@@ -64,7 +64,7 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-4">Company</h4>
               <ul className="space-y-2 text-gray-400">
                 <li>
-                  <Link href="/" className="hover:text-white transition-colors">
+                  <Link href="/about" className="hover:text-white transition-colors">
                     About
                   </Link>
                 </li>
@@ -74,8 +74,8 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="hover:text-white transition-colors">
-                    Careers
+                  <Link href="/pricing" className="hover:text-white transition-colors">
+                    Pricing
                   </Link>
                 </li>
               </ul>
@@ -88,10 +88,10 @@ export default function Footer() {
                 © 2024 Orellana, Santhos & Thompson. All rights reserved.
               </p>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
-                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
-                <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
                   Terms of Service
                 </Link>
               </div>

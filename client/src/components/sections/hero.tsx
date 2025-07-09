@@ -31,7 +31,7 @@ export default function Hero() {
               <Button
                 size="lg"
                 className="bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all duration-300 transform hover:-translate-y-1"
-                onClick={() => window.location.href = "/api/login"}
+                onClick={() => window.location.href = "/pricing"}
               >
                 Get Started
               </Button>

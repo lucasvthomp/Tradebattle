@@ -21,6 +21,7 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/studies", label: "Studies" },
     { href: "/news", label: "News" },
+    { href: "/pricing", label: "Pricing" },
     ...(isAuthenticated ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     { href: "/contact", label: "Contact Us" },
   ];
@@ -93,32 +94,19 @@ export default function Header() {
                     My Subscription
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => window.location.href = "/api/logout"}>
+                  <DropdownMenuItem onClick={() => alert("Sign out functionality coming soon!")}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-100">
-                    <User className="w-5 h-5" />
-                    <span className="text-sm font-medium">Profile</span>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => window.location.href = "/api/login"}>
-                    <User className="w-4 h-4 mr-2" />
-                    Sign In
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/api/login"}>
-                    <User className="w-4 h-4 mr-2" />
-                    Sign Up
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button
+                className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
+                onClick={() => window.location.href = "/pricing"}
+              >
+                Get Started
+              </Button>
             )}
 
             {/* Mobile Menu Button */}
