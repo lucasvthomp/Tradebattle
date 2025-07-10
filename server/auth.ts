@@ -165,3 +165,6 @@ export function requireAuth(req: any, res: any, next: any) {
   }
   next();
 }
+
+// Export hashPassword for use in storage
+export { hashPassword };

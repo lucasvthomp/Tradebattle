@@ -11,6 +11,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth setup
   setupAuth(app);
 
+  // Authentication routes are handled in setupAuth()
+
   // Studies routes
   app.get('/api/studies', async (req, res) => {
     try {

@@ -791,24 +791,9 @@ export default function Dashboard() {
                               <td className="py-3 px-4 font-medium">${stock.price ? stock.price.toFixed(2) : 'N/A'}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
-                                  {stock.changes[changePeriod].change !== null && stock.changes[changePeriod].changePercent !== null ? (
-                                    <>
-                                      {stock.changes[changePeriod].change > 0 ? (
-                                        <TrendingUp className="w-4 h-4 text-green-500" />
-                                      ) : (
-                                        <TrendingDown className="w-4 h-4 text-red-500" />
-                                      )}
-                                      <span className={`text-sm font-medium ${
-                                        stock.changes[changePeriod].change > 0 ? "text-green-600" : "text-red-600"
-                                      }`}>
-                                        {stock.changes[changePeriod].change > 0 ? "+" : ""}{stock.changes[changePeriod].change.toFixed(2)} ({stock.changes[changePeriod].changePercent.toFixed(2)}%)
-                                      </span>
-                                    </>
-                                  ) : (
-                                    <span className="text-sm text-gray-500">
-                                      {changePeriod === "1D" ? "N/A" : "Historical data unavailable"}
-                                    </span>
-                                  )}
+                                  <span className="text-sm text-gray-500">
+                                    Data loading...
+                                  </span>
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-sm">{stock.volume}</td>
