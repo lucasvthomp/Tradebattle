@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { getTwelveDataHistorical } from './twelvedata';
 
 const FINNHUB_API_KEY = 'd1nr9epr01qtrautf0sgd1nr9epr01qtrautf0t0';
 const BASE_URL = 'https://finnhub.io/api/v1';
@@ -99,6 +100,14 @@ export async function getHistoricalData(symbol: string, period: string): Promise
   change: number;
   changePercent: number;
 } | null> {
+  // First try Twelve Data API for historical data
+  const historicalData = await getTwelveDataHistorical(symbol, period);
+  
+  if (historicalData) {
+    return historicalData;
+  }
+  
+  // Fallback to Finnhub if Twelve Data fails
   try {
     const now = Math.floor(Date.now() / 1000);
     let fromDate;
@@ -127,7 +136,6 @@ export async function getHistoricalData(symbol: string, period: string): Promise
         return null;
     }
     
-    // Try the candle endpoint with proper error handling
     const response = await fetch(`${BASE_URL}/stock/candle?symbol=${symbol}&resolution=D&from=${fromDate}&to=${now}&token=${FINNHUB_API_KEY}`);
     
     if (!response.ok) {

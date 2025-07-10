@@ -418,12 +418,12 @@ export default function Dashboard() {
     const loadPopularStocks = async () => {
       try {
         setIsLoadingPopular(true);
-        // Load current stock data only since historical data requires premium access
-        const response = await fetch('/api/stocks/popular?limit=10');
+        // Load current stock data with historical data
+        const response = await fetch('/api/stocks/popular?limit=10&withHistory=true');
         if (response.ok) {
           const data = await response.json();
           setPopularStocks(data);
-          // Initialize watchlist with first 5 popular stocks
+          // Initialize watchlist with first 5 popular stocks with real historical data
           const initialWatchlist = data.slice(0, 5).map((stock: any, index: number) => ({
             id: index + 1,
             symbol: stock.symbol,
@@ -434,12 +434,12 @@ export default function Dashboard() {
             sector: stock.sector,
             changes: {
               "1D": { change: stock.change, changePercent: stock.changePercent },
-              "1W": { change: null, changePercent: null },
-              "1M": { change: null, changePercent: null },
-              "3M": { change: null, changePercent: null },
-              "6M": { change: null, changePercent: null },
-              "1Y": { change: null, changePercent: null },
-              "YTD": { change: null, changePercent: null }
+              "1W": stock.historicalData?.['1W'] || { change: null, changePercent: null },
+              "1M": stock.historicalData?.['1M'] || { change: null, changePercent: null },
+              "3M": stock.historicalData?.['3M'] || { change: null, changePercent: null },
+              "6M": stock.historicalData?.['6M'] || { change: null, changePercent: null },
+              "1Y": stock.historicalData?.['1Y'] || { change: null, changePercent: null },
+              "YTD": stock.historicalData?.['YTD'] || { change: null, changePercent: null }
             }
           }));
           setWatchlist(initialWatchlist);
@@ -477,6 +477,17 @@ export default function Dashboard() {
 
   const addToWatchlist = async (stock: any) => {
     try {
+      // Get historical data for the stock
+      const response = await fetch(`/api/stocks/batch?symbols=${stock.symbol}&withHistory=true`);
+      let historicalData = null;
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.length > 0) {
+          historicalData = data[0].historicalData;
+        }
+      }
+      
       const newStock = {
         id: Date.now(),
         symbol: stock.symbol,
@@ -487,12 +498,12 @@ export default function Dashboard() {
         sector: stock.sector,
         changes: {
           "1D": { change: stock.change, changePercent: stock.changePercent },
-          "1W": { change: null, changePercent: null },
-          "1M": { change: null, changePercent: null },
-          "3M": { change: null, changePercent: null },
-          "6M": { change: null, changePercent: null },
-          "1Y": { change: null, changePercent: null },
-          "YTD": { change: null, changePercent: null }
+          "1W": historicalData?.['1W'] || { change: null, changePercent: null },
+          "1M": historicalData?.['1M'] || { change: null, changePercent: null },
+          "3M": historicalData?.['3M'] || { change: null, changePercent: null },
+          "6M": historicalData?.['6M'] || { change: null, changePercent: null },
+          "1Y": historicalData?.['1Y'] || { change: null, changePercent: null },
+          "YTD": historicalData?.['YTD'] || { change: null, changePercent: null }
         }
       };
       
@@ -501,7 +512,7 @@ export default function Dashboard() {
       setSearchQuery("");
       toast({
         title: "Added to Watchlist",
-        description: `${stock.symbol} has been added to your watchlist with live market data.`,
+        description: `${stock.symbol} has been added to your watchlist with historical data.`,
       });
     } catch (error) {
       console.error('Error adding to watchlist:', error);
