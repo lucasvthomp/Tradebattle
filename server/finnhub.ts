@@ -1,6 +1,9 @@
 import fetch from "node-fetch";
 import { getTwelveDataHistorical } from "./twelvedata";
 import { getPolygonHistoricalData } from "./polygon";
+import { quoteCache, historicalCache, profileCache, CACHE_TTL } from "./cache";
+import { APIError, RateLimitError, validateQuoteData, validateHistoricalData } from "./errors";
+import { withRetry, shouldRetryAPICall } from "./retry";
 
 const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || "d1nr9epr01qtrautf0sgd1nr9epr01qtrautf0t0";
 const BASE_URL = "https://finnhub.io/api/v1";
@@ -58,27 +61,45 @@ export interface CompanyProfile {
 export async function getStockQuote(
   symbol: string,
 ): Promise<StockQuote | null> {
+  // Check cache first
+  const cacheKey = `quote:${symbol}`;
+  const cached = quoteCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
-    const response = await rateLimitedFetch(
-      `${BASE_URL}/quote?symbol=${symbol}&token=${FINNHUB_API_KEY}`,
-    );
+    const result = await withRetry(async () => {
+      const response = await rateLimitedFetch(
+        `${BASE_URL}/quote?symbol=${symbol}&token=${FINNHUB_API_KEY}`,
+      );
 
-    const data = (await response.json()) as any;
+      const data = (await response.json()) as any;
 
-    if (!data.c || data.c === 0) {
-      return null;
-    }
+      if (!validateQuoteData(data)) {
+        throw new Error(`Invalid quote data for ${symbol}`);
+      }
 
-    return {
-      symbol,
-      currentPrice: data.c,
-      change: data.d,
-      changePercent: data.dp,
-      high: data.h,
-      low: data.l,
-      open: data.o,
-      previousClose: data.pc,
-    };
+      return {
+        symbol,
+        currentPrice: data.c,
+        change: data.d,
+        changePercent: data.dp,
+        high: data.h,
+        low: data.l,
+        open: data.o,
+        previousClose: data.pc,
+      };
+    }, {
+      maxAttempts: 3,
+      baseDelay: 1000,
+      maxDelay: 5000,
+      retryCondition: shouldRetryAPICall
+    });
+
+    // Cache the result
+    quoteCache.set(cacheKey, result, CACHE_TTL.QUOTE);
+    return result;
   } catch (error) {
     console.error(`Error fetching quote for ${symbol}:`, error);
     return null;
@@ -88,29 +109,47 @@ export async function getStockQuote(
 export async function getCompanyProfile(
   symbol: string,
 ): Promise<CompanyProfile | null> {
+  // Check cache first
+  const cacheKey = `profile:${symbol}`;
+  const cached = profileCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   try {
-    const response = await rateLimitedFetch(
-      `${BASE_URL}/stock/profile2?symbol=${symbol}&token=${FINNHUB_API_KEY}`,
-    );
+    const result = await withRetry(async () => {
+      const response = await rateLimitedFetch(
+        `${BASE_URL}/stock/profile2?symbol=${symbol}&token=${FINNHUB_API_KEY}`,
+      );
 
-    const data = (await response.json()) as any;
+      const data = (await response.json()) as any;
 
-    if (!data.name) {
-      return null;
-    }
+      if (!data.name) {
+        throw new Error(`No profile data for ${symbol}`);
+      }
 
-    return {
-      symbol,
-      name: data.name,
-      sector: data.finnhubIndustry || "Unknown",
-      industry: data.finnhubIndustry || "Unknown",
-      marketCap: data.marketCapitalization || 0,
-      country: data.country || "US",
-      currency: data.currency || "USD",
-      exchange: data.exchange || "Unknown",
-      weburl: data.weburl || "",
-      logo: data.logo || "",
-    };
+      return {
+        symbol,
+        name: data.name,
+        sector: data.finnhubIndustry || "Unknown",
+        industry: data.finnhubIndustry || "Unknown",
+        marketCap: data.marketCapitalization || 0,
+        country: data.country || "US",
+        currency: data.currency || "USD",
+        exchange: data.exchange || "Unknown",
+        weburl: data.weburl || "",
+        logo: data.logo || "",
+      };
+    }, {
+      maxAttempts: 3,
+      baseDelay: 1000,
+      maxDelay: 5000,
+      retryCondition: shouldRetryAPICall
+    });
+
+    // Cache the result
+    profileCache.set(cacheKey, result, CACHE_TTL.PROFILE);
+    return result;
   } catch (error) {
     console.error(`Error fetching profile for ${symbol}:`, error);
     return null;
@@ -132,18 +171,44 @@ export async function getHistoricalData(
   change: number;
   changePercent: number;
 } | null> {
-  // First try Polygon.io API for historical data (most reliable)
-  const polygonData = await getPolygonHistoricalData(symbol, period);
-
-  if (polygonData) {
-    return polygonData;
+  // Check cache first
+  const cacheKey = `historical:${symbol}:${period}`;
+  const cached = historicalCache.get(cacheKey);
+  if (cached) {
+    return cached;
   }
 
-  // Fallback to Twelve Data API
-  const historicalData = await getTwelveDataHistorical(symbol, period);
+  let result = null;
 
-  if (historicalData) {
-    return historicalData;
+  // First try Polygon.io API for historical data (most reliable)
+  try {
+    result = await getPolygonHistoricalData(symbol, period);
+    if (result) {
+      historicalCache.set(cacheKey, result, CACHE_TTL.HISTORICAL);
+      return result;
+    }
+  } catch (error) {
+    console.log(`Polygon failed for ${symbol} (${period}): ${error.message}`);
+  }
+
+  // Fallback to Twelve Data API with retry
+  try {
+    result = await withRetry(
+      () => getTwelveDataHistorical(symbol, period),
+      {
+        maxAttempts: 2,
+        baseDelay: 2000,
+        maxDelay: 10000,
+        retryCondition: (error) => error.message.includes('rate limit') || error.message.includes('credits')
+      }
+    );
+    
+    if (result) {
+      historicalCache.set(cacheKey, result, CACHE_TTL.HISTORICAL);
+      return result;
+    }
+  } catch (error) {
+    console.log(`Twelve Data failed for ${symbol} (${period}): ${error.message}`);
   }
 
   // Final fallback to Finnhub - use current quote with known reference prices
@@ -168,12 +233,15 @@ export async function getHistoricalData(
           const change = currentQuote.currentPrice - startPrice;
           const changePercent = (change / startPrice) * 100;
           
-          console.log(`Finnhub YTD ${symbol}: ${startPrice} -> ${currentQuote.currentPrice} = ${change} (${changePercent.toFixed(2)}%)`);
+          console.log(`Finnhub YTD fallback ${symbol}: ${startPrice} -> ${currentQuote.currentPrice} = ${change} (${changePercent.toFixed(2)}%)`);
           
-          return {
+          result = {
             change: parseFloat(change.toFixed(2)),
             changePercent: parseFloat(changePercent.toFixed(2)),
           };
+          
+          historicalCache.set(cacheKey, result, CACHE_TTL.HISTORICAL);
+          return result;
         }
       }
     }
@@ -232,10 +300,13 @@ export async function getHistoricalData(
 
       console.log(`Finnhub ${symbol} (${period}): ${startPrice} -> ${endPrice} = ${change} (${changePercent.toFixed(2)}%)`);
 
-      return {
+      result = {
         change: parseFloat(change.toFixed(2)),
         changePercent: parseFloat(changePercent.toFixed(2)),
       };
+      
+      historicalCache.set(cacheKey, result, CACHE_TTL.HISTORICAL);
+      return result;
     }
 
     return null;

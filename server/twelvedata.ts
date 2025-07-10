@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { APIError, RateLimitError, validateTwelveDataResponse } from "./errors";
 
 const TWELVE_DATA_API_KEY = process.env.TWELVE_DATA_API_KEY || "52043db1593844d3a178d1c9e720dc23";
 const BASE_URL = "https://api.twelvedata.com";
@@ -70,8 +71,9 @@ export async function getTwelveDataHistorical(symbol: string, period: string): P
     
     const data = await response.json();
     
-    if (data.status === "error" || !data.values || data.values.length < 2) {
-      throw new Error(`No historical data available for ${symbol} (${period}): ${data.message || 'Unknown error'}`);
+    if (!validateTwelveDataResponse(data) || data.values.length < 2) {
+      const errorMsg = data.message || data.status || 'Unknown error';
+      throw new APIError(`No historical data available for ${symbol} (${period}): ${errorMsg}`, 'TwelveData');
     }
     
     // Get the most recent and oldest values
