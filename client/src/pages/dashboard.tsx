@@ -502,12 +502,14 @@ export default function Dashboard() {
   };
 
   const formatMarketCap = (marketCap: number) => {
-    if (marketCap >= 1000000) {
-      return (marketCap / 1000000).toFixed(1) + "T";
-    } else if (marketCap >= 1000) {
-      return (marketCap / 1000).toFixed(1) + "B";
+    if (marketCap >= 1000000000000) {
+      return (marketCap / 1000000000000).toFixed(1) + "T";
+    } else if (marketCap >= 1000000000) {
+      return (marketCap / 1000000000).toFixed(1) + "B";
+    } else if (marketCap >= 1000000) {
+      return (marketCap / 1000000).toFixed(1) + "M";
     } else {
-      return marketCap.toFixed(1) + "M";
+      return marketCap.toFixed(1) + "K";
     }
   };
 
@@ -751,13 +753,13 @@ export default function Dashboard() {
                       onChange={(e) => setChangePeriod(e.target.value)}
                       className="px-3 py-2 border rounded-md"
                     >
-                      <option value="1D">1 Day</option>
-                      <option value="1W">1 Week</option>
-                      <option value="1M">1 Month</option>
-                      <option value="3M">3 Months</option>
-                      <option value="6M">6 Months</option>
-                      <option value="1Y">1 Year</option>
-                      <option value="YTD">Year to Date</option>
+                      <option key="1D" value="1D">1 Day</option>
+                      <option key="1W" value="1W">1 Week</option>
+                      <option key="1M" value="1M">1 Month</option>
+                      <option key="3M" value="3M">3 Months</option>
+                      <option key="6M" value="6M">6 Months</option>
+                      <option key="1Y" value="1Y">1 Year</option>
+                      <option key="YTD" value="YTD">Year to Date</option>
                     </select>
                     <Button
                       variant="outline"
@@ -830,7 +832,7 @@ export default function Dashboard() {
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-sm">{stock.peRatio ? stock.peRatio.toFixed(1) : 'N/A'}</td>
-                              <td className="py-3 px-4 text-sm">{stock.marketCap || 'N/A'}</td>
+                              <td className="py-3 px-4 text-sm">{stock.marketCap ? formatMarketCap(stock.marketCap) : 'N/A'}</td>
                               <td className="py-3 px-4">
                                 <Badge variant="secondary" className="text-xs">
                                   {stock.sector}

@@ -77,7 +77,7 @@ export async function getYahooCompanyProfile(symbol: string): Promise<YahooCompa
       ),
       withRetry(
         () => yahooFinance.quoteSummary(symbol, { 
-          modules: ['summaryProfile', 'defaultKeyStatistics', 'financialData'] 
+          modules: ['summaryProfile', 'defaultKeyStatistics', 'financialData', 'summaryDetail'] 
         }),
         { maxAttempts: 3, baseDelay: 1000, maxDelay: 5000 }
       )
@@ -90,6 +90,7 @@ export async function getYahooCompanyProfile(symbol: string): Promise<YahooCompa
     const summaryProfile = profile.summaryProfile;
     const keyStats = profile.defaultKeyStatistics;
     const financialData = profile.financialData;
+    const summaryDetail = profile.summaryDetail;
 
     return {
       symbol: quote.symbol || symbol,
@@ -97,7 +98,7 @@ export async function getYahooCompanyProfile(symbol: string): Promise<YahooCompa
       sector: summaryProfile?.sector || 'Unknown',
       industry: summaryProfile?.industry || 'Unknown',
       marketCap: quote.marketCap || 0,
-      peRatio: keyStats?.trailingPE || financialData?.currentRatio || null,
+      peRatio: summaryDetail?.trailingPE || keyStats?.trailingPE || keyStats?.forwardPE || null,
       country: summaryProfile?.country || 'US',
       currency: quote.currency || 'USD',
       exchange: quote.fullExchangeName || 'Unknown',
