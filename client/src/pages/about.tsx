@@ -11,7 +11,7 @@ const founders = [
     expertise: ["Tech Analysis", "Healthcare", "M&A Research"]
   },
   {
-    name: "Isabella Santhos",
+    name: "Isabella Santos",
     role: "CTO & Head of Research",
     description: "Previously at McKinsey & Company, leading digital transformation in financial services. Expert in emerging markets analysis.",
     expertise: ["Emerging Markets", "Digital Finance", "ESG Analysis"]

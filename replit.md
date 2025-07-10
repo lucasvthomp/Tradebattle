@@ -134,3 +134,4 @@ Preferred communication style: Simple, everyday language.
 - **No Rate Limits**: Eliminated API rate limit issues by using Yahoo Finance's scraping-based approach instead of rate-limited APIs
 - **Enhanced Data Coverage**: Access to comprehensive financial data including earnings, financials, news headlines, and detailed company information
 - **Simplified Architecture**: Reduced complexity by removing multiple API providers and fallback logic in favor of single Yahoo Finance integration
+- **Company Name Correction**: Fixed all instances of "Santhos" to "Santos" throughout the codebase - correct company name is "Orellana, Santos & Thompson, LLC"
