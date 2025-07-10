@@ -10,8 +10,7 @@ export interface PolygonHistoricalData {
 
 // Calculate the date range for different periods
 function getDateRange(period: string): { from: string; to: string } {
-  // Use a fixed reference date since we're working with simulated data
-  const today = new Date('2025-07-09'); // Latest trading day
+  const today = new Date(); // Always use current date
   const toDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
   
   let fromDate: Date;
@@ -33,7 +32,7 @@ function getDateRange(period: string): { from: string; to: string } {
       fromDate = new Date(today.getTime() - 365 * 24 * 60 * 60 * 1000);
       break;
     case 'YTD':
-      fromDate = new Date('2025-01-01'); // January 1st of current year
+      fromDate = new Date(today.getFullYear(), 0, 1); // January 1st of current year
       break;
     default:
       fromDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);

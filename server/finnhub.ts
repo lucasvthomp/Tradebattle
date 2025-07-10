@@ -5,6 +5,30 @@ import { getPolygonHistoricalData } from './polygon';
 const FINNHUB_API_KEY = 'd1nr9epr01qtrautf0sgd1nr9epr01qtrautf0t0';
 const BASE_URL = 'https://finnhub.io/api/v1';
 
+// Rate limiting for Finnhub API (60 calls per minute = 1 call per second)
+let finnhubLastRequest = 0;
+const FINNHUB_MIN_INTERVAL = 1000; // 1 second between requests
+
+async function rateLimitedFetch(url: string) {
+  const now = Date.now();
+  if (now - finnhubLastRequest < FINNHUB_MIN_INTERVAL) {
+    await new Promise(resolve => setTimeout(resolve, FINNHUB_MIN_INTERVAL - (now - finnhubLastRequest)));
+  }
+  finnhubLastRequest = Date.now();
+  
+  const response = await fetch(url);
+  if (!response.ok) {
+    if (response.status === 429) {
+      console.log(`Finnhub API rate limited, waiting 2 seconds...`);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Retry once
+      return await fetch(url);
+    }
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response;
+}
+
 export interface StockQuote {
   symbol: string;
   currentPrice: number;
@@ -31,11 +55,7 @@ export interface CompanyProfile {
 
 export async function getStockQuote(symbol: string): Promise<StockQuote | null> {
   try {
-    const response = await fetch(`${BASE_URL}/quote?symbol=${symbol}&token=${FINNHUB_API_KEY}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await rateLimitedFetch(`${BASE_URL}/quote?symbol=${symbol}&token=${FINNHUB_API_KEY}`);
     
     const data = await response.json() as any;
     
@@ -61,11 +81,7 @@ export async function getStockQuote(symbol: string): Promise<StockQuote | null> 
 
 export async function getCompanyProfile(symbol: string): Promise<CompanyProfile | null> {
   try {
-    const response = await fetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${FINNHUB_API_KEY}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const response = await rateLimitedFetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${FINNHUB_API_KEY}`);
     
     const data = await response.json() as any;
     
