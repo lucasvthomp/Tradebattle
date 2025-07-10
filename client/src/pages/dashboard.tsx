@@ -452,27 +452,21 @@ export default function Dashboard() {
 
   // Authentication handled by router
 
-  // Load popular stocks on component mount
-  useEffect(() => {
-    const loadPopularStocks = async () => {
-      try {
-        setIsLoadingPopular(true);
-        const response = await fetch('/api/stocks/popular?limit=10&withHistory=true');
-        if (response.ok) {
-          const data = await response.json();
-          setPopularStocks(data);
-        }
-      } catch (error) {
-        console.error('Error loading popular stocks:', error);
-      } finally {
-        setIsLoadingPopular(false);
-      }
-    };
+  // Add query for cached company data
+  const { data: cachedCompanies = [], isLoading: cachedLoading } = useQuery({
+    queryKey: ["/api/companies/cached"],
+    enabled: !!user,
+    refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+  });
 
-    if (user) {
-      loadPopularStocks();
+  // Use cached data for popular stocks
+  useEffect(() => {
+    if (cachedCompanies.length > 0) {
+      // Select first 10 companies from cache as popular stocks
+      setPopularStocks(cachedCompanies.slice(0, 10));
+      setIsLoadingPopular(false);
     }
-  }, [user]);
+  }, [cachedCompanies]);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -521,7 +515,24 @@ export default function Dashboard() {
     removeFromWatchlistMutation.mutate(id);
   };
 
-  const filteredWatchlist = watchlist
+  // Enrich watchlist with cached company data
+  const enrichedWatchlist = watchlist.map(stock => {
+    const cachedData = cachedCompanies.find((company: any) => company.symbol === stock.symbol);
+    if (cachedData) {
+      return {
+        ...stock,
+        currentPrice: cachedData.currentPrice,
+        volume: cachedData.volume,
+        marketCap: formatMarketCap(cachedData.marketCap),
+        sector: cachedData.sector,
+        changes: cachedData.changes,
+        lastUpdated: cachedData.lastUpdated
+      };
+    }
+    return stock;
+  });
+
+  const filteredWatchlist = enrichedWatchlist
     .filter(stock => filterSector === "all" || stock.sector === filterSector)
     .sort((a, b) => {
       const aValue = a[sortBy as keyof typeof a];
@@ -788,16 +799,38 @@ export default function Dashboard() {
                             <tr key={stock.id} className="border-b hover:bg-gray-50">
                               <td className="py-3 px-4 font-medium">{stock.symbol}</td>
                               <td className="py-3 px-4 text-sm">{stock.companyName}</td>
-                              <td className="py-3 px-4 font-medium">${stock.price ? stock.price.toFixed(2) : 'N/A'}</td>
+                              <td className="py-3 px-4 font-medium">
+                                ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
+                              </td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
-                                  <span className="text-sm text-gray-500">
-                                    Data loading...
-                                  </span>
+                                  {stock.changes && stock.changes[changePeriod] ? (
+                                    <>
+                                      {stock.changes[changePeriod].changePercent >= 0 ? (
+                                        <TrendingUp className="w-4 h-4 text-green-500" />
+                                      ) : (
+                                        <TrendingDown className="w-4 h-4 text-red-500" />
+                                      )}
+                                      <span className={`text-sm font-medium ${
+                                        stock.changes[changePeriod].changePercent >= 0 ? "text-green-600" : "text-red-600"
+                                      }`}>
+                                        {stock.changes[changePeriod].changePercent >= 0 ? '+' : ''}{stock.changes[changePeriod].changePercent.toFixed(2)}%
+                                      </span>
+                                      <span className={`text-xs ${
+                                        stock.changes[changePeriod].change >= 0 ? "text-green-500" : "text-red-500"
+                                      }`}>
+                                        (${stock.changes[changePeriod].change >= 0 ? '+' : ''}{stock.changes[changePeriod].change.toFixed(2)})
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-sm text-gray-500">
+                                      Loading...
+                                    </span>
+                                  )}
                                 </div>
                               </td>
-                              <td className="py-3 px-4 text-sm">{stock.volume}</td>
-                              <td className="py-3 px-4 text-sm">{stock.marketCap}</td>
+                              <td className="py-3 px-4 text-sm">{stock.volume || 'N/A'}</td>
+                              <td className="py-3 px-4 text-sm">{stock.marketCap || 'N/A'}</td>
                               <td className="py-3 px-4">
                                 <Badge variant="secondary" className="text-xs">
                                   {stock.sector}

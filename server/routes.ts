@@ -4,7 +4,8 @@ import { storage } from "./storage";
 import { setupAuth, requireAuth } from "./auth";
 import { getStockQuote, getCompanyProfile, getMarketData, getMarketDataWithHistory, getHistoricalData, POPULAR_STOCKS } from "./finnhub";
 import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema } from "@shared/schema";
-import { searchCache, CACHE_TTL } from "./cache";
+import { searchCache, CACHE_TTL, companyDataCache } from "./cache";
+import { companyDataManager } from "./company-data-manager";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -185,8 +186,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const symbols = POPULAR_STOCKS.slice(0, limit);
       
       if (withHistory) {
-        const marketData = await getMarketDataWithHistory(symbols);
-        res.json(marketData);
+        // Try to use cached comprehensive data first
+        const cachedData = await companyDataManager.getMultipleCompaniesData(symbols);
+        
+        if (cachedData.length > 0) {
+          res.json(cachedData);
+        } else {
+          // Fallback to original API if cache is empty
+          const marketData = await getMarketDataWithHistory(symbols);
+          res.json(marketData);
+        }
       } else {
         const marketData = await getMarketData(symbols);
         res.json(marketData);
@@ -256,6 +265,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       console.error('Error fetching batch stocks:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  // New company data routes using cached data
+  app.get('/api/companies/cached', async (req, res) => {
+    try {
+      const symbols = companyDataManager.getCachedSymbols();
+      const companiesData = await companyDataManager.getMultipleCompaniesData(symbols);
+      res.json(companiesData);
+    } catch (error) {
+      console.error('Error fetching cached companies:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/companies/:symbol', async (req, res) => {
+    try {
+      const symbol = req.params.symbol.toUpperCase();
+      const companyData = await companyDataManager.getCompanyData(symbol);
+      
+      if (!companyData) {
+        return res.status(404).json({ error: 'Company data not found' });
+      }
+      
+      res.json(companyData);
+    } catch (error) {
+      console.error(`Error fetching company data for ${req.params.symbol}:`, error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.post('/api/companies/:symbol/refresh', async (req, res) => {
+    try {
+      const symbol = req.params.symbol.toUpperCase();
+      const companyData = await companyDataManager.updateCompanyData(symbol);
+      
+      if (!companyData) {
+        return res.status(404).json({ error: 'Failed to update company data' });
+      }
+      
+      res.json(companyData);
+    } catch (error) {
+      console.error(`Error refreshing company data for ${req.params.symbol}:`, error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/cache/stats', (req, res) => {
+    try {
+      const stats = companyDataManager.getCacheStats();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error fetching cache stats:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
