@@ -15,6 +15,8 @@ import Pricing from "@/pages/pricing";
 import About from "@/pages/about";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
+import Auth from "@/pages/auth";
+import Profile from "@/pages/profile";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
@@ -44,6 +46,7 @@ function Router() {
               <Route path="/about" component={About} />
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
+              <Route path="/auth" component={Auth} />
             </>
           ) : (
             <>
@@ -56,6 +59,8 @@ function Router() {
               <Route path="/about" component={About} />
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
+              <Route path="/profile" component={Profile} />
+              <Route path="/auth" component={Auth} />
             </>
           )}
           <Route component={NotFound} />

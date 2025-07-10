@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, Menu, Settings, List, Crown, LogOut } from "lucide-react";
+import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -75,38 +75,57 @@ export default function Header() {
                       <User className="w-5 h-5" />
                     )}
                     <span className="text-sm font-medium">
-                      {user?.firstName || "Profile"}
+                      {user?.firstName || "Alexander T."}
                     </span>
                     <ChevronDown className="w-4 h-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem>
-                    <List className="w-4 h-4 mr-2" />
-                    Watchlist
+                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
+                    <User className="w-4 h-4 mr-2" />
+                    My ORSATH
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = "/dashboard"}>
+                    <List className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
                     <Crown className="w-4 h-4 mr-2" />
                     My Subscription
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => alert("Sign out functionality coming soon!")}>
+                  <DropdownMenuItem onClick={() => {
+                    // Clear authentication state
+                    localStorage.removeItem('orsath_auth');
+                    window.location.href = "/";
+                  }}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button
-                className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
-                onClick={() => window.location.href = "/pricing"}
-              >
-                Get Started
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  className="text-gray-700 hover:text-black"
+                  onClick={() => window.location.href = "/auth"}
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Log In
+                </Button>
+                <Button
+                  className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
+                  onClick={() => window.location.href = "/auth"}
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
+                  Sign Up
+                </Button>
+              </div>
             )}
 
             {/* Mobile Menu Button */}

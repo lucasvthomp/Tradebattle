@@ -1,9 +1,19 @@
 export function useAuth() {
-  // For now, return a simple non-authenticated state to show the landing page
-  // This will be properly implemented when authentication is needed
+  // Simulate authentication state based on localStorage
+  const authData = localStorage.getItem('orsath_auth');
+  const isAuthenticated = authData === 'true';
+  
+  const mockUser = isAuthenticated ? {
+    id: '1',
+    firstName: 'Alexander',
+    lastName: 'Thompson',
+    email: 'alex.thompson@email.com',
+    profileImageUrl: null
+  } : null;
+
   return {
-    user: null,
+    user: mockUser,
     isLoading: false,
-    isAuthenticated: false,
+    isAuthenticated,
   };
 }
