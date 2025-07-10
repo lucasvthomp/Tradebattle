@@ -46,11 +46,13 @@ function Router() {
               <Route path="/about" component={About} />
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
+              <Route path="/login" component={Auth} />
+              <Route path="/signup" component={Auth} />
               <Route path="/auth" component={Auth} />
             </>
           ) : (
             <>
-              <Route path="/" component={Home} />
+              <Route path="/" component={Dashboard} />
               <Route path="/studies" component={Studies} />
               <Route path="/news" component={News} />
               <Route path="/dashboard" component={Dashboard} />
@@ -60,7 +62,6 @@ function Router() {
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
               <Route path="/profile" component={Profile} />
-              <Route path="/auth" component={Auth} />
             </>
           )}
           <Route component={NotFound} />

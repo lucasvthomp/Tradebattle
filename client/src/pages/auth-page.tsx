@@ -13,16 +13,28 @@ import { useLocation } from "wouter";
 import { useEffect } from "react";
 
 export default function AuthPage() {
-  const [, navigate] = useLocation();
+  const [location, navigate] = useLocation();
   const { user, loginMutation, registerMutation } = useAuth();
-  const [activeTab, setActiveTab] = useState("login");
+  const [activeTab, setActiveTab] = useState(() => {
+    if (location === "/signup") return "register";
+    return "login";
+  });
 
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [user, navigate]);
+
+  // Update active tab based on route
+  useEffect(() => {
+    if (location === "/signup") {
+      setActiveTab("register");
+    } else {
+      setActiveTab("login");
+    }
+  }, [location]);
 
   const loginForm = useForm<LoginUser>({
     resolver: zodResolver(loginSchema),

@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,7 +13,7 @@ import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Header() {
-  const { isAuthenticated, user } = useAuth();
+  const { user, logoutMutation } = useAuth();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -22,7 +22,7 @@ export default function Header() {
     { href: "/studies", label: "Studies" },
     { href: "/news", label: "News" },
     { href: "/pricing", label: "Pricing" },
-    ...(isAuthenticated ? [{ href: "/dashboard", label: "Dashboard" }] : []),
+    ...(user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     { href: "/contact", label: "Contact Us" },
   ];
 
@@ -61,7 +61,7 @@ export default function Header() {
 
           {/* Profile Section */}
           <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
+            {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-100">
@@ -75,7 +75,7 @@ export default function Header() {
                       <User className="w-5 h-5" />
                     )}
                     <span className="text-sm font-medium">
-                      {user?.firstName || "Alexander T."}
+                      {user?.name || user?.email || "User"}
                     </span>
                     <ChevronDown className="w-4 h-4" />
                   </Button>
@@ -99,9 +99,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => {
-                    // Clear authentication state
-                    localStorage.removeItem('orsath_auth');
-                    window.location.href = "/";
+                    logoutMutation.mutate();
                   }}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Sign Out
@@ -110,21 +108,23 @@ export default function Header() {
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  className="text-gray-700 hover:text-black"
-                  onClick={() => window.location.href = "/auth"}
-                >
-                  <LogIn className="w-4 h-4 mr-2" />
-                  Log In
-                </Button>
-                <Button
-                  className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
-                  onClick={() => window.location.href = "/auth"}
-                >
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Sign Up
-                </Button>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    className="text-gray-700 hover:text-black"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Log In
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button
+                    className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Sign Up
+                  </Button>
+                </Link>
               </div>
             )}
 
