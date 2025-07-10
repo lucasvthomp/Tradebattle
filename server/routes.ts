@@ -2,10 +2,10 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, requireAuth } from "./auth";
-import { getStockQuote, getCompanyProfile, getMarketData, getMarketDataWithHistory, getHistoricalData, POPULAR_STOCKS } from "./finnhub";
+import { getYahooStockQuote, getYahooCompanyProfile, getYahooMarketData, getYahooMarketDataWithHistory, getYahooHistoricalData, POPULAR_STOCKS } from "./yahoo-finance";
 import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema } from "@shared/schema";
 import { searchCache, CACHE_TTL, companyDataCache } from "./cache";
-import { companyDataManager } from "./company-data-manager";
+import { yahooCompanyDataManager } from "./yahoo-company-data-manager";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -170,7 +170,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/stock/quote/:symbol', async (req, res) => {
     try {
       const symbol = req.params.symbol.toUpperCase();
-      const quote = await getStockQuote(symbol);
+      const quote = await getYahooStockQuote(symbol);
       
       if (!quote) {
         return res.status(404).json({ error: 'Stock not found' });
@@ -186,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/stock/profile/:symbol', async (req, res) => {
     try {
       const symbol = req.params.symbol.toUpperCase();
-      const profile = await getCompanyProfile(symbol);
+      const profile = await getYahooCompanyProfile(symbol);
       
       if (!profile) {
         return res.status(404).json({ error: 'Company profile not found' });
@@ -207,17 +207,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (withHistory) {
         // Try to use cached comprehensive data first
-        const cachedData = await companyDataManager.getMultipleCompaniesData(symbols);
+        const cachedData = await yahooCompanyDataManager.getMultipleCompaniesData(symbols);
         
         if (cachedData.length > 0) {
           res.json(cachedData);
         } else {
           // Fallback to original API if cache is empty
-          const marketData = await getMarketDataWithHistory(symbols);
+          const marketData = await getYahooMarketDataWithHistory(symbols);
           res.json(marketData);
         }
       } else {
-        const marketData = await getMarketData(symbols);
+        const marketData = await getYahooMarketData(symbols);
         res.json(marketData);
       }
     } catch (error) {
@@ -240,8 +240,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (matchingSymbols.length === 0) {
         // Try to fetch the symbol directly
-        const quote = await getStockQuote(searchTerm);
-        const profile = await getCompanyProfile(searchTerm);
+        const quote = await getYahooStockQuote(searchTerm);
+        const profile = await getYahooCompanyProfile(searchTerm);
         
         if (quote && profile) {
           return res.json([{
@@ -258,7 +258,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json([]);
       }
       
-      const marketData = await getMarketData(matchingSymbols.slice(0, 10));
+      const marketData = await getYahooMarketData(matchingSymbols.slice(0, 10));
       res.json(marketData);
     } catch (error) {
       console.error('Error searching stocks:', error);
@@ -277,10 +277,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const symbolList = symbols.split(',').map(s => s.toUpperCase()).slice(0, 20);
       
       if (withHistory) {
-        const marketData = await getMarketDataWithHistory(symbolList);
+        const marketData = await getYahooMarketDataWithHistory(symbolList);
         res.json(marketData);
       } else {
-        const marketData = await getMarketData(symbolList);
+        const marketData = await getYahooMarketData(symbolList);
         res.json(marketData);
       }
     } catch (error) {
@@ -292,8 +292,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // New company data routes using cached data
   app.get('/api/companies/cached', async (req, res) => {
     try {
-      const symbols = companyDataManager.getCachedSymbols();
-      const companiesData = await companyDataManager.getMultipleCompaniesData(symbols);
+      const symbols = yahooCompanyDataManager.getCachedSymbols();
+      const companiesData = await yahooCompanyDataManager.getMultipleCompaniesData(symbols);
       res.json(companiesData);
     } catch (error) {
       console.error('Error fetching cached companies:', error);
@@ -304,7 +304,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/companies/:symbol/data', async (req, res) => {
     try {
       const symbol = req.params.symbol.toUpperCase();
-      const companyData = await companyDataManager.getCompanyData(symbol);
+      const companyData = await yahooCompanyDataManager.getCompanyData(symbol);
       
       if (!companyData) {
         return res.status(404).json({ error: 'Company data not found' });
@@ -320,7 +320,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/companies/:symbol/refresh', async (req, res) => {
     try {
       const symbol = req.params.symbol.toUpperCase();
-      const companyData = await companyDataManager.updateCompanyData(symbol);
+      const companyData = await yahooCompanyDataManager.updateCompanyData(symbol);
       
       if (!companyData) {
         return res.status(404).json({ error: 'Failed to update company data' });
@@ -335,7 +335,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/cache/stats', (req, res) => {
     try {
-      const stats = companyDataManager.getCacheStats();
+      const stats = yahooCompanyDataManager.getCacheStats();
       res.json(stats);
     } catch (error) {
       console.error('Error fetching cache stats:', error);
@@ -348,7 +348,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const symbol = req.params.symbol.toUpperCase();
       const period = req.params.period;
       
-      const historicalData = await getHistoricalData(symbol, period);
+      const historicalData = await getYahooHistoricalData(symbol, period);
       
       if (!historicalData) {
         return res.status(404).json({ error: 'Historical data not found' });

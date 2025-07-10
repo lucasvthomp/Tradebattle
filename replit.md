@@ -129,3 +129,8 @@ Preferred communication style: Simple, everyday language.
 - **Search Results Caching**: 30-minute cache for stock search queries prevents redundant API calls
 - **Retry Logic**: Added exponential backoff retry mechanisms for temporary API failures and rate limits
 - **Data Validation**: Enhanced input validation and error handling with custom error types for better debugging
+- **Yahoo Finance Migration**: Completely migrated from Finnhub/TwelveData/Polygon APIs to yahoo-finance2 NPM package for comprehensive server-side data fetching
+- **Unified Data Source**: Single reliable source for quotes, company profiles, historical data, and market information through Yahoo Finance
+- **No Rate Limits**: Eliminated API rate limit issues by using Yahoo Finance's scraping-based approach instead of rate-limited APIs
+- **Enhanced Data Coverage**: Access to comprehensive financial data including earnings, financials, news headlines, and detailed company information
+- **Simplified Architecture**: Reduced complexity by removing multiple API providers and fallback logic in favor of single Yahoo Finance integration
