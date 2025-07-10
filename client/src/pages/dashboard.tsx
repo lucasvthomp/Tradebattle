@@ -788,7 +788,7 @@ export default function Dashboard() {
                             <tr key={stock.id} className="border-b hover:bg-gray-50">
                               <td className="py-3 px-4 font-medium">{stock.symbol}</td>
                               <td className="py-3 px-4 text-sm">{stock.companyName}</td>
-                              <td className="py-3 px-4 font-medium">${stock.price.toFixed(2)}</td>
+                              <td className="py-3 px-4 font-medium">${stock.price ? stock.price.toFixed(2) : 'N/A'}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
                                   {stock.changes[changePeriod].change !== null && stock.changes[changePeriod].changePercent !== null ? (
