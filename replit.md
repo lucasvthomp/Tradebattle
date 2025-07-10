@@ -92,7 +92,7 @@ Preferred communication style: Simple, everyday language.
 - **Database**: `DATABASE_URL` for PostgreSQL connection
 - **Authentication**: `REPL_ID`, `ISSUER_URL`, `SESSION_SECRET` for auth setup
 - **Domains**: `REPLIT_DOMAINS` for CORS configuration
-- **Financial Data**: `FINNHUB_API_KEY` for stock market data access, `TWELVE_DATA_API_KEY` for historical data
+- **Financial Data**: `FINNHUB_API_KEY` for stock market data access, `TWELVE_DATA_API_KEY` for historical data, `POLYGON_API_KEY` for premium historical data
 
 ### Production Considerations
 - **Static Assets**: Frontend served from `/dist/public`
@@ -117,3 +117,5 @@ Preferred communication style: Simple, everyday language.
 - **Historical Data Integration**: Added Twelve Data API (`server/twelvedata.ts`) for authentic historical stock performance data
 - **Multi-Source Data**: Implemented fallback system using Twelve Data for historical data and Finnhub for current quotes
 - **Rate Limit Handling**: Properly handles API rate limits (Twelve Data: 8 calls/minute, Finnhub: 60 calls/minute)
+- **Polygon.io Integration**: Added Polygon.io API (`server/polygon.ts`) as primary source for historical data with rate limiting and fallback logic
+- **Triple API Fallback**: Implemented robust data pipeline: Polygon.io → Twelve Data → Finnhub for maximum accuracy and reliability

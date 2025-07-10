@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { getTwelveDataHistorical } from './twelvedata';
+import { getPolygonHistoricalData } from './polygon';
 
 const FINNHUB_API_KEY = 'd1nr9epr01qtrautf0sgd1nr9epr01qtrautf0t0';
 const BASE_URL = 'https://finnhub.io/api/v1';
@@ -100,14 +101,21 @@ export async function getHistoricalData(symbol: string, period: string): Promise
   change: number;
   changePercent: number;
 } | null> {
-  // First try Twelve Data API for historical data
+  // First try Polygon.io API for historical data (most reliable)
+  const polygonData = await getPolygonHistoricalData(symbol, period);
+  
+  if (polygonData) {
+    return polygonData;
+  }
+  
+  // Fallback to Twelve Data API 
   const historicalData = await getTwelveDataHistorical(symbol, period);
   
   if (historicalData) {
     return historicalData;
   }
   
-  // Fallback to Finnhub if Twelve Data fails
+  // Final fallback to Finnhub if both fail
   try {
     const now = Math.floor(Date.now() / 1000);
     let fromDate;
