@@ -1,5 +1,32 @@
-const TWELVE_DATA_API_KEY = "52043db1593844d3a178d1c9e720dc23";
+import fetch from 'node-fetch';
+
+const TWELVE_DATA_API_KEY = process.env.TWELVE_DATA_API_KEY || "52043db1593844d3a178d1c9e720dc23";
 const BASE_URL = "https://api.twelvedata.com";
+
+// Rate limiting for Twelve Data API (8 calls per minute)
+let twelveDataLastRequest = 0;
+const TWELVE_DATA_MIN_INTERVAL = 7500; // 7.5 seconds between requests
+
+async function rateLimitedTwelveDataFetch(url: string) {
+  const now = Date.now();
+  if (now - twelveDataLastRequest < TWELVE_DATA_MIN_INTERVAL) {
+    const waitTime = TWELVE_DATA_MIN_INTERVAL - (now - twelveDataLastRequest);
+    console.log(`Twelve Data API rate limit: waiting ${waitTime}ms`);
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+  }
+  twelveDataLastRequest = Date.now();
+  
+  const response = await fetch(url);
+  if (!response.ok) {
+    if (response.status === 429) {
+      console.log(`Twelve Data API rate limited, waiting 10 seconds...`);
+      await new Promise(resolve => setTimeout(resolve, 10000));
+      throw new Error(`Rate limited: ${response.status}`);
+    }
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response;
+}
 
 export interface HistoricalData {
   change: number;
@@ -39,18 +66,12 @@ export async function getTwelveDataHistorical(symbol: string, period: string): P
 
     const url = `${BASE_URL}/time_series?symbol=${symbol}&interval=${interval}&outputsize=${outputsize}&apikey=${TWELVE_DATA_API_KEY}`;
     
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      console.error(`Twelve Data API error: ${response.status}`);
-      return null;
-    }
+    const response = await rateLimitedTwelveDataFetch(url);
     
     const data = await response.json();
     
     if (data.status === "error" || !data.values || data.values.length < 2) {
-      console.error(`No historical data available for ${symbol} (${period})`);
-      return null;
+      throw new Error(`No historical data available for ${symbol} (${period}): ${data.message || 'Unknown error'}`);
     }
     
     // Get the most recent and oldest values
@@ -85,11 +106,7 @@ export async function getTwelveDataQuote(symbol: string): Promise<{
   try {
     const url = `${BASE_URL}/quote?symbol=${symbol}&apikey=${TWELVE_DATA_API_KEY}`;
     
-    const response = await fetch(url);
-    
-    if (!response.ok) {
-      return null;
-    }
+    const response = await rateLimitedTwelveDataFetch(url);
     
     const data = await response.json();
     

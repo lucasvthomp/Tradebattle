@@ -119,3 +119,7 @@ Preferred communication style: Simple, everyday language.
 - **Rate Limit Handling**: Properly handles API rate limits (Twelve Data: 8 calls/minute, Finnhub: 60 calls/minute)
 - **Polygon.io Integration**: Added Polygon.io API (`server/polygon.ts`) as primary source for historical data with rate limiting and fallback logic
 - **Triple API Fallback**: Implemented robust data pipeline: Polygon.io → Twelve Data → Finnhub for maximum accuracy and reliability
+- **Security Enhancement**: Moved all API keys to environment variables (FINNHUB_API_KEY, TWELVE_DATA_API_KEY, POLYGON_API_KEY)
+- **Rate Limiting Implementation**: Added comprehensive rate limiting for all APIs (Polygon: 2s, Twelve Data: 7.5s, Finnhub: 1s)
+- **Error Handling Standardization**: Improved error messages and consistent exception handling across all financial data providers
+- **Market Date Logic**: Implemented weekend-aware date calculations to ensure accurate trading day references

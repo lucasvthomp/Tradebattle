@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-const POLYGON_API_KEY = 't3m4pFpwZKGJU_DpSrmJgJG3MeqX7HWe';
+const POLYGON_API_KEY = process.env.POLYGON_API_KEY || 't3m4pFpwZKGJU_DpSrmJgJG3MeqX7HWe';
 const BASE_URL = 'https://api.polygon.io/v2/aggs/ticker';
 
 export interface PolygonHistoricalData {
@@ -8,9 +8,23 @@ export interface PolygonHistoricalData {
   changePercent: number;
 }
 
+// Get the latest trading day (excluding weekends)
+function getLatestTradingDay(): Date {
+  const date = new Date();
+  const dayOfWeek = date.getDay(); // 0 = Sunday, 6 = Saturday
+  
+  if (dayOfWeek === 0) { // Sunday
+    date.setDate(date.getDate() - 2); // Go back to Friday
+  } else if (dayOfWeek === 6) { // Saturday
+    date.setDate(date.getDate() - 1); // Go back to Friday
+  }
+  
+  return date;
+}
+
 // Calculate the date range for different periods
 function getDateRange(period: string): { from: string; to: string } {
-  const today = new Date(); // Always use current date
+  const today = getLatestTradingDay(); // Use latest trading day
   const toDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
   
   let fromDate: Date;
@@ -85,8 +99,7 @@ export async function getPolygonHistoricalData(symbol: string, period: string): 
     }
     
     if (data.status !== 'OK' || !data.results || data.results.length < 2) {
-      console.error(`No historical data available for ${symbol} (${period}) from Polygon`);
-      return null;
+      throw new Error(`No historical data available for ${symbol} (${period}) from Polygon: ${data.error || 'Insufficient data points'}`);
     }
     
     // Get the first and last closing prices
