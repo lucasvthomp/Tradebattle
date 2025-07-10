@@ -149,7 +149,7 @@ export async function getYahooHistoricalData(
     }
 
     const historical = await withRetry(
-      () => yahooFinance.historical(symbol, {
+      () => yahooFinance.chart(symbol, {
         period1: startDate,
         period2: now,
         interval: '1d'
@@ -158,18 +158,21 @@ export async function getYahooHistoricalData(
     );
 
     if (!historical || !historical.quotes || historical.quotes.length === 0) {
+      console.log(`No historical data found for ${symbol} (${period})`);
       return null;
     }
 
     const quotes = historical.quotes;
     
-    // Get first and last data points
-    const firstData = quotes[0];
-    const lastData = quotes[quotes.length - 1];
-
-    if (!firstData || !lastData || !firstData.open || !lastData.close) {
+    // Get first and last data points with valid data
+    const validQuotes = quotes.filter(q => q && q.open && q.close);
+    if (validQuotes.length === 0) {
+      console.log(`No valid quotes found for ${symbol} (${period})`);
       return null;
     }
+
+    const firstData = validQuotes[0];
+    const lastData = validQuotes[validQuotes.length - 1];
 
     const change = lastData.close - firstData.open;
     const changePercent = (change / firstData.open) * 100;
