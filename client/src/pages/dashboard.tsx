@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/hooks/use-auth";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import type { WatchlistItem, InsertWatchlistItem } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Search, 
@@ -383,10 +386,9 @@ const stockSearchResults = [
 ];
 
 export default function Dashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [watchlist, setWatchlist] = useState([]);
   const [stockData, setStockData] = useState([]);
   const [isLoadingStocks, setIsLoadingStocks] = useState(false);
   const [popularStocks, setPopularStocks] = useState([]);
@@ -399,50 +401,66 @@ export default function Dashboard() {
   const [filterSector, setFilterSector] = useState("all");
   const [changePeriod, setChangePeriod] = useState("1D");
 
-  // Redirect to auth if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
+  // Fetch user's watchlist
+  const { data: watchlist = [], isLoading: watchlistLoading, refetch: refetchWatchlist } = useQuery({
+    queryKey: ["/api/watchlist"],
+    enabled: !!user,
+  });
+
+  // Add to watchlist mutation
+  const addToWatchlistMutation = useMutation({
+    mutationFn: async (item: InsertWatchlistItem) => {
+      const res = await apiRequest("POST", "/api/watchlist", item);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
       toast({
-        title: "Access Required",
-        description: "Please log in to access your dashboard.",
+        title: "Added to watchlist",
+        description: "Stock has been added to your watchlist",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
-      setTimeout(() => {
-        window.location.href = "/auth";
-      }, 1000);
-    }
-  }, [isAuthenticated, toast]);
+    },
+  });
+
+  // Remove from watchlist mutation
+  const removeFromWatchlistMutation = useMutation({
+    mutationFn: async (id: number) => {
+      await apiRequest("DELETE", `/api/watchlist/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
+      toast({
+        title: "Removed from watchlist",
+        description: "Stock has been removed from your watchlist",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Authentication handled by router
 
   // Load popular stocks on component mount
   useEffect(() => {
     const loadPopularStocks = async () => {
       try {
         setIsLoadingPopular(true);
-        // Load current stock data with historical data
         const response = await fetch('/api/stocks/popular?limit=10&withHistory=true');
         if (response.ok) {
           const data = await response.json();
           setPopularStocks(data);
-          // Initialize watchlist with first 5 popular stocks with real historical data
-          const initialWatchlist = data.slice(0, 5).map((stock: any, index: number) => ({
-            id: index + 1,
-            symbol: stock.symbol,
-            companyName: stock.name,
-            price: stock.currentPrice,
-            volume: "N/A",
-            marketCap: formatMarketCap(stock.marketCap),
-            sector: stock.sector,
-            changes: {
-              "1D": { change: stock.change, changePercent: stock.changePercent },
-              "1W": stock.historicalData?.['1W'] || { change: null, changePercent: null },
-              "1M": stock.historicalData?.['1M'] || { change: null, changePercent: null },
-              "3M": stock.historicalData?.['3M'] || { change: null, changePercent: null },
-              "6M": stock.historicalData?.['6M'] || { change: null, changePercent: null },
-              "1Y": stock.historicalData?.['1Y'] || { change: null, changePercent: null },
-              "YTD": stock.historicalData?.['YTD'] || { change: null, changePercent: null }
-            }
-          }));
-          setWatchlist(initialWatchlist);
         }
       } catch (error) {
         console.error('Error loading popular stocks:', error);
@@ -451,10 +469,10 @@ export default function Dashboard() {
       }
     };
 
-    if (isAuthenticated) {
+    if (user) {
       loadPopularStocks();
     }
-  }, [isAuthenticated]);
+  }, [user]);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
@@ -476,52 +494,17 @@ export default function Dashboard() {
   };
 
   const addToWatchlist = async (stock: any) => {
-    try {
-      // Get historical data for the stock
-      const response = await fetch(`/api/stocks/batch?symbols=${stock.symbol}&withHistory=true`);
-      let historicalData = null;
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.length > 0) {
-          historicalData = data[0].historicalData;
-        }
-      }
-      
-      const newStock = {
-        id: Date.now(),
-        symbol: stock.symbol,
-        companyName: stock.name,
-        price: stock.currentPrice,
-        volume: "N/A",
-        marketCap: formatMarketCap(stock.marketCap),
-        sector: stock.sector,
-        changes: {
-          "1D": { change: stock.change, changePercent: stock.changePercent },
-          "1W": historicalData?.['1W'] || { change: null, changePercent: null },
-          "1M": historicalData?.['1M'] || { change: null, changePercent: null },
-          "3M": historicalData?.['3M'] || { change: null, changePercent: null },
-          "6M": historicalData?.['6M'] || { change: null, changePercent: null },
-          "1Y": historicalData?.['1Y'] || { change: null, changePercent: null },
-          "YTD": historicalData?.['YTD'] || { change: null, changePercent: null }
-        }
-      };
-      
-      setWatchlist([...watchlist, newStock]);
-      setShowSearchResults(false);
-      setSearchQuery("");
-      toast({
-        title: "Added to Watchlist",
-        description: `${stock.symbol} has been added to your watchlist with historical data.`,
-      });
-    } catch (error) {
-      console.error('Error adding to watchlist:', error);
-      toast({
-        title: "Error",
-        description: "Failed to add stock to watchlist. Please try again.",
-        variant: "destructive",
-      });
-    }
+    addToWatchlistMutation.mutate({
+      symbol: stock.symbol,
+      companyName: stock.name,
+      price: stock.currentPrice,
+      marketCap: stock.marketCap,
+      sector: stock.sector,
+      change: stock.change,
+      changePercent: stock.changePercent,
+    });
+    setShowSearchResults(false);
+    setSearchQuery("");
   };
 
   const formatMarketCap = (marketCap: number) => {
@@ -535,11 +518,7 @@ export default function Dashboard() {
   };
 
   const removeFromWatchlist = (id: number) => {
-    setWatchlist(watchlist.filter(item => item.id !== id));
-    toast({
-      title: "Removed from Watchlist",
-      description: "Stock has been removed from your watchlist.",
-    });
+    removeFromWatchlistMutation.mutate(id);
   };
 
   const filteredWatchlist = watchlist
@@ -556,12 +535,12 @@ export default function Dashboard() {
 
   const sectors = ["all", ...Array.from(new Set(watchlist.map(stock => stock.sector)))];
 
-  if (!isAuthenticated) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-gray-600">Checking authentication...</p>
+          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
     );
@@ -581,7 +560,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-black mb-2">
-                  Welcome back, {user?.firstName || "Alexander"}
+                  Welcome back, {user?.firstName || user?.email || "User"}
                 </h1>
                 <p className="text-gray-600">Here's your investment dashboard</p>
               </div>

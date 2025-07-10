@@ -1,27 +1,15 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, isAuthenticated } from "./replitAuth";
+import { setupAuth, requireAuth } from "./auth";
 import { getStockQuote, getCompanyProfile, getMarketData, getMarketDataWithHistory, getHistoricalData, POPULAR_STOCKS } from "./finnhub";
-import { insertContactSchema, insertWatchlistSchema } from "@shared/schema";
+import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema } from "@shared/schema";
 import { searchCache, CACHE_TTL } from "./cache";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Auth middleware
-  await setupAuth(app);
-
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth setup
+  setupAuth(app);
 
   // Studies routes
   app.get('/api/studies', async (req, res) => {
@@ -91,9 +79,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Watchlist routes (protected)
-  app.get('/api/watchlist', isAuthenticated, async (req: any, res) => {
+  app.get('/api/watchlist', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const watchlist = await storage.getUserWatchlist(userId);
       res.json(watchlist);
     } catch (error) {
@@ -102,9 +90,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/watchlist', isAuthenticated, async (req: any, res) => {
+  app.post('/api/watchlist', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const validatedData = insertWatchlistSchema.parse(req.body);
       const watchlistItem = await storage.addToWatchlist(userId, validatedData);
       res.json(watchlistItem);
@@ -117,9 +105,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/watchlist/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/watchlist/:id', requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      const userId = req.user.id;
       const id = parseInt(req.params.id);
       await storage.removeFromWatchlist(userId, id);
       res.json({ message: "Removed from watchlist" });

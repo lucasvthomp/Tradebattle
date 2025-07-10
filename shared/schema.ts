@@ -23,15 +23,14 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
-// User storage table for Replit Auth
+// User storage table with email/password authentication
 export const users = pgTable("users", {
-  id: varchar("id").primaryKey().notNull(),
-  email: varchar("email").unique(),
-  firstName: varchar("first_name"),
-  lastName: varchar("last_name"),
-  profileImageUrl: varchar("profile_image_url"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  id: serial("id").primaryKey(),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  password: varchar("password", { length: 255 }).notNull(), // hashed password
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 // Research studies table
@@ -42,7 +41,7 @@ export const studies = pgTable("studies", {
   content: text("content").notNull(),
   category: varchar("category").notNull(),
   publishedAt: timestamp("published_at").defaultNow(),
-  authorId: varchar("author_id").references(() => users.id),
+  authorId: integer("author_id").references(() => users.id),
   featured: boolean("featured").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -57,7 +56,7 @@ export const news = pgTable("news", {
   category: varchar("category").notNull(),
   priority: varchar("priority").default("normal"), // breaking, research, normal
   publishedAt: timestamp("published_at").defaultNow(),
-  authorId: varchar("author_id").references(() => users.id),
+  authorId: integer("author_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -65,7 +64,7 @@ export const news = pgTable("news", {
 // User watchlist table
 export const watchlist = pgTable("watchlist", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").references(() => users.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
   symbol: varchar("symbol").notNull(),
   companyName: varchar("company_name").notNull(),
   notes: text("notes"),
@@ -135,8 +134,28 @@ export const insertResearchInsightSchema = createInsertSchema(researchInsights).
 });
 
 // Type exports
-export type UpsertUser = typeof users.$inferInsert;
+// User schemas for new authentication system
+export const insertUserSchema = createInsertSchema(users).pick({
+  email: true,
+  name: true,
+  password: true,
+});
+
+export const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+export const registerSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
 export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
+export type LoginUser = z.infer<typeof loginSchema>;
+export type RegisterUser = z.infer<typeof registerSchema>;
 export type Study = typeof studies.$inferSelect;
 export type InsertStudy = z.infer<typeof insertStudySchema>;
 export type News = typeof news.$inferSelect;

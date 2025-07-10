@@ -6,7 +6,7 @@ import {
   contactSubmissions,
   researchInsights,
   type User,
-  type UpsertUser,
+  type InsertUser,
   type Study,
   type InsertStudy,
   type News,
@@ -22,26 +22,27 @@ import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations (mandatory for Replit Auth)
-  getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  // User operations for email/password auth
+  getUser(id: number): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  createUser(user: InsertUser): Promise<User>;
   
   // Studies operations
   getStudies(): Promise<Study[]>;
   getFeaturedStudies(): Promise<Study[]>;
   getStudy(id: number): Promise<Study | undefined>;
-  createStudy(study: InsertStudy & { authorId: string }): Promise<Study>;
+  createStudy(study: InsertStudy & { authorId: number }): Promise<Study>;
   
   // News operations
   getNews(): Promise<News[]>;
   getNewsByCategory(category: string): Promise<News[]>;
   getBreakingNews(): Promise<News[]>;
-  createNews(news: InsertNews & { authorId: string }): Promise<News>;
+  createNews(news: InsertNews & { authorId: number }): Promise<News>;
   
   // Watchlist operations
-  getUserWatchlist(userId: string): Promise<WatchlistItem[]>;
-  addToWatchlist(userId: string, item: InsertWatchlistItem): Promise<WatchlistItem>;
-  removeFromWatchlist(userId: string, id: number): Promise<void>;
+  getUserWatchlist(userId: number): Promise<WatchlistItem[]>;
+  addToWatchlist(userId: number, item: InsertWatchlistItem): Promise<WatchlistItem>;
+  removeFromWatchlist(userId: number, id: number): Promise<void>;
   
   // Contact operations
   createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
@@ -52,23 +53,21 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations
-  async getUser(id: string): Promise<User | undefined> {
+  // User operations for email/password auth
+  async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
       .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
       .returning();
     return user;
   }
@@ -97,7 +96,7 @@ export class DatabaseStorage implements IStorage {
     return study;
   }
 
-  async createStudy(studyData: InsertStudy & { authorId: string }): Promise<Study> {
+  async createStudy(studyData: InsertStudy & { authorId: number }): Promise<Study> {
     const [study] = await db
       .insert(studies)
       .values(studyData)
@@ -129,7 +128,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(news.publishedAt));
   }
 
-  async createNews(newsData: InsertNews & { authorId: string }): Promise<News> {
+  async createNews(newsData: InsertNews & { authorId: number }): Promise<News> {
     const [newsItem] = await db
       .insert(news)
       .values(newsData)
@@ -138,7 +137,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Watchlist operations
-  async getUserWatchlist(userId: string): Promise<WatchlistItem[]> {
+  async getUserWatchlist(userId: number): Promise<WatchlistItem[]> {
     return await db
       .select()
       .from(watchlist)
@@ -146,7 +145,7 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(watchlist.createdAt));
   }
 
-  async addToWatchlist(userId: string, item: InsertWatchlistItem): Promise<WatchlistItem> {
+  async addToWatchlist(userId: number, item: InsertWatchlistItem): Promise<WatchlistItem> {
     const [watchlistItem] = await db
       .insert(watchlist)
       .values({ ...item, userId })
@@ -154,7 +153,7 @@ export class DatabaseStorage implements IStorage {
     return watchlistItem;
   }
 
-  async removeFromWatchlist(userId: string, id: number): Promise<void> {
+  async removeFromWatchlist(userId: number, id: number): Promise<void> {
     await db
       .delete(watchlist)
       .where(and(eq(watchlist.id, id), eq(watchlist.userId, userId)));
