@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
+import { getStockQuote, getCompanyProfile, getMarketData, POPULAR_STOCKS } from "./finnhub";
 import { insertContactSchema, insertWatchlistSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -150,6 +151,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching insights:", error);
       res.status(500).json({ message: "Failed to fetch insights" });
+    }
+  });
+
+  // Stock market data routes
+  app.get('/api/stock/quote/:symbol', async (req, res) => {
+    try {
+      const symbol = req.params.symbol.toUpperCase();
+      const quote = await getStockQuote(symbol);
+      
+      if (!quote) {
+        return res.status(404).json({ error: 'Stock not found' });
+      }
+      
+      res.json(quote);
+    } catch (error) {
+      console.error('Error fetching stock quote:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/stock/profile/:symbol', async (req, res) => {
+    try {
+      const symbol = req.params.symbol.toUpperCase();
+      const profile = await getCompanyProfile(symbol);
+      
+      if (!profile) {
+        return res.status(404).json({ error: 'Company profile not found' });
+      }
+      
+      res.json(profile);
+    } catch (error) {
+      console.error('Error fetching company profile:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/stocks/popular', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const symbols = POPULAR_STOCKS.slice(0, limit);
+      const marketData = await getMarketData(symbols);
+      
+      res.json(marketData);
+    } catch (error) {
+      console.error('Error fetching popular stocks:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/stocks/search', async (req, res) => {
+    try {
+      const query = req.query.q as string;
+      if (!query || query.length < 1) {
+        return res.status(400).json({ error: 'Query parameter required' });
+      }
+      
+      const searchTerm = query.toUpperCase();
+      const matchingSymbols = POPULAR_STOCKS.filter(symbol => 
+        symbol.includes(searchTerm)
+      );
+      
+      if (matchingSymbols.length === 0) {
+        // Try to fetch the symbol directly
+        const quote = await getStockQuote(searchTerm);
+        const profile = await getCompanyProfile(searchTerm);
+        
+        if (quote && profile) {
+          return res.json([{
+            symbol: quote.symbol,
+            name: profile.name,
+            currentPrice: quote.currentPrice,
+            change: quote.change,
+            changePercent: quote.changePercent,
+            marketCap: profile.marketCap,
+            sector: profile.sector
+          }]);
+        }
+        
+        return res.json([]);
+      }
+      
+      const marketData = await getMarketData(matchingSymbols.slice(0, 10));
+      res.json(marketData);
+    } catch (error) {
+      console.error('Error searching stocks:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/stocks/batch', async (req, res) => {
+    try {
+      const symbols = req.query.symbols as string;
+      if (!symbols) {
+        return res.status(400).json({ error: 'Symbols parameter required' });
+      }
+      
+      const symbolList = symbols.split(',').map(s => s.toUpperCase()).slice(0, 20);
+      const marketData = await getMarketData(symbolList);
+      
+      res.json(marketData);
+    } catch (error) {
+      console.error('Error fetching batch stocks:', error);
+      res.status(500).json({ error: 'Internal server error' });
     }
   });
 

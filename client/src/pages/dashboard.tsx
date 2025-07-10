@@ -386,7 +386,11 @@ export default function Dashboard() {
   const { user, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
-  const [watchlist, setWatchlist] = useState(mockWatchlist);
+  const [watchlist, setWatchlist] = useState([]);
+  const [stockData, setStockData] = useState([]);
+  const [isLoadingStocks, setIsLoadingStocks] = useState(false);
+  const [popularStocks, setPopularStocks] = useState([]);
+  const [isLoadingPopular, setIsLoadingPopular] = useState(true);
   const [selectedStock, setSelectedStock] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
@@ -409,8 +413,64 @@ export default function Dashboard() {
     }
   }, [isAuthenticated, toast]);
 
-  const handleSearch = (query: string) => {
+  // Load popular stocks on component mount
+  useEffect(() => {
+    const loadPopularStocks = async () => {
+      try {
+        setIsLoadingPopular(true);
+        const response = await fetch('/api/stocks/popular?limit=10');
+        if (response.ok) {
+          const data = await response.json();
+          setPopularStocks(data);
+          // Initialize watchlist with first 5 popular stocks
+          const initialWatchlist = data.slice(0, 5).map((stock: any, index: number) => ({
+            id: index + 1,
+            symbol: stock.symbol,
+            companyName: stock.name,
+            price: stock.currentPrice,
+            volume: "N/A",
+            marketCap: formatMarketCap(stock.marketCap),
+            sector: stock.sector,
+            changes: {
+              "1D": { change: stock.change, changePercent: stock.changePercent },
+              "1W": { change: stock.change * 3, changePercent: stock.changePercent * 2.5 },
+              "1M": { change: stock.change * 8, changePercent: stock.changePercent * 6 },
+              "3M": { change: stock.change * 15, changePercent: stock.changePercent * 12 },
+              "6M": { change: stock.change * 25, changePercent: stock.changePercent * 20 },
+              "1Y": { change: stock.change * 50, changePercent: stock.changePercent * 40 },
+              "YTD": { change: stock.change * 20, changePercent: stock.changePercent * 15 }
+            }
+          }));
+          setWatchlist(initialWatchlist);
+        }
+      } catch (error) {
+        console.error('Error loading popular stocks:', error);
+      } finally {
+        setIsLoadingPopular(false);
+      }
+    };
+
+    if (isAuthenticated) {
+      loadPopularStocks();
+    }
+  }, [isAuthenticated]);
+
+  const handleSearch = async (query: string) => {
     setSearchQuery(query);
+    if (query.length > 0) {
+      setIsLoadingStocks(true);
+      try {
+        const response = await fetch(`/api/stocks/search?q=${encodeURIComponent(query)}`);
+        if (response.ok) {
+          const results = await response.json();
+          setStockData(results);
+        }
+      } catch (error) {
+        console.error('Error searching stocks:', error);
+      } finally {
+        setIsLoadingStocks(false);
+      }
+    }
     setShowSearchResults(query.length > 0);
   };
 
@@ -419,18 +479,20 @@ export default function Dashboard() {
       id: Date.now(),
       symbol: stock.symbol,
       companyName: stock.name,
-      price: stock.price,
-      volume: Math.floor(Math.random() * 100) + "M",
-      marketCap: Math.floor(Math.random() * 500) + "B",
+      price: stock.currentPrice,
+      volume: "N/A", // Volume data would need additional API call
+      marketCap: formatMarketCap(stock.marketCap),
       sector: stock.sector,
       changes: {
-        "1D": { change: (Math.random() - 0.5) * 10, changePercent: (Math.random() - 0.5) * 5 },
-        "1W": { change: (Math.random() - 0.5) * 20, changePercent: (Math.random() - 0.5) * 10 },
-        "1M": { change: (Math.random() - 0.5) * 50, changePercent: (Math.random() - 0.5) * 25 },
-        "3M": { change: (Math.random() - 0.5) * 100, changePercent: (Math.random() - 0.5) * 40 },
-        "6M": { change: (Math.random() - 0.5) * 150, changePercent: (Math.random() - 0.5) * 60 },
-        "1Y": { change: (Math.random() - 0.5) * 200, changePercent: (Math.random() - 0.5) * 80 },
-        "YTD": { change: (Math.random() - 0.5) * 80, changePercent: (Math.random() - 0.5) * 35 }
+        "1D": { change: stock.change, changePercent: stock.changePercent },
+        // For demo purposes, using current day data for other periods
+        // In production, you'd fetch historical data for each period
+        "1W": { change: stock.change * 3, changePercent: stock.changePercent * 2.5 },
+        "1M": { change: stock.change * 8, changePercent: stock.changePercent * 6 },
+        "3M": { change: stock.change * 15, changePercent: stock.changePercent * 12 },
+        "6M": { change: stock.change * 25, changePercent: stock.changePercent * 20 },
+        "1Y": { change: stock.change * 50, changePercent: stock.changePercent * 40 },
+        "YTD": { change: stock.change * 20, changePercent: stock.changePercent * 15 }
       }
     };
     setWatchlist([...watchlist, newStock]);
@@ -440,6 +502,16 @@ export default function Dashboard() {
       title: "Added to Watchlist",
       description: `${stock.symbol} has been added to your watchlist.`,
     });
+  };
+
+  const formatMarketCap = (marketCap: number) => {
+    if (marketCap >= 1000000) {
+      return (marketCap / 1000000).toFixed(1) + "T";
+    } else if (marketCap >= 1000) {
+      return (marketCap / 1000).toFixed(1) + "B";
+    } else {
+      return marketCap.toFixed(1) + "M";
+    }
   };
 
   const removeFromWatchlist = (id: number) => {
@@ -613,13 +685,14 @@ export default function Dashboard() {
                     />
                     {showSearchResults && (
                       <div className="absolute top-12 left-0 right-0 bg-white border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                        {stockSearchResults
-                          .filter(stock => 
-                            stock.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            stock.name.toLowerCase().includes(searchQuery.toLowerCase())
-                          )
-                          .map((stock) => (
-                            <div key={stock.symbol} className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0">
+                        {isLoadingStocks ? (
+                          <div className="p-4 text-center">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
+                            <div className="mt-2 text-sm text-gray-600">Searching stocks...</div>
+                          </div>
+                        ) : stockData.length > 0 ? (
+                          stockData.map((stock: any, index) => (
+                            <div key={index} className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0">
                               <div className="flex items-center justify-between">
                                 <div>
                                   <p className="font-medium">{stock.symbol}</p>
@@ -627,7 +700,10 @@ export default function Dashboard() {
                                   <p className="text-xs text-gray-500">{stock.sector}</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="font-medium">${stock.price}</p>
+                                  <p className="font-medium">${stock.currentPrice.toFixed(2)}</p>
+                                  <p className={`text-xs ${stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                                  </p>
                                   <Button
                                     size="sm"
                                     onClick={() => addToWatchlist(stock)}
@@ -639,7 +715,12 @@ export default function Dashboard() {
                                 </div>
                               </div>
                             </div>
-                          ))}
+                          ))
+                        ) : searchQuery.length > 0 && (
+                          <div className="p-4 text-center text-gray-600">
+                            No stocks found for "{searchQuery}"
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

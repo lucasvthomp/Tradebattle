@@ -69,6 +69,7 @@ Preferred communication style: Simple, everyday language.
 ### Core Dependencies
 - **Database**: Neon PostgreSQL for serverless database hosting
 - **Authentication**: Replit Auth service for user management
+- **Financial Data**: Finnhub API for real-time stock market data
 - **UI Components**: Radix UI primitives for accessible components
 - **Styling**: Tailwind CSS for utility-first styling
 - **Forms**: React Hook Form with Zod validation
@@ -91,6 +92,7 @@ Preferred communication style: Simple, everyday language.
 - **Database**: `DATABASE_URL` for PostgreSQL connection
 - **Authentication**: `REPL_ID`, `ISSUER_URL`, `SESSION_SECRET` for auth setup
 - **Domains**: `REPLIT_DOMAINS` for CORS configuration
+- **Financial Data**: `FINNHUB_API_KEY` for stock market data access
 
 ### Production Considerations
 - **Static Assets**: Frontend served from `/dist/public`
@@ -104,3 +106,11 @@ Preferred communication style: Simple, everyday language.
 - **Production**: Express serves static files, bundled backend code
 - **Database**: Same PostgreSQL setup for both environments
 - **Authentication**: Environment-specific Replit Auth configuration
+- **Financial Data**: Real-time stock data via Finnhub API (60 requests/minute free tier)
+
+## Recent Changes (January 2025)
+- **Real Financial Data Integration**: Replaced all mock stock data with authentic market data from Finnhub API
+- **Backend Financial Services**: Added `server/finnhub.ts` with stock quote, company profile, and market data endpoints
+- **API Routes**: Created comprehensive stock data API endpoints (`/api/stocks/popular`, `/api/stocks/search`, `/api/stocks/batch`)
+- **Dashboard Enhancement**: Updated watchlist and search functionality to use real stock prices, market caps, and percentage changes
+- **Data Accuracy**: Resolved critical issue with inaccurate stock information by integrating live financial data
