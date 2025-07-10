@@ -1,9 +1,10 @@
 import fetch from "node-fetch";
 import { getTwelveDataHistorical } from "./twelvedata";
 import { getPolygonHistoricalData } from "./polygon";
-import { quoteCache, historicalCache, profileCache, CACHE_TTL } from "./cache";
+import { quoteCache, historicalCache, profileCache, marketDataCache, CACHE_TTL } from "./cache";
 import { APIError, RateLimitError, validateQuoteData, validateHistoricalData } from "./errors";
 import { withRetry, shouldRetryAPICall } from "./retry";
+import { batchProcessor } from "./batch-cache";
 
 const FINNHUB_API_KEY = process.env.FINNHUB_API_KEY || "d1nr9epr01qtrautf0sgd1nr9epr01qtrautf0t0";
 const BASE_URL = "https://finnhub.io/api/v1";
@@ -159,9 +160,26 @@ export async function getCompanyProfile(
 export async function getMultipleQuotes(
   symbols: string[],
 ): Promise<StockQuote[]> {
+  // Check for batch cache first
+  const batchKey = `batch:quotes:${symbols.sort().join(',')}`;
+  const cached = marketDataCache.get(batchKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Notify batch processor of this request
+  symbols.forEach(symbol => batchProcessor.addQuoteRequest(symbol));
+
   const promises = symbols.map((symbol) => getStockQuote(symbol));
   const results = await Promise.all(promises);
-  return results.filter((quote) => quote !== null) as StockQuote[];
+  const validResults = results.filter((quote) => quote !== null) as StockQuote[];
+  
+  // Cache the batch result if we got all symbols
+  if (validResults.length === symbols.length) {
+    marketDataCache.set(batchKey, validResults, CACHE_TTL.MARKET_DATA);
+  }
+  
+  return validResults;
 }
 
 export async function getHistoricalData(
@@ -327,6 +345,13 @@ export async function getMarketData(symbols: string[]): Promise<
     sector: string;
   }[]
 > {
+  // Check for complete market data cache first
+  const cacheKey = `market:${symbols.sort().join(',')}`;
+  const cached = marketDataCache.get(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const quotes = await getMultipleQuotes(symbols);
   const profiles = await Promise.all(
     symbols.map((symbol) => getCompanyProfile(symbol)),
@@ -351,6 +376,8 @@ export async function getMarketData(symbols: string[]): Promise<
     }
   }
 
+  // Cache the complete market data result
+  marketDataCache.set(cacheKey, marketData, CACHE_TTL.MARKET_DATA);
   return marketData;
 }
 

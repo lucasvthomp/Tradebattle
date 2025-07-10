@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { getStockQuote, getCompanyProfile, getMarketData, getMarketDataWithHistory, getHistoricalData, POPULAR_STOCKS } from "./finnhub";
 import { insertContactSchema, insertWatchlistSchema } from "@shared/schema";
+import { searchCache, CACHE_TTL } from "./cache";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
