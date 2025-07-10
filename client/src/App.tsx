@@ -21,7 +21,7 @@ import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -36,7 +36,7 @@ function Router() {
       <Header />
       <main className="flex-1">
         <Switch>
-          {!isAuthenticated ? (
+          {!user ? (
             <>
               <Route path="/" component={Landing} />
               <Route path="/studies" component={Studies} />
