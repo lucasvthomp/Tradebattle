@@ -156,15 +156,17 @@ export async function getYahooHistoricalData(
       { maxAttempts: 3, baseDelay: 1000, maxDelay: 5000 }
     );
 
-    if (!historical || historical.length === 0) {
+    if (!historical || !historical.quotes || historical.quotes.length === 0) {
       return null;
     }
 
+    const quotes = historical.quotes;
+    
     // Get first and last data points
-    const firstData = historical[0];
-    const lastData = historical[historical.length - 1];
+    const firstData = quotes[0];
+    const lastData = quotes[quotes.length - 1];
 
-    if (!firstData || !lastData) {
+    if (!firstData || !lastData || !firstData.open || !lastData.close) {
       return null;
     }
 
@@ -176,9 +178,9 @@ export async function getYahooHistoricalData(
       changePercent: Number(changePercent.toFixed(2)),
       open: firstData.open,
       close: lastData.close,
-      high: Math.max(...historical.map(h => h.high)),
-      low: Math.min(...historical.map(h => h.low)),
-      volume: historical.reduce((sum, h) => sum + h.volume, 0)
+      high: Math.max(...quotes.filter(q => q.high).map(q => q.high)),
+      low: Math.min(...quotes.filter(q => q.low).map(q => q.low)),
+      volume: quotes.reduce((sum, q) => sum + (q.volume || 0), 0)
     };
   } catch (error) {
     console.error(`Error fetching Yahoo Finance historical data for ${symbol} (${period}):`, error);
