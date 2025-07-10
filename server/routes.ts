@@ -281,7 +281,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/companies/:symbol', async (req, res) => {
+  app.get('/api/companies/:symbol/data', async (req, res) => {
     try {
       const symbol = req.params.symbol.toUpperCase();
       const companyData = await companyDataManager.getCompanyData(symbol);
