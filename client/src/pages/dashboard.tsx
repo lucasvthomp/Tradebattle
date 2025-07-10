@@ -501,7 +501,17 @@ export default function Dashboard() {
     setSearchQuery("");
   };
 
-  const formatMarketCap = (marketCap: number) => {
+  const formatMarketCap = (marketCap: number | string) => {
+    // If already formatted, return as is
+    if (typeof marketCap === 'string') {
+      return marketCap;
+    }
+    
+    // If not a number, return N/A
+    if (!marketCap || typeof marketCap !== 'number') {
+      return 'N/A';
+    }
+    
     if (marketCap >= 1000000000000) {
       return (marketCap / 1000000000000).toFixed(1) + "T";
     } else if (marketCap >= 1000000000) {
@@ -525,7 +535,8 @@ export default function Dashboard() {
         ...stock,
         currentPrice: cachedData.currentPrice,
         volume: cachedData.volume,
-        marketCap: formatMarketCap(cachedData.marketCap),
+        marketCap: cachedData.marketCap,
+        peRatio: cachedData.peRatio,
         sector: cachedData.sector,
         changes: cachedData.changes,
         lastUpdated: cachedData.lastUpdated
@@ -832,7 +843,7 @@ export default function Dashboard() {
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-sm">{stock.peRatio ? stock.peRatio.toFixed(1) : 'N/A'}</td>
-                              <td className="py-3 px-4 text-sm">{stock.marketCap ? formatMarketCap(stock.marketCap) : 'N/A'}</td>
+                              <td className="py-3 px-4 text-sm">{formatMarketCap(stock.marketCap)}</td>
                               <td className="py-3 px-4">
                                 <Badge variant="secondary" className="text-xs">
                                   {stock.sector}
