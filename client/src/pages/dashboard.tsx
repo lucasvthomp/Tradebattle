@@ -425,18 +425,15 @@ export default function Dashboard() {
           setPopularStocks(data);
           // Initialize watchlist with first 5 popular stocks with real historical data
           const initialWatchlist = data.slice(0, 5).map((stock: any, index: number) => ({
-            id: `${stock.symbol}-${index}`, // Use unique key combining symbol and index
+            id: index + 1,
             symbol: stock.symbol,
-            companyName: stock.name || 'Unknown Company',
-            price: stock.currentPrice || 0,
+            companyName: stock.name,
+            price: stock.currentPrice,
             volume: "N/A",
-            marketCap: formatMarketCap(stock.marketCap || 0),
-            sector: stock.sector || 'Unknown',
+            marketCap: formatMarketCap(stock.marketCap),
+            sector: stock.sector,
             changes: {
-              "1D": { 
-                change: stock.change || 0, 
-                changePercent: stock.changePercent || 0 
-              },
+              "1D": { change: stock.change, changePercent: stock.changePercent },
               "1W": stock.historicalData?.['1W'] || { change: null, changePercent: null },
               "1M": stock.historicalData?.['1M'] || { change: null, changePercent: null },
               "3M": stock.historicalData?.['3M'] || { change: null, changePercent: null },
@@ -446,8 +443,6 @@ export default function Dashboard() {
             }
           }));
           setWatchlist(initialWatchlist);
-        } else {
-          console.error('Failed to fetch popular stocks:', response.status, response.statusText);
         }
       } catch (error) {
         console.error('Error loading popular stocks:', error);
@@ -482,17 +477,6 @@ export default function Dashboard() {
 
   const addToWatchlist = async (stock: any) => {
     try {
-      // Check if stock already exists in watchlist
-      const existingStock = watchlist.find(item => item.symbol === stock.symbol);
-      if (existingStock) {
-        toast({
-          title: "Already in Watchlist",
-          description: `${stock.symbol} is already in your watchlist.`,
-          variant: "destructive",
-        });
-        return;
-      }
-
       // Get historical data for the stock
       const response = await fetch(`/api/stocks/batch?symbols=${stock.symbol}&withHistory=true`);
       let historicalData = null;
@@ -505,18 +489,15 @@ export default function Dashboard() {
       }
       
       const newStock = {
-        id: `${stock.symbol}-${Date.now()}`, // Use unique key combining symbol and timestamp
+        id: Date.now(),
         symbol: stock.symbol,
-        companyName: stock.name || 'Unknown Company',
-        price: stock.currentPrice || 0,
+        companyName: stock.name,
+        price: stock.currentPrice,
         volume: "N/A",
-        marketCap: formatMarketCap(stock.marketCap || 0),
-        sector: stock.sector || 'Unknown',
+        marketCap: formatMarketCap(stock.marketCap),
+        sector: stock.sector,
         changes: {
-          "1D": { 
-            change: stock.change || 0, 
-            changePercent: stock.changePercent || 0 
-          },
+          "1D": { change: stock.change, changePercent: stock.changePercent },
           "1W": historicalData?.['1W'] || { change: null, changePercent: null },
           "1M": historicalData?.['1M'] || { change: null, changePercent: null },
           "3M": historicalData?.['3M'] || { change: null, changePercent: null },
@@ -831,9 +812,7 @@ export default function Dashboard() {
                               <td className="py-3 px-4 font-medium">${stock.price.toFixed(2)}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
-                                  {stock.changes && stock.changes[changePeriod] && 
-                                   stock.changes[changePeriod].change !== null && 
-                                   stock.changes[changePeriod].changePercent !== null ? (
+                                  {stock.changes[changePeriod].change !== null && stock.changes[changePeriod].changePercent !== null ? (
                                     <>
                                       {stock.changes[changePeriod].change > 0 ? (
                                         <TrendingUp className="w-4 h-4 text-green-500" />
