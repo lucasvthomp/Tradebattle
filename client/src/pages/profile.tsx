@@ -22,6 +22,12 @@ import {
   MapPin
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -37,30 +43,75 @@ const staggerChildren = {
   }
 };
 
-export default function Profile() {
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+const profileSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email address"),
+});
 
-  const handleSaveProfile = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+type ProfileFormData = z.infer<typeof profileSchema>;
+
+export default function Profile() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const form = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      name: user?.name || "",
+      email: user?.email || "",
+    },
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: ProfileFormData) => {
+      const res = await apiRequest("PUT", "/api/user/profile", data);
+      return await res.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/user"], updatedUser);
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
       });
-    }, 1000);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleSaveProfile = (data: ProfileFormData) => {
+    updateProfileMutation.mutate(data);
   };
 
-  const mockUser = {
-    name: "Alexander Thompson",
-    email: "alex.thompson@email.com",
-    phone: "+1 (555) 123-4567",
-    location: "New York, NY",
-    joinDate: "January 2024",
-    subscription: "Analyst",
-    subscriptionStatus: "Active"
-  };
+  // Parse user's name into first and last name for display
+  const nameParts = (user?.name || "").split(" ");
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ") || "";
+  
+  // Format join date
+  const joinDate = user?.createdAt 
+    ? new Date(user.createdAt).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long' 
+      })
+    : "Unknown";
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <Card className="w-96">
+          <CardContent className="p-6 text-center">
+            <p className="text-gray-600">Please log in to view your profile.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -86,15 +137,15 @@ export default function Profile() {
                     <User className="w-8 h-8 text-gray-400" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-black">{mockUser.name}</h2>
-                    <p className="text-gray-600">{mockUser.email}</p>
+                    <h2 className="text-xl font-bold text-black">{user.name}</h2>
+                    <p className="text-gray-600">{user.email}</p>
                     <div className="flex items-center space-x-4 mt-2">
                       <Badge className="bg-blue-100 text-blue-800">
                         <Crown className="w-3 h-3 mr-1" />
-                        {mockUser.subscription} Plan
+                        Analyst Plan
                       </Badge>
                       <Badge className="bg-green-100 text-green-800">
-                        {mockUser.subscriptionStatus}
+                        Active
                       </Badge>
                     </div>
                   </div>
@@ -137,47 +188,59 @@ export default function Profile() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" defaultValue="Alexander" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" defaultValue="Thompson" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input id="email" type="email" defaultValue={mockUser.email} className="pl-10" />
+                    <form onSubmit={form.handleSubmit(handleSaveProfile)} className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="name">Full Name</Label>
+                          <Input 
+                            id="name" 
+                            {...form.register("name")}
+                            placeholder="Enter your full name"
+                          />
+                          {form.formState.errors.name && (
+                            <p className="text-sm text-red-600">
+                              {form.formState.errors.name.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email Address</Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Input 
+                              id="email" 
+                              type="email" 
+                              {...form.register("email")}
+                              className="pl-10" 
+                              placeholder="Enter your email"
+                            />
+                          </div>
+                          {form.formState.errors.email && (
+                            <p className="text-sm text-red-600">
+                              {form.formState.errors.email.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="joinDate">Member Since</Label>
+                          <div className="relative">
+                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Input 
+                              id="joinDate" 
+                              value={joinDate} 
+                              className="pl-10" 
+                              disabled 
+                            />
+                          </div>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input id="phone" defaultValue={mockUser.phone} className="pl-10" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="location">Location</Label>
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input id="location" defaultValue={mockUser.location} className="pl-10" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="joinDate">Member Since</Label>
-                        <div className="relative">
-                          <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                          <Input id="joinDate" defaultValue={mockUser.joinDate} className="pl-10" disabled />
-                        </div>
-                      </div>
-                    </div>
-                    <Button onClick={handleSaveProfile} disabled={isLoading}>
-                      {isLoading ? "Saving..." : "Save Changes"}
-                    </Button>
+                      <Button 
+                        type="submit" 
+                        disabled={updateProfileMutation.isPending}
+                      >
+                        {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </form>
                   </CardContent>
                 </Card>
               </TabsContent>

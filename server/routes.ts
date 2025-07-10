@@ -14,6 +14,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Authentication routes are handled in setupAuth()
 
+  // User profile routes (protected)
+  app.put('/api/user/profile', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = z.object({
+        name: z.string().min(1),
+        email: z.string().email()
+      }).parse(req.body);
+      
+      const updatedUser = await storage.updateUser(userId, validatedData);
+      res.json(updatedUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error updating user profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   // Studies routes
   app.get('/api/studies', async (req, res) => {
     try {
