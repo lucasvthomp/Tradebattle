@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { getStockQuote, getCompanyProfile, getMarketData, POPULAR_STOCKS } from "./finnhub";
+import { getStockQuote, getCompanyProfile, getMarketData, getMarketDataWithHistory, getHistoricalData, POPULAR_STOCKS } from "./finnhub";
 import { insertContactSchema, insertWatchlistSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -190,10 +190,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/stocks/popular', async (req, res) => {
     try {
       const limit = parseInt(req.query.limit as string) || 50;
+      const withHistory = req.query.withHistory === 'true';
       const symbols = POPULAR_STOCKS.slice(0, limit);
-      const marketData = await getMarketData(symbols);
       
-      res.json(marketData);
+      if (withHistory) {
+        const marketData = await getMarketDataWithHistory(symbols);
+        res.json(marketData);
+      } else {
+        const marketData = await getMarketData(symbols);
+        res.json(marketData);
+      }
     } catch (error) {
       console.error('Error fetching popular stocks:', error);
       res.status(500).json({ error: 'Internal server error' });
@@ -247,12 +253,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'Symbols parameter required' });
       }
       
+      const withHistory = req.query.withHistory === 'true';
       const symbolList = symbols.split(',').map(s => s.toUpperCase()).slice(0, 20);
-      const marketData = await getMarketData(symbolList);
       
-      res.json(marketData);
+      if (withHistory) {
+        const marketData = await getMarketDataWithHistory(symbolList);
+        res.json(marketData);
+      } else {
+        const marketData = await getMarketData(symbolList);
+        res.json(marketData);
+      }
     } catch (error) {
       console.error('Error fetching batch stocks:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
+  app.get('/api/stock/history/:symbol/:period', async (req, res) => {
+    try {
+      const symbol = req.params.symbol.toUpperCase();
+      const period = req.params.period;
+      
+      const historicalData = await getHistoricalData(symbol, period);
+      
+      if (!historicalData) {
+        return res.status(404).json({ error: 'Historical data not found' });
+      }
+      
+      res.json(historicalData);
+    } catch (error) {
+      console.error('Error fetching historical data:', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });

@@ -418,6 +418,7 @@ export default function Dashboard() {
     const loadPopularStocks = async () => {
       try {
         setIsLoadingPopular(true);
+        // Load current stock data only since historical data requires premium access
         const response = await fetch('/api/stocks/popular?limit=10');
         if (response.ok) {
           const data = await response.json();
@@ -433,12 +434,12 @@ export default function Dashboard() {
             sector: stock.sector,
             changes: {
               "1D": { change: stock.change, changePercent: stock.changePercent },
-              "1W": { change: stock.change * 3, changePercent: stock.changePercent * 2.5 },
-              "1M": { change: stock.change * 8, changePercent: stock.changePercent * 6 },
-              "3M": { change: stock.change * 15, changePercent: stock.changePercent * 12 },
-              "6M": { change: stock.change * 25, changePercent: stock.changePercent * 20 },
-              "1Y": { change: stock.change * 50, changePercent: stock.changePercent * 40 },
-              "YTD": { change: stock.change * 20, changePercent: stock.changePercent * 15 }
+              "1W": { change: null, changePercent: null },
+              "1M": { change: null, changePercent: null },
+              "3M": { change: null, changePercent: null },
+              "6M": { change: null, changePercent: null },
+              "1Y": { change: null, changePercent: null },
+              "YTD": { change: null, changePercent: null }
             }
           }));
           setWatchlist(initialWatchlist);
@@ -474,34 +475,42 @@ export default function Dashboard() {
     setShowSearchResults(query.length > 0);
   };
 
-  const addToWatchlist = (stock: any) => {
-    const newStock = {
-      id: Date.now(),
-      symbol: stock.symbol,
-      companyName: stock.name,
-      price: stock.currentPrice,
-      volume: "N/A", // Volume data would need additional API call
-      marketCap: formatMarketCap(stock.marketCap),
-      sector: stock.sector,
-      changes: {
-        "1D": { change: stock.change, changePercent: stock.changePercent },
-        // For demo purposes, using current day data for other periods
-        // In production, you'd fetch historical data for each period
-        "1W": { change: stock.change * 3, changePercent: stock.changePercent * 2.5 },
-        "1M": { change: stock.change * 8, changePercent: stock.changePercent * 6 },
-        "3M": { change: stock.change * 15, changePercent: stock.changePercent * 12 },
-        "6M": { change: stock.change * 25, changePercent: stock.changePercent * 20 },
-        "1Y": { change: stock.change * 50, changePercent: stock.changePercent * 40 },
-        "YTD": { change: stock.change * 20, changePercent: stock.changePercent * 15 }
-      }
-    };
-    setWatchlist([...watchlist, newStock]);
-    setShowSearchResults(false);
-    setSearchQuery("");
-    toast({
-      title: "Added to Watchlist",
-      description: `${stock.symbol} has been added to your watchlist.`,
-    });
+  const addToWatchlist = async (stock: any) => {
+    try {
+      const newStock = {
+        id: Date.now(),
+        symbol: stock.symbol,
+        companyName: stock.name,
+        price: stock.currentPrice,
+        volume: "N/A",
+        marketCap: formatMarketCap(stock.marketCap),
+        sector: stock.sector,
+        changes: {
+          "1D": { change: stock.change, changePercent: stock.changePercent },
+          "1W": { change: null, changePercent: null },
+          "1M": { change: null, changePercent: null },
+          "3M": { change: null, changePercent: null },
+          "6M": { change: null, changePercent: null },
+          "1Y": { change: null, changePercent: null },
+          "YTD": { change: null, changePercent: null }
+        }
+      };
+      
+      setWatchlist([...watchlist, newStock]);
+      setShowSearchResults(false);
+      setSearchQuery("");
+      toast({
+        title: "Added to Watchlist",
+        description: `${stock.symbol} has been added to your watchlist with live market data.`,
+      });
+    } catch (error) {
+      console.error('Error adding to watchlist:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add stock to watchlist. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatMarketCap = (marketCap: number) => {
@@ -792,16 +801,24 @@ export default function Dashboard() {
                               <td className="py-3 px-4 font-medium">${stock.price.toFixed(2)}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
-                                  {stock.changes[changePeriod].change > 0 ? (
-                                    <TrendingUp className="w-4 h-4 text-green-500" />
+                                  {stock.changes[changePeriod].change !== null && stock.changes[changePeriod].changePercent !== null ? (
+                                    <>
+                                      {stock.changes[changePeriod].change > 0 ? (
+                                        <TrendingUp className="w-4 h-4 text-green-500" />
+                                      ) : (
+                                        <TrendingDown className="w-4 h-4 text-red-500" />
+                                      )}
+                                      <span className={`text-sm font-medium ${
+                                        stock.changes[changePeriod].change > 0 ? "text-green-600" : "text-red-600"
+                                      }`}>
+                                        {stock.changes[changePeriod].change > 0 ? "+" : ""}{stock.changes[changePeriod].change.toFixed(2)} ({stock.changes[changePeriod].changePercent.toFixed(2)}%)
+                                      </span>
+                                    </>
                                   ) : (
-                                    <TrendingDown className="w-4 h-4 text-red-500" />
+                                    <span className="text-sm text-gray-500">
+                                      {changePeriod === "1D" ? "N/A" : "Historical data unavailable"}
+                                    </span>
                                   )}
-                                  <span className={`text-sm font-medium ${
-                                    stock.changes[changePeriod].change > 0 ? "text-green-600" : "text-red-600"
-                                  }`}>
-                                    {stock.changes[changePeriod].change > 0 ? "+" : ""}{stock.changes[changePeriod].change.toFixed(2)} ({stock.changes[changePeriod].changePercent.toFixed(2)}%)
-                                  </span>
                                 </div>
                               </td>
                               <td className="py-3 px-4 text-sm">{stock.volume}</td>

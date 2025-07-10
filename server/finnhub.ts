@@ -95,6 +95,74 @@ export async function getMultipleQuotes(symbols: string[]): Promise<StockQuote[]
   return results.filter(quote => quote !== null) as StockQuote[];
 }
 
+export async function getHistoricalData(symbol: string, period: string): Promise<{
+  change: number;
+  changePercent: number;
+} | null> {
+  try {
+    const now = Math.floor(Date.now() / 1000);
+    let fromDate;
+    
+    switch (period) {
+      case '1W':
+        fromDate = now - (7 * 24 * 60 * 60);
+        break;
+      case '1M':
+        fromDate = now - (30 * 24 * 60 * 60);
+        break;
+      case '3M':
+        fromDate = now - (90 * 24 * 60 * 60);
+        break;
+      case '6M':
+        fromDate = now - (180 * 24 * 60 * 60);
+        break;
+      case '1Y':
+        fromDate = now - (365 * 24 * 60 * 60);
+        break;
+      case 'YTD':
+        const currentYear = new Date().getFullYear();
+        fromDate = Math.floor(new Date(currentYear, 0, 1).getTime() / 1000);
+        break;
+      default:
+        return null;
+    }
+    
+    // Try the candle endpoint with proper error handling
+    const response = await fetch(`${BASE_URL}/stock/candle?symbol=${symbol}&resolution=D&from=${fromDate}&to=${now}&token=${FINNHUB_API_KEY}`);
+    
+    if (!response.ok) {
+      console.log(`Historical data not available for ${symbol} (${period}): HTTP ${response.status}`);
+      return null;
+    }
+    
+    const data = await response.json() as any;
+    
+    if (data.s !== 'ok' || !data.c || data.c.length === 0) {
+      console.log(`No historical data returned for ${symbol} (${period})`);
+      return null;
+    }
+    
+    const closePrices = data.c;
+    const startPrice = closePrices[0];
+    const endPrice = closePrices[closePrices.length - 1];
+    
+    if (startPrice && endPrice && startPrice > 0) {
+      const change = endPrice - startPrice;
+      const changePercent = (change / startPrice) * 100;
+      
+      return {
+        change: parseFloat(change.toFixed(2)),
+        changePercent: parseFloat(changePercent.toFixed(2))
+      };
+    }
+    
+    return null;
+  } catch (error) {
+    console.error(`Error fetching historical data for ${symbol}:`, error);
+    return null;
+  }
+}
+
 export async function getMarketData(symbols: string[]): Promise<{
   symbol: string;
   name: string;
@@ -122,6 +190,63 @@ export async function getMarketData(symbols: string[]): Promise<{
         changePercent: quote.changePercent,
         marketCap: profile.marketCap,
         sector: profile.sector
+      });
+    }
+  }
+  
+  return marketData;
+}
+
+export async function getMarketDataWithHistory(symbols: string[]): Promise<{
+  symbol: string;
+  name: string;
+  currentPrice: number;
+  change: number;
+  changePercent: number;
+  marketCap: number;
+  sector: string;
+  historicalData: {
+    '1W': { change: number; changePercent: number } | null;
+    '1M': { change: number; changePercent: number } | null;
+    '3M': { change: number; changePercent: number } | null;
+    '6M': { change: number; changePercent: number } | null;
+    '1Y': { change: number; changePercent: number } | null;
+    'YTD': { change: number; changePercent: number } | null;
+  };
+}[]> {
+  const quotes = await getMultipleQuotes(symbols);
+  const profiles = await Promise.all(symbols.map(symbol => getCompanyProfile(symbol)));
+  
+  const marketData = [];
+  
+  for (let i = 0; i < symbols.length; i++) {
+    const quote = quotes.find(q => q.symbol === symbols[i]);
+    const profile = profiles[i];
+    
+    if (quote && profile) {
+      // Get historical data for all periods
+      const historicalPromises = ['1W', '1M', '3M', '6M', '1Y', 'YTD'].map(period => 
+        getHistoricalData(quote.symbol, period)
+      );
+      
+      const historicalResults = await Promise.all(historicalPromises);
+      
+      marketData.push({
+        symbol: quote.symbol,
+        name: profile.name,
+        currentPrice: quote.currentPrice,
+        change: quote.change,
+        changePercent: quote.changePercent,
+        marketCap: profile.marketCap,
+        sector: profile.sector,
+        historicalData: {
+          '1W': historicalResults[0],
+          '1M': historicalResults[1],
+          '3M': historicalResults[2],
+          '6M': historicalResults[3],
+          '1Y': historicalResults[4],
+          'YTD': historicalResults[5]
+        }
       });
     }
   }
