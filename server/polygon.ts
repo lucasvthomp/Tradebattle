@@ -102,14 +102,14 @@ export async function getPolygonHistoricalData(symbol: string, period: string): 
       throw new Error(`No historical data available for ${symbol} (${period}) from Polygon: ${data.error || 'Insufficient data points'}`);
     }
     
-    // Get the first and last closing prices
-    const firstClose = data.results[0].c;
-    const lastClose = data.results[data.results.length - 1].c;
+    // Get the first and last prices (for YTD, use opening price of first day)
+    const firstPrice = period === 'YTD' ? data.results[0].o : data.results[0].c;
+    const lastPrice = data.results[data.results.length - 1].c;
     
-    const change = lastClose - firstClose;
-    const changePercent = (change / firstClose) * 100;
+    const change = lastPrice - firstPrice;
+    const changePercent = (change / firstPrice) * 100;
     
-    console.log(`Polygon data for ${symbol} (${period}): ${firstClose} -> ${lastClose} = ${change} (${changePercent.toFixed(2)}%)`);
+    console.log(`Polygon data for ${symbol} (${period}): ${firstPrice} -> ${lastPrice} = ${change} (${changePercent.toFixed(2)}%)`);
     
     return {
       change: parseFloat(change.toFixed(2)),

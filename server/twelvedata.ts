@@ -77,7 +77,23 @@ export async function getTwelveDataHistorical(symbol: string, period: string): P
     // Get the most recent and oldest values
     const values = data.values;
     const mostRecent = parseFloat(values[0].close);
-    const oldest = parseFloat(values[values.length - 1].close);
+    
+    // For YTD, use opening price of first trading day, otherwise use closing price
+    let oldest;
+    if (period === 'YTD') {
+      // Find the first trading day of 2025 (Jan 2, 2025)
+      const firstDay2025 = values.find(v => v.datetime.startsWith('2025-01-02'));
+      if (firstDay2025) {
+        oldest = parseFloat(firstDay2025.open);
+        console.log(`Found 2025 first trading day: ${firstDay2025.datetime} open=${firstDay2025.open}`);
+      } else {
+        // Fallback to oldest available
+        oldest = parseFloat(values[values.length - 1].open);
+        console.log(`Using fallback oldest: ${values[values.length - 1].datetime} open=${values[values.length - 1].open}`);
+      }
+    } else {
+      oldest = parseFloat(values[values.length - 1].close);
+    }
     
     if (isNaN(mostRecent) || isNaN(oldest) || oldest === 0) {
       return null;
@@ -85,6 +101,8 @@ export async function getTwelveDataHistorical(symbol: string, period: string): P
     
     const change = mostRecent - oldest;
     const changePercent = (change / oldest) * 100;
+    
+    console.log(`Twelve Data ${symbol} (${period}): ${oldest} -> ${mostRecent} = ${change} (${changePercent.toFixed(2)}%)`);
     
     return {
       change: parseFloat(change.toFixed(2)),
