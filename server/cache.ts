@@ -10,7 +10,7 @@ interface CompanyData {
   symbol: string;
   name: string;
   currentPrice: number;
-  volume: string;
+  peRatio: number | null;
   marketCap: number;
   sector: string;
   industry: string;

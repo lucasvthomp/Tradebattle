@@ -47,7 +47,7 @@ class CompanyDataManager {
         symbol: quote.symbol,
         name: profile.name,
         currentPrice: quote.currentPrice,
-        volume: this.formatVolume(quote.volume || 0),
+        peRatio: profile.peRatio || null,
         marketCap: profile.marketCap,
         sector: profile.sector,
         industry: profile.industry,

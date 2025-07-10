@@ -788,7 +788,7 @@ export default function Dashboard() {
                             <th className="text-left py-2 px-4 font-medium">
                               Change ({changePeriod})
                             </th>
-                            <th className="text-left py-2 px-4 font-medium">Volume</th>
+                            <th className="text-left py-2 px-4 font-medium">P/E Ratio</th>
                             <th className="text-left py-2 px-4 font-medium">Market Cap</th>
                             <th className="text-left py-2 px-4 font-medium">Sector</th>
                             <th className="text-left py-2 px-4 font-medium">Actions</th>
@@ -829,7 +829,7 @@ export default function Dashboard() {
                                   )}
                                 </div>
                               </td>
-                              <td className="py-3 px-4 text-sm">{stock.volume || 'N/A'}</td>
+                              <td className="py-3 px-4 text-sm">{stock.peRatio ? stock.peRatio.toFixed(1) : 'N/A'}</td>
                               <td className="py-3 px-4 text-sm">{stock.marketCap || 'N/A'}</td>
                               <td className="py-3 px-4">
                                 <Badge variant="secondary" className="text-xs">

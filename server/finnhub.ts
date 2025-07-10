@@ -52,6 +52,7 @@ export interface CompanyProfile {
   sector: string;
   industry: string;
   marketCap: number;
+  peRatio?: number;
   country: string;
   currency: string;
   exchange: string;
@@ -107,6 +108,40 @@ export async function getStockQuote(
   }
 }
 
+async function getBasicFinancials(symbol: string): Promise<{ peRatio: number | null }> {
+  try {
+    console.log(`Fetching basic financials for ${symbol}...`);
+    
+    const response = await rateLimitedFetch(
+      `${BASE_URL}/stock/metric?symbol=${symbol}&metric=all&token=${FINNHUB_API_KEY}`,
+    );
+
+    const data = (await response.json()) as any;
+    
+    console.log(`Basic financials response for ${symbol}:`, {
+      hasMetric: !!data?.metric,
+      peBasicExclExtraTTM: data?.metric?.peBasicExclExtraTTM,
+      peAnnual: data?.metric?.peAnnual,
+      peExclExtraTTM: data?.metric?.peExclExtraTTM
+    });
+    
+    // Extract P/E ratio from various possible fields
+    const peRatio = data?.metric?.peBasicExclExtraTTM || 
+                   data?.metric?.peAnnual || 
+                   data?.metric?.peExclExtraTTM || 
+                   null;
+
+    const parsedPeRatio = peRatio ? parseFloat(peRatio.toString()) : null;
+    
+    console.log(`P/E ratio for ${symbol}: ${parsedPeRatio}`);
+
+    return { peRatio: parsedPeRatio };
+  } catch (error) {
+    console.error(`Could not fetch basic financials for ${symbol}:`, error);
+    return { peRatio: null };
+  }
+}
+
 export async function getCompanyProfile(
   symbol: string,
 ): Promise<CompanyProfile | null> {
@@ -119,11 +154,13 @@ export async function getCompanyProfile(
 
   try {
     const result = await withRetry(async () => {
-      const response = await rateLimitedFetch(
-        `${BASE_URL}/stock/profile2?symbol=${symbol}&token=${FINNHUB_API_KEY}`,
-      );
+      // Get both profile and financial metrics in parallel
+      const [profileResponse, financials] = await Promise.all([
+        rateLimitedFetch(`${BASE_URL}/stock/profile2?symbol=${symbol}&token=${FINNHUB_API_KEY}`),
+        getBasicFinancials(symbol)
+      ]);
 
-      const data = (await response.json()) as any;
+      const data = (await profileResponse.json()) as any;
 
       if (!data.name) {
         throw new Error(`No profile data for ${symbol}`);
@@ -135,6 +172,7 @@ export async function getCompanyProfile(
         sector: data.finnhubIndustry || "Unknown",
         industry: data.finnhubIndustry || "Unknown",
         marketCap: data.marketCapitalization || 0,
+        peRatio: financials.peRatio,
         country: data.country || "US",
         currency: data.currency || "USD",
         exchange: data.exchange || "Unknown",
