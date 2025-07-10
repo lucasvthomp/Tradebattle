@@ -52,13 +52,98 @@ const staggerChildren = {
   }
 };
 
-// Mock data for demonstration
+// Mock data for demonstration with different time periods
 const mockWatchlist = [
-  { id: 1, symbol: "AAPL", companyName: "Apple Inc.", price: 175.43, change: 2.15, changePercent: 1.24, volume: "45.2M", marketCap: "2.7T", sector: "Technology" },
-  { id: 2, symbol: "GOOGL", companyName: "Alphabet Inc.", price: 138.21, change: -1.87, changePercent: -1.33, volume: "28.1M", marketCap: "1.8T", sector: "Technology" },
-  { id: 3, symbol: "MSFT", companyName: "Microsoft Corporation", price: 378.85, change: 5.23, changePercent: 1.40, volume: "22.8M", marketCap: "2.8T", sector: "Technology" },
-  { id: 4, symbol: "TSLA", companyName: "Tesla Inc.", price: 248.42, change: -8.15, changePercent: -3.18, volume: "67.9M", marketCap: "789B", sector: "Automotive" },
-  { id: 5, symbol: "NVDA", companyName: "NVIDIA Corporation", price: 875.28, change: 12.45, changePercent: 1.44, volume: "41.2M", marketCap: "2.2T", sector: "Technology" },
+  { 
+    id: 1, 
+    symbol: "AAPL", 
+    companyName: "Apple Inc.", 
+    price: 175.43, 
+    volume: "45.2M", 
+    marketCap: "2.7T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: 2.15, changePercent: 1.24 },
+      "1W": { change: -3.42, changePercent: -1.91 },
+      "1M": { change: 8.73, changePercent: 5.24 },
+      "3M": { change: -12.15, changePercent: -6.48 },
+      "6M": { change: 18.92, changePercent: 12.08 },
+      "1Y": { change: 34.21, changePercent: 24.24 },
+      "YTD": { change: 15.67, changePercent: 9.81 }
+    }
+  },
+  { 
+    id: 2, 
+    symbol: "GOOGL", 
+    companyName: "Alphabet Inc.", 
+    price: 138.21, 
+    volume: "28.1M", 
+    marketCap: "1.8T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: -1.87, changePercent: -1.33 },
+      "1W": { change: 4.21, changePercent: 3.14 },
+      "1M": { change: -5.42, changePercent: -3.77 },
+      "3M": { change: 12.85, changePercent: 10.25 },
+      "6M": { change: -8.92, changePercent: -6.08 },
+      "1Y": { change: 28.45, changePercent: 25.93 },
+      "YTD": { change: 6.78, changePercent: 5.16 }
+    }
+  },
+  { 
+    id: 3, 
+    symbol: "MSFT", 
+    companyName: "Microsoft Corporation", 
+    price: 378.85, 
+    volume: "22.8M", 
+    marketCap: "2.8T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: 5.23, changePercent: 1.40 },
+      "1W": { change: -2.15, changePercent: -0.56 },
+      "1M": { change: 15.42, changePercent: 4.24 },
+      "3M": { change: 22.75, changePercent: 6.39 },
+      "6M": { change: 31.18, changePercent: 8.98 },
+      "1Y": { change: 48.92, changePercent: 14.82 },
+      "YTD": { change: 19.34, changePercent: 5.38 }
+    }
+  },
+  { 
+    id: 4, 
+    symbol: "TSLA", 
+    companyName: "Tesla Inc.", 
+    price: 248.42, 
+    volume: "67.9M", 
+    marketCap: "789B", 
+    sector: "Automotive",
+    changes: {
+      "1D": { change: -8.15, changePercent: -3.18 },
+      "1W": { change: 12.45, changePercent: 5.27 },
+      "1M": { change: -21.73, changePercent: -8.04 },
+      "3M": { change: 18.92, changePercent: 8.24 },
+      "6M": { change: -45.21, changePercent: -15.39 },
+      "1Y": { change: -92.15, changePercent: -27.05 },
+      "YTD": { change: -15.67, changePercent: -5.93 }
+    }
+  },
+  { 
+    id: 5, 
+    symbol: "NVDA", 
+    companyName: "NVIDIA Corporation", 
+    price: 875.28, 
+    volume: "41.2M", 
+    marketCap: "2.2T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: 12.45, changePercent: 1.44 },
+      "1W": { change: -18.73, changePercent: -2.09 },
+      "1M": { change: 45.92, changePercent: 5.54 },
+      "3M": { change: 125.43, changePercent: 16.73 },
+      "6M": { change: 187.65, changePercent: 27.29 },
+      "1Y": { change: 342.18, changePercent: 64.17 },
+      "YTD": { change: 89.23, changePercent: 11.35 }
+    }
+  },
 ];
 
 const mockMarketData = [
@@ -100,6 +185,7 @@ export default function Dashboard() {
   const [sortBy, setSortBy] = useState("symbol");
   const [sortOrder, setSortOrder] = useState("asc");
   const [filterSector, setFilterSector] = useState("all");
+  const [changePeriod, setChangePeriod] = useState("1D");
 
   // Redirect to auth if not authenticated
   useEffect(() => {
@@ -126,11 +212,18 @@ export default function Dashboard() {
       symbol: stock.symbol,
       companyName: stock.name,
       price: stock.price,
-      change: (Math.random() - 0.5) * 10,
-      changePercent: (Math.random() - 0.5) * 5,
       volume: Math.floor(Math.random() * 100) + "M",
       marketCap: Math.floor(Math.random() * 500) + "B",
-      sector: stock.sector
+      sector: stock.sector,
+      changes: {
+        "1D": { change: (Math.random() - 0.5) * 10, changePercent: (Math.random() - 0.5) * 5 },
+        "1W": { change: (Math.random() - 0.5) * 20, changePercent: (Math.random() - 0.5) * 10 },
+        "1M": { change: (Math.random() - 0.5) * 50, changePercent: (Math.random() - 0.5) * 25 },
+        "3M": { change: (Math.random() - 0.5) * 100, changePercent: (Math.random() - 0.5) * 40 },
+        "6M": { change: (Math.random() - 0.5) * 150, changePercent: (Math.random() - 0.5) * 60 },
+        "1Y": { change: (Math.random() - 0.5) * 200, changePercent: (Math.random() - 0.5) * 80 },
+        "YTD": { change: (Math.random() - 0.5) * 80, changePercent: (Math.random() - 0.5) * 35 }
+      }
     };
     setWatchlist([...watchlist, newStock]);
     setShowSearchResults(false);
@@ -354,6 +447,19 @@ export default function Dashboard() {
                         </option>
                       ))}
                     </select>
+                    <select
+                      value={changePeriod}
+                      onChange={(e) => setChangePeriod(e.target.value)}
+                      className="px-3 py-2 border rounded-md"
+                    >
+                      <option value="1D">1 Day</option>
+                      <option value="1W">1 Week</option>
+                      <option value="1M">1 Month</option>
+                      <option value="3M">3 Months</option>
+                      <option value="6M">6 Months</option>
+                      <option value="1Y">1 Year</option>
+                      <option value="YTD">Year to Date</option>
+                    </select>
                     <Button
                       variant="outline"
                       size="sm"
@@ -380,7 +486,9 @@ export default function Dashboard() {
                             <th className="text-left py-2 px-4 font-medium">Symbol</th>
                             <th className="text-left py-2 px-4 font-medium">Company</th>
                             <th className="text-left py-2 px-4 font-medium">Price</th>
-                            <th className="text-left py-2 px-4 font-medium">Change</th>
+                            <th className="text-left py-2 px-4 font-medium">
+                              Change ({changePeriod})
+                            </th>
                             <th className="text-left py-2 px-4 font-medium">Volume</th>
                             <th className="text-left py-2 px-4 font-medium">Market Cap</th>
                             <th className="text-left py-2 px-4 font-medium">Sector</th>
@@ -395,15 +503,15 @@ export default function Dashboard() {
                               <td className="py-3 px-4 font-medium">${stock.price.toFixed(2)}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
-                                  {stock.change > 0 ? (
+                                  {stock.changes[changePeriod].change > 0 ? (
                                     <TrendingUp className="w-4 h-4 text-green-500" />
                                   ) : (
                                     <TrendingDown className="w-4 h-4 text-red-500" />
                                   )}
                                   <span className={`text-sm font-medium ${
-                                    stock.change > 0 ? "text-green-600" : "text-red-600"
+                                    stock.changes[changePeriod].change > 0 ? "text-green-600" : "text-red-600"
                                   }`}>
-                                    {stock.change > 0 ? "+" : ""}{stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
+                                    {stock.changes[changePeriod].change > 0 ? "+" : ""}{stock.changes[changePeriod].change.toFixed(2)} ({stock.changes[changePeriod].changePercent.toFixed(2)}%)
                                   </span>
                                 </div>
                               </td>
