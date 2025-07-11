@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
@@ -38,8 +37,22 @@ import {
   ExternalLink,
   Bell,
   Settings,
-  Download
+  Download,
+  Building,
+  TrendingUpDown
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -400,6 +413,13 @@ export default function Dashboard() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [filterSector, setFilterSector] = useState("all");
   const [changePeriod, setChangePeriod] = useState("1D");
+  
+  // Research request dialog states
+  const [isResearchDialogOpen, setIsResearchDialogOpen] = useState(false);
+  const [researchStep, setResearchStep] = useState(1);
+  const [researchType, setResearchType] = useState("");
+  const [researchTarget, setResearchTarget] = useState("");
+  const [researchDescription, setResearchDescription] = useState("");
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -493,6 +513,54 @@ export default function Dashboard() {
       });
     },
   });
+
+  // Research request mutation
+  const createResearchRequestMutation = useMutation({
+    mutationFn: async (requestData: { type: string; target: string; description: string }) => {
+      await apiRequest("POST", "/api/research-requests", requestData);
+    },
+    onSuccess: () => {
+      resetResearchDialog();
+      toast({
+        title: "Research request submitted",
+        description: "Your custom research request has been sent to our team for review.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Reset research dialog
+  const resetResearchDialog = () => {
+    setIsResearchDialogOpen(false);
+    setResearchStep(1);
+    setResearchType("");
+    setResearchTarget("");
+    setResearchDescription("");
+  };
+
+  // Handle research request submission
+  const handleResearchRequestSubmit = () => {
+    if (!researchType || !researchTarget) {
+      toast({
+        title: "Missing information",
+        description: "Please select a research type and specify the target.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createResearchRequestMutation.mutate({
+      type: researchType,
+      target: researchTarget,
+      description: researchDescription || `${researchType} analysis for ${researchTarget}`,
+    });
+  };
 
   // Authentication handled by router
 
@@ -1068,10 +1136,104 @@ export default function Dashboard() {
                           <p className="text-sm text-gray-600 mt-2">
                             Get personalized research on specific companies or sectors.
                           </p>
-                          <Button className="mt-3" size="sm">
-                            <Plus className="w-4 h-4 mr-2" />
-                            New Request
-                          </Button>
+                          {user?.subscriptionTier === 'professional' ? (
+                            <Dialog open={isResearchDialogOpen} onOpenChange={setIsResearchDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button className="mt-3" size="sm">
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  New Request
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>
+                                    {researchStep === 1 ? 'Select Research Type' : 'Research Details'}
+                                  </DialogTitle>
+                                  <DialogDescription>
+                                    {researchStep === 1 
+                                      ? 'Choose the type of research you need'
+                                      : 'Provide details for your research request'
+                                    }
+                                  </DialogDescription>
+                                </DialogHeader>
+                                
+                                {researchStep === 1 ? (
+                                  <div className="space-y-4">
+                                    <RadioGroup value={researchType} onValueChange={setResearchType}>
+                                      <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="company" id="company" />
+                                        <Label htmlFor="company" className="flex items-center">
+                                          <Building className="w-4 h-4 mr-2" />
+                                          Company Analysis
+                                        </Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="sector" id="sector" />
+                                        <Label htmlFor="sector" className="flex items-center">
+                                          <TrendingUpDown className="w-4 h-4 mr-2" />
+                                          Sector Analysis
+                                        </Label>
+                                      </div>
+                                    </RadioGroup>
+                                    
+                                    <div className="flex justify-end space-x-2">
+                                      <Button variant="outline" onClick={resetResearchDialog}>
+                                        Cancel
+                                      </Button>
+                                      <Button 
+                                        onClick={() => setResearchStep(2)}
+                                        disabled={!researchType}
+                                      >
+                                        Next
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-4">
+                                    <div>
+                                      <Label htmlFor="target">
+                                        {researchType === 'company' ? 'Company Name/Symbol' : 'Sector Name'}
+                                      </Label>
+                                      <Input
+                                        id="target"
+                                        value={researchTarget}
+                                        onChange={(e) => setResearchTarget(e.target.value)}
+                                        placeholder={researchType === 'company' ? 'e.g., Apple Inc. or AAPL' : 'e.g., Technology, Healthcare'}
+                                      />
+                                    </div>
+                                    
+                                    <div>
+                                      <Label htmlFor="description">Additional Details (Optional)</Label>
+                                      <Textarea
+                                        id="description"
+                                        value={researchDescription}
+                                        onChange={(e) => setResearchDescription(e.target.value)}
+                                        placeholder="Any specific areas of focus or questions you'd like addressed..."
+                                        rows={3}
+                                      />
+                                    </div>
+                                    
+                                    <div className="flex justify-end space-x-2">
+                                      <Button variant="outline" onClick={() => setResearchStep(1)}>
+                                        Back
+                                      </Button>
+                                      <Button 
+                                        onClick={handleResearchRequestSubmit}
+                                        disabled={!researchTarget || createResearchRequestMutation.isPending}
+                                      >
+                                        {createResearchRequestMutation.isPending ? 'Submitting...' : 'Submit Request'}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
+                          ) : (
+                            <Button className="mt-3" size="sm" disabled>
+                              <Plus className="w-4 h-4 mr-2" />
+                              Professional Only
+                            </Button>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between p-3 bg-gray-50 rounded">

@@ -177,3 +177,4 @@ Preferred communication style: Simple, everyday language.
 - **Partner Panel System** (January 2025): Developed comprehensive partner collaboration platform with research request management, client communication features, and insight publishing capabilities
 - **Admin Actions Logging** (January 2025): Implemented audit trail system tracking all administrative actions including subscription changes, user modifications, and system operations with detailed logging
 - **User Management Enhancement** (January 2025): Added subscription tier editing, user status monitoring, and detailed user activity tracking with admin log integration
+- **Research Request System** (January 2025): Implemented comprehensive research request system for professional subscribers - users can request company or sector analysis through dashboard dialog, requests are sent to Partner Panel for review and management

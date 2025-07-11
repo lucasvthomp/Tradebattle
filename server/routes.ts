@@ -509,6 +509,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Research requests for professional users
+  app.post("/api/research-requests", requireAuth, async (req: any, res) => {
+    try {
+      // Check if user has professional subscription
+      if (req.user.subscriptionTier !== 'professional') {
+        return res.status(403).json({ message: "Professional subscription required for custom research requests." });
+      }
+      
+      const requestData = {
+        clientUserId: req.user.id,
+        type: req.body.type,
+        target: req.body.target,
+        description: req.body.description,
+        status: 'pending' as const,
+        priority: 'medium' as const,
+      };
+      
+      const researchRequest = await storage.createResearchRequest(requestData);
+      res.status(201).json(researchRequest);
+    } catch (error) {
+      console.error("Error creating research request:", error);
+      res.status(500).json({ message: "Failed to create research request" });
+    }
+  });
+
   // Error handling middleware (must be last)
   app.use(errorHandler);
 
