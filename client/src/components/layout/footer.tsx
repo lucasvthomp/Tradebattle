@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { FaInstagram, FaFacebook, FaTwitter, FaTiktok } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -88,6 +89,44 @@ export default function Footer() {
                 © 2024 Orellana, Santos & Thompson. All rights reserved.
               </p>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
+                <div className="flex items-center space-x-4 mr-6">
+                  <a
+                    href="https://instagram.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <FaInstagram className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="https://facebook.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="Facebook"
+                  >
+                    <FaFacebook className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="https://twitter.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="Twitter"
+                  >
+                    <FaTwitter className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="https://tiktok.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                    aria-label="TikTok"
+                  >
+                    <FaTiktok className="w-5 h-5" />
+                  </a>
+                </div>
                 <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>

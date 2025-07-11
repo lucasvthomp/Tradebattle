@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth, AuthProvider } from "@/hooks/use-auth";
+import { ThemeProvider } from "@/hooks/use-theme";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -52,7 +53,7 @@ function Router() {
             </>
           ) : (
             <>
-              <Route path="/" component={Dashboard} />
+              <Route path="/" component={Home} />
               <Route path="/studies" component={Studies} />
               <Route path="/news" component={News} />
               <Route path="/dashboard" component={Dashboard} />
@@ -76,10 +77,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <TooltipProvider>
-          <Router />
-          <Toaster />
-        </TooltipProvider>
+        <ThemeProvider defaultTheme="light" storageKey="orsath-ui-theme">
+          <TooltipProvider>
+            <Router />
+            <Toaster />
+          </TooltipProvider>
+        </ThemeProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

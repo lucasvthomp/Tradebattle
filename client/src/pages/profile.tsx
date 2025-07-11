@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { useTheme } from "@/hooks/use-theme";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
@@ -53,6 +54,7 @@ type ProfileFormData = z.infer<typeof profileSchema>;
 export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const queryClient = useQueryClient();
   
   const form = useForm<ProfileFormData>({
@@ -341,6 +343,22 @@ export default function Profile() {
                           <p className="text-sm text-gray-600">Product updates and promotional content</p>
                         </div>
                         <Switch />
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-black">Display Settings</h4>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-medium text-black">Dark Mode</h4>
+                          <p className="text-sm text-gray-600">Switch between light and dark themes</p>
+                        </div>
+                        <Switch 
+                          checked={theme === "dark"}
+                          onCheckedChange={(checked) => setTheme(checked ? "dark" : "light")}
+                        />
                       </div>
                     </div>
 
