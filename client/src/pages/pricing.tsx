@@ -197,7 +197,7 @@ export default function Pricing() {
                 )}
                 
                 <Card className={`h-full border-2 ${tier.popular ? 'border-blue-600' : 'border-gray-200'} relative overflow-hidden`}>
-                  <div className={`absolute inset-0 bg-gradient-to-br ${tier.color} opacity-5`} />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${tier.color} opacity-5 pointer-events-none`} />
                   
                   <CardHeader className="text-center pb-6">
                     <div className="flex justify-center mb-4">
@@ -228,15 +228,21 @@ export default function Pricing() {
                     </ul>
                     
                     <Button 
-                      className={`w-full py-6 text-lg font-semibold ${
+                      className={`w-full py-6 text-lg font-semibold cursor-pointer ${
                         tier.popular 
                           ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                           : tier.name === 'Novice'
                           ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-gray-900 hover:bg-gray-800 text-white'
                       }`}
-                      onClick={() => handleTierSelection(tier.name)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("Button clicked for tier:", tier.name);
+                        handleTierSelection(tier.name);
+                      }}
                       disabled={subscriptionMutation.isPending || (user && user.subscriptionTier === tier.name.toLowerCase())}
+                      type="button"
                     >
                       {subscriptionMutation.isPending ? 'Updating...' : 
                        (user && user.subscriptionTier === tier.name.toLowerCase()) ? 'Current Plan' :
