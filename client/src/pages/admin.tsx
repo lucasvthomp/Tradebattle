@@ -356,13 +356,7 @@ export default function Admin() {
 
       {/* Double Confirmation Dialog */}
       <AlertDialog 
-        open={!!deleteState.step} 
-        onOpenChange={(open) => {
-          console.log('Dialog open changed:', open, 'current step:', deleteState.step);
-          if (!open) {
-            handleCancelDelete();
-          }
-        }}
+        open={!!deleteState.step}
       >
         <AlertDialogContent>
           <AlertDialogHeader>
