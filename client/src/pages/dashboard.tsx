@@ -623,25 +623,13 @@ export default function Dashboard() {
     // Use the correct previous close from API data
     const previousClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
     
-    // Use the correct change data from API (already calculated correctly on backend)
-    let finalChange = popularData?.change || individualData?.change || 0;
-    let finalChangePercent = popularData?.percentChange || individualData?.percentChange || 0;
+    // Always calculate change based on current price and previous close for consistency
+    const calculatedChange = currentPrice - previousClose;
+    const calculatedChangePercent = previousClose > 0 ? ((calculatedChange / previousClose) * 100) : 0;
     
-    // Debug logging for Apple stock
-    if (stock.symbol === 'AAPL') {
-      console.log('AAPL Debug:', {
-        currentPrice,
-        previousClose,
-        finalChange,
-        finalChangePercent,
-        popularData: popularData ? {
-          price: popularData.price,
-          change: popularData.change,
-          percentChange: popularData.percentChange,
-          previousClose: popularData.previousClose
-        } : null
-      });
-    }
+    // Use calculated values to ensure synchronization with current price
+    let finalChange = calculatedChange;
+    let finalChangePercent = calculatedChangePercent;
     
     // For timeframe-specific data, use the timeframe data if available
     if (timeframeSpecificData) {
