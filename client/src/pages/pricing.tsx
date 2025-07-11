@@ -15,8 +15,7 @@ const tiers = [
       "Limited watchlist (5 equities)",
       "Limited news access",
       "Email support",
-      "Basic market insights",
-      "Mobile app access"
+      "Basic market insights"
     ],
     popular: false,
     color: "from-green-900 to-green-800"
@@ -31,7 +30,6 @@ const tiers = [
       "Access to 50+ research studies monthly",
       "Basic market news and insights",
       "Email support",
-      "Mobile app access",
       "Basic portfolio tracking",
       "Weekend market analysis"
     ],
@@ -49,10 +47,9 @@ const tiers = [
       "Unlimited research studies access",
       "Priority breaking news alerts",
       "Advanced portfolio analytics",
-      "Direct analyst Q&A sessions",
+      "Instant email news alerts",
       "Custom research requests (2 per month)",
-      "Premium mobile features",
-      "Priority customer support"
+      "Customer support"
     ],
     popular: true,
     color: "from-blue-900 to-blue-800"
@@ -65,14 +62,10 @@ const tiers = [
     icon: <Crown className="w-6 h-6" />,
     features: [
       "Everything in Analyst",
-      "Multi-user team access (up to 10 users)",
       "Custom research reports",
       "Dedicated account manager",
       "API access for data integration",
-      "White-label research options",
-      "Advanced compliance tools",
-      "24/7 priority support",
-      "Quarterly strategy sessions"
+      "Priority support"
     ],
     popular: false,
     color: "from-purple-900 to-purple-800"
