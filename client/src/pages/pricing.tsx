@@ -61,7 +61,7 @@ const tiers = [
     icon: <Crown className="w-6 h-6" />,
     features: [
       "Everything in Analyst",
-      "Custom research reports",
+      "Custom case studies",
       "Priority support"
     ],
     popular: false,
@@ -222,9 +222,9 @@ export default function Pricing() {
             </motion.div>
             
             <motion.div variants={fadeInUp}>
-              <h3 className="text-xl font-semibold mb-3 text-black">How do custom research reports work?</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">How do custom case studies work?</h3>
               <p className="text-gray-600">
-                Professional tier subscribers can request custom research reports on specific companies or sectors through our platform.
+                Professional tier subscribers can request custom case studies on specific companies or sectors through our platform.
               </p>
             </motion.div>
           </div>
