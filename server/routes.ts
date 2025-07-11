@@ -223,6 +223,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to delete a user (only for user ID 3 or 4)
+  app.delete("/api/admin/users/:userId", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.id;
+      const targetUserId = parseInt(req.params.userId);
+      
+      // Check if user is admin (ID 3 or 4)
+      if (adminUserId !== 3 && adminUserId !== 4) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+
+      // Prevent deletion of admin accounts
+      if (targetUserId === 3 || targetUserId === 4) {
+        return res.status(403).json({ message: "Cannot delete admin accounts." });
+      }
+
+      // Check if target user exists
+      const targetUser = await storage.getUser(targetUserId);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found." });
+      }
+
+      // Delete the user
+      await storage.deleteUser(targetUserId);
+      
+      res.json({ message: "User deleted successfully." });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+
   // Error handling middleware (must be last)
   app.use(errorHandler);
 

@@ -1,12 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { 
   Shield, 
   Users, 
@@ -14,8 +15,19 @@ import {
   Calendar, 
   Mail,
   AlertCircle,
-  Settings
+  Settings,
+  Trash2
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -35,6 +47,8 @@ export default function Admin() {
   const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
+  const [confirmationStep, setConfirmationStep] = useState<'first' | 'second' | null>(null);
 
   // Check if user is admin (ID 3 or 4)
   const isAdmin = user?.id === 3 || user?.id === 4;
@@ -56,6 +70,66 @@ export default function Admin() {
     queryKey: ["/api/admin/users"],
     enabled: isAdmin,
   });
+
+  // Delete user mutation
+  const deleteUserMutation = useMutation({
+    mutationFn: async (userId: number) => {
+      const response = await apiRequest("DELETE", `/api/admin/users/${userId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "User Deleted",
+        description: "User account has been successfully deleted.",
+      });
+      setDeleteUserId(null);
+      setConfirmationStep(null);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+      setDeleteUserId(null);
+      setConfirmationStep(null);
+    },
+  });
+
+  // Helper functions
+  const handleDeleteClick = (userId: number) => {
+    setDeleteUserId(userId);
+    setConfirmationStep('first');
+  };
+
+  const handleFirstConfirmation = () => {
+    setConfirmationStep('second');
+  };
+
+  const handleSecondConfirmation = () => {
+    if (deleteUserId) {
+      deleteUserMutation.mutate(deleteUserId);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteUserId(null);
+    setConfirmationStep(null);
+  };
+
+  const canDeleteUser = (targetUserId: number) => {
+    // Admin cannot delete another admin
+    return !(targetUserId === 3 || targetUserId === 4);
+  };
+
+  const getSelectedUserName = () => {
+    if (!deleteUserId || !allUsers) return '';
+    const selectedUser = allUsers.find((u: any) => u.id === deleteUserId);
+    return selectedUser?.firstName && selectedUser?.lastName 
+      ? `${selectedUser.firstName} ${selectedUser.lastName}`
+      : selectedUser?.email?.split('@')[0] || 'Unknown User';
+  };
 
   if (authLoading || usersLoading) {
     return (
@@ -168,6 +242,7 @@ export default function Admin() {
                         <th className="text-left py-3 px-4 font-medium">Subscription</th>
                         <th className="text-left py-3 px-4 font-medium">Join Date</th>
                         <th className="text-left py-3 px-4 font-medium">Status</th>
+                        <th className="text-left py-3 px-4 font-medium">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -239,6 +314,21 @@ export default function Admin() {
                               Active
                             </Badge>
                           </td>
+                          <td className="py-3 px-4">
+                            {canDeleteUser(user.id) ? (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteClick(user.id)}
+                                className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                                disabled={deleteUserMutation.isPending}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            ) : (
+                              <span className="text-gray-400 text-sm">Protected</span>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -249,6 +339,49 @@ export default function Admin() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Double Confirmation Dialog */}
+      <AlertDialog open={!!confirmationStep} onOpenChange={handleCancelDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirmationStep === 'first' ? 'Delete User Account?' : 'Are you absolutely sure?'}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmationStep === 'first' ? (
+                <>
+                  You are about to delete the account for <strong>{getSelectedUserName()}</strong>.
+                  This action cannot be undone and will permanently remove all user data including:
+                  <ul className="list-disc ml-4 mt-2">
+                    <li>User profile information</li>
+                    <li>Watchlist items</li>
+                    <li>Account history</li>
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <span className="text-red-600 font-medium">FINAL CONFIRMATION</span>
+                  <br />
+                  This is your last chance to cancel. Deleting <strong>{getSelectedUserName()}</strong>'s account 
+                  will permanently remove all their data from the system. This action is irreversible.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleCancelDelete}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmationStep === 'first' ? handleFirstConfirmation : handleSecondConfirmation}
+              className="bg-red-600 hover:bg-red-700"
+              disabled={deleteUserMutation.isPending}
+            >
+              {confirmationStep === 'first' ? 'Yes, Delete Account' : 'Delete Forever'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

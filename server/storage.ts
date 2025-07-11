@@ -30,6 +30,7 @@ export interface IStorage {
   updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'email'>>): Promise<User>;
   updateUserSubscription(id: number, subscription: UpdateUserSubscription): Promise<User>;
   getAllUsers(): Promise<User[]>;
+  deleteUser(id: number): Promise<void>;
   
   // Studies operations
   getStudies(): Promise<Study[]>;
@@ -107,6 +108,18 @@ export class DatabaseStorage implements IStorage {
   async getAllUsers(): Promise<User[]> {
     const allUsers = await db.select().from(users).orderBy(users.id);
     return allUsers;
+  }
+
+  async deleteUser(id: number): Promise<void> {
+    // First delete related watchlist items
+    await db.delete(watchlist).where(eq(watchlist.userId, id));
+    
+    // Then delete the user
+    const result = await db.delete(users).where(eq(users.id, id));
+    
+    if (result.rowCount === 0) {
+      throw new Error("User not found");
+    }
   }
 
   // Studies operations
