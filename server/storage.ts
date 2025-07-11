@@ -29,6 +29,7 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'email'>>): Promise<User>;
   updateUserSubscription(id: number, subscription: UpdateUserSubscription): Promise<User>;
+  getAllUsers(): Promise<User[]>;
   
   // Studies operations
   getStudies(): Promise<Study[]>;
@@ -101,6 +102,11 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, id))
       .returning();
     return user;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    const allUsers = await db.select().from(users).orderBy(users.id);
+    return allUsers;
   }
 
   // Studies operations

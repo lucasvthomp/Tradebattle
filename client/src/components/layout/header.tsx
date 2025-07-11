@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn } from "lucide-react";
+import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn, Shield } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -97,6 +97,15 @@ export default function Header() {
                     <Crown className="w-4 h-4 mr-2" />
                     My Subscription
                   </DropdownMenuItem>
+                  {user.id === 3 && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => window.location.href = "/admin"}>
+                        <Shield className="w-4 h-4 mr-2" />
+                        Admin Panel
+                      </DropdownMenuItem>
+                    </>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => {
                     logoutMutation.mutate();

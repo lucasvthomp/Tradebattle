@@ -19,6 +19,7 @@ import Terms from "@/pages/terms";
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Profile from "@/pages/profile";
+import Admin from "@/pages/admin";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
@@ -64,6 +65,7 @@ function Router() {
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
               <Route path="/profile" component={Profile} />
+              <Route path="/admin" component={Admin} />
             </>
           )}
           <Route component={NotFound} />
