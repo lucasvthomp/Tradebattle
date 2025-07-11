@@ -158,3 +158,4 @@ Preferred communication style: Simple, everyday language.
 - **Terminology Update** (January 2025): Changed "custom research reports" to "custom case studies" in Professional plan
 - **Subscription Tier System** (January 2025): Implemented dynamic subscription tier functionality with database persistence - users can instantly upgrade/downgrade plans via pricing page buttons, with changes saved across sessions
 - **Differentiated Data Refresh Intervals** (January 2025): Implemented subscription-based data refresh rates - free users get 15-minute intervals for 1D/5D data and 1-day intervals for longer timeframes, paid users get 1-minute intervals for 1D/5D data and 5-minute intervals for longer timeframes
+- **1-Day Change Calculation Fix** (January 2025): Updated 1-day percentage change calculation to use previous trading day's market close price instead of current day's market open for accurate daily performance metrics

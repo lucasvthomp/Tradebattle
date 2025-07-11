@@ -285,38 +285,37 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
       throw new Error(`No data found for symbol: ${symbol}`);
     }
 
-    // Get today's market open price for accurate 1-day change calculation
-    let todayOpenPrice = result.regularMarketOpen || result.regularMarketPreviousClose;
+    // Get previous trading day's market close price for accurate 1-day change calculation
+    let previousClosePrice = result.regularMarketPreviousClose;
     let currentPrice = result.regularMarketPrice;
     
-    // Try to get more accurate intraday data if available
+    // Try to get more accurate historical data for previous close if needed
     try {
-      const today = new Date();
-      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+      // Get the last 3 trading days to ensure we have accurate previous close
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
       
-      // Fetch intraday data to get the actual market open price
-      const intradayData = await yahooFinance.chart(symbol, {
-        period1: startOfDay,
-        period2: endOfDay,
-        interval: '1m' // 1-minute intervals
+      const historicalData = await yahooFinance.chart(symbol, {
+        period1: threeDaysAgo,
+        period2: new Date(),
+        interval: '1d' // Daily intervals
       });
       
-      if (intradayData && intradayData.quotes && intradayData.quotes.length > 0) {
-        // Get the first quote of the day as the market open price
-        const firstQuote = intradayData.quotes[0];
-        if (firstQuote && firstQuote.open) {
-          todayOpenPrice = firstQuote.open;
+      if (historicalData && historicalData.quotes && historicalData.quotes.length >= 2) {
+        // Get the second to last quote as the previous trading day's close
+        const previousDayQuote = historicalData.quotes[historicalData.quotes.length - 2];
+        if (previousDayQuote && previousDayQuote.close) {
+          previousClosePrice = previousDayQuote.close;
         }
       }
-    } catch (intradayError) {
-      // If intraday data fails, use the regular market open price
-      console.log(`Could not fetch intraday data for ${symbol}, using regular market open`);
+    } catch (historicalError) {
+      // If historical data fails, use the regular market previous close
+      console.log(`Could not fetch historical data for ${symbol}, using regular market previous close`);
     }
 
-    // Calculate 1-day change manually using market open price
-    const change = currentPrice - todayOpenPrice;
-    const percentChange = ((change / todayOpenPrice) * 100);
+    // Calculate 1-day change manually using previous trading day's close price
+    const change = currentPrice - previousClosePrice;
+    const percentChange = ((change / previousClosePrice) * 100);
 
     const quote: StockQuote = {
       symbol: result.symbol || symbol,
