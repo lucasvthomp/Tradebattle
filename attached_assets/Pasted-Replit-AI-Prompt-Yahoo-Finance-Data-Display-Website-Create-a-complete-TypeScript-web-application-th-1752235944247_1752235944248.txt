@@ -1,0 +1,191 @@
+Replit AI Prompt: Yahoo Finance Data Display Website
+Create a complete TypeScript web application that fetches and displays financial data using the yahoo-finance2 npm package. Here are the detailed requirements:
+Project Setup
+
+Initialize a new TypeScript project with proper tsconfig.json
+Install dependencies: yahoo-finance2, express, @types/express,@types/node
+Set up a basic Express server with TypeScript compilation
+Create a simple HTML frontend with CSS styling
+
+Backend Requirements (TypeScript + Express)
+1. Server Setup
+
+Create server.tsas the main entry point
+Set up Express server on port 3000
+Configure CORS to allow frontend requests
+Add proper error handling middleware
+Serve static files from a publicdirectory
+
+2. API Endpoints
+Create the following REST endpoints:
+GET /api/quote/ :symbol
+
+Fetch current stock quote data
+Return: price, change, percentChange, volume, marketCap, currency
+Handle invalid symbols gracefully
+
+GET /api/search/ :query
+
+Search for stock symbols by company name
+Return: symbol, name, exchange, type
+Limit results to top 10 matches
+
+GET /api/historical/ :symbol
+
+Get historical price data (last 30 days)
+Query parameters: period (optional, defaults to 30 days)
+Return: date, open, high, low, close, volume
+
+GET /api/summary/ :symbol
+
+Get detailed company information
+Include: company profile, financial data, key statistics
+Return: name, description, sector, industry, market cap, P/E ratio
+
+3. TypeScript Types
+Create proper TypeScript interfaces for:
+
+Stock quote data structure
+Historical data points
+Company profile information
+API response
+Error response
+
+4. Error Handling
+
+Implement comprehensive try-catch blocks
+Handle Yahoo Finance API errors (rate limits, invalid symbols)
+Return appropriate HTTP status codes
+Log errors with timestamps
+
+Frontend Requirements (HTML + CSS + JavaScript)
+1. User Interface
+Create a clean, responsive design with:
+
+Header with site title and navigation
+Search bar for stock symbols
+Stock quote display card with:
+
+Current price (large, prominent)
+Change amount and percentage (green/red colored)
+Volume, market cap, other key metrics
+
+
+Historical chart area (simple line chart)
+Company information section
+
+2. Interactive Features
+
+Real-time search suggestions as user types
+Click to select from search results
+Automatic data refresh every 30 seconds
+Loading states and error messages
+Responsive design for mobile devices
+
+3. Styling
+
+Use modern CSS (flexbox/grid)
+Implement a professional color scheme
+Add hover effects and transitions
+Make it visually appealing with proper spacing
+Include loading spinners and error states
+
+Technical Implementation Details
+1. Data Fetching Strategy
+
+Implement caching to avoid excessive API calls
+Add request throttling/debouncing for search
+Handle network timeouts gracefully
+Implement retry logic for failed requests
+
+2. Code Organization
+project/
+├── src/
+│   ├── server.ts
+│   ├── routes/
+│   │   └── api.ts
+│   ├── types/
+│   │   └── finance.ts
+│   ├── utils/
+│   │   └── errorHandler.ts
+│   └── services/
+│       └── yahooFinance.ts
+├── public/
+│   ├── index.html
+│   ├── styles.css
+│   └── script.js
+├── package.json
+└── tsconfig.json
+3. Performance Considerations
+
+Implement response caching (5-minute cache for quotes)
+Minimize API calls by batching requests where possible
+Use efficient data structures
+Optimize bundle size
+
+Specific Features to Include
+1. Stock Dashboard
+
+Display multiple stocks in a grid layout
+Default to showing popular stocks (AAPL, GOOGL, MSFT, TSLA)
+Allow users to add/remove stocks from their watchlist
+
+2. Price Chart
+
+Simple line chart showing price over time
+Use Canvas or SVG for rendering
+Include hover tooltips with exact values
+Show price change indicators
+
+3. Search Functionality
+
+Autocomplete dropdown
+Search by symbol or company name
+Recent searches history
+Popular/trending stocks suggestions
+
+4. Data Formatting
+
+Format prices with proper currency symbols
+Show percentage changes with + or - indicators
+Format large numbers (1.2M, 1.5B) for market cap
+Use consistent decimal places
+
+Error Handling & User Experience
+1. Error States
+
+"Stock not found" message for invalid symbols
+"Network error" for connection issues
+"Rate limit exceeded" with retry suggestions
+Loading states for all async operations
+
+2. Validation
+
+Validate stock symbols before API calls
+Sanitize user input
+Handle edge cases (delisted stocks, invalid data)
+
+3. Accessibility
+
+Proper ARIA labels
+Keyboard navigation support
+Screen reader compatibility
+High contrast mode support
+
+Development Guidelines
+
+Use async/await for all asynchronous operations
+Implement proper TypeScript strict mode
+Add JSDoc comments for all functions
+Use meaningful variable and function names
+Include console.log statements for debugging
+Add basic unit tests for critical functions
+
+Deployment Considerations
+
+Configure proper build scripts in package.json
+Set up development and production environments
+Include environment variables for configuration
+Add proper logging for production debugging
+
+Please create this project with clean, well-commented code that demonstrates best practices for TypeScript, Express, and modern web development. Include example usage and setup instructions in a README.md file.

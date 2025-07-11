@@ -452,31 +452,32 @@ export default function Dashboard() {
 
   // Authentication handled by router
 
-  // Add query for cached company data
-  const { data: cachedCompanies = [], isLoading: cachedLoading } = useQuery({
-    queryKey: ["/api/companies/cached"],
+  // Add query for popular stocks
+  const { data: popularStocksData, isLoading: cachedLoading } = useQuery({
+    queryKey: ["/api/popular"],
     enabled: !!user,
     refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
   });
 
-  // Use cached data for popular stocks
+  // Use popular stocks data
   useEffect(() => {
-    if (cachedCompanies.length > 0) {
-      // Select first 10 companies from cache as popular stocks
-      setPopularStocks(cachedCompanies.slice(0, 10));
+    if (popularStocksData?.success && popularStocksData.data) {
+      setPopularStocks(popularStocksData.data);
       setIsLoadingPopular(false);
     }
-  }, [cachedCompanies]);
+  }, [popularStocksData]);
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.length > 0) {
       setIsLoadingStocks(true);
       try {
-        const response = await fetch(`/api/stocks/search?q=${encodeURIComponent(query)}`);
+        const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
         if (response.ok) {
           const results = await response.json();
-          setStockData(results);
+          if (results.success) {
+            setStockData(results.data);
+          }
         }
       } catch (error) {
         console.error('Error searching stocks:', error);
@@ -491,11 +492,11 @@ export default function Dashboard() {
     addToWatchlistMutation.mutate({
       symbol: stock.symbol,
       companyName: stock.name,
-      price: stock.currentPrice,
+      price: stock.price,
       marketCap: stock.marketCap,
-      sector: stock.sector,
+      sector: stock.sector || "N/A",
       change: stock.change,
-      changePercent: stock.changePercent,
+      changePercent: stock.percentChange,
     });
     setShowSearchResults(false);
     setSearchQuery("");
@@ -527,19 +528,20 @@ export default function Dashboard() {
     removeFromWatchlistMutation.mutate(id);
   };
 
-  // Enrich watchlist with cached company data
+  // Enrich watchlist with real-time data
   const enrichedWatchlist = watchlist.map(stock => {
-    const cachedData = cachedCompanies.find((company: any) => company.symbol === stock.symbol);
-    if (cachedData) {
+    const popularData = popularStocks.find((company: any) => company.symbol === stock.symbol);
+    if (popularData) {
       return {
         ...stock,
-        currentPrice: cachedData.currentPrice,
-        volume: cachedData.volume,
-        marketCap: cachedData.marketCap,
-        peRatio: cachedData.peRatio,
-        sector: cachedData.sector,
-        changes: cachedData.changes,
-        lastUpdated: cachedData.lastUpdated
+        currentPrice: popularData.price,
+        volume: popularData.volume,
+        marketCap: popularData.marketCap,
+        sector: stock.sector || "N/A",
+        change: popularData.change,
+        changePercent: popularData.percentChange,
+        currency: popularData.currency,
+        lastUpdated: Date.now()
       };
     }
     return stock;
@@ -801,7 +803,7 @@ export default function Dashboard() {
                             <th className="text-left py-2 px-4 font-medium">
                               Change ({changePeriod})
                             </th>
-                            <th className="text-left py-2 px-4 font-medium">P/E Ratio</th>
+                            <th className="text-left py-2 px-4 font-medium">Volume</th>
                             <th className="text-left py-2 px-4 font-medium">Market Cap</th>
                             <th className="text-left py-2 px-4 font-medium">Sector</th>
                             <th className="text-left py-2 px-4 font-medium">Actions</th>
@@ -842,7 +844,7 @@ export default function Dashboard() {
                                   )}
                                 </div>
                               </td>
-                              <td className="py-3 px-4 text-sm">{stock.peRatio ? stock.peRatio.toFixed(1) : 'N/A'}</td>
+                              <td className="py-3 px-4 text-sm">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
                               <td className="py-3 px-4 text-sm">{formatMarketCap(stock.marketCap)}</td>
                               <td className="py-3 px-4">
                                 <Badge variant="secondary" className="text-xs">
