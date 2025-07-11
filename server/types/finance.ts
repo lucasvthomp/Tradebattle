@@ -5,6 +5,7 @@ export interface StockQuote {
   price: number;
   change: number;
   percentChange: number;
+  previousClose: number;
   volume: number;
   marketCap: number;
   currency: string;

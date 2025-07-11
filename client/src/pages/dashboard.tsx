@@ -620,18 +620,14 @@ export default function Dashboard() {
     const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
     const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
     
-    // Calculate previous close price based on current price and change from API
-    const apiChange = popularData?.change || individualData?.change || 0;
-    const previousClose = currentPrice - apiChange;
+    // Use the correct previous close from API data
+    const previousClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
     
-    // Calculate change and percentage based on previous close vs current price
-    const displayChange = currentPrice - previousClose;
-    const displayChangePercent = previousClose > 0 ? ((displayChange / previousClose) * 100) : 0;
+    // Use the correct change data from API (already calculated correctly on backend)
+    let finalChange = popularData?.change || individualData?.change || 0;
+    let finalChangePercent = popularData?.percentChange || individualData?.percentChange || 0;
     
     // For timeframe-specific data, use the timeframe data if available
-    let finalChange = displayChange;
-    let finalChangePercent = displayChangePercent;
-    
     if (timeframeSpecificData) {
       finalChange = timeframeSpecificData.change;
       finalChangePercent = timeframeSpecificData.percentChange;

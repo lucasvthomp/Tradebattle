@@ -322,6 +322,7 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
       price: currentPrice,
       change: change,
       percentChange: percentChange,
+      previousClose: previousClosePrice,
       volume: result.regularMarketVolume || 0,
       marketCap: result.marketCap || 0,
       currency: result.currency || 'USD',
