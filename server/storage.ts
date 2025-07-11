@@ -9,6 +9,8 @@ import {
   partners,
   researchRequests,
   partnerConversations,
+  chatMessages,
+  researchPublications,
   type User,
   type InsertUser,
   type Study,
@@ -30,9 +32,13 @@ import {
   type InsertResearchRequest,
   type PartnerConversation,
   type InsertPartnerConversation,
+  type ChatMessage,
+  type InsertChatMessage,
+  type ResearchPublication,
+  type InsertResearchPublication,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, and, or, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for email/password auth
@@ -89,6 +95,19 @@ export interface IStorage {
   getConversations(partnerUserId: number, clientUserId: number): Promise<PartnerConversation[]>;
   createConversation(conversation: InsertPartnerConversation): Promise<PartnerConversation>;
   markConversationAsRead(id: number): Promise<void>;
+  
+  // Chat messages operations
+  getChatMessages(conversationId: string): Promise<ChatMessage[]>;
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  markChatMessageAsRead(id: number): Promise<void>;
+  getUserConversations(userId: number): Promise<{conversationId: string, otherUser: User, lastMessage: ChatMessage}[]>;
+  
+  // Research publications operations
+  getResearchPublications(isPublished?: boolean): Promise<ResearchPublication[]>;
+  getResearchPublicationsByAuthor(authorId: number): Promise<ResearchPublication[]>;
+  createResearchPublication(publication: InsertResearchPublication & { authorId: number }): Promise<ResearchPublication>;
+  updateResearchPublication(id: number, updates: Partial<Pick<ResearchPublication, 'title' | 'content' | 'summary' | 'category' | 'tags' | 'isPublished'>>): Promise<ResearchPublication>;
+  deleteResearchPublication(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -397,6 +416,103 @@ export class DatabaseStorage implements IStorage {
       .update(partnerConversations)
       .set({ isRead: true })
       .where(eq(partnerConversations.id, id));
+  }
+
+  // Chat messages operations
+  async getChatMessages(conversationId: string): Promise<ChatMessage[]> {
+    return await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.conversationId, conversationId))
+      .orderBy(chatMessages.createdAt);
+  }
+
+  async createChatMessage(messageData: InsertChatMessage): Promise<ChatMessage> {
+    const [message] = await db
+      .insert(chatMessages)
+      .values(messageData)
+      .returning();
+    return message;
+  }
+
+  async markChatMessageAsRead(id: number): Promise<void> {
+    await db.update(chatMessages).set({ isRead: true }).where(eq(chatMessages.id, id));
+  }
+
+  async getUserConversations(userId: number): Promise<{conversationId: string, otherUser: User, lastMessage: ChatMessage}[]> {
+    const conversations = await db
+      .select()
+      .from(chatMessages)
+      .where(or(eq(chatMessages.senderUserId, userId), eq(chatMessages.receiverUserId, userId)))
+      .orderBy(desc(chatMessages.createdAt));
+
+    const uniqueConversations = new Map<string, ChatMessage>();
+    
+    for (const message of conversations) {
+      if (!uniqueConversations.has(message.conversationId)) {
+        uniqueConversations.set(message.conversationId, message);
+      }
+    }
+
+    const result = [];
+    for (const [conversationId, lastMessage] of uniqueConversations) {
+      const otherUserId = lastMessage.senderUserId === userId ? lastMessage.receiverUserId : lastMessage.senderUserId;
+      const otherUser = await this.getUser(otherUserId);
+      if (otherUser) {
+        result.push({ conversationId, otherUser, lastMessage });
+      }
+    }
+
+    return result;
+  }
+
+  // Research publications operations
+  async getResearchPublications(isPublished?: boolean): Promise<ResearchPublication[]> {
+    const query = db.select().from(researchPublications);
+    
+    if (isPublished !== undefined) {
+      return await query.where(eq(researchPublications.isPublished, isPublished)).orderBy(desc(researchPublications.createdAt));
+    }
+    
+    return await query.orderBy(desc(researchPublications.createdAt));
+  }
+
+  async getResearchPublicationsByAuthor(authorId: number): Promise<ResearchPublication[]> {
+    return await db
+      .select()
+      .from(researchPublications)
+      .where(eq(researchPublications.authorId, authorId))
+      .orderBy(desc(researchPublications.createdAt));
+  }
+
+  async createResearchPublication(publicationData: InsertResearchPublication & { authorId: number }): Promise<ResearchPublication> {
+    const [publication] = await db
+      .insert(researchPublications)
+      .values({
+        ...publicationData,
+        publishedAt: publicationData.isPublished ? new Date() : null,
+      })
+      .returning();
+    return publication;
+  }
+
+  async updateResearchPublication(id: number, updates: Partial<Pick<ResearchPublication, 'title' | 'content' | 'summary' | 'category' | 'tags' | 'isPublished'>>): Promise<ResearchPublication> {
+    const updateData: any = { ...updates, updatedAt: new Date() };
+    
+    if (updates.isPublished !== undefined) {
+      updateData.publishedAt = updates.isPublished ? new Date() : null;
+    }
+
+    const [publication] = await db
+      .update(researchPublications)
+      .set(updateData)
+      .where(eq(researchPublications.id, id))
+      .returning();
+    return publication;
+  }
+
+  async deleteResearchPublication(id: number): Promise<void> {
+    await db.delete(researchPublications).where(eq(researchPublications.id, id));
   }
 }
 

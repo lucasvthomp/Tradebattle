@@ -146,6 +146,32 @@ export const partnerConversations = pgTable("partner_conversations", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Chat messages table for dashboard chat system
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  conversationId: varchar("conversation_id").notNull(), // Format: "user1_user2" where user1 < user2
+  senderUserId: integer("sender_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  receiverUserId: integer("receiver_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  message: text("message").notNull(),
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Research publications table
+export const researchPublications = pgTable("research_publications", {
+  id: serial("id").primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  summary: text("summary").notNull(),
+  category: varchar("category", { length: 100 }).notNull(),
+  tags: text("tags").array().default([]),
+  authorId: integer("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  isPublished: boolean("is_published").default(false),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Zod schemas for validation
 export const insertStudySchema = createInsertSchema(studies).pick({
   title: true,
@@ -215,6 +241,22 @@ export const insertPartnerConversationSchema = createInsertSchema(partnerConvers
   senderType: true,
 });
 
+export const insertChatMessageSchema = createInsertSchema(chatMessages).pick({
+  conversationId: true,
+  senderUserId: true,
+  receiverUserId: true,
+  message: true,
+});
+
+export const insertResearchPublicationSchema = createInsertSchema(researchPublications).pick({
+  title: true,
+  content: true,
+  summary: true,
+  category: true,
+  tags: true,
+  isPublished: true,
+});
+
 // Type exports
 // User schemas for new authentication system
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -264,3 +306,7 @@ export type ResearchRequest = typeof researchRequests.$inferSelect;
 export type InsertResearchRequest = z.infer<typeof insertResearchRequestSchema>;
 export type PartnerConversation = typeof partnerConversations.$inferSelect;
 export type InsertPartnerConversation = z.infer<typeof insertPartnerConversationSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ResearchPublication = typeof researchPublications.$inferSelect;
+export type InsertResearchPublication = z.infer<typeof insertResearchPublicationSchema>;

@@ -379,6 +379,136 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Chat endpoints
+  app.get("/api/chat/conversations", requireAuth, async (req: any, res) => {
+    try {
+      const conversations = await storage.getUserConversations(req.user.id);
+      res.json(conversations);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+      res.status(500).json({ message: "Failed to fetch conversations" });
+    }
+  });
+
+  app.get("/api/chat/messages/:conversationId", requireAuth, async (req: any, res) => {
+    try {
+      const { conversationId } = req.params;
+      const messages = await storage.getChatMessages(conversationId);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  app.post("/api/chat/messages", requireAuth, async (req: any, res) => {
+    try {
+      const { receiverUserId, message } = req.body;
+      const senderId = req.user.id;
+      
+      // Create conversation ID (ensure consistent ordering)
+      const conversationId = senderId < receiverUserId 
+        ? `${senderId}_${receiverUserId}` 
+        : `${receiverUserId}_${senderId}`;
+
+      const chatMessage = await storage.createChatMessage({
+        conversationId,
+        senderUserId: senderId,
+        receiverUserId: parseInt(receiverUserId),
+        message,
+      });
+
+      res.status(201).json(chatMessage);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // Research publications endpoints
+  app.get("/api/research-publications", async (req, res) => {
+    try {
+      const publications = await storage.getResearchPublications(true); // Only published
+      res.json(publications);
+    } catch (error) {
+      console.error("Error fetching research publications:", error);
+      res.status(500).json({ message: "Failed to fetch research publications" });
+    }
+  });
+
+  app.get("/api/research-publications/drafts", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const publications = await storage.getResearchPublications(); // All publications
+      res.json(publications);
+    } catch (error) {
+      console.error("Error fetching research publications:", error);
+      res.status(500).json({ message: "Failed to fetch research publications" });
+    }
+  });
+
+  app.post("/api/research-publications", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const publication = await storage.createResearchPublication({
+        ...req.body,
+        authorId: req.user.id,
+      });
+      res.status(201).json(publication);
+    } catch (error) {
+      console.error("Error creating research publication:", error);
+      res.status(500).json({ message: "Failed to create research publication" });
+    }
+  });
+
+  app.put("/api/research-publications/:id", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const id = parseInt(req.params.id);
+      const publication = await storage.updateResearchPublication(id, req.body);
+      res.json(publication);
+    } catch (error) {
+      console.error("Error updating research publication:", error);
+      res.status(500).json({ message: "Failed to update research publication" });
+    }
+  });
+
+  app.delete("/api/research-publications/:id", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const id = parseInt(req.params.id);
+      await storage.deleteResearchPublication(id);
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting research publication:", error);
+      res.status(500).json({ message: "Failed to delete research publication" });
+    }
+  });
+
   // Error handling middleware (must be last)
   app.use(errorHandler);
 
