@@ -2,7 +2,7 @@ import yahooFinance from 'yahoo-finance2';
 import { StockQuote, HistoricalDataPoint, CompanyProfile, SearchResult } from '../types/finance.js';
 
 // Define timeframe options
-export type TimeFrame = '1D' | '1W' | '1M' | '6M' | 'YTD' | '1Y' | '5Y';
+export type TimeFrame = '1D' | '5D' | '1M' | '6M' | 'YTD' | '1Y' | '5Y';
 
 // Helper function to calculate date ranges
 export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: string; interval: string } {
@@ -31,16 +31,16 @@ export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: 
   switch (timeFrame) {
     case '1D':
       return {
-        period1: getDaysAgo(1),
+        period1: getDaysAgo(2), // Get 2 days ago to ensure we have comparison data
         period2: today,
-        interval: '5m' // 5-minute intervals for intraday
+        interval: '1d' // Use daily intervals for 1D to avoid weekend data issues
       };
     
-    case '1W':
+    case '5D':
       return {
-        period1: getDaysAgo(7),
+        period1: getDaysAgo(7), // Get 7 days ago to ensure we have 5 trading days
         period2: today,
-        interval: '30m' // 30-minute intervals
+        interval: '1d' // Daily intervals
       };
     
     case '1M':
@@ -215,50 +215,32 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
   try {
     const { period1, period2, interval } = getDateRange(timeFrame);
     
-    // Use chart data for intraday (1D, 1W), historical for longer periods
-    const result = timeFrame === '1D' || timeFrame === '1W' 
-      ? await yahooFinance.chart(symbol, {
-          period1,
-          period2,
-          interval: interval as any,
-          includePrePost: timeFrame === '1D'
-        })
-      : await yahooFinance.historical(symbol, {
-          period1,
-          period2,
-          interval: interval as any,
-          events: 'history'
-        });
+    // Use historical data for all timeframes to ensure consistency
+    const result = await yahooFinance.historical(symbol, {
+      period1,
+      period2,
+      interval: interval as any,
+      events: 'history'
+    });
 
     if (!result) {
       throw new Error(`No historical data found for symbol: ${symbol}`);
     }
 
-    let historicalData: HistoricalDataPoint[];
-
-    if (timeFrame === '1D' || timeFrame === '1W') {
-      // Chart data structure
-      const quotes = (result as any).quotes || [];
-      historicalData = quotes.map((item: any) => ({
-        date: item.date.toISOString().split('T')[0],
-        open: item.open || 0,
-        high: item.high || 0,
-        low: item.low || 0,
-        close: item.close || 0,
-        volume: item.volume || 0,
-      }));
-    } else {
-      // Historical data structure
-      const data = result as any[];
-      historicalData = data.map(item => ({
-        date: item.date.toISOString().split('T')[0],
-        open: item.open || 0,
-        high: item.high || 0,
-        low: item.low || 0,
-        close: item.close || 0,
-        volume: item.volume || 0,
-      }));
+    // Historical data structure (consistent for all timeframes)
+    const data = result as any[];
+    if (!data || data.length === 0) {
+      throw new Error(`No historical data found for symbol: ${symbol}`);
     }
+
+    const historicalData: HistoricalDataPoint[] = data.map(item => ({
+      date: item.date.toISOString().split('T')[0],
+      open: item.open || 0,
+      high: item.high || 0,
+      low: item.low || 0,
+      close: item.close || 0,
+      volume: item.volume || 0,
+    }));
 
     setCachedData(cacheKey, historicalData, CACHE_TTL.HISTORICAL);
     return historicalData;
