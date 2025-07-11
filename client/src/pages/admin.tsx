@@ -16,7 +16,10 @@ import {
   Mail,
   AlertCircle,
   Settings,
-  Trash2
+  Trash2,
+  Edit2,
+  Check,
+  X
 } from "lucide-react";
 import {
   AlertDialog,
@@ -54,6 +57,9 @@ export default function Admin() {
     userId: null,
     step: null,
   });
+  
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
+  const [newIdValue, setNewIdValue] = useState<string>('');
 
   // Check if user is admin (ID 3 or 4)
   const isAdmin = user?.id === 3 || user?.id === 4;
@@ -100,6 +106,30 @@ export default function Admin() {
     },
   });
 
+  // Update user ID mutation
+  const updateUserIdMutation = useMutation({
+    mutationFn: async ({ oldId, newId }: { oldId: number; newId: number }) => {
+      const response = await apiRequest("PUT", `/api/admin/users/${oldId}/id`, { newId });
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({
+        title: "User ID Updated",
+        description: "User ID has been successfully updated.",
+      });
+      setEditingUserId(null);
+      setNewIdValue('');
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Helper functions
   const handleDeleteClick = (userId: number) => {
     console.log('Delete clicked for user:', userId);
@@ -130,6 +160,31 @@ export default function Admin() {
       userId: null,
       step: null
     });
+  };
+
+  const handleEditId = (userId: number) => {
+    setEditingUserId(userId);
+    setNewIdValue(userId.toString());
+  };
+
+  const handleSaveId = () => {
+    if (editingUserId && newIdValue) {
+      const newId = parseInt(newIdValue);
+      if (!isNaN(newId) && newId > 0) {
+        updateUserIdMutation.mutate({ oldId: editingUserId, newId });
+      } else {
+        toast({
+          title: "Invalid ID",
+          description: "Please enter a valid positive number.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingUserId(null);
+    setNewIdValue('');
   };
 
   const canDeleteUser = (targetUserId: number) => {
@@ -263,7 +318,48 @@ export default function Admin() {
                       {allUsers?.map((user) => (
                         <tr key={user.id} className="border-b hover:bg-gray-50">
                           <td className="py-3 px-4 font-medium text-blue-600">
-                            #{user.id}
+                            {editingUserId === user.id ? (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="number"
+                                  value={newIdValue}
+                                  onChange={(e) => setNewIdValue(e.target.value)}
+                                  className="w-16 px-2 py-1 border rounded text-sm"
+                                  min="1"
+                                  disabled={updateUserIdMutation.isPending}
+                                />
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleSaveId}
+                                  disabled={updateUserIdMutation.isPending}
+                                  className="p-1"
+                                >
+                                  <Check className="w-3 h-3 text-green-600" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={handleCancelEdit}
+                                  disabled={updateUserIdMutation.isPending}
+                                  className="p-1"
+                                >
+                                  <X className="w-3 h-3 text-red-600" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2 group">
+                                <span>#{user.id}</span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleEditId(user.id)}
+                                  className="p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Edit2 className="w-3 h-3 text-gray-500" />
+                                </Button>
+                              </div>
+                            )}
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">

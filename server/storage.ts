@@ -31,6 +31,7 @@ export interface IStorage {
   updateUserSubscription(id: number, subscription: UpdateUserSubscription): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
+  updateUserId(oldId: number, newId: number): Promise<void>;
   
   // Studies operations
   getStudies(): Promise<Study[]>;
@@ -116,6 +117,32 @@ export class DatabaseStorage implements IStorage {
     
     // Then delete the user
     await db.delete(users).where(eq(users.id, id));
+  }
+
+  async updateUserId(oldId: number, newId: number): Promise<void> {
+    await db.transaction(async (tx) => {
+      // First, update the user ID in the users table
+      await tx.update(users)
+        .set({ id: newId })
+        .where(eq(users.id, oldId));
+      
+      // Update all foreign key references
+      await tx.update(studies)
+        .set({ authorId: newId })
+        .where(eq(studies.authorId, oldId));
+      
+      await tx.update(news)
+        .set({ authorId: newId })
+        .where(eq(news.authorId, oldId));
+      
+      await tx.update(watchlist)
+        .set({ userId: newId })
+        .where(eq(watchlist.userId, oldId));
+      
+      await tx.update(researchInsights)
+        .set({ authorId: newId })
+        .where(eq(researchInsights.authorId, oldId));
+    });
   }
 
   // Studies operations
