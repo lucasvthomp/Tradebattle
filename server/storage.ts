@@ -20,7 +20,7 @@ import {
   type UpdateUserSubscription,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for email/password auth
@@ -74,11 +74,19 @@ export class DatabaseStorage implements IStorage {
     const { hashPassword } = await import("./auth");
     const hashedPassword = await hashPassword(userData.password);
     
+    // Get the highest userId to assign the next one
+    const [maxUserIdResult] = await db.select({ 
+      maxUserId: sql<number>`COALESCE(MAX(${users.userId}), -1)` 
+    }).from(users);
+    
+    const nextUserId = (maxUserIdResult?.maxUserId ?? -1) + 1;
+    
     const [user] = await db
       .insert(users)
       .values({
         ...userData,
-        password: hashedPassword
+        password: hashedPassword,
+        userId: nextUserId
       })
       .returning();
     return user;

@@ -94,13 +94,12 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ message: "User already exists with this email" });
       }
 
-      // Hash password and create user
-      const hashedPassword = await hashPassword(password);
+      // Create user (password will be hashed in storage)
       const user = await storage.createUser({
         email,
         firstName,
         lastName,
-        password: hashedPassword,
+        password,
       });
 
       // Log the user in automatically
@@ -108,6 +107,7 @@ export function setupAuth(app: Express) {
         if (err) return next(err);
         res.status(201).json({
           id: user.id,
+          userId: user.userId,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
