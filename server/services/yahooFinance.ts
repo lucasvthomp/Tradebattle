@@ -215,32 +215,56 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
   try {
     const { period1, period2, interval } = getDateRange(timeFrame);
     
-    // Use historical data for all timeframes to ensure consistency
-    const result = await yahooFinance.historical(symbol, {
-      period1,
-      period2,
-      interval: interval as any,
-      events: 'history'
-    });
+    // Use chart data for short timeframes (1D, 5D), historical for longer periods
+    const result = timeFrame === '1D' || timeFrame === '5D' 
+      ? await yahooFinance.chart(symbol, {
+          period1,
+          period2,
+          interval: interval as any,
+          includePrePost: false
+        })
+      : await yahooFinance.historical(symbol, {
+          period1,
+          period2,
+          interval: interval as any,
+          events: 'history'
+        });
 
     if (!result) {
       throw new Error(`No historical data found for symbol: ${symbol}`);
     }
 
-    // Historical data structure (consistent for all timeframes)
-    const data = result as any[];
-    if (!data || data.length === 0) {
-      throw new Error(`No historical data found for symbol: ${symbol}`);
-    }
+    let historicalData: HistoricalDataPoint[];
 
-    const historicalData: HistoricalDataPoint[] = data.map(item => ({
-      date: item.date.toISOString().split('T')[0],
-      open: item.open || 0,
-      high: item.high || 0,
-      low: item.low || 0,
-      close: item.close || 0,
-      volume: item.volume || 0,
-    }));
+    if (timeFrame === '1D' || timeFrame === '5D') {
+      // Chart data structure
+      const quotes = (result as any).quotes || [];
+      if (!quotes || quotes.length === 0) {
+        throw new Error(`No chart data found for symbol: ${symbol}`);
+      }
+      historicalData = quotes.map((item: any) => ({
+        date: item.date.toISOString().split('T')[0],
+        open: item.open || 0,
+        high: item.high || 0,
+        low: item.low || 0,
+        close: item.close || 0,
+        volume: item.volume || 0,
+      }));
+    } else {
+      // Historical data structure
+      const data = result as any[];
+      if (!data || data.length === 0) {
+        throw new Error(`No historical data found for symbol: ${symbol}`);
+      }
+      historicalData = data.map(item => ({
+        date: item.date.toISOString().split('T')[0],
+        open: item.open || 0,
+        high: item.high || 0,
+        low: item.low || 0,
+        close: item.close || 0,
+        volume: item.volume || 0,
+      }));
+    }
 
     setCachedData(cacheKey, historicalData, CACHE_TTL.HISTORICAL);
     return historicalData;

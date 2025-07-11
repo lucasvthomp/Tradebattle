@@ -801,9 +801,9 @@ export default function Dashboard() {
                                   <p className="text-xs text-gray-500">{stock.sector}</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="font-medium">${stock.currentPrice.toFixed(2)}</p>
+                                  <p className="font-medium">${stock.currentPrice ? stock.currentPrice.toFixed(2) : 'N/A'}</p>
                                   <p className={`text-xs ${stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent ? stock.changePercent.toFixed(2) : '0.00'}%
                                   </p>
                                   <Button
                                     size="sm"
@@ -843,7 +843,7 @@ export default function Dashboard() {
                       className="px-3 py-2 border rounded-md"
                     >
                       <option value="1D">1 Day</option>
-                      <option value="1W">1 Week</option>
+                      <option value="5D">5 Days</option>
                       <option value="1M">1 Month</option>
                       <option value="6M">6 Months</option>
                       <option value="YTD">Year to Date</option>
