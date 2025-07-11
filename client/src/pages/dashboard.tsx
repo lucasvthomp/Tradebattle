@@ -623,18 +623,25 @@ export default function Dashboard() {
     // Use the correct previous close from API data
     const previousClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
     
-    // Always calculate change based on current price and previous close for consistency
-    const calculatedChange = currentPrice - previousClose;
-    const calculatedChangePercent = previousClose > 0 ? ((calculatedChange / previousClose) * 100) : 0;
+    // For 1D changes: Always calculate from current price vs previous close
+    // For long-term changes: Use Yahoo Finance timeframe data
+    let finalChange = 0;
+    let finalChangePercent = 0;
     
-    // Use calculated values to ensure synchronization with current price
-    let finalChange = calculatedChange;
-    let finalChangePercent = calculatedChangePercent;
-    
-    // For timeframe-specific data, use the timeframe data if available
-    if (timeframeSpecificData) {
-      finalChange = timeframeSpecificData.change;
-      finalChangePercent = timeframeSpecificData.percentChange;
+    if (changePeriod === '1D') {
+      // 1D: Calculate change immediately from current price vs previous close
+      finalChange = currentPrice - previousClose;
+      finalChangePercent = previousClose > 0 ? ((finalChange / previousClose) * 100) : 0;
+    } else {
+      // Long-term: Use Yahoo Finance timeframe-specific data
+      if (timeframeSpecificData) {
+        finalChange = timeframeSpecificData.change;
+        finalChangePercent = timeframeSpecificData.percentChange;
+      } else {
+        // Fallback to current data if timeframe data not available
+        finalChange = popularData?.change || individualData?.change || 0;
+        finalChangePercent = popularData?.percentChange || individualData?.percentChange || 0;
+      }
     }
     
     return {
