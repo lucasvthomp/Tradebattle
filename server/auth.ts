@@ -86,7 +86,7 @@ export function setupAuth(app: Express) {
   // Registration endpoint
   app.post("/api/register", async (req, res, next) => {
     try {
-      const { email, name, password } = req.body;
+      const { email, firstName, lastName, password } = req.body;
 
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
@@ -98,7 +98,8 @@ export function setupAuth(app: Express) {
       const hashedPassword = await hashPassword(password);
       const user = await storage.createUser({
         email,
-        name,
+        firstName,
+        lastName,
         password: hashedPassword,
       });
 
@@ -108,7 +109,10 @@ export function setupAuth(app: Express) {
         res.status(201).json({
           id: user.id,
           email: user.email,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         });
       });
     } catch (error) {
@@ -130,7 +134,10 @@ export function setupAuth(app: Express) {
         res.json({
           id: user.id,
           email: user.email,
-          name: user.name,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         });
       });
     })(req, res, next);
@@ -153,7 +160,10 @@ export function setupAuth(app: Express) {
     res.json({
       id: req.user.id,
       email: req.user.email,
-      name: req.user.name,
+      firstName: req.user.firstName,
+      lastName: req.user.lastName,
+      createdAt: req.user.createdAt,
+      updatedAt: req.user.updatedAt,
     });
   });
 }

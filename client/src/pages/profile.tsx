@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -67,6 +67,17 @@ export default function Profile() {
     },
   });
 
+  // Update form when user data changes
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        email: user.email || "",
+      });
+    }
+  }, [user, form]);
+
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
       const res = await apiRequest("PUT", "/api/user/profile", data);
@@ -74,6 +85,7 @@ export default function Profile() {
     },
     onSuccess: (updatedUser) => {
       queryClient.setQueryData(["/api/user"], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
