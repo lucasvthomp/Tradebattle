@@ -11,21 +11,19 @@ let totalRequests = 0;
 let errorCount = 0;
 let responseTimes: number[] = [];
 
-// Track API health
+// Track API health with individual timestamps
 interface APIHealth {
-  yahooFinance: boolean;
-  finnhub: boolean;
-  twelveData: boolean;
-  polygon: boolean;
-  lastChecked: number;
+  yahooFinance: { status: boolean; lastChecked: number };
+  finnhub: { status: boolean; lastChecked: number };
+  twelveData: { status: boolean; lastChecked: number };
+  polygon: { status: boolean; lastChecked: number };
 }
 
 const apiHealth: APIHealth = {
-  yahooFinance: false,
-  finnhub: false,
-  twelveData: false,
-  polygon: false,
-  lastChecked: 0
+  yahooFinance: { status: false, lastChecked: 0 },
+  finnhub: { status: false, lastChecked: 0 },
+  twelveData: { status: false, lastChecked: 0 },
+  polygon: { status: false, lastChecked: 0 }
 };
 
 // Middleware to track requests
@@ -92,30 +90,47 @@ export async function checkDatabaseHealth(): Promise<{
   }
 }
 
-// Check Yahoo Finance API health
+// Check Yahoo Finance API health (every minute)
 export async function checkYahooFinanceHealth(): Promise<boolean> {
+  const now = Date.now();
+  const oneMinute = 60 * 1000;
+  
+  // Check if we need to update (every minute)
+  if (now - apiHealth.yahooFinance.lastChecked < oneMinute) {
+    return apiHealth.yahooFinance.status;
+  }
+  
   try {
     // Test with a simple quote request
     const quote = await yahooFinance.quote('AAPL');
     const isHealthy = quote && quote.regularMarketPrice !== undefined;
     
-    apiHealth.yahooFinance = isHealthy;
-    apiHealth.lastChecked = Date.now();
+    apiHealth.yahooFinance.status = isHealthy;
+    apiHealth.yahooFinance.lastChecked = now;
     
     return isHealthy;
   } catch (error) {
     console.error('Yahoo Finance health check failed:', error);
-    apiHealth.yahooFinance = false;
-    apiHealth.lastChecked = Date.now();
+    apiHealth.yahooFinance.status = false;
+    apiHealth.yahooFinance.lastChecked = now;
     return false;
   }
 }
 
-// Check Finnhub API health
+// Check Finnhub API health (every hour)
 export async function checkFinnhubHealth(): Promise<boolean> {
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+  
+  // Check if we need to update (every hour)
+  if (now - apiHealth.finnhub.lastChecked < oneHour) {
+    return apiHealth.finnhub.status;
+  }
+  
   try {
     if (!process.env.FINNHUB_API_KEY) {
-      apiHealth.finnhub = false;
+      apiHealth.finnhub.status = false;
+      apiHealth.finnhub.lastChecked = now;
       return false;
     }
     
@@ -123,21 +138,32 @@ export async function checkFinnhubHealth(): Promise<boolean> {
     const data = await response.json();
     
     const isHealthy = response.ok && data.c !== undefined; // c = current price
-    apiHealth.finnhub = isHealthy;
+    apiHealth.finnhub.status = isHealthy;
+    apiHealth.finnhub.lastChecked = now;
     
     return isHealthy;
   } catch (error) {
     console.error('Finnhub health check failed:', error);
-    apiHealth.finnhub = false;
+    apiHealth.finnhub.status = false;
+    apiHealth.finnhub.lastChecked = now;
     return false;
   }
 }
 
-// Check Twelve Data API health
+// Check Twelve Data API health (every hour)
 export async function checkTwelveDataHealth(): Promise<boolean> {
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+  
+  // Check if we need to update (every hour)
+  if (now - apiHealth.twelveData.lastChecked < oneHour) {
+    return apiHealth.twelveData.status;
+  }
+  
   try {
     if (!process.env.TWELVE_DATA_API_KEY) {
-      apiHealth.twelveData = false;
+      apiHealth.twelveData.status = false;
+      apiHealth.twelveData.lastChecked = now;
       return false;
     }
     
@@ -145,21 +171,32 @@ export async function checkTwelveDataHealth(): Promise<boolean> {
     const data = await response.json();
     
     const isHealthy = response.ok && data.price !== undefined;
-    apiHealth.twelveData = isHealthy;
+    apiHealth.twelveData.status = isHealthy;
+    apiHealth.twelveData.lastChecked = now;
     
     return isHealthy;
   } catch (error) {
     console.error('Twelve Data health check failed:', error);
-    apiHealth.twelveData = false;
+    apiHealth.twelveData.status = false;
+    apiHealth.twelveData.lastChecked = now;
     return false;
   }
 }
 
-// Check Polygon API health
+// Check Polygon API health (every hour)
 export async function checkPolygonHealth(): Promise<boolean> {
+  const now = Date.now();
+  const oneHour = 60 * 60 * 1000;
+  
+  // Check if we need to update (every hour)
+  if (now - apiHealth.polygon.lastChecked < oneHour) {
+    return apiHealth.polygon.status;
+  }
+  
   try {
     if (!process.env.POLYGON_API_KEY) {
-      apiHealth.polygon = false;
+      apiHealth.polygon.status = false;
+      apiHealth.polygon.lastChecked = now;
       return false;
     }
     
@@ -167,12 +204,14 @@ export async function checkPolygonHealth(): Promise<boolean> {
     const data = await response.json();
     
     const isHealthy = response.ok && data.status === 'OK';
-    apiHealth.polygon = isHealthy;
+    apiHealth.polygon.status = isHealthy;
+    apiHealth.polygon.lastChecked = now;
     
     return isHealthy;
   } catch (error) {
     console.error('Polygon health check failed:', error);
-    apiHealth.polygon = false;
+    apiHealth.polygon.status = false;
+    apiHealth.polygon.lastChecked = now;
     return false;
   }
 }
@@ -259,19 +298,26 @@ export async function getSystemStatus() {
     apis: {
       yahooFinance: {
         status: yahooHealth,
-        lastChecked: apiHealth.lastChecked
+        lastChecked: apiHealth.yahooFinance.lastChecked,
+        checkInterval: '1 minute'
       },
       finnhub: {
         status: finnhubHealth,
-        keyExists: !!process.env.FINNHUB_API_KEY
+        keyExists: !!process.env.FINNHUB_API_KEY,
+        lastChecked: apiHealth.finnhub.lastChecked,
+        checkInterval: '1 hour'
       },
       twelveData: {
         status: twelveDataHealth,
-        keyExists: !!process.env.TWELVE_DATA_API_KEY
+        keyExists: !!process.env.TWELVE_DATA_API_KEY,
+        lastChecked: apiHealth.twelveData.lastChecked,
+        checkInterval: '1 hour'
       },
       polygon: {
         status: polygonHealth,
-        keyExists: !!process.env.POLYGON_API_KEY
+        keyExists: !!process.env.POLYGON_API_KEY,
+        lastChecked: apiHealth.polygon.lastChecked,
+        checkInterval: '1 hour'
       },
       cache: {
         enabled: true,

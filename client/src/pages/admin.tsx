@@ -141,7 +141,7 @@ export default function Admin() {
   const { data: systemStatus, isLoading: systemLoading } = useQuery({
     queryKey: ["/api/system/status"],
     enabled: isAdmin,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: 15000, // Refresh every 15 seconds to show Yahoo Finance updates
   });
 
   // Delete user mutation
