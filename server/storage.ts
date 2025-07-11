@@ -26,7 +26,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'name' | 'email'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'email'>>): Promise<User>;
   
   // Studies operations
   getStudies(): Promise<Study[]>;
@@ -80,7 +80,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'name' | 'email'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'email'>>): Promise<User> {
     const [user] = await db
       .update(users)
       .set(updates)

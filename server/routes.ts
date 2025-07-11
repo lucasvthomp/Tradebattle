@@ -21,7 +21,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const validatedData = z.object({
-        name: z.string().min(1),
+        firstName: z.string().min(1),
+        lastName: z.string().min(1),
         email: z.string().email()
       }).parse(req.body);
       

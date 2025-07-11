@@ -45,7 +45,8 @@ const staggerChildren = {
 };
 
 const profileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
 });
 
@@ -60,7 +61,8 @@ export default function Profile() {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      name: user?.name || "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
       email: user?.email || "",
     },
   });
@@ -90,11 +92,6 @@ export default function Profile() {
     updateProfileMutation.mutate(data);
   };
 
-  // Parse user's name into first and last name for display
-  const nameParts = (user?.name || "").split(" ");
-  const firstName = nameParts[0] || "";
-  const lastName = nameParts.slice(1).join(" ") || "";
-  
   // Format join date
   const joinDate = user?.createdAt 
     ? new Date(user.createdAt).toLocaleDateString('en-US', { 
@@ -139,7 +136,7 @@ export default function Profile() {
                     <User className="w-8 h-8 text-gray-400" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-black">{user.name}</h2>
+                    <h2 className="text-xl font-bold text-black">{user.firstName} {user.lastName}</h2>
                     <p className="text-gray-600">{user.email}</p>
                     <div className="flex items-center space-x-4 mt-2">
                       <Badge className="bg-blue-100 text-blue-800">
@@ -147,7 +144,8 @@ export default function Profile() {
                         Analyst Plan
                       </Badge>
                       <Badge className="bg-green-100 text-green-800">
-                        Active
+                        <Calendar className="w-3 h-3 mr-1" />
+                        Member since {joinDate}
                       </Badge>
                     </div>
                   </div>
@@ -193,15 +191,28 @@ export default function Profile() {
                     <form onSubmit={form.handleSubmit(handleSaveProfile)} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="name">Full Name</Label>
+                          <Label htmlFor="firstName">First Name</Label>
                           <Input 
-                            id="name" 
-                            {...form.register("name")}
-                            placeholder="Enter your full name"
+                            id="firstName" 
+                            {...form.register("firstName")}
+                            placeholder="Enter your first name"
                           />
-                          {form.formState.errors.name && (
+                          {form.formState.errors.firstName && (
                             <p className="text-sm text-red-600">
-                              {form.formState.errors.name.message}
+                              {form.formState.errors.firstName.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input 
+                            id="lastName" 
+                            {...form.register("lastName")}
+                            placeholder="Enter your last name"
+                          />
+                          {form.formState.errors.lastName && (
+                            <p className="text-sm text-red-600">
+                              {form.formState.errors.lastName.message}
                             </p>
                           )}
                         </div>

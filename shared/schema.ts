@@ -27,7 +27,8 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   email: varchar("email", { length: 255 }).unique().notNull(),
-  name: varchar("name", { length: 255 }).notNull(),
+  firstName: varchar("first_name", { length: 255 }).notNull(),
+  lastName: varchar("last_name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -137,7 +138,8 @@ export const insertResearchInsightSchema = createInsertSchema(researchInsights).
 // User schemas for new authentication system
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
-  name: true,
+  firstName: true,
+  lastName: true,
   password: true,
 });
 
@@ -148,7 +150,8 @@ export const loginSchema = z.object({
 
 export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
