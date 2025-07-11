@@ -144,3 +144,5 @@ Preferred communication style: Simple, everyday language.
 - **P/E to Volume Display**: Changed dashboard table from P/E ratio back to Volume display as requested by user
 - **Real-time Watchlist Updates**: Fixed watchlist to show actual stock changes and percentages instead of "Loading..." placeholder
 - **Eliminated Mock Data**: Removed all mock/cached data dependencies and replaced with live Yahoo Finance data fetching
+- **Home Button Behavior**: Modified routing so the Home button always shows the original landing page, even when logged in
+- **Comprehensive Sector System**: Created sector mapping for 200+ stocks with 17 sector categories and new /api/sectors endpoint

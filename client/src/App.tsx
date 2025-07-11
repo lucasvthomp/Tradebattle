@@ -38,9 +38,11 @@ function Router() {
       <Header />
       <main className="flex-1">
         <Switch>
+          {/* Home route always shows landing page */}
+          <Route path="/" component={Landing} />
+          
           {!user ? (
             <>
-              <Route path="/" component={Landing} />
               <Route path="/studies" component={Studies} />
               <Route path="/news" component={News} />
               <Route path="/contact" component={Contact} />
@@ -53,7 +55,6 @@ function Router() {
             </>
           ) : (
             <>
-              <Route path="/" component={Home} />
               <Route path="/studies" component={Studies} />
               <Route path="/news" component={News} />
               <Route path="/dashboard" component={Dashboard} />
