@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Mail, Phone, MapPin, Clock } from "lucide-react";
+import { Mail, Phone, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -120,7 +120,7 @@ export default function Contact() {
                         </div>
                         <div>
                           <h3 className="font-semibold text-black">Email</h3>
-                          <p className="text-gray-600">research@orsath.com</p>
+                          <p className="text-gray-600">contact@orsath.com</p>
                         </div>
                       </div>
                       
@@ -130,19 +130,11 @@ export default function Contact() {
                         </div>
                         <div>
                           <h3 className="font-semibold text-black">Phone</h3>
-                          <p className="text-gray-600">+1 (555) 123-4567</p>
+                          <p className="text-gray-600">To be added</p>
                         </div>
                       </div>
                       
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
-                          <MapPin className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-black">Location</h3>
-                          <p className="text-gray-600">Financial District, New York</p>
-                        </div>
-                      </div>
+
                     </div>
 
                     <div className="mt-12">
@@ -153,7 +145,7 @@ export default function Contact() {
                           <div className="flex-1">
                             <div className="flex justify-between">
                               <span className="text-gray-600">Monday - Friday</span>
-                              <span className="text-black font-medium">9:00 AM - 6:00 PM</span>
+                              <span className="text-black font-medium">8:00 AM - 6:00 PM</span>
                             </div>
                           </div>
                         </div>
@@ -162,7 +154,7 @@ export default function Contact() {
                           <div className="flex-1">
                             <div className="flex justify-between">
                               <span className="text-gray-600">Weekend Research</span>
-                              <span className="text-green-600 font-medium">Available</span>
+                              <span className="text-green-600 font-medium">Analyst+ only</span>
                             </div>
                           </div>
                         </div>
