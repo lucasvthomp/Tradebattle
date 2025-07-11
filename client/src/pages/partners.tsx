@@ -37,8 +37,11 @@ import {
   Settings,
   User,
   Hash,
-  DollarSign
+  DollarSign,
+  Building,
+  TrendingUpDown
 } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -66,6 +69,12 @@ export default function Partners() {
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  // Research request dialog state (same as dashboard)
+  const [researchStep, setResearchStep] = useState(1);
+  const [researchType, setResearchType] = useState("");
+  const [researchTarget, setResearchTarget] = useState("");
+  const [researchDescription, setResearchDescription] = useState("");
 
   // Check if user is a partner (userId 0, 1, or 2)
   const isPartner = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
@@ -117,14 +126,14 @@ export default function Partners() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Create research request mutation
+  // Create research request mutation (same as dashboard)
   const createRequestMutation = useMutation({
-    mutationFn: async (requestData: any) => {
+    mutationFn: async (requestData: { type: string; target: string; description: string }) => {
       await apiRequest("POST", "/api/research-requests", requestData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/research-requests"] });
-      setNewRequestOpen(false);
+      resetResearchDialog();
       toast({
         title: "Research Request Created",
         description: "Your research request has been submitted successfully.",
@@ -139,6 +148,33 @@ export default function Partners() {
       });
     },
   });
+
+  // Reset research dialog (same as dashboard)
+  const resetResearchDialog = () => {
+    setNewRequestOpen(false);
+    setResearchStep(1);
+    setResearchType("");
+    setResearchTarget("");
+    setResearchDescription("");
+  };
+
+  // Handle research request submit (same as dashboard)
+  const handleResearchRequestSubmit = () => {
+    if (!researchType || !researchTarget) {
+      toast({
+        title: "Missing information",
+        description: "Please select a research type and specify the target.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    createRequestMutation.mutate({
+      type: researchType,
+      target: researchTarget,
+      description: researchDescription || `${researchType} analysis for ${researchTarget}`,
+    });
+  };
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -436,66 +472,88 @@ export default function Partners() {
                           New Request
                         </Button>
                       </DialogTrigger>
-                      <DialogContent>
+                      <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
-                          <DialogTitle>Create Research Request</DialogTitle>
+                          <DialogTitle>
+                            {researchStep === 1 ? 'Select Research Type' : 'Research Details'}
+                          </DialogTitle>
                           <DialogDescription>
-                            Submit a new research request for the team
+                            {researchStep === 1 
+                              ? 'Choose the type of research you need'
+                              : 'Provide details for your research request'
+                            }
                           </DialogDescription>
                         </DialogHeader>
-                        <form action={handleCreateRequest} className="space-y-4">
-                          <div>
-                            <Label htmlFor="target">Target</Label>
-                            <Input 
-                              id="target" 
-                              name="target" 
-                              placeholder="Company name or sector"
-                              required 
-                            />
+                        
+                        {researchStep === 1 ? (
+                          <div className="space-y-4">
+                            <RadioGroup value={researchType} onValueChange={setResearchType}>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="company" id="company" />
+                                <Label htmlFor="company" className="flex items-center">
+                                  <Building className="w-4 h-4 mr-2" />
+                                  Company Analysis
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="sector" id="sector" />
+                                <Label htmlFor="sector" className="flex items-center">
+                                  <TrendingUpDown className="w-4 h-4 mr-2" />
+                                  Sector Analysis
+                                </Label>
+                              </div>
+                            </RadioGroup>
+                            
+                            <div className="flex justify-end space-x-2">
+                              <Button variant="outline" onClick={resetResearchDialog}>
+                                Cancel
+                              </Button>
+                              <Button 
+                                onClick={() => setResearchStep(2)}
+                                disabled={!researchType}
+                              >
+                                Next
+                              </Button>
+                            </div>
                           </div>
-                          <div>
-                            <Label htmlFor="description">Description</Label>
-                            <Textarea 
-                              id="description" 
-                              name="description" 
-                              placeholder="Detailed description of the research needed"
-                            />
+                        ) : (
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="target">
+                                {researchType === 'company' ? 'Company Name/Symbol' : 'Sector Name'}
+                              </Label>
+                              <Input
+                                id="target"
+                                value={researchTarget}
+                                onChange={(e) => setResearchTarget(e.target.value)}
+                                placeholder={researchType === 'company' ? 'e.g., Apple Inc. or AAPL' : 'e.g., Technology, Healthcare'}
+                              />
+                            </div>
+                            
+                            <div>
+                              <Label htmlFor="description">Additional Details (Optional)</Label>
+                              <Textarea
+                                id="description"
+                                value={researchDescription}
+                                onChange={(e) => setResearchDescription(e.target.value)}
+                                placeholder="Any specific areas of focus or questions you'd like addressed..."
+                                rows={3}
+                              />
+                            </div>
+                            
+                            <div className="flex justify-end space-x-2">
+                              <Button variant="outline" onClick={() => setResearchStep(1)}>
+                                Back
+                              </Button>
+                              <Button 
+                                onClick={handleResearchRequestSubmit}
+                                disabled={!researchTarget || createRequestMutation.isPending}
+                              >
+                                {createRequestMutation.isPending ? 'Submitting...' : 'Submit Request'}
+                              </Button>
+                            </div>
                           </div>
-                          <div>
-                            <Label htmlFor="category">Category</Label>
-                            <Select name="category" required>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="company">Company</SelectItem>
-                                <SelectItem value="sector">Sector</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div>
-                            <Label htmlFor="priority">Priority</Label>
-                            <Select name="priority" required>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select priority" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="low">Low</SelectItem>
-                                <SelectItem value="medium">Medium</SelectItem>
-                                <SelectItem value="high">High</SelectItem>
-                                <SelectItem value="urgent">Urgent</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-                          <div className="flex justify-end gap-2">
-                            <Button type="button" variant="outline" onClick={() => setNewRequestOpen(false)}>
-                              Cancel
-                            </Button>
-                            <Button type="submit" disabled={createRequestMutation.isPending}>
-                              {createRequestMutation.isPending ? "Creating..." : "Create Request"}
-                            </Button>
-                          </div>
-                        </form>
+                        )}
                       </DialogContent>
                     </Dialog>
                   </div>

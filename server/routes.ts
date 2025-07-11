@@ -366,18 +366,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/research-requests", requireAuth, async (req: any, res) => {
-    try {
-      const request = await storage.createResearchRequest({
-        ...req.body,
-        clientUserId: req.user.id,
-      });
-      res.status(201).json(request);
-    } catch (error) {
-      console.error("Error creating research request:", error);
-      res.status(500).json({ message: "Failed to create research request" });
-    }
-  });
+
 
   // Chat endpoints
   app.get("/api/chat/conversations", requireAuth, async (req: any, res) => {
