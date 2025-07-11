@@ -620,23 +620,21 @@ export default function Dashboard() {
     const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
     const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
     
-    // Calculate previous close price based on current price and change
-    const change = popularData?.change || individualData?.change || 0;
-    const previousClose = currentPrice - change;
+    // Calculate previous close price based on current price and change from API
+    const apiChange = popularData?.change || individualData?.change || 0;
+    const previousClose = currentPrice - apiChange;
     
-    // Use timeframe-specific change data if available, otherwise fallback to current data
-    let displayChange = 0;
-    let displayChangePercent = 0;
+    // Calculate change and percentage based on previous close vs current price
+    const displayChange = currentPrice - previousClose;
+    const displayChangePercent = previousClose > 0 ? ((displayChange / previousClose) * 100) : 0;
+    
+    // For timeframe-specific data, use the timeframe data if available
+    let finalChange = displayChange;
+    let finalChangePercent = displayChangePercent;
     
     if (timeframeSpecificData) {
-      displayChange = timeframeSpecificData.change;
-      displayChangePercent = timeframeSpecificData.percentChange;
-    } else if (popularData) {
-      displayChange = popularData.change;
-      displayChangePercent = popularData.percentChange;
-    } else if (individualData) {
-      displayChange = individualData.change;
-      displayChangePercent = individualData.percentChange;
+      finalChange = timeframeSpecificData.change;
+      finalChangePercent = timeframeSpecificData.percentChange;
     }
     
     return {
@@ -646,8 +644,8 @@ export default function Dashboard() {
       volume,
       marketCap,
       sector,
-      change: displayChange,
-      changePercent: displayChangePercent,
+      change: finalChange,
+      changePercent: finalChangePercent,
       currency: popularData?.currency || individualData?.currency || stock.currency || "USD",
       lastUpdated: Date.now()
     };
