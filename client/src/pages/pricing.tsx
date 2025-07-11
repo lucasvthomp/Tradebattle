@@ -23,7 +23,7 @@ const tiers = [
   },
   {
     name: "Explorer",
-    price: "$29",
+    price: "$9.99",
     period: "per month",
     description: "Perfect for individual investors starting their qualitative research journey",
     icon: <Star className="w-6 h-6" />,
@@ -40,7 +40,7 @@ const tiers = [
   },
   {
     name: "Analyst",
-    price: "$89",
+    price: "$19.99",
     period: "per month",
     description: "Ideal for active investors and financial professionals",
     icon: <Zap className="w-6 h-6" />,
@@ -58,10 +58,10 @@ const tiers = [
     color: "from-blue-900 to-blue-800"
   },
   {
-    name: "Institution",
-    price: "$249",
+    name: "Professional",
+    price: "$49.99",
     period: "per month",
-    description: "Comprehensive solution for investment firms and institutions",
+    description: "Comprehensive solution for investment firms and professionals",
     icon: <Crown className="w-6 h-6" />,
     features: [
       "Everything in Analyst",
@@ -234,7 +234,7 @@ export default function Pricing() {
             <motion.div variants={fadeInUp}>
               <h3 className="text-xl font-semibold mb-3 text-black">How do custom research requests work?</h3>
               <p className="text-gray-600">
-                Analyst and Institution tiers can request custom research on specific companies or sectors through our platform.
+                Analyst and Professional tiers can request custom research on specific companies or sectors through our platform.
               </p>
             </motion.div>
           </div>
