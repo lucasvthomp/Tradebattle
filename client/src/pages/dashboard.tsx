@@ -620,29 +620,34 @@ export default function Dashboard() {
     const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
     const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
     
+    // Calculate previous close price based on current price and change
+    const change = popularData?.change || individualData?.change || 0;
+    const previousClose = currentPrice - change;
+    
     // Use timeframe-specific change data if available, otherwise fallback to current data
-    let change = 0;
-    let changePercent = 0;
+    let displayChange = 0;
+    let displayChangePercent = 0;
     
     if (timeframeSpecificData) {
-      change = timeframeSpecificData.change;
-      changePercent = timeframeSpecificData.percentChange;
+      displayChange = timeframeSpecificData.change;
+      displayChangePercent = timeframeSpecificData.percentChange;
     } else if (popularData) {
-      change = popularData.change;
-      changePercent = popularData.percentChange;
+      displayChange = popularData.change;
+      displayChangePercent = popularData.percentChange;
     } else if (individualData) {
-      change = individualData.change;
-      changePercent = individualData.percentChange;
+      displayChange = individualData.change;
+      displayChangePercent = individualData.percentChange;
     }
     
     return {
       ...stock,
       currentPrice,
+      previousClose,
       volume,
       marketCap,
       sector,
-      change,
-      changePercent,
+      change: displayChange,
+      changePercent: displayChangePercent,
       currency: popularData?.currency || individualData?.currency || stock.currency || "USD",
       lastUpdated: Date.now()
     };
@@ -909,6 +914,7 @@ export default function Dashboard() {
                             <th className="text-left py-2 px-4 font-medium">Symbol</th>
                             <th className="text-left py-2 px-4 font-medium">Company</th>
                             <th className="text-left py-2 px-4 font-medium">Price</th>
+                            <th className="text-left py-2 px-4 font-medium">Previous Close</th>
                             <th className="text-left py-2 px-4 font-medium">
                               Change ({changePeriod})
                             </th>
@@ -925,6 +931,9 @@ export default function Dashboard() {
                               <td className="py-3 px-4 text-sm">{stock.companyName}</td>
                               <td className="py-3 px-4 font-medium">
                                 ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
+                              </td>
+                              <td className="py-3 px-4 text-sm text-gray-600">
+                                {stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A'}
                               </td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
