@@ -1,5 +1,6 @@
 import { db, pool } from '../db';
 import yahooFinance from 'yahoo-finance2';
+import fetch from 'node-fetch';
 
 // Track server start time for uptime calculation
 const serverStartTime = Date.now();
@@ -13,11 +14,17 @@ let responseTimes: number[] = [];
 // Track API health
 interface APIHealth {
   yahooFinance: boolean;
+  finnhub: boolean;
+  twelveData: boolean;
+  polygon: boolean;
   lastChecked: number;
 }
 
 const apiHealth: APIHealth = {
   yahooFinance: false,
+  finnhub: false,
+  twelveData: false,
+  polygon: false,
   lastChecked: 0
 };
 
@@ -104,6 +111,72 @@ export async function checkYahooFinanceHealth(): Promise<boolean> {
   }
 }
 
+// Check Finnhub API health
+export async function checkFinnhubHealth(): Promise<boolean> {
+  try {
+    if (!process.env.FINNHUB_API_KEY) {
+      apiHealth.finnhub = false;
+      return false;
+    }
+    
+    const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=AAPL&token=${process.env.FINNHUB_API_KEY}`);
+    const data = await response.json();
+    
+    const isHealthy = response.ok && data.c !== undefined; // c = current price
+    apiHealth.finnhub = isHealthy;
+    
+    return isHealthy;
+  } catch (error) {
+    console.error('Finnhub health check failed:', error);
+    apiHealth.finnhub = false;
+    return false;
+  }
+}
+
+// Check Twelve Data API health
+export async function checkTwelveDataHealth(): Promise<boolean> {
+  try {
+    if (!process.env.TWELVE_DATA_API_KEY) {
+      apiHealth.twelveData = false;
+      return false;
+    }
+    
+    const response = await fetch(`https://api.twelvedata.com/price?symbol=AAPL&apikey=${process.env.TWELVE_DATA_API_KEY}`);
+    const data = await response.json();
+    
+    const isHealthy = response.ok && data.price !== undefined;
+    apiHealth.twelveData = isHealthy;
+    
+    return isHealthy;
+  } catch (error) {
+    console.error('Twelve Data health check failed:', error);
+    apiHealth.twelveData = false;
+    return false;
+  }
+}
+
+// Check Polygon API health
+export async function checkPolygonHealth(): Promise<boolean> {
+  try {
+    if (!process.env.POLYGON_API_KEY) {
+      apiHealth.polygon = false;
+      return false;
+    }
+    
+    const response = await fetch(`https://api.polygon.io/v2/last/nbbo/AAPL?apikey=${process.env.POLYGON_API_KEY}`);
+    const data = await response.json();
+    
+    const isHealthy = response.ok && data.status === 'OK';
+    apiHealth.polygon = isHealthy;
+    
+    return isHealthy;
+  } catch (error) {
+    console.error('Polygon health check failed:', error);
+    apiHealth.polygon = false;
+    return false;
+  }
+}
+
 // Get system uptime
 export function getSystemUptime(): {
   uptimeMs: number;
@@ -161,7 +234,15 @@ export function getTotalRequests(): number {
 // Get comprehensive system status
 export async function getSystemStatus() {
   const dbHealth = await checkDatabaseHealth();
-  const yahooHealth = await checkYahooFinanceHealth();
+  
+  // Check all APIs in parallel
+  const [yahooHealth, finnhubHealth, twelveDataHealth, polygonHealth] = await Promise.all([
+    checkYahooFinanceHealth(),
+    checkFinnhubHealth(),
+    checkTwelveDataHealth(),
+    checkPolygonHealth()
+  ]);
+  
   const uptime = getSystemUptime();
   const errorRate = getErrorRate();
   const avgResponseTime = getAverageResponseTime();
@@ -179,6 +260,18 @@ export async function getSystemStatus() {
       yahooFinance: {
         status: yahooHealth,
         lastChecked: apiHealth.lastChecked
+      },
+      finnhub: {
+        status: finnhubHealth,
+        keyExists: !!process.env.FINNHUB_API_KEY
+      },
+      twelveData: {
+        status: twelveDataHealth,
+        keyExists: !!process.env.TWELVE_DATA_API_KEY
+      },
+      polygon: {
+        status: polygonHealth,
+        keyExists: !!process.env.POLYGON_API_KEY
       },
       cache: {
         enabled: true,
