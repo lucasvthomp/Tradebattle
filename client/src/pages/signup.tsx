@@ -33,7 +33,11 @@ export default function Signup() {
       return;
     }
     
-    registerMutation.mutate({ email, password, firstName, lastName });
+    registerMutation.mutate({ email, password, firstName, lastName }, {
+      onSuccess: () => {
+        navigate("/dashboard");
+      }
+    });
   };
 
   return (

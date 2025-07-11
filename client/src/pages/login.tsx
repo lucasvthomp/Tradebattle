@@ -23,7 +23,11 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({ email, password });
+    loginMutation.mutate({ email, password }, {
+      onSuccess: () => {
+        navigate("/dashboard");
+      }
+    });
   };
 
   return (

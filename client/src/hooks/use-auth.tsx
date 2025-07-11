@@ -8,6 +8,7 @@ import { User, LoginUser, RegisterUser } from "@shared/schema";
 import { apiRequest } from "../lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 type AuthContextType = {
   user: User | null;
@@ -23,6 +24,7 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
   
   const {
     data: user,
@@ -52,8 +54,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome back!",
-        description: `Good to see you again, ${user.name}`,
+        description: `Good to see you again, ${user.firstName || user.email}`,
       });
+      navigate("/dashboard");
     },
     onError: (error: Error) => {
       toast({

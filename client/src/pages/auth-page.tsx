@@ -55,11 +55,19 @@ export default function AuthPage() {
   });
 
   const onLogin = (data: LoginUser) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate(data, {
+      onSuccess: () => {
+        navigate("/dashboard");
+      }
+    });
   };
 
   const onRegister = (data: RegisterUser) => {
-    registerMutation.mutate(data);
+    registerMutation.mutate(data, {
+      onSuccess: () => {
+        navigate("/dashboard");
+      }
+    });
   };
 
   if (user) {
