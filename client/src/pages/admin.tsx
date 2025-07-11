@@ -55,8 +55,8 @@ export default function Admin() {
     step: null,
   });
 
-  // Check if user is admin (based on email)
-  const isAdmin = user?.email === 'contact@mowbroshomes.com' || user?.email === 'murksantos@gmail.com';
+  // Check if user is admin (based on userId)
+  const isAdmin = user?.userId === 0 || user?.userId === 1;
 
   // Redirect if not admin
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function Admin() {
 
   const canDeleteUser = (targetUser: any) => {
     // Admin cannot delete another admin
-    return !(targetUser.email === 'contact@mowbroshomes.com' || targetUser.email === 'murksantos@gmail.com');
+    return !(targetUser.userId === 0 || targetUser.userId === 1);
   };
 
   const getSelectedUserName = () => {
@@ -275,7 +275,7 @@ export default function Admin() {
                                     : user.email?.split('@')[0] || 'Unknown'
                                   }
                                 </p>
-                                {(user.email === 'contact@mowbroshomes.com' || user.email === 'murksantos@gmail.com') && (
+                                {(user.userId === 0 || user.userId === 1) && (
                                   <Badge className="bg-red-100 text-red-800 text-xs">
                                     <Shield className="w-3 h-3 mr-1" />
                                     Admin

@@ -26,6 +26,7 @@ export const sessions = pgTable(
 // User storage table with email/password authentication
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
+  userId: integer("user_id").unique(), // New field for admin identification (Lucas=0, Murilo=1)
   email: varchar("email", { length: 255 }).unique().notNull(),
   firstName: varchar("first_name", { length: 255 }).notNull(),
   lastName: varchar("last_name", { length: 255 }).notNull(),
@@ -142,6 +143,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   firstName: true,
   lastName: true,
   password: true,
+  userId: true,
 });
 
 export const updateUserSubscriptionSchema = z.object({
