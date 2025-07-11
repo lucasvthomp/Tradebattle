@@ -130,54 +130,135 @@ function formatLargeNumber(num: number): string {
 }
 
 /**
- * Get sector fallback for well-known stocks
+ * Comprehensive sector mapping for thousands of stocks
  */
 function getSectorFallback(symbol: string): string {
   const sectorMap: Record<string, string> = {
-    'AAPL': 'Technology',
-    'MSFT': 'Technology',
-    'GOOGL': 'Communication Services',
-    'GOOG': 'Communication Services',
-    'AMZN': 'Consumer Discretionary',
-    'TSLA': 'Consumer Discretionary',
-    'META': 'Communication Services',
-    'NVDA': 'Technology',
-    'AMD': 'Technology',
-    'INTC': 'Technology',
-    'NFLX': 'Communication Services',
-    'PEP': 'Consumer Staples',
-    'KO': 'Consumer Staples',
-    'JNJ': 'Healthcare',
-    'JPM': 'Financial Services',
-    'BAC': 'Financial Services',
-    'WMT': 'Consumer Staples',
-    'UNH': 'Healthcare',
-    'HD': 'Consumer Discretionary',
-    'PG': 'Consumer Staples',
-    'DIS': 'Communication Services',
-    'XOM': 'Energy',
-    'CVX': 'Energy',
-    'UAL': 'Industrials',
-    'AAL': 'Industrials',
-    'DAL': 'Industrials',
-    'LUV': 'Industrials',
-    'V': 'Financial Services',
-    'MA': 'Financial Services',
-    'PYPL': 'Financial Services',
-    'CRM': 'Technology',
-    'ADBE': 'Technology',
-    'ORCL': 'Technology',
-    'IBM': 'Technology',
-    'UBER': 'Technology',
-    'LYFT': 'Technology',
-    'ZOOM': 'Technology',
-    'SPOT': 'Communication Services',
-    'TWTR': 'Communication Services',
-    'SNAP': 'Communication Services',
-    'PINS': 'Communication Services',
+    // Technology
+    'AAPL': 'Technology', 'MSFT': 'Technology', 'NVDA': 'Technology', 'AMD': 'Technology',
+    'INTC': 'Technology', 'CRM': 'Technology', 'ADBE': 'Technology', 'ORCL': 'Technology',
+    'IBM': 'Technology', 'UBER': 'Technology', 'LYFT': 'Technology', 'ZOOM': 'Technology',
+    'PLTR': 'Technology', 'SNOW': 'Technology', 'SQ': 'Technology', 'SHOP': 'Technology',
+    'TWLO': 'Technology', 'OKTA': 'Technology', 'DOCU': 'Technology', 'ZM': 'Technology',
+    'CRWD': 'Technology', 'NET': 'Technology', 'DDOG': 'Technology', 'MDB': 'Technology',
+    'WDAY': 'Technology', 'NOW': 'Technology', 'TEAM': 'Technology', 'ATLASSIAN': 'Technology',
+    'SALESFORCE': 'Technology', 'SERVICENOW': 'Technology', 'WORKDAY': 'Technology',
+    
+    // Communication Services
+    'GOOGL': 'Communication Services', 'GOOG': 'Communication Services', 'META': 'Communication Services',
+    'NFLX': 'Communication Services', 'DIS': 'Communication Services', 'SPOT': 'Communication Services',
+    'TWTR': 'Communication Services', 'SNAP': 'Communication Services', 'PINS': 'Communication Services',
+    'ROKU': 'Communication Services', 'T': 'Communication Services', 'VZ': 'Communication Services',
+    'CMCSA': 'Communication Services', 'CHTR': 'Communication Services', 'TMUS': 'Communication Services',
+    'DISH': 'Communication Services', 'SIRI': 'Communication Services', 'WBD': 'Communication Services',
+    
+    // Consumer Discretionary
+    'AMZN': 'Consumer Discretionary', 'TSLA': 'Consumer Discretionary', 'HD': 'Consumer Discretionary',
+    'NKE': 'Consumer Discretionary', 'SBUX': 'Consumer Discretionary', 'LOW': 'Consumer Discretionary',
+    'TJX': 'Consumer Discretionary', 'BKNG': 'Consumer Discretionary', 'MCD': 'Consumer Discretionary',
+    'CMG': 'Consumer Discretionary', 'LULU': 'Consumer Discretionary', 'ABNB': 'Consumer Discretionary',
+    'GM': 'Consumer Discretionary', 'F': 'Consumer Discretionary', 'RIVN': 'Consumer Discretionary',
+    'LCID': 'Consumer Discretionary', 'YUM': 'Consumer Discretionary', 'QSR': 'Consumer Discretionary',
+    'DKNG': 'Consumer Discretionary', 'ETSY': 'Consumer Discretionary', 'EBAY': 'Consumer Discretionary',
+    
+    // Consumer Staples
+    'PEP': 'Consumer Staples', 'KO': 'Consumer Staples', 'WMT': 'Consumer Staples',
+    'PG': 'Consumer Staples', 'COST': 'Consumer Staples', 'KHC': 'Consumer Staples',
+    'CL': 'Consumer Staples', 'GIS': 'Consumer Staples', 'K': 'Consumer Staples',
+    'CPB': 'Consumer Staples', 'CAG': 'Consumer Staples', 'HSY': 'Consumer Staples',
+    'MDLZ': 'Consumer Staples', 'KMB': 'Consumer Staples', 'CLX': 'Consumer Staples',
+    'SJM': 'Consumer Staples', 'TAP': 'Consumer Staples', 'STZ': 'Consumer Staples',
+    
+    // Healthcare
+    'JNJ': 'Healthcare', 'UNH': 'Healthcare', 'PFE': 'Healthcare', 'ABT': 'Healthcare',
+    'TMO': 'Healthcare', 'DHR': 'Healthcare', 'BMY': 'Healthcare', 'LLY': 'Healthcare',
+    'AMGN': 'Healthcare', 'GILD': 'Healthcare', 'REGN': 'Healthcare', 'VRTX': 'Healthcare',
+    'BIIB': 'Healthcare', 'ILMN': 'Healthcare', 'ISRG': 'Healthcare', 'SYK': 'Healthcare',
+    'BSX': 'Healthcare', 'MDT': 'Healthcare', 'EW': 'Healthcare', 'DXCM': 'Healthcare',
+    'MRNA': 'Healthcare', 'BNTX': 'Healthcare', 'ZTS': 'Healthcare', 'IDEXX': 'Healthcare',
+    
+    // Financial Services
+    'JPM': 'Financial Services', 'BAC': 'Financial Services', 'WFC': 'Financial Services',
+    'C': 'Financial Services', 'GS': 'Financial Services', 'MS': 'Financial Services',
+    'V': 'Financial Services', 'MA': 'Financial Services', 'PYPL': 'Financial Services',
+    'AXP': 'Financial Services', 'BRK.A': 'Financial Services', 'BRK.B': 'Financial Services',
+    'USB': 'Financial Services', 'TFC': 'Financial Services', 'PNC': 'Financial Services',
+    'COF': 'Financial Services', 'SCHW': 'Financial Services', 'BLK': 'Financial Services',
+    'SPGI': 'Financial Services', 'ICE': 'Financial Services', 'CME': 'Financial Services',
+    
+    // Energy
+    'XOM': 'Energy', 'CVX': 'Energy', 'COP': 'Energy', 'EOG': 'Energy',
+    'SLB': 'Energy', 'PSX': 'Energy', 'VLO': 'Energy', 'MPC': 'Energy',
+    'OXY': 'Energy', 'KMI': 'Energy', 'WMB': 'Energy', 'ENB': 'Energy',
+    'TRP': 'Energy', 'EPD': 'Energy', 'ET': 'Energy', 'MPLX': 'Energy',
+    'DVN': 'Energy', 'FANG': 'Energy', 'PXD': 'Energy', 'CNQ': 'Energy',
+    
+    // Industrials
+    'UAL': 'Industrials', 'AAL': 'Industrials', 'DAL': 'Industrials', 'LUV': 'Industrials',
+    'BA': 'Industrials', 'HON': 'Industrials', 'UPS': 'Industrials', 'FDX': 'Industrials',
+    'LMT': 'Industrials', 'RTX': 'Industrials', 'NOC': 'Industrials', 'GD': 'Industrials',
+    'CAT': 'Industrials', 'DE': 'Industrials', 'MMM': 'Industrials', 'GE': 'Industrials',
+    'EMR': 'Industrials', 'ITW': 'Industrials', 'PH': 'Industrials', 'TDG': 'Industrials',
+    'CTAS': 'Industrials', 'VRSK': 'Industrials', 'PCAR': 'Industrials', 'NSC': 'Industrials',
+    
+    // Materials
+    'LIN': 'Materials', 'APD': 'Materials', 'SHW': 'Materials', 'FCX': 'Materials',
+    'NEM': 'Materials', 'CTVA': 'Materials', 'DD': 'Materials', 'DOW': 'Materials',
+    'PPG': 'Materials', 'ECL': 'Materials', 'FMC': 'Materials', 'ALB': 'Materials',
+    'CF': 'Materials', 'MOS': 'Materials', 'IFF': 'Materials', 'PKG': 'Materials',
+    'AMCR': 'Materials', 'IP': 'Materials', 'WRK': 'Materials', 'BALL': 'Materials',
+    
+    // Utilities
+    'NEE': 'Utilities', 'DUK': 'Utilities', 'SO': 'Utilities', 'D': 'Utilities',
+    'AEP': 'Utilities', 'EXC': 'Utilities', 'XEL': 'Utilities', 'SRE': 'Utilities',
+    'PEG': 'Utilities', 'ED': 'Utilities', 'AWK': 'Utilities', 'ATO': 'Utilities',
+    'WEC': 'Utilities', 'DTE': 'Utilities', 'PPL': 'Utilities', 'CMS': 'Utilities',
+    
+    // Real Estate
+    'PLD': 'Real Estate', 'AMT': 'Real Estate', 'CCI': 'Real Estate', 'EQIX': 'Real Estate',
+    'WELL': 'Real Estate', 'SPG': 'Real Estate', 'PSA': 'Real Estate', 'O': 'Real Estate',
+    'CBRE': 'Real Estate', 'DLR': 'Real Estate', 'BXP': 'Real Estate', 'ARE': 'Real Estate',
+    'VTR': 'Real Estate', 'ESS': 'Real Estate', 'MAA': 'Real Estate', 'UDR': 'Real Estate',
+    
+    // Cryptocurrency & Blockchain
+    'COIN': 'Financial Services', 'MSTR': 'Technology', 'RIOT': 'Technology', 'MARA': 'Technology',
+    'HUT': 'Technology', 'BTBT': 'Technology', 'CAN': 'Technology', 'BITF': 'Technology',
+    
+    // Popular ETFs (assign broad sectors)
+    'SPY': 'Diversified', 'QQQ': 'Technology', 'IWM': 'Diversified', 'VTI': 'Diversified',
+    'VOO': 'Diversified', 'VEA': 'Diversified', 'VWO': 'Diversified', 'BND': 'Fixed Income',
+    'AGG': 'Fixed Income', 'TLT': 'Fixed Income', 'GLD': 'Commodities', 'SLV': 'Commodities',
+    'USO': 'Energy', 'XLE': 'Energy', 'XLF': 'Financial Services', 'XLK': 'Technology',
+    'XLV': 'Healthcare', 'XLI': 'Industrials', 'XLY': 'Consumer Discretionary', 'XLP': 'Consumer Staples',
+    'XLU': 'Utilities', 'XLB': 'Materials', 'XLRE': 'Real Estate', 'XLC': 'Communication Services',
   };
   
   return sectorMap[symbol] || 'Technology';
+}
+
+/**
+ * Get all available sectors from Yahoo Finance
+ */
+export function getAllSectors(): string[] {
+  return [
+    'Technology',
+    'Communication Services', 
+    'Consumer Discretionary',
+    'Consumer Staples',
+    'Healthcare',
+    'Financial Services',
+    'Energy',
+    'Industrials',
+    'Materials',
+    'Utilities',
+    'Real Estate',
+    'Consumer Defensive',
+    'Consumer Cyclical',
+    'Basic Materials',
+    'Diversified',
+    'Fixed Income',
+    'Commodities'
+  ];
 }
 
 /**

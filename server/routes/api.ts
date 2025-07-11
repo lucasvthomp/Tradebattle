@@ -6,6 +6,7 @@ import {
   getCompanyProfile,
   getPopularStocks,
   getStockPerformance,
+  getAllSectors,
   TimeFrame
 } from '../services/yahooFinance.js';
 import { 
@@ -150,6 +151,19 @@ router.get('/popular', asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: popularStocks,
+  });
+}));
+
+/**
+ * GET /api/sectors
+ * Get all available sectors
+ */
+router.get('/sectors', asyncHandler(async (req, res) => {
+  const sectors = getAllSectors();
+  
+  res.json({
+    success: true,
+    data: sectors,
   });
 }));
 

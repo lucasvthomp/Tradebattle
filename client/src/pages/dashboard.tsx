@@ -520,6 +520,19 @@ export default function Dashboard() {
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
   });
 
+  // Fetch all available sectors
+  const { data: allSectors = [] } = useQuery({
+    queryKey: ["/api/sectors"],
+    queryFn: async () => {
+      const response = await fetch('/api/sectors');
+      if (response.ok) {
+        const result = await response.json();
+        return result.success ? result.data : [];
+      }
+      return [];
+    },
+  });
+
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.length > 0) {
@@ -636,7 +649,7 @@ export default function Dashboard() {
       }
     });
 
-  const sectors = ["all", ...Array.from(new Set(enrichedWatchlist.map(stock => stock.sector).filter(sector => sector !== "N/A")))];
+  const sectors = ["all", ...allSectors];
 
   if (authLoading) {
     return (
