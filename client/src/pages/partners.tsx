@@ -39,28 +39,6 @@ import {
   Hash,
   DollarSign
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -89,16 +67,15 @@ export default function Partners() {
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Check if user is admin or partner
-  const isAdmin = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
-  const isPartner = isAdmin; // For now, admins are also partners
+  // Check if user is a partner (userId 0, 1, or 2)
+  const isPartner = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
 
   // Redirect if not authorized
   useEffect(() => {
     if (!authLoading && (!user || !isPartner)) {
       toast({
         title: "Access Denied",
-        description: "You don't have permission to access this page.",
+        description: "You don't have permission to access the Partner Panel.",
         variant: "destructive",
       });
       setLocation("/dashboard");

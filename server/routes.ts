@@ -438,11 +438,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/research-publications/drafts", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.userId;
+      const partnerUserId = req.user.userId;
       
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
-        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      // Check if user is partner (userId 0, 1, or 2)
+      if (partnerUserId !== 0 && partnerUserId !== 1 && partnerUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Partner privileges required." });
       }
       
       const publications = await storage.getResearchPublications(); // All publications
@@ -455,11 +455,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/research-publications", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.userId;
+      const partnerUserId = req.user.userId;
       
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
-        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      // Check if user is partner (userId 0, 1, or 2)
+      if (partnerUserId !== 0 && partnerUserId !== 1 && partnerUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Partner privileges required." });
       }
       
       const publication = await storage.createResearchPublication({
@@ -475,11 +475,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put("/api/research-publications/:id", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.userId;
+      const partnerUserId = req.user.userId;
       
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
-        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      // Check if user is partner (userId 0, 1, or 2)
+      if (partnerUserId !== 0 && partnerUserId !== 1 && partnerUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Partner privileges required." });
       }
       
       const id = parseInt(req.params.id);
@@ -493,11 +493,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete("/api/research-publications/:id", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.userId;
+      const partnerUserId = req.user.userId;
       
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
-        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      // Check if user is partner (userId 0, 1, or 2)
+      if (partnerUserId !== 0 && partnerUserId !== 1 && partnerUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Partner privileges required." });
       }
       
       const id = parseInt(req.params.id);

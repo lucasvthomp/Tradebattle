@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn, Shield } from "lucide-react";
+import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn, Shield, Users } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -103,6 +103,15 @@ export default function Header() {
                       <DropdownMenuItem onClick={() => window.location.href = "/admin"}>
                         <Shield className="w-4 h-4 mr-2" />
                         Admin Panel
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {(user.userId === 0 || user.userId === 1 || user.userId === 2) && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => window.location.href = "/partners"}>
+                        <Users className="w-4 h-4 mr-2" />
+                        Partner Panel
                       </DropdownMenuItem>
                     </>
                   )}
