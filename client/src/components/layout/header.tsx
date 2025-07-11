@@ -21,7 +21,7 @@ export default function Header() {
     { href: "/", label: "Home" },
     { href: "/studies", label: "Studies" },
     { href: "/news", label: "News" },
-    { href: "/pricing", label: "Pricing" },
+    { href: "/pricing", label: "Plans" },
     ...(user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     { href: "/contact", label: "Contact Us" },
   ];

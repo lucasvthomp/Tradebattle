@@ -136,6 +136,11 @@ Preferred communication style: Simple, everyday language.
 - **Simplified Architecture**: Reduced complexity by removing multiple API providers and fallback logic in favor of single Yahoo Finance integration
 - **Company Name Correction**: Fixed all instances of "Santhos" to "Santos" throughout the codebase - correct company name is "Orellana, Santos & Thompson, LLC"
 - **Complete Yahoo Finance API Rebuild** (January 2025): Completely rebuilt Yahoo Finance API implementation with new organized structure
+- **User Profile System Enhancement** (January 2025): Updated user profile system to use separate firstName/lastName fields instead of single name field
+- **Profile Data Migration**: Successfully migrated existing user data to new firstName/lastName structure with proper database schema changes
+- **Authentication System Update**: Updated all authentication endpoints to return complete user data including firstName, lastName, and createdAt
+- **Header Display Fix**: Changed header to display full name instead of email address in top-right corner
+- **Navigation Update**: Changed "Pricing" menu item to "Plans" in main navigation
 - **New API Structure**: Created proper TypeScript interfaces in `server/types/finance.ts` with StockQuote, HistoricalDataPoint, CompanyProfile, and SearchResult types
 - **Enhanced Services Layer**: Rebuilt `server/services/yahooFinance.ts` with comprehensive caching (5min quotes, 30min historical, 1hr profiles)
 - **Improved Error Handling**: Added robust error handling in `server/utils/errorHandler.ts` with custom error types and async wrappers
