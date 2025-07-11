@@ -48,7 +48,6 @@ const tiers = [
       "Priority breaking news alerts",
       "Advanced portfolio analytics",
       "Instant email news alerts",
-      "Custom research requests (2 per month)",
       "Customer support"
     ],
     popular: true,
@@ -63,8 +62,6 @@ const tiers = [
     features: [
       "Everything in Analyst",
       "Custom research reports",
-      "Dedicated account manager",
-      "API access for data integration",
       "Priority support"
     ],
     popular: false,
@@ -225,9 +222,9 @@ export default function Pricing() {
             </motion.div>
             
             <motion.div variants={fadeInUp}>
-              <h3 className="text-xl font-semibold mb-3 text-black">How do custom research requests work?</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">How do custom research reports work?</h3>
               <p className="text-gray-600">
-                Analyst and Professional tiers can request custom research on specific companies or sectors through our platform.
+                Professional tier subscribers can request custom research reports on specific companies or sectors through our platform.
               </p>
             </motion.div>
           </div>

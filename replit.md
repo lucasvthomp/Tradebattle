@@ -154,3 +154,4 @@ Preferred communication style: Simple, everyday language.
 - **Free Novice Plan Addition** (January 2025): Added free "Novice" plan to pricing page with limited watchlist (5 equities), limited news access, and email support
 - **Pricing Updates** (January 2025): Updated plan pricing - Explorer: $9.99/month, Analyst: $19.99/month, renamed Institution to Professional: $49.99/month
 - **Plan Features Refinement** (January 2025): Removed mobile features from all plans, updated Analyst plan features (removed priority support and Q&A, added instant email news), streamlined Professional plan features
+- **Additional Plan Simplification** (January 2025): Removed custom research from Analyst plan, removed dedicated account manager and API access from Professional plan
