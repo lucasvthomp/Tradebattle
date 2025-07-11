@@ -941,7 +941,7 @@ export default function Dashboard() {
                             <th className="text-left py-2 px-4 font-medium">Symbol</th>
                             <th className="text-left py-2 px-4 font-medium">Company</th>
                             <th className="text-left py-2 px-4 font-medium">Price</th>
-                            <th className="text-left py-2 px-4 font-medium">Close Price ({changePeriod})</th>
+                            <th className="text-left py-2 px-4 font-medium">Close Price ({changePeriod} ago)</th>
                             <th className="text-left py-2 px-4 font-medium">
                               Change ({changePeriod})
                             </th>
