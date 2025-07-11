@@ -285,11 +285,44 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
       throw new Error(`No data found for symbol: ${symbol}`);
     }
 
+    // Get today's market open price for accurate 1-day change calculation
+    let todayOpenPrice = result.regularMarketOpen || result.regularMarketPreviousClose;
+    let currentPrice = result.regularMarketPrice;
+    
+    // Try to get more accurate intraday data if available
+    try {
+      const today = new Date();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const endOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+      
+      // Fetch intraday data to get the actual market open price
+      const intradayData = await yahooFinance.chart(symbol, {
+        period1: startOfDay,
+        period2: endOfDay,
+        interval: '1m' // 1-minute intervals
+      });
+      
+      if (intradayData && intradayData.quotes && intradayData.quotes.length > 0) {
+        // Get the first quote of the day as the market open price
+        const firstQuote = intradayData.quotes[0];
+        if (firstQuote && firstQuote.open) {
+          todayOpenPrice = firstQuote.open;
+        }
+      }
+    } catch (intradayError) {
+      // If intraday data fails, use the regular market open price
+      console.log(`Could not fetch intraday data for ${symbol}, using regular market open`);
+    }
+
+    // Calculate 1-day change manually using market open price
+    const change = currentPrice - todayOpenPrice;
+    const percentChange = ((change / todayOpenPrice) * 100);
+
     const quote: StockQuote = {
       symbol: result.symbol || symbol,
-      price: result.regularMarketPrice || 0,
-      change: result.regularMarketChange || 0,
-      percentChange: result.regularMarketChangePercent || 0,
+      price: currentPrice,
+      change: change,
+      percentChange: percentChange,
       volume: result.regularMarketVolume || 0,
       marketCap: result.marketCap || 0,
       currency: result.currency || 'USD',
