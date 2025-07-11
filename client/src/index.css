@@ -26,25 +26,25 @@
 }
 
 .dark {
-  --background: hsl(0, 0%, 0%);
-  --foreground: hsl(0, 0%, 100%);
-  --card: hsl(0, 0%, 0%);
-  --card-foreground: hsl(0, 0%, 100%);
-  --popover: hsl(0, 0%, 0%);
-  --popover-foreground: hsl(0, 0%, 100%);
-  --primary: hsl(0, 0%, 100%);
-  --primary-foreground: hsl(0, 0%, 0%);
-  --secondary: hsl(0, 0%, 10%);
-  --secondary-foreground: hsl(0, 0%, 100%);
-  --muted: hsl(0, 0%, 10%);
-  --muted-foreground: hsl(0, 0%, 70%);
-  --accent: hsl(0, 0%, 10%);
-  --accent-foreground: hsl(0, 0%, 100%);
+  --background: hsl(0, 0%, 3%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(0, 0%, 3%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(0, 0%, 3%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --primary: hsl(0, 0%, 98%);
+  --primary-foreground: hsl(0, 0%, 9%);
+  --secondary: hsl(0, 0%, 14%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(0, 0%, 14%);
+  --muted-foreground: hsl(0, 0%, 64%);
+  --accent: hsl(0, 0%, 14%);
+  --accent-foreground: hsl(0, 0%, 98%);
   --destructive: hsl(0, 63%, 31%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(0, 0%, 10%);
-  --input: hsl(0, 0%, 10%);
-  --ring: hsl(0, 0%, 90%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(0, 0%, 14%);
+  --input: hsl(0, 0%, 14%);
+  --ring: hsl(0, 0%, 83%);
 }
 
 @layer base {
@@ -57,6 +57,7 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
   }
 }
 
@@ -118,18 +119,31 @@
     transform: scale(1.05) translateY(-2px);
   }
   
-  /* Dark mode theme overrides - using standard CSS to avoid circular dependencies */
-  .dark .invert-bg {
-    background-color: white;
-    color: black;
+  /* Dark mode enhancements */
+  .dark {
+    color-scheme: dark;
   }
   
-  .dark .invert-text {
-    color: white;
+  .light {
+    color-scheme: light;
   }
   
-  .dark .invert-border {
-    border-color: white;
+  /* Ensure proper transitions for all elements */
+  * {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  }
+  
+  /* Dark mode specific overrides for footer and other components */
+  .dark .bg-gray-900 {
+    background-color: hsl(0, 0%, 98%);
+  }
+  
+  .dark .text-gray-400 {
+    color: hsl(0, 0%, 40%);
+  }
+  
+  .dark .border-gray-800 {
+    border-color: hsl(0, 0%, 20%);
   }
 }
 
