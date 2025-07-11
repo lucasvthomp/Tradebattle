@@ -350,7 +350,9 @@ export default function Admin() {
                             <div>
                               <div className="font-medium">{user.firstName} {user.lastName}</div>
                             </div>
-                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div className="text-sm text-gray-500" title={user.email}>
+                              {user.email.length > 8 ? `${user.email.substring(0, 8)}...` : user.email}
+                            </div>
                             <div>
                               <Badge variant="outline" className="capitalize">
                                 {user.subscriptionTier}
