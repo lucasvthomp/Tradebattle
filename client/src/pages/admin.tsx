@@ -250,6 +250,7 @@ export default function Admin() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
+                        <th className="text-left py-3 px-4 font-medium">User ID</th>
                         <th className="text-left py-3 px-4 font-medium">Name</th>
                         <th className="text-left py-3 px-4 font-medium">Email</th>
                         <th className="text-left py-3 px-4 font-medium">Subscription</th>
@@ -261,6 +262,22 @@ export default function Admin() {
                     <tbody>
                       {allUsers?.map((user) => (
                         <tr key={user.email} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-2">
+                              <Badge className={`
+                                ${user.userId === 0 || user.userId === 1 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'}
+                                text-xs font-mono font-bold
+                              `}>
+                                {user.userId !== null ? user.userId : 'N/A'}
+                              </Badge>
+                              {(user.userId === 0 || user.userId === 1) && (
+                                <Badge className="bg-red-100 text-red-800 text-xs">
+                                  <Shield className="w-3 h-3 mr-1" />
+                                  Admin
+                                </Badge>
+                              )}
+                            </div>
+                          </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
@@ -275,12 +292,6 @@ export default function Admin() {
                                     : user.email?.split('@')[0] || 'Unknown'
                                   }
                                 </p>
-                                {(user.userId === 0 || user.userId === 1) && (
-                                  <Badge className="bg-red-100 text-red-800 text-xs">
-                                    <Shield className="w-3 h-3 mr-1" />
-                                    Admin
-                                  </Badge>
-                                )}
                               </div>
                             </div>
                           </td>
