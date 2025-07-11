@@ -491,6 +491,35 @@ export default function Dashboard() {
     }
   }, [popularStocksData]);
 
+  // Fetch timeframe-specific performance data for watchlist
+  const { data: performanceData = {} } = useQuery({
+    queryKey: ["/api/performance", watchlist.map(s => s.symbol), changePeriod],
+    queryFn: async () => {
+      if (watchlist.length === 0) return {};
+      
+      const performancePromises = watchlist.map(async (stock) => {
+        try {
+          const response = await fetch(`/api/performance/${stock.symbol}/${changePeriod}`);
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+              return { [stock.symbol]: result.data };
+            }
+          }
+          return { [stock.symbol]: null };
+        } catch (error) {
+          console.error(`Error fetching ${changePeriod} data for ${stock.symbol}:`, error);
+          return { [stock.symbol]: null };
+        }
+      });
+      
+      const results = await Promise.all(performancePromises);
+      return Object.assign({}, ...results);
+    },
+    enabled: !!user && watchlist.length > 0,
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+  });
+
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
     if (query.length > 0) {
@@ -554,48 +583,42 @@ export default function Dashboard() {
 
   // Enrich watchlist with real-time data
   const enrichedWatchlist = watchlist.map(stock => {
-    // First try to find data in popular stocks
+    // Get timeframe-specific data for the selected period
+    const timeframeSpecificData = performanceData[stock.symbol];
+    
+    // First try to find data in popular stocks for current price
     const popularData = popularStocks.find((company: any) => company.symbol === stock.symbol);
-    if (popularData) {
-      return {
-        ...stock,
-        currentPrice: popularData.price,
-        volume: popularData.volume,
-        marketCap: popularData.marketCap,
-        sector: stock.sector || "N/A",
-        change: popularData.change,
-        changePercent: popularData.percentChange,
-        currency: popularData.currency,
-        lastUpdated: Date.now()
-      };
-    }
-    
-    // If not in popular stocks, try to find in individual stock data
     const individualData = individualStockData.find((company: any) => company.symbol === stock.symbol);
-    if (individualData) {
-      return {
-        ...stock,
-        currentPrice: individualData.price,
-        volume: individualData.volume,
-        marketCap: individualData.marketCap,
-        sector: stock.sector || "N/A",
-        change: individualData.change,
-        changePercent: individualData.percentChange,
-        currency: individualData.currency,
-        lastUpdated: Date.now()
-      };
+    
+    // Use current price from popular or individual data
+    const currentPrice = popularData?.price || individualData?.price || stock.price;
+    const volume = popularData?.volume || individualData?.volume || stock.volume || 0;
+    const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
+    
+    // Use timeframe-specific change data if available, otherwise fallback to current data
+    let change = 0;
+    let changePercent = 0;
+    
+    if (timeframeSpecificData) {
+      change = timeframeSpecificData.change;
+      changePercent = timeframeSpecificData.percentChange;
+    } else if (popularData) {
+      change = popularData.change;
+      changePercent = popularData.percentChange;
+    } else if (individualData) {
+      change = individualData.change;
+      changePercent = individualData.percentChange;
     }
     
-    // If no real-time data available, use stored data
     return {
       ...stock,
-      currentPrice: stock.price,
-      volume: stock.volume || 0,
-      marketCap: stock.marketCap || 0,
+      currentPrice,
+      volume,
+      marketCap,
       sector: stock.sector || "N/A",
-      change: stock.change || 0,
-      changePercent: stock.changePercent || 0,
-      currency: stock.currency || "USD",
+      change,
+      changePercent,
+      currency: popularData?.currency || individualData?.currency || stock.currency || "USD",
       lastUpdated: Date.now()
     };
   });
@@ -822,10 +845,10 @@ export default function Dashboard() {
                       <option value="1D">1 Day</option>
                       <option value="1W">1 Week</option>
                       <option value="1M">1 Month</option>
-                      <option value="3M">3 Months</option>
                       <option value="6M">6 Months</option>
-                      <option value="1Y">1 Year</option>
                       <option value="YTD">Year to Date</option>
+                      <option value="1Y">1 Year</option>
+                      <option value="5Y">5 Years</option>
                     </select>
                     <Button
                       variant="outline"

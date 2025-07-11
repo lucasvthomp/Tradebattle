@@ -1,0 +1,232 @@
+import yahooFinance from 'yahoo-finance2';
+
+// Define timeframe options
+export type TimeFrame = '1D' | '1W' | '1M' | '6M' | 'YTD' | '1Y' | '5Y';
+
+// Helper function to calculate date ranges
+export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: string; interval: string } {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  
+  // Helper to get date N days ago
+  const getDaysAgo = (days: number): string => {
+    const date = new Date(now);
+    date.setDate(date.getDate() - days);
+    return date.toISOString().split('T')[0];
+  };
+  
+  // Helper to get start of current year
+  const getYearStart = (): string => {
+    return `${now.getFullYear()}-01-01`;
+  };
+  
+  // Helper to get date N years ago
+  const getYearsAgo = (years: number): string => {
+    const date = new Date(now);
+    date.setFullYear(date.getFullYear() - years);
+    return date.toISOString().split('T')[0];
+  };
+
+  switch (timeFrame) {
+    case '1D':
+      return {
+        period1: getDaysAgo(1),
+        period2: today,
+        interval: '5m' // 5-minute intervals for intraday
+      };
+    
+    case '1W':
+      return {
+        period1: getDaysAgo(7),
+        period2: today,
+        interval: '30m' // 30-minute intervals
+      };
+    
+    case '1M':
+      return {
+        period1: getDaysAgo(30),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case '6M':
+      return {
+        period1: getDaysAgo(180),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case 'YTD':
+      return {
+        period1: getYearStart(),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case '1Y':
+      return {
+        period1: getYearsAgo(1),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case '5Y':
+      return {
+        period1: getYearsAgo(5),
+        period2: today,
+        interval: '1wk' // Weekly intervals for longer timeframes
+      };
+    
+    default:
+      throw new Error(`Unsupported timeframe: ${timeFrame}`);
+  }
+}
+
+// Main function to get historical data for different timeframes
+export async function getHistoricalData(symbol: string, timeFrame: TimeFrame) {
+  try {
+    const { period1, period2, interval } = getDateRange(timeFrame);
+    
+    const result = await yahooFinance.historical(symbol, {
+      period1,
+      period2,
+      interval: interval as any, // Cast to satisfy TypeScript
+      events: 'history'
+    });
+    
+    return {
+      symbol,
+      timeFrame,
+      data: result.map(item => ({
+        date: item.date,
+        open: item.open,
+        high: item.high,
+        low: item.low,
+        close: item.close,
+        volume: item.volume,
+        adjClose: item.adjClose
+      })),
+      period: { from: period1, to: period2 },
+      interval
+    };
+    
+  } catch (error) {
+    console.error(`Error fetching ${timeFrame} data for ${symbol}:`, error);
+    throw error;
+  }
+}
+
+// Alternative using the chart module (often more reliable for intraday data)
+export async function getChartData(symbol: string, timeFrame: TimeFrame) {
+  try {
+    const { period1, period2, interval } = getDateRange(timeFrame);
+    
+    const result = await yahooFinance.chart(symbol, {
+      period1,
+      period2,
+      interval: interval as any,
+      includePrePost: timeFrame === '1D' // Include pre/post market for intraday
+    });
+    
+    const quotes = result.quotes;
+    
+    return {
+      symbol,
+      timeFrame,
+      data: quotes.map(quote => ({
+        date: quote.date,
+        open: quote.open,
+        high: quote.high,
+        low: quote.low,
+        close: quote.close,
+        volume: quote.volume
+      })),
+      period: { from: period1, to: period2 },
+      interval
+    };
+    
+  } catch (error) {
+    console.error(`Error fetching chart data for ${symbol}:`, error);
+    throw error;
+  }
+}
+
+// Express route handler example
+export async function handleTimeframeRequest(req: any, res: any) {
+  const { symbol, timeframe } = req.params;
+  const timeFrame = timeframe.toUpperCase() as TimeFrame;
+  
+  // Validate timeframe
+  const validTimeframes: TimeFrame[] = ['1D', '1W', '1M', '6M', 'YTD', '1Y', '5Y'];
+  if (!validTimeframes.includes(timeFrame)) {
+    return res.status(400).json({ 
+      error: 'Invalid timeframe', 
+      validTimeframes 
+    });
+  }
+  
+  try {
+    // Use chart data for intraday (1D, 1W), historical for longer periods
+    const data = timeFrame === '1D' || timeFrame === '1W' 
+      ? await getChartData(symbol, timeFrame)
+      : await getHistoricalData(symbol, timeFrame);
+    
+    res.json({
+      success: true,
+      ...data
+    });
+    
+  } catch (error) {
+    res.status(500).json({ 
+      error: 'Failed to fetch data', 
+      message: error.message 
+    });
+  }
+}
+
+// React component example for timeframe selector
+export const TimeframeSelector = ({ onTimeframeChange, currentTimeframe }) => {
+  const timeframes: { value: TimeFrame; label: string }[] = [
+    { value: '1D', label: '1 Day' },
+    { value: '1W', label: '1 Week' },
+    { value: '1M', label: '1 Month' },
+    { value: '6M', label: '6 Months' },
+    { value: 'YTD', label: 'YTD' },
+    { value: '1Y', label: '1 Year' },
+    { value: '5Y', label: '5 Years' }
+  ];
+  
+  return (
+    <div className="timeframe-selector">
+      {timeframes.map(tf => (
+        <button 
+          key={tf.value}
+          className={`timeframe-btn ${currentTimeframe === tf.value ? 'active' : ''}`}
+          onClick={() => onTimeframeChange(tf.value)}
+        >
+          {tf.label}
+        </button>
+      ))}
+    </div>
+  );
+};
+
+// Usage example
+export async function example() {
+  try {
+    // Get 1 day intraday data
+    const dayData = await getChartData('AAPL', '1D');
+    console.log('1D data points:', dayData.data.length);
+    
+    // Get 1 year daily data
+    const yearData = await getHistoricalData('AAPL', '1Y');
+    console.log('1Y data points:', yearData.data.length);
+    
+    // Get YTD data
+    const ytdData = await getHistoricalData('AAPL', 'YTD');
+    console.log('YTD data points:', ytdData.data.length);
+    
+  } catch (error) {
+    console.error('Error in example:', error);
+  }
+}

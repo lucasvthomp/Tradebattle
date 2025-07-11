@@ -1,6 +1,88 @@
 import yahooFinance from 'yahoo-finance2';
 import { StockQuote, HistoricalDataPoint, CompanyProfile, SearchResult } from '../types/finance.js';
 
+// Define timeframe options
+export type TimeFrame = '1D' | '1W' | '1M' | '6M' | 'YTD' | '1Y' | '5Y';
+
+// Helper function to calculate date ranges
+export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: string; interval: string } {
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+  
+  // Helper to get date N days ago
+  const getDaysAgo = (days: number): string => {
+    const date = new Date(now);
+    date.setDate(date.getDate() - days);
+    return date.toISOString().split('T')[0];
+  };
+  
+  // Helper to get start of current year
+  const getYearStart = (): string => {
+    return `${now.getFullYear()}-01-01`;
+  };
+  
+  // Helper to get date N years ago
+  const getYearsAgo = (years: number): string => {
+    const date = new Date(now);
+    date.setFullYear(date.getFullYear() - years);
+    return date.toISOString().split('T')[0];
+  };
+
+  switch (timeFrame) {
+    case '1D':
+      return {
+        period1: getDaysAgo(1),
+        period2: today,
+        interval: '5m' // 5-minute intervals for intraday
+      };
+    
+    case '1W':
+      return {
+        period1: getDaysAgo(7),
+        period2: today,
+        interval: '30m' // 30-minute intervals
+      };
+    
+    case '1M':
+      return {
+        period1: getDaysAgo(30),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case '6M':
+      return {
+        period1: getDaysAgo(180),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case 'YTD':
+      return {
+        period1: getYearStart(),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case '1Y':
+      return {
+        period1: getYearsAgo(1),
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case '5Y':
+      return {
+        period1: getYearsAgo(5),
+        period2: today,
+        interval: '1wk' // Weekly intervals for longer timeframes
+      };
+    
+    default:
+      throw new Error(`Unsupported timeframe: ${timeFrame}`);
+  }
+}
+
 // Cache for storing API responses to avoid excessive calls
 const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
 
@@ -120,10 +202,10 @@ export async function searchStocks(query: string): Promise<SearchResult[]> {
 }
 
 /**
- * Get historical price data for a stock
+ * Get historical price data for a stock with timeframe support
  */
-export async function getHistoricalData(symbol: string, period: string = '1mo'): Promise<HistoricalDataPoint[]> {
-  const cacheKey = `historical_${symbol}_${period}`;
+export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '1M'): Promise<HistoricalDataPoint[]> {
+  const cacheKey = `historical_${symbol}_${timeFrame}`;
   const cached = getCachedData(cacheKey);
   
   if (cached) {
@@ -131,57 +213,116 @@ export async function getHistoricalData(symbol: string, period: string = '1mo'):
   }
 
   try {
-    const endDate = new Date();
-    const startDate = new Date();
+    const { period1, period2, interval } = getDateRange(timeFrame);
     
-    // Calculate start date based on period
-    switch (period) {
-      case '1d':
-        startDate.setDate(endDate.getDate() - 1);
-        break;
-      case '5d':
-        startDate.setDate(endDate.getDate() - 5);
-        break;
-      case '1mo':
-        startDate.setMonth(endDate.getMonth() - 1);
-        break;
-      case '3mo':
-        startDate.setMonth(endDate.getMonth() - 3);
-        break;
-      case '6mo':
-        startDate.setMonth(endDate.getMonth() - 6);
-        break;
-      case '1y':
-        startDate.setFullYear(endDate.getFullYear() - 1);
-        break;
-      default:
-        startDate.setDate(endDate.getDate() - 30);
-    }
+    // Use chart data for intraday (1D, 1W), historical for longer periods
+    const result = timeFrame === '1D' || timeFrame === '1W' 
+      ? await yahooFinance.chart(symbol, {
+          period1,
+          period2,
+          interval: interval as any,
+          includePrePost: timeFrame === '1D'
+        })
+      : await yahooFinance.historical(symbol, {
+          period1,
+          period2,
+          interval: interval as any,
+          events: 'history'
+        });
 
-    const result = await yahooFinance.historical(symbol, {
-      period1: startDate,
-      period2: endDate,
-      interval: '1d',
-    });
-
-    if (!result || result.length === 0) {
+    if (!result) {
       throw new Error(`No historical data found for symbol: ${symbol}`);
     }
 
-    const historicalData: HistoricalDataPoint[] = result.map(item => ({
-      date: item.date.toISOString().split('T')[0],
-      open: item.open || 0,
-      high: item.high || 0,
-      low: item.low || 0,
-      close: item.close || 0,
-      volume: item.volume || 0,
-    }));
+    let historicalData: HistoricalDataPoint[];
+
+    if (timeFrame === '1D' || timeFrame === '1W') {
+      // Chart data structure
+      const quotes = (result as any).quotes || [];
+      historicalData = quotes.map((item: any) => ({
+        date: item.date.toISOString().split('T')[0],
+        open: item.open || 0,
+        high: item.high || 0,
+        low: item.low || 0,
+        close: item.close || 0,
+        volume: item.volume || 0,
+      }));
+    } else {
+      // Historical data structure
+      const data = result as any[];
+      historicalData = data.map(item => ({
+        date: item.date.toISOString().split('T')[0],
+        open: item.open || 0,
+        high: item.high || 0,
+        low: item.low || 0,
+        close: item.close || 0,
+        volume: item.volume || 0,
+      }));
+    }
 
     setCachedData(cacheKey, historicalData, CACHE_TTL.HISTORICAL);
     return historicalData;
   } catch (error) {
     console.error(`Error fetching historical data for ${symbol}:`, error);
     throw new Error(`Failed to fetch historical data for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  }
+}
+
+/**
+ * Calculate percentage change between two prices
+ */
+export function calculatePercentChange(currentPrice: number, previousPrice: number): number {
+  if (previousPrice === 0) return 0;
+  return ((currentPrice - previousPrice) / previousPrice) * 100;
+}
+
+/**
+ * Get stock performance data for different timeframes
+ */
+export async function getStockPerformance(symbol: string, timeFrame: TimeFrame): Promise<{
+  symbol: string;
+  timeFrame: TimeFrame;
+  currentPrice: number;
+  previousPrice: number;
+  change: number;
+  percentChange: number;
+}> {
+  const cacheKey = `performance_${symbol}_${timeFrame}`;
+  const cached = getCachedData(cacheKey);
+  
+  if (cached) {
+    return cached;
+  }
+
+  try {
+    const [currentQuote, historicalData] = await Promise.all([
+      getStockQuote(symbol),
+      getHistoricalData(symbol, timeFrame)
+    ]);
+
+    if (!historicalData || historicalData.length === 0) {
+      throw new Error(`No historical data available for ${symbol}`);
+    }
+
+    const previousPrice = historicalData[0].close;
+    const currentPrice = currentQuote.price;
+    const change = currentPrice - previousPrice;
+    const percentChange = calculatePercentChange(currentPrice, previousPrice);
+
+    const performance = {
+      symbol,
+      timeFrame,
+      currentPrice,
+      previousPrice,
+      change,
+      percentChange,
+    };
+
+    setCachedData(cacheKey, performance, CACHE_TTL.QUOTE);
+    return performance;
+  } catch (error) {
+    console.error(`Error fetching performance for ${symbol}:`, error);
+    throw new Error(`Failed to fetch performance for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

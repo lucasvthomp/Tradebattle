@@ -4,7 +4,9 @@ import {
   searchStocks, 
   getHistoricalData, 
   getCompanyProfile,
-  getPopularStocks 
+  getPopularStocks,
+  getStockPerformance,
+  TimeFrame
 } from '../services/yahooFinance.js';
 import { 
   asyncHandler, 
@@ -63,26 +65,56 @@ router.get('/search/:query', asyncHandler(async (req, res) => {
  */
 router.get('/historical/:symbol', asyncHandler(async (req, res) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
-  const period = sanitizeInput(req.query.period as string || '1mo');
+  const timeFrame = sanitizeInput(req.query.timeframe as string || '1M') as TimeFrame;
   
   if (!validateSymbol(symbol)) {
     throw new ValidationError('Invalid symbol format');
   }
 
-  // Validate period
-  const validPeriods = ['1d', '5d', '1mo', '3mo', '6mo', '1y'];
-  if (!validPeriods.includes(period)) {
-    throw new ValidationError('Invalid period. Valid periods: ' + validPeriods.join(', '));
+  // Validate timeframe
+  const validTimeframes: TimeFrame[] = ['1D', '1W', '1M', '6M', 'YTD', '1Y', '5Y'];
+  if (!validTimeframes.includes(timeFrame)) {
+    throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
 
   try {
-    const historicalData = await getHistoricalData(symbol, period);
+    const historicalData = await getHistoricalData(symbol, timeFrame);
     res.json({
       success: true,
       data: historicalData,
+      timeFrame,
     });
   } catch (error) {
     throw new NotFoundError(`Historical data not found for symbol: ${symbol}`);
+  }
+}));
+
+/**
+ * GET /api/performance/:symbol/:timeframe
+ * Get stock performance for specific timeframe
+ */
+router.get('/performance/:symbol/:timeframe', asyncHandler(async (req, res) => {
+  const symbol = sanitizeInput(req.params.symbol.toUpperCase());
+  const timeFrame = sanitizeInput(req.params.timeframe.toUpperCase()) as TimeFrame;
+  
+  if (!validateSymbol(symbol)) {
+    throw new ValidationError('Invalid symbol format');
+  }
+
+  // Validate timeframe
+  const validTimeframes: TimeFrame[] = ['1D', '1W', '1M', '6M', 'YTD', '1Y', '5Y'];
+  if (!validTimeframes.includes(timeFrame)) {
+    throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
+  }
+
+  try {
+    const performance = await getStockPerformance(symbol, timeFrame);
+    res.json({
+      success: true,
+      data: performance,
+    });
+  } catch (error) {
+    throw new NotFoundError(`Performance data not found for symbol: ${symbol}`);
   }
 }));
 
