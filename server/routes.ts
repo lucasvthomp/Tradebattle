@@ -263,52 +263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to update user ID (only for user ID 3 or 4)
-  app.put("/api/admin/users/:userId/id", requireAuth, async (req: any, res) => {
-    try {
-      const adminUserId = req.user.id;
-      const oldId = parseInt(req.params.userId);
-      const { newId } = req.body;
-      
-      console.log(`Admin ${adminUserId} attempting to update user ${oldId} to ID ${newId}`);
-      
-      // Check if user is admin (ID 3 or 4)
-      if (adminUserId !== 3 && adminUserId !== 4) {
-        console.log(`Access denied: User ${adminUserId} is not an admin`);
-        return res.status(403).json({ message: "Access denied. Admin privileges required." });
-      }
-      
-      // Validate newId
-      if (!newId || !Number.isInteger(newId) || newId <= 0) {
-        return res.status(400).json({ message: "Invalid new ID. Must be a positive integer." });
-      }
-      
-      // Check if user exists
-      const existingUser = await storage.getUser(oldId);
-      if (!existingUser) {
-        console.log(`User ${oldId} not found`);
-        return res.status(404).json({ message: "User not found." });
-      }
-      
-      // Check if new ID is already taken
-      const existingNewIdUser = await storage.getUser(newId);
-      if (existingNewIdUser) {
-        console.log(`New ID ${newId} is already in use`);
-        return res.status(409).json({ message: "New ID is already in use." });
-      }
-      
-      console.log(`Updating user ${oldId} to ID ${newId}...`);
-      
-      // Update the user ID
-      await storage.updateUserId(oldId, newId);
-      console.log(`User ID updated successfully from ${oldId} to ${newId}`);
-      
-      res.json({ message: "User ID updated successfully.", oldId, newId });
-    } catch (error) {
-      console.error("Error updating user ID:", error);
-      res.status(500).json({ message: "Failed to update user ID." });
-    }
-  });
+
 
   // Error handling middleware (must be last)
   app.use(errorHandler);
