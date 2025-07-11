@@ -97,7 +97,7 @@ export default function Header() {
                     <Crown className="w-4 h-4 mr-2" />
                     My Subscription
                   </DropdownMenuItem>
-                  {user.id === 3 && (
+                  {(user.id === 3 || user.id === 4) && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => window.location.href = "/admin"}>

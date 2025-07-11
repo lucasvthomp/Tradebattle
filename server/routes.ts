@@ -205,13 +205,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to get all users (only for user ID 3)
+  // Admin endpoint to get all users (only for user ID 3 or 4)
   app.get("/api/admin/users", requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
       
-      // Check if user is admin (ID 3)
-      if (userId !== 3) {
+      // Check if user is admin (ID 3 or 4)
+      if (userId !== 3 && userId !== 4) {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
       

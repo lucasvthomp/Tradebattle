@@ -36,8 +36,8 @@ export default function Admin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  // Check if user is admin (ID 3)
-  const isAdmin = user?.id === 3;
+  // Check if user is admin (ID 3 or 4)
+  const isAdmin = user?.id === 3 || user?.id === 4;
 
   // Redirect if not admin
   useEffect(() => {
@@ -190,7 +190,7 @@ export default function Admin() {
                                     : user.email?.split('@')[0] || 'Unknown'
                                   }
                                 </p>
-                                {user.id === 3 && (
+                                {(user.id === 3 || user.id === 4) && (
                                   <Badge className="bg-red-100 text-red-800 text-xs">
                                     <Shield className="w-3 h-3 mr-1" />
                                     Admin
