@@ -47,8 +47,13 @@ export default function Admin() {
   const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [deleteUserId, setDeleteUserId] = useState<number | null>(null);
-  const [confirmationStep, setConfirmationStep] = useState<'first' | 'second' | null>(null);
+  const [deleteState, setDeleteState] = useState<{
+    userId: number | null;
+    step: 'first' | 'second' | null;
+  }>({
+    userId: null,
+    step: null,
+  });
 
   // Check if user is admin (ID 3 or 4)
   const isAdmin = user?.id === 3 || user?.id === 4;
@@ -83,8 +88,7 @@ export default function Admin() {
         title: "User Deleted",
         description: "User account has been successfully deleted.",
       });
-      setDeleteUserId(null);
-      setConfirmationStep(null);
+      setDeleteState({ userId: null, step: null });
     },
     onError: (error: Error) => {
       toast({
@@ -92,34 +96,40 @@ export default function Admin() {
         description: error.message,
         variant: "destructive",
       });
-      setDeleteUserId(null);
-      setConfirmationStep(null);
+      setDeleteState({ userId: null, step: null });
     },
   });
 
   // Helper functions
   const handleDeleteClick = (userId: number) => {
     console.log('Delete clicked for user:', userId);
-    setDeleteUserId(userId);
-    setConfirmationStep('first');
+    setDeleteState({
+      userId: userId,
+      step: 'first'
+    });
   };
 
   const handleFirstConfirmation = () => {
     console.log('First confirmation clicked, moving to second step');
-    setConfirmationStep('second');
+    setDeleteState(prev => ({
+      ...prev,
+      step: 'second'
+    }));
   };
 
   const handleSecondConfirmation = () => {
-    console.log('Second confirmation clicked, deleting user:', deleteUserId);
-    if (deleteUserId) {
-      deleteUserMutation.mutate(deleteUserId);
+    console.log('Second confirmation clicked, deleting user:', deleteState.userId);
+    if (deleteState.userId) {
+      deleteUserMutation.mutate(deleteState.userId);
     }
   };
 
   const handleCancelDelete = () => {
     console.log('Delete cancelled');
-    setDeleteUserId(null);
-    setConfirmationStep(null);
+    setDeleteState({
+      userId: null,
+      step: null
+    });
   };
 
   const canDeleteUser = (targetUserId: number) => {
@@ -128,8 +138,8 @@ export default function Admin() {
   };
 
   const getSelectedUserName = () => {
-    if (!deleteUserId || !allUsers) return '';
-    const selectedUser = allUsers.find((u: any) => u.id === deleteUserId);
+    if (!deleteState.userId || !allUsers) return '';
+    const selectedUser = allUsers.find((u: any) => u.id === deleteState.userId);
     return selectedUser?.firstName && selectedUser?.lastName 
       ? `${selectedUser.firstName} ${selectedUser.lastName}`
       : selectedUser?.email?.split('@')[0] || 'Unknown User';
@@ -346,9 +356,9 @@ export default function Admin() {
 
       {/* Double Confirmation Dialog */}
       <AlertDialog 
-        open={!!confirmationStep} 
+        open={!!deleteState.step} 
         onOpenChange={(open) => {
-          console.log('Dialog open changed:', open, 'current step:', confirmationStep);
+          console.log('Dialog open changed:', open, 'current step:', deleteState.step);
           if (!open) {
             handleCancelDelete();
           }
@@ -357,10 +367,10 @@ export default function Admin() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
-              {confirmationStep === 'first' ? 'Delete User Account?' : 'Are you absolutely sure?'}
+              {deleteState.step === 'first' ? 'Delete User Account?' : 'Are you absolutely sure?'}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
-              {confirmationStep === 'first' ? (
+              {deleteState.step === 'first' ? (
                 <div>
                   You are about to delete the account for <strong>{getSelectedUserName()}</strong>.
                   This action cannot be undone and will permanently remove all user data including:
@@ -385,11 +395,11 @@ export default function Admin() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={confirmationStep === 'first' ? handleFirstConfirmation : handleSecondConfirmation}
+              onClick={deleteState.step === 'first' ? handleFirstConfirmation : handleSecondConfirmation}
               className="bg-red-600 hover:bg-red-700"
               disabled={deleteUserMutation.isPending}
             >
-              {confirmationStep === 'first' ? 'Yes, Delete Account' : 'Delete Forever'}
+              {deleteState.step === 'first' ? 'Yes, Delete Account' : 'Delete Forever'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
