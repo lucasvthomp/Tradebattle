@@ -109,15 +109,18 @@ export default function Pricing() {
       return await res.json();
     },
     onSuccess: (updatedUser, tierName) => {
+      console.log("Success callback triggered:", updatedUser, tierName);
       queryClient.setQueryData(["/api/user"], updatedUser);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Subscription Updated!",
         description: `You've successfully upgraded to the ${tierName} tier.`,
       });
-      navigate("/dashboard");
+      // Stay on pricing page to show the change
+      window.location.reload();
     },
     onError: (error) => {
+      console.log("Error callback triggered:", error);
       toast({
         title: "Update Failed",
         description: "Failed to update subscription tier. Please try again.",
@@ -130,14 +133,17 @@ export default function Pricing() {
     console.log("Button clicked:", tierName);
     console.log("User:", user);
     console.log("User subscription tier:", user?.subscriptionTier);
+    console.log("Is mutation pending?", subscriptionMutation.isPending);
     
     if (!user) {
       // Not logged in, redirect to auth
+      console.log("User not logged in, redirecting to auth");
       navigate("/auth");
       return;
     }
     
     // User is logged in, update subscription
+    console.log("Calling mutation with:", tierName);
     subscriptionMutation.mutate(tierName);
   };
 
