@@ -31,7 +31,6 @@ export interface IStorage {
   updateUserSubscription(id: number, subscription: UpdateUserSubscription): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
-
   
   // Studies operations
   getStudies(): Promise<Study[]>;
@@ -118,8 +117,6 @@ export class DatabaseStorage implements IStorage {
     // Then delete the user
     await db.delete(users).where(eq(users.id, id));
   }
-
-
 
   // Studies operations
   async getStudies(): Promise<Study[]> {

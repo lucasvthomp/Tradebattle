@@ -263,8 +263,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-
-
   // Error handling middleware (must be last)
   app.use(errorHandler);
 

@@ -54,8 +54,6 @@ export default function Admin() {
     userId: null,
     step: null,
   });
-  
-
 
   // Check if user is admin (ID 3 or 4)
   const isAdmin = user?.id === 3 || user?.id === 4;
@@ -102,8 +100,6 @@ export default function Admin() {
     },
   });
 
-
-
   // Helper functions
   const handleDeleteClick = (userId: number) => {
     console.log('Delete clicked for user:', userId);
@@ -135,8 +131,6 @@ export default function Admin() {
       step: null
     });
   };
-
-
 
   const canDeleteUser = (targetUserId: number) => {
     // Admin cannot delete another admin
