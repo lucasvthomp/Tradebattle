@@ -403,9 +403,9 @@ export default function Dashboard() {
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
-    // Free tier gets 15-minute intervals for 1D and 5D
+    // Free tier gets 15-minute intervals for 1D and 5D, 1-day intervals for longer periods
     if (user?.subscriptionTier === 'novice') {
-      return (timeframe === '1D' || timeframe === '5D') ? 15 * 60 * 1000 : 5 * 60 * 1000;
+      return (timeframe === '1D' || timeframe === '5D') ? 15 * 60 * 1000 : 24 * 60 * 60 * 1000;
     }
     
     // Paid tiers get 1-minute intervals for 1D and 5D, 5-minute for longer periods
@@ -887,7 +887,7 @@ export default function Dashboard() {
                       <span className="text-sm text-gray-600">
                         {(changePeriod === '1D' || changePeriod === '5D') ? 
                           (user?.subscriptionTier === 'novice' ? '15min' : '1min') : 
-                          '5min'} refresh
+                          (user?.subscriptionTier === 'novice' ? '1day' : '5min')} refresh
                       </span>
                     </div>
                   </div>
