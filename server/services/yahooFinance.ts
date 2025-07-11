@@ -155,6 +155,8 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
       volume: result.regularMarketVolume || 0,
       marketCap: result.marketCap || 0,
       currency: result.currency || 'USD',
+      sector: result.sector || undefined,
+      industry: result.industry || undefined,
     };
 
     setCachedData(cacheKey, quote, CACHE_TTL.QUOTE);
@@ -191,6 +193,8 @@ export async function searchStocks(query: string): Promise<SearchResult[]> {
         name: item.shortname || item.longname || item.symbol!,
         exchange: item.exchange || 'N/A',
         type: item.typeDisp || 'Stock',
+        sector: item.sector || undefined,
+        industry: item.industry || undefined,
       }));
 
     setCachedData(cacheKey, searchResults, CACHE_TTL.SEARCH);

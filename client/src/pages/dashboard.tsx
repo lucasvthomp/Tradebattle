@@ -594,6 +594,7 @@ export default function Dashboard() {
     const currentPrice = popularData?.price || individualData?.price || stock.price;
     const volume = popularData?.volume || individualData?.volume || stock.volume || 0;
     const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
+    const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
     
     // Use timeframe-specific change data if available, otherwise fallback to current data
     let change = 0;
@@ -615,7 +616,7 @@ export default function Dashboard() {
       currentPrice,
       volume,
       marketCap,
-      sector: stock.sector || "N/A",
+      sector,
       change,
       changePercent,
       currency: popularData?.currency || individualData?.currency || stock.currency || "USD",
@@ -635,7 +636,7 @@ export default function Dashboard() {
       }
     });
 
-  const sectors = ["all", ...Array.from(new Set(watchlist.map(stock => stock.sector)))];
+  const sectors = ["all", ...Array.from(new Set(enrichedWatchlist.map(stock => stock.sector).filter(sector => sector !== "N/A")))];
 
   if (authLoading) {
     return (
@@ -798,7 +799,7 @@ export default function Dashboard() {
                                 <div>
                                   <p className="font-medium">{stock.symbol}</p>
                                   <p className="text-sm text-gray-600">{stock.name}</p>
-                                  <p className="text-xs text-gray-500">{stock.sector}</p>
+                                  <p className="text-xs text-gray-500">{stock.sector || "N/A"}</p>
                                 </div>
                                 <div className="text-right">
                                   <p className="font-medium">${stock.currentPrice ? stock.currentPrice.toFixed(2) : 'N/A'}</p>

@@ -8,6 +8,8 @@ export interface StockQuote {
   volume: number;
   marketCap: number;
   currency: string;
+  sector?: string;
+  industry?: string;
 }
 
 export interface HistoricalDataPoint {
@@ -37,6 +39,8 @@ export interface SearchResult {
   name: string;
   exchange: string;
   type: string;
+  sector?: string;
+  industry?: string;
 }
 
 export interface APIResponse<T> {
