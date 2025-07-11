@@ -519,6 +519,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const requestData = {
         clientUserId: req.user.id,
+        title: `${req.body.type} analysis for ${req.body.target}`,
         type: req.body.type,
         target: req.body.target,
         description: req.body.description,
