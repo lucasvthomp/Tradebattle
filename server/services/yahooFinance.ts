@@ -130,6 +130,57 @@ function formatLargeNumber(num: number): string {
 }
 
 /**
+ * Get sector fallback for well-known stocks
+ */
+function getSectorFallback(symbol: string): string {
+  const sectorMap: Record<string, string> = {
+    'AAPL': 'Technology',
+    'MSFT': 'Technology',
+    'GOOGL': 'Communication Services',
+    'GOOG': 'Communication Services',
+    'AMZN': 'Consumer Discretionary',
+    'TSLA': 'Consumer Discretionary',
+    'META': 'Communication Services',
+    'NVDA': 'Technology',
+    'AMD': 'Technology',
+    'INTC': 'Technology',
+    'NFLX': 'Communication Services',
+    'PEP': 'Consumer Staples',
+    'KO': 'Consumer Staples',
+    'JNJ': 'Healthcare',
+    'JPM': 'Financial Services',
+    'BAC': 'Financial Services',
+    'WMT': 'Consumer Staples',
+    'UNH': 'Healthcare',
+    'HD': 'Consumer Discretionary',
+    'PG': 'Consumer Staples',
+    'DIS': 'Communication Services',
+    'XOM': 'Energy',
+    'CVX': 'Energy',
+    'UAL': 'Industrials',
+    'AAL': 'Industrials',
+    'DAL': 'Industrials',
+    'LUV': 'Industrials',
+    'V': 'Financial Services',
+    'MA': 'Financial Services',
+    'PYPL': 'Financial Services',
+    'CRM': 'Technology',
+    'ADBE': 'Technology',
+    'ORCL': 'Technology',
+    'IBM': 'Technology',
+    'UBER': 'Technology',
+    'LYFT': 'Technology',
+    'ZOOM': 'Technology',
+    'SPOT': 'Communication Services',
+    'TWTR': 'Communication Services',
+    'SNAP': 'Communication Services',
+    'PINS': 'Communication Services',
+  };
+  
+  return sectorMap[symbol] || 'Technology';
+}
+
+/**
  * Fetch current stock quote data
  */
 export async function getStockQuote(symbol: string): Promise<StockQuote> {
@@ -141,7 +192,13 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
   }
 
   try {
-    const result = await yahooFinance.quote(symbol);
+    // Fetch both quote and quoteSummary to get sector information
+    const [result, summary] = await Promise.all([
+      yahooFinance.quote(symbol),
+      yahooFinance.quoteSummary(symbol, {
+        modules: ['assetProfile', 'summaryProfile']
+      }).catch(() => null) // Don't fail if summary is not available
+    ]);
     
     if (!result || !result.regularMarketPrice) {
       throw new Error(`No data found for symbol: ${symbol}`);
@@ -155,8 +212,8 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
       volume: result.regularMarketVolume || 0,
       marketCap: result.marketCap || 0,
       currency: result.currency || 'USD',
-      sector: result.sector || undefined,
-      industry: result.industry || undefined,
+      sector: summary?.summaryProfile?.sector || summary?.assetProfile?.sector || getSectorFallback(symbol),
+      industry: summary?.summaryProfile?.industry || summary?.assetProfile?.industry || undefined,
     };
 
     setCachedData(cacheKey, quote, CACHE_TTL.QUOTE);
@@ -185,17 +242,39 @@ export async function searchStocks(query: string): Promise<SearchResult[]> {
       return [];
     }
 
-    const searchResults: SearchResult[] = result.quotes
-      .filter(item => item.symbol && item.shortname)
-      .slice(0, 10) // Limit to top 10 results
-      .map(item => ({
-        symbol: item.symbol!,
-        name: item.shortname || item.longname || item.symbol!,
-        exchange: item.exchange || 'N/A',
-        type: item.typeDisp || 'Stock',
-        sector: item.sector || undefined,
-        industry: item.industry || undefined,
-      }));
+    // Enhanced search results with sector information
+    const searchResults: SearchResult[] = await Promise.all(
+      result.quotes
+        .filter(item => item.symbol && item.shortname)
+        .slice(0, 10) // Limit to top 10 results
+        .map(async item => {
+          // Try to get sector information from quoteSummary
+          let sector = item.sector;
+          let industry = item.industry;
+          
+          if (!sector) {
+            try {
+              const summary = await yahooFinance.quoteSummary(item.symbol!, {
+                modules: ['assetProfile', 'summaryProfile']
+              });
+              sector = summary?.summaryProfile?.sector || summary?.assetProfile?.sector;
+              industry = summary?.summaryProfile?.industry || summary?.assetProfile?.industry;
+            } catch (error) {
+              // If we can't get sector info, use fallback
+              sector = getSectorFallback(item.symbol!);
+            }
+          }
+          
+          return {
+            symbol: item.symbol!,
+            name: item.shortname || item.longname || item.symbol!,
+            exchange: item.exchange || 'N/A',
+            type: item.typeDisp || 'Stock',
+            sector: sector || getSectorFallback(item.symbol!),
+            industry: industry || undefined,
+          };
+        })
+    );
 
     setCachedData(cacheKey, searchResults, CACHE_TTL.SEARCH);
     return searchResults;
