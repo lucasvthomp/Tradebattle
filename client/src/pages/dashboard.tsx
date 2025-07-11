@@ -407,6 +407,30 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
+  // Fetch individual stock quotes for watchlist items not in popular stocks
+  const watchlistSymbols = watchlist.map(stock => stock.symbol);
+  const { data: individualStockData = [], isLoading: individualStockLoading } = useQuery({
+    queryKey: ["/api/watchlist-quotes", watchlistSymbols],
+    queryFn: async () => {
+      const promises = watchlistSymbols.map(async (symbol) => {
+        try {
+          const response = await fetch(`/api/quote/${symbol}`);
+          if (response.ok) {
+            const result = await response.json();
+            return result.success ? result.data : null;
+          }
+        } catch (error) {
+          console.error(`Error fetching quote for ${symbol}:`, error);
+          return null;
+        }
+      });
+      const results = await Promise.all(promises);
+      return results.filter(Boolean);
+    },
+    enabled: !!user && watchlistSymbols.length > 0,
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+  });
+
   // Add to watchlist mutation
   const addToWatchlistMutation = useMutation({
     mutationFn: async (item: InsertWatchlistItem) => {
@@ -530,6 +554,7 @@ export default function Dashboard() {
 
   // Enrich watchlist with real-time data
   const enrichedWatchlist = watchlist.map(stock => {
+    // First try to find data in popular stocks
     const popularData = popularStocks.find((company: any) => company.symbol === stock.symbol);
     if (popularData) {
       return {
@@ -544,7 +569,35 @@ export default function Dashboard() {
         lastUpdated: Date.now()
       };
     }
-    return stock;
+    
+    // If not in popular stocks, try to find in individual stock data
+    const individualData = individualStockData.find((company: any) => company.symbol === stock.symbol);
+    if (individualData) {
+      return {
+        ...stock,
+        currentPrice: individualData.price,
+        volume: individualData.volume,
+        marketCap: individualData.marketCap,
+        sector: stock.sector || "N/A",
+        change: individualData.change,
+        changePercent: individualData.percentChange,
+        currency: individualData.currency,
+        lastUpdated: Date.now()
+      };
+    }
+    
+    // If no real-time data available, use stored data
+    return {
+      ...stock,
+      currentPrice: stock.price,
+      volume: stock.volume || 0,
+      marketCap: stock.marketCap || 0,
+      sector: stock.sector || "N/A",
+      change: stock.change || 0,
+      changePercent: stock.changePercent || 0,
+      currency: stock.currency || "USD",
+      lastUpdated: Date.now()
+    };
   });
 
   const filteredWatchlist = enrichedWatchlist
@@ -755,8 +808,8 @@ export default function Dashboard() {
                       onChange={(e) => setFilterSector(e.target.value)}
                       className="px-3 py-2 border rounded-md"
                     >
-                      {sectors.map(sector => (
-                        <option key={sector} value={sector}>
+                      {sectors.map((sector, index) => (
+                        <option key={`sector-${index}`} value={sector}>
                           {sector === "all" ? "All Sectors" : sector}
                         </option>
                       ))}
@@ -766,13 +819,13 @@ export default function Dashboard() {
                       onChange={(e) => setChangePeriod(e.target.value)}
                       className="px-3 py-2 border rounded-md"
                     >
-                      <option key="1D" value="1D">1 Day</option>
-                      <option key="1W" value="1W">1 Week</option>
-                      <option key="1M" value="1M">1 Month</option>
-                      <option key="3M" value="3M">3 Months</option>
-                      <option key="6M" value="6M">6 Months</option>
-                      <option key="1Y" value="1Y">1 Year</option>
-                      <option key="YTD" value="YTD">Year to Date</option>
+                      <option value="1D">1 Day</option>
+                      <option value="1W">1 Week</option>
+                      <option value="1M">1 Month</option>
+                      <option value="3M">3 Months</option>
+                      <option value="6M">6 Months</option>
+                      <option value="1Y">1 Year</option>
+                      <option value="YTD">Year to Date</option>
                     </select>
                     <Button
                       variant="outline"
@@ -819,27 +872,27 @@ export default function Dashboard() {
                               </td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
-                                  {stock.changes && stock.changes[changePeriod] ? (
+                                  {stock.changePercent !== undefined && stock.change !== undefined ? (
                                     <>
-                                      {stock.changes[changePeriod].changePercent >= 0 ? (
+                                      {stock.changePercent >= 0 ? (
                                         <TrendingUp className="w-4 h-4 text-green-500" />
                                       ) : (
                                         <TrendingDown className="w-4 h-4 text-red-500" />
                                       )}
                                       <span className={`text-sm font-medium ${
-                                        stock.changes[changePeriod].changePercent >= 0 ? "text-green-600" : "text-red-600"
+                                        stock.changePercent >= 0 ? "text-green-600" : "text-red-600"
                                       }`}>
-                                        {stock.changes[changePeriod].changePercent >= 0 ? '+' : ''}{stock.changes[changePeriod].changePercent.toFixed(2)}%
+                                        {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                                       </span>
                                       <span className={`text-xs ${
-                                        stock.changes[changePeriod].change >= 0 ? "text-green-500" : "text-red-500"
+                                        stock.change >= 0 ? "text-green-500" : "text-red-500"
                                       }`}>
-                                        (${stock.changes[changePeriod].change >= 0 ? '+' : ''}{stock.changes[changePeriod].change.toFixed(2)})
+                                        (${stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)})
                                       </span>
                                     </>
                                   ) : (
                                     <span className="text-sm text-gray-500">
-                                      Loading...
+                                      N/A
                                     </span>
                                   )}
                                 </div>
