@@ -99,21 +99,25 @@ export default function Admin() {
 
   // Helper functions
   const handleDeleteClick = (userId: number) => {
+    console.log('Delete clicked for user:', userId);
     setDeleteUserId(userId);
     setConfirmationStep('first');
   };
 
   const handleFirstConfirmation = () => {
+    console.log('First confirmation clicked, moving to second step');
     setConfirmationStep('second');
   };
 
   const handleSecondConfirmation = () => {
+    console.log('Second confirmation clicked, deleting user:', deleteUserId);
     if (deleteUserId) {
       deleteUserMutation.mutate(deleteUserId);
     }
   };
 
   const handleCancelDelete = () => {
+    console.log('Delete cancelled');
     setDeleteUserId(null);
     setConfirmationStep(null);
   };
@@ -341,13 +345,21 @@ export default function Admin() {
       </div>
 
       {/* Double Confirmation Dialog */}
-      <AlertDialog open={!!confirmationStep} onOpenChange={handleCancelDelete}>
+      <AlertDialog 
+        open={!!confirmationStep} 
+        onOpenChange={(open) => {
+          console.log('Dialog open changed:', open, 'current step:', confirmationStep);
+          if (!open) {
+            handleCancelDelete();
+          }
+        }}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               {confirmationStep === 'first' ? 'Delete User Account?' : 'Are you absolutely sure?'}
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription asChild>
               {confirmationStep === 'first' ? (
                 <div>
                   You are about to delete the account for <strong>{getSelectedUserName()}</strong>.
@@ -359,12 +371,12 @@ export default function Admin() {
                   </ul>
                 </div>
               ) : (
-                <>
+                <div>
                   <span className="text-red-600 font-medium">FINAL CONFIRMATION</span>
                   <br />
                   This is your last chance to cancel. Deleting <strong>{getSelectedUserName()}</strong>'s account 
                   will permanently remove all their data from the system. This action is irreversible.
-                </>
+                </div>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
