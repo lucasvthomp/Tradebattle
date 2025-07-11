@@ -210,8 +210,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.userId;
       
-      // Check if user is admin (userId 0 or 1)
-      if (userId !== 0 && userId !== 1) {
+      // Check if user is admin (userId 0, 1, or 2)
+      if (userId !== 0 && userId !== 1 && userId !== 2) {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
       
@@ -231,8 +231,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log(`Admin userId ${adminUserId} attempting to delete user ${targetUserEmail}`);
       
-      // Check if user is admin (userId 0 or 1)
-      if (adminUserId !== 0 && adminUserId !== 1) {
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
         console.log(`Access denied: User ${adminUserId} is not an admin`);
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }

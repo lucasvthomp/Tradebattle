@@ -56,7 +56,7 @@ export default function Admin() {
   });
 
   // Check if user is admin (based on userId)
-  const isAdmin = user?.userId === 0 || user?.userId === 1;
+  const isAdmin = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
 
   // Redirect if not admin
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function Admin() {
 
   const canDeleteUser = (targetUser: any) => {
     // Admin cannot delete another admin
-    return !(targetUser.userId === 0 || targetUser.userId === 1);
+    return !(targetUser.userId === 0 || targetUser.userId === 1 || targetUser.userId === 2);
   };
 
   const getSelectedUserName = () => {
@@ -265,12 +265,12 @@ export default function Admin() {
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-2">
                               <Badge className={`
-                                ${user.userId === 0 || user.userId === 1 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'}
+                                ${user.userId === 0 || user.userId === 1 || user.userId === 2 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'}
                                 text-xs font-mono font-bold
                               `}>
                                 {user.userId !== null ? user.userId : 'N/A'}
                               </Badge>
-                              {(user.userId === 0 || user.userId === 1) && (
+                              {(user.userId === 0 || user.userId === 1 || user.userId === 2) && (
                                 <Badge className="bg-red-100 text-red-800 text-xs">
                                   <Shield className="w-3 h-3 mr-1" />
                                   Admin
