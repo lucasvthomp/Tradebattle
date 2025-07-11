@@ -48,15 +48,15 @@ export default function Admin() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [deleteState, setDeleteState] = useState<{
-    userId: number | null;
+    userEmail: string | null;
     step: 'first' | 'second' | null;
   }>({
-    userId: null,
+    userEmail: null,
     step: null,
   });
 
-  // Check if user is admin (ID 3 or 4)
-  const isAdmin = user?.id === 3 || user?.id === 4;
+  // Check if user is admin (based on email)
+  const isAdmin = user?.email === 'contact@mowbroshomes.com' || user?.email === 'murksantos@gmail.com';
 
   // Redirect if not admin
   useEffect(() => {
@@ -78,8 +78,8 @@ export default function Admin() {
 
   // Delete user mutation
   const deleteUserMutation = useMutation({
-    mutationFn: async (userId: number) => {
-      const response = await apiRequest("DELETE", `/api/admin/users/${userId}`);
+    mutationFn: async (userEmail: string) => {
+      const response = await apiRequest("DELETE", `/api/admin/users/${encodeURIComponent(userEmail)}`);
       return response.json();
     },
     onSuccess: () => {
@@ -88,7 +88,7 @@ export default function Admin() {
         title: "User Deleted",
         description: "User account has been successfully deleted.",
       });
-      setDeleteState({ userId: null, step: null });
+      setDeleteState({ userEmail: null, step: null });
     },
     onError: (error: Error) => {
       toast({
@@ -96,15 +96,15 @@ export default function Admin() {
         description: error.message,
         variant: "destructive",
       });
-      setDeleteState({ userId: null, step: null });
+      setDeleteState({ userEmail: null, step: null });
     },
   });
 
   // Helper functions
-  const handleDeleteClick = (userId: number) => {
-    console.log('Delete clicked for user:', userId);
+  const handleDeleteClick = (userEmail: string) => {
+    console.log('Delete clicked for user:', userEmail);
     setDeleteState({
-      userId: userId,
+      userEmail,
       step: 'first'
     });
   };
@@ -118,28 +118,28 @@ export default function Admin() {
   };
 
   const handleSecondConfirmation = () => {
-    console.log('Second confirmation clicked, deleting user:', deleteState.userId);
-    if (deleteState.userId) {
-      deleteUserMutation.mutate(deleteState.userId);
+    console.log('Second confirmation clicked, deleting user:', deleteState.userEmail);
+    if (deleteState.userEmail) {
+      deleteUserMutation.mutate(deleteState.userEmail);
     }
   };
 
   const handleCancelDelete = () => {
     console.log('Delete cancelled');
     setDeleteState({
-      userId: null,
+      userEmail: null,
       step: null
     });
   };
 
-  const canDeleteUser = (targetUserId: number) => {
+  const canDeleteUser = (targetUser: any) => {
     // Admin cannot delete another admin
-    return !(targetUserId === 3 || targetUserId === 4);
+    return !(targetUser.email === 'contact@mowbroshomes.com' || targetUser.email === 'murksantos@gmail.com');
   };
 
   const getSelectedUserName = () => {
-    if (!deleteState.userId || !allUsers) return '';
-    const selectedUser = allUsers.find((u: any) => u.id === deleteState.userId);
+    if (!deleteState.userEmail || !allUsers) return '';
+    const selectedUser = allUsers.find((u: any) => u.email === deleteState.userEmail);
     return selectedUser?.firstName && selectedUser?.lastName 
       ? `${selectedUser.firstName} ${selectedUser.lastName}`
       : selectedUser?.email?.split('@')[0] || 'Unknown User';
@@ -250,7 +250,6 @@ export default function Admin() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium">User ID</th>
                         <th className="text-left py-3 px-4 font-medium">Name</th>
                         <th className="text-left py-3 px-4 font-medium">Email</th>
                         <th className="text-left py-3 px-4 font-medium">Subscription</th>
@@ -261,10 +260,7 @@ export default function Admin() {
                     </thead>
                     <tbody>
                       {allUsers?.map((user) => (
-                        <tr key={user.id} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4 font-medium text-blue-600">
-                            #{user.id}
-                          </td>
+                        <tr key={user.email} className="border-b hover:bg-gray-50">
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-3">
                               <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
@@ -279,7 +275,7 @@ export default function Admin() {
                                     : user.email?.split('@')[0] || 'Unknown'
                                   }
                                 </p>
-                                {(user.id === 3 || user.id === 4) && (
+                                {(user.email === 'contact@mowbroshomes.com' || user.email === 'murksantos@gmail.com') && (
                                   <Badge className="bg-red-100 text-red-800 text-xs">
                                     <Shield className="w-3 h-3 mr-1" />
                                     Admin
@@ -329,11 +325,11 @@ export default function Admin() {
                             </Badge>
                           </td>
                           <td className="py-3 px-4">
-                            {canDeleteUser(user.id) ? (
+                            {canDeleteUser(user) ? (
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => handleDeleteClick(user.id)}
+                                onClick={() => handleDeleteClick(user.email)}
                                 className="text-red-600 hover:text-red-800 hover:bg-red-50"
                                 disabled={deleteUserMutation.isPending}
                               >

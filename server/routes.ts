@@ -205,13 +205,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to get all users (only for user ID 3 or 4)
+  // Admin endpoint to get all users (only for specific admin emails)
   app.get("/api/admin/users", requireAuth, async (req: any, res) => {
     try {
-      const userId = req.user.id;
+      const userEmail = req.user.email;
       
-      // Check if user is admin (ID 3 or 4)
-      if (userId !== 3 && userId !== 4) {
+      // Check if user is admin (specific emails)
+      if (userEmail !== 'contact@mowbroshomes.com' && userEmail !== 'murksantos@gmail.com') {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
       
@@ -223,39 +223,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to delete a user (only for user ID 3 or 4)
-  app.delete("/api/admin/users/:userId", requireAuth, async (req: any, res) => {
+  // Admin endpoint to delete a user (only for specific admin emails)
+  app.delete("/api/admin/users/:userEmail", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.id;
-      const targetUserId = parseInt(req.params.userId);
+      const adminEmail = req.user.email;
+      const targetUserEmail = req.params.userEmail;
       
-      console.log(`Admin ${adminUserId} attempting to delete user ${targetUserId}`);
+      console.log(`Admin ${adminEmail} attempting to delete user ${targetUserEmail}`);
       
-      // Check if user is admin (ID 3 or 4)
-      if (adminUserId !== 3 && adminUserId !== 4) {
-        console.log(`Access denied: User ${adminUserId} is not an admin`);
+      // Check if user is admin (specific emails)
+      if (adminEmail !== 'contact@mowbroshomes.com' && adminEmail !== 'murksantos@gmail.com') {
+        console.log(`Access denied: User ${adminEmail} is not an admin`);
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
 
       // Prevent deletion of admin accounts
-      if (targetUserId === 3 || targetUserId === 4) {
-        console.log(`Cannot delete admin account: User ${targetUserId}`);
+      if (targetUserEmail === 'contact@mowbroshomes.com' || targetUserEmail === 'murksantos@gmail.com') {
+        console.log(`Cannot delete admin account: User ${targetUserEmail}`);
         return res.status(403).json({ message: "Cannot delete admin accounts." });
       }
 
       // Check if target user exists
-      const targetUser = await storage.getUser(targetUserId);
+      const targetUser = await storage.getUserByEmail(targetUserEmail);
       if (!targetUser) {
-        console.log(`User ${targetUserId} not found`);
+        console.log(`User ${targetUserEmail} not found`);
         return res.status(404).json({ message: "User not found." });
       }
 
-      console.log(`Deleting user ${targetUserId}...`);
+      console.log(`Deleting user ${targetUserEmail}...`);
       
       // Delete the user
-      await storage.deleteUser(targetUserId);
+      await storage.deleteUser(targetUser.id);
       
-      console.log(`User ${targetUserId} deleted successfully`);
+      console.log(`User ${targetUserEmail} deleted successfully`);
       res.json({ message: "User deleted successfully." });
     } catch (error) {
       console.error("Error deleting user:", error);
