@@ -306,7 +306,7 @@ const stockSearchResults = [
   { symbol: "CMI", name: "Cummins Inc.", price: 285.43, sector: "Industrials" },
   { symbol: "GPN", name: "Global Payments Inc.", price: 128.45, sector: "Technology" },
   { symbol: "MSI", name: "Motorola Solutions Inc.", price: 485.92, sector: "Technology" },
-
+  
   // Additional Growth and Tech Stocks
   { symbol: "SHOP", name: "Shopify Inc.", price: 89.45, sector: "Technology" },
   { symbol: "ROKU", name: "Roku Inc.", price: 68.73, sector: "Technology" },
@@ -326,7 +326,7 @@ const stockSearchResults = [
   { symbol: "NIO", name: "NIO Inc.", price: 8.92, sector: "Automotive" },
   { symbol: "XPEV", name: "XPeng Inc.", price: 12.45, sector: "Automotive" },
   { symbol: "LI", name: "Li Auto Inc.", price: 24.78, sector: "Automotive" },
-
+  
   // Healthcare & Biotech
   { symbol: "MRNA", name: "Moderna Inc.", price: 48.92, sector: "Healthcare" },
   { symbol: "PFE", name: "Pfizer Inc.", price: 28.45, sector: "Healthcare" },
@@ -337,7 +337,7 @@ const stockSearchResults = [
   { symbol: "CAH", name: "Cardinal Health Inc.", price: 118.92, sector: "Healthcare" },
   { symbol: "CVS", name: "CVS Health Corporation", price: 78.45, sector: "Healthcare" },
   { symbol: "WBA", name: "Walgreens Boots Alliance Inc.", price: 28.92, sector: "Healthcare" },
-
+  
   // Energy Sector
   { symbol: "SLB", name: "SLB", price: 48.92, sector: "Energy" },
   { symbol: "HAL", name: "Halliburton Company", price: 38.45, sector: "Energy" },
@@ -349,7 +349,7 @@ const stockSearchResults = [
   { symbol: "KMI", name: "Kinder Morgan Inc.", price: 18.92, sector: "Energy" },
   { symbol: "WMB", name: "Williams Companies Inc.", price: 38.45, sector: "Energy" },
   { symbol: "OKE", name: "ONEOK Inc.", price: 88.92, sector: "Energy" },
-
+  
   // Financial Services
   { symbol: "V", name: "Visa Inc.", price: 285.43, sector: "Financial Services" },
   { symbol: "MA", name: "Mastercard Incorporated", price: 458.92, sector: "Financial Services" },
@@ -361,9 +361,9 @@ const stockSearchResults = [
   { symbol: "FITB", name: "Fifth Third Bancorp", price: 38.45, sector: "Financial Services" },
   { symbol: "HBAN", name: "Huntington Bancshares Incorporated", price: 14.78, sector: "Financial Services" },
   { symbol: "CFG", name: "Citizens Financial Group Inc.", price: 42.89, sector: "Financial Services" },
-
+  
   // Consumer & Retail
-  { symbol: "AMZN", name: "Amazon.com Inc.", price: 151.94, sector: "ConsumerDiscretionary" },
+  { symbol: "AMZN", name: "Amazon.com Inc.", price: 151.94, sector: "Consumer Discretionary" },
   { symbol: "EBAY", name: "eBay Inc.", price: 58.92, sector: "Consumer Discretionary" },
   { symbol: "ETSY", name: "Etsy Inc.", price: 58.73, sector: "Consumer Discretionary" },
   { symbol: "W", name: "Wayfair Inc.", price: 78.45, sector: "Consumer Discretionary" },
@@ -372,7 +372,7 @@ const stockSearchResults = [
   { symbol: "ABNB", name: "Airbnb Inc.", price: 128.45, sector: "Consumer Discretionary" },
   { symbol: "TSLA", name: "Tesla Inc.", price: 248.42, sector: "Automotive" },
   { symbol: "F", name: "Ford Motor Company", price: 10.45, sector: "Automotive" },
-
+  
   // Real Estate
   { symbol: "SPG", name: "Simon Property Group Inc.", price: 158.92, sector: "Real Estate" },
   { symbol: "EXR", name: "Extended Stay America Inc.", price: 128.45, sector: "Real Estate" },
@@ -496,7 +496,7 @@ export default function Dashboard() {
     queryKey: ["/api/performance", watchlist.map(s => s.symbol), changePeriod],
     queryFn: async () => {
       if (watchlist.length === 0) return {};
-
+      
       const performancePromises = watchlist.map(async (stock) => {
         try {
           const response = await fetch(`/api/performance/${stock.symbol}/${changePeriod}`);
@@ -512,7 +512,7 @@ export default function Dashboard() {
           return { [stock.symbol]: null };
         }
       });
-
+      
       const results = await Promise.all(performancePromises);
       return Object.assign({}, ...results);
     },
@@ -573,12 +573,12 @@ export default function Dashboard() {
     if (typeof marketCap === 'string') {
       return marketCap;
     }
-
+    
     // If not a number, return N/A
     if (!marketCap || typeof marketCap !== 'number') {
       return 'N/A';
     }
-
+    
     if (marketCap >= 1000000000000) {
       return (marketCap / 1000000000000).toFixed(1) + "T";
     } else if (marketCap >= 1000000000) {
@@ -598,21 +598,21 @@ export default function Dashboard() {
   const enrichedWatchlist = watchlist.map(stock => {
     // Get timeframe-specific data for the selected period
     const timeframeSpecificData = performanceData[stock.symbol];
-
+    
     // First try to find data in popular stocks for current price
     const popularData = popularStocks.find((company: any) => company.symbol === stock.symbol);
     const individualData = individualStockData.find((company: any) => company.symbol === stock.symbol);
-
+    
     // Use current price from popular or individual data
     const currentPrice = popularData?.price || individualData?.price || stock.price;
     const volume = popularData?.volume || individualData?.volume || stock.volume || 0;
     const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
     const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
-
+    
     // Use timeframe-specific change data if available, otherwise fallback to current data
     let change = 0;
     let changePercent = 0;
-
+    
     if (timeframeSpecificData) {
       change = timeframeSpecificData.change;
       changePercent = timeframeSpecificData.percentChange;
@@ -623,7 +623,7 @@ export default function Dashboard() {
       change = individualData.change;
       changePercent = individualData.percentChange;
     }
-
+    
     return {
       ...stock,
       currentPrice,
