@@ -111,6 +111,7 @@ export function setupAuth(app: Express) {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          subscriptionTier: user.subscriptionTier,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         });
@@ -136,6 +137,7 @@ export function setupAuth(app: Express) {
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          subscriptionTier: user.subscriptionTier,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         });
@@ -152,19 +154,31 @@ export function setupAuth(app: Express) {
   });
 
   // Get current user endpoint
-  app.get("/api/user", (req, res) => {
+  app.get("/api/user", async (req, res) => {
     if (!req.isAuthenticated() || !req.user) {
       return res.status(401).json({ message: "Not authenticated" });
     }
     
-    res.json({
-      id: req.user.id,
-      email: req.user.email,
-      firstName: req.user.firstName,
-      lastName: req.user.lastName,
-      createdAt: req.user.createdAt,
-      updatedAt: req.user.updatedAt,
-    });
+    try {
+      // Always fetch fresh user data from database to ensure latest subscription tier
+      const freshUser = await storage.getUser(req.user.id);
+      if (!freshUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json({
+        id: freshUser.id,
+        email: freshUser.email,
+        firstName: freshUser.firstName,
+        lastName: freshUser.lastName,
+        subscriptionTier: freshUser.subscriptionTier,
+        createdAt: freshUser.createdAt,
+        updatedAt: freshUser.updatedAt,
+      });
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
   });
 }
 

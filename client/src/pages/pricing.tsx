@@ -127,6 +127,10 @@ export default function Pricing() {
   });
 
   const handleTierSelection = (tierName: string) => {
+    console.log("Button clicked:", tierName);
+    console.log("User:", user);
+    console.log("User subscription tier:", user?.subscriptionTier);
+    
     if (!user) {
       // Not logged in, redirect to auth
       navigate("/auth");
