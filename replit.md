@@ -161,3 +161,4 @@ Preferred communication style: Simple, everyday language.
 - **1-Day Change Calculation Fix** (January 2025): Updated 1-day percentage change calculation to use previous trading day's market close price instead of current day's market open for accurate daily performance metrics
 - **Synchronized Change Updates** (January 2025): Fixed change calculation synchronization to ensure daily change values update in real-time with current stock price movements, maintaining consistency between price and change data
 - **1D vs Long-term Change Logic Split** (January 2025): Implemented distinct calculation logic - 1D changes calculated immediately from current price vs previous close for real-time accuracy, while long-term changes (5D, 1M, etc.) use Yahoo Finance timeframe-specific data
+- **Watchlist Limit for Free Accounts** (January 2025): Implemented watchlist limit of 5 equities for free "novice" tier accounts with backend validation and user-friendly error messaging

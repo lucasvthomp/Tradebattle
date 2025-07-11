@@ -148,6 +148,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const validatedData = insertWatchlistSchema.parse(req.body);
+      
+      // Check subscription tier limits
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Get current watchlist count
+      const currentWatchlist = await storage.getUserWatchlist(userId);
+      
+      // Check if user has reached their limit
+      if (user.subscriptionTier === 'novice' && currentWatchlist.length >= 5) {
+        return res.status(403).json({ 
+          message: "Free accounts are limited to 5 equities in their watchlist. Please upgrade to add more stocks.",
+          limit: 5,
+          current: currentWatchlist.length
+        });
+      }
+      
       const watchlistItem = await storage.addToWatchlist(userId, validatedData);
       res.status(201).json(watchlistItem);
     } catch (error) {

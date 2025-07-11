@@ -456,11 +456,20 @@ export default function Dashboard() {
       });
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      // Check if it's a watchlist limit error
+      if (error.message.includes("limited to 5 equities")) {
+        toast({
+          title: "Watchlist Limit Reached",
+          description: "Free accounts can only track 5 stocks. Upgrade to add more to your watchlist.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     },
   });
 
