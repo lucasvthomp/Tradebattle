@@ -349,7 +349,7 @@ export default function Admin() {
             </AlertDialogTitle>
             <AlertDialogDescription>
               {confirmationStep === 'first' ? (
-                <>
+                <div>
                   You are about to delete the account for <strong>{getSelectedUserName()}</strong>.
                   This action cannot be undone and will permanently remove all user data including:
                   <ul className="list-disc ml-4 mt-2">
@@ -357,7 +357,7 @@ export default function Admin() {
                     <li>Watchlist items</li>
                     <li>Account history</li>
                   </ul>
-                </>
+                </div>
               ) : (
                 <>
                   <span className="text-red-600 font-medium">FINAL CONFIRMATION</span>

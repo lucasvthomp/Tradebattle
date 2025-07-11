@@ -115,11 +115,7 @@ export class DatabaseStorage implements IStorage {
     await db.delete(watchlist).where(eq(watchlist.userId, id));
     
     // Then delete the user
-    const result = await db.delete(users).where(eq(users.id, id));
-    
-    if (result.rowCount === 0) {
-      throw new Error("User not found");
-    }
+    await db.delete(users).where(eq(users.id, id));
   }
 
   // Studies operations
