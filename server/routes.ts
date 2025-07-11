@@ -520,9 +520,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const requestData = {
         clientUserId: req.user.id,
         title: `${req.body.type} analysis for ${req.body.target}`,
-        type: req.body.type,
-        target: req.body.target,
-        description: req.body.description,
+        description: req.body.description || `${req.body.type} analysis for ${req.body.target}`,
+        category: req.body.type, // company or sector
         status: 'pending' as const,
         priority: 'medium' as const,
       };
