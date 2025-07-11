@@ -48,7 +48,7 @@ const tiers = [
       "Priority breaking news alerts",
       "Advanced portfolio analytics",
       "Instant email news alerts",
-      "Customer support"
+      "Weekend support"
     ],
     popular: true,
     color: "from-blue-900 to-blue-800"
