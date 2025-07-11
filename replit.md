@@ -151,3 +151,4 @@ Preferred communication style: Simple, everyday language.
 - **Eliminated Mock Data**: Removed all mock/cached data dependencies and replaced with live Yahoo Finance data fetching
 - **Home Button Behavior**: Modified routing so the Home button always shows the original landing page, even when logged in
 - **Comprehensive Sector System**: Created sector mapping for 200+ stocks with 17 sector categories and new /api/sectors endpoint
+- **Free Novice Plan Addition** (January 2025): Added free "Novice" plan to pricing page with limited watchlist (5 equities), limited news access, and email support

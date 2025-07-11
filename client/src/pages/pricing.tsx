@@ -2,9 +2,25 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, Star, Crown, Zap } from "lucide-react";
+import { Check, Star, Crown, Zap, BookOpen } from "lucide-react";
 
 const tiers = [
+  {
+    name: "Novice",
+    price: "Free",
+    period: "forever",
+    description: "Perfect for beginners getting started with investment research",
+    icon: <BookOpen className="w-6 h-6" />,
+    features: [
+      "Limited watchlist (5 equities)",
+      "Limited news access",
+      "Email support",
+      "Basic market insights",
+      "Mobile app access"
+    ],
+    popular: false,
+    color: "from-green-900 to-green-800"
+  },
   {
     name: "Explorer",
     price: "$29",
@@ -111,7 +127,7 @@ export default function Pricing() {
         variants={staggerChildren}
       >
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-3 gap-8 lg:gap-6">
+          <div className="grid lg:grid-cols-4 gap-8 lg:gap-6">
             {tiers.map((tier, index) => (
               <motion.div
                 key={tier.name}
@@ -162,11 +178,13 @@ export default function Pricing() {
                       className={`w-full py-6 text-lg font-semibold ${
                         tier.popular 
                           ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                          : tier.name === 'Novice'
+                          ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-gray-900 hover:bg-gray-800 text-white'
                       }`}
-                      onClick={() => alert(`You selected the ${tier.name} plan! Contact us at info@orsath.com to get started.`)}
+                      onClick={() => alert(`You selected the ${tier.name} plan! ${tier.name === 'Novice' ? 'Sign up now to get started for free!' : 'Contact us at info@orsath.com to get started.'}`)}
                     >
-                      Get Started
+                      {tier.name === 'Novice' ? 'Start Free' : 'Get Started'}
                     </Button>
                   </CardContent>
                 </Card>
@@ -200,9 +218,9 @@ export default function Pricing() {
             </motion.div>
             
             <motion.div variants={fadeInUp}>
-              <h3 className="text-xl font-semibold mb-3 text-black">Is there a free trial?</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">Is there a free plan?</h3>
               <p className="text-gray-600">
-                We offer a 14-day free trial for all new users to experience our qualitative research platform.
+                Yes! Our Novice plan is completely free and includes limited watchlist (5 equities), limited news access, and email support.
               </p>
             </motion.div>
             
