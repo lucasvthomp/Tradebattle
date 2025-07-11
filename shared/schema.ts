@@ -125,9 +125,9 @@ export const researchRequests = pgTable("research_requests", {
   id: serial("id").primaryKey(),
   clientUserId: integer("client_user_id").references(() => users.id).notNull(),
   partnerUserId: integer("partner_user_id").references(() => users.id),
-  title: varchar("title").notNull(),
-  description: text("description").notNull(),
-  category: varchar("category").notNull(),
+  target: varchar("target").notNull(), // company name or sector
+  description: text("description"),
+  category: varchar("category").notNull(), // company or sector
   priority: varchar("priority").default("medium"), // low, medium, high, urgent
   status: varchar("status").default("pending"), // pending, assigned, in_progress, completed, cancelled
   dueDate: timestamp("due_date"),
@@ -227,7 +227,7 @@ export const insertPartnerSchema = createInsertSchema(partners).pick({
 
 export const insertResearchRequestSchema = createInsertSchema(researchRequests).pick({
   clientUserId: true,
-  title: true,
+  target: true,
   description: true,
   category: true,
   priority: true,

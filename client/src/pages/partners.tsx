@@ -220,7 +220,7 @@ export default function Partners() {
 
   const handleCreateRequest = (formData: FormData) => {
     const requestData = {
-      title: formData.get("title"),
+      target: formData.get("target"),
       description: formData.get("description"),
       category: formData.get("category"),
       priority: formData.get("priority"),
@@ -392,7 +392,7 @@ export default function Partners() {
                             <FileText className="h-5 w-5 text-gray-500" />
                           </div>
                           <div>
-                            <p className="font-medium">{request.title}</p>
+                            <p className="font-medium">{request.target}</p>
                             <p className="text-sm text-gray-500">{request.category}</p>
                           </div>
                         </div>
@@ -445,11 +445,11 @@ export default function Partners() {
                         </DialogHeader>
                         <form action={handleCreateRequest} className="space-y-4">
                           <div>
-                            <Label htmlFor="title">Title</Label>
+                            <Label htmlFor="target">Target</Label>
                             <Input 
-                              id="title" 
-                              name="title" 
-                              placeholder="Research request title"
+                              id="target" 
+                              name="target" 
+                              placeholder="Company name or sector"
                               required 
                             />
                           </div>
@@ -459,7 +459,6 @@ export default function Partners() {
                               id="description" 
                               name="description" 
                               placeholder="Detailed description of the research needed"
-                              required 
                             />
                           </div>
                           <div>
@@ -469,11 +468,8 @@ export default function Partners() {
                                 <SelectValue placeholder="Select category" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="equity_analysis">Equity Analysis</SelectItem>
-                                <SelectItem value="market_research">Market Research</SelectItem>
-                                <SelectItem value="sector_analysis">Sector Analysis</SelectItem>
-                                <SelectItem value="economic_research">Economic Research</SelectItem>
-                                <SelectItem value="technical_analysis">Technical Analysis</SelectItem>
+                                <SelectItem value="company">Company</SelectItem>
+                                <SelectItem value="sector">Sector</SelectItem>
                               </SelectContent>
                             </Select>
                           </div>
@@ -512,7 +508,7 @@ export default function Partners() {
                           <div key={request.id} className="border rounded-lg p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex-1">
-                                <h3 className="font-medium">{request.title}</h3>
+                                <h3 className="font-medium">{request.target}</h3>
                                 <p className="text-sm text-gray-600 mt-1">{request.description}</p>
                                 <div className="flex items-center gap-2 mt-2">
                                   <Badge variant="outline">{request.category}</Badge>

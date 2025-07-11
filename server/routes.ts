@@ -519,8 +519,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const requestData = {
         clientUserId: req.user.id,
-        title: `${req.body.type} analysis for ${req.body.target}`,
-        description: req.body.description || `${req.body.type} analysis for ${req.body.target}`,
+        target: req.body.target,
+        description: req.body.description,
         category: req.body.type, // company or sector
         status: 'pending' as const,
         priority: 'medium' as const,
