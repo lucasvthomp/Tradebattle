@@ -98,6 +98,54 @@ export const researchInsights = pgTable("research_insights", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Admin logs table for tracking administrative actions
+export const adminLogs = pgTable("admin_logs", {
+  id: serial("id").primaryKey(),
+  adminUserId: integer("admin_user_id").references(() => users.id).notNull(),
+  targetUserId: integer("target_user_id").references(() => users.id).notNull(),
+  action: varchar("action").notNull(), // subscription_change, role_change, account_suspension, etc.
+  oldValue: text("old_value"),
+  newValue: text("new_value"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Partner management table
+export const partners = pgTable("partners", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  specialization: varchar("specialization"), // research, analysis, advisory, etc.
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Research requests table
+export const researchRequests = pgTable("research_requests", {
+  id: serial("id").primaryKey(),
+  clientUserId: integer("client_user_id").references(() => users.id).notNull(),
+  partnerUserId: integer("partner_user_id").references(() => users.id),
+  title: varchar("title").notNull(),
+  description: text("description").notNull(),
+  category: varchar("category").notNull(),
+  priority: varchar("priority").default("medium"), // low, medium, high, urgent
+  status: varchar("status").default("pending"), // pending, assigned, in_progress, completed, cancelled
+  dueDate: timestamp("due_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Partner-client conversations table
+export const partnerConversations = pgTable("partner_conversations", {
+  id: serial("id").primaryKey(),
+  partnerUserId: integer("partner_user_id").references(() => users.id).notNull(),
+  clientUserId: integer("client_user_id").references(() => users.id).notNull(),
+  message: text("message").notNull(),
+  senderType: varchar("sender_type").notNull(), // partner, client
+  isRead: boolean("is_read").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Zod schemas for validation
 export const insertStudySchema = createInsertSchema(studies).pick({
   title: true,
@@ -134,6 +182,37 @@ export const insertResearchInsightSchema = createInsertSchema(researchInsights).
   description: true,
   symbol: true,
   impact: true,
+});
+
+export const insertAdminLogSchema = createInsertSchema(adminLogs).pick({
+  adminUserId: true,
+  targetUserId: true,
+  action: true,
+  oldValue: true,
+  newValue: true,
+  notes: true,
+});
+
+export const insertPartnerSchema = createInsertSchema(partners).pick({
+  userId: true,
+  specialization: true,
+  isActive: true,
+});
+
+export const insertResearchRequestSchema = createInsertSchema(researchRequests).pick({
+  clientUserId: true,
+  title: true,
+  description: true,
+  category: true,
+  priority: true,
+  dueDate: true,
+});
+
+export const insertPartnerConversationSchema = createInsertSchema(partnerConversations).pick({
+  partnerUserId: true,
+  clientUserId: true,
+  message: true,
+  senderType: true,
 });
 
 // Type exports
@@ -177,3 +256,11 @@ export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSchema>;
 export type ResearchInsight = typeof researchInsights.$inferSelect;
 export type InsertResearchInsight = z.infer<typeof insertResearchInsightSchema>;
+export type AdminLog = typeof adminLogs.$inferSelect;
+export type InsertAdminLog = z.infer<typeof insertAdminLogSchema>;
+export type Partner = typeof partners.$inferSelect;
+export type InsertPartner = z.infer<typeof insertPartnerSchema>;
+export type ResearchRequest = typeof researchRequests.$inferSelect;
+export type InsertResearchRequest = z.infer<typeof insertResearchRequestSchema>;
+export type PartnerConversation = typeof partnerConversations.$inferSelect;
+export type InsertPartnerConversation = z.infer<typeof insertPartnerConversationSchema>;

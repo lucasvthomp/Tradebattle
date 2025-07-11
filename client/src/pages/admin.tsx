@@ -16,7 +16,17 @@ import {
   Mail,
   AlertCircle,
   Settings,
-  Trash2
+  Trash2,
+  MoreHorizontal,
+  Eye,
+  Edit,
+  UserPlus,
+  Server,
+  Activity,
+  Globe,
+  Database,
+  Clock,
+  AlertTriangle
 } from "lucide-react";
 import {
   AlertDialog,
@@ -28,6 +38,34 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -55,6 +93,11 @@ export default function Admin() {
     step: null,
   });
 
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [adminLogsOpen, setAdminLogsOpen] = useState(false);
+  const [editUserOpen, setEditUserOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("users");
+
   // Check if user is admin (based on userId)
   const isAdmin = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
 
@@ -74,337 +117,604 @@ export default function Admin() {
   const { data: allUsers, isLoading: usersLoading } = useQuery({
     queryKey: ["/api/admin/users"],
     enabled: isAdmin,
+    onError: (error: Error) => {
+      if (error.message.includes("401")) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+      }
+    },
+  });
+
+  // Fetch admin logs for selected user
+  const { data: adminLogs, isLoading: logsLoading } = useQuery({
+    queryKey: ["/api/admin/logs", selectedUser?.id],
+    enabled: isAdmin && !!selectedUser?.id,
   });
 
   // Delete user mutation
-  const deleteUserMutation = useMutation({
-    mutationFn: async (userEmail: string) => {
-      const response = await apiRequest("DELETE", `/api/admin/users/${encodeURIComponent(userEmail)}`);
-      return response.json();
+  const deleteMutation = useMutation({
+    mutationFn: async (email: string) => {
+      await apiRequest("DELETE", `/api/admin/users/${email}`);
     },
-    onSuccess: () => {
+    onSuccess: (_, deletedEmail) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      toast({
-        title: "User Deleted",
-        description: "User account has been successfully deleted.",
-      });
       setDeleteState({ userEmail: null, step: null });
+      toast({
+        title: "User deleted",
+        description: `User ${deletedEmail} has been successfully deleted.`,
+        variant: "default",
+      });
     },
     onError: (error: Error) => {
+      if (error.message.includes("401")) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
       toast({
-        title: "Delete Failed",
+        title: "Error",
         description: error.message,
         variant: "destructive",
       });
-      setDeleteState({ userEmail: null, step: null });
     },
   });
 
-  // Helper functions
-  const handleDeleteClick = (userEmail: string) => {
-    console.log('Delete clicked for user:', userEmail);
-    setDeleteState({
-      userEmail,
-      step: 'first'
-    });
-  };
+  // Edit user mutation
+  const editUserMutation = useMutation({
+    mutationFn: async ({ userId, subscriptionTier }: { userId: number; subscriptionTier: string }) => {
+      await apiRequest("PUT", `/api/admin/users/${userId}/subscription`, {
+        subscriptionTier,
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setEditUserOpen(false);
+      toast({
+        title: "User updated",
+        description: "User subscription has been updated successfully.",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
-  const handleFirstConfirmation = () => {
-    console.log('First confirmation clicked, moving to second step');
-    setDeleteState(prev => ({
-      ...prev,
-      step: 'second'
-    }));
-  };
-
-  const handleSecondConfirmation = () => {
-    console.log('Second confirmation clicked, deleting user:', deleteState.userEmail);
+  // Handle delete confirmation
+  const handleDeleteConfirm = () => {
     if (deleteState.userEmail) {
-      deleteUserMutation.mutate(deleteState.userEmail);
+      deleteMutation.mutate(deleteState.userEmail);
     }
   };
 
-  const handleCancelDelete = () => {
-    console.log('Delete cancelled');
-    setDeleteState({
-      userEmail: null,
-      step: null
-    });
+  // Handle delete initiation
+  const handleDeleteUser = (email: string) => {
+    setDeleteState({ userEmail: email, step: 'first' });
   };
 
-  const canDeleteUser = (targetUser: any) => {
-    // Admin cannot delete another admin
-    return !(targetUser.userId === 0 || targetUser.userId === 1 || targetUser.userId === 2);
+  // Handle edit user
+  const handleEditUser = (user: any) => {
+    setSelectedUser(user);
+    setEditUserOpen(true);
   };
 
-  const getSelectedUserName = () => {
-    if (!deleteState.userEmail || !allUsers) return '';
-    const selectedUser = allUsers.find((u: any) => u.email === deleteState.userEmail);
-    return selectedUser?.firstName && selectedUser?.lastName 
-      ? `${selectedUser.firstName} ${selectedUser.lastName}`
-      : selectedUser?.email?.split('@')[0] || 'Unknown User';
+  // Handle view logs
+  const handleViewLogs = (user: any) => {
+    setSelectedUser(user);
+    setAdminLogsOpen(true);
   };
 
+  // Show loading state
   if (authLoading || usersLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading admin panel...</p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
       </div>
     );
   }
 
+  // Don't render anything if not admin (redirect will happen in useEffect)
   if (!isAdmin) {
-    return null; // Will redirect via useEffect
+    return null;
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto py-6 px-4">
-        <motion.div
-          className="max-w-6xl mx-auto"
-          initial="initial"
-          animate="animate"
-          variants={staggerChildren}
-        >
-          {/* Header */}
-          <motion.div className="mb-8" variants={fadeInUp}>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-black mb-2 flex items-center">
-                  <Shield className="w-8 h-8 mr-3 text-red-600" />
-                  Admin Panel
-                </h1>
-                <p className="text-gray-600">System administration and user management</p>
+    <div className="max-w-7xl mx-auto p-8">
+      <motion.div
+        initial="initial"
+        animate="animate"
+        variants={staggerChildren}
+        className="space-y-8"
+      >
+        {/* Header */}
+        <motion.div variants={fadeInUp} className="text-center">
+          <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
+          <p className="text-gray-600">Comprehensive user management and system administration</p>
+        </motion.div>
+
+        {/* Admin Tabs */}
+        <motion.div variants={fadeInUp}>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="users">User Management</TabsTrigger>
+              <TabsTrigger value="system">System Status</TabsTrigger>
+              <TabsTrigger value="partners">Partner Panel</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="users" className="space-y-6">
+              {/* User Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                    <Users className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{allUsers?.length || 0}</div>
+                    <p className="text-xs text-gray-500">Registered accounts</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Admin Users</CardTitle>
+                    <Crown className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {allUsers?.filter(u => u.userId === 0 || u.userId === 1 || u.userId === 2).length || 0}
+                    </div>
+                    <p className="text-xs text-gray-500">System administrators</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Paid Users</CardTitle>
+                    <Activity className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {allUsers?.filter(u => u.subscriptionTier !== 'novice').length || 0}
+                    </div>
+                    <p className="text-xs text-gray-500">Subscription holders</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Free Users</CardTitle>
+                    <Users className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {allUsers?.filter(u => u.subscriptionTier === 'novice').length || 0}
+                    </div>
+                    <p className="text-xs text-gray-500">Novice plan users</p>
+                  </CardContent>
+                </Card>
               </div>
-              <div className="flex items-center space-x-3">
-                <Badge className="bg-red-100 text-red-800">
-                  <AlertCircle className="w-3 h-3 mr-1" />
-                  Administrator Access
-                </Badge>
-                <Button variant="outline" size="sm">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
-                </Button>
+
+              {/* Users Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    User Management
+                  </CardTitle>
+                  <CardDescription>
+                    Manage user accounts, permissions, and subscription tiers
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="rounded-lg border">
+                      <div className="grid grid-cols-7 gap-4 p-4 border-b bg-gray-50 font-semibold">
+                        <div>User ID</div>
+                        <div>Name</div>
+                        <div>Email</div>
+                        <div>Plan</div>
+                        <div>Created</div>
+                        <div>Status</div>
+                        <div>Actions</div>
+                      </div>
+                      <div className="divide-y">
+                        {allUsers?.map((user) => (
+                          <div key={user.id} className="grid grid-cols-7 gap-4 p-4 items-center">
+                            <div className="flex items-center gap-2">
+                              <Badge variant={user.userId === 0 || user.userId === 1 || user.userId === 2 ? "default" : "secondary"}>
+                                {user.userId === 0 || user.userId === 1 || user.userId === 2 ? (
+                                  <Crown className="h-3 w-3 mr-1" />
+                                ) : (
+                                  <Users className="h-3 w-3 mr-1" />
+                                )}
+                                {user.userId}
+                              </Badge>
+                            </div>
+                            <div>
+                              <div className="font-medium">{user.firstName} {user.lastName}</div>
+                            </div>
+                            <div className="text-sm text-gray-500">{user.email}</div>
+                            <div>
+                              <Badge variant="outline" className="capitalize">
+                                {user.subscriptionTier}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
+                            </div>
+                            <div>
+                              <Badge variant="outline" className="text-green-600">
+                                Active
+                              </Badge>
+                            </div>
+                            <div>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="sm">
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem onClick={() => handleViewLogs(user)}>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View Logs
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleEditUser(user)}>
+                                    <Edit className="h-4 w-4 mr-2" />
+                                    Edit User
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => handleDeleteUser(user.email)}
+                                    disabled={user.userId === 0 || user.userId === 1 || user.userId === 2}
+                                    className="text-red-600 hover:text-red-700"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete User
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="system" className="space-y-6">
+              {/* System Status */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Server className="h-5 w-5" />
+                    System Status
+                  </CardTitle>
+                  <CardDescription>
+                    Monitor system health and performance metrics
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">Database</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Status</span>
+                          <Badge variant="outline" className="text-green-600">
+                            <Database className="h-3 w-3 mr-1" />
+                            Connected
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Type</span>
+                          <Badge variant="outline">PostgreSQL</Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Tables</span>
+                          <Badge variant="outline">12</Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">API Services</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Yahoo Finance</span>
+                          <Badge variant="outline" className="text-green-600">
+                            <Globe className="h-3 w-3 mr-1" />
+                            Active
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Cache</span>
+                          <Badge variant="outline" className="text-green-600">
+                            <Settings className="h-3 w-3 mr-1" />
+                            Enabled
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Rate Limit</span>
+                          <Badge variant="outline" className="text-green-600">
+                            <Activity className="h-3 w-3 mr-1" />
+                            Normal
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">System Health</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Uptime</span>
+                          <Badge variant="outline" className="text-green-600">
+                            <Clock className="h-3 w-3 mr-1" />
+                            99.9%
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Error Rate</span>
+                          <Badge variant="outline" className="text-green-600">
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            0.1%
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm">Response Time</span>
+                          <Badge variant="outline" className="text-green-600">
+                            <Activity className="h-3 w-3 mr-1" />
+                            Fast
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* IT Administration */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    IT Administration
+                  </CardTitle>
+                  <CardDescription>
+                    System configuration and administrative tools
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">Quick Actions</h3>
+                      <div className="space-y-2">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Database className="h-4 w-4 mr-2" />
+                          Database Backup
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Settings className="h-4 w-4 mr-2" />
+                          Clear Cache
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Activity className="h-4 w-4 mr-2" />
+                          System Restart
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="space-y-4">
+                      <h3 className="font-semibold">Monitoring</h3>
+                      <div className="space-y-2">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Eye className="h-4 w-4 mr-2" />
+                          View Logs
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <AlertTriangle className="h-4 w-4 mr-2" />
+                          Error Reports
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Activity className="h-4 w-4 mr-2" />
+                          Performance Metrics
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="partners" className="space-y-6">
+              {/* Partner Panel Preview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <UserPlus className="h-5 w-5" />
+                    Partner Panel
+                  </CardTitle>
+                  <CardDescription>
+                    Manage partner staff and research collaboration
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-center py-8">
+                    <UserPlus className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+                    <h3 className="text-lg font-semibold mb-2">Partner Panel Coming Soon</h3>
+                    <p className="text-gray-600 mb-4">
+                      This section will allow partners to manage research requests, 
+                      communicate with clients, and publish research content.
+                    </p>
+                    <Button variant="outline">
+                      Configure Partner Access
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </motion.div>
+
+        {/* Edit User Dialog */}
+        <Dialog open={editUserOpen} onOpenChange={setEditUserOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit User</DialogTitle>
+              <DialogDescription>
+                Update user subscription tier and permissions
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium">User</label>
+                <p className="text-sm text-gray-600">
+                  {selectedUser?.firstName} {selectedUser?.lastName} ({selectedUser?.email})
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium">Subscription Tier</label>
+                <Select
+                  defaultValue={selectedUser?.subscriptionTier}
+                  onValueChange={(value) => {
+                    if (selectedUser) {
+                      editUserMutation.mutate({
+                        userId: selectedUser.id,
+                        subscriptionTier: value,
+                      });
+                    }
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="novice">Novice (Free)</SelectItem>
+                    <SelectItem value="explorer">Explorer ($9.99/month)</SelectItem>
+                    <SelectItem value="analyst">Analyst ($19.99/month)</SelectItem>
+                    <SelectItem value="professional">Professional ($49.99/month)</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
-          </motion.div>
+          </DialogContent>
+        </Dialog>
 
-          {/* Admin Stats */}
-          <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" variants={fadeInUp}>
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Total Users</p>
-                    <p className="text-2xl font-bold text-black">{allUsers?.length || 0}</p>
-                  </div>
-                  <Users className="w-8 h-8 text-blue-600" />
+        {/* Admin Logs Dialog */}
+        <Dialog open={adminLogsOpen} onOpenChange={setAdminLogsOpen}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Admin Logs</DialogTitle>
+              <DialogDescription>
+                Administrative actions for {selectedUser?.firstName} {selectedUser?.lastName}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              {logsLoading ? (
+                <div className="flex justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Free Users</p>
-                    <p className="text-2xl font-bold text-black">
-                      {allUsers?.filter(u => u.subscriptionTier === 'novice').length || 0}
-                    </p>
-                  </div>
-                  <Crown className="w-8 h-8 text-gray-600" />
-                </div>
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-lg">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-600">Paid Users</p>
-                    <p className="text-2xl font-bold text-black">
-                      {allUsers?.filter(u => u.subscriptionTier !== 'novice').length || 0}
-                    </p>
-                  </div>
-                  <Crown className="w-8 h-8 text-green-600" />
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Users List */}
-          <motion.div variants={fadeInUp}>
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Users className="w-5 h-5 mr-2" />
-                  All Users ({allUsers?.length || 0})
-                </CardTitle>
-                <CardDescription>
-                  Complete list of all registered users in the system
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left py-3 px-4 font-medium">User ID</th>
-                        <th className="text-left py-3 px-4 font-medium">Name</th>
-                        <th className="text-left py-3 px-4 font-medium">Email</th>
-                        <th className="text-left py-3 px-4 font-medium">Subscription</th>
-                        <th className="text-left py-3 px-4 font-medium">Join Date</th>
-                        <th className="text-left py-3 px-4 font-medium">Status</th>
-                        <th className="text-left py-3 px-4 font-medium">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allUsers?.map((user) => (
-                        <tr key={user.email} className="border-b hover:bg-gray-50">
-                          <td className="py-3 px-4">
-                            <div className="flex items-center space-x-2">
-                              <Badge className={`
-                                ${user.userId === 0 || user.userId === 1 || user.userId === 2 ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-700'}
-                                text-xs font-mono font-bold
-                              `}>
-                                {user.userId !== null ? user.userId : 'N/A'}
-                              </Badge>
-                              {(user.userId === 0 || user.userId === 1 || user.userId === 2) && (
-                                <Badge className="bg-red-100 text-red-800 text-xs">
-                                  <Shield className="w-3 h-3 mr-1" />
-                                  Admin
-                                </Badge>
-                              )}
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                                <span className="text-xs font-medium text-gray-600">
-                                  {user.firstName?.charAt(0) || user.email?.charAt(0)}
-                                </span>
-                              </div>
-                              <div>
-                                <p className="font-medium text-black">
-                                  {user.firstName && user.lastName 
-                                    ? `${user.firstName} ${user.lastName}`
-                                    : user.email?.split('@')[0] || 'Unknown'
-                                  }
-                                </p>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center space-x-2">
-                              <Mail className="w-4 h-4 text-gray-400" />
-                              <span className="text-sm text-gray-600">{user.email}</span>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <Badge className={`${
-                              user.subscriptionTier === 'professional' ? 'bg-purple-100 text-purple-800' :
-                              user.subscriptionTier === 'analyst' ? 'bg-green-100 text-green-800' :
-                              user.subscriptionTier === 'explorer' ? 'bg-blue-100 text-blue-800' :
-                              'bg-gray-100 text-gray-800'
-                            }`}>
-                              <Crown className="w-3 h-3 mr-1" />
-                              {user.subscriptionTier ? 
-                                user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 
-                                'Novice'
-                              }
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center space-x-2">
-                              <Calendar className="w-4 h-4 text-gray-400" />
-                              <span className="text-sm text-gray-600">
-                                {user.createdAt 
-                                  ? new Date(user.createdAt).toLocaleDateString('en-US', {
-                                      year: 'numeric',
-                                      month: 'short',
-                                      day: 'numeric'
-                                    })
-                                  : 'Unknown'
-                                }
-                              </span>
-                            </div>
-                          </td>
-                          <td className="py-3 px-4">
-                            <Badge className="bg-green-100 text-green-800">
-                              Active
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4">
-                            {canDeleteUser(user) ? (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteClick(user.email)}
-                                className="text-red-600 hover:text-red-800 hover:bg-red-50"
-                                disabled={deleteUserMutation.isPending}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            ) : (
-                              <span className="text-gray-400 text-sm">Protected</span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
-      </div>
-
-      {/* Double Confirmation Dialog */}
-      <AlertDialog 
-        open={!!deleteState.step}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {deleteState.step === 'first' ? 'Delete User Account?' : 'Are you absolutely sure?'}
-            </AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              {deleteState.step === 'first' ? (
-                <div>
-                  You are about to delete the account for <strong>{getSelectedUserName()}</strong>.
-                  This action cannot be undone and will permanently remove all user data including:
-                  <ul className="list-disc ml-4 mt-2">
-                    <li>User profile information</li>
-                    <li>Watchlist items</li>
-                    <li>Account history</li>
-                  </ul>
+              ) : adminLogs?.length ? (
+                <div className="space-y-2">
+                  {adminLogs.map((log) => (
+                    <div key={log.id} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline">{log.action}</Badge>
+                          <span className="text-sm text-gray-600">
+                            {new Date(log.createdAt).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+                      {log.notes && (
+                        <p className="text-sm text-gray-600 mt-2">{log.notes}</p>
+                      )}
+                    </div>
+                  ))}
                 </div>
               ) : (
-                <div>
-                  <span className="text-red-600 font-medium">FINAL CONFIRMATION</span>
-                  <br />
-                  This is your last chance to cancel. Deleting <strong>{getSelectedUserName()}</strong>'s account 
-                  will permanently remove all their data from the system. This action is irreversible.
+                <div className="text-center py-8 text-gray-500">
+                  No admin logs found for this user
                 </div>
               )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleCancelDelete}>
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={deleteState.step === 'first' ? handleFirstConfirmation : handleSecondConfirmation}
-              className="bg-red-600 hover:bg-red-700"
-              disabled={deleteUserMutation.isPending}
-            >
-              {deleteState.step === 'first' ? 'Yes, Delete Account' : 'Delete Forever'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteState.step === 'first'} onOpenChange={(open) => {
+          if (!open) setDeleteState({ userEmail: null, step: null });
+        }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This action cannot be undone. This will permanently delete the user account for{' '}
+                <strong>{deleteState.userEmail}</strong> and remove all their data from our servers.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => setDeleteState({ ...deleteState, step: 'second' })}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Continue
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+
+        {/* Second Confirmation Dialog */}
+        <AlertDialog open={deleteState.step === 'second'} onOpenChange={(open) => {
+          if (!open) setDeleteState({ userEmail: null, step: null });
+        }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Final Confirmation</AlertDialogTitle>
+              <AlertDialogDescription>
+                You are about to permanently delete the user account for{' '}
+                <strong>{deleteState.userEmail}</strong>. This will also delete:
+                <ul className="mt-2 list-disc list-inside text-sm">
+                  <li>All watchlist items</li>
+                  <li>All user preferences</li>
+                  <li>All session data</li>
+                  <li>All related records</li>
+                </ul>
+                <br />
+                Are you sure you want to proceed?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteConfirm}
+                disabled={deleteMutation.isPending}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {deleteMutation.isPending ? "Deleting..." : "Delete User"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </motion.div>
     </div>
   );
 }

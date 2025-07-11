@@ -263,6 +263,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to update user subscription
+  app.put("/api/admin/users/:userId/subscription", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      const targetUserId = parseInt(req.params.userId);
+      const { subscriptionTier } = req.body;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      // Get the user to be updated
+      const targetUser = await storage.getUser(targetUserId);
+      if (!targetUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      // Update subscription
+      const updatedUser = await storage.updateUserSubscription(targetUserId, { subscriptionTier });
+      
+      // Log the admin action
+      await storage.createAdminLog({
+        adminUserId: req.user.id,
+        targetUserId: targetUserId,
+        action: "subscription_change",
+        oldValue: targetUser.subscriptionTier,
+        newValue: subscriptionTier,
+        notes: `Subscription changed from ${targetUser.subscriptionTier} to ${subscriptionTier}`,
+      });
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user subscription:", error);
+      res.status(500).json({ message: "Failed to update user subscription" });
+    }
+  });
+
+  // Admin endpoint to get logs for a specific user
+  app.get("/api/admin/logs/:userId", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      const targetUserId = parseInt(req.params.userId);
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const logs = await storage.getAdminLogs(targetUserId);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching admin logs:", error);
+      res.status(500).json({ message: "Failed to fetch admin logs" });
+    }
+  });
+
+  // Partner management endpoints
+  app.get("/api/partners", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const partners = await storage.getPartners();
+      res.json(partners);
+    } catch (error) {
+      console.error("Error fetching partners:", error);
+      res.status(500).json({ message: "Failed to fetch partners" });
+    }
+  });
+
+  app.post("/api/partners", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const partner = await storage.createPartner(req.body);
+      res.status(201).json(partner);
+    } catch (error) {
+      console.error("Error creating partner:", error);
+      res.status(500).json({ message: "Failed to create partner" });
+    }
+  });
+
+  // Research requests endpoints
+  app.get("/api/research-requests", requireAuth, async (req: any, res) => {
+    try {
+      const requests = await storage.getResearchRequests();
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching research requests:", error);
+      res.status(500).json({ message: "Failed to fetch research requests" });
+    }
+  });
+
+  app.post("/api/research-requests", requireAuth, async (req: any, res) => {
+    try {
+      const request = await storage.createResearchRequest({
+        ...req.body,
+        clientUserId: req.user.id,
+      });
+      res.status(201).json(request);
+    } catch (error) {
+      console.error("Error creating research request:", error);
+      res.status(500).json({ message: "Failed to create research request" });
+    }
+  });
+
   // Error handling middleware (must be last)
   app.use(errorHandler);
 
