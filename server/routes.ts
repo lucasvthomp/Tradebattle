@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, requireAuth } from "./auth";
-import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema } from "@shared/schema";
+import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema, updateUserSubscriptionSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import { z } from "zod";
@@ -34,6 +34,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       console.error("Error updating user profile:", error);
       res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Subscription update route (protected)
+  app.put('/api/user/subscription', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = updateUserSubscriptionSchema.parse(req.body);
+      
+      const updatedUser = await storage.updateUserSubscription(userId, validatedData);
+      res.json(updatedUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid subscription tier", errors: error.errors });
+      }
+      console.error("Error updating user subscription:", error);
+      res.status(500).json({ message: "Failed to update subscription" });
     }
   });
 

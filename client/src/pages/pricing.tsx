@@ -3,6 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Check, Star, Crown, Zap, BookOpen } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
+import { useToast } from "@/hooks/use-toast";
+import { useLocation } from "wouter";
 
 const tiers = [
   {
@@ -84,6 +89,54 @@ const staggerChildren = {
 };
 
 export default function Pricing() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
+
+  const subscriptionMutation = useMutation({
+    mutationFn: async (tierName: string) => {
+      const tierMap: { [key: string]: string } = {
+        "Novice": "novice",
+        "Explorer": "explorer", 
+        "Analyst": "analyst",
+        "Professional": "professional"
+      };
+      
+      const res = await apiRequest("PUT", "/api/user/subscription", {
+        subscriptionTier: tierMap[tierName]
+      });
+      return await res.json();
+    },
+    onSuccess: (updatedUser, tierName) => {
+      queryClient.setQueryData(["/api/user"], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({
+        title: "Subscription Updated!",
+        description: `You've successfully upgraded to the ${tierName} tier.`,
+      });
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      toast({
+        title: "Update Failed",
+        description: "Failed to update subscription tier. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleTierSelection = (tierName: string) => {
+    if (!user) {
+      // Not logged in, redirect to auth
+      navigate("/auth");
+      return;
+    }
+    
+    // User is logged in, update subscription
+    subscriptionMutation.mutate(tierName);
+  };
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -172,9 +225,12 @@ export default function Pricing() {
                           ? 'bg-green-600 hover:bg-green-700 text-white'
                           : 'bg-gray-900 hover:bg-gray-800 text-white'
                       }`}
-                      onClick={() => alert(`You selected the ${tier.name} plan! ${tier.name === 'Novice' ? 'Sign up now to get started for free!' : 'Contact us at info@orsath.com to get started.'}`)}
+                      onClick={() => handleTierSelection(tier.name)}
+                      disabled={subscriptionMutation.isPending || (user && user.subscriptionTier === tier.name.toLowerCase())}
                     >
-                      {tier.name === 'Novice' ? 'Start Free' : 'Get Started'}
+                      {subscriptionMutation.isPending ? 'Updating...' : 
+                       (user && user.subscriptionTier === tier.name.toLowerCase()) ? 'Current Plan' :
+                       tier.name === 'Novice' ? 'Start Free' : 'Get Started'}
                     </Button>
                   </CardContent>
                 </Card>

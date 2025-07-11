@@ -156,3 +156,4 @@ Preferred communication style: Simple, everyday language.
 - **Plan Features Refinement** (January 2025): Removed mobile features from all plans, updated Analyst plan features (removed priority support and Q&A, added instant email news), streamlined Professional plan features
 - **Additional Plan Simplification** (January 2025): Removed custom research from Analyst plan, removed dedicated account manager and API access from Professional plan
 - **Terminology Update** (January 2025): Changed "custom research reports" to "custom case studies" in Professional plan
+- **Subscription Tier System** (January 2025): Implemented dynamic subscription tier functionality with database persistence - users can instantly upgrade/downgrade plans via pricing page buttons, with changes saved across sessions

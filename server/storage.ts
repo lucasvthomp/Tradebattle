@@ -17,6 +17,7 @@ import {
   type InsertContactSubmission,
   type ResearchInsight,
   type InsertResearchInsight,
+  type UpdateUserSubscription,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -27,6 +28,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'email'>>): Promise<User>;
+  updateUserSubscription(id: number, subscription: UpdateUserSubscription): Promise<User>;
   
   // Studies operations
   getStudies(): Promise<Study[]>;
@@ -84,6 +86,18 @@ export class DatabaseStorage implements IStorage {
     const [user] = await db
       .update(users)
       .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user;
+  }
+
+  async updateUserSubscription(id: number, subscription: UpdateUserSubscription): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        subscriptionTier: subscription.subscriptionTier,
+        updatedAt: new Date(),
+      })
       .where(eq(users.id, id))
       .returning();
     return user;

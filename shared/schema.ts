@@ -30,6 +30,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name", { length: 255 }).notNull(),
   lastName: varchar("last_name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(), // hashed password
+  subscriptionTier: varchar("subscription_tier", { length: 50 }).default("novice").notNull(), // novice, explorer, analyst, professional
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -143,6 +144,10 @@ export const insertUserSchema = createInsertSchema(users).pick({
   password: true,
 });
 
+export const updateUserSubscriptionSchema = z.object({
+  subscriptionTier: z.enum(["novice", "explorer", "analyst", "professional"]),
+});
+
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -159,6 +164,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type LoginUser = z.infer<typeof loginSchema>;
 export type RegisterUser = z.infer<typeof registerSchema>;
+export type UpdateUserSubscription = z.infer<typeof updateUserSubscriptionSchema>;
 export type Study = typeof studies.$inferSelect;
 export type InsertStudy = z.infer<typeof insertStudySchema>;
 export type News = typeof news.$inferSelect;
