@@ -203,6 +203,18 @@ export default function Profile() {
                     <form onSubmit={form.handleSubmit(handleSaveProfile)} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
+                          <Label htmlFor="userId">User ID</Label>
+                          <Input 
+                            id="userId" 
+                            value={user.id} 
+                            className="bg-gray-50 cursor-not-allowed" 
+                            disabled 
+                          />
+                          <p className="text-xs text-gray-500">
+                            Your unique account identifier
+                          </p>
+                        </div>
+                        <div className="space-y-2">
                           <Label htmlFor="firstName">First Name</Label>
                           <Input 
                             id="firstName" 
