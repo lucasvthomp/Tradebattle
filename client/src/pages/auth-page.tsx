@@ -47,7 +47,8 @@ export default function AuthPage() {
   const registerForm = useForm<RegisterUser>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     },
@@ -149,18 +150,33 @@ export default function AuthPage() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="register-name">Full Name</Label>
-                        <Input
-                          id="register-name"
-                          placeholder="John Doe"
-                          {...registerForm.register("name")}
-                        />
-                        {registerForm.formState.errors.name && (
-                          <p className="text-sm text-red-500">
-                            {registerForm.formState.errors.name.message}
-                          </p>
-                        )}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="register-firstName">First Name</Label>
+                          <Input
+                            id="register-firstName"
+                            placeholder="John"
+                            {...registerForm.register("firstName")}
+                          />
+                          {registerForm.formState.errors.firstName && (
+                            <p className="text-sm text-red-500">
+                              {registerForm.formState.errors.firstName.message}
+                            </p>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <Label htmlFor="register-lastName">Last Name</Label>
+                          <Input
+                            id="register-lastName"
+                            placeholder="Doe"
+                            {...registerForm.register("lastName")}
+                          />
+                          {registerForm.formState.errors.lastName && (
+                            <p className="text-sm text-red-500">
+                              {registerForm.formState.errors.lastName.message}
+                            </p>
+                          )}
+                        </div>
                       </div>
 
                       <div className="space-y-2">
