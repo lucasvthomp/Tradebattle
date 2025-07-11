@@ -627,6 +627,22 @@ export default function Dashboard() {
     let finalChange = popularData?.change || individualData?.change || 0;
     let finalChangePercent = popularData?.percentChange || individualData?.percentChange || 0;
     
+    // Debug logging for Apple stock
+    if (stock.symbol === 'AAPL') {
+      console.log('AAPL Debug:', {
+        currentPrice,
+        previousClose,
+        finalChange,
+        finalChangePercent,
+        popularData: popularData ? {
+          price: popularData.price,
+          change: popularData.change,
+          percentChange: popularData.percentChange,
+          previousClose: popularData.previousClose
+        } : null
+      });
+    }
+    
     // For timeframe-specific data, use the timeframe data if available
     if (timeframeSpecificData) {
       finalChange = timeframeSpecificData.change;
