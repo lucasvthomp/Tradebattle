@@ -134,6 +134,7 @@ export function setupAuth(app: Express) {
         if (err) return next(err);
         res.json({
           id: user.id,
+          userId: user.userId,
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
@@ -168,6 +169,7 @@ export function setupAuth(app: Express) {
       
       res.json({
         id: freshUser.id,
+        userId: freshUser.userId,
         email: freshUser.email,
         firstName: freshUser.firstName,
         lastName: freshUser.lastName,

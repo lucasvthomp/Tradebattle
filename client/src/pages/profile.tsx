@@ -206,7 +206,7 @@ export default function Profile() {
                           <Label htmlFor="userId">User ID</Label>
                           <Input 
                             id="userId" 
-                            value={user.id} 
+                            value={user.userId !== null ? user.userId : "Not assigned"} 
                             className="bg-gray-50 cursor-not-allowed" 
                             disabled 
                           />
