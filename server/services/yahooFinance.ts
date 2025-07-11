@@ -487,6 +487,7 @@ export async function getStockPerformance(symbol: string, timeFrame: TimeFrame):
   timeFrame: TimeFrame;
   currentPrice: number;
   previousPrice: number;
+  startPrice: number;
   change: number;
   percentChange: number;
 }> {
@@ -508,6 +509,7 @@ export async function getStockPerformance(symbol: string, timeFrame: TimeFrame):
     }
 
     const previousPrice = historicalData[0].close;
+    const startPrice = historicalData[0].close; // The close price from the start of the timeframe
     const currentPrice = currentQuote.price;
     const change = currentPrice - previousPrice;
     const percentChange = calculatePercentChange(currentPrice, previousPrice);
@@ -517,6 +519,7 @@ export async function getStockPerformance(symbol: string, timeFrame: TimeFrame):
       timeFrame,
       currentPrice,
       previousPrice,
+      startPrice,
       change,
       percentChange,
     };

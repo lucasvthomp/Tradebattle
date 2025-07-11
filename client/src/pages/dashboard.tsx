@@ -629,8 +629,21 @@ export default function Dashboard() {
     const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
     const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
     
-    // Use the correct previous close from API data
-    const previousClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
+    // Get the correct historical close price based on timeframe
+    let historicalClose = 0;
+    
+    if (changePeriod === '1D') {
+      // For 1D, use previous close (trading day before)
+      historicalClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
+    } else {
+      // For other timeframes, use the historical open price from performance data
+      if (timeframeSpecificData) {
+        historicalClose = timeframeSpecificData.startPrice || timeframeSpecificData.previousClose || 0;
+      } else {
+        // Fallback to previous close if timeframe data not available
+        historicalClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
+      }
+    }
     
     // For 1D changes: Always calculate from current price vs previous close
     // For long-term changes: Use Yahoo Finance timeframe data
@@ -639,8 +652,8 @@ export default function Dashboard() {
     
     if (changePeriod === '1D') {
       // 1D: Calculate change immediately from current price vs previous close
-      finalChange = currentPrice - previousClose;
-      finalChangePercent = previousClose > 0 ? ((finalChange / previousClose) * 100) : 0;
+      finalChange = currentPrice - historicalClose;
+      finalChangePercent = historicalClose > 0 ? ((finalChange / historicalClose) * 100) : 0;
     } else {
       // Long-term: Use Yahoo Finance timeframe-specific data
       if (timeframeSpecificData) {
@@ -656,7 +669,7 @@ export default function Dashboard() {
     return {
       ...stock,
       currentPrice,
-      previousClose,
+      previousClose: historicalClose,
       volume,
       marketCap,
       sector,
@@ -928,7 +941,7 @@ export default function Dashboard() {
                             <th className="text-left py-2 px-4 font-medium">Symbol</th>
                             <th className="text-left py-2 px-4 font-medium">Company</th>
                             <th className="text-left py-2 px-4 font-medium">Price</th>
-                            <th className="text-left py-2 px-4 font-medium">Previous Close</th>
+                            <th className="text-left py-2 px-4 font-medium">Close Price ({changePeriod})</th>
                             <th className="text-left py-2 px-4 font-medium">
                               Change ({changePeriod})
                             </th>
