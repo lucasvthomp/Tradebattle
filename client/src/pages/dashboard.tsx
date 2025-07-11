@@ -401,6 +401,17 @@ export default function Dashboard() {
   const [filterSector, setFilterSector] = useState("all");
   const [changePeriod, setChangePeriod] = useState("1D");
 
+  // Helper function to determine refresh interval based on subscription tier and timeframe
+  const getRefreshInterval = (timeframe: string) => {
+    // Free tier gets 15-minute intervals for 1D and 5D
+    if (user?.subscriptionTier === 'novice') {
+      return (timeframe === '1D' || timeframe === '5D') ? 15 * 60 * 1000 : 5 * 60 * 1000;
+    }
+    
+    // Paid tiers get 1-minute intervals for 1D and 5D, 5-minute for longer periods
+    return (timeframe === '1D' || timeframe === '5D') ? 1 * 60 * 1000 : 5 * 60 * 1000;
+  };
+
   // Fetch user's watchlist
   const { data: watchlist = [], isLoading: watchlistLoading, refetch: refetchWatchlist } = useQuery({
     queryKey: ["/api/watchlist"],
@@ -428,7 +439,7 @@ export default function Dashboard() {
       return results.filter(Boolean);
     },
     enabled: !!user && watchlistSymbols.length > 0,
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    refetchInterval: getRefreshInterval(changePeriod),
   });
 
   // Add to watchlist mutation
@@ -480,7 +491,7 @@ export default function Dashboard() {
   const { data: popularStocksData, isLoading: cachedLoading } = useQuery({
     queryKey: ["/api/popular"],
     enabled: !!user,
-    refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+    refetchInterval: getRefreshInterval(changePeriod),
   });
 
   // Use popular stocks data
@@ -517,7 +528,7 @@ export default function Dashboard() {
       return Object.assign({}, ...results);
     },
     enabled: !!user && watchlist.length > 0,
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    refetchInterval: getRefreshInterval(changePeriod),
   });
 
   // Fetch all available sectors
@@ -871,6 +882,14 @@ export default function Dashboard() {
                     >
                       {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
                     </Button>
+                    <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-md">
+                      <RefreshCw className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-600">
+                        {(changePeriod === '1D' || changePeriod === '5D') ? 
+                          (user?.subscriptionTier === 'novice' ? '15min' : '1min') : 
+                          '5min'} refresh
+                      </span>
+                    </div>
                   </div>
                 </div>
 
