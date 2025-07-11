@@ -5,9 +5,13 @@ import { setupAuth, requireAuth } from "./auth";
 import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema, updateUserSubscriptionSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
 import { errorHandler } from "./utils/errorHandler.js";
+import { trackRequest, getSystemStatus } from "./services/systemMonitor.js";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Add request tracking middleware
+  app.use(trackRequest);
+  
   // Auth setup
   setupAuth(app);
 
@@ -520,6 +524,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating research request:", error);
       res.status(500).json({ message: "Failed to create research request" });
+    }
+  });
+
+  // System status endpoint for admin panel
+  app.get("/api/system/status", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const systemStatus = await getSystemStatus();
+      res.json(systemStatus);
+    } catch (error) {
+      console.error("Error getting system status:", error);
+      res.status(500).json({ message: "Failed to get system status" });
     }
   });
 

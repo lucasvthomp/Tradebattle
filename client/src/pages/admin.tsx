@@ -137,6 +137,13 @@ export default function Admin() {
     enabled: isAdmin && !!selectedUser?.id,
   });
 
+  // Fetch system status
+  const { data: systemStatus, isLoading: systemLoading } = useQuery({
+    queryKey: ["/api/system/status"],
+    enabled: isAdmin,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
   // Delete user mutation
   const deleteMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -416,80 +423,98 @@ export default function Admin() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">Database</h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Status</span>
-                          <Badge variant="outline" className="text-green-600">
-                            <Database className="h-3 w-3 mr-1" />
-                            Connected
-                          </Badge>
+                  {systemLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                      <p className="mt-2 text-sm text-gray-600">Loading system status...</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="space-y-4">
+                        <h3 className="font-semibold">Database</h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Status</span>
+                            <Badge variant="outline" className={systemStatus?.database?.connected ? "text-green-600" : "text-red-600"}>
+                              <Database className="h-3 w-3 mr-1" />
+                              {systemStatus?.database?.connected ? "Connected" : "Disconnected"}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Type</span>
+                            <Badge variant="outline">{systemStatus?.database?.type || "PostgreSQL"}</Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Tables</span>
+                            <Badge variant="outline">{systemStatus?.database?.tableCount || "0"}</Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Connections</span>
+                            <Badge variant="outline">{systemStatus?.database?.activeConnections || "0"}</Badge>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Type</span>
-                          <Badge variant="outline">PostgreSQL</Badge>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="font-semibold">API Services</h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Yahoo Finance</span>
+                            <Badge variant="outline" className={systemStatus?.apis?.yahooFinance?.status ? "text-green-600" : "text-red-600"}>
+                              <Globe className="h-3 w-3 mr-1" />
+                              {systemStatus?.apis?.yahooFinance?.status ? "Active" : "Inactive"}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Cache</span>
+                            <Badge variant="outline" className={systemStatus?.apis?.cache?.enabled ? "text-green-600" : "text-red-600"}>
+                              <Settings className="h-3 w-3 mr-1" />
+                              {systemStatus?.apis?.cache?.enabled ? "Enabled" : "Disabled"}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Active Users</span>
+                            <Badge variant="outline" className="text-blue-600">
+                              <Users className="h-3 w-3 mr-1" />
+                              {systemStatus?.system?.activeUsers || "0"}
+                            </Badge>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Tables</span>
-                          <Badge variant="outline">12</Badge>
+                      </div>
+                      <div className="space-y-4">
+                        <h3 className="font-semibold">System Health</h3>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Uptime</span>
+                            <Badge variant="outline" className="text-green-600">
+                              <Clock className="h-3 w-3 mr-1" />
+                              {systemStatus?.system?.uptime || "0m"}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Error Rate</span>
+                            <Badge variant="outline" className={systemStatus?.system?.errorRate > 5 ? "text-red-600" : "text-green-600"}>
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              {systemStatus?.system?.errorRate || "0"}%
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Response Time</span>
+                            <Badge variant="outline" className={systemStatus?.system?.avgResponseTime > 1000 ? "text-red-600" : "text-green-600"}>
+                              <Activity className="h-3 w-3 mr-1" />
+                              {systemStatus?.system?.avgResponseTime || "0"}ms
+                            </Badge>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm">Total Requests</span>
+                            <Badge variant="outline" className="text-blue-600">
+                              <Activity className="h-3 w-3 mr-1" />
+                              {systemStatus?.system?.totalRequests || "0"}
+                            </Badge>
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">API Services</h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Yahoo Finance</span>
-                          <Badge variant="outline" className="text-green-600">
-                            <Globe className="h-3 w-3 mr-1" />
-                            Active
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Cache</span>
-                          <Badge variant="outline" className="text-green-600">
-                            <Settings className="h-3 w-3 mr-1" />
-                            Enabled
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Rate Limit</span>
-                          <Badge variant="outline" className="text-green-600">
-                            <Activity className="h-3 w-3 mr-1" />
-                            Normal
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">System Health</h3>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Uptime</span>
-                          <Badge variant="outline" className="text-green-600">
-                            <Clock className="h-3 w-3 mr-1" />
-                            99.9%
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Error Rate</span>
-                          <Badge variant="outline" className="text-green-600">
-                            <AlertTriangle className="h-3 w-3 mr-1" />
-                            0.1%
-                          </Badge>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm">Response Time</span>
-                          <Badge variant="outline" className="text-green-600">
-                            <Activity className="h-3 w-3 mr-1" />
-                            Fast
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
 
