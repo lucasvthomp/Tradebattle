@@ -153,7 +153,7 @@ export default function Profile() {
                     <div className="flex items-center space-x-4 mt-2">
                       <Badge className="bg-blue-100 text-blue-800">
                         <Crown className="w-3 h-3 mr-1" />
-                        Analyst Plan
+                        {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Novice'} Plan
                       </Badge>
                       <Badge className="bg-green-100 text-green-800">
                         <Calendar className="w-3 h-3 mr-1" />
@@ -284,9 +284,15 @@ export default function Profile() {
                         <div>
                           <h3 className="font-semibold text-black flex items-center">
                             <Crown className="w-5 h-5 mr-2 text-blue-600" />
-                            Analyst Plan
+                            {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Novice'} Plan
                           </h3>
-                          <p className="text-sm text-gray-600">$89/month • Next billing: Feb 15, 2024</p>
+                          <p className="text-sm text-gray-600">
+                            {user.subscriptionTier === 'novice' ? 'Free' : 
+                             user.subscriptionTier === 'explorer' ? '$9.99/month' :
+                             user.subscriptionTier === 'analyst' ? '$19.99/month' :
+                             user.subscriptionTier === 'professional' ? '$49.99/month' : 'Free'} • 
+                             Next billing: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </p>
                         </div>
                         <Badge className="bg-green-100 text-green-800">Active</Badge>
                       </div>
@@ -295,12 +301,44 @@ export default function Profile() {
                     <div className="space-y-4">
                       <h4 className="font-semibold text-black">Plan Features</h4>
                       <ul className="space-y-2 text-sm text-gray-600">
-                        <li>✓ Unlimited research studies access</li>
-                        <li>✓ Priority breaking news alerts</li>
-                        <li>✓ Advanced portfolio analytics</li>
-                        <li>✓ Direct analyst Q&A sessions</li>
-                        <li>✓ Custom research requests (2 per month)</li>
-                        <li>✓ Priority customer support</li>
+                        {user.subscriptionTier === 'novice' ? (
+                          <>
+                            <li>✓ Limited watchlist (5 equities)</li>
+                            <li>✓ Limited news access</li>
+                            <li>✓ Email support</li>
+                            <li>✓ Basic market insights</li>
+                          </>
+                        ) : user.subscriptionTier === 'explorer' ? (
+                          <>
+                            <li>✓ Access to 50+ research studies monthly</li>
+                            <li>✓ Basic market news and insights</li>
+                            <li>✓ Email support</li>
+                            <li>✓ Basic portfolio tracking</li>
+                            <li>✓ Weekend market analysis</li>
+                          </>
+                        ) : user.subscriptionTier === 'analyst' ? (
+                          <>
+                            <li>✓ Everything in Explorer</li>
+                            <li>✓ Unlimited research studies access</li>
+                            <li>✓ Priority breaking news alerts</li>
+                            <li>✓ Advanced portfolio analytics</li>
+                            <li>✓ Instant email news alerts</li>
+                            <li>✓ Weekend support</li>
+                          </>
+                        ) : user.subscriptionTier === 'professional' ? (
+                          <>
+                            <li>✓ Everything in Analyst</li>
+                            <li>✓ Custom case studies</li>
+                            <li>✓ Priority support</li>
+                          </>
+                        ) : (
+                          <>
+                            <li>✓ Limited watchlist (5 equities)</li>
+                            <li>✓ Limited news access</li>
+                            <li>✓ Email support</li>
+                            <li>✓ Basic market insights</li>
+                          </>
+                        )}
                       </ul>
                     </div>
 
