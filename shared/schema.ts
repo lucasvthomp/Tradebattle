@@ -8,6 +8,7 @@ import {
   serial,
   boolean,
   integer,
+  numeric,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -32,6 +33,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   subscriptionTier: varchar("subscription_tier", { length: 50 }).default("novice").notNull(), // novice, explorer, analyst, professional
+  balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -71,6 +73,19 @@ export const watchlist = pgTable("watchlist", {
   symbol: varchar("symbol").notNull(),
   companyName: varchar("company_name").notNull(),
   notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Stock purchases table for tracking user trading activity
+export const stockPurchases = pgTable("stock_purchases", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  symbol: varchar("symbol").notNull(),
+  companyName: varchar("company_name").notNull(),
+  shares: integer("shares").notNull(),
+  purchasePrice: numeric("purchase_price", { precision: 15, scale: 2 }).notNull(),
+  totalCost: numeric("total_cost", { precision: 15, scale: 2 }).notNull(),
+  purchaseDate: timestamp("purchase_date").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -195,6 +210,14 @@ export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
   notes: true,
 });
 
+export const insertStockPurchaseSchema = createInsertSchema(stockPurchases).pick({
+  symbol: true,
+  companyName: true,
+  shares: true,
+  purchasePrice: true,
+  totalCost: true,
+});
+
 export const insertContactSchema = createInsertSchema(contactSubmissions).pick({
   name: true,
   email: true,
@@ -294,6 +317,8 @@ export type News = typeof news.$inferSelect;
 export type InsertNews = z.infer<typeof insertNewsSchema>;
 export type WatchlistItem = typeof watchlist.$inferSelect;
 export type InsertWatchlistItem = z.infer<typeof insertWatchlistSchema>;
+export type StockPurchase = typeof stockPurchases.$inferSelect;
+export type InsertStockPurchase = z.infer<typeof insertStockPurchaseSchema>;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSchema>;
 export type ResearchInsight = typeof researchInsights.$inferSelect;

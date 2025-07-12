@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, requireAuth } from "./auth";
-import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema, updateUserSubscriptionSchema } from "@shared/schema";
+import { insertContactSchema, insertWatchlistSchema, insertStockPurchaseSchema, registerSchema, loginSchema, updateUserSubscriptionSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import { trackRequest, getSystemStatus } from "./services/systemMonitor.js";
@@ -191,6 +191,66 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error removing from watchlist:", error);
       res.status(500).json({ message: "Failed to remove from watchlist" });
+    }
+  });
+
+  // Trading routes (protected)
+  app.get('/api/trading/balance', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const balance = await storage.getUserBalance(userId);
+      res.json({ balance });
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      res.status(500).json({ message: "Failed to fetch balance" });
+    }
+  });
+
+  app.post('/api/trading/purchase', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = insertStockPurchaseSchema.parse(req.body);
+      
+      // Check user's balance
+      const currentBalance = await storage.getUserBalance(userId);
+      const totalCost = parseFloat(validatedData.totalCost);
+      
+      if (currentBalance < totalCost) {
+        return res.status(400).json({ 
+          message: "Insufficient balance. Purchase cancelled.",
+          balance: currentBalance,
+          required: totalCost
+        });
+      }
+      
+      // Create the purchase
+      const purchase = await storage.purchaseStock(userId, validatedData);
+      
+      // Update user balance
+      const newBalance = currentBalance - totalCost;
+      await storage.updateUserBalance(userId, newBalance);
+      
+      res.status(201).json({ 
+        purchase,
+        newBalance 
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error processing stock purchase:", error);
+      res.status(500).json({ message: "Failed to process stock purchase" });
+    }
+  });
+
+  app.get('/api/trading/purchases', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const purchases = await storage.getUserStockPurchases(userId);
+      res.json(purchases);
+    } catch (error) {
+      console.error("Error fetching purchases:", error);
+      res.status(500).json({ message: "Failed to fetch purchases" });
     }
   });
 

@@ -3,6 +3,7 @@ import {
   studies,
   news,
   watchlist,
+  stockPurchases,
   contactSubmissions,
   researchInsights,
   adminLogs,
@@ -19,6 +20,8 @@ import {
   type InsertNews,
   type WatchlistItem,
   type InsertWatchlistItem,
+  type StockPurchase,
+  type InsertStockPurchase,
   type ContactSubmission,
   type InsertContactSubmission,
   type ResearchInsight,
@@ -66,6 +69,12 @@ export interface IStorage {
   getUserWatchlist(userId: number): Promise<WatchlistItem[]>;
   addToWatchlist(userId: number, item: InsertWatchlistItem): Promise<WatchlistItem>;
   removeFromWatchlist(userId: number, id: number): Promise<void>;
+  
+  // Trading operations
+  getUserBalance(userId: number): Promise<number>;
+  updateUserBalance(userId: number, newBalance: number): Promise<User>;
+  purchaseStock(userId: number, purchase: InsertStockPurchase): Promise<StockPurchase>;
+  getUserStockPurchases(userId: number): Promise<StockPurchase[]>;
   
   // Contact operations
   createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
@@ -264,6 +273,40 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(watchlist)
       .where(and(eq(watchlist.id, id), eq(watchlist.userId, userId)));
+  }
+
+  // Trading operations
+  async getUserBalance(userId: number): Promise<number> {
+    const [user] = await db
+      .select({ balance: users.balance })
+      .from(users)
+      .where(eq(users.id, userId));
+    return user ? parseFloat(user.balance) : 0;
+  }
+
+  async updateUserBalance(userId: number, newBalance: number): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ balance: newBalance.toString() })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async purchaseStock(userId: number, purchase: InsertStockPurchase): Promise<StockPurchase> {
+    const [stockPurchase] = await db
+      .insert(stockPurchases)
+      .values({ ...purchase, userId })
+      .returning();
+    return stockPurchase;
+  }
+
+  async getUserStockPurchases(userId: number): Promise<StockPurchase[]> {
+    return await db
+      .select()
+      .from(stockPurchases)
+      .where(eq(stockPurchases.userId, userId))
+      .orderBy(desc(stockPurchases.purchaseDate));
   }
 
   // Contact operations

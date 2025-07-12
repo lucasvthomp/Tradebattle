@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { WatchlistItem, InsertWatchlistItem } from "@shared/schema";
+import type { WatchlistItem, InsertWatchlistItem, StockPurchase, InsertStockPurchase } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Search, 
@@ -420,6 +420,15 @@ export default function Dashboard() {
   const [researchType, setResearchType] = useState("");
   const [researchTarget, setResearchTarget] = useState("");
   const [researchDescription, setResearchDescription] = useState("");
+  
+  // Trading state
+  const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const [selectedTradingStock, setSelectedTradingStock] = useState<any>(null);
+  const [shareAmount, setShareAmount] = useState("");
+  const [tradingSearchQuery, setTradingSearchQuery] = useState("");
+  const [tradingStockData, setTradingStockData] = useState<any[]>([]);
+  const [showTradingSearchResults, setShowTradingSearchResults] = useState(false);
+  const [isLoadingTradingStocks, setIsLoadingTradingStocks] = useState(false);
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -460,6 +469,19 @@ export default function Dashboard() {
     },
     enabled: !!user && watchlistSymbols.length > 0,
     refetchInterval: getRefreshInterval(changePeriod),
+  });
+
+  // Trading queries
+  const { data: userBalance } = useQuery({
+    queryKey: ['/api/trading/balance'],
+    enabled: !!user,
+    refetchOnWindowFocus: false
+  });
+
+  const { data: userPurchases } = useQuery({
+    queryKey: ['/api/trading/purchases'],
+    enabled: !!user,
+    refetchOnWindowFocus: false
   });
 
   // Add to watchlist mutation
@@ -535,6 +557,32 @@ export default function Dashboard() {
     },
   });
 
+  // Trading mutations
+  const purchaseStockMutation = useMutation({
+    mutationFn: async (purchaseData: any) => {
+      const res = await apiRequest("POST", "/api/trading/purchase", purchaseData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/trading/balance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/trading/purchases"] });
+      toast({
+        title: "Purchase Successful",
+        description: "Stock has been added to your portfolio",
+      });
+      setIsBuyDialogOpen(false);
+      setSelectedTradingStock(null);
+      setShareAmount("");
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Purchase Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Reset research dialog
   const resetResearchDialog = () => {
     setIsResearchDialogOpen(false);
@@ -559,6 +607,64 @@ export default function Dashboard() {
       type: researchType,
       target: researchTarget,
       description: researchDescription || `${researchType} analysis for ${researchTarget}`,
+    });
+  };
+
+  // Trading search function
+  const handleTradingSearch = async (query: string) => {
+    setTradingSearchQuery(query);
+    
+    if (query.length < 2) {
+      setTradingStockData([]);
+      setShowTradingSearchResults(false);
+      return;
+    }
+
+    setIsLoadingTradingStocks(true);
+    setShowTradingSearchResults(true);
+
+    try {
+      const response = await fetch(`/api/search/${query}`);
+      const data = await response.json();
+      
+      if (data.success) {
+        setTradingStockData(data.data);
+      } else {
+        setTradingStockData([]);
+      }
+    } catch (error) {
+      console.error('Error searching stocks:', error);
+      setTradingStockData([]);
+    } finally {
+      setIsLoadingTradingStocks(false);
+    }
+  };
+
+  // Handle buy button click
+  const handleBuyStock = (stock: any) => {
+    setSelectedTradingStock(stock);
+    setIsBuyDialogOpen(true);
+  };
+
+  // Handle purchase submission
+  const handlePurchaseSubmit = () => {
+    if (!selectedTradingStock || !shareAmount || parseInt(shareAmount) <= 0) {
+      toast({
+        title: "Invalid input",
+        description: "Please enter a valid number of shares",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const shares = parseInt(shareAmount);
+    const totalCost = shares * selectedTradingStock.price;
+
+    purchaseStockMutation.mutate({
+      symbol: selectedTradingStock.symbol,
+      shares: shares,
+      purchasePrice: selectedTradingStock.price.toString(),
+      totalCost: totalCost.toString(),
     });
   };
 
@@ -850,6 +956,78 @@ export default function Dashboard() {
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
+                {/* Balance Display */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <DollarSign className="w-5 h-5 mr-2" />
+                      Account Balance
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-3xl font-bold text-black">
+                      ${userBalance?.balance ? parseFloat(userBalance.balance).toFixed(2) : '0.00'}
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2">Available for trading</p>
+                  </CardContent>
+                </Card>
+
+                {/* Trading Section */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <TrendingUp className="w-5 h-5 mr-2" />
+                      Buy Stocks
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          placeholder="Search stocks to buy..."
+                          value={tradingSearchQuery}
+                          onChange={(e) => handleTradingSearch(e.target.value)}
+                          className="pl-10"
+                        />
+                        {showTradingSearchResults && (
+                          <div className="absolute top-12 left-0 right-0 bg-white border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                            {isLoadingTradingStocks ? (
+                              <div className="p-4 text-center">
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
+                                <div className="mt-2 text-sm text-gray-600">Searching stocks...</div>
+                              </div>
+                            ) : tradingStockData.length > 0 ? (
+                              tradingStockData.map((stock: any, index) => (
+                                <div key={index} className="p-3 hover:bg-gray-50 border-b last:border-b-0">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex-1">
+                                      <p className="font-medium">{stock.symbol}</p>
+                                      <p className="text-sm text-gray-600">{stock.name}</p>
+                                      <p className="text-sm font-medium text-black">${stock.price}</p>
+                                    </div>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleBuyStock(stock)}
+                                      className="bg-black text-white hover:bg-gray-800"
+                                    >
+                                      Buy
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="p-4 text-center text-gray-500">
+                                {tradingSearchQuery.length > 0 ? "No stocks found" : "Start typing to search"}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2">
                     <Card className="border-0 shadow-lg">
@@ -1286,6 +1464,60 @@ export default function Dashboard() {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Buy Stock Dialog */}
+      <Dialog open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Buy Stock</DialogTitle>
+            <DialogDescription>
+              {selectedTradingStock && (
+                <div className="space-y-2">
+                  <p><strong>{selectedTradingStock.symbol}</strong> - {selectedTradingStock.name}</p>
+                  <p>Current price: <strong>${selectedTradingStock.price}</strong></p>
+                  <p>Your balance: <strong>${userBalance?.balance ? parseFloat(userBalance.balance).toFixed(2) : '0.00'}</strong></p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="shares">Number of shares</Label>
+              <Input
+                id="shares"
+                type="number"
+                min="1"
+                step="1"
+                value={shareAmount}
+                onChange={(e) => setShareAmount(e.target.value)}
+                placeholder="Enter number of shares"
+              />
+            </div>
+            {selectedTradingStock && shareAmount && parseInt(shareAmount) > 0 && (
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="text-sm">
+                  Total cost: <strong>${(parseInt(shareAmount) * selectedTradingStock.price).toFixed(2)}</strong>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Remaining balance: <strong>${(parseFloat(userBalance?.balance || '0') - (parseInt(shareAmount) * selectedTradingStock.price)).toFixed(2)}</strong>
+                </p>
+              </div>
+            )}
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsBuyDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handlePurchaseSubmit}
+                disabled={!shareAmount || parseInt(shareAmount) <= 0 || purchaseStockMutation.isPending}
+                className="bg-black text-white hover:bg-gray-800"
+              >
+                {purchaseStockMutation.isPending ? "Processing..." : "Buy Stock"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
