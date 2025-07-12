@@ -633,7 +633,29 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
+  // Extract tournaments from response
   const userTournaments = tournamentResponse?.data || [];
+
+  // Auto-select first tournament if none selected
+  useEffect(() => {
+    if (userTournaments.length > 0 && !selectedTournamentId) {
+      const firstTournament = userTournaments[0];
+      setSelectedTournamentId(firstTournament.tournaments.id.toString());
+      setSelectedTournament(firstTournament);
+    }
+  }, [userTournaments, selectedTournamentId]);
+
+  // Update selectedTournament when selectedTournamentId changes
+  useEffect(() => {
+    if (selectedTournamentId && userTournaments.length > 0) {
+      const tournament = userTournaments.find((t: any) => 
+        t.tournaments.id.toString() === selectedTournamentId
+      );
+      if (tournament) {
+        setSelectedTournament(tournament);
+      }
+    }
+  }, [selectedTournamentId, userTournaments]);
 
 
 
