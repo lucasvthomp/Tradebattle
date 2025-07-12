@@ -85,6 +85,10 @@ export default function Dashboard() {
   const [selectedTradingStock, setSelectedTradingStock] = useState<any>(null);
   const [shareAmount, setShareAmount] = useState('');
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  
+  // State for watchlist
+  const [watchlistSearchQuery, setWatchlistSearchQuery] = useState('');
+  const [showWatchlistSearchResults, setShowWatchlistSearchResults] = useState(false);
 
   // Fetch user tournaments
   const { data: userTournaments = [], isLoading: isLoadingTournaments } = useQuery({
@@ -102,6 +106,18 @@ export default function Dashboard() {
   const { data: searchResults = [], isLoading: isSearching } = useQuery({
     queryKey: ['/api/search', searchQuery],
     enabled: !!user && searchQuery.length > 0,
+  });
+
+  // Fetch watchlist search results
+  const { data: watchlistSearchResults = [], isLoading: isWatchlistSearching } = useQuery({
+    queryKey: ['/api/search', watchlistSearchQuery],
+    enabled: !!user && watchlistSearchQuery.length > 0,
+  });
+
+  // Fetch user watchlist
+  const { data: watchlistItems = [], isLoading: isLoadingWatchlist } = useQuery({
+    queryKey: ['/api/watchlist'],
+    enabled: !!user,
   });
 
   // Fetch tournament balance
@@ -203,10 +219,81 @@ export default function Dashboard() {
     },
   });
 
+  // Add to watchlist mutation
+  const addToWatchlistMutation = useMutation({
+    mutationFn: async (item: InsertWatchlistItem) => {
+      const response = await apiRequest("/api/watchlist", {
+        method: "POST",
+        body: JSON.stringify(item),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/watchlist'] });
+      setWatchlistSearchQuery('');
+      setShowWatchlistSearchResults(false);
+      toast({
+        title: "Added to Watchlist",
+        description: "Stock added to your watchlist successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Remove from watchlist mutation
+  const removeFromWatchlistMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest(`/api/watchlist/${id}`, {
+        method: "DELETE",
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/watchlist'] });
+      toast({
+        title: "Removed from Watchlist",
+        description: "Stock removed from your watchlist.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Handle search
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setShowSearchResults(query.length > 0);
+  };
+
+  // Handle watchlist search
+  const handleWatchlistSearch = (query: string) => {
+    setWatchlistSearchQuery(query);
+    setShowWatchlistSearchResults(query.length > 0);
+  };
+
+  // Handle add to watchlist
+  const handleAddToWatchlist = (stock: any) => {
+    addToWatchlistMutation.mutate({
+      symbol: stock.symbol,
+      companyName: stock.name,
+      notes: '',
+    });
+  };
+
+  // Handle remove from watchlist
+  const removeFromWatchlist = (id: number) => {
+    removeFromWatchlistMutation.mutate(id);
   };
 
   // Handle stock selection for trading
@@ -323,6 +410,145 @@ export default function Dashboard() {
                 </Button>
               </div>
             </div>
+          </motion.div>
+
+          {/* Watchlist Section */}
+          <motion.div variants={fadeInUp}>
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Star className="w-5 h-5 mr-2" />
+                    Your Watchlist ({watchlistItems.length})
+                  </div>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search to add stocks..."
+                      value={watchlistSearchQuery}
+                      onChange={(e) => handleWatchlistSearch(e.target.value)}
+                      className="pl-10 w-64"
+                    />
+                    {showWatchlistSearchResults && (
+                      <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                        {isWatchlistSearching ? (
+                          <div className="p-4 text-center">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                            <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
+                          </div>
+                        ) : watchlistSearchResults.length > 0 ? (
+                          watchlistSearchResults.map((stock: any) => (
+                            <div
+                              key={stock.symbol}
+                              className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
+                              onClick={() => handleAddToWatchlist(stock)}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="font-medium">{stock.symbol}</div>
+                                  <div className="text-sm text-muted-foreground">{stock.name}</div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="font-medium">${stock.price}</div>
+                                  <div className={`text-sm ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {stock.change >= 0 ? '+' : ''}{stock.percentChange?.toFixed(2)}%
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-4 text-center text-muted-foreground">
+                            No stocks found for "{watchlistSearchQuery}"
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {watchlistItems.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b">
+                          <th className="text-left py-3 px-4 font-medium">Symbol</th>
+                          <th className="text-left py-3 px-4 font-medium">Company</th>
+                          <th className="text-left py-3 px-4 font-medium">Price</th>
+                          <th className="text-left py-3 px-4 font-medium">Change</th>
+                          <th className="text-left py-3 px-4 font-medium">Volume</th>
+                          <th className="text-left py-3 px-4 font-medium">Market Cap</th>
+                          <th className="text-left py-3 px-4 font-medium">Sector</th>
+                          <th className="text-left py-3 px-4 font-medium">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {watchlistItems.map((stock: any) => {
+                          const stockData = popularStocks.find(s => s.symbol === stock.symbol);
+                          return (
+                            <tr key={stock.id} className="border-b hover:bg-muted">
+                              <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
+                              <td className="py-3 px-4 text-sm text-foreground max-w-[200px] truncate">{stock.companyName}</td>
+                              <td className="py-3 px-4 text-sm font-medium text-foreground">
+                                {stockData ? `$${stockData.price.toFixed(2)}` : 'Loading...'}
+                              </td>
+                              <td className="py-3 px-4">
+                                {stockData ? (
+                                  <div className="flex flex-col">
+                                    <span className={`text-sm font-medium ${
+                                      stockData.change >= 0 ? "text-green-600" : "text-red-600"
+                                    }`}>
+                                      {stockData.change >= 0 ? '+' : ''}${stockData.change.toFixed(2)}
+                                    </span>
+                                    <span className={`text-xs ${
+                                      stockData.change >= 0 ? "text-green-500" : "text-red-500"
+                                    }`}>
+                                      ({stockData.percentChange >= 0 ? '+' : ''}{stockData.percentChange.toFixed(2)}%)
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <span className="text-sm text-muted-foreground">Loading...</span>
+                                )}
+                              </td>
+                              <td className="py-3 px-4 text-sm text-foreground">
+                                {stockData ? stockData.volume.toLocaleString() : 'N/A'}
+                              </td>
+                              <td className="py-3 px-4 text-sm text-foreground">{stockData ? formatMarketCap(stockData.marketCap) : 'N/A'}</td>
+                              <td className="py-3 px-4">
+                                <Badge variant="secondary" className="text-xs">
+                                  {stockData?.sector || 'N/A'}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="flex items-center space-x-2">
+                                  <Button variant="ghost" size="sm">
+                                    <LineChart className="w-4 h-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeFromWatchlist(stock.id)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                    <p className="text-muted-foreground mb-2">Your watchlist is empty</p>
+                    <p className="text-sm text-muted-foreground">Search for stocks above to add them to your watchlist</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Tournament Code Display */}
