@@ -8,6 +8,7 @@ import {
   serial,
   boolean,
   integer,
+  decimal,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -32,6 +33,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   subscriptionTier: varchar("subscription_tier", { length: 50 }).default("novice").notNull(), // novice, explorer, analyst, professional
+  balance: varchar("balance", { length: 20 }).default("10000.00").notNull(), // Trading balance
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -71,6 +73,18 @@ export const watchlist = pgTable("watchlist", {
   symbol: varchar("symbol").notNull(),
   companyName: varchar("company_name").notNull(),
   notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// User portfolio table for tracking stock purchases
+export const portfolio = pgTable("portfolio", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  symbol: varchar("symbol").notNull(),
+  companyName: varchar("company_name").notNull(),
+  shares: integer("shares").notNull(),
+  purchasePrice: varchar("purchase_price", { length: 20 }).notNull(),
+  purchaseDate: timestamp("purchase_date").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -195,6 +209,13 @@ export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
   notes: true,
 });
 
+export const insertPortfolioSchema = createInsertSchema(portfolio).pick({
+  symbol: true,
+  companyName: true,
+  shares: true,
+  purchasePrice: true,
+});
+
 export const insertContactSchema = createInsertSchema(contactSubmissions).pick({
   name: true,
   email: true,
@@ -294,6 +315,8 @@ export type News = typeof news.$inferSelect;
 export type InsertNews = z.infer<typeof insertNewsSchema>;
 export type WatchlistItem = typeof watchlist.$inferSelect;
 export type InsertWatchlistItem = z.infer<typeof insertWatchlistSchema>;
+export type PortfolioItem = typeof portfolio.$inferSelect;
+export type InsertPortfolioItem = z.infer<typeof insertPortfolioSchema>;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSchema>;
 export type ResearchInsight = typeof researchInsights.$inferSelect;

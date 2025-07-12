@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, requireAuth } from "./auth";
-import { insertContactSchema, insertWatchlistSchema, registerSchema, loginSchema, updateUserSubscriptionSchema } from "@shared/schema";
+import { insertContactSchema, insertWatchlistSchema, insertPortfolioSchema, registerSchema, loginSchema, updateUserSubscriptionSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import { trackRequest, getSystemStatus } from "./services/systemMonitor.js";
@@ -191,6 +191,69 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error removing from watchlist:", error);
       res.status(500).json({ message: "Failed to remove from watchlist" });
+    }
+  });
+
+  // Portfolio routes (protected)
+  app.get('/api/portfolio', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const portfolio = await storage.getUserPortfolio(userId);
+      res.json(portfolio);
+    } catch (error) {
+      console.error("Error fetching portfolio:", error);
+      res.status(500).json({ message: "Failed to fetch portfolio" });
+    }
+  });
+
+  app.post('/api/portfolio/buy', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { symbol, companyName, shares, price } = req.body;
+      
+      // Validate inputs
+      if (!symbol || !companyName || !shares || !price) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      if (!Number.isInteger(shares) || shares <= 0) {
+        return res.status(400).json({ message: "Shares must be a positive integer" });
+      }
+      
+      const totalCost = (parseFloat(price) * shares).toFixed(2);
+      const currentBalance = await storage.getUserBalance(userId);
+      
+      if (parseFloat(totalCost) > parseFloat(currentBalance)) {
+        return res.status(400).json({ message: "Insufficient balance" });
+      }
+      
+      // Add to portfolio
+      const portfolioItem = await storage.addToPortfolio(userId, {
+        symbol,
+        companyName,
+        shares,
+        purchasePrice: price,
+      });
+      
+      // Update user balance
+      const newBalance = (parseFloat(currentBalance) - parseFloat(totalCost)).toFixed(2);
+      await storage.updateUserBalance(userId, newBalance);
+      
+      res.json({ success: true, portfolioItem, newBalance });
+    } catch (error) {
+      console.error("Error buying stock:", error);
+      res.status(500).json({ message: "Failed to buy stock" });
+    }
+  });
+
+  app.get('/api/balance', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const balance = await storage.getUserBalance(userId);
+      res.json({ balance });
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      res.status(500).json({ message: "Failed to fetch balance" });
     }
   });
 
