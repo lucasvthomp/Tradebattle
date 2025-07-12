@@ -419,6 +419,7 @@ export default function Dashboard() {
   const [createdTournament, setCreatedTournament] = useState<any>(null);
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
+  const [stockPrices, setStockPrices] = useState<{[key: string]: number}>({});
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -518,6 +519,45 @@ export default function Dashboard() {
   const currentPurchases = selectedTournament?.tournaments?.id 
     ? tournamentPurchases?.data || []
     : [];
+
+  // Fetch current prices for purchased stocks
+  const purchasedSymbols = currentPurchases.map((purchase: any) => purchase.symbol);
+  const { data: purchasedStockPrices, isLoading: isLoadingPurchasedPrices } = useQuery({
+    queryKey: ['purchased-stock-prices', purchasedSymbols],
+    queryFn: async () => {
+      if (purchasedSymbols.length === 0) return {};
+      
+      const promises = purchasedSymbols.map(async (symbol: string) => {
+        try {
+          const response = await fetch(`/api/quote/${symbol}`);
+          if (response.ok) {
+            const result = await response.json();
+            return result.success ? { symbol, price: result.data.price } : null;
+          }
+        } catch (error) {
+          console.error(`Error fetching price for ${symbol}:`, error);
+          return null;
+        }
+      });
+      const results = await Promise.all(promises);
+      const prices: {[key: string]: number} = {};
+      results.forEach(result => {
+        if (result) {
+          prices[result.symbol] = result.price;
+        }
+      });
+      return prices;
+    },
+    enabled: purchasedSymbols.length > 0,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  // Update stock prices when new data comes in
+  useEffect(() => {
+    if (purchasedStockPrices) {
+      setStockPrices(purchasedStockPrices);
+    }
+  }, [purchasedStockPrices]);
 
   // Refetch balance when tournament changes
   useEffect(() => {
@@ -1567,26 +1607,49 @@ export default function Dashboard() {
                             </CardHeader>
                             <CardContent>
                               {currentPurchases.length > 0 ? (
-                                <div className="space-y-4">
-                                  {currentPurchases.map((purchase: any, index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                                      <div className="flex-1">
-                                        <p className="font-medium text-foreground">{purchase.symbol}</p>
-                                        <p className="text-sm text-muted-foreground">{purchase.companyName}</p>
-                                        <p className="text-sm text-muted-foreground">
-                                          {purchase.shares} shares @ ${Number(purchase.purchasePrice).toFixed(2)}
-                                        </p>
-                                      </div>
-                                      <div className="text-right">
-                                        <p className="font-medium text-foreground">
-                                          ${Number(purchase.totalCost).toFixed(2)}
-                                        </p>
-                                        <p className="text-xs text-muted-foreground">
-                                          {new Date(purchase.createdAt).toLocaleDateString()}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ))}
+                                <div className="overflow-x-auto">
+                                  <table className="w-full">
+                                    <thead>
+                                      <tr className="border-b">
+                                        <th className="text-left p-2 font-medium text-muted-foreground">Stock</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Shares</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Purchase Price</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Current Price</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Change</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Total Value</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {currentPurchases.map((purchase: any, index: number) => {
+                                        const purchasePrice = Number(purchase.purchasePrice);
+                                        const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
+                                        const change = currentPrice - purchasePrice;
+                                        const percentChange = ((change / purchasePrice) * 100);
+                                        const totalValue = currentPrice * purchase.shares;
+                                        
+                                        return (
+                                          <tr key={index} className="border-b hover:bg-muted/50">
+                                            <td className="p-2">
+                                              <div>
+                                                <p className="font-medium text-foreground">{purchase.symbol}</p>
+                                                <p className="text-sm text-muted-foreground">{purchase.companyName}</p>
+                                              </div>
+                                            </td>
+                                            <td className="p-2 text-right font-medium">{purchase.shares}</td>
+                                            <td className="p-2 text-right">${purchasePrice.toFixed(2)}</td>
+                                            <td className="p-2 text-right">${currentPrice.toFixed(2)}</td>
+                                            <td className="p-2 text-right">
+                                              <div className={`${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                <div>${change.toFixed(2)}</div>
+                                                <div className="text-xs">({percentChange.toFixed(2)}%)</div>
+                                              </div>
+                                            </td>
+                                            <td className="p-2 text-right font-medium">${totalValue.toFixed(2)}</td>
+                                          </tr>
+                                        );
+                                      })}
+                                    </tbody>
+                                  </table>
                                 </div>
                               ) : (
                                 <div className="text-center py-8">
