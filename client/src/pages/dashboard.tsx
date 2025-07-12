@@ -289,19 +289,19 @@ export default function Dashboard() {
   };
 
   // Prepare chart data
-  const chartData = portfolioPerformance.length > 0 ? 
-    portfolioPerformance[0]?.historicalData?.map((point, index) => ({
+  const chartData = portfolioPerformance.length > 0 && portfolioPerformance[0]?.historicalData ? 
+    portfolioPerformance[0].historicalData.map((point, index) => ({
       date: point.date,
       ...portfolioPerformance.reduce((acc, perf) => {
         const portfolioItem = portfolio.find(p => p.symbol === perf.symbol);
-        if (portfolioItem && perf.historicalData[index]) {
+        if (portfolioItem && perf.historicalData && perf.historicalData[index]) {
           acc[perf.symbol] = perf.historicalData[index].price * portfolioItem.shares;
         }
         return acc;
       }, {} as Record<string, number>),
       total: portfolioPerformance.reduce((total, perf) => {
         const portfolioItem = portfolio.find(p => p.symbol === perf.symbol);
-        if (portfolioItem && perf.historicalData[index]) {
+        if (portfolioItem && perf.historicalData && perf.historicalData[index]) {
           return total + (perf.historicalData[index].price * portfolioItem.shares);
         }
         return total;
@@ -390,7 +390,7 @@ export default function Dashboard() {
                   <div className="h-64 flex items-center justify-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
                   </div>
-                ) : chartData.length > 0 ? (
+                ) : chartData && chartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={300}>
                     <RechartsLineChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" />
