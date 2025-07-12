@@ -409,6 +409,7 @@ export default function Dashboard() {
   const [tradingStockData, setTradingStockData] = useState<any[]>([]);
   const [showTradingSearchResults, setShowTradingSearchResults] = useState(false);
   const [isLoadingTradingStocks, setIsLoadingTradingStocks] = useState(false);
+  const [isWatchlistExpanded, setIsWatchlistExpanded] = useState(false);
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -922,6 +923,9 @@ export default function Dashboard() {
       }
     });
 
+  // Limit watchlist display to 3 items by default
+  const displayedWatchlist = isWatchlistExpanded ? filteredWatchlist : filteredWatchlist.slice(0, 3);
+
   const sectors = ["all", ...allSectors];
 
   if (authLoading) {
@@ -1056,7 +1060,7 @@ export default function Dashboard() {
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredWatchlist.map((stock) => (
+                      {displayedWatchlist.map((stock) => (
                         <tr key={stock.id} className="border-b hover:bg-muted">
                           <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
                           <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
@@ -1119,6 +1123,19 @@ export default function Dashboard() {
                     </tbody>
                   </table>
                 </div>
+                
+                {/* Show More/Show Less Button */}
+                {filteredWatchlist.length > 3 && (
+                  <div className="flex justify-center mt-4">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsWatchlistExpanded(!isWatchlistExpanded)}
+                    >
+                      {isWatchlistExpanded ? 'Show Less' : 'Show More'}
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
