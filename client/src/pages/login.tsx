@@ -101,10 +101,10 @@ export default function Login() {
                 {loginMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    Logging in...
                   </>
                 ) : (
-                  "Sign in"
+                  "Log in"
                 )}
               </Button>
 
