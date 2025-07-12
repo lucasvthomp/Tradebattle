@@ -45,59 +45,47 @@ export default function StockTicker() {
     );
   }
 
+  const StockItem = ({ stock }: { stock: StockData }) => (
+    <div className="flex items-center space-x-2 whitespace-nowrap px-4">
+      <span className="font-semibold text-foreground text-sm">{stock.symbol}</span>
+      <span className="text-foreground text-sm">${stock.price.toFixed(2)}</span>
+      <div className="flex items-center space-x-1">
+        {stock.percentChange >= 0 ? (
+          <TrendingUp className="w-3 h-3 text-green-500" />
+        ) : (
+          <TrendingDown className="w-3 h-3 text-red-500" />
+        )}
+        <span
+          className={`text-xs font-medium ${
+            stock.percentChange >= 0 ? "text-green-600" : "text-red-600"
+          }`}
+        >
+          {stock.percentChange >= 0 ? '+' : ''}{stock.percentChange.toFixed(2)}%
+        </span>
+      </div>
+    </div>
+  );
+
   return (
     <div className="bg-card border-b border-muted py-3 overflow-hidden">
       <motion.div
-        className="flex items-center space-x-8"
+        className="flex items-center"
         animate={{
-          x: [-window.innerWidth, window.innerWidth],
+          x: [0, -100 * tickerData.length - 32 * tickerData.length], // Account for padding
         }}
         transition={{
-          duration: 30,
+          duration: 25,
           repeat: Infinity,
           ease: "linear",
         }}
       >
-        {tickerData.map((stock, index) => (
-          <div key={`${stock.symbol}-${index}`} className="flex items-center space-x-2 whitespace-nowrap">
-            <span className="font-semibold text-foreground text-sm">{stock.symbol}</span>
-            <span className="text-foreground text-sm">${stock.price.toFixed(2)}</span>
-            <div className="flex items-center space-x-1">
-              {stock.percentChange >= 0 ? (
-                <TrendingUp className="w-3 h-3 text-green-500" />
-              ) : (
-                <TrendingDown className="w-3 h-3 text-red-500" />
-              )}
-              <span
-                className={`text-xs font-medium ${
-                  stock.percentChange >= 0 ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {stock.percentChange >= 0 ? '+' : ''}{stock.percentChange.toFixed(2)}%
-              </span>
-            </div>
-          </div>
+        {/* First set */}
+        {tickerData.map((stock) => (
+          <StockItem key={`first-${stock.symbol}`} stock={stock} />
         ))}
-        {/* Duplicate the data for seamless loop */}
-        {tickerData.map((stock, index) => (
-          <div key={`${stock.symbol}-duplicate-${index}`} className="flex items-center space-x-2 whitespace-nowrap">
-            <span className="font-semibold text-foreground text-sm">{stock.symbol}</span>
-            <span className="text-foreground text-sm">${stock.price.toFixed(2)}</span>
-            <div className="flex items-center space-x-1">
-              {stock.percentChange >= 0 ? (
-                <TrendingUp className="w-3 h-3 text-green-500" />
-              ) : (
-                <TrendingDown className="w-3 h-3 text-red-500" />
-              )}
-              <span
-                className={`text-xs font-medium ${
-                  stock.percentChange >= 0 ? "text-green-600" : "text-red-600"
-                }`}
-              >
-                {stock.percentChange >= 0 ? '+' : ''}{stock.percentChange.toFixed(2)}%
-              </span>
-            </div>
-          </div>
+        {/* Second set for seamless loop */}
+        {tickerData.map((stock) => (
+          <StockItem key={`second-${stock.symbol}`} stock={stock} />
         ))}
       </motion.div>
     </div>
