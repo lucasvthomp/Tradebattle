@@ -715,6 +715,7 @@ export default function Dashboard() {
 
     purchaseStockMutation.mutate({
       symbol: selectedTradingStock.symbol,
+      companyName: selectedTradingStock.name || selectedTradingStock.symbol,
       shares: shares,
       purchasePrice: selectedTradingStock.price.toString(),
       totalCost: totalCost.toString(),
