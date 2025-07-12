@@ -254,6 +254,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/trading/sell', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { purchaseId, shares, salePrice, totalValue } = req.body;
+      
+      // Validate input
+      if (!purchaseId || !shares || !salePrice || !totalValue) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      
+      // Delete the purchase record
+      await storage.deletePurchase(userId, purchaseId);
+      
+      // Update user balance
+      const currentBalance = await storage.getUserBalance(userId);
+      const newBalance = currentBalance + totalValue;
+      await storage.updateUserBalance(userId, newBalance);
+      
+      res.status(200).json({ 
+        message: "Stock sold successfully",
+        newBalance,
+        saleValue: totalValue
+      });
+    } catch (error) {
+      console.error("Error selling stock:", error);
+      res.status(500).json({ message: "Failed to sell stock" });
+    }
+  });
+
   // Contact form route
   app.post('/api/contact', async (req, res) => {
     try {

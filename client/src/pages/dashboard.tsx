@@ -583,6 +583,29 @@ export default function Dashboard() {
     },
   });
 
+  // Sell stock mutation
+  const sellStockMutation = useMutation({
+    mutationFn: async (saleData: any) => {
+      const res = await apiRequest("POST", "/api/trading/sell", saleData);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/trading/balance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/trading/purchases"] });
+      toast({
+        title: "Sale Successful",
+        description: "Stock has been sold and funds added to your balance",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Sale Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   // Reset research dialog
   const resetResearchDialog = () => {
     setIsResearchDialogOpen(false);
@@ -674,6 +697,49 @@ export default function Dashboard() {
       toast({
         title: "Error",
         description: "Unable to fetch current price for this stock",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Handle sell stock
+  const handleSellStock = async (purchase: any) => {
+    try {
+      // Get current price for the stock
+      const response = await fetch(`/api/quote/${purchase.symbol}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        const currentPrice = data.data.price;
+        const totalValue = purchase.shares * currentPrice;
+        
+        // Confirm sale
+        const confirmed = confirm(
+          `Sell ${purchase.shares} shares of ${purchase.symbol} at $${currentPrice.toFixed(2)} per share?\n\nTotal value: $${totalValue.toFixed(2)}`
+        );
+        
+        if (confirmed) {
+          const saleData = {
+            purchaseId: purchase.id,
+            shares: purchase.shares,
+            salePrice: currentPrice,
+            totalValue: totalValue
+          };
+          
+          sellStockMutation.mutate(saleData);
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: "Unable to fetch current price for this stock",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error selling stock:', error);
+      toast({
+        title: "Error",
+        description: "Unable to sell stock at this time",
         variant: "destructive",
       });
     }
@@ -1120,6 +1186,7 @@ export default function Dashboard() {
                                   <th className="text-left py-2 px-4 font-medium">Total Value</th>
                                   <th className="text-left py-2 px-4 font-medium">P&L</th>
                                   <th className="text-left py-2 px-4 font-medium">Purchase Date</th>
+                                  <th className="text-left py-2 px-4 font-medium">Actions</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1168,6 +1235,16 @@ export default function Dashboard() {
                                       </td>
                                       <td className="py-3 px-4 text-sm">
                                         {new Date(purchase.purchaseDate).toLocaleDateString()}
+                                      </td>
+                                      <td className="py-3 px-4">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => handleSellStock(purchase)}
+                                          className="text-red-600 border-red-600 hover:bg-red-50"
+                                        >
+                                          Sell
+                                        </Button>
                                       </td>
                                     </tr>
                                   );

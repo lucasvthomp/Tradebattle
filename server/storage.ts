@@ -75,6 +75,7 @@ export interface IStorage {
   updateUserBalance(userId: number, newBalance: number): Promise<User>;
   purchaseStock(userId: number, purchase: InsertStockPurchase): Promise<StockPurchase>;
   getUserStockPurchases(userId: number): Promise<StockPurchase[]>;
+  deletePurchase(userId: number, purchaseId: number): Promise<void>;
   
   // Contact operations
   createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
@@ -307,6 +308,16 @@ export class DatabaseStorage implements IStorage {
       .from(stockPurchases)
       .where(eq(stockPurchases.userId, userId))
       .orderBy(desc(stockPurchases.purchaseDate));
+  }
+
+  async deletePurchase(userId: number, purchaseId: number): Promise<void> {
+    await db.delete(stockPurchases)
+      .where(
+        and(
+          eq(stockPurchases.id, purchaseId),
+          eq(stockPurchases.userId, userId)
+        )
+      );
   }
 
   // Contact operations
