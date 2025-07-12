@@ -1280,12 +1280,12 @@ export default function Dashboard() {
                     >
                       {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
                     </Button>
-                    <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-md">
-                      <RefreshCw className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">
+                    <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
+                      <RefreshCw className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
                         {(changePeriod === '1D' || changePeriod === '5D') ? 
-                          (user?.subscriptionTier === 'novice' ? '15min' : '1min') : 
-                          (user?.subscriptionTier === 'novice' ? '1day' : '5min')} refresh
+                          '1min' : 
+                          '5min'} refresh
                       </span>
                     </div>
                   </div>
@@ -1319,13 +1319,13 @@ export default function Dashboard() {
                         </thead>
                         <tbody>
                           {filteredWatchlist.map((stock) => (
-                            <tr key={stock.id} className="border-b hover:bg-gray-50">
-                              <td className="py-3 px-4 font-medium">{stock.symbol}</td>
-                              <td className="py-3 px-4 text-sm">{stock.companyName}</td>
-                              <td className="py-3 px-4 font-medium">
+                            <tr key={stock.id} className="border-b hover:bg-muted">
+                              <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
+                              <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
+                              <td className="py-3 px-4 font-medium text-foreground">
                                 ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
                               </td>
-                              <td className="py-3 px-4 text-sm text-gray-600">
+                              <td className="py-3 px-4 text-sm text-muted-foreground">
                                 {stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A'}
                               </td>
                               <td className="py-3 px-4">
@@ -1349,14 +1349,14 @@ export default function Dashboard() {
                                       </span>
                                     </>
                                   ) : (
-                                    <span className="text-sm text-gray-500">
+                                    <span className="text-sm text-muted-foreground">
                                       N/A
                                     </span>
                                   )}
                                 </div>
                               </td>
-                              <td className="py-3 px-4 text-sm">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
-                              <td className="py-3 px-4 text-sm">{formatMarketCap(stock.marketCap)}</td>
+                              <td className="py-3 px-4 text-sm text-foreground">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
+                              <td className="py-3 px-4 text-sm text-foreground">{formatMarketCap(stock.marketCap)}</td>
                               <td className="py-3 px-4">
                                 <Badge variant="secondary" className="text-xs">
                                   {stock.sector}
