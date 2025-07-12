@@ -71,12 +71,13 @@ export default function StockTicker() {
       <motion.div
         className="flex items-center"
         animate={{
-          x: [0, -100 * tickerData.length - 32 * tickerData.length], // Account for padding
+          x: [0, -100 * tickerData.length], // Move exactly one full set width
         }}
         transition={{
-          duration: 25,
+          duration: 35, // Slower animation
           repeat: Infinity,
           ease: "linear",
+          repeatType: "loop",
         }}
       >
         {/* First set */}
@@ -86,6 +87,10 @@ export default function StockTicker() {
         {/* Second set for seamless loop */}
         {tickerData.map((stock) => (
           <StockItem key={`second-${stock.symbol}`} stock={stock} />
+        ))}
+        {/* Third set to ensure no gaps */}
+        {tickerData.map((stock) => (
+          <StockItem key={`third-${stock.symbol}`} stock={stock} />
         ))}
       </motion.div>
     </div>
