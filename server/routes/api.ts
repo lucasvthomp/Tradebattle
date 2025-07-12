@@ -185,21 +185,22 @@ router.get('/health', (req, res) => {
  * Create a new tournament
  */
 router.post('/tournaments', asyncHandler(async (req, res) => {
-  const { name, buyInAmount, maxPlayers } = req.body;
+  const { name, buyInAmount, maxPlayers, startingCash } = req.body;
   const userId = req.user?.id;
   
   if (!userId) {
     throw new ValidationError('User not authenticated');
   }
 
-  if (!name || !buyInAmount) {
-    throw new ValidationError('Tournament name and buy-in amount are required');
+  if (!name || !buyInAmount || !startingCash) {
+    throw new ValidationError('Tournament name, buy-in amount, and starting cash are required');
   }
 
   const tournament = await storage.createTournament({
     name: sanitizeInput(name),
     buyInAmount: parseFloat(buyInAmount),
-    maxPlayers: maxPlayers || 10
+    maxPlayers: maxPlayers || 10,
+    startingCash: parseFloat(startingCash)
   }, userId);
 
   res.json({
