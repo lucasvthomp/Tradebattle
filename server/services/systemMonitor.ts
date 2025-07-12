@@ -200,10 +200,11 @@ export async function checkPolygonHealth(): Promise<boolean> {
       return false;
     }
     
-    const response = await fetch(`https://api.polygon.io/v2/last/nbbo/AAPL?apikey=${process.env.POLYGON_API_KEY}`);
+    // Use the previous day's aggregates endpoint which works with basic access
+    const response = await fetch(`https://api.polygon.io/v2/aggs/ticker/AAPL/prev?adjusted=true&apikey=${process.env.POLYGON_API_KEY}`);
     const data = await response.json();
     
-    const isHealthy = response.ok && data.status === 'OK';
+    const isHealthy = response.ok && (data.status === 'OK' || data.results?.length > 0);
     apiHealth.polygon.status = isHealthy;
     apiHealth.polygon.lastChecked = now;
     
