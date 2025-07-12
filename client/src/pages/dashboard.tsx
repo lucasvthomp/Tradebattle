@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -1299,143 +1300,168 @@ export default function Dashboard() {
                   </Card>
                 )}
 
-                {/* Tournament Selector Tabs */}
+                {/* Tournament Header & Selector */}
                 {userTournaments.length > 0 ? (
-                  <Tabs value={selectedTournamentId || userTournaments[0]?.tournaments?.id?.toString()} onValueChange={setSelectedTournamentId}>
-                    <TabsList className="grid w-full mb-6" style={{ gridTemplateColumns: `repeat(${Math.min(userTournaments.length, 4)}, 1fr)` }}>
-                      {userTournaments.slice(0, 4).map((tournament: any) => (
-                        <TabsTrigger key={tournament.tournaments.id} value={tournament.tournaments.id.toString()}>
-                          {tournament.tournaments.name}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
+                  <div className="space-y-6">
+                    {/* Tournament Header with Selector */}
+                    <Card className="border-0 shadow-lg">
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="flex items-center">
+                            <Activity className="w-5 h-5 mr-2" />
+                            Your Tournaments
+                          </CardTitle>
+                          <Select value={selectedTournamentId || userTournaments[0]?.tournaments?.id?.toString()} onValueChange={setSelectedTournamentId}>
+                            <SelectTrigger className="w-64">
+                              <SelectValue placeholder="Select a tournament" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {userTournaments.map((tournament: any) => (
+                                <SelectItem key={tournament.tournaments.id} value={tournament.tournaments.id.toString()}>
+                                  {tournament.tournaments.name} - {tournament.tournaments.code}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </CardHeader>
+                    </Card>
 
-                    {userTournaments.map((tournament: any) => (
-                      <TabsContent key={tournament.tournaments.id} value={tournament.tournaments.id.toString()} className="space-y-6">
-                        {/* Tournament Details */}
-                        <Card className="border-0 shadow-lg">
-                          <CardHeader>
-                            <CardTitle className="flex items-center justify-between">
-                              <div className="flex items-center">
-                                <Activity className="w-5 h-5 mr-2" />
-                                {tournament.tournaments.name}
-                              </div>
-                              <Badge variant={tournament.tournaments.status === 'waiting' ? 'secondary' : 'default'}>
-                                {tournament.tournaments.status}
-                              </Badge>
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                              <div>
-                                <p className="text-sm text-muted-foreground">Join Code</p>
-                                <p className="font-mono text-lg font-semibold">{tournament.tournaments.code}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-muted-foreground">Buy-in Amount</p>
-                                <p className="text-lg font-semibold">${tournament.tournaments.buyInAmount}</p>
-                              </div>
-                              <div>
-                                <p className="text-sm text-muted-foreground">Players</p>
-                                <p className="text-lg font-semibold">{tournament.tournaments.currentPlayers}/{tournament.tournaments.maxPlayers}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                    {/* Selected Tournament Content */}
+                    {(() => {
+                      const selectedTournament = userTournaments.find((t: any) => 
+                        t.tournaments.id.toString() === (selectedTournamentId || userTournaments[0]?.tournaments?.id?.toString())
+                      ) || userTournaments[0];
 
-                        {/* Tournament Balance */}
-                        <Card className="border-0 shadow-lg">
-                          <CardHeader>
-                            <CardTitle className="flex items-center">
-                              <DollarSign className="w-5 h-5 mr-2" />
-                              Tournament Balance
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="text-3xl font-bold text-foreground">
-                              ${tournament.balance ? parseFloat(tournament.balance).toFixed(2) : tournament.tournaments.buyInAmount.toFixed(2)}
-                            </div>
-                            <p className="text-sm text-muted-foreground mt-2">
-                              Available for trading in this tournament
-                            </p>
-                          </CardContent>
-                        </Card>
+                      if (!selectedTournament) return null;
 
-                        {/* Tournament Trading Section */}
-                        <Card className="border-0 shadow-lg">
-                          <CardHeader>
-                            <CardTitle className="flex items-center">
-                              <TrendingUp className="w-5 h-5 mr-2" />
-                              Trade in {tournament.tournaments.name}
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="space-y-4">
-                              <div className="relative">
-                                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                  placeholder="Search stocks to buy in this tournament..."
-                                  value={tradingSearchQuery}
-                                  onChange={(e) => handleTradingSearch(e.target.value)}
-                                  className="pl-10"
-                                />
-                                {showTradingSearchResults && (
-                                  <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                                    {isLoadingTradingStocks ? (
-                                      <div className="p-4 text-center">
-                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                                        <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
-                                      </div>
-                                    ) : tradingStockData.length > 0 ? (
-                                      tradingStockData.map((stock: any, index) => (
-                                        <div key={index} className="p-3 hover:bg-muted border-b last:border-b-0">
-                                          <div className="flex items-center justify-between">
-                                            <div className="flex-1">
-                                              <p className="font-medium text-foreground">{stock.symbol}</p>
-                                              <p className="text-sm text-muted-foreground">{stock.name}</p>
-                                              <p className="text-sm font-medium text-foreground">${stock.price}</p>
-                                            </div>
-                                            <Button
-                                              size="sm"
-                                              onClick={() => handleBuyStock(stock)}
-                                              className="bg-primary text-primary-foreground hover:bg-primary/90"
-                                            >
-                                              Buy
-                                            </Button>
-                                          </div>
+                      return (
+                        <div className="space-y-6">
+                          {/* Tournament Details */}
+                          <Card className="border-0 shadow-lg">
+                            <CardHeader>
+                              <CardTitle className="flex items-center justify-between">
+                                <div className="flex items-center">
+                                  <Activity className="w-5 h-5 mr-2" />
+                                  {selectedTournament.tournaments.name}
+                                </div>
+                                <Badge variant={selectedTournament.tournaments.status === 'waiting' ? 'secondary' : 'default'}>
+                                  {selectedTournament.tournaments.status}
+                                </Badge>
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Join Code</p>
+                                  <p className="font-mono text-lg font-semibold">{selectedTournament.tournaments.code}</p>
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Buy-in Amount</p>
+                                  <p className="text-lg font-semibold">${selectedTournament.tournaments.buyInAmount}</p>
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Players</p>
+                                  <p className="text-lg font-semibold">{selectedTournament.tournaments.currentPlayers}/{selectedTournament.tournaments.maxPlayers}</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+
+                          {/* Tournament Balance */}
+                          <Card className="border-0 shadow-lg">
+                            <CardHeader>
+                              <CardTitle className="flex items-center">
+                                <DollarSign className="w-5 h-5 mr-2" />
+                                Tournament Balance
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="text-3xl font-bold text-foreground">
+                                ${selectedTournament.balance ? parseFloat(selectedTournament.balance).toFixed(2) : selectedTournament.tournaments.buyInAmount.toFixed(2)}
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-2">
+                                Available for trading in this tournament
+                              </p>
+                            </CardContent>
+                          </Card>
+
+                          {/* Tournament Trading Section */}
+                          <Card className="border-0 shadow-lg">
+                            <CardHeader>
+                              <CardTitle className="flex items-center">
+                                <TrendingUp className="w-5 h-5 mr-2" />
+                                Trade in {selectedTournament.tournaments.name}
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="space-y-4">
+                                <div className="relative">
+                                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                                  <Input
+                                    placeholder="Search stocks to buy in this tournament..."
+                                    value={tradingSearchQuery}
+                                    onChange={(e) => handleTradingSearch(e.target.value)}
+                                    className="pl-10"
+                                  />
+                                  {showTradingSearchResults && (
+                                    <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                                      {isLoadingTradingStocks ? (
+                                        <div className="p-4 text-center">
+                                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                                          <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
                                         </div>
-                                      ))
-                                    ) : (
-                                      <div className="p-4 text-center text-muted-foreground">
-                                        {tradingSearchQuery.length > 0 ? "No stocks found" : "Start typing to search"}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                                      ) : tradingStockData.length > 0 ? (
+                                        tradingStockData.map((stock: any, index) => (
+                                          <div key={index} className="p-3 hover:bg-muted border-b last:border-b-0">
+                                            <div className="flex items-center justify-between">
+                                              <div className="flex-1">
+                                                <p className="font-medium text-foreground">{stock.symbol}</p>
+                                                <p className="text-sm text-muted-foreground">{stock.name}</p>
+                                                <p className="text-sm font-medium text-foreground">${stock.price}</p>
+                                              </div>
+                                              <Button
+                                                size="sm"
+                                                onClick={() => handleBuyStock(stock)}
+                                                className="bg-primary text-primary-foreground hover:bg-primary/90"
+                                              >
+                                                Buy
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        ))
+                                      ) : (
+                                        <div className="p-4 text-center text-muted-foreground">
+                                          {tradingSearchQuery.length > 0 ? "No stocks found" : "Start typing to search"}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                            </CardContent>
+                          </Card>
 
-                        {/* Tournament Portfolio */}
-                        <Card className="border-0 shadow-lg">
-                          <CardHeader>
-                            <CardTitle className="flex items-center">
-                              <Building className="w-5 h-5 mr-2" />
-                              Tournament Portfolio
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <div className="text-center py-8">
-                              <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                              <p className="text-muted-foreground mb-2">No stocks in this tournament yet</p>
-                              <p className="text-sm text-muted-foreground">Use the search above to buy stocks for this tournament</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
+                          {/* Tournament Portfolio */}
+                          <Card className="border-0 shadow-lg">
+                            <CardHeader>
+                              <CardTitle className="flex items-center">
+                                <Building className="w-5 h-5 mr-2" />
+                                Tournament Portfolio
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="text-center py-8">
+                                <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                                <p className="text-muted-foreground mb-2">No stocks in this tournament yet</p>
+                                <p className="text-sm text-muted-foreground">Use the search above to buy stocks for this tournament</p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                      );
+                    })()}
+                  </div>
                 ) : (
                   <Card className="border-0 shadow-lg">
                     <CardHeader>
@@ -1452,16 +1478,6 @@ export default function Dashboard() {
                       </div>
                     </CardContent>
                   </Card>
-                )}
-
-                {/* Debug Tournament Data */}
-                {userTournaments.length > 0 && (
-                  <div className="mt-4 p-4 bg-gray-800 rounded-lg">
-                    <h4 className="text-sm font-semibold text-white mb-2">Debug: Tournament Data</h4>
-                    <pre className="text-xs text-gray-300 overflow-x-auto">
-                      {JSON.stringify(userTournaments, null, 2)}
-                    </pre>
-                  </div>
                 )}
               </TabsContent>
 
