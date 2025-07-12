@@ -13,9 +13,9 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-5xl md:text-6xl font-bold text-black mb-6">
-              Qualitative Investment{" "}
+              Paper Trading{" "}
               <span className="relative">
-                Research
+                Competitions
                 <motion.div
                   className="absolute right-0 top-0 h-full w-0.5 bg-black"
                   animate={{ opacity: [1, 0, 1] }}
@@ -24,16 +24,16 @@ export default function Hero() {
               </span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Beyond graphs and predictions. We dive deep into qualitative research to uncover
-              investment opportunities that traditional firms miss.
+              Compete with traders worldwide using virtual portfolios and real market data.
+              Test your skills, climb the leaderboards, and win prizes.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Button
                 size="lg"
                 className="bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all duration-300 transform hover:-translate-y-1"
-                onClick={() => window.location.href = "/pricing"}
+                onClick={() => window.location.href = "/signup"}
               >
-                Get Started
+                Start Trading
               </Button>
               <Button variant="ghost" size="lg" className="text-gray-600 hover:text-black">
                 <Play className="w-5 h-5 mr-2" />

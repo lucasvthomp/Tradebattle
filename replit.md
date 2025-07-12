@@ -1,8 +1,8 @@
-# ORSATH - Qualitative Investment Research Platform
+# Paper Trading Competition Platform
 
 ## Overview
 
-ORSATH is a full-stack web application focused on qualitative investment research. It provides a platform for researchers to publish studies, share news insights, and offer personalized dashboards for authenticated users. The system emphasizes in-depth analysis over quantitative metrics, targeting investors who value qualitative research.
+A comprehensive paper trading competition platform that connects participants with trading competitions worldwide. The system provides virtual portfolio management, real-time market data, and competitive leaderboards. Built for aspiring traders who want to test their skills in a risk-free environment with authentic market conditions.
 
 ## User Preferences
 
@@ -36,12 +36,11 @@ Preferred communication style: Simple, everyday language.
 ## Key Components
 
 ### Database Schema
-- **Users**: Stores user profiles integrated with Replit Auth
-- **Studies**: Research publications with categories and featured content
-- **News**: News articles with categorization and priority levels
-- **Watchlist**: User-specific stock/company tracking
+- **Users**: Stores user profiles with trading account balances
+- **Watchlist**: User-specific stock/company tracking for competition preparation
+- **Stock Purchases**: Paper trading transaction records
 - **Contact Submissions**: Customer inquiries and feedback
-- **Research Insights**: Actionable insights with different types (opportunity, risk, etc.)
+- **Admin Logs**: Administrative action tracking
 - **Sessions**: Authentication session storage
 
 ### Authentication System
@@ -58,11 +57,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Data Flow
 
-1. **User Authentication**: Users authenticate via Replit Auth, creating/updating user records
-2. **Content Management**: Authenticated users can create studies, news, and manage watchlists
-3. **Public Access**: Landing page, studies, and news are publicly accessible
-4. **Dashboard**: Authenticated users access personalized dashboards with watchlists and insights
-5. **Real-time Updates**: React Query handles cache invalidation and real-time data synchronization
+1. **User Authentication**: Users authenticate via email/password, creating trading accounts
+2. **Paper Trading**: Authenticated users can buy/sell stocks with virtual money
+3. **Competition Participation**: Users join trading competitions through the platform
+4. **Portfolio Management**: Real-time tracking of virtual portfolios and performance
+5. **Real-time Updates**: Live market data and portfolio updates via React Query
 
 ## External Dependencies
 
@@ -148,40 +147,11 @@ Preferred communication style: Simple, everyday language.
 - **Dashboard Data Integration**: Updated dashboard to fetch real-time data for all watchlist stocks, including individual stock quotes for non-popular stocks
 - **P/E to Volume Display**: Changed dashboard table from P/E ratio back to Volume display as requested by user
 - **Real-time Watchlist Updates**: Fixed watchlist to show actual stock changes and percentages instead of "Loading..." placeholder
-- **Eliminated Mock Data**: Removed all mock/cached data dependencies and replaced with live Yahoo Finance data fetching
-- **Home Button Behavior**: Modified routing so the Home button always shows the original landing page, even when logged in
-- **Comprehensive Sector System**: Created sector mapping for 200+ stocks with 17 sector categories and new /api/sectors endpoint
-- **Free Novice Plan Addition** (January 2025): Added free "Novice" plan to pricing page with limited watchlist (5 equities), limited news access, and email support
-- **Pricing Updates** (January 2025): Updated plan pricing - Explorer: $9.99/month, Analyst: $19.99/month, renamed Institution to Professional: $49.99/month
-- **Plan Features Refinement** (January 2025): Removed mobile features from all plans, updated Analyst plan features (removed priority support and Q&A, added instant email news), streamlined Professional plan features
-- **Additional Plan Simplification** (January 2025): Removed custom research from Analyst plan, removed dedicated account manager and API access from Professional plan
-- **Terminology Update** (January 2025): Changed "custom research reports" to "custom case studies" in Professional plan
-- **Subscription Tier System** (January 2025): Implemented dynamic subscription tier functionality with database persistence - users can instantly upgrade/downgrade plans via pricing page buttons, with changes saved across sessions
-- **Real-time System Monitoring** (January 2025): Implemented comprehensive admin panel system monitoring with live database status, API health checks, server metrics, and differentiated refresh intervals - Yahoo Finance checked every minute, other APIs (Finnhub, Twelve Data, Polygon) checked hourly
-- **Polygon API Fix** (January 2025): Fixed Polygon API health check by switching from premium NBBO endpoint to basic aggregates endpoint (/v2/aggs/ticker/AAPL/prev) which works with standard API access
-- **Differentiated Data Refresh Intervals** (January 2025): Implemented subscription-based data refresh rates - free users get 15-minute intervals for 1D/5D data and 1-day intervals for longer timeframes, paid users get 1-minute intervals for 1D/5D data and 5-minute intervals for longer timeframes
-- **1-Day Change Calculation Fix** (January 2025): Updated 1-day percentage change calculation to use previous trading day's market close price instead of current day's market open for accurate daily performance metrics
-- **Synchronized Change Updates** (January 2025): Fixed change calculation synchronization to ensure daily change values update in real-time with current stock price movements, maintaining consistency between price and change data
-- **1D vs Long-term Change Logic Split** (January 2025): Implemented distinct calculation logic - 1D changes calculated immediately from current price vs previous close for real-time accuracy, while long-term changes (5D, 1M, etc.) use Yahoo Finance timeframe-specific data
-- **Watchlist Limit for Free Accounts** (January 2025): Implemented watchlist limit of 5 equities for free "novice" tier accounts with backend validation and user-friendly error messaging
-- **Dynamic Historical Close Price Column** (January 2025): Updated watchlist "Previous Close" column to dynamically display historical close prices based on selected timeframe - showing Close Price (1D ago), Close Price (5D ago), etc. with actual historical data from Yahoo Finance
-- **Admin Panel for User ID 3 & 4** (January 2025): Created exclusive admin panel accessible to user ID 3 and 4 with comprehensive user management features including user list, statistics, and subscription tiers
-- **User Account Deletion System** (January 2025): Implemented secure user account deletion with double confirmation dialogs, admin-only access, and protection against deleting admin accounts - includes cascading deletion of related data
-- **Email-Based Admin Authentication** (January 2025): Completely removed all user ID-based authentication and admin access controls, replacing with email-based system where admin access is granted to specific email addresses (contact@mowbroshomes.com and murksantos@gmail.com)
-- **User ID Admin System** (January 2025): Implemented new userId field in database schema and replaced email-based admin authentication with userId-based system where Lucas Thompson has userId 0 and Murilo dos Santos has userId 1, with admin access granted to userId 0 and 1 only
-- **Auto-Incrementing User ID System** (January 2025): Implemented automatic User ID assignment for new accounts - every new registration gets the next sequential User ID starting from 2, ensuring unique identification for all users
-- **Expanded Admin Access** (January 2025): Added User ID 2 (Aaron Orellana) to admin privileges - admin access now granted to userId 0, 1, and 2, with protection against admin account deletion
-- **Separate Partner Panel System** (January 2025): Moved Partner Panel to dedicated /partners route with separate navigation button - partner access granted to userId 0, 1, and 2 (same as admin but independent system)
-- **Comprehensive Admin Panel Overhaul** (January 2025): Completely rebuilt admin dashboard with tabbed interface including User Management, System Status, and Partner Panel sections - added enhanced user table with dropdown actions, edit capabilities, and admin log viewing
-- **Advanced Database Schema** (January 2025): Added new tables for admin_logs, partners, research_requests, and partner_conversations to support comprehensive administrative features and partner collaboration system
-- **Enhanced Storage Layer** (January 2025): Implemented complete storage methods for admin logs tracking, partner management, research requests, and conversation systems with full CRUD operations
-- **IT Administration Section** (January 2025): Created system monitoring dashboard with database status, API health checks, performance metrics, and quick action buttons for system maintenance
-- **Partner Panel System** (January 2025): Developed comprehensive partner collaboration platform with research request management, client communication features, and insight publishing capabilities
-- **Admin Actions Logging** (January 2025): Implemented audit trail system tracking all administrative actions including subscription changes, user modifications, and system operations with detailed logging
-- **User Management Enhancement** (January 2025): Added subscription tier editing, user status monitoring, and detailed user activity tracking with admin log integration
-- **Research Request System** (January 2025): Implemented comprehensive research request system for professional subscribers - users can request company or sector analysis through dashboard dialog, requests are sent to Partner Panel for review and management
-- **Research Request System Bug Fix** (January 2025): Resolved critical 500 error in research request submission - database schema required both 'title' and 'category' fields which weren't being properly populated from API endpoint, fixed by adding auto-generated title and mapping type to category
-- **Complete Trading System Implementation** (January 2025): Added comprehensive trading functionality to dashboard overview section including balance display above graph, stock search with real-time prices, buy dialog with share amount validation, balance checking, and purchase processing with database persistence
-- **Trading API Endpoints** (January 2025): Created backend API routes for trading operations (/api/trading/balance, /api/trading/purchase, /api/trading/purchases) with proper validation and balance management
-- **Stock Purchase Database Schema** (January 2025): Implemented stockPurchases table with fields for symbol, company name, shares, purchase price, total cost, and timestamps
-- **Trading Error Handling** (January 2025): Fixed validation errors in purchase submission by ensuring all required fields (symbol, companyName, shares, purchasePrice, totalCost) are properly sent to backend
+- **Platform Transformation** (January 2025): Complete transformation from investment research platform to paper trading competition platform - removed all studies, news, research insights, partner panels, and subscription tiers while preserving core trading functionality
+- **Simplified Navigation** (January 2025): Streamlined navigation by removing Studies, News, and Pricing routes, focusing on core competition features
+- **Landing Page Redesign** (January 2025): Updated hero and about sections to focus on paper trading competitions, leaderboards, and virtual portfolio management
+- **Database Schema Cleanup** (January 2025): Removed partner-related tables (partners, research_requests, partner_conversations, chat_messages, research_insights, research_publications) and subscription tier system
+- **API Route Simplification** (January 2025): Cleaned up backend routes by removing subscription management, research features, and partner system endpoints while maintaining trading and watchlist functionality
+- **User Profile Simplification** (January 2025): Removed subscription tier field from user profiles - all users now have equal access to platform features
+- **Trading System Preservation** (January 2025): Maintained complete trading functionality including virtual balance management, stock purchases, portfolio tracking, and real-time market data integration
+- **Competition-Focused Architecture** (January 2025): Restructured the platform to serve as a middleman between trading competitions and participants rather than a research platform

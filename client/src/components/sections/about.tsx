@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 
 export default function About() {
   const features = [
-    "Deep company research and analysis",
-    "Real-time news and market sentiment",
-    "Weekend research for Monday opportunities",
+    "Real-time leaderboards and rankings",
+    "Virtual portfolios with real market data",
+    "Multiple competition formats and prizes",
   ];
 
   return (
@@ -19,11 +19,11 @@ export default function About() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl font-bold text-black mb-6">Our Approach</h2>
+              <h2 className="text-4xl font-bold text-black mb-6">Why Choose Us</h2>
               <p className="text-gray-600 mb-6">
-                While most investment firms rely on numerical data and technical analysis, we focus on
-                in-depth qualitative research. We analyze company fundamentals, market conditions, and
-                real-world events that drive stock movements.
+                Our platform bridges the gap between aspiring traders and competitive trading. 
+                Experience real market conditions with virtual money, learn from other participants,
+                and compete for prizes in a risk-free environment.
               </p>
               <div className="space-y-4">
                 {features.map((feature, index) => (
@@ -42,12 +42,12 @@ export default function About() {
               viewport={{ once: true }}
             >
               <div className="bg-gray-50 rounded-lg p-6 h-80">
-                <h3 className="text-lg font-semibold mb-4">Research Impact Analysis</h3>
+                <h3 className="text-lg font-semibold mb-4">Platform Activity</h3>
                 <div className="space-y-4">
                   {[
-                    { label: "Company Analysis", value: 85 },
-                    { label: "Market Sentiment", value: 70 },
-                    { label: "News Impact", value: 90 },
+                    { label: "Active Traders", value: 95 },
+                    { label: "Daily Competitions", value: 85 },
+                    { label: "Market Coverage", value: 90 },
                   ].map((item, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">{item.label}</span>

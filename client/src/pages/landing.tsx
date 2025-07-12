@@ -2,22 +2,16 @@ import Hero from "@/components/sections/hero";
 import About from "@/components/sections/about";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, Newspaper, Search } from "lucide-react";
+import { ArrowRight, TrendingUp, Trophy, Target, Users, BarChart3, DollarSign, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
-import { Study } from "@shared/schema";
 
 export default function Landing() {
-  const { data: featuredStudies, isLoading } = useQuery<Study[]>({
-    queryKey: ["/api/studies/featured"],
-  });
-
   return (
     <div>
       <Hero />
       <About />
       
-      {/* Studies Preview Section */}
+      {/* Competition Features Section */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
@@ -28,65 +22,58 @@ export default function Landing() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-4xl font-bold text-black mb-6">Research Studies</h2>
+                <h2 className="text-4xl font-bold text-black mb-6">Competition Features</h2>
                 <p className="text-xl text-gray-600">
-                  In-depth analysis and case studies from our research team
+                  Everything you need to compete in paper trading competitions
                 </p>
               </motion.div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
-              {isLoading ? (
-                Array.from({ length: 3 }).map((_, i) => (
-                  <Card key={i} className="animate-pulse">
+              {[
+                {
+                  icon: Trophy,
+                  title: "Leaderboards",
+                  description: "Track your ranking against other participants with real-time updates",
+                  color: "text-yellow-600"
+                },
+                {
+                  icon: BarChart3,
+                  title: "Performance Analytics",
+                  description: "Detailed portfolio analytics and performance metrics",
+                  color: "text-blue-600"
+                },
+                {
+                  icon: Target,
+                  title: "Competition Management",
+                  description: "Join active competitions or create your own private contests",
+                  color: "text-green-600"
+                }
+              ].map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                >
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                     <CardContent className="p-6">
-                      <div className="h-4 bg-gray-200 rounded mb-4"></div>
-                      <div className="h-6 bg-gray-200 rounded mb-3"></div>
-                      <div className="h-16 bg-gray-200 rounded mb-4"></div>
-                      <div className="h-4 bg-gray-200 rounded"></div>
+                      <div className="flex items-center mb-4">
+                        <feature.icon className={`mr-3 w-8 h-8 ${feature.color}`} />
+                      </div>
+                      <h3 className="text-xl font-bold text-black mb-3">{feature.title}</h3>
+                      <p className="text-gray-600 mb-4">{feature.description}</p>
                     </CardContent>
                   </Card>
-                ))
-              ) : featuredStudies && featuredStudies.length > 0 ? (
-                featuredStudies.slice(0, 3).map((study, index) => (
-                  <motion.div
-                    key={study.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                  >
-                    <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                      <CardContent className="p-6">
-                        <div className="flex items-center mb-4">
-                          <TrendingUp className="text-black mr-3 w-5 h-5" />
-                          <span className="text-sm text-gray-500">{study.category}</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-black mb-3">{study.title}</h3>
-                        <p className="text-gray-600 mb-4">{study.description}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-gray-500">
-                            {new Date(study.publishedAt!).toLocaleDateString()}
-                          </span>
-                          <Button variant="ghost" size="sm" className="p-0">
-                            <ArrowRight className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))
-              ) : (
-                <div className="col-span-3 text-center py-12">
-                  <p className="text-gray-600">No featured studies available at the moment.</p>
-                </div>
-              )}
+                </motion.div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* How It Works Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
@@ -97,55 +84,79 @@ export default function Landing() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-4xl font-bold text-black mb-6">Professional Tools</h2>
+                <h2 className="text-4xl font-bold text-black mb-6">How It Works</h2>
                 <p className="text-xl text-gray-600">
-                  Everything you need for qualitative investment research
+                  Start competing in paper trading competitions in three simple steps
                 </p>
               </motion.div>
             </div>
 
-            <div className="grid md:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
-                  icon: Search,
-                  title: "Company Research",
-                  description: "Deep dive analysis tools",
+                  step: "1",
+                  icon: Users,
+                  title: "Join Competition",
+                  description: "Browse available competitions and join the one that matches your interests",
                 },
                 {
-                  icon: Newspaper,
-                  title: "News Aggregator",
-                  description: "Real-time news analysis",
+                  step: "2",
+                  icon: DollarSign,
+                  title: "Trade with Virtual Money",
+                  description: "Use your virtual portfolio to buy and sell stocks with real market prices",
                 },
                 {
-                  icon: TrendingUp,
-                  title: "Sentiment Tracker",
-                  description: "Market sentiment analysis",
-                },
-                {
-                  icon: TrendingUp,
-                  title: "Watchlist",
-                  description: "Custom research lists",
-                },
-              ].map((feature, index) => (
+                  step: "3",
+                  icon: Trophy,
+                  title: "Compete & Win",
+                  description: "Track your performance on leaderboards and win based on your returns",
+                }
+              ].map((step, index) => (
                 <motion.div
-                  key={index}
+                  key={step.step}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-center">
                     <CardContent className="p-6">
-                      <div className="flex items-center mb-3">
-                        <feature.icon className="text-black mr-2 w-5 h-5" />
-                        <h4 className="font-semibold text-black">{feature.title}</h4>
+                      <div className="flex justify-center mb-4">
+                        <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold">
+                          {step.step}
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600">{feature.description}</p>
+                      <step.icon className="w-8 h-8 mx-auto mb-4 text-black" />
+                      <h3 className="text-xl font-bold text-black mb-3">{step.title}</h3>
+                      <p className="text-gray-600">{step.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-black text-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl font-bold mb-6">Ready to Start Trading?</h2>
+              <p className="text-xl text-gray-300 mb-8">
+                Join thousands of traders competing in paper trading competitions
+              </p>
+              <Button size="lg" className="bg-white text-black hover:bg-gray-100">
+                Get Started Today
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </motion.div>
           </div>
         </div>
       </section>

@@ -8,11 +8,8 @@ import { ThemeProvider } from "@/hooks/use-theme";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
-import Studies from "@/pages/studies";
-import News from "@/pages/news";
 import Dashboard from "@/pages/dashboard";
 import Contact from "@/pages/contact";
-import Pricing from "@/pages/pricing";
 import About from "@/pages/about";
 import Privacy from "@/pages/privacy";
 import Terms from "@/pages/terms";
@@ -20,7 +17,6 @@ import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
-import Partners from "@/pages/partners";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
@@ -45,10 +41,7 @@ function Router() {
           
           {!user ? (
             <>
-              <Route path="/studies" component={Studies} />
-              <Route path="/news" component={News} />
               <Route path="/contact" component={Contact} />
-              <Route path="/pricing" component={Pricing} />
               <Route path="/about" component={About} />
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
@@ -57,17 +50,13 @@ function Router() {
             </>
           ) : (
             <>
-              <Route path="/studies" component={Studies} />
-              <Route path="/news" component={News} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/contact" component={Contact} />
-              <Route path="/pricing" component={Pricing} />
               <Route path="/about" component={About} />
               <Route path="/privacy" component={Privacy} />
               <Route path="/terms" component={Terms} />
               <Route path="/profile" component={Profile} />
               <Route path="/admin" component={Admin} />
-              <Route path="/partners" component={Partners} />
             </>
           )}
           <Route component={NotFound} />

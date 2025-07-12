@@ -19,9 +19,6 @@ export default function Header() {
 
   const navItems = [
     { href: "/", label: "Home" },
-    { href: "/studies", label: "Studies" },
-    { href: "/news", label: "News" },
-    { href: "/pricing", label: "Plans" },
     ...(user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
     { href: "/contact", label: "Contact Us" },
   ];
@@ -93,25 +90,12 @@ export default function Header() {
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
-                    <Crown className="w-4 h-4 mr-2" />
-                    My Subscription
-                  </DropdownMenuItem>
-                  {(user.id === 3 || user.id === 4) && (
+                  {(user.userId === 0 || user.userId === 1 || user.userId === 2) && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => window.location.href = "/admin"}>
                         <Shield className="w-4 h-4 mr-2" />
                         Admin Panel
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  {(user.userId === 0 || user.userId === 1 || user.userId === 2) && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => window.location.href = "/partners"}>
-                        <Users className="w-4 h-4 mr-2" />
-                        Partner Panel
                       </DropdownMenuItem>
                     </>
                   )}

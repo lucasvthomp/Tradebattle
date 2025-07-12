@@ -32,39 +32,12 @@ export const users = pgTable("users", {
   firstName: varchar("first_name", { length: 255 }).notNull(),
   lastName: varchar("last_name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(), // hashed password
-  subscriptionTier: varchar("subscription_tier", { length: 50 }).default("novice").notNull(), // novice, explorer, analyst, professional
   balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Research studies table
-export const studies = pgTable("studies", {
-  id: serial("id").primaryKey(),
-  title: varchar("title").notNull(),
-  description: text("description").notNull(),
-  content: text("content").notNull(),
-  category: varchar("category").notNull(),
-  publishedAt: timestamp("published_at").defaultNow(),
-  authorId: integer("author_id").references(() => users.id),
-  featured: boolean("featured").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
 
-// News articles table
-export const news = pgTable("news", {
-  id: serial("id").primaryKey(),
-  title: varchar("title").notNull(),
-  description: text("description").notNull(),
-  content: text("content").notNull(),
-  category: varchar("category").notNull(),
-  priority: varchar("priority").default("normal"), // breaking, research, normal
-  publishedAt: timestamp("published_at").defaultNow(),
-  authorId: integer("author_id").references(() => users.id),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
 
 // User watchlist table
 export const watchlist = pgTable("watchlist", {
@@ -100,18 +73,7 @@ export const contactSubmissions = pgTable("contact_submissions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Research insights table
-export const researchInsights = pgTable("research_insights", {
-  id: serial("id").primaryKey(),
-  type: varchar("type").notNull(), // opportunity, risk, alert
-  title: varchar("title").notNull(),
-  description: text("description").notNull(),
-  symbol: varchar("symbol"),
-  impact: varchar("impact").default("medium"), // low, medium, high
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
+
 
 // Admin logs table for tracking administrative actions
 export const adminLogs = pgTable("admin_logs", {
@@ -125,85 +87,9 @@ export const adminLogs = pgTable("admin_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Partner management table
-export const partners = pgTable("partners", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull().unique(),
-  specialization: varchar("specialization"), // research, analysis, advisory, etc.
-  isActive: boolean("is_active").default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
 
-// Research requests table
-export const researchRequests = pgTable("research_requests", {
-  id: serial("id").primaryKey(),
-  clientUserId: integer("client_user_id").references(() => users.id).notNull(),
-  partnerUserId: integer("partner_user_id").references(() => users.id),
-  target: varchar("target").notNull(), // company name or sector
-  description: text("description"),
-  category: varchar("category").notNull(), // company or sector
-  priority: varchar("priority").default("medium"), // low, medium, high, urgent
-  status: varchar("status").default("pending"), // pending, assigned, in_progress, completed, cancelled
-  dueDate: timestamp("due_date"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
-
-// Partner-client conversations table
-export const partnerConversations = pgTable("partner_conversations", {
-  id: serial("id").primaryKey(),
-  partnerUserId: integer("partner_user_id").references(() => users.id).notNull(),
-  clientUserId: integer("client_user_id").references(() => users.id).notNull(),
-  message: text("message").notNull(),
-  senderType: varchar("sender_type").notNull(), // partner, client
-  isRead: boolean("is_read").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Chat messages table for dashboard chat system
-export const chatMessages = pgTable("chat_messages", {
-  id: serial("id").primaryKey(),
-  conversationId: varchar("conversation_id").notNull(), // Format: "user1_user2" where user1 < user2
-  senderUserId: integer("sender_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  receiverUserId: integer("receiver_user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  message: text("message").notNull(),
-  isRead: boolean("is_read").default(false),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-// Research publications table
-export const researchPublications = pgTable("research_publications", {
-  id: serial("id").primaryKey(),
-  title: varchar("title", { length: 255 }).notNull(),
-  content: text("content").notNull(),
-  summary: text("summary").notNull(),
-  category: varchar("category", { length: 100 }).notNull(),
-  tags: text("tags").array().default([]),
-  authorId: integer("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  isPublished: boolean("is_published").default(false),
-  publishedAt: timestamp("published_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
-});
 
 // Zod schemas for validation
-export const insertStudySchema = createInsertSchema(studies).pick({
-  title: true,
-  description: true,
-  content: true,
-  category: true,
-  featured: true,
-});
-
-export const insertNewsSchema = createInsertSchema(news).pick({
-  title: true,
-  description: true,
-  content: true,
-  category: true,
-  priority: true,
-});
-
 export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
   symbol: true,
   companyName: true,
@@ -225,14 +111,6 @@ export const insertContactSchema = createInsertSchema(contactSubmissions).pick({
   message: true,
 });
 
-export const insertResearchInsightSchema = createInsertSchema(researchInsights).pick({
-  type: true,
-  title: true,
-  description: true,
-  symbol: true,
-  impact: true,
-});
-
 export const insertAdminLogSchema = createInsertSchema(adminLogs).pick({
   adminUserId: true,
   targetUserId: true,
@@ -240,44 +118,6 @@ export const insertAdminLogSchema = createInsertSchema(adminLogs).pick({
   oldValue: true,
   newValue: true,
   notes: true,
-});
-
-export const insertPartnerSchema = createInsertSchema(partners).pick({
-  userId: true,
-  specialization: true,
-  isActive: true,
-});
-
-export const insertResearchRequestSchema = createInsertSchema(researchRequests).pick({
-  clientUserId: true,
-  target: true,
-  description: true,
-  category: true,
-  priority: true,
-  dueDate: true,
-});
-
-export const insertPartnerConversationSchema = createInsertSchema(partnerConversations).pick({
-  partnerUserId: true,
-  clientUserId: true,
-  message: true,
-  senderType: true,
-});
-
-export const insertChatMessageSchema = createInsertSchema(chatMessages).pick({
-  conversationId: true,
-  senderUserId: true,
-  receiverUserId: true,
-  message: true,
-});
-
-export const insertResearchPublicationSchema = createInsertSchema(researchPublications).pick({
-  title: true,
-  content: true,
-  summary: true,
-  category: true,
-  tags: true,
-  isPublished: true,
 });
 
 // Type exports
@@ -290,9 +130,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   userId: true,
 });
 
-export const updateUserSubscriptionSchema = z.object({
-  subscriptionTier: z.enum(["novice", "explorer", "analyst", "professional"]),
-});
+
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
@@ -310,17 +148,14 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type LoginUser = z.infer<typeof loginSchema>;
 export type RegisterUser = z.infer<typeof registerSchema>;
-export type UpdateUserSubscription = z.infer<typeof updateUserSubscriptionSchema>;
-export type Study = typeof studies.$inferSelect;
-export type InsertStudy = z.infer<typeof insertStudySchema>;
-export type News = typeof news.$inferSelect;
-export type InsertNews = z.infer<typeof insertNewsSchema>;
 export type WatchlistItem = typeof watchlist.$inferSelect;
 export type InsertWatchlistItem = z.infer<typeof insertWatchlistSchema>;
 export type StockPurchase = typeof stockPurchases.$inferSelect;
 export type InsertStockPurchase = z.infer<typeof insertStockPurchaseSchema>;
 export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSchema>;
+export type AdminLog = typeof adminLogs.$inferSelect;
+export type InsertAdminLog = z.infer<typeof insertAdminLogSchema>;
 export type ResearchInsight = typeof researchInsights.$inferSelect;
 export type InsertResearchInsight = z.infer<typeof insertResearchInsightSchema>;
 export type AdminLog = typeof adminLogs.$inferSelect;
