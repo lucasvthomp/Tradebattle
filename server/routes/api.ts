@@ -297,4 +297,48 @@ router.get('/tournaments/:id/purchases', asyncHandler(async (req, res) => {
   });
 }));
 
+/**
+ * POST /api/tournaments/:id/purchase
+ * Purchase stock in a tournament
+ */
+router.post('/tournaments/:id/purchase', asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const { symbol, companyName, shares, purchasePrice } = req.body;
+  
+  if (!symbol || !companyName || !shares || !purchasePrice) {
+    throw new ValidationError('All purchase fields are required');
+  }
+
+  const totalCost = shares * purchasePrice;
+
+  // Check if user has enough balance
+  const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
+  if (currentBalance < totalCost) {
+    throw new ValidationError('Insufficient balance for this purchase');
+  }
+
+  // Create purchase record
+  const purchase = await storage.purchaseTournamentStock(tournamentId, userId, {
+    symbol: sanitizeInput(symbol),
+    companyName: sanitizeInput(companyName),
+    shares: parseInt(shares),
+    purchasePrice: parseFloat(purchasePrice),
+    totalCost: totalCost
+  });
+
+  // Update user balance
+  await storage.updateTournamentBalance(tournamentId, userId, currentBalance - totalCost);
+
+  res.status(201).json({
+    success: true,
+    data: { purchase },
+  });
+}));
+
 export default router;

@@ -461,18 +461,26 @@ export default function Dashboard() {
     refetchInterval: getRefreshInterval(changePeriod),
   });
 
-  // Trading queries
-  const { data: userBalance } = useQuery({
-    queryKey: ['/api/trading/balance'],
-    enabled: !!user,
+  // Tournament-specific trading queries
+  const { data: tournamentBalance } = useQuery({
+    queryKey: ['/api/tournaments', selectedTournament?.tournaments?.id, 'balance'],
+    enabled: !!user && !!selectedTournament?.tournaments?.id,
     refetchOnWindowFocus: false
   });
 
-  const { data: userPurchases } = useQuery({
-    queryKey: ['/api/trading/purchases'],
-    enabled: !!user,
+  const { data: tournamentPurchases } = useQuery({
+    queryKey: ['/api/tournaments', selectedTournament?.tournaments?.id, 'purchases'],
+    enabled: !!user && !!selectedTournament?.tournaments?.id,
     refetchOnWindowFocus: false
   });
+
+  // Use tournament data when available, otherwise use regular balance
+  const currentBalance = selectedTournament?.tournaments?.id 
+    ? tournamentBalance?.data?.balance || selectedTournament?.balance || 0
+    : 0;
+  const currentPurchases = selectedTournament?.tournaments?.id 
+    ? tournamentPurchases?.data || []
+    : [];
 
   // Add to watchlist mutation
   const addToWatchlistMutation = useMutation({
@@ -565,18 +573,25 @@ export default function Dashboard() {
 
 
 
-  // Trading mutations
+  // Tournament trading mutations
   const purchaseStockMutation = useMutation({
     mutationFn: async (purchaseData: any) => {
-      const res = await apiRequest("POST", "/api/trading/purchase", purchaseData);
+      const tournamentId = selectedTournament?.tournaments?.id;
+      if (!tournamentId) {
+        throw new Error("No tournament selected");
+      }
+      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/purchase`, purchaseData);
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/trading/balance"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/trading/purchases"] });
+      const tournamentId = selectedTournament?.tournaments?.id;
+      if (tournamentId) {
+        queryClient.invalidateQueries({ queryKey: ["/api/tournaments", tournamentId, "balance"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/tournaments", tournamentId, "purchases"] });
+      }
       toast({
         title: "Purchase Successful",
-        description: "Stock has been added to your portfolio",
+        description: "Stock has been added to your tournament portfolio",
       });
       setIsBuyDialogOpen(false);
       setSelectedTradingStock(null);
@@ -752,11 +767,11 @@ export default function Dashboard() {
     const totalCost = shares * selectedTradingStock.price;
 
     // Check if user has enough balance
-    const currentBalance = parseFloat(userBalance?.balance || '0');
-    if (totalCost > currentBalance) {
+    const currentBalanceAmount = parseFloat(currentBalance?.toString() || '0');
+    if (totalCost > currentBalanceAmount) {
       toast({
         title: "Insufficient funds",
-        description: `You need $${totalCost.toFixed(2)} but only have $${currentBalance.toFixed(2)}`,
+        description: `You need $${totalCost.toFixed(2)} but only have $${currentBalanceAmount.toFixed(2)}`,
         variant: "destructive",
       });
       return;
@@ -1398,7 +1413,7 @@ export default function Dashboard() {
                             </CardHeader>
                             <CardContent>
                               <div className="text-3xl font-bold text-foreground">
-                                ${selectedTournament.balance ? parseFloat(selectedTournament.balance).toFixed(2) : selectedTournament.tournaments.buyInAmount.toFixed(2)}
+                                ${currentBalance.toFixed(2)}
                               </div>
                               <p className="text-sm text-muted-foreground mt-2">
                                 Available for trading in this tournament
@@ -1471,11 +1486,35 @@ export default function Dashboard() {
                               </CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <div className="text-center py-8">
-                                <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                                <p className="text-muted-foreground mb-2">No stocks in this tournament yet</p>
-                                <p className="text-sm text-muted-foreground">Use the search above to buy stocks for this tournament</p>
-                              </div>
+                              {currentPurchases.length > 0 ? (
+                                <div className="space-y-4">
+                                  {currentPurchases.map((purchase: any, index: number) => (
+                                    <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                                      <div className="flex-1">
+                                        <p className="font-medium text-foreground">{purchase.symbol}</p>
+                                        <p className="text-sm text-muted-foreground">{purchase.companyName}</p>
+                                        <p className="text-sm text-muted-foreground">
+                                          {purchase.shares} shares @ ${purchase.purchasePrice.toFixed(2)}
+                                        </p>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="font-medium text-foreground">
+                                          ${purchase.totalCost.toFixed(2)}
+                                        </p>
+                                        <p className="text-xs text-muted-foreground">
+                                          {new Date(purchase.createdAt).toLocaleDateString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-center py-8">
+                                  <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                                  <p className="text-muted-foreground mb-2">No stocks in this tournament yet</p>
+                                  <p className="text-sm text-muted-foreground">Use the search above to buy stocks for this tournament</p>
+                                </div>
+                              )}
                             </CardContent>
                           </Card>
                         </div>
