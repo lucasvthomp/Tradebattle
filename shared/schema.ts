@@ -162,6 +162,7 @@ export const insertTournamentSchema = createInsertSchema(tournaments).pick({
   name: true,
   buyInAmount: true,
   maxPlayers: true,
+  startingCash: true,
 });
 
 export const insertTournamentParticipantSchema = createInsertSchema(tournamentParticipants).pick({

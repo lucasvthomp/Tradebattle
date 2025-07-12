@@ -197,16 +197,20 @@ export class DatabaseStorage implements IStorage {
     await db.insert(tournamentParticipants).values({
       tournamentId: result[0].id,
       userId: creatorId,
-      balance: tournament.buyInAmount.toString()
+      balance: tournament.startingCash.toString()
     });
     
     return result[0];
   }
 
   async joinTournament(tournamentId: number, userId: number): Promise<TournamentParticipant> {
+    // Get tournament data to set starting cash
+    const tournament = await db.select().from(tournaments).where(eq(tournaments.id, tournamentId));
+    
     const result = await db.insert(tournamentParticipants).values({
       tournamentId,
-      userId
+      userId,
+      balance: tournament[0].startingCash.toString()
     }).returning();
     
     // Update tournament current players count

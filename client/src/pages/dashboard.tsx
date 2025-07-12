@@ -415,6 +415,7 @@ export default function Dashboard() {
   const [tournamentName, setTournamentName] = useState("");
   const [buyInAmount, setBuyInAmount] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("10");
+  const [startingCash, setStartingCash] = useState("10000");
   const [createdTournament, setCreatedTournament] = useState<any>(null);
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
@@ -538,6 +539,7 @@ export default function Dashboard() {
       setTournamentName("");
       setBuyInAmount("");
       setMaxPlayers("10");
+      setStartingCash("10000");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       toast({
         title: "Tournament created!",
@@ -1227,6 +1229,21 @@ export default function Dashboard() {
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="starting-cash" className="text-right">
+                        Starting Cash ($)
+                      </Label>
+                      <Input
+                        id="starting-cash"
+                        type="number"
+                        value={startingCash}
+                        onChange={(e) => setStartingCash(e.target.value)}
+                        className="col-span-3"
+                        placeholder="10000.00"
+                        min="1"
+                        step="0.01"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="max-players" className="text-right">
                         Max Players
                       </Label>
@@ -1247,15 +1264,16 @@ export default function Dashboard() {
                     </Button>
                     <Button 
                       onClick={() => {
-                        if (tournamentName && buyInAmount) {
+                        if (tournamentName && buyInAmount && startingCash) {
                           createTournamentMutation.mutate({
                             name: tournamentName,
                             buyInAmount: parseFloat(buyInAmount),
-                            maxPlayers: parseInt(maxPlayers)
+                            maxPlayers: parseInt(maxPlayers),
+                            startingCash: parseFloat(startingCash)
                           });
                         }
                       }}
-                      disabled={!tournamentName || !buyInAmount || createTournamentMutation.isPending}
+                      disabled={!tournamentName || !buyInAmount || !startingCash || createTournamentMutation.isPending}
                     >
                       {createTournamentMutation.isPending ? 'Creating...' : 'Create Tournament'}
                     </Button>
