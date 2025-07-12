@@ -193,10 +193,11 @@ export class DatabaseStorage implements IStorage {
       creatorId
     }).returning();
     
-    // Add creator as first participant
+    // Add creator as first participant with initial balance
     await db.insert(tournamentParticipants).values({
       tournamentId: result[0].id,
-      userId: creatorId
+      userId: creatorId,
+      balance: tournament.buyInAmount.toString()
     });
     
     return result[0];
@@ -221,9 +222,12 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async getUserTournaments(userId: number): Promise<Tournament[]> {
+  async getUserTournaments(userId: number): Promise<any[]> {
     return await db
-      .select()
+      .select({
+        tournaments: tournaments,
+        balance: tournamentParticipants.balance
+      })
       .from(tournaments)
       .innerJoin(tournamentParticipants, eq(tournaments.id, tournamentParticipants.tournamentId))
       .where(eq(tournamentParticipants.userId, userId))

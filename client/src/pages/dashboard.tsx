@@ -1452,6 +1452,16 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
                 )}
+
+                {/* Debug Tournament Data */}
+                {userTournaments.length > 0 && (
+                  <div className="mt-4 p-4 bg-gray-800 rounded-lg">
+                    <h4 className="text-sm font-semibold text-white mb-2">Debug: Tournament Data</h4>
+                    <pre className="text-xs text-gray-300 overflow-x-auto">
+                      {JSON.stringify(userTournaments, null, 2)}
+                    </pre>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="watchlist" className="space-y-6">
