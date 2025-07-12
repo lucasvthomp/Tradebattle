@@ -41,19 +41,19 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">O</span>
+            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-xl">O</span>
             </div>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
+          <h2 className="mt-6 text-3xl font-bold text-foreground">
             Join ORSATH
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Start your investment research journey
+          <p className="mt-2 text-sm text-muted-foreground">
+            Start your paper trading competition journey
           </p>
         </div>
 
@@ -121,9 +121,9 @@ export default function Signup() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
                     ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
+                      <Eye className="h-4 w-4 text-muted-foreground" />
                     )}
                   </button>
                 </div>
@@ -147,9 +147,9 @@ export default function Signup() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
+                      <EyeOff className="h-4 w-4 text-muted-foreground" />
                     ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
+                      <Eye className="h-4 w-4 text-muted-foreground" />
                     )}
                   </button>
                 </div>
@@ -174,9 +174,9 @@ export default function Signup() {
               </Button>
 
               <div className="text-center">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-muted-foreground">
                   Already have an account?{" "}
-                  <Link href="/login" className="font-medium text-black hover:underline">
+                  <Link href="/login" className="font-medium text-primary hover:underline">
                     Sign in
                   </Link>
                 </p>

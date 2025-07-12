@@ -166,3 +166,5 @@ Preferred communication style: Simple, everyday language.
 - **Automatic Tournament Selection**: System automatically selects first available tournament and properly manages tournament switching with real-time balance updates
 - **Fixed Tournament Balance Queries**: Resolved React Query caching issues that were causing all tournaments to show the same balance - each tournament now displays its correct unique balance
 - **Tournament Purchase System**: Fixed stock purchasing system to work with tournament-specific balances and validation
+- **Authentication Pages Dark Mode** (January 2025): Updated login and signup pages to use consistent dark mode styling with proper CSS variables and color schemes
+- **Portfolio Enhancement** (January 2025): Added comprehensive portfolio table with purchase price, current price, dollar/percentage change calculations, and real-time price updates
