@@ -161,7 +161,8 @@ export default function Signup() {
               <Button
                 type="submit"
                 disabled={registerMutation.isPending || password !== confirmPassword}
-                className="w-full !bg-black !text-white hover:!bg-gray-800"
+                className="w-full"
+                style={{ backgroundColor: '#000000', color: '#ffffff' }}
               >
                 {registerMutation.isPending ? (
                   <>
