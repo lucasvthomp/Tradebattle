@@ -12,7 +12,7 @@ export default function Landing() {
       <About />
       
       {/* Competition Features Section */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-card">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -22,8 +22,8 @@ export default function Landing() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-4xl font-bold text-black mb-6">Competition Features</h2>
-                <p className="text-xl text-gray-600">
+                <h2 className="text-4xl font-bold text-foreground mb-6">Competition Features</h2>
+                <p className="text-xl text-muted-foreground">
                   Everything you need to compete in paper trading competitions
                 </p>
               </motion.div>
@@ -62,8 +62,8 @@ export default function Landing() {
                       <div className="flex items-center mb-4">
                         <feature.icon className={`mr-3 w-8 h-8 ${feature.color}`} />
                       </div>
-                      <h3 className="text-xl font-bold text-black mb-3">{feature.title}</h3>
-                      <p className="text-gray-600 mb-4">{feature.description}</p>
+                      <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
+                      <p className="text-muted-foreground mb-4">{feature.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>

@@ -30,15 +30,15 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-background border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-            <div className="w-8 h-8 bg-black rounded-sm flex items-center justify-center">
-              <span className="text-white font-bold text-sm">O</span>
+            <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">O</span>
             </div>
-            <span className="text-xl font-bold text-black">ORSATH</span>
+            <span className="text-xl font-bold text-foreground">ORSATH</span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -47,8 +47,8 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`nav-link transition-all duration-300 py-2 px-1 border-b-2 border-transparent hover:text-black hover:border-black ${
-                  isActive(item.href) ? "text-black border-black" : "text-gray-700"
+                className={`nav-link transition-all duration-300 py-2 px-1 border-b-2 border-transparent hover:text-foreground hover:border-primary ${
+                  isActive(item.href) ? "text-foreground border-primary" : "text-muted-foreground"
                 }`}
               >
                 {item.label}
@@ -61,7 +61,7 @@ export default function Header() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-gray-100">
+                  <Button variant="ghost" className="flex items-center space-x-2 hover:bg-accent">
                     {user?.profileImageUrl ? (
                       <img
                         src={user.profileImageUrl}

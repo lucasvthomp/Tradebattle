@@ -71,7 +71,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <ThemeProvider defaultTheme="light" storageKey="orsath-ui-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="orsath-ui-theme">
           <TooltipProvider>
             <Router />
             <Toaster />

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function Hero() {
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="py-20 bg-gradient-to-b from-background to-card">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
@@ -12,30 +12,30 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-black mb-6">
+            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
               Paper Trading{" "}
               <span className="relative">
                 Competitions
                 <motion.div
-                  className="absolute right-0 top-0 h-full w-0.5 bg-black"
+                  className="absolute right-0 top-0 h-full w-0.5 bg-primary"
                   animate={{ opacity: [1, 0, 1] }}
                   transition={{ duration: 1, repeat: Infinity }}
                 />
               </span>
             </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Compete with traders worldwide using virtual portfolios and real market data.
               Test your skills, climb the leaderboards, and win prizes.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
               <Button
                 size="lg"
-                className="bg-white text-black border-2 border-black hover:bg-black hover:text-white transition-all duration-300 transform hover:-translate-y-1"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 transform hover:-translate-y-1"
                 onClick={() => window.location.href = "/signup"}
               >
                 Start Trading
               </Button>
-              <Button variant="ghost" size="lg" className="text-gray-600 hover:text-black">
+              <Button variant="ghost" size="lg" className="text-muted-foreground hover:text-foreground">
                 <Play className="w-5 h-5 mr-2" />
                 Watch Demo
               </Button>
