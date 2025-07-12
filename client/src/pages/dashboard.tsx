@@ -463,13 +463,24 @@ export default function Dashboard() {
 
   // Tournament-specific trading queries with unique keys
   const tournamentId = selectedTournament?.tournaments?.id;
-  const { data: tournamentBalance, refetch: refetchBalance } = useQuery({
+  const { data: tournamentBalance, refetch: refetchBalance, isLoading: isLoadingBalance } = useQuery({
     queryKey: ['tournament-balance', tournamentId, user?.id],
     queryFn: async () => {
       if (!tournamentId) return null;
-      const response = await fetch(`/api/tournaments/${tournamentId}/balance`);
-      if (!response.ok) throw new Error('Failed to fetch balance');
-      return response.json();
+      console.log('Fetching balance for tournament:', tournamentId);
+      const response = await fetch(`/api/tournaments/${tournamentId}/balance`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) {
+        console.error('Balance fetch failed:', response.status, response.statusText);
+        throw new Error('Failed to fetch balance');
+      }
+      const data = await response.json();
+      console.log('Balance response:', data);
+      return data;
     },
     enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: false,
@@ -477,13 +488,24 @@ export default function Dashboard() {
     cacheTime: 0
   });
 
-  const { data: tournamentPurchases, refetch: refetchPurchases } = useQuery({
+  const { data: tournamentPurchases, refetch: refetchPurchases, isLoading: isLoadingPurchases } = useQuery({
     queryKey: ['tournament-purchases', tournamentId, user?.id],
     queryFn: async () => {
       if (!tournamentId) return null;
-      const response = await fetch(`/api/tournaments/${tournamentId}/purchases`);
-      if (!response.ok) throw new Error('Failed to fetch purchases');
-      return response.json();
+      console.log('Fetching purchases for tournament:', tournamentId);
+      const response = await fetch(`/api/tournaments/${tournamentId}/purchases`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) {
+        console.error('Purchases fetch failed:', response.status, response.statusText);
+        throw new Error('Failed to fetch purchases');
+      }
+      const data = await response.json();
+      console.log('Purchases response:', data);
+      return data;
     },
     enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: false,
@@ -495,6 +517,13 @@ export default function Dashboard() {
   const currentBalance = selectedTournament?.tournaments?.id 
     ? tournamentBalance?.data?.balance || selectedTournament?.balance || 0
     : 0;
+  
+  // Debug logging
+  console.log('Selected tournament:', selectedTournament?.tournaments?.id);
+  console.log('Tournament balance data:', tournamentBalance);
+  console.log('Current balance:', currentBalance);
+  console.log('Is loading balance:', isLoadingBalance);
+  console.log('User:', user?.id);
   const currentPurchases = selectedTournament?.tournaments?.id 
     ? tournamentPurchases?.data || []
     : [];
