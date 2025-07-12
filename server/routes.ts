@@ -15,6 +15,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth setup
   setupAuth(app);
 
+  // Make storage available to API routes
+  app.locals.storage = storage;
+  
   // Mount Yahoo Finance API routes
   app.use('/api', apiRoutes);
 
