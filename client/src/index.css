@@ -128,6 +128,20 @@
     color-scheme: light;
   }
   
+  /* Seamless scrolling animation for stock ticker */
+  .animate-scroll {
+    animation: scroll 40s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
   /* Ensure proper transitions for all elements */
   * {
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;

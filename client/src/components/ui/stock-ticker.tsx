@@ -11,6 +11,12 @@ interface StockData {
   volume: number;
 }
 
+interface PerformanceData {
+  symbol: string;
+  percentChange: number;
+  timeFrame: string;
+}
+
 export default function StockTicker() {
   const [tickerData, setTickerData] = useState<StockData[]>([]);
 
@@ -68,18 +74,7 @@ export default function StockTicker() {
 
   return (
     <div className="bg-card border-b border-muted py-3 overflow-hidden">
-      <motion.div
-        className="flex items-center"
-        animate={{
-          x: [0, -100 * tickerData.length], // Move exactly one full set width
-        }}
-        transition={{
-          duration: 35, // Slower animation
-          repeat: Infinity,
-          ease: "linear",
-          repeatType: "loop",
-        }}
-      >
+      <div className="flex animate-scroll">
         {/* First set */}
         {tickerData.map((stock) => (
           <StockItem key={`first-${stock.symbol}`} stock={stock} />
@@ -88,11 +83,7 @@ export default function StockTicker() {
         {tickerData.map((stock) => (
           <StockItem key={`second-${stock.symbol}`} stock={stock} />
         ))}
-        {/* Third set to ensure no gaps */}
-        {tickerData.map((stock) => (
-          <StockItem key={`third-${stock.symbol}`} stock={stock} />
-        ))}
-      </motion.div>
+      </div>
     </div>
   );
 }
