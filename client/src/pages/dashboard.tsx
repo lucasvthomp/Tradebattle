@@ -549,10 +549,20 @@ export default function Dashboard() {
       setMaxPlayers("10");
       setStartingCash("10000");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
+      // Invalidate balance query for the newly created tournament
+      queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournament.id}/balance`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournament.id}/purchases`] });
       toast({
         title: "Tournament created!",
         description: `Tournament "${tournament.name}" has been created. Code: ${tournament.code}`,
       });
+      
+      // Auto-select the newly created tournament after a short delay to ensure queries are updated
+      setTimeout(() => {
+        const tournamentWithBalance = { tournaments: tournament, balance: null };
+        setSelectedTournament(tournamentWithBalance);
+        setSelectedTournamentId(tournament.id.toString());
+      }, 100);
     },
     onError: (error: Error) => {
       toast({

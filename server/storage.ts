@@ -187,8 +187,6 @@ export class DatabaseStorage implements IStorage {
     // Generate unique 8-character code
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
     
-    console.log('Creating tournament with startingCash:', tournament.startingCash);
-    
     const result = await db.insert(tournaments).values({
       ...tournament,
       code,
@@ -196,7 +194,6 @@ export class DatabaseStorage implements IStorage {
     }).returning();
     
     // Add creator as first participant with initial balance
-    console.log('Setting participant balance to:', tournament.startingCash.toString());
     await db.insert(tournamentParticipants).values({
       tournamentId: result[0].id,
       userId: creatorId,
