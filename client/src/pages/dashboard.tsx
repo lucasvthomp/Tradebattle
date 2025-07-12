@@ -463,13 +463,13 @@ export default function Dashboard() {
 
   // Tournament-specific trading queries
   const { data: tournamentBalance } = useQuery({
-    queryKey: ['/api/tournaments', selectedTournament?.tournaments?.id, 'balance'],
+    queryKey: [`/api/tournaments/${selectedTournament?.tournaments?.id}/balance`],
     enabled: !!user && !!selectedTournament?.tournaments?.id,
     refetchOnWindowFocus: false
   });
 
   const { data: tournamentPurchases } = useQuery({
-    queryKey: ['/api/tournaments', selectedTournament?.tournaments?.id, 'purchases'],
+    queryKey: [`/api/tournaments/${selectedTournament?.tournaments?.id}/purchases`],
     enabled: !!user && !!selectedTournament?.tournaments?.id,
     refetchOnWindowFocus: false
   });
@@ -586,8 +586,8 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.tournaments?.id;
       if (tournamentId) {
-        queryClient.invalidateQueries({ queryKey: ["/api/tournaments", tournamentId, "balance"] });
-        queryClient.invalidateQueries({ queryKey: ["/api/tournaments", tournamentId, "purchases"] });
+        queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}/balance`] });
+        queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}/purchases`] });
       }
       toast({
         title: "Purchase Successful",
