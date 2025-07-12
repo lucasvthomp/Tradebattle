@@ -515,7 +515,7 @@ export default function Dashboard() {
 
   // Use tournament data when available, otherwise use regular balance
   const currentBalance = selectedTournament?.tournaments?.id 
-    ? tournamentBalance?.data?.balance || selectedTournament?.balance || 0
+    ? Number(tournamentBalance?.data?.balance || selectedTournament?.balance || 0)
     : 0;
   
   // Debug logging
@@ -524,6 +524,7 @@ export default function Dashboard() {
   console.log('Current balance:', currentBalance);
   console.log('Is loading balance:', isLoadingBalance);
   console.log('User:', user?.id);
+  console.log('Balance type:', typeof currentBalance);
   const currentPurchases = selectedTournament?.tournaments?.id 
     ? tournamentPurchases?.data || []
     : [];
