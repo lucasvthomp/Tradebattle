@@ -1317,6 +1317,93 @@ export default function Dashboard() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Portfolio Section */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Building className="w-5 h-5 mr-2" />
+                      Your Portfolio ({userPurchases?.length || 0})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {userPurchases && userPurchases.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-2 px-4 font-medium">Symbol</th>
+                              <th className="text-left py-2 px-4 font-medium">Company</th>
+                              <th className="text-left py-2 px-4 font-medium">Shares</th>
+                              <th className="text-left py-2 px-4 font-medium">Purchase Price</th>
+                              <th className="text-left py-2 px-4 font-medium">Current Price</th>
+                              <th className="text-left py-2 px-4 font-medium">Total Value</th>
+                              <th className="text-left py-2 px-4 font-medium">P&L</th>
+                              <th className="text-left py-2 px-4 font-medium">Purchase Date</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {userPurchases.map((purchase) => {
+                              const currentStock = popularStocks.find(s => s.symbol === purchase.symbol);
+                              const currentPrice = currentStock?.price || 0;
+                              const totalValue = purchase.shares * currentPrice;
+                              const totalCost = parseFloat(purchase.totalCost);
+                              const pnl = totalValue - totalCost;
+                              const pnlPercent = totalCost > 0 ? (pnl / totalCost) * 100 : 0;
+                              
+                              return (
+                                <tr key={purchase.id} className="border-b hover:bg-gray-50">
+                                  <td className="py-3 px-4 font-medium">{purchase.symbol}</td>
+                                  <td className="py-3 px-4 text-sm">{purchase.companyName}</td>
+                                  <td className="py-3 px-4">{purchase.shares}</td>
+                                  <td className="py-3 px-4">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
+                                  <td className="py-3 px-4">
+                                    {currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A'}
+                                  </td>
+                                  <td className="py-3 px-4 font-medium">
+                                    {currentPrice > 0 ? `$${totalValue.toFixed(2)}` : 'N/A'}
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    {currentPrice > 0 ? (
+                                      <div className="flex items-center space-x-1">
+                                        {pnl >= 0 ? (
+                                          <TrendingUp className="w-4 h-4 text-green-500" />
+                                        ) : (
+                                          <TrendingDown className="w-4 h-4 text-red-500" />
+                                        )}
+                                        <span className={`text-sm font-medium ${
+                                          pnl >= 0 ? "text-green-600" : "text-red-600"
+                                        }`}>
+                                          {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
+                                        </span>
+                                        <span className={`text-xs ${
+                                          pnl >= 0 ? "text-green-500" : "text-red-500"
+                                        }`}>
+                                          ({pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-sm text-gray-500">N/A</span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 px-4 text-sm">
+                                    {new Date(purchase.purchaseDate).toLocaleDateString()}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Building className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+                        <p className="text-gray-600 mb-2">No stocks in your portfolio yet</p>
+                        <p className="text-sm text-gray-500">Use the search function above to find and buy stocks</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </TabsContent>
 
               <TabsContent value="research" className="space-y-6">
