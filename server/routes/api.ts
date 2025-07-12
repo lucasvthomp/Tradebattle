@@ -16,6 +16,7 @@ import {
   ValidationError, 
   NotFoundError 
 } from '../utils/errorHandler.js';
+import { storage } from '../storage.js';
 
 const router = Router();
 
@@ -195,7 +196,7 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
     throw new ValidationError('Tournament name and buy-in amount are required');
   }
 
-  const tournament = await req.app.locals.storage.createTournament({
+  const tournament = await storage.createTournament({
     name: sanitizeInput(name),
     buyInAmount: parseFloat(buyInAmount),
     maxPlayers: maxPlayers || 10
@@ -219,7 +220,7 @@ router.post('/tournaments/:code/join', asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  const tournament = await req.app.locals.storage.getTournamentByCode(code);
+  const tournament = await storage.getTournamentByCode(code);
   if (!tournament) {
     throw new NotFoundError('Tournament not found');
   }
@@ -228,7 +229,7 @@ router.post('/tournaments/:code/join', asyncHandler(async (req, res) => {
     throw new ValidationError('Tournament is full');
   }
 
-  const participant = await req.app.locals.storage.joinTournament(tournament.id, userId);
+  const participant = await storage.joinTournament(tournament.id, userId);
 
   res.json({
     success: true,
@@ -247,7 +248,7 @@ router.get('/tournaments', asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  const tournaments = await req.app.locals.storage.getUserTournaments(userId);
+  const tournaments = await storage.getUserTournaments(userId);
 
   res.json({
     success: true,
@@ -267,7 +268,7 @@ router.get('/tournaments/:id/balance', asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  const balance = await req.app.locals.storage.getTournamentBalance(tournamentId, userId);
+  const balance = await storage.getTournamentBalance(tournamentId, userId);
 
   res.json({
     success: true,
@@ -287,7 +288,7 @@ router.get('/tournaments/:id/purchases', asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  const purchases = await req.app.locals.storage.getTournamentStockPurchases(tournamentId, userId);
+  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
 
   res.json({
     success: true,
