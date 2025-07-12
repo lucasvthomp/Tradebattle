@@ -3,7 +3,6 @@ import {
   studies,
   news,
   watchlist,
-  portfolio,
   contactSubmissions,
   researchInsights,
   adminLogs,
@@ -20,8 +19,6 @@ import {
   type InsertNews,
   type WatchlistItem,
   type InsertWatchlistItem,
-  type PortfolioItem,
-  type InsertPortfolioItem,
   type ContactSubmission,
   type InsertContactSubmission,
   type ResearchInsight,
@@ -69,12 +66,6 @@ export interface IStorage {
   getUserWatchlist(userId: number): Promise<WatchlistItem[]>;
   addToWatchlist(userId: number, item: InsertWatchlistItem): Promise<WatchlistItem>;
   removeFromWatchlist(userId: number, id: number): Promise<void>;
-  
-  // Portfolio operations
-  getUserPortfolio(userId: number): Promise<PortfolioItem[]>;
-  addToPortfolio(userId: number, item: InsertPortfolioItem): Promise<PortfolioItem>;
-  getUserBalance(userId: number): Promise<string>;
-  updateUserBalance(userId: number, newBalance: string): Promise<User>;
   
   // Contact operations
   createContactSubmission(submission: InsertContactSubmission): Promise<ContactSubmission>;
@@ -273,40 +264,6 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(watchlist)
       .where(and(eq(watchlist.id, id), eq(watchlist.userId, userId)));
-  }
-
-  // Portfolio operations
-  async getUserPortfolio(userId: number): Promise<PortfolioItem[]> {
-    return await db
-      .select()
-      .from(portfolio)
-      .where(eq(portfolio.userId, userId))
-      .orderBy(desc(portfolio.createdAt));
-  }
-
-  async addToPortfolio(userId: number, item: InsertPortfolioItem): Promise<PortfolioItem> {
-    const [portfolioItem] = await db
-      .insert(portfolio)
-      .values({ ...item, userId })
-      .returning();
-    return portfolioItem;
-  }
-
-  async getUserBalance(userId: number): Promise<string> {
-    const [user] = await db
-      .select({ balance: users.balance })
-      .from(users)
-      .where(eq(users.id, userId));
-    return user?.balance || "0.00";
-  }
-
-  async updateUserBalance(userId: number, newBalance: string): Promise<User> {
-    const [user] = await db
-      .update(users)
-      .set({ balance: newBalance })
-      .where(eq(users.id, userId))
-      .returning();
-    return user;
   }
 
   // Contact operations

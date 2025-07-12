@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { WatchlistItem, InsertWatchlistItem, PortfolioItem } from "@shared/schema";
+import type { WatchlistItem, InsertWatchlistItem } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Search, 
@@ -39,8 +39,7 @@ import {
   Settings,
   Download,
   Building,
-  TrendingUpDown,
-  ShoppingCart
+  TrendingUpDown
 } from "lucide-react";
 import {
   Dialog,
@@ -54,8 +53,6 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar } from "recharts";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -71,138 +68,428 @@ const staggerChildren = {
   }
 };
 
-interface StockQuote {
-  symbol: string;
-  price: number;
-  change: number;
-  changePercent: number;
-  companyName: string;
-  volume: number;
-  marketCap: number;
-  peRatio: number;
-}
+// Mock data for demonstration with different time periods
+const mockWatchlist = [
+  { 
+    id: 1, 
+    symbol: "AAPL", 
+    companyName: "Apple Inc.", 
+    price: 175.43, 
+    volume: "45.2M", 
+    marketCap: "2.7T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: 2.15, changePercent: 1.24 },
+      "1W": { change: -3.42, changePercent: -1.91 },
+      "1M": { change: 8.73, changePercent: 5.24 },
+      "3M": { change: -12.15, changePercent: -6.48 },
+      "6M": { change: 18.92, changePercent: 12.08 },
+      "1Y": { change: 34.21, changePercent: 24.24 },
+      "YTD": { change: 15.67, changePercent: 9.81 }
+    }
+  },
+  { 
+    id: 2, 
+    symbol: "GOOGL", 
+    companyName: "Alphabet Inc.", 
+    price: 138.21, 
+    volume: "28.1M", 
+    marketCap: "1.8T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: -1.87, changePercent: -1.33 },
+      "1W": { change: 4.21, changePercent: 3.14 },
+      "1M": { change: -5.42, changePercent: -3.77 },
+      "3M": { change: 12.85, changePercent: 10.25 },
+      "6M": { change: -8.92, changePercent: -6.08 },
+      "1Y": { change: 28.45, changePercent: 25.93 },
+      "YTD": { change: 6.78, changePercent: 5.16 }
+    }
+  },
+  { 
+    id: 3, 
+    symbol: "MSFT", 
+    companyName: "Microsoft Corporation", 
+    price: 378.85, 
+    volume: "22.8M", 
+    marketCap: "2.8T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: 5.23, changePercent: 1.40 },
+      "1W": { change: -2.15, changePercent: -0.56 },
+      "1M": { change: 15.42, changePercent: 4.24 },
+      "3M": { change: 22.75, changePercent: 6.39 },
+      "6M": { change: 31.18, changePercent: 8.98 },
+      "1Y": { change: 48.92, changePercent: 14.82 },
+      "YTD": { change: 19.34, changePercent: 5.38 }
+    }
+  },
+  { 
+    id: 4, 
+    symbol: "TSLA", 
+    companyName: "Tesla Inc.", 
+    price: 248.42, 
+    volume: "67.9M", 
+    marketCap: "789B", 
+    sector: "Automotive",
+    changes: {
+      "1D": { change: -8.15, changePercent: -3.18 },
+      "1W": { change: 12.45, changePercent: 5.27 },
+      "1M": { change: -21.73, changePercent: -8.04 },
+      "3M": { change: 18.92, changePercent: 8.24 },
+      "6M": { change: -45.21, changePercent: -15.39 },
+      "1Y": { change: -92.15, changePercent: -27.05 },
+      "YTD": { change: -15.67, changePercent: -5.93 }
+    }
+  },
+  { 
+    id: 5, 
+    symbol: "NVDA", 
+    companyName: "NVIDIA Corporation", 
+    price: 875.28, 
+    volume: "41.2M", 
+    marketCap: "2.2T", 
+    sector: "Technology",
+    changes: {
+      "1D": { change: 12.45, changePercent: 1.44 },
+      "1W": { change: -18.73, changePercent: -2.09 },
+      "1M": { change: 45.92, changePercent: 5.54 },
+      "3M": { change: 125.43, changePercent: 16.73 },
+      "6M": { change: 187.65, changePercent: 27.29 },
+      "1Y": { change: 342.18, changePercent: 64.17 },
+      "YTD": { change: 89.23, changePercent: 11.35 }
+    }
+  },
+];
 
-interface StockPerformance {
-  symbol: string;
-  timeFrame: string;
-  currentPrice: number;
-  change: number;
-  changePercent: number;
-  historicalData: {
-    date: string;
-    price: number;
-  }[];
-}
+const mockMarketData = [
+  { name: "S&P 500", value: "4,789.85", change: "+0.72%", trend: "up" },
+  { name: "NASDAQ", value: "14,567.23", change: "+1.15%", trend: "up" },
+  { name: "DOW", value: "37,248.92", change: "+0.28%", trend: "up" },
+  { name: "VIX", value: "12.84", change: "-2.45%", trend: "down" },
+];
 
-interface SearchResult {
-  symbol: string;
-  name: string;
-  type: string;
-  region: string;
-  marketOpen: string;
-  marketClose: string;
-  timezone: string;
-  currency: string;
-  matchScore: number;
-}
+const mockNews = [
+  { id: 1, title: "Tech Stocks Rally as AI Optimism Grows", time: "2 hours ago", source: "ORSATH Research" },
+  { id: 2, title: "Federal Reserve Signals Potential Rate Cuts", time: "4 hours ago", source: "Market Watch" },
+  { id: 3, title: "Earnings Season Preview: What to Expect", time: "1 day ago", source: "ORSATH Insights" },
+  { id: 4, title: "ESG Investing Trends for 2024", time: "2 days ago", source: "Sustainability Report" },
+];
+
+const mockInsights = [
+  { id: 1, type: "opportunity", title: "Emerging Market Recovery", description: "Our analysis suggests emerging markets are poised for recovery...", priority: "high" },
+  { id: 2, type: "risk", title: "Tech Sector Volatility", description: "Increased volatility expected in tech sector due to...", priority: "medium" },
+  { id: 3, type: "trend", title: "Green Energy Momentum", description: "Renewable energy stocks showing strong momentum...", priority: "low" },
+];
+
+// Comprehensive stock database from major indices
+const stockSearchResults = [
+  // S&P 500 Major Companies
+  { symbol: "AAPL", name: "Apple Inc.", price: 175.43, sector: "Technology" },
+  { symbol: "MSFT", name: "Microsoft Corporation", price: 378.85, sector: "Technology" },
+  { symbol: "GOOGL", name: "Alphabet Inc. Class A", price: 138.21, sector: "Technology" },
+  { symbol: "GOOG", name: "Alphabet Inc. Class C", price: 137.95, sector: "Technology" },
+  { symbol: "AMZN", name: "Amazon.com Inc.", price: 151.94, sector: "Consumer Discretionary" },
+  { symbol: "NVDA", name: "NVIDIA Corporation", price: 875.28, sector: "Technology" },
+  { symbol: "TSLA", name: "Tesla Inc.", price: 248.42, sector: "Automotive" },
+  { symbol: "META", name: "Meta Platforms Inc.", price: 484.26, sector: "Technology" },
+  { symbol: "BRK.B", name: "Berkshire Hathaway Inc. Class B", price: 442.18, sector: "Financial Services" },
+  { symbol: "UNH", name: "UnitedHealth Group Incorporated", price: 612.95, sector: "Healthcare" },
+  { symbol: "JNJ", name: "Johnson & Johnson", price: 158.73, sector: "Healthcare" },
+  { symbol: "JPM", name: "JPMorgan Chase & Co.", price: 221.45, sector: "Financial Services" },
+  { symbol: "XOM", name: "Exxon Mobil Corporation", price: 118.42, sector: "Energy" },
+  { symbol: "PG", name: "Procter & Gamble Company", price: 162.34, sector: "Consumer Staples" },
+  { symbol: "HD", name: "Home Depot Inc.", price: 398.72, sector: "Consumer Discretionary" },
+  { symbol: "CVX", name: "Chevron Corporation", price: 158.92, sector: "Energy" },
+  { symbol: "MRK", name: "Merck & Co. Inc.", price: 98.45, sector: "Healthcare" },
+  { symbol: "ABBV", name: "AbbVie Inc.", price: 169.83, sector: "Healthcare" },
+  { symbol: "KO", name: "Coca-Cola Company", price: 62.78, sector: "Consumer Staples" },
+  { symbol: "PEP", name: "PepsiCo Inc.", price: 158.92, sector: "Consumer Staples" },
+  { symbol: "COST", name: "Costco Wholesale Corporation", price: 798.45, sector: "Consumer Staples" },
+  { symbol: "LLY", name: "Eli Lilly and Company", price: 712.34, sector: "Healthcare" },
+  { symbol: "AVGO", name: "Broadcom Inc.", price: 1284.62, sector: "Technology" },
+  { symbol: "WMT", name: "Walmart Inc.", price: 86.73, sector: "Consumer Staples" },
+  { symbol: "NFLX", name: "Netflix Inc.", price: 487.83, sector: "Communication Services" },
+  { symbol: "BAC", name: "Bank of America Corporation", price: 42.15, sector: "Financial Services" },
+  { symbol: "CRM", name: "Salesforce Inc.", price: 295.48, sector: "Technology" },
+  { symbol: "TMO", name: "Thermo Fisher Scientific Inc.", price: 512.67, sector: "Healthcare" },
+  { symbol: "WFC", name: "Wells Fargo & Company", price: 63.84, sector: "Financial Services" },
+  { symbol: "AMD", name: "Advanced Micro Devices Inc.", price: 184.92, sector: "Technology" },
+  { symbol: "DIS", name: "Walt Disney Company", price: 98.73, sector: "Communication Services" },
+  { symbol: "ACN", name: "Accenture plc", price: 342.15, sector: "Technology" },
+  { symbol: "VZ", name: "Verizon Communications Inc.", price: 41.92, sector: "Communication Services" },
+  { symbol: "ADBE", name: "Adobe Inc.", price: 485.67, sector: "Technology" },
+  { symbol: "PM", name: "Philip Morris International Inc.", price: 118.45, sector: "Consumer Staples" },
+  { symbol: "COP", name: "ConocoPhillips", price: 108.92, sector: "Energy" },
+  { symbol: "NEE", name: "NextEra Energy Inc.", price: 79.34, sector: "Utilities" },
+  { symbol: "RTX", name: "RTX Corporation", price: 115.28, sector: "Industrials" },
+  { symbol: "LIN", name: "Linde plc", price: 445.73, sector: "Materials" },
+  { symbol: "T", name: "AT&T Inc.", price: 22.45, sector: "Communication Services" },
+  { symbol: "UPS", name: "United Parcel Service Inc.", price: 129.67, sector: "Industrials" },
+  { symbol: "LOW", name: "Lowe's Companies Inc.", price: 258.42, sector: "Consumer Discretionary" },
+  { symbol: "INTU", name: "Intuit Inc.", price: 624.83, sector: "Technology" },
+  { symbol: "GS", name: "Goldman Sachs Group Inc.", price: 512.34, sector: "Financial Services" },
+  { symbol: "SPGI", name: "S&P Global Inc.", price: 445.92, sector: "Financial Services" },
+  { symbol: "CAT", name: "Caterpillar Inc.", price: 345.78, sector: "Industrials" },
+  { symbol: "DE", name: "Deere & Company", price: 398.45, sector: "Industrials" },
+  { symbol: "MS", name: "Morgan Stanley", price: 112.67, sector: "Financial Services" },
+  { symbol: "TJX", name: "TJX Companies Inc.", price: 118.92, sector: "Consumer Discretionary" },
+  { symbol: "AXP", name: "American Express Company", price: 248.73, sector: "Financial Services" },
+  { symbol: "BKNG", name: "Booking Holdings Inc.", price: 4285.67, sector: "Consumer Discretionary" },
+  { symbol: "BLK", name: "BlackRock Inc.", price: 912.45, sector: "Financial Services" },
+  { symbol: "MDT", name: "Medtronic plc", price: 87.34, sector: "Healthcare" },
+  { symbol: "GE", name: "General Electric Company", price: 172.89, sector: "Industrials" },
+  { symbol: "GILD", name: "Gilead Sciences Inc.", price: 91.45, sector: "Healthcare" },
+  { symbol: "MMC", name: "Marsh & McLennan Companies", price: 218.67, sector: "Financial Services" },
+  { symbol: "ADP", name: "Automatic Data Processing Inc.", price: 285.43, sector: "Technology" },
+  { symbol: "VRTX", name: "Vertex Pharmaceuticals Incorporated", price: 412.89, sector: "Healthcare" },
+  { symbol: "AMT", name: "American Tower Corporation", price: 212.34, sector: "Real Estate" },
+  { symbol: "LRCX", name: "Lam Research Corporation", price: 785.92, sector: "Technology" },
+  { symbol: "SYK", name: "Stryker Corporation", price: 342.78, sector: "Healthcare" },
+  { symbol: "TGT", name: "Target Corporation", price: 148.92, sector: "Consumer Discretionary" },
+  { symbol: "PANW", name: "Palo Alto Networks Inc.", price: 298.45, sector: "Technology" },
+  { symbol: "BSX", name: "Boston Scientific Corporation", price: 78.92, sector: "Healthcare" },
+  { symbol: "C", name: "Citigroup Inc.", price: 65.43, sector: "Financial Services" },
+  { symbol: "CMG", name: "Chipotle Mexican Grill Inc.", price: 2945.67, sector: "Consumer Discretionary" },
+  { symbol: "MU", name: "Micron Technology Inc.", price: 104.58, sector: "Technology" },
+  { symbol: "SCHW", name: "Charles Schwab Corporation", price: 74.29, sector: "Financial Services" },
+  { symbol: "NOW", name: "ServiceNow Inc.", price: 798.45, sector: "Technology" },
+  { symbol: "ISRG", name: "Intuitive Surgical Inc.", price: 485.73, sector: "Healthcare" },
+  { symbol: "PLD", name: "Prologis Inc.", price: 118.92, sector: "Real Estate" },
+  { symbol: "AMAT", name: "Applied Materials Inc.", price: 185.43, sector: "Technology" },
+  { symbol: "HON", name: "Honeywell International Inc.", price: 219.78, sector: "Industrials" },
+  { symbol: "TXN", name: "Texas Instruments Incorporated", price: 198.45, sector: "Technology" },
+  { symbol: "SHW", name: "Sherwin-Williams Company", price: 385.92, sector: "Materials" },
+  { symbol: "WM", name: "Waste Management Inc.", price: 218.67, sector: "Industrials" },
+  { symbol: "PYPL", name: "PayPal Holdings Inc.", price: 78.92, sector: "Financial Services" },
+  { symbol: "ETN", name: "Eaton Corporation plc", price: 345.78, sector: "Industrials" },
+  { symbol: "ORCL", name: "Oracle Corporation", price: 178.34, sector: "Technology" },
+  { symbol: "BDX", name: "Becton Dickinson and Company", price: 242.89, sector: "Healthcare" },
+  { symbol: "IBM", name: "International Business Machines Corporation", price: 218.45, sector: "Technology" },
+  { symbol: "QCOM", name: "QUALCOMM Incorporated", price: 168.92, sector: "Technology" },
+  { symbol: "MO", name: "Altria Group Inc.", price: 48.73, sector: "Consumer Staples" },
+  { symbol: "USB", name: "U.S. Bancorp", price: 48.92, sector: "Financial Services" },
+  { symbol: "NKE", name: "Nike Inc.", price: 78.45, sector: "Consumer Discretionary" },
+  { symbol: "CCI", name: "Crown Castle Inc.", price: 89.67, sector: "Real Estate" },
+  { symbol: "DHR", name: "Danaher Corporation", price: 245.78, sector: "Healthcare" },
+  { symbol: "BMY", name: "Bristol-Myers Squibb Company", price: 54.92, sector: "Healthcare" },
+  { symbol: "TMUS", name: "T-Mobile US Inc.", price: 218.45, sector: "Communication Services" },
+  { symbol: "SO", name: "Southern Company", price: 78.92, sector: "Utilities" },
+  { symbol: "EOG", name: "EOG Resources Inc.", price: 125.43, sector: "Energy" },
+  { symbol: "ICE", name: "Intercontinental Exchange Inc.", price: 142.78, sector: "Financial Services" },
+  { symbol: "ITW", name: "Illinois Tool Works Inc.", price: 248.92, sector: "Industrials" },
+  { symbol: "PNC", name: "PNC Financial Services Group Inc.", price: 198.45, sector: "Financial Services" },
+  { symbol: "APD", name: "Air Products and Chemicals Inc.", price: 285.67, sector: "Materials" },
+  { symbol: "REGN", name: "Regeneron Pharmaceuticals Inc.", price: 812.34, sector: "Healthcare" },
+  { symbol: "KLAC", name: "KLA Corporation", price: 685.92, sector: "Technology" },
+  { symbol: "CME", name: "CME Group Inc.", price: 218.45, sector: "Financial Services" },
+  { symbol: "CSX", name: "CSX Corporation", price: 34.78, sector: "Industrials" },
+  { symbol: "AON", name: "Aon plc", price: 358.92, sector: "Financial Services" },
+  { symbol: "PGR", name: "Progressive Corporation", price: 245.67, sector: "Financial Services" },
+  { symbol: "FCX", name: "Freeport-McMoRan Inc.", price: 42.89, sector: "Materials" },
+  { symbol: "EL", name: "Estée Lauder Companies Inc.", price: 89.45, sector: "Consumer Staples" },
+  { symbol: "MCO", name: "Moody's Corporation", price: 445.78, sector: "Financial Services" },
+  { symbol: "NSC", name: "Norfolk Southern Corporation", price: 245.92, sector: "Industrials" },
+  { symbol: "CRWD", name: "CrowdStrike Holdings Inc.", price: 298.45, sector: "Technology" },
+  { symbol: "FTNT", name: "Fortinet Inc.", price: 78.92, sector: "Technology" },
+  { symbol: "MAR", name: "Marriott International Inc.", price: 258.45, sector: "Consumer Discretionary" },
+  { symbol: "JCI", name: "Johnson Controls International plc", price: 78.34, sector: "Industrials" },
+  { symbol: "PCAR", name: "PACCAR Inc.", price: 108.92, sector: "Industrials" },
+  { symbol: "NXPI", name: "NXP Semiconductors N.V.", price: 234.78, sector: "Technology" },
+  { symbol: "ROST", name: "Ross Stores Inc.", price: 148.92, sector: "Consumer Discretionary" },
+  { symbol: "GM", name: "General Motors Company", price: 48.73, sector: "Consumer Discretionary" },
+  { symbol: "TFC", name: "Truist Financial Corporation", price: 42.89, sector: "Financial Services" },
+  { symbol: "AIG", name: "American International Group Inc.", price: 78.45, sector: "Financial Services" },
+  { symbol: "MCK", name: "McKesson Corporation", price: 485.92, sector: "Healthcare" },
+  { symbol: "O", name: "Realty Income Corporation", price: 58.73, sector: "Real Estate" },
+  { symbol: "FAST", name: "Fastenal Company", price: 78.92, sector: "Industrials" },
+  { symbol: "MLM", name: "Martin Marietta Materials Inc.", price: 585.43, sector: "Materials" },
+  { symbol: "ROP", name: "Roper Technologies Inc.", price: 485.67, sector: "Technology" },
+  { symbol: "PAYX", name: "Paychex Inc.", price: 128.45, sector: "Technology" },
+  { symbol: "ODFL", name: "Old Dominion Freight Line Inc.", price: 198.92, sector: "Industrials" },
+  { symbol: "KMB", name: "Kimberly-Clark Corporation", price: 138.78, sector: "Consumer Staples" },
+  { symbol: "COF", name: "Capital One Financial Corporation", price: 148.92, sector: "Financial Services" },
+  { symbol: "CTSH", name: "Cognizant Technology Solutions Corporation", price: 78.45, sector: "Technology" },
+  { symbol: "CTAS", name: "Cintas Corporation", price: 198.92, sector: "Industrials" },
+  { symbol: "MCHP", name: "Microchip Technology Incorporated", price: 89.45, sector: "Technology" },
+  { symbol: "VRSK", name: "Verisk Analytics Inc.", price: 258.73, sector: "Technology" },
+  { symbol: "GWW", name: "W.W. Grainger Inc.", price: 985.42, sector: "Industrials" },
+  { symbol: "YUM", name: "Yum! Brands Inc.", price: 138.92, sector: "Consumer Discretionary" },
+  { symbol: "IDXX", name: "IDEXX Laboratories Inc.", price: 485.67, sector: "Healthcare" },
+  { symbol: "CMI", name: "Cummins Inc.", price: 285.43, sector: "Industrials" },
+  { symbol: "GPN", name: "Global Payments Inc.", price: 128.45, sector: "Technology" },
+  { symbol: "MSI", name: "Motorola Solutions Inc.", price: 485.92, sector: "Technology" },
+  
+  // Additional Growth and Tech Stocks
+  { symbol: "SHOP", name: "Shopify Inc.", price: 89.45, sector: "Technology" },
+  { symbol: "ROKU", name: "Roku Inc.", price: 68.73, sector: "Technology" },
+  { symbol: "SQ", name: "Block Inc.", price: 78.92, sector: "Technology" },
+  { symbol: "SNAP", name: "Snap Inc.", price: 11.45, sector: "Technology" },
+  { symbol: "PINS", name: "Pinterest Inc.", price: 38.92, sector: "Technology" },
+  { symbol: "UBER", name: "Uber Technologies Inc.", price: 78.45, sector: "Technology" },
+  { symbol: "LYFT", name: "Lyft Inc.", price: 18.92, sector: "Technology" },
+  { symbol: "DOCU", name: "DocuSign Inc.", price: 58.73, sector: "Technology" },
+  { symbol: "ZM", name: "Zoom Video Communications Inc.", price: 68.92, sector: "Technology" },
+  { symbol: "PLTR", name: "Palantir Technologies Inc.", price: 28.45, sector: "Technology" },
+  { symbol: "SNOW", name: "Snowflake Inc.", price: 128.92, sector: "Technology" },
+  { symbol: "DDOG", name: "Datadog Inc.", price: 128.45, sector: "Technology" },
+  { symbol: "COIN", name: "Coinbase Global Inc.", price: 248.92, sector: "Technology" },
+  { symbol: "RIVN", name: "Rivian Automotive Inc.", price: 18.45, sector: "Automotive" },
+  { symbol: "LCID", name: "Lucid Group Inc.", price: 4.82, sector: "Automotive" },
+  { symbol: "NIO", name: "NIO Inc.", price: 8.92, sector: "Automotive" },
+  { symbol: "XPEV", name: "XPeng Inc.", price: 12.45, sector: "Automotive" },
+  { symbol: "LI", name: "Li Auto Inc.", price: 24.78, sector: "Automotive" },
+  
+  // Healthcare & Biotech
+  { symbol: "MRNA", name: "Moderna Inc.", price: 48.92, sector: "Healthcare" },
+  { symbol: "PFE", name: "Pfizer Inc.", price: 28.45, sector: "Healthcare" },
+  { symbol: "BNTX", name: "BioNTech SE", price: 118.92, sector: "Healthcare" },
+  { symbol: "ZTS", name: "Zoetis Inc.", price: 178.45, sector: "Healthcare" },
+  { symbol: "BIIB", name: "Biogen Inc.", price: 218.92, sector: "Healthcare" },
+  { symbol: "AMGN", name: "Amgen Inc.", price: 278.45, sector: "Healthcare" },
+  { symbol: "CAH", name: "Cardinal Health Inc.", price: 118.92, sector: "Healthcare" },
+  { symbol: "CVS", name: "CVS Health Corporation", price: 78.45, sector: "Healthcare" },
+  { symbol: "WBA", name: "Walgreens Boots Alliance Inc.", price: 28.92, sector: "Healthcare" },
+  
+  // Energy Sector
+  { symbol: "SLB", name: "SLB", price: 48.92, sector: "Energy" },
+  { symbol: "HAL", name: "Halliburton Company", price: 38.45, sector: "Energy" },
+  { symbol: "BKR", name: "Baker Hughes Company", price: 38.92, sector: "Energy" },
+  { symbol: "OXY", name: "Occidental Petroleum Corporation", price: 58.73, sector: "Energy" },
+  { symbol: "PSX", name: "Phillips 66", price: 128.45, sector: "Energy" },
+  { symbol: "VLO", name: "Valero Energy Corporation", price: 138.92, sector: "Energy" },
+  { symbol: "MPC", name: "Marathon Petroleum Corporation", price: 158.45, sector: "Energy" },
+  { symbol: "KMI", name: "Kinder Morgan Inc.", price: 18.92, sector: "Energy" },
+  { symbol: "WMB", name: "Williams Companies Inc.", price: 38.45, sector: "Energy" },
+  { symbol: "OKE", name: "ONEOK Inc.", price: 88.92, sector: "Energy" },
+  
+  // Financial Services
+  { symbol: "V", name: "Visa Inc.", price: 285.43, sector: "Financial Services" },
+  { symbol: "MA", name: "Mastercard Incorporated", price: 458.92, sector: "Financial Services" },
+  { symbol: "BK", name: "Bank of New York Mellon Corporation", price: 58.73, sector: "Financial Services" },
+  { symbol: "STT", name: "State Street Corporation", price: 78.45, sector: "Financial Services" },
+  { symbol: "NTRS", name: "Northern Trust Corporation", price: 98.92, sector: "Financial Services" },
+  { symbol: "RF", name: "Regions Financial Corporation", price: 22.45, sector: "Financial Services" },
+  { symbol: "KEY", name: "KeyCorp", price: 18.92, sector: "Financial Services" },
+  { symbol: "FITB", name: "Fifth Third Bancorp", price: 38.45, sector: "Financial Services" },
+  { symbol: "HBAN", name: "Huntington Bancshares Incorporated", price: 14.78, sector: "Financial Services" },
+  { symbol: "CFG", name: "Citizens Financial Group Inc.", price: 42.89, sector: "Financial Services" },
+  
+  // Consumer & Retail
+  { symbol: "AMZN", name: "Amazon.com Inc.", price: 151.94, sector: "Consumer Discretionary" },
+  { symbol: "EBAY", name: "eBay Inc.", price: 58.92, sector: "Consumer Discretionary" },
+  { symbol: "ETSY", name: "Etsy Inc.", price: 58.73, sector: "Consumer Discretionary" },
+  { symbol: "W", name: "Wayfair Inc.", price: 78.45, sector: "Consumer Discretionary" },
+  { symbol: "CHWY", name: "Chewy Inc.", price: 28.92, sector: "Consumer Discretionary" },
+  { symbol: "DASH", name: "DoorDash Inc.", price: 148.92, sector: "Consumer Discretionary" },
+  { symbol: "ABNB", name: "Airbnb Inc.", price: 128.45, sector: "Consumer Discretionary" },
+  { symbol: "TSLA", name: "Tesla Inc.", price: 248.42, sector: "Automotive" },
+  { symbol: "F", name: "Ford Motor Company", price: 10.45, sector: "Automotive" },
+  
+  // Real Estate
+  { symbol: "SPG", name: "Simon Property Group Inc.", price: 158.92, sector: "Real Estate" },
+  { symbol: "EXR", name: "Extended Stay America Inc.", price: 128.45, sector: "Real Estate" },
+  { symbol: "AVB", name: "AvalonBay Communities Inc.", price: 218.92, sector: "Real Estate" },
+  { symbol: "EQR", name: "Equity Residential", price: 78.45, sector: "Real Estate" },
+  { symbol: "WELL", name: "Welltower Inc.", price: 118.92, sector: "Real Estate" },
+  { symbol: "VTR", name: "Ventas Inc.", price: 58.73, sector: "Real Estate" },
+  { symbol: "HCP", name: "Healthpeak Properties Inc.", price: 22.45, sector: "Real Estate" },
+  { symbol: "PSA", name: "Public Storage", price: 358.92, sector: "Real Estate" },
+  { symbol: "EXR", name: "Extended Stay America Inc.", price: 158.45, sector: "Real Estate" },
+];
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
-  const [selectedTimeFrame, setSelectedTimeFrame] = useState("1D");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
-  const [showAddDialog, setShowAddDialog] = useState(false);
-  const [showBuyDialog, setShowBuyDialog] = useState(false);
-  const [showResearchDialog, setShowResearchDialog] = useState(false);
-  const [selectedStock, setSelectedStock] = useState<SearchResult | null>(null);
-  const [selectedStockQuote, setSelectedStockQuote] = useState<StockQuote | null>(null);
-  const [buyShares, setBuyShares] = useState<number>(1);
-  const [loading, setLoading] = useState(false);
-  const [researchType, setResearchType] = useState<string>("");
-  const [researchDetails, setResearchDetails] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [stockData, setStockData] = useState([]);
+  const [isLoadingStocks, setIsLoadingStocks] = useState(false);
+  const [popularStocks, setPopularStocks] = useState([]);
+  const [isLoadingPopular, setIsLoadingPopular] = useState(true);
+  const [selectedStock, setSelectedStock] = useState(null);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [activeTab, setActiveTab] = useState("overview");
+  const [sortBy, setSortBy] = useState("symbol");
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [filterSector, setFilterSector] = useState("all");
+  const [changePeriod, setChangePeriod] = useState("1D");
+  
+  // Research request dialog states
+  const [isResearchDialogOpen, setIsResearchDialogOpen] = useState(false);
+  const [researchStep, setResearchStep] = useState(1);
+  const [researchType, setResearchType] = useState("");
+  const [researchTarget, setResearchTarget] = useState("");
+  const [researchDescription, setResearchDescription] = useState("");
 
-  // Fetch user balance
-  const { data: balanceData, isLoading: balanceLoading } = useQuery<{ balance: string }>({
-    queryKey: ["/api/balance"],
-    refetchInterval: 30000,
-  });
+  // Helper function to determine refresh interval based on subscription tier and timeframe
+  const getRefreshInterval = (timeframe: string) => {
+    // Free tier gets 15-minute intervals for 1D and 5D, 1-day intervals for longer periods
+    if (user?.subscriptionTier === 'novice') {
+      return (timeframe === '1D' || timeframe === '5D') ? 15 * 60 * 1000 : 24 * 60 * 60 * 1000;
+    }
+    
+    // Paid tiers get 1-minute intervals for 1D and 5D, 5-minute for longer periods
+    return (timeframe === '1D' || timeframe === '5D') ? 1 * 60 * 1000 : 5 * 60 * 1000;
+  };
 
-  // Fetch user portfolio
-  const { data: portfolio = [], isLoading: portfolioLoading } = useQuery<PortfolioItem[]>({
-    queryKey: ["/api/portfolio"],
-    refetchInterval: 30000,
-  });
-
-  // Fetch watchlist
-  const { data: watchlist = [], isLoading: watchlistLoading } = useQuery<WatchlistItem[]>({
+  // Fetch user's watchlist
+  const { data: watchlist = [], isLoading: watchlistLoading, refetch: refetchWatchlist } = useQuery({
     queryKey: ["/api/watchlist"],
-    refetchInterval: 30000,
+    enabled: !!user,
   });
 
-  // Fetch watchlist performance data
-  const { data: watchlistPerformance = [], isLoading: watchlistPerformanceLoading } = useQuery<StockPerformance[]>({
-    queryKey: ["/api/watchlist/performance", selectedTimeFrame],
+  // Fetch individual stock quotes for watchlist items not in popular stocks
+  const watchlistSymbols = watchlist.map(stock => stock.symbol);
+  const { data: individualStockData = [], isLoading: individualStockLoading } = useQuery({
+    queryKey: ["/api/watchlist-quotes", watchlistSymbols],
     queryFn: async () => {
-      if (watchlist.length === 0) return [];
-      
-      const promises = watchlist.map(async (item) => {
-        const res = await apiRequest("GET", `/api/performance/${item.symbol}/${selectedTimeFrame}`);
-        return res.json();
+      const promises = watchlistSymbols.map(async (symbol) => {
+        try {
+          const response = await fetch(`/api/quote/${symbol}`);
+          if (response.ok) {
+            const result = await response.json();
+            return result.success ? result.data : null;
+          }
+        } catch (error) {
+          console.error(`Error fetching quote for ${symbol}:`, error);
+          return null;
+        }
       });
-      
       const results = await Promise.all(promises);
-      return results.map(r => r.data);
+      return results.filter(Boolean);
     },
-    enabled: watchlist.length > 0,
-    refetchInterval: user?.subscriptionTier === "novice" ? 
-      (selectedTimeFrame === "1D" || selectedTimeFrame === "5D" ? 15 * 60 * 1000 : 24 * 60 * 60 * 1000) : 
-      (selectedTimeFrame === "1D" || selectedTimeFrame === "5D" ? 60 * 1000 : 5 * 60 * 1000),
-  });
-
-  // Fetch portfolio performance data
-  const { data: portfolioPerformance = [], isLoading: performanceLoading } = useQuery<StockPerformance[]>({
-    queryKey: ["/api/portfolio/performance", selectedTimeFrame],
-    queryFn: async () => {
-      if (portfolio.length === 0) return [];
-      
-      const promises = portfolio.map(async (item) => {
-        const res = await apiRequest("GET", `/api/performance/${item.symbol}/${selectedTimeFrame}`);
-        return res.json();
-      });
-      
-      const results = await Promise.all(promises);
-      return results.map(r => r.data);
-    },
-    enabled: portfolio.length > 0,
-    refetchInterval: user?.subscriptionTier === "novice" ? 
-      (selectedTimeFrame === "1D" || selectedTimeFrame === "5D" ? 15 * 60 * 1000 : 24 * 60 * 60 * 1000) : 
-      (selectedTimeFrame === "1D" || selectedTimeFrame === "5D" ? 60 * 1000 : 5 * 60 * 1000),
+    enabled: !!user && watchlistSymbols.length > 0,
+    refetchInterval: getRefreshInterval(changePeriod),
   });
 
   // Add to watchlist mutation
   const addToWatchlistMutation = useMutation({
-    mutationFn: async (data: InsertWatchlistItem) => {
-      const response = await apiRequest("POST", "/api/watchlist", data);
-      return response.json();
+    mutationFn: async (item: InsertWatchlistItem) => {
+      const res = await apiRequest("POST", "/api/watchlist", item);
+      return res.json();
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
       toast({
         title: "Added to watchlist",
-        description: "Stock has been added to your watchlist.",
+        description: "Stock has been added to your watchlist",
       });
-      setShowAddDialog(false);
-      setSelectedStock(null);
-      setSearchTerm("");
-      setSearchResults([]);
-      queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
     },
-    onError: (error: any) => {
-      toast({
-        title: "Failed to add to watchlist",
-        description: error.message || "Please try again.",
-        variant: "destructive",
-      });
+    onError: (error: Error) => {
+      // Check if it's a watchlist limit error
+      if (error.message.includes("limited to 5 equities")) {
+        toast({
+          title: "Watchlist Limit Reached",
+          description: "Free accounts can only track 5 stocks. Upgrade to add more to your watchlist.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      }
     },
   });
 
@@ -212,846 +499,793 @@ export default function Dashboard() {
       await apiRequest("DELETE", `/api/watchlist/${id}`);
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
       toast({
         title: "Removed from watchlist",
-        description: "Stock has been removed from your watchlist.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Failed to remove from watchlist",
-        description: error.message || "Please try again.",
-        variant: "destructive",
+        description: "Stock has been removed from your watchlist",
       });
     },
-  });
-
-  // Buy stock mutation
-  const buyStockMutation = useMutation({
-    mutationFn: async (data: { symbol: string; companyName: string; shares: number; price: string }) => {
-      const response = await apiRequest("POST", "/api/portfolio/buy", data);
-      return response.json();
-    },
-    onSuccess: () => {
+    onError: (error: Error) => {
       toast({
-        title: "Purchase successful",
-        description: "Stock added to your portfolio!",
-      });
-      setShowBuyDialog(false);
-      setSelectedStock(null);
-      setSelectedStockQuote(null);
-      setBuyShares(1);
-      queryClient.invalidateQueries({ queryKey: ["/api/portfolio"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/balance"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Purchase failed",
-        description: error.message || "Failed to buy stock. Please try again.",
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
 
   // Research request mutation
-  const researchRequestMutation = useMutation({
-    mutationFn: async (data: { type: string; details: string }) => {
-      const response = await apiRequest("POST", "/api/research-requests", data);
-      return response.json();
+  const createResearchRequestMutation = useMutation({
+    mutationFn: async (requestData: { type: string; target: string; description: string }) => {
+      await apiRequest("POST", "/api/research-requests", requestData);
     },
     onSuccess: () => {
+      resetResearchDialog();
       toast({
         title: "Research request submitted",
-        description: "Our team will review your request and get back to you soon.",
+        description: "Your custom research request has been sent to our team for review.",
       });
-      setShowResearchDialog(false);
-      setResearchType("");
-      setResearchDetails("");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
-        title: "Failed to submit request",
-        description: error.message || "Please try again.",
+        title: "Error",
+        description: error.message,
         variant: "destructive",
       });
     },
   });
 
-  // Search stocks
-  const searchStocks = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await apiRequest("GET", `/api/search/${encodeURIComponent(query)}`);
-      const data = await response.json();
-      if (data.success) {
-        setSearchResults(data.data);
-      }
-    } catch (error) {
-      console.error("Error searching stocks:", error);
-      toast({
-        title: "Search failed",
-        description: "Failed to search stocks. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
+  // Reset research dialog
+  const resetResearchDialog = () => {
+    setIsResearchDialogOpen(false);
+    setResearchStep(1);
+    setResearchType("");
+    setResearchTarget("");
+    setResearchDescription("");
   };
 
-  // Get stock quote for buy dialog
-  const getStockQuote = async (symbol: string) => {
-    try {
-      const response = await apiRequest("GET", `/api/quote/${symbol}`);
-      const data = await response.json();
-      if (data.success) {
-        setSelectedStockQuote(data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching stock quote:", error);
+  // Handle research request submission
+  const handleResearchRequestSubmit = () => {
+    if (!researchType || !researchTarget) {
       toast({
-        title: "Quote failed",
-        description: "Failed to fetch stock quote. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  // Handle add to watchlist
-  const handleAddToWatchlist = (stock: SearchResult) => {
-    if (user?.subscriptionTier === "novice" && watchlist.length >= 5) {
-      toast({
-        title: "Watchlist limit reached",
-        description: "Upgrade to add more than 5 stocks to your watchlist.",
+        title: "Missing information",
+        description: "Please select a research type and specify the target.",
         variant: "destructive",
       });
       return;
     }
 
+    createResearchRequestMutation.mutate({
+      type: researchType,
+      target: researchTarget,
+      description: researchDescription || `${researchType} analysis for ${researchTarget}`,
+    });
+  };
+
+  // Authentication handled by router
+
+  // Add query for popular stocks
+  const { data: popularStocksData, isLoading: cachedLoading } = useQuery({
+    queryKey: ["/api/popular"],
+    enabled: !!user,
+    refetchInterval: getRefreshInterval(changePeriod),
+  });
+
+  // Use popular stocks data
+  useEffect(() => {
+    if (popularStocksData?.success && popularStocksData.data) {
+      setPopularStocks(popularStocksData.data);
+      setIsLoadingPopular(false);
+    }
+  }, [popularStocksData]);
+
+  // Fetch timeframe-specific performance data for watchlist
+  const { data: performanceData = {} } = useQuery({
+    queryKey: ["/api/performance", watchlist.map(s => s.symbol), changePeriod],
+    queryFn: async () => {
+      if (watchlist.length === 0) return {};
+      
+      const performancePromises = watchlist.map(async (stock) => {
+        try {
+          const response = await fetch(`/api/performance/${stock.symbol}/${changePeriod}`);
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success && result.data) {
+              return { [stock.symbol]: result.data };
+            }
+          }
+          return { [stock.symbol]: null };
+        } catch (error) {
+          console.error(`Error fetching ${changePeriod} data for ${stock.symbol}:`, error);
+          return { [stock.symbol]: null };
+        }
+      });
+      
+      const results = await Promise.all(performancePromises);
+      return Object.assign({}, ...results);
+    },
+    enabled: !!user && watchlist.length > 0,
+    refetchInterval: getRefreshInterval(changePeriod),
+  });
+
+  // Fetch all available sectors
+  const { data: allSectors = [] } = useQuery({
+    queryKey: ["/api/sectors"],
+    queryFn: async () => {
+      const response = await fetch('/api/sectors');
+      if (response.ok) {
+        const result = await response.json();
+        return result.success ? result.data : [];
+      }
+      return [];
+    },
+  });
+
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    if (query.length > 0) {
+      setIsLoadingStocks(true);
+      try {
+        const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
+        if (response.ok) {
+          const results = await response.json();
+          if (results.success) {
+            setStockData(results.data);
+          }
+        }
+      } catch (error) {
+        console.error('Error searching stocks:', error);
+      } finally {
+        setIsLoadingStocks(false);
+      }
+    }
+    setShowSearchResults(query.length > 0);
+  };
+
+  const addToWatchlist = async (stock: any) => {
     addToWatchlistMutation.mutate({
       symbol: stock.symbol,
       companyName: stock.name,
+      price: stock.price,
+      marketCap: stock.marketCap,
+      sector: stock.sector || "N/A",
+      change: stock.change,
+      changePercent: stock.percentChange,
     });
+    setShowSearchResults(false);
+    setSearchQuery("");
   };
 
-  // Handle buy stock
-  const handleBuyStock = () => {
-    if (!selectedStock || !selectedStockQuote) return;
-    
-    const totalCost = selectedStockQuote.price * buyShares;
-    const balance = parseFloat(balanceData?.balance || "0");
-    
-    if (totalCost > balance) {
-      toast({
-        title: "Insufficient funds",
-        description: "You don't have enough balance to make this purchase.",
-        variant: "destructive",
-      });
-      return;
+  const formatMarketCap = (marketCap: number | string) => {
+    // If already formatted, return as is
+    if (typeof marketCap === 'string') {
+      return marketCap;
     }
-
-    buyStockMutation.mutate({
-      symbol: selectedStock.symbol,
-      companyName: selectedStock.name,
-      shares: buyShares,
-      price: selectedStockQuote.price.toString(),
-    });
-  };
-
-  // Handle research request
-  const handleResearchRequest = () => {
-    if (!researchType || !researchDetails.trim()) {
-      toast({
-        title: "Missing information",
-        description: "Please select a research type and provide details.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    researchRequestMutation.mutate({
-      type: researchType,
-      details: researchDetails,
-    });
-  };
-
-  // Handle search input change
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      searchStocks(searchTerm);
-    }, 300);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
-
-  // Handle stock selection for buying
-  const handleStockSelect = (stock: SearchResult) => {
-    setSelectedStock(stock);
-    getStockQuote(stock.symbol);
-    setShowBuyDialog(true);
-  };
-
-  // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
-
-  // Calculate portfolio value
-  const calculatePortfolioValue = () => {
-    if (!portfolioPerformance.length) return 0;
     
-    return portfolioPerformance.reduce((total, perf) => {
-      const portfolioItem = portfolio.find(p => p.symbol === perf.symbol);
-      if (!portfolioItem) return total;
-      
-      return total + (perf.currentPrice * portfolioItem.shares);
-    }, 0);
-  };
-
-  // Get historical close label
-  const getHistoricalCloseLabel = (timeFrame: string) => {
-    switch (timeFrame) {
-      case "1D": return "Previous Close";
-      case "5D": return "Close Price (5D ago)";
-      case "1M": return "Close Price (1M ago)";
-      case "6M": return "Close Price (6M ago)";
-      case "YTD": return "Close Price (YTD)";
-      case "1Y": return "Close Price (1Y ago)";
-      case "5Y": return "Close Price (5Y ago)";
-      default: return "Previous Close";
+    // If not a number, return N/A
+    if (!marketCap || typeof marketCap !== 'number') {
+      return 'N/A';
+    }
+    
+    if (marketCap >= 1000000000000) {
+      return (marketCap / 1000000000000).toFixed(1) + "T";
+    } else if (marketCap >= 1000000000) {
+      return (marketCap / 1000000000).toFixed(1) + "B";
+    } else if (marketCap >= 1000000) {
+      return (marketCap / 1000000).toFixed(1) + "M";
+    } else {
+      return marketCap.toFixed(1) + "K";
     }
   };
 
-  // Prepare chart data
-  const chartData = portfolioPerformance.length > 0 && portfolioPerformance[0]?.historicalData ? 
-    portfolioPerformance[0].historicalData.map((point, index) => ({
-      date: point.date,
-      ...portfolioPerformance.reduce((acc, perf) => {
-        const portfolioItem = portfolio.find(p => p.symbol === perf.symbol);
-        if (portfolioItem && perf.historicalData && perf.historicalData[index]) {
-          acc[perf.symbol] = perf.historicalData[index].price * portfolioItem.shares;
-        }
-        return acc;
-      }, {} as Record<string, number>),
-      total: portfolioPerformance.reduce((total, perf) => {
-        const portfolioItem = portfolio.find(p => p.symbol === perf.symbol);
-        if (portfolioItem && perf.historicalData && perf.historicalData[index]) {
-          return total + (perf.historicalData[index].price * portfolioItem.shares);
-        }
-        return total;
-      }, 0)
-    })) : [];
+  const removeFromWatchlist = (id: number) => {
+    removeFromWatchlistMutation.mutate(id);
+  };
 
-  if (!user) {
+  // Enrich watchlist with real-time data
+  const enrichedWatchlist = watchlist.map(stock => {
+    // Get timeframe-specific data for the selected period
+    const timeframeSpecificData = performanceData[stock.symbol];
+    
+    // First try to find data in popular stocks for current price
+    const popularData = popularStocks.find((company: any) => company.symbol === stock.symbol);
+    const individualData = individualStockData.find((company: any) => company.symbol === stock.symbol);
+    
+    // Use current price from popular or individual data
+    const currentPrice = popularData?.price || individualData?.price || stock.price;
+    const volume = popularData?.volume || individualData?.volume || stock.volume || 0;
+    const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
+    const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
+    
+    // Get the correct historical close price based on timeframe
+    let historicalClose = 0;
+    
+    if (changePeriod === '1D') {
+      // For 1D, use previous close (trading day before)
+      historicalClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
+    } else {
+      // For other timeframes, use the historical open price from performance data
+      if (timeframeSpecificData) {
+        historicalClose = timeframeSpecificData.startPrice || timeframeSpecificData.previousClose || 0;
+      } else {
+        // Fallback to previous close if timeframe data not available
+        historicalClose = popularData?.previousClose || individualData?.previousClose || (currentPrice - (popularData?.change || individualData?.change || 0));
+      }
+    }
+    
+    // For 1D changes: Always calculate from current price vs previous close
+    // For long-term changes: Use Yahoo Finance timeframe data
+    let finalChange = 0;
+    let finalChangePercent = 0;
+    
+    if (changePeriod === '1D') {
+      // 1D: Calculate change immediately from current price vs previous close
+      finalChange = currentPrice - historicalClose;
+      finalChangePercent = historicalClose > 0 ? ((finalChange / historicalClose) * 100) : 0;
+    } else {
+      // Long-term: Use Yahoo Finance timeframe-specific data
+      if (timeframeSpecificData) {
+        finalChange = timeframeSpecificData.change;
+        finalChangePercent = timeframeSpecificData.percentChange;
+      } else {
+        // Fallback to current data if timeframe data not available
+        finalChange = popularData?.change || individualData?.change || 0;
+        finalChangePercent = popularData?.percentChange || individualData?.percentChange || 0;
+      }
+    }
+    
+    return {
+      ...stock,
+      currentPrice,
+      previousClose: historicalClose,
+      volume,
+      marketCap,
+      sector,
+      change: finalChange,
+      changePercent: finalChangePercent,
+      currency: popularData?.currency || individualData?.currency || stock.currency || "USD",
+      lastUpdated: Date.now()
+    };
+  });
+
+  const filteredWatchlist = enrichedWatchlist
+    .filter(stock => filterSector === "all" || stock.sector === filterSector)
+    .sort((a, b) => {
+      const aValue = a[sortBy as keyof typeof a];
+      const bValue = b[sortBy as keyof typeof b];
+      if (sortOrder === "asc") {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
+  const sectors = ["all", ...allSectors];
+
+  if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Please log in to access your dashboard</h2>
-          <Button onClick={() => window.location.href = "/login"}>
-            Log In
-          </Button>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto py-6 px-4">
         <motion.div
+          className="max-w-7xl mx-auto"
           initial="initial"
           animate="animate"
           variants={staggerChildren}
-          className="space-y-8"
         >
           {/* Header */}
-          <motion.div variants={fadeInUp} className="text-center">
-            <h1 className="text-4xl font-bold text-black mb-2">
-              Investment Dashboard
-            </h1>
-            <p className="text-gray-600">
-              Track your watchlist, manage your portfolio, and explore investment opportunities
-            </p>
+          <motion.div className="mb-8" variants={fadeInUp}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-black mb-2">
+                  Welcome back, {user?.firstName || user?.email || "User"}
+                </h1>
+                <p className="text-gray-600">Here's your investment dashboard</p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button variant="outline" size="sm">
+                  <Download className="w-4 h-4 mr-2" />
+                  Export Data
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Bell className="w-4 h-4 mr-2" />
+                  Alerts
+                </Button>
+                <Button variant="outline" size="sm">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Settings
+                </Button>
+              </div>
+            </div>
           </motion.div>
 
-          {/* Balance Display */}
-          <motion.div variants={fadeInUp}>
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <DollarSign className="h-5 w-5" />
-                  Account Balance
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-3xl font-bold text-green-600">
-                  {balanceLoading ? "Loading..." : formatCurrency(parseFloat(balanceData?.balance || "0"))}
-                </div>
-                <p className="text-sm text-gray-600 mt-1">
-                  Available for trading
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Portfolio Chart */}
-          <motion.div variants={fadeInUp}>
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <LineChart className="h-5 w-5" />
-                    Portfolio Performance
-                  </CardTitle>
-                  <Select value={selectedTimeFrame} onValueChange={setSelectedTimeFrame}>
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1D">1 Day</SelectItem>
-                      <SelectItem value="5D">5 Days</SelectItem>
-                      <SelectItem value="1M">1 Month</SelectItem>
-                      <SelectItem value="6M">6 Months</SelectItem>
-                      <SelectItem value="YTD">YTD</SelectItem>
-                      <SelectItem value="1Y">1 Year</SelectItem>
-                      <SelectItem value="5Y">5 Years</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {performanceLoading ? (
-                  <div className="h-64 flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-                  </div>
-                ) : chartData && chartData.length > 0 ? (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <RechartsLineChart data={chartData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip 
-                        formatter={(value) => [formatCurrency(value as number), "Portfolio Value"]}
-                      />
-                      <Line 
-                        type="monotone" 
-                        dataKey="total" 
-                        stroke="#000000" 
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </RechartsLineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-64 flex items-center justify-center text-gray-500">
-                    <div className="text-center">
-                      <BarChart3 className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                      <p>No portfolio data available</p>
-                      <p className="text-sm">Start by buying your first stock below</p>
+          {/* Market Overview */}
+          <motion.div className="mb-8" variants={fadeInUp}>
+            <h2 className="text-xl font-semibold mb-4">Market Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {mockMarketData.map((market, index) => (
+                <Card key={index} className="border-0 shadow-lg">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-600">{market.name}</p>
+                        <p className="text-2xl font-bold text-black">{market.value}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {market.trend === "up" ? (
+                          <TrendingUp className="w-5 h-5 text-green-500" />
+                        ) : (
+                          <TrendingDown className="w-5 h-5 text-red-500" />
+                        )}
+                        <span className={`text-sm font-medium ${
+                          market.trend === "up" ? "text-green-600" : "text-red-600"
+                        }`}>
+                          {market.change}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </motion.div>
 
-          {/* Tabs for different sections */}
+          {/* Main Dashboard */}
           <motion.div variants={fadeInUp}>
-            <Tabs defaultValue="watchlist" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-4 mb-6">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
-                <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-                <TabsTrigger value="trading">Trading</TabsTrigger>
                 <TabsTrigger value="research">Research</TabsTrigger>
+                <TabsTrigger value="insights">Insights</TabsTrigger>
               </TabsList>
 
-              {/* Watchlist Tab */}
-              <TabsContent value="watchlist" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2">
-                        <Star className="h-5 w-5" />
-                        My Watchlist
-                        {user?.subscriptionTier === "novice" && (
-                          <Badge variant="secondary">
-                            {watchlist.length}/5
-                          </Badge>
-                        )}
-                      </CardTitle>
-                      <div className="flex items-center gap-2">
-                        <Select value={selectedTimeFrame} onValueChange={setSelectedTimeFrame}>
-                          <SelectTrigger className="w-32">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1D">1 Day</SelectItem>
-                            <SelectItem value="5D">5 Days</SelectItem>
-                            <SelectItem value="1M">1 Month</SelectItem>
-                            <SelectItem value="6M">6 Months</SelectItem>
-                            <SelectItem value="YTD">YTD</SelectItem>
-                            <SelectItem value="1Y">1 Year</SelectItem>
-                            <SelectItem value="5Y">5 Years</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-                          <DialogTrigger asChild>
-                            <Button>
-                              <Plus className="h-4 w-4 mr-2" />
-                              Add Stock
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Add Stock to Watchlist</DialogTitle>
-                              <DialogDescription>
-                                Search for a stock to add to your watchlist
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div className="relative">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                                <Input
-                                  placeholder="Search stocks by symbol or company name..."
-                                  value={searchTerm}
-                                  onChange={(e) => setSearchTerm(e.target.value)}
-                                  className="pl-10"
-                                />
-                              </div>
-                              
-                              {loading && (
-                                <div className="flex items-center justify-center py-4">
-                                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-black"></div>
-                                </div>
-                              )}
-                              
-                              {searchResults.length > 0 && (
-                                <div className="space-y-2 max-h-64 overflow-y-auto">
-                                  {searchResults.map((stock) => (
-                                    <div
-                                      key={stock.symbol}
-                                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
-                                    >
-                                      <div className="flex-1">
-                                        <div className="flex items-center gap-2">
-                                          <span className="font-semibold">{stock.symbol}</span>
-                                          <span className="text-gray-600">{stock.name}</span>
-                                        </div>
-                                        <div className="text-sm text-gray-500">
-                                          {stock.type} • {stock.region}
-                                        </div>
-                                      </div>
-                                      <Button
-                                        onClick={() => handleAddToWatchlist(stock)}
-                                        disabled={addToWatchlistMutation.isPending}
-                                        size="sm"
-                                      >
-                                        {addToWatchlistMutation.isPending ? "Adding..." : "Add"}
-                                      </Button>
-                                    </div>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                          </DialogContent>
-                        </Dialog>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    {watchlistLoading ? (
-                      <div className="flex items-center justify-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-                      </div>
-                    ) : watchlist.length > 0 ? (
-                      <div className="space-y-4">
-                        {/* Watchlist Table Header */}
-                        <div className="grid grid-cols-7 gap-4 font-semibold text-sm text-gray-600 border-b pb-2">
-                          <div>Symbol</div>
-                          <div>Price</div>
-                          <div>Change</div>
-                          <div>Change %</div>
-                          <div>Volume</div>
-                          <div>{getHistoricalCloseLabel(selectedTimeFrame)}</div>
-                          <div>Actions</div>
+              <TabsContent value="overview" className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <Card className="border-0 shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <BarChart3 className="w-5 h-5 mr-2" />
+                          Portfolio Performance
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="h-64 flex items-center justify-center bg-gray-100 rounded-lg">
+                          <p className="text-gray-500">Portfolio chart would go here</p>
                         </div>
-                        
-                        {/* Watchlist Items */}
-                        {watchlist.map((item) => {
-                          const performance = watchlistPerformance.find(p => p.symbol === item.symbol);
-                          const historicalPrice = performance?.historicalData?.[0]?.price || 0;
-                          
-                          return (
-                            <div
-                              key={item.id}
-                              className="grid grid-cols-7 gap-4 items-center py-3 border-b border-gray-100 hover:bg-gray-50"
-                            >
-                              <div>
-                                <div className="font-semibold">{item.symbol}</div>
-                                <div className="text-sm text-gray-600 truncate">{item.companyName}</div>
-                              </div>
-                              <div className="font-semibold">
-                                {performance ? `$${performance.currentPrice.toFixed(2)}` : "Loading..."}
-                              </div>
-                              <div className={`flex items-center gap-1 ${
-                                performance && performance.change >= 0 ? "text-green-600" : "text-red-600"
-                              }`}>
-                                {performance && performance.change >= 0 ? (
-                                  <TrendingUp className="h-4 w-4" />
-                                ) : (
-                                  <TrendingDown className="h-4 w-4" />
-                                )}
-                                <span>
-                                  {performance ? `$${Math.abs(performance.change).toFixed(2)}` : "N/A"}
-                                </span>
-                              </div>
-                              <div className={`font-semibold ${
-                                performance && performance.changePercent >= 0 ? "text-green-600" : "text-red-600"
-                              }`}>
-                                {performance ? `${performance.changePercent.toFixed(2)}%` : "N/A"}
-                              </div>
-                              <div className="text-sm text-gray-600">
-                                {performance ? performance.historicalData?.[0]?.volume || "N/A" : "N/A"}
-                              </div>
-                              <div className="font-semibold">
-                                {historicalPrice > 0 ? `$${historicalPrice.toFixed(2)}` : "N/A"}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeFromWatchlistMutation.mutate(item.id)}
-                                  disabled={removeFromWatchlistMutation.isPending}
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <Star className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                        <p>No stocks in your watchlist yet</p>
-                        <p className="text-sm">Click "Add Stock" to get started</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Portfolio Tab */}
-              <TabsContent value="portfolio" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Building className="h-5 w-5" />
-                      Portfolio Holdings
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {portfolioLoading ? (
-                      <div className="flex items-center justify-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-                      </div>
-                    ) : portfolio.length > 0 ? (
-                      <div className="space-y-4">
-                        {portfolio.map((item) => {
-                          const performance = portfolioPerformance.find(p => p.symbol === item.symbol);
-                          const currentValue = performance ? performance.currentPrice * item.shares : 0;
-                          const originalValue = parseFloat(item.purchasePrice) * item.shares;
-                          const change = currentValue - originalValue;
-                          const changePercent = originalValue > 0 ? (change / originalValue) * 100 : 0;
-
-                          return (
-                            <div
-                              key={item.id}
-                              className="flex items-center justify-between p-4 border rounded-lg"
-                            >
+                      </CardContent>
+                    </Card>
+                  </div>
+                  <div className="space-y-4">
+                    <Card className="border-0 shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          <Newspaper className="w-5 h-5 mr-2" />
+                          Latest News
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {mockNews.map((news) => (
+                            <div key={news.id} className="flex items-start space-x-3">
                               <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-semibold">{item.symbol}</span>
-                                  <span className="text-gray-600">{item.companyName}</span>
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {item.shares} shares • Bought at {formatCurrency(parseFloat(item.purchasePrice))}
-                                </div>
+                                <p className="text-sm font-medium text-black line-clamp-2">
+                                  {news.title}
+                                </p>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  {news.source} • {news.time}
+                                </p>
                               </div>
-                              <div className="text-right">
-                                <div className="font-semibold">
-                                  {formatCurrency(currentValue)}
-                                </div>
-                                <div className={`text-sm ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  {change >= 0 ? '+' : ''}{formatCurrency(change)} ({changePercent.toFixed(2)}%)
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                        <div className="border-t pt-4">
-                          <div className="flex justify-between items-center">
-                            <span className="font-semibold">Total Portfolio Value:</span>
-                            <span className="font-bold text-lg">
-                              {formatCurrency(calculatePortfolioValue())}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        <Building className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                        <p>No stocks in your portfolio yet</p>
-                        <p className="text-sm">Use the trading tab to buy your first stock</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              {/* Trading Tab */}
-              <TabsContent value="trading" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <ShoppingCart className="h-5 w-5" />
-                      Buy Stocks
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          placeholder="Search stocks by symbol or company name..."
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                          className="pl-10"
-                        />
-                      </div>
-                      
-                      {loading && (
-                        <div className="flex items-center justify-center py-4">
-                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-black"></div>
-                        </div>
-                      )}
-                      
-                      {searchResults.length > 0 && (
-                        <div className="space-y-2 max-h-64 overflow-y-auto">
-                          {searchResults.map((stock) => (
-                            <div
-                              key={stock.symbol}
-                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                              onClick={() => handleStockSelect(stock)}
-                            >
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-semibold">{stock.symbol}</span>
-                                  <span className="text-gray-600">{stock.name}</span>
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {stock.type} • {stock.region}
-                                </div>
-                              </div>
-                              <Button size="sm" variant="outline">
-                                <ShoppingCart className="h-4 w-4 mr-1" />
-                                Buy
+                              <Button variant="ghost" size="sm">
+                                <ExternalLink className="w-4 h-4" />
                               </Button>
                             </div>
                           ))}
                         </div>
-                      )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="watchlist" className="space-y-6">
+                {/* Search and Controls */}
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                  <div className="relative flex-1 max-w-md">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Input
+                      placeholder="Search stocks to add..."
+                      value={searchQuery}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      className="pl-10"
+                    />
+                    {showSearchResults && (
+                      <div className="absolute top-12 left-0 right-0 bg-white border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                        {isLoadingStocks ? (
+                          <div className="p-4 text-center">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
+                            <div className="mt-2 text-sm text-gray-600">Searching stocks...</div>
+                          </div>
+                        ) : stockData.length > 0 ? (
+                          stockData.map((stock: any, index) => (
+                            <div key={index} className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0">
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-medium">{stock.symbol}</p>
+                                  <p className="text-sm text-gray-600">{stock.name}</p>
+                                  <p className="text-xs text-gray-500">{stock.sector || "N/A"}</p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="font-medium">${stock.currentPrice ? stock.currentPrice.toFixed(2) : 'N/A'}</p>
+                                  <p className={`text-xs ${stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent ? stock.changePercent.toFixed(2) : '0.00'}%
+                                  </p>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => addToWatchlist(stock)}
+                                    className="mt-1"
+                                  >
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Add
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        ) : searchQuery.length > 0 && (
+                          <div className="p-4 text-center text-gray-600">
+                            No stocks found for "{searchQuery}"
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <select
+                      value={filterSector}
+                      onChange={(e) => setFilterSector(e.target.value)}
+                      className="px-3 py-2 border rounded-md"
+                    >
+                      {sectors.map((sector, index) => (
+                        <option key={`sector-${index}`} value={sector}>
+                          {sector === "all" ? "All Sectors" : sector}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={changePeriod}
+                      onChange={(e) => setChangePeriod(e.target.value)}
+                      className="px-3 py-2 border rounded-md"
+                    >
+                      <option value="1D">1 Day</option>
+                      <option value="5D">5 Days</option>
+                      <option value="1M">1 Month</option>
+                      <option value="6M">6 Months</option>
+                      <option value="YTD">Year to Date</option>
+                      <option value="1Y">1 Year</option>
+                      <option value="5Y">5 Years</option>
+                    </select>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                    >
+                      {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+                    </Button>
+                    <div className="flex items-center space-x-2 px-3 py-2 bg-gray-50 rounded-md">
+                      <RefreshCw className="w-4 h-4 text-gray-500" />
+                      <span className="text-sm text-gray-600">
+                        {(changePeriod === '1D' || changePeriod === '5D') ? 
+                          (user?.subscriptionTier === 'novice' ? '15min' : '1min') : 
+                          (user?.subscriptionTier === 'novice' ? '1day' : '5min')} refresh
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Watchlist Table */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Star className="w-5 h-5 mr-2" />
+                      Your Watchlist ({filteredWatchlist.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="text-left py-2 px-4 font-medium">Symbol</th>
+                            <th className="text-left py-2 px-4 font-medium">Company</th>
+                            <th className="text-left py-2 px-4 font-medium">Price</th>
+                            <th className="text-left py-2 px-4 font-medium">Close Price ({changePeriod} ago)</th>
+                            <th className="text-left py-2 px-4 font-medium">
+                              Change ({changePeriod})
+                            </th>
+                            <th className="text-left py-2 px-4 font-medium">Volume</th>
+                            <th className="text-left py-2 px-4 font-medium">Market Cap</th>
+                            <th className="text-left py-2 px-4 font-medium">Sector</th>
+                            <th className="text-left py-2 px-4 font-medium">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {filteredWatchlist.map((stock) => (
+                            <tr key={stock.id} className="border-b hover:bg-gray-50">
+                              <td className="py-3 px-4 font-medium">{stock.symbol}</td>
+                              <td className="py-3 px-4 text-sm">{stock.companyName}</td>
+                              <td className="py-3 px-4 font-medium">
+                                ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
+                              </td>
+                              <td className="py-3 px-4 text-sm text-gray-600">
+                                {stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A'}
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="flex items-center space-x-1">
+                                  {stock.changePercent !== undefined && stock.change !== undefined ? (
+                                    <>
+                                      {stock.changePercent >= 0 ? (
+                                        <TrendingUp className="w-4 h-4 text-green-500" />
+                                      ) : (
+                                        <TrendingDown className="w-4 h-4 text-red-500" />
+                                      )}
+                                      <span className={`text-sm font-medium ${
+                                        stock.changePercent >= 0 ? "text-green-600" : "text-red-600"
+                                      }`}>
+                                        {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                                      </span>
+                                      <span className={`text-xs ${
+                                        stock.change >= 0 ? "text-green-500" : "text-red-500"
+                                      }`}>
+                                        (${stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)})
+                                      </span>
+                                    </>
+                                  ) : (
+                                    <span className="text-sm text-gray-500">
+                                      N/A
+                                    </span>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="py-3 px-4 text-sm">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
+                              <td className="py-3 px-4 text-sm">{formatMarketCap(stock.marketCap)}</td>
+                              <td className="py-3 px-4">
+                                <Badge variant="secondary" className="text-xs">
+                                  {stock.sector}
+                                </Badge>
+                              </td>
+                              <td className="py-3 px-4">
+                                <div className="flex items-center space-x-2">
+                                  <Button variant="ghost" size="sm">
+                                    <LineChart className="w-4 h-4" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeFromWatchlist(stock.id)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
 
-              {/* Research Tab */}
-              <TabsContent value="research" className="space-y-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <BookOpen className="h-5 w-5" />
-                      Research Requests
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {user?.subscriptionTier === "professional" ? (
+              <TabsContent value="research" className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <BookOpen className="w-5 h-5 mr-2" />
+                        Latest Research
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
                       <div className="space-y-4">
-                        <p className="text-gray-600">
-                          Request custom research analysis from our team of experts.
-                        </p>
-                        <Dialog open={showResearchDialog} onOpenChange={setShowResearchDialog}>
-                          <DialogTrigger asChild>
-                            <Button>
-                              <Plus className="h-4 w-4 mr-2" />
-                              Request Research
+                        <div className="p-4 bg-blue-50 rounded-lg">
+                          <h3 className="font-semibold text-black">Q4 2024 Tech Sector Analysis</h3>
+                          <p className="text-sm text-gray-600 mt-2">
+                            Comprehensive analysis of technology sector performance and outlook...
+                          </p>
+                          <div className="flex items-center justify-between mt-3">
+                            <span className="text-xs text-gray-500">Published 2 days ago</span>
+                            <Button size="sm" variant="outline">Read More</Button>
+                          </div>
+                        </div>
+                        <div className="p-4 bg-green-50 rounded-lg">
+                          <h3 className="font-semibold text-black">ESG Investment Trends</h3>
+                          <p className="text-sm text-gray-600 mt-2">
+                            Examining the growing impact of ESG factors on investment decisions...
+                          </p>
+                          <div className="flex items-center justify-between mt-3">
+                            <span className="text-xs text-gray-500">Published 5 days ago</span>
+                            <Button size="sm" variant="outline">Read More</Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <Target className="w-5 h-5 mr-2" />
+                        Research Requests
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div className="p-4 border rounded-lg">
+                          <h3 className="font-medium text-black">Request Custom Research</h3>
+                          <p className="text-sm text-gray-600 mt-2">
+                            Get personalized research on specific companies or sectors.
+                          </p>
+                          {user?.subscriptionTier === 'professional' ? (
+                            <Dialog open={isResearchDialogOpen} onOpenChange={setIsResearchDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button className="mt-3" size="sm">
+                                  <Plus className="w-4 h-4 mr-2" />
+                                  New Request
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-[425px]">
+                                <DialogHeader>
+                                  <DialogTitle>
+                                    {researchStep === 1 ? 'Select Research Type' : 'Research Details'}
+                                  </DialogTitle>
+                                  <DialogDescription>
+                                    {researchStep === 1 
+                                      ? 'Choose the type of research you need'
+                                      : 'Provide details for your research request'
+                                    }
+                                  </DialogDescription>
+                                </DialogHeader>
+                                
+                                {researchStep === 1 ? (
+                                  <div className="space-y-4">
+                                    <RadioGroup value={researchType} onValueChange={setResearchType}>
+                                      <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="company" id="company" />
+                                        <Label htmlFor="company" className="flex items-center">
+                                          <Building className="w-4 h-4 mr-2" />
+                                          Company Analysis
+                                        </Label>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <RadioGroupItem value="sector" id="sector" />
+                                        <Label htmlFor="sector" className="flex items-center">
+                                          <TrendingUpDown className="w-4 h-4 mr-2" />
+                                          Sector Analysis
+                                        </Label>
+                                      </div>
+                                    </RadioGroup>
+                                    
+                                    <div className="flex justify-end space-x-2">
+                                      <Button variant="outline" onClick={resetResearchDialog}>
+                                        Cancel
+                                      </Button>
+                                      <Button 
+                                        onClick={() => setResearchStep(2)}
+                                        disabled={!researchType}
+                                      >
+                                        Next
+                                      </Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="space-y-4">
+                                    <div>
+                                      <Label htmlFor="target">
+                                        {researchType === 'company' ? 'Company Name/Symbol' : 'Sector Name'}
+                                      </Label>
+                                      <Input
+                                        id="target"
+                                        value={researchTarget}
+                                        onChange={(e) => setResearchTarget(e.target.value)}
+                                        placeholder={researchType === 'company' ? 'e.g., Apple Inc. or AAPL' : 'e.g., Technology, Healthcare'}
+                                      />
+                                    </div>
+                                    
+                                    <div>
+                                      <Label htmlFor="description">Additional Details (Optional)</Label>
+                                      <Textarea
+                                        id="description"
+                                        value={researchDescription}
+                                        onChange={(e) => setResearchDescription(e.target.value)}
+                                        placeholder="Any specific areas of focus or questions you'd like addressed..."
+                                        rows={3}
+                                      />
+                                    </div>
+                                    
+                                    <div className="flex justify-end space-x-2">
+                                      <Button variant="outline" onClick={() => setResearchStep(1)}>
+                                        Back
+                                      </Button>
+                                      <Button 
+                                        onClick={handleResearchRequestSubmit}
+                                        disabled={!researchTarget || createResearchRequestMutation.isPending}
+                                      >
+                                        {createResearchRequestMutation.isPending ? 'Submitting...' : 'Submit Request'}
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </DialogContent>
+                            </Dialog>
+                          ) : (
+                            <Button className="mt-3" size="sm" disabled>
+                              <Plus className="w-4 h-4 mr-2" />
+                              Professional Only
                             </Button>
-                          </DialogTrigger>
-                          <DialogContent>
-                            <DialogHeader>
-                              <DialogTitle>Request Research Analysis</DialogTitle>
-                              <DialogDescription>
-                                Our research team will analyze your request and provide detailed insights.
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="space-y-4">
-                              <div>
-                                <Label htmlFor="research-type">Research Type</Label>
-                                <RadioGroup value={researchType} onValueChange={setResearchType}>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="company" id="company" />
-                                    <Label htmlFor="company">Company Analysis</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="sector" id="sector" />
-                                    <Label htmlFor="sector">Sector Analysis</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="market" id="market" />
-                                    <Label htmlFor="market">Market Trends</Label>
-                                  </div>
-                                  <div className="flex items-center space-x-2">
-                                    <RadioGroupItem value="custom" id="custom" />
-                                    <Label htmlFor="custom">Custom Request</Label>
-                                  </div>
-                                </RadioGroup>
-                              </div>
-                              
-                              <div>
-                                <Label htmlFor="research-details">Research Details</Label>
-                                <Textarea
-                                  id="research-details"
-                                  placeholder="Please provide specific details about what you'd like us to research..."
-                                  value={researchDetails}
-                                  onChange={(e) => setResearchDetails(e.target.value)}
-                                  className="mt-1"
-                                />
-                              </div>
-                              
-                              <div className="flex gap-2">
-                                <Button
-                                  onClick={handleResearchRequest}
-                                  disabled={researchRequestMutation.isPending}
-                                  className="flex-1"
-                                >
-                                  {researchRequestMutation.isPending ? "Submitting..." : "Submit Request"}
-                                </Button>
-                                <Button
-                                  variant="outline"
-                                  onClick={() => setShowResearchDialog(false)}
-                                  className="flex-1"
-                                >
-                                  Cancel
-                                </Button>
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                          )}
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                            <span className="text-sm font-medium">AI & Machine Learning Sector</span>
+                            <Badge variant="secondary">In Progress</Badge>
+                          </div>
+                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                            <span className="text-sm font-medium">Renewable Energy Outlook</span>
+                            <Badge className="bg-green-100 text-green-800">Completed</Badge>
+                          </div>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="text-center py-8">
-                        <Target className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-                        <h3 className="text-lg font-semibold mb-2">Custom Research Available</h3>
-                        <p className="text-gray-600 mb-4">
-                          Upgrade to Professional to request custom research analysis from our expert team.
-                        </p>
-                        <Button onClick={() => window.location.href = "/pricing"}>
-                          View Plans
-                        </Button>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="insights" className="space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  {mockInsights.map((insight) => (
+                    <Card key={insight.id} className="border-0 shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center">
+                          {insight.type === "opportunity" && <Zap className="w-5 h-5 mr-2 text-green-500" />}
+                          {insight.type === "risk" && <AlertCircle className="w-5 h-5 mr-2 text-red-500" />}
+                          {insight.type === "trend" && <TrendingUp className="w-5 h-5 mr-2 text-blue-500" />}
+                          {insight.title}
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-sm text-gray-600 mb-4">{insight.description}</p>
+                        <div className="flex items-center justify-between">
+                          <Badge className={`${
+                            insight.priority === "high" ? "bg-red-100 text-red-800" :
+                            insight.priority === "medium" ? "bg-yellow-100 text-yellow-800" :
+                            "bg-blue-100 text-blue-800"
+                          }`}>
+                            {insight.priority} priority
+                          </Badge>
+                          <Button size="sm" variant="outline">
+                            View Details
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </TabsContent>
             </Tabs>
           </motion.div>
         </motion.div>
       </div>
-
-      {/* Buy Stock Dialog */}
-      <Dialog open={showBuyDialog} onOpenChange={setShowBuyDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Buy Stock</DialogTitle>
-            <DialogDescription>
-              {selectedStock && `Purchase shares of ${selectedStock.name} (${selectedStock.symbol})`}
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedStockQuote && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Current Price</Label>
-                  <div className="text-lg font-semibold">
-                    {formatCurrency(selectedStockQuote.price)}
-                  </div>
-                </div>
-                <div>
-                  <Label>Available Balance</Label>
-                  <div className="text-lg font-semibold text-green-600">
-                    {formatCurrency(parseFloat(balanceData?.balance || "0"))}
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="shares">Number of Shares</Label>
-                <Input
-                  id="shares"
-                  type="number"
-                  min="1"
-                  step="1"
-                  value={buyShares}
-                  onChange={(e) => setBuyShares(Math.max(1, parseInt(e.target.value) || 1))}
-                  className="mt-1"
-                />
-              </div>
-              
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span>Total Cost:</span>
-                  <span className="font-semibold text-lg">
-                    {formatCurrency(selectedStockQuote.price * buyShares)}
-                  </span>
-                </div>
-                <div className="flex justify-between items-center mt-2">
-                  <span>Remaining Balance:</span>
-                  <span className="font-semibold">
-                    {formatCurrency(parseFloat(balanceData?.balance || "0") - (selectedStockQuote.price * buyShares))}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleBuyStock}
-                  disabled={buyStockMutation.isPending || (selectedStockQuote.price * buyShares) > parseFloat(balanceData?.balance || "0")}
-                  className="flex-1"
-                >
-                  {buyStockMutation.isPending ? "Processing..." : "Buy Stock"}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setShowBuyDialog(false)}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
