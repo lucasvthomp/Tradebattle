@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -64,7 +65,19 @@ export default function Dashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
   
-  // State for tournament management
+  // Original watchlist state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<any>(null);
+  const [shareAmount, setShareAmount] = useState('');
+  const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
+  const [filterSector, setFilterSector] = useState('all');
+  const [changePeriod, setChangePeriod] = useState('1D');
+  const [sortBy, setSortBy] = useState('symbol');
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [isExpanded, setIsExpanded] = useState(false);
+  
+  // Tournament state
   const [selectedTournament, setSelectedTournament] = useState<Tournament | null>(null);
   const [createdTournament, setCreatedTournament] = useState<Tournament | null>(null);
   const [tournamentForm, setTournamentForm] = useState({
@@ -79,60 +92,136 @@ export default function Dashboard() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [showJoinDialog, setShowJoinDialog] = useState(false);
   
-  // State for stock trading
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [selectedTradingStock, setSelectedTradingStock] = useState<any>(null);
-  const [shareAmount, setShareAmount] = useState('');
-  const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
-  
-  // State for watchlist
-  const [watchlistSearchQuery, setWatchlistSearchQuery] = useState('');
-  const [showWatchlistSearchResults, setShowWatchlistSearchResults] = useState(false);
+  // Sectors for filtering
+  const sectors = ['all', 'Technology', 'Healthcare', 'Financial Services', 'Consumer Cyclical', 'Communication Services', 'Industrials', 'Consumer Defensive', 'Energy', 'Utilities', 'Real Estate', 'Materials', 'Basic Materials'];
 
-  // Fetch user tournaments
-  const { data: userTournaments = [], isLoading: isLoadingTournaments } = useQuery({
-    queryKey: ['/api/tournaments'],
-    enabled: !!user,
-  });
-
-  // Fetch popular stocks
-  const { data: popularStocks = [], isLoading: isLoadingStocks } = useQuery({
-    queryKey: ['/api/popular'],
-    enabled: !!user,
-  });
-
-  // Fetch search results
-  const { data: searchResults = [], isLoading: isSearching } = useQuery({
-    queryKey: ['/api/search', searchQuery],
-    enabled: !!user && searchQuery.length > 0,
-  });
-
-  // Fetch watchlist search results
-  const { data: watchlistSearchResults = [], isLoading: isWatchlistSearching } = useQuery({
-    queryKey: ['/api/search', watchlistSearchQuery],
-    enabled: !!user && watchlistSearchQuery.length > 0,
-  });
-
-  // Fetch user watchlist
+  // Original data fetching
   const { data: watchlistItems = [], isLoading: isLoadingWatchlist } = useQuery({
     queryKey: ['/api/watchlist'],
     enabled: !!user,
   });
 
-  // Fetch tournament balance
+  const { data: userBalance } = useQuery({
+    queryKey: ['/api/user'],
+    enabled: !!user,
+  });
+
+  const { data: userPurchases = [] } = useQuery({
+    queryKey: ['/api/purchases'],
+    enabled: !!user,
+  });
+
+  const { data: popularStocksResponse, isLoading: isLoadingStocks } = useQuery({
+    queryKey: ['/api/popular'],
+    enabled: !!user,
+  });
+
+  const popularStocks = popularStocksResponse?.data || [];
+
+  const { data: stockSearchResponse } = useQuery({
+    queryKey: ['/api/search', searchQuery],
+    enabled: !!user && searchQuery.length > 0,
+  });
+
+  const stockData = stockSearchResponse?.data || [];
+
+  // Tournament data fetching
+  const { data: tournamentsResponse } = useQuery({
+    queryKey: ['/api/tournaments'],
+    enabled: !!user,
+  });
+
+  const userTournaments = tournamentsResponse?.data || [];
+
   const { data: tournamentBalance } = useQuery({
     queryKey: ['/api/tournaments', selectedTournament?.id, 'balance'],
     enabled: !!user && !!selectedTournament,
   });
 
-  // Fetch tournament purchases
   const { data: tournamentPurchases = [] } = useQuery({
     queryKey: ['/api/tournaments', selectedTournament?.id, 'purchases'],
     enabled: !!user && !!selectedTournament,
   });
 
-  // Create tournament mutation
+  // Original watchlist mutations
+  const addToWatchlistMutation = useMutation({
+    mutationFn: async (item: InsertWatchlistItem) => {
+      const response = await apiRequest("/api/watchlist", {
+        method: "POST",
+        body: JSON.stringify(item),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/watchlist'] });
+      setSearchQuery('');
+      setShowSearchResults(false);
+      toast({
+        title: "Added to Watchlist",
+        description: "Stock added to your watchlist successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const removeFromWatchlistMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest(`/api/watchlist/${id}`, {
+        method: "DELETE",
+      });
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/watchlist'] });
+      toast({
+        title: "Removed from Watchlist",
+        description: "Stock removed from your watchlist.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const purchaseStockMutation = useMutation({
+    mutationFn: async (purchase: InsertStockPurchase) => {
+      const response = await apiRequest("/api/purchases", {
+        method: "POST",
+        body: JSON.stringify(purchase),
+      });
+      return response;
+    },
+    onSuccess: () => {
+      setIsBuyDialogOpen(false);
+      setSelectedStock(null);
+      setShareAmount('');
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/purchases'] });
+      toast({
+        title: "Stock Purchased!",
+        description: "Your stock purchase was successful.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Purchase Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Tournament mutations
   const createTournamentMutation = useMutation({
     mutationFn: async (tournament: InsertTournament) => {
       const response = await apiRequest("/api/tournaments", {
@@ -160,7 +249,6 @@ export default function Dashboard() {
     },
   });
 
-  // Join tournament mutation
   const joinTournamentMutation = useMutation({
     mutationFn: async (code: string) => {
       const response = await apiRequest(`/api/tournaments/${code}/join`, {
@@ -186,104 +274,13 @@ export default function Dashboard() {
     },
   });
 
-  // Purchase stock mutation
-  const purchaseStockMutation = useMutation({
-    mutationFn: async (purchase: any) => {
-      if (!selectedTournament) {
-        throw new Error("No tournament selected");
-      }
-      
-      const response = await apiRequest(`/api/tournaments/${selectedTournament.id}/purchases`, {
-        method: "POST",
-        body: JSON.stringify(purchase),
-      });
-      return response;
-    },
-    onSuccess: () => {
-      setIsBuyDialogOpen(false);
-      setSelectedTradingStock(null);
-      setShareAmount('');
-      queryClient.invalidateQueries({ queryKey: ['/api/tournaments', selectedTournament?.id, 'balance'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/tournaments', selectedTournament?.id, 'purchases'] });
-      toast({
-        title: "Stock Purchased!",
-        description: "Your stock purchase was successful.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Purchase Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Add to watchlist mutation
-  const addToWatchlistMutation = useMutation({
-    mutationFn: async (item: InsertWatchlistItem) => {
-      const response = await apiRequest("/api/watchlist", {
-        method: "POST",
-        body: JSON.stringify(item),
-      });
-      return response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/watchlist'] });
-      setWatchlistSearchQuery('');
-      setShowWatchlistSearchResults(false);
-      toast({
-        title: "Added to Watchlist",
-        description: "Stock added to your watchlist successfully.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Remove from watchlist mutation
-  const removeFromWatchlistMutation = useMutation({
-    mutationFn: async (id: number) => {
-      const response = await apiRequest(`/api/watchlist/${id}`, {
-        method: "DELETE",
-      });
-      return response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/watchlist'] });
-      toast({
-        title: "Removed from Watchlist",
-        description: "Stock removed from your watchlist.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Handle search
+  // Original handlers
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     setShowSearchResults(query.length > 0);
   };
 
-  // Handle watchlist search
-  const handleWatchlistSearch = (query: string) => {
-    setWatchlistSearchQuery(query);
-    setShowWatchlistSearchResults(query.length > 0);
-  };
-
-  // Handle add to watchlist
-  const handleAddToWatchlist = (stock: any) => {
+  const addToWatchlist = (stock: any) => {
     addToWatchlistMutation.mutate({
       symbol: stock.symbol,
       companyName: stock.name,
@@ -291,27 +288,22 @@ export default function Dashboard() {
     });
   };
 
-  // Handle remove from watchlist
   const removeFromWatchlist = (id: number) => {
     removeFromWatchlistMutation.mutate(id);
   };
 
-  // Handle stock selection for trading
-  const handleStockSelect = (stock: any) => {
-    setSelectedTradingStock(stock);
+  const handleBuyStock = (stock: any) => {
+    setSelectedStock(stock);
     setIsBuyDialogOpen(true);
-    setShowSearchResults(false);
-    setSearchQuery('');
   };
 
-  // Handle purchase submission
   const handlePurchaseSubmit = () => {
-    if (!selectedTradingStock || !shareAmount || !selectedTournament) return;
+    if (!selectedStock || !shareAmount) return;
     
     const shares = parseInt(shareAmount);
-    const totalCost = shares * selectedTradingStock.price;
+    const totalCost = shares * selectedStock.price;
     
-    if (totalCost > parseFloat(tournamentBalance?.balance || '0')) {
+    if (totalCost > parseFloat(userBalance?.balance || '0')) {
       toast({
         title: "Insufficient Funds",
         description: "You don't have enough balance to make this purchase.",
@@ -321,15 +313,20 @@ export default function Dashboard() {
     }
 
     purchaseStockMutation.mutate({
-      symbol: selectedTradingStock.symbol,
-      companyName: selectedTradingStock.name,
+      symbol: selectedStock.symbol,
+      companyName: selectedStock.name,
       shares: shares,
-      purchasePrice: selectedTradingStock.price,
+      purchasePrice: selectedStock.price,
       totalCost: totalCost,
     });
   };
 
-  // Handle tournament creation
+  const handleSellStock = (purchase: any) => {
+    // Implement sell functionality
+    console.log('Selling stock:', purchase);
+  };
+
+  // Tournament handlers
   const handleCreateTournament = () => {
     if (!tournamentForm.name || !tournamentForm.buyInAmount || !tournamentForm.startingCash) {
       toast({
@@ -348,7 +345,6 @@ export default function Dashboard() {
     });
   };
 
-  // Handle tournament join
   const handleJoinTournament = () => {
     if (!joinForm.code) {
       toast({
@@ -362,12 +358,19 @@ export default function Dashboard() {
     joinTournamentMutation.mutate(joinForm.code);
   };
 
-  // Format market cap
+  // Utility functions
   const formatMarketCap = (marketCap: number) => {
     if (marketCap >= 1e12) return `$${(marketCap / 1e12).toFixed(2)}T`;
     if (marketCap >= 1e9) return `$${(marketCap / 1e9).toFixed(2)}B`;
     if (marketCap >= 1e6) return `$${(marketCap / 1e6).toFixed(2)}M`;
     return `$${marketCap.toLocaleString()}`;
+  };
+
+  const getDisplayedWatchlistItems = () => {
+    if (isExpanded) {
+      return watchlistItems;
+    }
+    return watchlistItems.slice(0, 10);
   };
 
   if (!user) {
@@ -390,353 +393,78 @@ export default function Dashboard() {
           variants={staggerChildren}
           className="space-y-8"
         >
-          {/* Header */}
           <motion.div variants={fadeInUp}>
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-foreground">Tournament Dashboard</h1>
+                <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
                 <p className="text-muted-foreground mt-2">
-                  Create and join paper trading competitions
+                  Track your investments and manage your portfolio
                 </p>
               </div>
               <div className="flex items-center space-x-4">
-                <Button onClick={() => setShowCreateDialog(true)} className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Create Game
-                </Button>
-                <Button variant="outline" onClick={() => setShowJoinDialog(true)}>
-                  <Activity className="w-4 h-4 mr-2" />
-                  Join Game
-                </Button>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-foreground">
+                    ${userBalance?.balance ? parseFloat(userBalance.balance).toFixed(2) : '0.00'}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Available Balance</div>
+                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Watchlist Section */}
           <motion.div variants={fadeInUp}>
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <Star className="w-5 h-5 mr-2" />
-                    Your Watchlist ({watchlistItems.length})
-                  </div>
-                  <div className="relative">
+            <Tabs defaultValue="watchlist" className="w-full">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="watchlist" className="space-y-6">
+                {/* Search and Controls */}
+                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                  <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Search to add stocks..."
-                      value={watchlistSearchQuery}
-                      onChange={(e) => handleWatchlistSearch(e.target.value)}
-                      className="pl-10 w-64"
-                    />
-                    {showWatchlistSearchResults && (
-                      <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                        {isWatchlistSearching ? (
-                          <div className="p-4 text-center">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                            <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
-                          </div>
-                        ) : watchlistSearchResults.length > 0 ? (
-                          watchlistSearchResults.map((stock: any) => (
-                            <div
-                              key={stock.symbol}
-                              className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                              onClick={() => handleAddToWatchlist(stock)}
-                            >
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <div className="font-medium">{stock.symbol}</div>
-                                  <div className="text-sm text-muted-foreground">{stock.name}</div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="font-medium">${stock.price}</div>
-                                  <div className={`text-sm ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {stock.change >= 0 ? '+' : ''}{stock.percentChange?.toFixed(2)}%
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="p-4 text-center text-muted-foreground">
-                            No stocks found for "{watchlistSearchQuery}"
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {watchlistItems.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-3 px-4 font-medium">Symbol</th>
-                          <th className="text-left py-3 px-4 font-medium">Company</th>
-                          <th className="text-left py-3 px-4 font-medium">Price</th>
-                          <th className="text-left py-3 px-4 font-medium">Change</th>
-                          <th className="text-left py-3 px-4 font-medium">Volume</th>
-                          <th className="text-left py-3 px-4 font-medium">Market Cap</th>
-                          <th className="text-left py-3 px-4 font-medium">Sector</th>
-                          <th className="text-left py-3 px-4 font-medium">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {watchlistItems.map((stock: any) => {
-                          const stockData = popularStocks.find(s => s.symbol === stock.symbol);
-                          return (
-                            <tr key={stock.id} className="border-b hover:bg-muted">
-                              <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
-                              <td className="py-3 px-4 text-sm text-foreground max-w-[200px] truncate">{stock.companyName}</td>
-                              <td className="py-3 px-4 text-sm font-medium text-foreground">
-                                {stockData ? `$${stockData.price.toFixed(2)}` : 'Loading...'}
-                              </td>
-                              <td className="py-3 px-4">
-                                {stockData ? (
-                                  <div className="flex flex-col">
-                                    <span className={`text-sm font-medium ${
-                                      stockData.change >= 0 ? "text-green-600" : "text-red-600"
-                                    }`}>
-                                      {stockData.change >= 0 ? '+' : ''}${stockData.change.toFixed(2)}
-                                    </span>
-                                    <span className={`text-xs ${
-                                      stockData.change >= 0 ? "text-green-500" : "text-red-500"
-                                    }`}>
-                                      ({stockData.percentChange >= 0 ? '+' : ''}{stockData.percentChange.toFixed(2)}%)
-                                    </span>
-                                  </div>
-                                ) : (
-                                  <span className="text-sm text-muted-foreground">Loading...</span>
-                                )}
-                              </td>
-                              <td className="py-3 px-4 text-sm text-foreground">
-                                {stockData ? stockData.volume.toLocaleString() : 'N/A'}
-                              </td>
-                              <td className="py-3 px-4 text-sm text-foreground">{stockData ? formatMarketCap(stockData.marketCap) : 'N/A'}</td>
-                              <td className="py-3 px-4">
-                                <Badge variant="secondary" className="text-xs">
-                                  {stockData?.sector || 'N/A'}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="flex items-center space-x-2">
-                                  <Button variant="ghost" size="sm">
-                                    <LineChart className="w-4 h-4" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => removeFromWatchlist(stock.id)}
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground mb-2">Your watchlist is empty</p>
-                    <p className="text-sm text-muted-foreground">Search for stocks above to add them to your watchlist</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Tournament Code Display */}
-          {createdTournament && (
-            <motion.div variants={fadeInUp}>
-              <Card className="border-0 shadow-lg border-green-200 bg-green-50">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-green-800">
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Tournament Created Successfully!
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    <p className="text-green-700">
-                      <strong>Tournament:</strong> {createdTournament.name}
-                    </p>
-                    <p className="text-green-700">
-                      <strong>Join Code:</strong> <span className="font-mono text-lg">{createdTournament.code}</span>
-                    </p>
-                    <p className="text-green-700">
-                      <strong>Buy-in:</strong> ${createdTournament.buyInAmount}
-                    </p>
-                    <p className="text-green-700">
-                      <strong>Starting Cash:</strong> ${createdTournament.startingCash}
-                    </p>
-                    <p className="text-sm text-green-600">
-                      Share this code with other players so they can join your tournament!
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Tournament Selector */}
-          <motion.div variants={fadeInUp}>
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Activity className="w-5 h-5 mr-2" />
-                  Your Tournaments
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {userTournaments.length > 0 ? (
-                  <div className="space-y-4">
-                    {userTournaments.map((tournament: any) => (
-                      <div 
-                        key={tournament.id} 
-                        className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                          selectedTournament?.id === tournament.id 
-                            ? 'border-primary bg-primary/5' 
-                            : 'hover:bg-muted'
-                        }`}
-                        onClick={() => setSelectedTournament(tournament)}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="font-semibold text-foreground">{tournament.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              Code: {tournament.code} | Buy-in: ${tournament.buyInAmount} | Starting Cash: ${tournament.startingCash}
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              {tournament.currentPlayers}/{tournament.maxPlayers} players
-                            </p>
-                          </div>
-                          <Badge variant={tournament.status === 'waiting' ? 'secondary' : 'default'}>
-                            {tournament.status}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <Activity className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                    <p className="text-muted-foreground mb-2">No tournaments yet</p>
-                    <p className="text-sm text-muted-foreground">Create your first tournament to start competing!</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Tournament Trading Section */}
-          {selectedTournament && (
-            <motion.div variants={fadeInUp} className="space-y-6">
-              {/* Balance and Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg">
-                      <DollarSign className="w-5 h-5 mr-2" />
-                      Tournament Balance
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-foreground">
-                      ${tournamentBalance?.balance ? parseFloat(tournamentBalance.balance).toFixed(2) : '0.00'}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Available for trading
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg">
-                      <Building className="w-5 h-5 mr-2" />
-                      Portfolio
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-foreground">
-                      {tournamentPurchases.length}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Stocks owned
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center text-lg">
-                      <BarChart3 className="w-5 h-5 mr-2" />
-                      Performance
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold text-green-600">
-                      +0.00%
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Total return
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Stock Search */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Search className="w-5 h-5 mr-2" />
-                    Find Stocks to Trade
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search stocks to trade..."
+                      placeholder="Search stocks to add..."
                       value={searchQuery}
                       onChange={(e) => handleSearch(e.target.value)}
                       className="pl-10"
                     />
                     {showSearchResults && (
                       <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                        {isSearching ? (
+                        {isLoadingStocks ? (
                           <div className="p-4 text-center">
                             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
                             <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
                           </div>
-                        ) : searchResults.length > 0 ? (
-                          searchResults.map((stock: any) => (
-                            <div
-                              key={stock.symbol}
-                              className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0"
-                              onClick={() => handleStockSelect(stock)}
-                            >
+                        ) : stockData.length > 0 ? (
+                          stockData.map((stock: any, index) => (
+                            <div key={index} className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <div className="font-medium">{stock.symbol}</div>
-                                  <div className="text-sm text-muted-foreground">{stock.name}</div>
+                                  <p className="font-medium text-foreground">{stock.symbol}</p>
+                                  <p className="text-sm text-muted-foreground">{stock.name}</p>
+                                  <p className="text-xs text-muted-foreground">{stock.sector || "N/A"}</p>
                                 </div>
                                 <div className="text-right">
-                                  <div className="font-medium">${stock.price}</div>
-                                  <div className={`text-sm ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {stock.change >= 0 ? '+' : ''}{stock.percentChange?.toFixed(2)}%
-                                  </div>
+                                  <p className="font-medium text-foreground">${stock.price ? stock.price.toFixed(2) : 'N/A'}</p>
+                                  <p className={`text-xs ${stock.percentChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {stock.percentChange >= 0 ? '+' : ''}{stock.percentChange ? stock.percentChange.toFixed(2) : '0.00'}%
+                                  </p>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => addToWatchlist(stock)}
+                                    className="mt-1"
+                                  >
+                                    <Plus className="w-3 h-3 mr-1" />
+                                    Add
+                                  </Button>
                                 </div>
                               </div>
                             </div>
                           ))
-                        ) : (
+                        ) : searchQuery.length > 0 && (
                           <div className="p-4 text-center text-muted-foreground">
                             No stocks found for "{searchQuery}"
                           </div>
@@ -744,60 +472,501 @@ export default function Dashboard() {
                       </div>
                     )}
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center space-x-2">
+                    <select
+                      value={filterSector}
+                      onChange={(e) => setFilterSector(e.target.value)}
+                      className="px-3 py-2 border rounded-md"
+                    >
+                      {sectors.map((sector, index) => (
+                        <option key={`sector-${index}`} value={sector}>
+                          {sector === "all" ? "All Sectors" : sector}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      value={changePeriod}
+                      onChange={(e) => setChangePeriod(e.target.value)}
+                      className="px-3 py-2 border rounded-md"
+                    >
+                      <option value="1D">1 Day</option>
+                      <option value="1W">1 Week</option>
+                      <option value="1M">1 Month</option>
+                      <option value="3M">3 Months</option>
+                      <option value="1Y">1 Year</option>
+                    </select>
+                  </div>
+                </div>
 
-              {/* Portfolio */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <Building className="w-5 h-5 mr-2" />
-                    Your Portfolio ({tournamentPurchases.length})
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {tournamentPurchases.length > 0 ? (
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-2 px-2 font-medium text-sm">Symbol</th>
-                            <th className="text-left py-2 px-2 font-medium text-sm">Company</th>
-                            <th className="text-left py-2 px-2 font-medium text-sm">Shares</th>
-                            <th className="text-left py-2 px-2 font-medium text-sm">Purchase Price</th>
-                            <th className="text-left py-2 px-2 font-medium text-sm">Total Cost</th>
-                            <th className="text-left py-2 px-2 font-medium text-sm">Date</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tournamentPurchases.map((purchase: any) => (
-                            <tr key={purchase.id} className="border-b hover:bg-muted">
-                              <td className="py-2 px-2 font-medium text-sm">{purchase.symbol}</td>
-                              <td className="py-2 px-2 text-xs max-w-[120px] truncate">{purchase.companyName}</td>
-                              <td className="py-2 px-2 text-sm">{purchase.shares}</td>
-                              <td className="py-2 px-2 text-sm">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
-                              <td className="py-2 px-2 text-sm">${parseFloat(purchase.totalCost).toFixed(2)}</td>
-                              <td className="py-2 px-2 text-xs text-muted-foreground">
-                                {new Date(purchase.purchaseDate).toLocaleDateString()}
-                              </td>
+                {/* Watchlist Table */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Star className="w-5 h-5 mr-2" />
+                        Your Watchlist ({watchlistItems.length})
+                      </div>
+                      {watchlistItems.length > 10 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setIsExpanded(!isExpanded)}
+                        >
+                          {isExpanded ? 'Show Less' : 'Show All'}
+                        </Button>
+                      )}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {getDisplayedWatchlistItems().length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-3 px-4 font-medium">Symbol</th>
+                              <th className="text-left py-3 px-4 font-medium">Company</th>
+                              <th className="text-left py-3 px-4 font-medium">Price</th>
+                              <th className="text-left py-3 px-4 font-medium">Change</th>
+                              <th className="text-left py-3 px-4 font-medium">Volume</th>
+                              <th className="text-left py-3 px-4 font-medium">Market Cap</th>
+                              <th className="text-left py-3 px-4 font-medium">Sector</th>
+                              <th className="text-left py-3 px-4 font-medium">Actions</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                      <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                      <p className="text-muted-foreground mb-2">No stocks in your portfolio yet</p>
-                      <p className="text-sm text-muted-foreground">Search for stocks above to start trading</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
+                          </thead>
+                          <tbody>
+                            {getDisplayedWatchlistItems().map((stock: any) => {
+                              const stockData = popularStocks.find(s => s.symbol === stock.symbol);
+                              return (
+                                <tr key={stock.id} className="border-b hover:bg-muted">
+                                  <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
+                                  <td className="py-3 px-4 text-sm text-foreground max-w-[200px] truncate">{stock.companyName}</td>
+                                  <td className="py-3 px-4 text-sm font-medium text-foreground">
+                                    {stockData ? `$${stockData.price.toFixed(2)}` : 'Loading...'}
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    {stockData ? (
+                                      <div className="flex flex-col">
+                                        <span className={`text-sm font-medium ${
+                                          stockData.change >= 0 ? "text-green-600" : "text-red-600"
+                                        }`}>
+                                          {stockData.change >= 0 ? '+' : ''}${stockData.change.toFixed(2)}
+                                        </span>
+                                        <span className={`text-xs ${
+                                          stockData.change >= 0 ? "text-green-500" : "text-red-500"
+                                        }`}>
+                                          ({stockData.percentChange >= 0 ? '+' : ''}{stockData.percentChange.toFixed(2)}%)
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-sm text-muted-foreground">Loading...</span>
+                                    )}
+                                  </td>
+                                  <td className="py-3 px-4 text-sm text-foreground">
+                                    {stockData ? stockData.volume.toLocaleString() : 'N/A'}
+                                  </td>
+                                  <td className="py-3 px-4 text-sm text-foreground">{stockData ? formatMarketCap(stockData.marketCap) : 'N/A'}</td>
+                                  <td className="py-3 px-4">
+                                    <Badge variant="secondary" className="text-xs">
+                                      {stockData?.sector || 'N/A'}
+                                    </Badge>
+                                  </td>
+                                  <td className="py-3 px-4">
+                                    <div className="flex items-center space-x-2">
+                                      <Button variant="ghost" size="sm">
+                                        <LineChart className="w-4 h-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => removeFromWatchlist(stock.id)}
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-muted-foreground mb-2">Your watchlist is empty</p>
+                        <p className="text-sm text-muted-foreground">Search for stocks above to add them to your watchlist</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="overview" className="space-y-6">
+                {/* Balance and Portfolio Overview */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-lg">
+                        <DollarSign className="w-5 h-5 mr-2" />
+                        Account Balance
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">
+                        ${userBalance?.balance ? parseFloat(userBalance.balance).toFixed(2) : '0.00'}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Available for trading
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-lg">
+                        <Building className="w-5 h-5 mr-2" />
+                        Portfolio Value
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">
+                        ${userPurchases.reduce((total, purchase) => {
+                          const stockData = popularStocks.find(s => s.symbol === purchase.symbol);
+                          return total + (stockData ? stockData.price * purchase.shares : 0);
+                        }, 0).toFixed(2)}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Current market value
+                      </p>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="border-0 shadow-lg">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-lg">
+                        <BarChart3 className="w-5 h-5 mr-2" />
+                        Holdings
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-foreground">
+                        {userPurchases.length}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Different stocks
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* Portfolio Holdings */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Building className="w-5 h-5 mr-2" />
+                      Your Portfolio ({userPurchases.length})
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {userPurchases.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-2 px-2 font-medium text-sm">Symbol</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">Company</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">Shares</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">Purchase Price</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">Current Price</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">Total Value</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">P&L</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">Purchase Date</th>
+                              <th className="text-left py-2 px-2 font-medium text-sm">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {userPurchases.map((purchase) => {
+                              const currentStock = popularStocks.find(s => s.symbol === purchase.symbol);
+                              const currentPrice = currentStock?.price || 0;
+                              const totalValue = purchase.shares * currentPrice;
+                              const totalCost = parseFloat(purchase.totalCost);
+                              const pnl = totalValue - totalCost;
+                              const pnlPercent = totalCost > 0 ? (pnl / totalCost) * 100 : 0;
+                              
+                              return (
+                                <tr key={purchase.id} className="border-b hover:bg-muted">
+                                  <td className="py-2 px-2 font-medium text-sm text-foreground">{purchase.symbol}</td>
+                                  <td className="py-2 px-2 text-xs max-w-[120px] truncate text-foreground">{purchase.companyName}</td>
+                                  <td className="py-2 px-2 text-sm text-foreground">{purchase.shares}</td>
+                                  <td className="py-2 px-2 text-sm text-foreground">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
+                                  <td className="py-2 px-2 text-sm text-foreground">
+                                    {currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A'}
+                                  </td>
+                                  <td className="py-2 px-2 font-medium text-sm text-foreground">
+                                    {currentPrice > 0 ? `$${totalValue.toFixed(2)}` : 'N/A'}
+                                  </td>
+                                  <td className="py-2 px-2">
+                                    {currentPrice > 0 ? (
+                                      <div className="flex flex-col">
+                                        <span className={`text-xs font-medium ${
+                                          pnl >= 0 ? "text-green-600" : "text-red-600"
+                                        }`}>
+                                          {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
+                                        </span>
+                                        <span className={`text-xs ${
+                                          pnl >= 0 ? "text-green-500" : "text-red-500"
+                                        }`}>
+                                          ({pnlPercent >= 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-xs text-muted-foreground">N/A</span>
+                                    )}
+                                  </td>
+                                  <td className="py-2 px-2 text-xs text-muted-foreground">
+                                    {new Date(purchase.purchaseDate).toLocaleDateString()}
+                                  </td>
+                                  <td className="py-2 px-2">
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => handleSellStock(purchase)}
+                                      className="text-red-600 border-red-600 hover:bg-red-50 h-7 text-xs"
+                                    >
+                                      Sell
+                                    </Button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-muted-foreground mb-2">No stocks in your portfolio yet</p>
+                        <p className="text-sm text-muted-foreground">Visit your watchlist to find and buy stocks</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="tournaments" className="space-y-6">
+                {/* Tournament Header */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold text-foreground">Paper Trading Tournaments</h2>
+                    <p className="text-muted-foreground mt-1">
+                      Create and join trading competitions
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Button onClick={() => setShowCreateDialog(true)} className="bg-primary text-primary-foreground hover:bg-primary/90">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Tournament
+                    </Button>
+                    <Button variant="outline" onClick={() => setShowJoinDialog(true)}>
+                      <Activity className="w-4 h-4 mr-2" />
+                      Join Tournament
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Tournament Code Display */}
+                {createdTournament && (
+                  <Card className="border-0 shadow-lg border-green-200 bg-green-50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-green-800">
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Tournament Created Successfully!
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <p className="text-green-700">
+                          <strong>Tournament:</strong> {createdTournament.name}
+                        </p>
+                        <p className="text-green-700">
+                          <strong>Join Code:</strong> <span className="font-mono text-lg">{createdTournament.code}</span>
+                        </p>
+                        <p className="text-green-700">
+                          <strong>Buy-in:</strong> ${createdTournament.buyInAmount}
+                        </p>
+                        <p className="text-green-700">
+                          <strong>Starting Cash:</strong> ${createdTournament.startingCash}
+                        </p>
+                        <p className="text-sm text-green-600">
+                          Share this code with other players so they can join your tournament!
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Tournament List */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Activity className="w-5 h-5 mr-2" />
+                      Your Tournaments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {userTournaments.length > 0 ? (
+                      <div className="space-y-4">
+                        {userTournaments.map((tournament: any) => (
+                          <div 
+                            key={tournament.id} 
+                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                              selectedTournament?.id === tournament.id 
+                                ? 'border-primary bg-primary/5' 
+                                : 'hover:bg-muted'
+                            }`}
+                            onClick={() => setSelectedTournament(tournament)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="font-semibold text-foreground">{tournament.name}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  Code: {tournament.code} | Buy-in: ${tournament.buyInAmount} | Starting Cash: ${tournament.startingCash}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {tournament.currentPlayers}/{tournament.maxPlayers} players
+                                </p>
+                              </div>
+                              <Badge variant={tournament.status === 'waiting' ? 'secondary' : 'default'}>
+                                {tournament.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Activity className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-muted-foreground mb-2">No tournaments yet</p>
+                        <p className="text-sm text-muted-foreground">Create your first tournament to start competing!</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Selected Tournament Details */}
+                {selectedTournament && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <Card className="border-0 shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center text-lg">
+                          <DollarSign className="w-5 h-5 mr-2" />
+                          Tournament Balance
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          ${tournamentBalance?.balance ? parseFloat(tournamentBalance.balance).toFixed(2) : selectedTournament.startingCash}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Available for trading
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-0 shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center text-lg">
+                          <Building className="w-5 h-5 mr-2" />
+                          Portfolio
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-foreground">
+                          {tournamentPurchases.length}
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Stocks owned
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-0 shadow-lg">
+                      <CardHeader>
+                        <CardTitle className="flex items-center text-lg">
+                          <BarChart3 className="w-5 h-5 mr-2" />
+                          Performance
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-green-600">
+                          +0.00%
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Total return
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </TabsContent>
+            </Tabs>
+          </motion.div>
         </motion.div>
       </div>
+
+      {/* Buy Stock Dialog */}
+      <Dialog open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Buy Stock</DialogTitle>
+            <DialogDescription>
+              {selectedStock && (
+                <div className="space-y-2">
+                  <p><strong>{selectedStock.symbol}</strong> - {selectedStock.name}</p>
+                  <p>Current price: <strong>${selectedStock.price}</strong></p>
+                  <p>Your balance: <strong>${userBalance?.balance ? parseFloat(userBalance.balance).toFixed(2) : '0.00'}</strong></p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="shares">Number of shares</Label>
+              <Input
+                id="shares"
+                type="number"
+                min="1"
+                step="1"
+                value={shareAmount}
+                onChange={(e) => setShareAmount(e.target.value)}
+                placeholder="Enter number of shares"
+              />
+            </div>
+            {selectedStock && shareAmount && parseInt(shareAmount) > 0 && (
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="text-sm">
+                  Total cost: <strong>${(parseInt(shareAmount) * selectedStock.price).toFixed(2)}</strong>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Remaining balance: <strong>${(parseFloat(userBalance?.balance || '0') - (parseInt(shareAmount) * selectedStock.price)).toFixed(2)}</strong>
+                </p>
+              </div>
+            )}
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsBuyDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={handlePurchaseSubmit}
+                disabled={!shareAmount || parseInt(shareAmount) <= 0 || purchaseStockMutation.isPending}
+                className="bg-black text-white hover:bg-gray-800"
+              >
+                {purchaseStockMutation.isPending ? "Processing..." : "Buy Stock"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Create Tournament Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -896,60 +1065,6 @@ export default function Dashboard() {
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 {joinTournamentMutation.isPending ? "Joining..." : "Join Tournament"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Buy Stock Dialog */}
-      <Dialog open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Buy Stock</DialogTitle>
-            <DialogDescription>
-              {selectedTradingStock && (
-                <div className="space-y-2">
-                  <p><strong>{selectedTradingStock.symbol}</strong> - {selectedTradingStock.name}</p>
-                  <p>Current price: <strong>${selectedTradingStock.price}</strong></p>
-                  <p>Your balance: <strong>${tournamentBalance?.balance ? parseFloat(tournamentBalance.balance).toFixed(2) : '0.00'}</strong></p>
-                </div>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="shares">Number of shares</Label>
-              <Input
-                id="shares"
-                type="number"
-                min="1"
-                step="1"
-                value={shareAmount}
-                onChange={(e) => setShareAmount(e.target.value)}
-                placeholder="Enter number of shares"
-              />
-            </div>
-            {selectedTradingStock && shareAmount && parseInt(shareAmount) > 0 && (
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-sm">
-                  Total cost: <strong>${(parseInt(shareAmount) * selectedTradingStock.price).toFixed(2)}</strong>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Remaining balance: <strong>${(parseFloat(tournamentBalance?.balance || '0') - (parseInt(shareAmount) * selectedTradingStock.price)).toFixed(2)}</strong>
-                </p>
-              </div>
-            )}
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsBuyDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={handlePurchaseSubmit}
-                disabled={!shareAmount || parseInt(shareAmount) <= 0 || purchaseStockMutation.isPending}
-                className="bg-primary text-primary-foreground hover:bg-primary/90"
-              >
-                {purchaseStockMutation.isPending ? "Processing..." : "Buy Stock"}
               </Button>
             </div>
           </div>
