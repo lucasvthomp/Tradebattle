@@ -161,5 +161,3 @@ Preferred communication style: Simple, everyday language.
 - **Component Styling Update**: Updated all components (header, footer, hero, about, landing page) to use CSS variables for consistent dark mode appearance
 - **Theme Provider Override**: Modified theme provider to always use dark mode, removing light mode options to maintain consistent visual experience
 - **Footer Content Update**: Updated footer to reflect paper trading competition platform focus instead of investment research platform
-- **Tournament System Implementation** (January 2025): Complete tournament-focused dashboard with tournament creation, joining, and portfolio management
-- **Watchlist Integration** (January 2025): Added watchlist section back to top of dashboard with live stock data, search functionality, and interactive management
