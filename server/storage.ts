@@ -4,6 +4,9 @@ import {
   stockPurchases,
   contactSubmissions,
   adminLogs,
+  tournaments,
+  tournamentParticipants,
+  tournamentStockPurchases,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -14,6 +17,12 @@ import {
   type InsertContactSubmission,
   type AdminLog,
   type InsertAdminLog,
+  type Tournament,
+  type InsertTournament,
+  type TournamentParticipant,
+  type InsertTournamentParticipant,
+  type TournamentStockPurchase,
+  type InsertTournamentStockPurchase,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql } from "drizzle-orm";
@@ -45,6 +54,20 @@ export interface IStorage {
   // Admin logs operations
   getAdminLogs(targetUserId: number): Promise<AdminLog[]>;
   createAdminLog(log: InsertAdminLog): Promise<AdminLog>;
+  
+  // Tournament operations
+  createTournament(tournament: InsertTournament, creatorId: number): Promise<Tournament>;
+  joinTournament(tournamentId: number, userId: number): Promise<TournamentParticipant>;
+  getTournamentByCode(code: string): Promise<Tournament | undefined>;
+  getUserTournaments(userId: number): Promise<Tournament[]>;
+  getTournamentParticipants(tournamentId: number): Promise<TournamentParticipant[]>;
+  
+  // Tournament trading operations
+  getTournamentBalance(tournamentId: number, userId: number): Promise<number>;
+  updateTournamentBalance(tournamentId: number, userId: number, newBalance: number): Promise<TournamentParticipant>;
+  purchaseTournamentStock(tournamentId: number, userId: number, purchase: InsertTournamentStockPurchase): Promise<TournamentStockPurchase>;
+  getTournamentStockPurchases(tournamentId: number, userId: number): Promise<TournamentStockPurchase[]>;
+  deleteTournamentPurchase(tournamentId: number, userId: number, purchaseId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -157,6 +180,106 @@ export class DatabaseStorage implements IStorage {
   async createAdminLog(log: InsertAdminLog): Promise<AdminLog> {
     const result = await db.insert(adminLogs).values(log).returning();
     return result[0];
+  }
+
+  // Tournament operations
+  async createTournament(tournament: InsertTournament, creatorId: number): Promise<Tournament> {
+    // Generate unique 8-character code
+    const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    
+    const result = await db.insert(tournaments).values({
+      ...tournament,
+      code,
+      creatorId
+    }).returning();
+    
+    // Add creator as first participant
+    await db.insert(tournamentParticipants).values({
+      tournamentId: result[0].id,
+      userId: creatorId
+    });
+    
+    return result[0];
+  }
+
+  async joinTournament(tournamentId: number, userId: number): Promise<TournamentParticipant> {
+    const result = await db.insert(tournamentParticipants).values({
+      tournamentId,
+      userId
+    }).returning();
+    
+    // Update tournament current players count
+    await db.update(tournaments)
+      .set({ currentPlayers: sql`${tournaments.currentPlayers} + 1` })
+      .where(eq(tournaments.id, tournamentId));
+    
+    return result[0];
+  }
+
+  async getTournamentByCode(code: string): Promise<Tournament | undefined> {
+    const result = await db.select().from(tournaments).where(eq(tournaments.code, code));
+    return result[0];
+  }
+
+  async getUserTournaments(userId: number): Promise<Tournament[]> {
+    return await db
+      .select()
+      .from(tournaments)
+      .innerJoin(tournamentParticipants, eq(tournaments.id, tournamentParticipants.tournamentId))
+      .where(eq(tournamentParticipants.userId, userId))
+      .orderBy(desc(tournaments.createdAt));
+  }
+
+  async getTournamentParticipants(tournamentId: number): Promise<TournamentParticipant[]> {
+    return await db
+      .select()
+      .from(tournamentParticipants)
+      .where(eq(tournamentParticipants.tournamentId, tournamentId))
+      .orderBy(asc(tournamentParticipants.joinedAt));
+  }
+
+  // Tournament trading operations
+  async getTournamentBalance(tournamentId: number, userId: number): Promise<number> {
+    const result = await db
+      .select({ balance: tournamentParticipants.balance })
+      .from(tournamentParticipants)
+      .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)));
+    return result[0] ? parseFloat(result[0].balance) : 0;
+  }
+
+  async updateTournamentBalance(tournamentId: number, userId: number, newBalance: number): Promise<TournamentParticipant> {
+    const result = await db
+      .update(tournamentParticipants)
+      .set({ balance: newBalance.toString() })
+      .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)))
+      .returning();
+    return result[0];
+  }
+
+  async purchaseTournamentStock(tournamentId: number, userId: number, purchase: InsertTournamentStockPurchase): Promise<TournamentStockPurchase> {
+    const result = await db
+      .insert(tournamentStockPurchases)
+      .values({ ...purchase, tournamentId, userId })
+      .returning();
+    return result[0];
+  }
+
+  async getTournamentStockPurchases(tournamentId: number, userId: number): Promise<TournamentStockPurchase[]> {
+    return await db
+      .select()
+      .from(tournamentStockPurchases)
+      .where(and(eq(tournamentStockPurchases.tournamentId, tournamentId), eq(tournamentStockPurchases.userId, userId)))
+      .orderBy(desc(tournamentStockPurchases.createdAt));
+  }
+
+  async deleteTournamentPurchase(tournamentId: number, userId: number, purchaseId: number): Promise<void> {
+    await db
+      .delete(tournamentStockPurchases)
+      .where(and(
+        eq(tournamentStockPurchases.id, purchaseId),
+        eq(tournamentStockPurchases.tournamentId, tournamentId),
+        eq(tournamentStockPurchases.userId, userId)
+      ));
   }
 }
 

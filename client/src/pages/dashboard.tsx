@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { WatchlistItem, InsertWatchlistItem, StockPurchase, InsertStockPurchase } from "@shared/schema";
+import type { WatchlistItem, InsertWatchlistItem, StockPurchase, InsertStockPurchase, Tournament, InsertTournament } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Search, 
@@ -410,6 +410,12 @@ export default function Dashboard() {
   const [showTradingSearchResults, setShowTradingSearchResults] = useState(false);
   const [isLoadingTradingStocks, setIsLoadingTradingStocks] = useState(false);
   const [isWatchlistExpanded, setIsWatchlistExpanded] = useState(false);
+  const [isCreateTournamentDialogOpen, setIsCreateTournamentDialogOpen] = useState(false);
+  const [tournamentName, setTournamentName] = useState("");
+  const [buyInAmount, setBuyInAmount] = useState("");
+  const [maxPlayers, setMaxPlayers] = useState("10");
+  const [createdTournament, setCreatedTournament] = useState<any>(null);
+  const [selectedTournament, setSelectedTournament] = useState<any>(null);
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -515,6 +521,38 @@ export default function Dashboard() {
         variant: "destructive",
       });
     },
+  });
+
+  // Create tournament mutation
+  const createTournamentMutation = useMutation({
+    mutationFn: async (tournament: InsertTournament) => {
+      const res = await apiRequest("POST", "/api/tournaments", tournament);
+      return res.json();
+    },
+    onSuccess: (data) => {
+      setCreatedTournament(data);
+      setIsCreateTournamentDialogOpen(false);
+      setTournamentName("");
+      setBuyInAmount("");
+      setMaxPlayers("10");
+      toast({
+        title: "Tournament created!",
+        description: `Tournament "${data.name}" has been created. Code: ${data.code}`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Fetch user tournaments
+  const { data: userTournaments = [], isLoading: tournamentsLoading } = useQuery({
+    queryKey: ["/api/tournaments"],
+    enabled: !!user,
   });
 
 
@@ -1138,6 +1176,87 @@ export default function Dashboard() {
                 )}
               </CardContent>
             </Card>
+            
+            {/* Create Game Button */}
+            <div className="flex justify-center mt-4">
+              <Dialog open={isCreateTournamentDialogOpen} onOpenChange={setIsCreateTournamentDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="default" size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    Create Game
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Create Tournament</DialogTitle>
+                    <DialogDescription>
+                      Create a new paper trading tournament. Max 10 players.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="tournament-name" className="text-right">
+                        Name
+                      </Label>
+                      <Input
+                        id="tournament-name"
+                        value={tournamentName}
+                        onChange={(e) => setTournamentName(e.target.value)}
+                        className="col-span-3"
+                        placeholder="Enter tournament name"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="buy-in" className="text-right">
+                        Buy-in ($)
+                      </Label>
+                      <Input
+                        id="buy-in"
+                        type="number"
+                        value={buyInAmount}
+                        onChange={(e) => setBuyInAmount(e.target.value)}
+                        className="col-span-3"
+                        placeholder="0.00"
+                        min="0"
+                        step="0.01"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="max-players" className="text-right">
+                        Max Players
+                      </Label>
+                      <Input
+                        id="max-players"
+                        type="number"
+                        value={maxPlayers}
+                        onChange={(e) => setMaxPlayers(e.target.value)}
+                        className="col-span-3"
+                        min="2"
+                        max="10"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsCreateTournamentDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        if (tournamentName && buyInAmount) {
+                          createTournamentMutation.mutate({
+                            name: tournamentName,
+                            buyInAmount: parseFloat(buyInAmount),
+                            maxPlayers: parseInt(maxPlayers)
+                          });
+                        }
+                      }}
+                      disabled={!tournamentName || !buyInAmount || createTournamentMutation.isPending}
+                    >
+                      {createTournamentMutation.isPending ? 'Creating...' : 'Create Tournament'}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </motion.div>
 
           {/* Main Dashboard */}
@@ -1145,8 +1264,7 @@ export default function Dashboard() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
-
+                <TabsTrigger value="tournament">Tournament</TabsTrigger>
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
@@ -1333,6 +1451,76 @@ export default function Dashboard() {
                   </div>
 
                 </div>
+              </TabsContent>
+
+              <TabsContent value="tournament" className="space-y-6">
+                {/* Tournament Selector */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Activity className="w-5 h-5 mr-2" />
+                      Your Tournaments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {userTournaments.length > 0 ? (
+                      <div className="space-y-4">
+                        {userTournaments.map((tournament: any) => (
+                          <div key={tournament.id} className="p-4 border rounded-lg hover:bg-muted cursor-pointer">
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <h3 className="font-semibold text-foreground">{tournament.name}</h3>
+                                <p className="text-sm text-muted-foreground">
+                                  Code: {tournament.code} | Buy-in: ${tournament.buyInAmount}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {tournament.currentPlayers}/{tournament.maxPlayers} players
+                                </p>
+                              </div>
+                              <Badge variant={tournament.status === 'waiting' ? 'secondary' : 'default'}>
+                                {tournament.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Activity className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                        <p className="text-muted-foreground mb-2">No tournaments yet</p>
+                        <p className="text-sm text-muted-foreground">Create your first tournament to start competing!</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* Tournament Code Display */}
+                {createdTournament && (
+                  <Card className="border-0 shadow-lg border-green-200 bg-green-50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center text-green-800">
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Tournament Created Successfully!
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <p className="text-green-700">
+                          <strong>Tournament:</strong> {createdTournament.name}
+                        </p>
+                        <p className="text-green-700">
+                          <strong>Join Code:</strong> <span className="font-mono text-lg">{createdTournament.code}</span>
+                        </p>
+                        <p className="text-green-700">
+                          <strong>Buy-in:</strong> ${createdTournament.buyInAmount}
+                        </p>
+                        <p className="text-sm text-green-600">
+                          Share this code with other players so they can join your tournament!
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </TabsContent>
 
               <TabsContent value="watchlist" className="space-y-6">

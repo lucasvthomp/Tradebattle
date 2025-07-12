@@ -87,6 +87,44 @@ export const adminLogs = pgTable("admin_logs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Tournament games table
+export const tournaments = pgTable("tournaments", {
+  id: serial("id").primaryKey(),
+  name: varchar("name").notNull(),
+  code: varchar("code", { length: 8 }).unique().notNull(), // 8-character unique code
+  creatorId: integer("creator_id").references(() => users.id).notNull(),
+  buyInAmount: numeric("buy_in_amount", { precision: 15, scale: 2 }).notNull(),
+  maxPlayers: integer("max_players").default(10).notNull(),
+  currentPlayers: integer("current_players").default(1).notNull(),
+  status: varchar("status").default("waiting"), // waiting, active, completed
+  createdAt: timestamp("created_at").defaultNow(),
+  startedAt: timestamp("started_at"),
+  endedAt: timestamp("ended_at"),
+});
+
+// Tournament participants table
+export const tournamentParticipants = pgTable("tournament_participants", {
+  id: serial("id").primaryKey(),
+  tournamentId: integer("tournament_id").references(() => tournaments.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(),
+  joinedAt: timestamp("joined_at").defaultNow(),
+});
+
+// Tournament-specific stock purchases
+export const tournamentStockPurchases = pgTable("tournament_stock_purchases", {
+  id: serial("id").primaryKey(),
+  tournamentId: integer("tournament_id").references(() => tournaments.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  symbol: varchar("symbol").notNull(),
+  companyName: varchar("company_name").notNull(),
+  shares: integer("shares").notNull(),
+  purchasePrice: numeric("purchase_price", { precision: 15, scale: 2 }).notNull(),
+  totalCost: numeric("total_cost", { precision: 15, scale: 2 }).notNull(),
+  purchaseDate: timestamp("purchase_date").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 
 
 // Zod schemas for validation
@@ -118,6 +156,26 @@ export const insertAdminLogSchema = createInsertSchema(adminLogs).pick({
   oldValue: true,
   newValue: true,
   notes: true,
+});
+
+export const insertTournamentSchema = createInsertSchema(tournaments).pick({
+  name: true,
+  buyInAmount: true,
+  maxPlayers: true,
+});
+
+export const insertTournamentParticipantSchema = createInsertSchema(tournamentParticipants).pick({
+  tournamentId: true,
+  userId: true,
+});
+
+export const insertTournamentStockPurchaseSchema = createInsertSchema(tournamentStockPurchases).pick({
+  tournamentId: true,
+  symbol: true,
+  companyName: true,
+  shares: true,
+  purchasePrice: true,
+  totalCost: true,
 });
 
 // Type exports
@@ -156,17 +214,9 @@ export type ContactSubmission = typeof contactSubmissions.$inferSelect;
 export type InsertContactSubmission = z.infer<typeof insertContactSchema>;
 export type AdminLog = typeof adminLogs.$inferSelect;
 export type InsertAdminLog = z.infer<typeof insertAdminLogSchema>;
-export type ResearchInsight = typeof researchInsights.$inferSelect;
-export type InsertResearchInsight = z.infer<typeof insertResearchInsightSchema>;
-export type AdminLog = typeof adminLogs.$inferSelect;
-export type InsertAdminLog = z.infer<typeof insertAdminLogSchema>;
-export type Partner = typeof partners.$inferSelect;
-export type InsertPartner = z.infer<typeof insertPartnerSchema>;
-export type ResearchRequest = typeof researchRequests.$inferSelect;
-export type InsertResearchRequest = z.infer<typeof insertResearchRequestSchema>;
-export type PartnerConversation = typeof partnerConversations.$inferSelect;
-export type InsertPartnerConversation = z.infer<typeof insertPartnerConversationSchema>;
-export type ChatMessage = typeof chatMessages.$inferSelect;
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
-export type ResearchPublication = typeof researchPublications.$inferSelect;
-export type InsertResearchPublication = z.infer<typeof insertResearchPublicationSchema>;
+export type Tournament = typeof tournaments.$inferSelect;
+export type InsertTournament = z.infer<typeof insertTournamentSchema>;
+export type TournamentParticipant = typeof tournamentParticipants.$inferSelect;
+export type InsertTournamentParticipant = z.infer<typeof insertTournamentParticipantSchema>;
+export type TournamentStockPurchase = typeof tournamentStockPurchases.$inferSelect;
+export type InsertTournamentStockPurchase = z.infer<typeof insertTournamentStockPurchaseSchema>;

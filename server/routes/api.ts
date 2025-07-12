@@ -179,4 +179,120 @@ router.get('/health', (req, res) => {
   });
 });
 
+/**
+ * POST /api/tournaments
+ * Create a new tournament
+ */
+router.post('/tournaments', asyncHandler(async (req, res) => {
+  const { name, buyInAmount, maxPlayers } = req.body;
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  if (!name || !buyInAmount) {
+    throw new ValidationError('Tournament name and buy-in amount are required');
+  }
+
+  const tournament = await req.app.locals.storage.createTournament({
+    name: sanitizeInput(name),
+    buyInAmount: parseFloat(buyInAmount),
+    maxPlayers: maxPlayers || 10
+  }, userId);
+
+  res.json({
+    success: true,
+    data: tournament,
+  });
+}));
+
+/**
+ * POST /api/tournaments/:code/join
+ * Join a tournament by code
+ */
+router.post('/tournaments/:code/join', asyncHandler(async (req, res) => {
+  const code = sanitizeInput(req.params.code.toUpperCase());
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const tournament = await req.app.locals.storage.getTournamentByCode(code);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  if (tournament.currentPlayers >= tournament.maxPlayers) {
+    throw new ValidationError('Tournament is full');
+  }
+
+  const participant = await req.app.locals.storage.joinTournament(tournament.id, userId);
+
+  res.json({
+    success: true,
+    data: participant,
+  });
+}));
+
+/**
+ * GET /api/tournaments
+ * Get user's tournaments
+ */
+router.get('/tournaments', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const tournaments = await req.app.locals.storage.getUserTournaments(userId);
+
+  res.json({
+    success: true,
+    data: tournaments,
+  });
+}));
+
+/**
+ * GET /api/tournaments/:id/balance
+ * Get tournament balance for user
+ */
+router.get('/tournaments/:id/balance', asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const balance = await req.app.locals.storage.getTournamentBalance(tournamentId, userId);
+
+  res.json({
+    success: true,
+    data: { balance },
+  });
+}));
+
+/**
+ * GET /api/tournaments/:id/purchases
+ * Get tournament purchases for user
+ */
+router.get('/tournaments/:id/purchases', asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const purchases = await req.app.locals.storage.getTournamentStockPurchases(tournamentId, userId);
+
+  res.json({
+    success: true,
+    data: purchases,
+  });
+}));
+
 export default router;
