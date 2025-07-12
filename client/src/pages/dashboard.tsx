@@ -554,10 +554,12 @@ export default function Dashboard() {
   });
 
   // Fetch user tournaments
-  const { data: userTournaments = [], isLoading: tournamentsLoading } = useQuery({
+  const { data: tournamentResponse, isLoading: tournamentsLoading } = useQuery({
     queryKey: ["/api/tournaments"],
     enabled: !!user,
   });
+
+  const userTournaments = tournamentResponse?.data || [];
 
 
 
