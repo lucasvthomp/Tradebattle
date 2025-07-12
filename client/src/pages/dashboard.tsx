@@ -461,21 +461,34 @@ export default function Dashboard() {
     refetchInterval: getRefreshInterval(changePeriod),
   });
 
-  // Tournament-specific trading queries
-  const { data: tournamentBalance } = useQuery({
-    queryKey: [`/api/tournaments/${selectedTournament?.tournaments?.id}/balance`],
-    enabled: !!user && !!selectedTournament?.tournaments?.id,
+  // Tournament-specific trading queries with unique keys
+  const tournamentId = selectedTournament?.tournaments?.id;
+  const { data: tournamentBalance, refetch: refetchBalance } = useQuery({
+    queryKey: ['tournament-balance', tournamentId, user?.id],
+    queryFn: async () => {
+      if (!tournamentId) return null;
+      const response = await fetch(`/api/tournaments/${tournamentId}/balance`);
+      if (!response.ok) throw new Error('Failed to fetch balance');
+      return response.json();
+    },
+    enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: false,
-    staleTime: 0, // Always refetch to ensure fresh data
-    cacheTime: 0  // Don't cache to avoid stale data
+    staleTime: 0,
+    cacheTime: 0
   });
 
-  const { data: tournamentPurchases } = useQuery({
-    queryKey: [`/api/tournaments/${selectedTournament?.tournaments?.id}/purchases`],
-    enabled: !!user && !!selectedTournament?.tournaments?.id,
+  const { data: tournamentPurchases, refetch: refetchPurchases } = useQuery({
+    queryKey: ['tournament-purchases', tournamentId, user?.id],
+    queryFn: async () => {
+      if (!tournamentId) return null;
+      const response = await fetch(`/api/tournaments/${tournamentId}/purchases`);
+      if (!response.ok) throw new Error('Failed to fetch purchases');
+      return response.json();
+    },
+    enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: false,
-    staleTime: 0, // Always refetch to ensure fresh data
-    cacheTime: 0  // Don't cache to avoid stale data
+    staleTime: 0,
+    cacheTime: 0
   });
 
   // Use tournament data when available, otherwise use regular balance
@@ -485,6 +498,14 @@ export default function Dashboard() {
   const currentPurchases = selectedTournament?.tournaments?.id 
     ? tournamentPurchases?.data || []
     : [];
+
+  // Refetch balance when tournament changes
+  useEffect(() => {
+    if (selectedTournament?.tournaments?.id) {
+      refetchBalance();
+      refetchPurchases();
+    }
+  }, [selectedTournament?.tournaments?.id, refetchBalance, refetchPurchases]);
 
   // Add to watchlist mutation
   const addToWatchlistMutation = useMutation({
@@ -554,8 +575,8 @@ export default function Dashboard() {
       setStartingCash("10000");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       // Invalidate balance query for the newly created tournament
-      queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournament.id}/balance`] });
-      queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournament.id}/purchases`] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournament.id, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournament.id, user?.id] });
       toast({
         title: "Tournament created!",
         description: `Tournament "${tournament.name}" has been created. Code: ${tournament.code}`,
@@ -600,8 +621,11 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.tournaments?.id;
       if (tournamentId) {
-        queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}/balance`] });
-        queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentId}/purchases`] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        // Also refetch immediately
+        refetchBalance();
+        refetchPurchases();
       }
       toast({
         title: "Purchase Successful",
