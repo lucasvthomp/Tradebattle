@@ -326,7 +326,7 @@ export default function Admin() {
                     User Management
                   </CardTitle>
                   <CardDescription>
-                    Manage user accounts, permissions, and subscription tiers
+                    Manage user accounts and permissions
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -336,7 +336,7 @@ export default function Admin() {
                         <div>User ID</div>
                         <div>Name</div>
                         <div>Email</div>
-                        <div>Plan</div>
+                        <div>Account</div>
                         <div>Created</div>
                         <div>Status</div>
                         <div>Actions</div>
@@ -362,7 +362,7 @@ export default function Admin() {
                             </div>
                             <div>
                               <Badge variant="outline" className="capitalize">
-                                {user.subscriptionTier}
+                                Free
                               </Badge>
                             </div>
                             <div className="text-sm text-gray-500">

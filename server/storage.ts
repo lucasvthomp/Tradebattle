@@ -16,7 +16,7 @@ import {
   type InsertAdminLog,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, or, sql } from "drizzle-orm";
+import { eq, desc, asc, and, or, sql } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for email/password auth
@@ -74,7 +74,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users).orderBy(desc(users.createdAt));
+    return await db.select().from(users).orderBy(asc(users.userId));
   }
 
   async deleteUser(id: number): Promise<void> {
