@@ -530,8 +530,9 @@ export default function Dashboard() {
       const res = await apiRequest("POST", "/api/tournaments", tournament);
       return res.json();
     },
-    onSuccess: (data) => {
-      setCreatedTournament(data);
+    onSuccess: (response) => {
+      const tournament = response.data;
+      setCreatedTournament(tournament);
       setIsCreateTournamentDialogOpen(false);
       setTournamentName("");
       setBuyInAmount("");
@@ -539,7 +540,7 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       toast({
         title: "Tournament created!",
-        description: `Tournament "${data.name}" has been created. Code: ${data.code}`,
+        description: `Tournament "${tournament.name}" has been created. Code: ${tournament.code}`,
       });
     },
     onError: (error: Error) => {
@@ -1282,13 +1283,13 @@ export default function Dashboard() {
                     <CardContent>
                       <div className="space-y-2">
                         <p className="text-green-700">
-                          <strong>Tournament:</strong> {createdTournament.name}
+                          <strong>Tournament:</strong> {createdTournament?.name || 'Unknown'}
                         </p>
                         <p className="text-green-700">
-                          <strong>Join Code:</strong> <span className="font-mono text-lg">{createdTournament.code}</span>
+                          <strong>Join Code:</strong> <span className="font-mono text-lg">{createdTournament?.code || 'N/A'}</span>
                         </p>
                         <p className="text-green-700">
-                          <strong>Buy-in:</strong> ${createdTournament.buyInAmount}
+                          <strong>Buy-in:</strong> ${createdTournament?.buyInAmount || 0}
                         </p>
                         <p className="text-sm text-green-600">
                           Share this code with other players so they can join your tournament!
