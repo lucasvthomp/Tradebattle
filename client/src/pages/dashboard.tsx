@@ -1574,12 +1574,12 @@ export default function Dashboard() {
                                         <p className="font-medium text-foreground">{purchase.symbol}</p>
                                         <p className="text-sm text-muted-foreground">{purchase.companyName}</p>
                                         <p className="text-sm text-muted-foreground">
-                                          {purchase.shares} shares @ ${purchase.purchasePrice.toFixed(2)}
+                                          {purchase.shares} shares @ ${Number(purchase.purchasePrice).toFixed(2)}
                                         </p>
                                       </div>
                                       <div className="text-right">
                                         <p className="font-medium text-foreground">
-                                          ${purchase.totalCost.toFixed(2)}
+                                          ${Number(purchase.totalCost).toFixed(2)}
                                         </p>
                                         <p className="text-xs text-muted-foreground">
                                           {new Date(purchase.createdAt).toLocaleDateString()}
