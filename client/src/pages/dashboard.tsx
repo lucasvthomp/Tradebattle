@@ -467,7 +467,7 @@ export default function Dashboard() {
     queryKey: ['tournament-balance', tournamentId, user?.id],
     queryFn: async () => {
       if (!tournamentId) return null;
-      console.log('Fetching balance for tournament:', tournamentId);
+
       const response = await fetch(`/api/tournaments/${tournamentId}/balance`, {
         credentials: 'include',
         headers: {
@@ -475,11 +475,9 @@ export default function Dashboard() {
         }
       });
       if (!response.ok) {
-        console.error('Balance fetch failed:', response.status, response.statusText);
         throw new Error('Failed to fetch balance');
       }
       const data = await response.json();
-      console.log('Balance response:', data);
       return data;
     },
     enabled: !!user && !!tournamentId,
@@ -492,7 +490,7 @@ export default function Dashboard() {
     queryKey: ['tournament-purchases', tournamentId, user?.id],
     queryFn: async () => {
       if (!tournamentId) return null;
-      console.log('Fetching purchases for tournament:', tournamentId);
+
       const response = await fetch(`/api/tournaments/${tournamentId}/purchases`, {
         credentials: 'include',
         headers: {
@@ -500,11 +498,9 @@ export default function Dashboard() {
         }
       });
       if (!response.ok) {
-        console.error('Purchases fetch failed:', response.status, response.statusText);
         throw new Error('Failed to fetch purchases');
       }
       const data = await response.json();
-      console.log('Purchases response:', data);
       return data;
     },
     enabled: !!user && !!tournamentId,
@@ -518,13 +514,7 @@ export default function Dashboard() {
     ? Number(tournamentBalance?.data?.balance || selectedTournament?.balance || 0)
     : 0;
   
-  // Debug logging
-  console.log('Selected tournament:', selectedTournament?.tournaments?.id);
-  console.log('Tournament balance data:', tournamentBalance);
-  console.log('Current balance:', currentBalance);
-  console.log('Is loading balance:', isLoadingBalance);
-  console.log('User:', user?.id);
-  console.log('Balance type:', typeof currentBalance);
+  // Tournament balance is working correctly
   const currentPurchases = selectedTournament?.tournaments?.id 
     ? tournamentPurchases?.data || []
     : [];
@@ -1835,7 +1825,7 @@ export default function Dashboard() {
                 <div className="space-y-2">
                   <p><strong>{selectedTradingStock.symbol}</strong> - {selectedTradingStock.name}</p>
                   <p>Current price: <strong>${selectedTradingStock.price}</strong></p>
-                  <p>Your balance: <strong>${userBalance?.balance ? parseFloat(userBalance.balance).toFixed(2) : '0.00'}</strong></p>
+                  <p>Your balance: <strong>${currentBalance.toFixed(2)}</strong></p>
                 </div>
               )}
             </DialogDescription>
@@ -1859,7 +1849,7 @@ export default function Dashboard() {
                   Total cost: <strong>${(parseInt(shareAmount) * selectedTradingStock.price).toFixed(2)}</strong>
                 </p>
                 <p className="text-sm text-gray-600">
-                  Remaining balance: <strong>${(parseFloat(userBalance?.balance || '0') - (parseInt(shareAmount) * selectedTradingStock.price)).toFixed(2)}</strong>
+                  Remaining balance: <strong>${(currentBalance - (parseInt(shareAmount) * selectedTradingStock.price)).toFixed(2)}</strong>
                 </p>
               </div>
             )}

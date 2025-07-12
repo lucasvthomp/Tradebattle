@@ -161,3 +161,8 @@ Preferred communication style: Simple, everyday language.
 - **Component Styling Update**: Updated all components (header, footer, hero, about, landing page) to use CSS variables for consistent dark mode appearance
 - **Theme Provider Override**: Modified theme provider to always use dark mode, removing light mode options to maintain consistent visual experience
 - **Footer Content Update**: Updated footer to reflect paper trading competition platform focus instead of investment research platform
+- **Tournament Balance System Implementation** (January 2025): Successfully implemented unique tournament balance system where each tournament maintains its own separate balance, buy-in amount, name, code, and member count tied to tournament ID
+- **Tournament-Specific Trading**: Each tournament now has completely isolated balance tracking, purchase history, and portfolio management
+- **Automatic Tournament Selection**: System automatically selects first available tournament and properly manages tournament switching with real-time balance updates
+- **Fixed Tournament Balance Queries**: Resolved React Query caching issues that were causing all tournaments to show the same balance - each tournament now displays its correct unique balance
+- **Tournament Purchase System**: Fixed stock purchasing system to work with tournament-specific balances and validation
