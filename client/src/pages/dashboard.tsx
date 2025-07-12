@@ -1001,9 +1001,9 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto py-6 px-4">
+      <div className="container mx-auto py-6 px-4 max-w-none">
         <motion.div
-          className="max-w-7xl mx-auto"
+          className="max-w-none mx-auto"
           initial="initial"
           animate="animate"
           variants={staggerChildren}
@@ -1178,15 +1178,15 @@ export default function Dashboard() {
                             <table className="w-full">
                               <thead>
                                 <tr className="border-b">
-                                  <th className="text-left py-2 px-4 font-medium">Symbol</th>
-                                  <th className="text-left py-2 px-4 font-medium">Company</th>
-                                  <th className="text-left py-2 px-4 font-medium">Shares</th>
-                                  <th className="text-left py-2 px-4 font-medium">Purchase Price</th>
-                                  <th className="text-left py-2 px-4 font-medium">Current Price</th>
-                                  <th className="text-left py-2 px-4 font-medium">Total Value</th>
-                                  <th className="text-left py-2 px-4 font-medium">P&L</th>
-                                  <th className="text-left py-2 px-4 font-medium">Purchase Date</th>
-                                  <th className="text-left py-2 px-4 font-medium">Actions</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Symbol</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Company</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Shares</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Purchase Price</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Current Price</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Total Value</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">P&L</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Purchase Date</th>
+                                  <th className="text-left py-2 px-2 font-medium text-sm">Actions</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -1200,25 +1200,20 @@ export default function Dashboard() {
                                   
                                   return (
                                     <tr key={purchase.id} className="border-b hover:bg-gray-50">
-                                      <td className="py-3 px-4 font-medium">{purchase.symbol}</td>
-                                      <td className="py-3 px-4 text-sm">{purchase.companyName}</td>
-                                      <td className="py-3 px-4">{purchase.shares}</td>
-                                      <td className="py-3 px-4">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
-                                      <td className="py-3 px-4">
+                                      <td className="py-2 px-2 font-medium text-sm">{purchase.symbol}</td>
+                                      <td className="py-2 px-2 text-xs max-w-[120px] truncate">{purchase.companyName}</td>
+                                      <td className="py-2 px-2 text-sm">{purchase.shares}</td>
+                                      <td className="py-2 px-2 text-sm">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
+                                      <td className="py-2 px-2 text-sm">
                                         {currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A'}
                                       </td>
-                                      <td className="py-3 px-4 font-medium">
+                                      <td className="py-2 px-2 font-medium text-sm">
                                         {currentPrice > 0 ? `$${totalValue.toFixed(2)}` : 'N/A'}
                                       </td>
-                                      <td className="py-3 px-4">
+                                      <td className="py-2 px-2">
                                         {currentPrice > 0 ? (
-                                          <div className="flex items-center space-x-1">
-                                            {pnl >= 0 ? (
-                                              <TrendingUp className="w-4 h-4 text-green-500" />
-                                            ) : (
-                                              <TrendingDown className="w-4 h-4 text-red-500" />
-                                            )}
-                                            <span className={`text-sm font-medium ${
+                                          <div className="flex flex-col">
+                                            <span className={`text-xs font-medium ${
                                               pnl >= 0 ? "text-green-600" : "text-red-600"
                                             }`}>
                                               {pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}
@@ -1230,18 +1225,18 @@ export default function Dashboard() {
                                             </span>
                                           </div>
                                         ) : (
-                                          <span className="text-sm text-gray-500">N/A</span>
+                                          <span className="text-xs text-gray-500">N/A</span>
                                         )}
                                       </td>
-                                      <td className="py-3 px-4 text-sm">
+                                      <td className="py-2 px-2 text-xs text-gray-600">
                                         {new Date(purchase.purchaseDate).toLocaleDateString()}
                                       </td>
-                                      <td className="py-3 px-4">
+                                      <td className="py-2 px-2">
                                         <Button
                                           variant="outline"
                                           size="sm"
                                           onClick={() => handleSellStock(purchase)}
-                                          className="text-red-600 border-red-600 hover:bg-red-50"
+                                          className="text-red-600 border-red-600 hover:bg-red-50 h-7 text-xs"
                                         >
                                           Sell
                                         </Button>
