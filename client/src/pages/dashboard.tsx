@@ -465,13 +465,17 @@ export default function Dashboard() {
   const { data: tournamentBalance } = useQuery({
     queryKey: [`/api/tournaments/${selectedTournament?.tournaments?.id}/balance`],
     enabled: !!user && !!selectedTournament?.tournaments?.id,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    staleTime: 0, // Always refetch to ensure fresh data
+    cacheTime: 0  // Don't cache to avoid stale data
   });
 
   const { data: tournamentPurchases } = useQuery({
     queryKey: [`/api/tournaments/${selectedTournament?.tournaments?.id}/purchases`],
     enabled: !!user && !!selectedTournament?.tournaments?.id,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    staleTime: 0, // Always refetch to ensure fresh data
+    cacheTime: 0  // Don't cache to avoid stale data
   });
 
   // Use tournament data when available, otherwise use regular balance
