@@ -926,17 +926,17 @@ export default function Dashboard() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading your dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto py-6 px-4 max-w-none">
         <motion.div
           className="max-w-none mx-auto"
@@ -948,10 +948,10 @@ export default function Dashboard() {
           <motion.div className="mb-8" variants={fadeInUp}>
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-black mb-2">
+                <h1 className="text-3xl font-bold text-foreground mb-2">
                   Welcome back, {user?.firstName || user?.email || "User"}
                 </h1>
-                <p className="text-gray-600">Here's your investment dashboard</p>
+                <p className="text-muted-foreground">Here's your trading dashboard</p>
               </div>
               <div className="flex items-center space-x-3">
                 <Button variant="outline" size="sm">
@@ -972,15 +972,15 @@ export default function Dashboard() {
 
           {/* Market Overview */}
           <motion.div className="mb-8" variants={fadeInUp}>
-            <h2 className="text-xl font-semibold mb-4">Market Overview</h2>
+            <h2 className="text-xl font-semibold mb-4 text-foreground">Market Overview</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {mockMarketData.map((market, index) => (
                 <Card key={index} className="border-0 shadow-lg">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">{market.name}</p>
-                        <p className="text-2xl font-bold text-black">{market.value}</p>
+                        <p className="text-sm font-medium text-muted-foreground">{market.name}</p>
+                        <p className="text-2xl font-bold text-foreground">{market.value}</p>
                       </div>
                       <div className="flex items-center space-x-2">
                         {market.trend === "up" ? (
@@ -1020,10 +1020,10 @@ export default function Dashboard() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-bold text-black">
+                    <div className="text-3xl font-bold text-foreground">
                       ${userBalance?.balance ? parseFloat(userBalance.balance).toFixed(2) : '0.00'}
                     </div>
-                    <p className="text-sm text-gray-600 mt-2">Available for trading</p>
+                    <p className="text-sm text-muted-foreground mt-2">Available for trading</p>
                   </CardContent>
                 </Card>
 
@@ -1038,7 +1038,7 @@ export default function Dashboard() {
                   <CardContent>
                     <div className="space-y-4">
                       <div className="relative">
-                        <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Search stocks to buy..."
                           value={tradingSearchQuery}
@@ -1046,25 +1046,25 @@ export default function Dashboard() {
                           className="pl-10"
                         />
                         {showTradingSearchResults && (
-                          <div className="absolute top-12 left-0 right-0 bg-white border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                          <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
                             {isLoadingTradingStocks ? (
                               <div className="p-4 text-center">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
-                                <div className="mt-2 text-sm text-gray-600">Searching stocks...</div>
+                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                                <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
                               </div>
                             ) : tradingStockData.length > 0 ? (
                               tradingStockData.map((stock: any, index) => (
-                                <div key={index} className="p-3 hover:bg-gray-50 border-b last:border-b-0">
+                                <div key={index} className="p-3 hover:bg-muted border-b last:border-b-0">
                                   <div className="flex items-center justify-between">
                                     <div className="flex-1">
-                                      <p className="font-medium">{stock.symbol}</p>
-                                      <p className="text-sm text-gray-600">{stock.name}</p>
-                                      <p className="text-sm font-medium text-black">${stock.price}</p>
+                                      <p className="font-medium text-foreground">{stock.symbol}</p>
+                                      <p className="text-sm text-muted-foreground">{stock.name}</p>
+                                      <p className="text-sm font-medium text-foreground">${stock.price}</p>
                                     </div>
                                     <Button
                                       size="sm"
                                       onClick={() => handleBuyStock(stock)}
-                                      className="bg-black text-white hover:bg-gray-800"
+                                      className="bg-primary text-primary-foreground hover:bg-primary/90"
                                     >
                                       Buy
                                     </Button>
@@ -1072,7 +1072,7 @@ export default function Dashboard() {
                                 </div>
                               ))
                             ) : (
-                              <div className="p-4 text-center text-gray-500">
+                              <div className="p-4 text-center text-muted-foreground">
                                 {tradingSearchQuery.length > 0 ? "No stocks found" : "Start typing to search"}
                               </div>
                             )}
@@ -1093,8 +1093,8 @@ export default function Dashboard() {
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="h-64 flex items-center justify-center bg-gray-100 rounded-lg">
-                          <p className="text-gray-500">Portfolio chart would go here</p>
+                        <div className="h-64 flex items-center justify-center bg-muted rounded-lg">
+                          <p className="text-muted-foreground">Portfolio chart would go here</p>
                         </div>
                       </CardContent>
                     </Card>
@@ -1134,15 +1134,15 @@ export default function Dashboard() {
                                   const pnlPercent = totalCost > 0 ? (pnl / totalCost) * 100 : 0;
                                   
                                   return (
-                                    <tr key={purchase.id} className="border-b hover:bg-gray-50">
-                                      <td className="py-2 px-2 font-medium text-sm">{purchase.symbol}</td>
-                                      <td className="py-2 px-2 text-xs max-w-[120px] truncate">{purchase.companyName}</td>
-                                      <td className="py-2 px-2 text-sm">{purchase.shares}</td>
-                                      <td className="py-2 px-2 text-sm">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
-                                      <td className="py-2 px-2 text-sm">
+                                    <tr key={purchase.id} className="border-b hover:bg-muted">
+                                      <td className="py-2 px-2 font-medium text-sm text-foreground">{purchase.symbol}</td>
+                                      <td className="py-2 px-2 text-xs max-w-[120px] truncate text-foreground">{purchase.companyName}</td>
+                                      <td className="py-2 px-2 text-sm text-foreground">{purchase.shares}</td>
+                                      <td className="py-2 px-2 text-sm text-foreground">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
+                                      <td className="py-2 px-2 text-sm text-foreground">
                                         {currentPrice > 0 ? `$${currentPrice.toFixed(2)}` : 'N/A'}
                                       </td>
-                                      <td className="py-2 px-2 font-medium text-sm">
+                                      <td className="py-2 px-2 font-medium text-sm text-foreground">
                                         {currentPrice > 0 ? `$${totalValue.toFixed(2)}` : 'N/A'}
                                       </td>
                                       <td className="py-2 px-2">
@@ -1160,10 +1160,10 @@ export default function Dashboard() {
                                             </span>
                                           </div>
                                         ) : (
-                                          <span className="text-xs text-gray-500">N/A</span>
+                                          <span className="text-xs text-muted-foreground">N/A</span>
                                         )}
                                       </td>
-                                      <td className="py-2 px-2 text-xs text-gray-600">
+                                      <td className="py-2 px-2 text-xs text-muted-foreground">
                                         {new Date(purchase.purchaseDate).toLocaleDateString()}
                                       </td>
                                       <td className="py-2 px-2">
@@ -1184,9 +1184,9 @@ export default function Dashboard() {
                           </div>
                         ) : (
                           <div className="text-center py-8">
-                            <Building className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-                            <p className="text-gray-600 mb-2">No stocks in your portfolio yet</p>
-                            <p className="text-sm text-gray-500">Use the search function above to find and buy stocks</p>
+                            <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                            <p className="text-muted-foreground mb-2">No stocks in your portfolio yet</p>
+                            <p className="text-sm text-muted-foreground">Use the search function above to find and buy stocks</p>
                           </div>
                         )}
                       </CardContent>
@@ -1200,7 +1200,7 @@ export default function Dashboard() {
                 {/* Search and Controls */}
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
                   <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Search stocks to add..."
                       value={searchQuery}
@@ -1208,23 +1208,23 @@ export default function Dashboard() {
                       className="pl-10"
                     />
                     {showSearchResults && (
-                      <div className="absolute top-12 left-0 right-0 bg-white border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                      <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
                         {isLoadingStocks ? (
                           <div className="p-4 text-center">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900 mx-auto"></div>
-                            <div className="mt-2 text-sm text-gray-600">Searching stocks...</div>
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                            <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
                           </div>
                         ) : stockData.length > 0 ? (
                           stockData.map((stock: any, index) => (
-                            <div key={index} className="p-3 hover:bg-gray-50 cursor-pointer border-b last:border-b-0">
+                            <div key={index} className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0">
                               <div className="flex items-center justify-between">
                                 <div>
-                                  <p className="font-medium">{stock.symbol}</p>
-                                  <p className="text-sm text-gray-600">{stock.name}</p>
-                                  <p className="text-xs text-gray-500">{stock.sector || "N/A"}</p>
+                                  <p className="font-medium text-foreground">{stock.symbol}</p>
+                                  <p className="text-sm text-muted-foreground">{stock.name}</p>
+                                  <p className="text-xs text-muted-foreground">{stock.sector || "N/A"}</p>
                                 </div>
                                 <div className="text-right">
-                                  <p className="font-medium">${stock.currentPrice ? stock.currentPrice.toFixed(2) : 'N/A'}</p>
+                                  <p className="font-medium text-foreground">${stock.currentPrice ? stock.currentPrice.toFixed(2) : 'N/A'}</p>
                                   <p className={`text-xs ${stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                     {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent ? stock.changePercent.toFixed(2) : '0.00'}%
                                   </p>
@@ -1241,7 +1241,7 @@ export default function Dashboard() {
                             </div>
                           ))
                         ) : searchQuery.length > 0 && (
-                          <div className="p-4 text-center text-gray-600">
+                          <div className="p-4 text-center text-muted-foreground">
                             No stocks found for "{searchQuery}"
                           </div>
                         )}
