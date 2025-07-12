@@ -970,35 +970,157 @@ export default function Dashboard() {
             </div>
           </motion.div>
 
-          {/* Market Overview */}
+          {/* Watchlist */}
           <motion.div className="mb-8" variants={fadeInUp}>
-            <h2 className="text-xl font-semibold mb-4 text-foreground">Market Overview</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {mockMarketData.map((market, index) => (
-                <Card key={index} className="border-0 shadow-lg">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-muted-foreground">{market.name}</p>
-                        <p className="text-2xl font-bold text-foreground">{market.value}</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {market.trend === "up" ? (
-                          <TrendingUp className="w-5 h-5 text-green-500" />
-                        ) : (
-                          <TrendingDown className="w-5 h-5 text-red-500" />
-                        )}
-                        <span className={`text-sm font-medium ${
-                          market.trend === "up" ? "text-green-600" : "text-red-600"
-                        }`}>
-                          {market.change}
-                        </span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-foreground">Your Watchlist</h2>
+              <div className="flex items-center space-x-4">
+                <select 
+                  className="px-3 py-2 border rounded-md bg-background text-foreground"
+                  value={filterSector}
+                  onChange={(e) => setFilterSector(e.target.value)}
+                >
+                  {sectors.map(sector => (
+                    <option key={sector} value={sector}>
+                      {sector === "all" ? "All Sectors" : sector}
+                    </option>
+                  ))}
+                </select>
+                <select 
+                  className="px-3 py-2 border rounded-md bg-background text-foreground"
+                  value={changePeriod}
+                  onChange={(e) => setChangePeriod(e.target.value as '1D' | '1W' | '1M' | '3M' | '6M' | '1Y' | 'YTD')}
+                >
+                  <option value="1D">1 Day</option>
+                  <option value="1W">1 Week</option>
+                  <option value="1M">1 Month</option>
+                  <option value="3M">3 Months</option>
+                  <option value="6M">6 Months</option>
+                  <option value="1Y">1 Year</option>
+                  <option value="YTD">Year to Date</option>
+                </select>
+                <select 
+                  className="px-3 py-2 border rounded-md bg-background text-foreground"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="symbol">Symbol</option>
+                  <option value="companyName">Company</option>
+                  <option value="currentPrice">Price</option>
+                  <option value="changePercent">% Change</option>
+                  <option value="volume">Volume</option>
+                  <option value="marketCap">Market Cap</option>
+                </select>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                >
+                  {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+                </Button>
+                <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
+                  <RefreshCw className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    {(changePeriod === '1D' || changePeriod === '5D') ? 
+                      '1min' : 
+                      '5min'} refresh
+                  </span>
+                </div>
+              </div>
             </div>
+
+            {/* Watchlist Table */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <Star className="w-5 h-5 mr-2" />
+                  Your Watchlist ({filteredWatchlist.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left py-2 px-4 font-medium">Symbol</th>
+                        <th className="text-left py-2 px-4 font-medium">Company</th>
+                        <th className="text-left py-2 px-4 font-medium">Price</th>
+                        <th className="text-left py-2 px-4 font-medium">Close Price ({changePeriod} ago)</th>
+                        <th className="text-left py-2 px-4 font-medium">
+                          Change ({changePeriod})
+                        </th>
+                        <th className="text-left py-2 px-4 font-medium">Volume</th>
+                        <th className="text-left py-2 px-4 font-medium">Market Cap</th>
+                        <th className="text-left py-2 px-4 font-medium">Sector</th>
+                        <th className="text-left py-2 px-4 font-medium">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredWatchlist.map((stock) => (
+                        <tr key={stock.id} className="border-b hover:bg-muted">
+                          <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
+                          <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
+                          <td className="py-3 px-4 font-medium text-foreground">
+                            ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-muted-foreground">
+                            {stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A'}
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-1">
+                              {stock.changePercent !== undefined && stock.change !== undefined ? (
+                                <>
+                                  {stock.changePercent >= 0 ? (
+                                    <TrendingUp className="w-4 h-4 text-green-500" />
+                                  ) : (
+                                    <TrendingDown className="w-4 h-4 text-red-500" />
+                                  )}
+                                  <span className={`text-sm font-medium ${
+                                    stock.changePercent >= 0 ? "text-green-600" : "text-red-600"
+                                  }`}>
+                                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                                  </span>
+                                  <span className={`text-xs ${
+                                    stock.change >= 0 ? "text-green-500" : "text-red-500"
+                                  }`}>
+                                    (${stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)})
+                                  </span>
+                                </>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">
+                                  N/A
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 text-sm text-foreground">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
+                          <td className="py-3 px-4 text-sm text-foreground">{formatMarketCap(stock.marketCap)}</td>
+                          <td className="py-3 px-4">
+                            <Badge variant="secondary" className="text-xs">
+                              {stock.sector}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center space-x-2">
+                              <Button variant="ghost" size="sm">
+                                <LineChart className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeFromWatchlist(stock.id)}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
 
           {/* Main Dashboard */}
