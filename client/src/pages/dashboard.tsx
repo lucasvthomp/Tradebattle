@@ -641,9 +641,42 @@ export default function Dashboard() {
   };
 
   // Handle buy button click
-  const handleBuyStock = (stock: any) => {
-    setSelectedTradingStock(stock);
-    setIsBuyDialogOpen(true);
+  const handleBuyStock = async (stock: any) => {
+    // If the stock already has a price, use it directly
+    if (stock.price && stock.price > 0) {
+      setSelectedTradingStock(stock);
+      setIsBuyDialogOpen(true);
+      return;
+    }
+
+    // Otherwise, fetch the current price
+    try {
+      const response = await fetch(`/api/quote/${stock.symbol}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        const stockWithPrice = {
+          ...stock,
+          price: data.data.price,
+          name: data.data.name || stock.name,
+        };
+        setSelectedTradingStock(stockWithPrice);
+        setIsBuyDialogOpen(true);
+      } else {
+        toast({
+          title: "Error",
+          description: "Unable to fetch current price for this stock",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching stock price:', error);
+      toast({
+        title: "Error",
+        description: "Unable to fetch current price for this stock",
+        variant: "destructive",
+      });
+    }
   };
 
   // Handle purchase submission
@@ -657,8 +690,28 @@ export default function Dashboard() {
       return;
     }
 
+    if (!selectedTradingStock.price || selectedTradingStock.price <= 0) {
+      toast({
+        title: "Price unavailable",
+        description: "Stock price is not available for this stock",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const shares = parseInt(shareAmount);
     const totalCost = shares * selectedTradingStock.price;
+
+    // Check if user has enough balance
+    const currentBalance = parseFloat(userBalance?.balance || '0');
+    if (totalCost > currentBalance) {
+      toast({
+        title: "Insufficient funds",
+        description: `You need $${totalCost.toFixed(2)} but only have $${currentBalance.toFixed(2)}`,
+        variant: "destructive",
+      });
+      return;
+    }
 
     purchaseStockMutation.mutate({
       symbol: selectedTradingStock.symbol,
