@@ -26,10 +26,7 @@ import {
   Clock,
   AlertCircle,
   CheckCircle,
-  Newspaper,
-  BookOpen,
-  Target,
-  Zap,
+
   Filter,
   SortAsc,
   SortDesc,
@@ -38,8 +35,7 @@ import {
   Bell,
   Settings,
   Download,
-  Building,
-  TrendingUpDown
+  Building
 } from "lucide-react";
 import {
   Dialog,
@@ -50,8 +46,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 
 const fadeInUp = {
@@ -169,18 +163,9 @@ const mockMarketData = [
   { name: "VIX", value: "12.84", change: "-2.45%", trend: "down" },
 ];
 
-const mockNews = [
-  { id: 1, title: "Tech Stocks Rally as AI Optimism Grows", time: "2 hours ago", source: "ORSATH Research" },
-  { id: 2, title: "Federal Reserve Signals Potential Rate Cuts", time: "4 hours ago", source: "Market Watch" },
-  { id: 3, title: "Earnings Season Preview: What to Expect", time: "1 day ago", source: "ORSATH Insights" },
-  { id: 4, title: "ESG Investing Trends for 2024", time: "2 days ago", source: "Sustainability Report" },
-];
 
-const mockInsights = [
-  { id: 1, type: "opportunity", title: "Emerging Market Recovery", description: "Our analysis suggests emerging markets are poised for recovery...", priority: "high" },
-  { id: 2, type: "risk", title: "Tech Sector Volatility", description: "Increased volatility expected in tech sector due to...", priority: "medium" },
-  { id: 3, type: "trend", title: "Green Energy Momentum", description: "Renewable energy stocks showing strong momentum...", priority: "low" },
-];
+
+
 
 // Comprehensive stock database from major indices
 const stockSearchResults = [
@@ -414,12 +399,7 @@ export default function Dashboard() {
   const [filterSector, setFilterSector] = useState("all");
   const [changePeriod, setChangePeriod] = useState("1D");
   
-  // Research request dialog states
-  const [isResearchDialogOpen, setIsResearchDialogOpen] = useState(false);
-  const [researchStep, setResearchStep] = useState(1);
-  const [researchType, setResearchType] = useState("");
-  const [researchTarget, setResearchTarget] = useState("");
-  const [researchDescription, setResearchDescription] = useState("");
+
   
   // Trading state
   const [isBuyDialogOpen, setIsBuyDialogOpen] = useState(false);
@@ -536,26 +516,7 @@ export default function Dashboard() {
     },
   });
 
-  // Research request mutation
-  const createResearchRequestMutation = useMutation({
-    mutationFn: async (requestData: { type: string; target: string; description: string }) => {
-      await apiRequest("POST", "/api/research-requests", requestData);
-    },
-    onSuccess: () => {
-      resetResearchDialog();
-      toast({
-        title: "Research request submitted",
-        description: "Your custom research request has been sent to our team for review.",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+
 
   // Trading mutations
   const purchaseStockMutation = useMutation({
@@ -606,32 +567,7 @@ export default function Dashboard() {
     },
   });
 
-  // Reset research dialog
-  const resetResearchDialog = () => {
-    setIsResearchDialogOpen(false);
-    setResearchStep(1);
-    setResearchType("");
-    setResearchTarget("");
-    setResearchDescription("");
-  };
 
-  // Handle research request submission
-  const handleResearchRequestSubmit = () => {
-    if (!researchType || !researchTarget) {
-      toast({
-        title: "Missing information",
-        description: "Please select a research type and specify the target.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    createResearchRequestMutation.mutate({
-      type: researchType,
-      target: researchTarget,
-      description: researchDescription || `${researchType} analysis for ${researchTarget}`,
-    });
-  };
 
   // Trading search function
   const handleTradingSearch = async (query: string) => {
@@ -1068,11 +1004,10 @@ export default function Dashboard() {
           {/* Main Dashboard */}
           <motion.div variants={fadeInUp}>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-4 mb-6">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
                 <TabsTrigger value="watchlist">Watchlist</TabsTrigger>
-                <TabsTrigger value="research">Research</TabsTrigger>
-                <TabsTrigger value="insights">Insights</TabsTrigger>
+
               </TabsList>
 
               <TabsContent value="overview" className="space-y-6">
@@ -1257,35 +1192,7 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   </div>
-                  <div className="space-y-4">
-                    <Card className="border-0 shadow-lg">
-                      <CardHeader>
-                        <CardTitle className="flex items-center">
-                          <Newspaper className="w-5 h-5 mr-2" />
-                          Latest News
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <div className="space-y-3">
-                          {mockNews.map((news) => (
-                            <div key={news.id} className="flex items-start space-x-3">
-                              <div className="flex-1">
-                                <p className="text-sm font-medium text-black line-clamp-2">
-                                  {news.title}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1">
-                                  {news.source} • {news.time}
-                                </p>
-                              </div>
-                              <Button variant="ghost" size="sm">
-                                <ExternalLink className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+
                 </div>
               </TabsContent>
 
@@ -1478,201 +1385,7 @@ export default function Dashboard() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="research" className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <BookOpen className="w-5 h-5 mr-2" />
-                        Latest Research
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="p-4 bg-blue-50 rounded-lg">
-                          <h3 className="font-semibold text-black">Q4 2024 Tech Sector Analysis</h3>
-                          <p className="text-sm text-gray-600 mt-2">
-                            Comprehensive analysis of technology sector performance and outlook...
-                          </p>
-                          <div className="flex items-center justify-between mt-3">
-                            <span className="text-xs text-gray-500">Published 2 days ago</span>
-                            <Button size="sm" variant="outline">Read More</Button>
-                          </div>
-                        </div>
-                        <div className="p-4 bg-green-50 rounded-lg">
-                          <h3 className="font-semibold text-black">ESG Investment Trends</h3>
-                          <p className="text-sm text-gray-600 mt-2">
-                            Examining the growing impact of ESG factors on investment decisions...
-                          </p>
-                          <div className="flex items-center justify-between mt-3">
-                            <span className="text-xs text-gray-500">Published 5 days ago</span>
-                            <Button size="sm" variant="outline">Read More</Button>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
 
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <Target className="w-5 h-5 mr-2" />
-                        Research Requests
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        <div className="p-4 border rounded-lg">
-                          <h3 className="font-medium text-black">Request Custom Research</h3>
-                          <p className="text-sm text-gray-600 mt-2">
-                            Get personalized research on specific companies or sectors.
-                          </p>
-                          {user?.subscriptionTier === 'professional' ? (
-                            <Dialog open={isResearchDialogOpen} onOpenChange={setIsResearchDialogOpen}>
-                              <DialogTrigger asChild>
-                                <Button className="mt-3" size="sm">
-                                  <Plus className="w-4 h-4 mr-2" />
-                                  New Request
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                  <DialogTitle>
-                                    {researchStep === 1 ? 'Select Research Type' : 'Research Details'}
-                                  </DialogTitle>
-                                  <DialogDescription>
-                                    {researchStep === 1 
-                                      ? 'Choose the type of research you need'
-                                      : 'Provide details for your research request'
-                                    }
-                                  </DialogDescription>
-                                </DialogHeader>
-                                
-                                {researchStep === 1 ? (
-                                  <div className="space-y-4">
-                                    <RadioGroup value={researchType} onValueChange={setResearchType}>
-                                      <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="company" id="company" />
-                                        <Label htmlFor="company" className="flex items-center">
-                                          <Building className="w-4 h-4 mr-2" />
-                                          Company Analysis
-                                        </Label>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="sector" id="sector" />
-                                        <Label htmlFor="sector" className="flex items-center">
-                                          <TrendingUpDown className="w-4 h-4 mr-2" />
-                                          Sector Analysis
-                                        </Label>
-                                      </div>
-                                    </RadioGroup>
-                                    
-                                    <div className="flex justify-end space-x-2">
-                                      <Button variant="outline" onClick={resetResearchDialog}>
-                                        Cancel
-                                      </Button>
-                                      <Button 
-                                        onClick={() => setResearchStep(2)}
-                                        disabled={!researchType}
-                                      >
-                                        Next
-                                      </Button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="space-y-4">
-                                    <div>
-                                      <Label htmlFor="target">
-                                        {researchType === 'company' ? 'Company Name/Symbol' : 'Sector Name'}
-                                      </Label>
-                                      <Input
-                                        id="target"
-                                        value={researchTarget}
-                                        onChange={(e) => setResearchTarget(e.target.value)}
-                                        placeholder={researchType === 'company' ? 'e.g., Apple Inc. or AAPL' : 'e.g., Technology, Healthcare'}
-                                      />
-                                    </div>
-                                    
-                                    <div>
-                                      <Label htmlFor="description">Additional Details (Optional)</Label>
-                                      <Textarea
-                                        id="description"
-                                        value={researchDescription}
-                                        onChange={(e) => setResearchDescription(e.target.value)}
-                                        placeholder="Any specific areas of focus or questions you'd like addressed..."
-                                        rows={3}
-                                      />
-                                    </div>
-                                    
-                                    <div className="flex justify-end space-x-2">
-                                      <Button variant="outline" onClick={() => setResearchStep(1)}>
-                                        Back
-                                      </Button>
-                                      <Button 
-                                        onClick={handleResearchRequestSubmit}
-                                        disabled={!researchTarget || createResearchRequestMutation.isPending}
-                                      >
-                                        {createResearchRequestMutation.isPending ? 'Submitting...' : 'Submit Request'}
-                                      </Button>
-                                    </div>
-                                  </div>
-                                )}
-                              </DialogContent>
-                            </Dialog>
-                          ) : (
-                            <Button className="mt-3" size="sm" disabled>
-                              <Plus className="w-4 h-4 mr-2" />
-                              Professional Only
-                            </Button>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                            <span className="text-sm font-medium">AI & Machine Learning Sector</span>
-                            <Badge variant="secondary">In Progress</Badge>
-                          </div>
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
-                            <span className="text-sm font-medium">Renewable Energy Outlook</span>
-                            <Badge className="bg-green-100 text-green-800">Completed</Badge>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </TabsContent>
-
-              <TabsContent value="insights" className="space-y-6">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  {mockInsights.map((insight) => (
-                    <Card key={insight.id} className="border-0 shadow-lg">
-                      <CardHeader>
-                        <CardTitle className="flex items-center">
-                          {insight.type === "opportunity" && <Zap className="w-5 h-5 mr-2 text-green-500" />}
-                          {insight.type === "risk" && <AlertCircle className="w-5 h-5 mr-2 text-red-500" />}
-                          {insight.type === "trend" && <TrendingUp className="w-5 h-5 mr-2 text-blue-500" />}
-                          {insight.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-gray-600 mb-4">{insight.description}</p>
-                        <div className="flex items-center justify-between">
-                          <Badge className={`${
-                            insight.priority === "high" ? "bg-red-100 text-red-800" :
-                            insight.priority === "medium" ? "bg-yellow-100 text-yellow-800" :
-                            "bg-blue-100 text-blue-800"
-                          }`}>
-                            {insight.priority} priority
-                          </Badge>
-                          <Button size="sm" variant="outline">
-                            View Details
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </TabsContent>
             </Tabs>
           </motion.div>
         </motion.div>
