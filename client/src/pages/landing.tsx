@@ -1,5 +1,6 @@
 import Hero from "@/components/sections/hero";
 import About from "@/components/sections/about";
+import StockTicker from "@/components/ui/stock-ticker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, TrendingUp, Trophy, Target, Users, BarChart3, DollarSign, Calendar } from "lucide-react";
@@ -8,6 +9,7 @@ import { motion } from "framer-motion";
 export default function Landing() {
   return (
     <div>
+      <StockTicker />
       <Hero />
       <About />
       
