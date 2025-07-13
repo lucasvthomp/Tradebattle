@@ -95,8 +95,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={loginMutation.isPending}
-                className="w-full"
-                style={{ backgroundColor: '#000000', color: '#ffffff' }}
+                className="w-full bg-black text-white hover:bg-neutral-800"
               >
                 {loginMutation.isPending ? (
                   <>
