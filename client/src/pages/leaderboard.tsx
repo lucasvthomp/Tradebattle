@@ -50,12 +50,6 @@ export default function Leaderboard() {
     }).format(amount);
   };
 
-  const calculateReturn = (currentValue: number, initialValue: number = 10000) => {
-    const returnAmount = currentValue - initialValue;
-    const returnPercentage = (returnAmount / initialValue) * 100;
-    return { amount: returnAmount, percentage: returnPercentage };
-  };
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
@@ -221,7 +215,7 @@ export default function Leaderboard() {
                     <div className="space-y-4">
                       {personalLeaderboard?.data?.rankings?.map((trader: any, index: number) => {
                         const rank = index + 1;
-                        const returns = calculateReturn(trader.portfolioValue, trader.initialBalance);
+                        const percentageChange = trader.percentageChange || 0;
                         
                         return (
                           <div
@@ -240,7 +234,7 @@ export default function Leaderboard() {
                                   )}
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                  Started: {new Date(trader.portfolioCreatedAt).toLocaleDateString()}
+                                  Started: {new Date(trader.portfolioCreatedAt).toLocaleDateString()} • Starting: {formatCurrency(trader.startingBalance)}
                                 </div>
                               </div>
                             </div>
@@ -248,10 +242,10 @@ export default function Leaderboard() {
                             <div className="text-right">
                               <div className="font-bold text-lg">{formatCurrency(trader.portfolioValue)}</div>
                               <div className={`text-sm flex items-center gap-1 ${
-                                returns.percentage >= 0 ? 'text-green-500' : 'text-red-500'
+                                percentageChange >= 0 ? 'text-green-500' : 'text-red-500'
                               }`}>
                                 <TrendingUp className="h-3 w-3" />
-                                {returns.percentage >= 0 ? '+' : ''}{returns.percentage.toFixed(2)}%
+                                {percentageChange >= 0 ? '+' : ''}{percentageChange.toFixed(2)}%
                               </div>
                             </div>
                           </div>

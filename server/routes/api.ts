@@ -803,15 +803,20 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
       }
     }
     
+    // Calculate percentage change from starting balance
+    const startingBalance = 10000; // Standard starting balance for personal portfolios
+    const percentageChange = ((portfolioValue - startingBalance) / startingBalance) * 100;
+    
     userPortfolios.push({
       ...user,
       portfolioValue,
-      initialBalance: 10000 // Standard starting balance
+      percentageChange,
+      startingBalance
     });
   }
   
-  // Sort by portfolio value (highest first)
-  userPortfolios.sort((a, b) => b.portfolioValue - a.portfolioValue);
+  // Sort by percentage change (highest first)
+  userPortfolios.sort((a, b) => b.percentageChange - a.percentageChange);
   
   // Find user's rank
   const userRank = userPortfolios.findIndex(p => p.id === userId) + 1;
