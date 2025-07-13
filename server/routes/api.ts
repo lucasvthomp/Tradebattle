@@ -709,9 +709,15 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
   // Get all tournaments with participants and their portfolio values
   const tournaments = await storage.getAllTournaments();
   const allParticipants = [];
+  let activeTournaments = 0;
   
   for (const tournament of tournaments) {
     const participants = await storage.getTournamentParticipants(tournament.id);
+    
+    // Count as active if it has participants
+    if (participants.length > 0) {
+      activeTournaments++;
+    }
     
     for (const participant of participants) {
       // Calculate portfolio value for each participant
@@ -749,7 +755,7 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
     success: true,
     data: {
       rankings: allParticipants.slice(0, 50), // Top 50
-      totalTournaments: tournaments.length,
+      totalTournaments: activeTournaments,
       totalParticipants: allParticipants.length,
       yourRank: userRank || null
     }

@@ -92,7 +92,7 @@ export default function Leaderboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{tournamentLeaderboard?.totalTournaments || 0}</div>
+                    <div className="text-2xl font-bold">{tournamentLeaderboard?.data?.totalTournaments || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -102,7 +102,7 @@ export default function Leaderboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{tournamentLeaderboard?.totalParticipants || 0}</div>
+                    <div className="text-2xl font-bold">{tournamentLeaderboard?.data?.totalParticipants || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -113,7 +113,7 @@ export default function Leaderboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {tournamentLeaderboard?.yourRank || "N/A"}
+                      {tournamentLeaderboard?.data?.yourRank || "N/A"}
                     </div>
                   </CardContent>
                 </Card>
@@ -130,7 +130,7 @@ export default function Leaderboard() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {tournamentLeaderboard?.rankings?.map((participant: any, index: number) => {
+                      {tournamentLeaderboard?.data?.rankings?.map((participant: any, index: number) => {
                         const rank = index + 1;
                         const returns = calculateReturn(participant.portfolioValue);
                         
@@ -179,7 +179,7 @@ export default function Leaderboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{personalLeaderboard?.totalTraders || 0}</div>
+                    <div className="text-2xl font-bold">{personalLeaderboard?.data?.totalTraders || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -190,7 +190,7 @@ export default function Leaderboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {personalLeaderboard?.yourRank || "N/A"}
+                      {personalLeaderboard?.data?.yourRank || "N/A"}
                     </div>
                   </CardContent>
                 </Card>
@@ -201,7 +201,7 @@ export default function Leaderboard() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{personalLeaderboard?.premiumUsers || 0}</div>
+                    <div className="text-2xl font-bold">{personalLeaderboard?.data?.premiumUsers || 0}</div>
                   </CardContent>
                 </Card>
               </div>
@@ -217,7 +217,7 @@ export default function Leaderboard() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {personalLeaderboard?.rankings?.map((trader: any, index: number) => {
+                      {personalLeaderboard?.data?.rankings?.map((trader: any, index: number) => {
                         const rank = index + 1;
                         const returns = calculateReturn(trader.portfolioValue, trader.initialBalance);
                         
