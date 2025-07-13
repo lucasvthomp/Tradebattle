@@ -1057,7 +1057,7 @@ export default function Dashboard() {
   }, [popularStocksData]);
 
   // Fetch timeframe-specific performance data for watchlist
-  const { data: performanceData = {} } = useQuery({
+  const { data: performanceData = {}, isLoading: isLoadingPerformance } = useQuery({
     queryKey: ["/api/performance", watchlist.map(s => s.symbol), changePeriod],
     queryFn: async () => {
       if (watchlist.length === 0) return {};
@@ -1161,6 +1161,7 @@ export default function Dashboard() {
     // For long-term changes: Use Yahoo Finance timeframe data
     let finalChange = 0;
     let finalChangePercent = 0;
+    let isLoadingData = false;
     
     if (changePeriod === '1D') {
       // 1D: Calculate change immediately from current price vs previous close
@@ -1168,7 +1169,10 @@ export default function Dashboard() {
       finalChangePercent = historicalClose > 0 ? ((finalChange / historicalClose) * 100) : 0;
     } else {
       // Long-term: Use Yahoo Finance timeframe-specific data
-      if (timeframeSpecificData) {
+      if (isLoadingPerformance) {
+        // Show loading state for non-1D timeframes
+        isLoadingData = true;
+      } else if (timeframeSpecificData) {
         finalChange = timeframeSpecificData.change;
         finalChangePercent = timeframeSpecificData.percentChange;
       } else {
@@ -1188,7 +1192,8 @@ export default function Dashboard() {
       change: finalChange,
       changePercent: finalChangePercent,
       currency: popularData?.currency || individualData?.currency || stock.currency || "USD",
-      lastUpdated: Date.now()
+      lastUpdated: Date.now(),
+      isLoadingData
     };
   });
 
@@ -1393,7 +1398,11 @@ export default function Dashboard() {
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-1">
-                              {stock.changePercent !== undefined && stock.change !== undefined ? (
+                              {stock.isLoadingData ? (
+                                <span className="text-sm text-muted-foreground">
+                                  Loading...
+                                </span>
+                              ) : stock.changePercent !== undefined && stock.change !== undefined ? (
                                 <>
                                   {stock.changePercent >= 0 ? (
                                     <TrendingUp className="w-4 h-4 text-green-500" />
@@ -2054,7 +2063,11 @@ export default function Dashboard() {
                               </td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
-                                  {stock.changePercent !== undefined && stock.change !== undefined ? (
+                                  {stock.isLoadingData ? (
+                                    <span className="text-sm text-muted-foreground">
+                                      Loading...
+                                    </span>
+                                  ) : stock.changePercent !== undefined && stock.change !== undefined ? (
                                     <>
                                       {stock.changePercent >= 0 ? (
                                         <TrendingUp className="w-4 h-4 text-green-500" />
