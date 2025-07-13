@@ -418,6 +418,8 @@ export default function Dashboard() {
   const [createdTournament, setCreatedTournament] = useState<any>(null);
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
+  const [isJoinTournamentDialogOpen, setIsJoinTournamentDialogOpen] = useState(false);
+  const [joinGameCode, setJoinGameCode] = useState("");
   const [stockPrices, setStockPrices] = useState<{[key: string]: number}>({});
   
   // Sell dialog state
@@ -646,6 +648,38 @@ export default function Dashboard() {
       });
       
       // Auto-select the newly created tournament after a short delay to ensure queries are updated
+      setTimeout(() => {
+        const tournamentWithBalance = { tournaments: tournament, balance: null };
+        setSelectedTournament(tournamentWithBalance);
+        setSelectedTournamentId(tournament.id.toString());
+      }, 100);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Join tournament mutation
+  const joinTournamentMutation = useMutation({
+    mutationFn: async (code: string) => {
+      const res = await apiRequest("POST", `/api/tournaments/${code}/join`, {});
+      return res.json();
+    },
+    onSuccess: (response) => {
+      const tournament = response.data;
+      setIsJoinTournamentDialogOpen(false);
+      setJoinGameCode("");
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
+      toast({
+        title: "Joined tournament!",
+        description: `Successfully joined tournament "${tournament.name}". Code: ${tournament.code}`,
+      });
+      
+      // Auto-select the newly joined tournament after a short delay
       setTimeout(() => {
         const tournamentWithBalance = { tournaments: tournament, balance: null };
         setSelectedTournament(tournamentWithBalance);
@@ -1340,8 +1374,8 @@ export default function Dashboard() {
               </CardContent>
             </Card>
             
-            {/* Create Game Button */}
-            <div className="flex justify-center mt-4">
+            {/* Create Game and Join Game Buttons */}
+            <div className="flex justify-center gap-4 mt-4">
               <Dialog open={isCreateTournamentDialogOpen} onOpenChange={setIsCreateTournamentDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="default" size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
@@ -1415,6 +1449,52 @@ export default function Dashboard() {
                       disabled={!tournamentName || !startingBalance || createTournamentMutation.isPending}
                     >
                       {createTournamentMutation.isPending ? 'Creating...' : 'Create Tournament'}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+              
+              <Dialog open={isJoinTournamentDialogOpen} onOpenChange={setIsJoinTournamentDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10">
+                    Join Game
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Join Tournament</DialogTitle>
+                    <DialogDescription>
+                      Enter the unique game code to join an existing tournament.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="game-code" className="text-right">
+                        Game Code
+                      </Label>
+                      <Input
+                        id="game-code"
+                        value={joinGameCode}
+                        onChange={(e) => setJoinGameCode(e.target.value.toUpperCase())}
+                        className="col-span-3 font-mono"
+                        placeholder="Enter 8-character code"
+                        maxLength={8}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsJoinTournamentDialogOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button 
+                      onClick={() => {
+                        if (joinGameCode && joinGameCode.length === 8) {
+                          joinTournamentMutation.mutate(joinGameCode);
+                        }
+                      }}
+                      disabled={!joinGameCode || joinGameCode.length !== 8 || joinTournamentMutation.isPending}
+                    >
+                      {joinTournamentMutation.isPending ? 'Joining...' : 'Join Tournament'}
                     </Button>
                   </div>
                 </DialogContent>
