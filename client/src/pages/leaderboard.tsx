@@ -132,7 +132,7 @@ export default function Leaderboard() {
                     <div className="space-y-4">
                       {tournamentLeaderboard?.data?.rankings?.map((participant: any, index: number) => {
                         const rank = index + 1;
-                        const returns = calculateReturn(participant.portfolioValue);
+                        const percentageChange = participant.percentageChange || 0;
                         
                         return (
                           <div
@@ -152,10 +152,10 @@ export default function Leaderboard() {
                             <div className="text-right">
                               <div className="font-bold text-lg">{formatCurrency(participant.portfolioValue)}</div>
                               <div className={`text-sm flex items-center gap-1 ${
-                                returns.percentage >= 0 ? 'text-green-500' : 'text-red-500'
+                                percentageChange >= 0 ? 'text-green-500' : 'text-red-500'
                               }`}>
                                 <TrendingUp className="h-3 w-3" />
-                                {returns.percentage >= 0 ? '+' : ''}{returns.percentage.toFixed(2)}%
+                                {percentageChange >= 0 ? '+' : ''}{percentageChange.toFixed(2)}%
                               </div>
                             </div>
                           </div>

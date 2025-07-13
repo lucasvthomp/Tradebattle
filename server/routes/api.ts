@@ -736,17 +736,22 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
         }
       }
       
+      // Calculate percentage change from starting balance
+      const startingBalance = 10000; // Standard tournament starting balance
+      const percentageChange = ((portfolioValue - startingBalance) / startingBalance) * 100;
+      
       allParticipants.push({
         ...participant,
         portfolioValue,
+        percentageChange,
         tournamentName: tournament.name,
         tournamentId: tournament.id
       });
     }
   }
   
-  // Sort by portfolio value (highest first)
-  allParticipants.sort((a, b) => b.portfolioValue - a.portfolioValue);
+  // Sort by percentage change (highest first)
+  allParticipants.sort((a, b) => b.percentageChange - a.percentageChange);
   
   // Find user's rank
   const userRank = allParticipants.findIndex(p => p.userId === userId) + 1;
