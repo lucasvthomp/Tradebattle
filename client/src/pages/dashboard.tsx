@@ -395,6 +395,7 @@ export default function Dashboard() {
   const [isLoadingPopular, setIsLoadingPopular] = useState(true);
   const [selectedStock, setSelectedStock] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState("tournament");
   const [sortBy, setSortBy] = useState("symbol");
   const [sortOrder, setSortOrder] = useState("asc");
@@ -649,6 +650,55 @@ export default function Dashboard() {
       });
     },
   });
+
+  // Search handler for watchlist
+  const handleSearch = async (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setSearchResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setSearchResults(data.data);
+          setShowSearchResults(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error searching stocks:", error);
+    }
+  };
+
+  // Add stock to watchlist from search results
+  const addToWatchlist = (stock: any) => {
+    const watchlistItem: InsertWatchlistItem = {
+      symbol: stock.symbol,
+      companyName: stock.name,
+      notes: ""
+    };
+    
+    addToWatchlistMutation.mutate(watchlistItem);
+    setSearchQuery("");
+    setSearchResults([]);
+    setShowSearchResults(false);
+  };
+
+  // Close search results when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (showSearchResults && !(event.target as Element).closest('.search-container')) {
+        setShowSearchResults(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showSearchResults]);
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
@@ -1048,40 +1098,7 @@ export default function Dashboard() {
     },
   });
 
-  const handleSearch = async (query: string) => {
-    setSearchQuery(query);
-    if (query.length > 0) {
-      setIsLoadingStocks(true);
-      try {
-        const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
-        if (response.ok) {
-          const results = await response.json();
-          if (results.success) {
-            setStockData(results.data);
-          }
-        }
-      } catch (error) {
-        console.error('Error searching stocks:', error);
-      } finally {
-        setIsLoadingStocks(false);
-      }
-    }
-    setShowSearchResults(query.length > 0);
-  };
 
-  const addToWatchlist = async (stock: any) => {
-    addToWatchlistMutation.mutate({
-      symbol: stock.symbol,
-      companyName: stock.name,
-      price: stock.price,
-      marketCap: stock.marketCap,
-      sector: stock.sector || "N/A",
-      change: stock.change,
-      changePercent: stock.percentChange,
-    });
-    setShowSearchResults(false);
-    setSearchQuery("");
-  };
 
   const formatMarketCap = (marketCap: number | string) => {
     // If already formatted, return as is
@@ -1243,6 +1260,40 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-semibold text-foreground">Your Watchlist</h2>
               <div className="flex items-center space-x-4">
+                {/* Add Stock Search */}
+                <div className="relative search-container">
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search stocks to add to watchlist..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="pl-10 min-w-[250px]"
+                  />
+                  {showSearchResults && (
+                    <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                      {searchResults.map((stock) => (
+                        <div
+                          key={stock.symbol}
+                          className="p-3 hover:bg-accent cursor-pointer border-b last:border-b-0"
+                          onClick={() => addToWatchlist(stock)}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="font-medium">{stock.symbol}</div>
+                              <div className="text-sm text-muted-foreground">{stock.name}</div>
+                            </div>
+                            <div className="text-sm text-muted-foreground">{stock.exchange}</div>
+                          </div>
+                        </div>
+                      ))}
+                      {searchResults.length === 0 && searchQuery && (
+                        <div className="p-3 text-sm text-muted-foreground">
+                          No stocks found for "{searchQuery}"
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
                 <select 
                   className="px-3 py-2 border rounded-md bg-background text-foreground"
                   value={filterSector}
