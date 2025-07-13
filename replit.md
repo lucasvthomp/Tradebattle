@@ -157,6 +157,7 @@ Preferred communication style: Simple, everyday language.
 - **Competition-Focused Architecture** (January 2025): Restructured the platform to serve as a middleman between trading competitions and participants rather than a research platform
 - **Dashboard Cleanup** (January 2025): Removed all remaining research-related components, state variables, and functions from dashboard - now purely focused on trading and watchlist management
 - **Complete Dark Mode Implementation** (January 2025): Implemented comprehensive dark mode theme with dark gray-blue background (HSL 220, 25%, 14%) and light text throughout entire application
+- **Admin Panel Simplification** (January 2025): Removed partner panel from admin interface, simplified subscription tiers to only free/premium, and added proper subscription tier update API endpoint
 - **CSS Variable System**: Updated all CSS variables to use dark gray-blue color scheme with proper contrast ratios for accessibility
 - **Component Styling Update**: Updated all components (header, footer, hero, about, landing page) to use CSS variables for consistent dark mode appearance
 - **Theme Provider Override**: Modified theme provider to always use dark mode, removing light mode options to maintain consistent visual experience

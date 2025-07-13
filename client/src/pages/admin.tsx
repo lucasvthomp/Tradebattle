@@ -629,8 +629,6 @@ export default function Admin() {
                   <SelectContent>
                     <SelectItem value="free">Free Account</SelectItem>
                     <SelectItem value="premium">Premium Account</SelectItem>
-                    <SelectItem value="analyst">Analyst ($19.99/month)</SelectItem>
-                    <SelectItem value="professional">Professional ($49.99/month)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
