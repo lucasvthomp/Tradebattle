@@ -35,7 +35,8 @@ import {
   Bell,
   Settings,
   Download,
-  Building
+  Building,
+  Trophy
 } from "lucide-react";
 import {
   Dialog,
