@@ -173,3 +173,4 @@ Preferred communication style: Simple, everyday language.
 - **Personal Portfolio Trading System** (January 2025): Implemented complete personal portfolio trading system with stock purchase/sell functionality, real-time price lookup, balance validation, and transaction processing
 - **Personal Trading UI** (January 2025): Added "Buy Stock" and "Sell" buttons with modal dialogs for stock trading, real-time price fetching, and comprehensive transaction validation
 - **Personal Portfolio API** (January 2025): Created complete API endpoints for personal portfolio trading including purchase, sell, and portfolio management with database integration
+- **Leaderboard System** (January 2025): Added comprehensive leaderboard page with tournaments and personal portfolio sub-tabs, real-time portfolio value calculations, ranking system with trophy icons, and user performance metrics with full dark mode support

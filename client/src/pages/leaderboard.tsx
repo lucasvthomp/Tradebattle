@@ -57,7 +57,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8">
         <motion.div 
           initial="hidden"
@@ -66,7 +66,7 @@ export default function Leaderboard() {
           className="text-center mb-8"
         >
           <h1 className="text-4xl font-bold mb-4">Leaderboard</h1>
-          <p className="text-gray-300 text-lg">
+          <p className="text-muted-foreground text-lg">
             See how you rank against other traders in tournaments and personal portfolios
           </p>
         </motion.div>
@@ -126,7 +126,7 @@ export default function Leaderboard() {
                 <CardContent>
                   {tournamentsLoading ? (
                     <div className="flex justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -138,14 +138,14 @@ export default function Leaderboard() {
                           <div
                             key={participant.id}
                             className={`flex items-center justify-between p-4 rounded-lg border ${
-                              participant.userId === user?.id ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700'
+                              participant.userId === user?.id ? 'border-primary bg-primary/10' : 'border-border'
                             }`}
                           >
                             <div className="flex items-center gap-4">
                               {getRankIcon(rank)}
                               <div>
                                 <div className="font-semibold">{participant.firstName} {participant.lastName}</div>
-                                <div className="text-sm text-gray-400">{participant.tournamentName}</div>
+                                <div className="text-sm text-muted-foreground">{participant.tournamentName}</div>
                               </div>
                             </div>
                             
@@ -161,7 +161,7 @@ export default function Leaderboard() {
                           </div>
                         );
                       }) || (
-                        <div className="text-center py-8 text-gray-500">
+                        <div className="text-center py-8 text-muted-foreground">
                           No tournament data available
                         </div>
                       )}
@@ -213,7 +213,7 @@ export default function Leaderboard() {
                 <CardContent>
                   {personalLoading ? (
                     <div className="flex justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                   ) : (
                     <div className="space-y-4">
@@ -225,7 +225,7 @@ export default function Leaderboard() {
                           <div
                             key={trader.id}
                             className={`flex items-center justify-between p-4 rounded-lg border ${
-                              trader.id === user?.id ? 'border-blue-500 bg-blue-500/10' : 'border-gray-700'
+                              trader.id === user?.id ? 'border-primary bg-primary/10' : 'border-border'
                             }`}
                           >
                             <div className="flex items-center gap-4">
@@ -237,7 +237,7 @@ export default function Leaderboard() {
                                     <Badge variant="outline" className="text-xs">Premium</Badge>
                                   )}
                                 </div>
-                                <div className="text-sm text-gray-400">
+                                <div className="text-sm text-muted-foreground">
                                   Started: {new Date(trader.portfolioCreatedAt).toLocaleDateString()}
                                 </div>
                               </div>
@@ -255,7 +255,7 @@ export default function Leaderboard() {
                           </div>
                         );
                       }) || (
-                        <div className="text-center py-8 text-gray-500">
+                        <div className="text-center py-8 text-muted-foreground">
                           No personal portfolio data available
                         </div>
                       )}
