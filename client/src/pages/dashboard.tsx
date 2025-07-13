@@ -414,6 +414,7 @@ export default function Dashboard() {
   const [isCreateTournamentDialogOpen, setIsCreateTournamentDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("10");
+  const [startingBalance, setStartingBalance] = useState("10000");
   const [createdTournament, setCreatedTournament] = useState<any>(null);
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
@@ -634,6 +635,7 @@ export default function Dashboard() {
       setIsCreateTournamentDialogOpen(false);
       setTournamentName("");
       setMaxPlayers("10");
+      setStartingBalance("10000");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       // Invalidate balance query for the newly created tournament
       queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournament.id, user?.id] });
@@ -1366,7 +1368,21 @@ export default function Dashboard() {
                         placeholder="Enter tournament name"
                       />
                     </div>
-
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="starting-balance" className="text-right">
+                        Starting Balance ($)
+                      </Label>
+                      <Input
+                        id="starting-balance"
+                        type="number"
+                        value={startingBalance}
+                        onChange={(e) => setStartingBalance(e.target.value)}
+                        className="col-span-3"
+                        placeholder="10000.00"
+                        min="1"
+                        step="0.01"
+                      />
+                    </div>
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="max-players" className="text-right">
                         Max Players
@@ -1388,14 +1404,15 @@ export default function Dashboard() {
                     </Button>
                     <Button 
                       onClick={() => {
-                        if (tournamentName) {
+                        if (tournamentName && startingBalance) {
                           createTournamentMutation.mutate({
                             name: tournamentName,
-                            maxPlayers: parseInt(maxPlayers)
+                            maxPlayers: parseInt(maxPlayers),
+                            startingBalance: parseFloat(startingBalance)
                           });
                         }
                       }}
-                      disabled={!tournamentName || createTournamentMutation.isPending}
+                      disabled={!tournamentName || !startingBalance || createTournamentMutation.isPending}
                     >
                       {createTournamentMutation.isPending ? 'Creating...' : 'Create Tournament'}
                     </Button>

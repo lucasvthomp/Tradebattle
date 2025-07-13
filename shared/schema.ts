@@ -95,6 +95,7 @@ export const tournaments = pgTable("tournaments", {
   creatorId: integer("creator_id").references(() => users.id).notNull(),
   maxPlayers: integer("max_players").default(10).notNull(),
   currentPlayers: integer("current_players").default(1).notNull(),
+  startingBalance: numeric("starting_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(),
   status: varchar("status").default("waiting"), // waiting, active, completed
   createdAt: timestamp("created_at").defaultNow(),
   startedAt: timestamp("started_at"),
@@ -160,6 +161,7 @@ export const insertAdminLogSchema = createInsertSchema(adminLogs).pick({
 export const insertTournamentSchema = createInsertSchema(tournaments).pick({
   name: true,
   maxPlayers: true,
+  startingBalance: true,
 });
 
 export const insertTournamentParticipantSchema = createInsertSchema(tournamentParticipants).pick({
