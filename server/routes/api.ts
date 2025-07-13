@@ -784,7 +784,10 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
   const userPortfolios = [];
   
   for (const user of users) {
-    // Calculate portfolio value for all users (personal portfolios are always available)
+    // Only include premium users (non-premium accounts don't have access to personal portfolios)
+    if (user.subscriptionTier !== 'premium') continue;
+    
+    // Calculate portfolio value for premium users
     const purchases = await storage.getPersonalStockPurchases(user.id);
     let portfolioValue = parseFloat(user.personalBalance) || 10000;
     
@@ -818,15 +821,12 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
   // Find user's rank
   const userRank = userPortfolios.findIndex(p => p.id === userId) + 1;
   
-  // Count premium users
-  const premiumUsers = userPortfolios.filter(p => p.subscriptionTier === 'premium').length;
-  
   res.json({
     success: true,
     data: {
       rankings: userPortfolios.slice(0, 50), // Top 50
-      totalTraders: userPortfolios.length,
-      premiumUsers,
+      totalTraders: userPortfolios.length, // Only premium users are shown
+      premiumUsers: userPortfolios.length, // All displayed users are premium
       yourRank: userRank || null
     }
   });
