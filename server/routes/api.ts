@@ -660,7 +660,7 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
   }
 
   const saleValue = sharesToSellNum * parseFloat(currentPrice);
-  const currentBalance = user.personalBalance || 10000;
+  const currentBalance = parseFloat(user.personalBalance) || 10000;
   
   // Update balance with sale proceeds
   await storage.updateUser(userId, {
@@ -675,12 +675,13 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
     await storage.deletePersonalPurchase(userId, purchase.id);
     
     if (purchase.shares - sharesToSellNum > 0) {
+      const purchasePrice = parseFloat(purchase.purchasePrice);
       await storage.purchasePersonalStock(userId, {
         symbol: purchase.symbol,
         companyName: purchase.companyName,
         shares: purchase.shares - sharesToSellNum,
-        purchasePrice: purchase.purchasePrice,
-        totalCost: (purchase.shares - sharesToSellNum) * purchase.purchasePrice
+        purchasePrice: purchasePrice,
+        totalCost: (purchase.shares - sharesToSellNum) * purchasePrice
       });
     }
   }
