@@ -234,7 +234,7 @@ export default function Leaderboard() {
                                   )}
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                  Started: {new Date(trader.portfolioCreatedAt).toLocaleDateString()} • Starting: {formatCurrency(trader.startingBalance)}
+                                  Started: {trader.personalPortfolioStartDate ? new Date(trader.personalPortfolioStartDate).toLocaleDateString() : 'N/A'} • Starting: {formatCurrency(trader.startingBalance)}
                                 </div>
                               </div>
                             </div>
