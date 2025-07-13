@@ -420,6 +420,11 @@ export default function Dashboard() {
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
   const [stockPrices, setStockPrices] = useState<{[key: string]: number}>({});
+  
+  // Sell dialog state
+  const [isSellDialogOpen, setIsSellDialogOpen] = useState(false);
+  const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
+  const [sellAmount, setSellAmount] = useState("");
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -729,16 +734,29 @@ export default function Dashboard() {
   // Sell stock mutation
   const sellStockMutation = useMutation({
     mutationFn: async (saleData: any) => {
-      const res = await apiRequest("POST", "/api/trading/sell", saleData);
+      const tournamentId = selectedTournament?.tournaments?.id;
+      if (!tournamentId) {
+        throw new Error("No tournament selected");
+      }
+      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/sell`, saleData);
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/trading/balance"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/trading/purchases"] });
+      const tournamentId = selectedTournament?.tournaments?.id;
+      if (tournamentId) {
+        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        // Also refetch immediately
+        refetchBalance();
+        refetchPurchases();
+      }
       toast({
         title: "Sale Successful",
-        description: "Stock has been sold and funds added to your balance",
+        description: "Stock has been sold and funds added to your tournament balance",
       });
+      setIsSellDialogOpen(false);
+      setSelectedSellStock(null);
+      setSellAmount("");
     },
     onError: (error: Error) => {
       toast({
@@ -1652,8 +1670,11 @@ export default function Dashboard() {
                                                 variant="outline"
                                                 className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
                                                 onClick={() => {
-                                                  // TODO: Implement sell functionality
-                                                  console.log('Sell', purchase.symbol, purchase.shares);
+                                                  setSelectedSellStock({
+                                                    ...purchase,
+                                                    currentPrice: currentPrice
+                                                  });
+                                                  setIsSellDialogOpen(true);
                                                 }}
                                               >
                                                 Sell
@@ -1940,6 +1961,70 @@ export default function Dashboard() {
                 className="bg-black text-white hover:bg-gray-800"
               >
                 {purchaseStockMutation.isPending ? "Processing..." : "Buy Stock"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Sell Stock Dialog */}
+      <Dialog open={isSellDialogOpen} onOpenChange={setIsSellDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Sell Stock</DialogTitle>
+            <DialogDescription>
+              {selectedSellStock && (
+                <div className="space-y-2">
+                  <p><strong>{selectedSellStock.symbol}</strong> - {selectedSellStock.companyName}</p>
+                  <p>Current price: <strong>${selectedSellStock.currentPrice?.toFixed(2)}</strong></p>
+                  <p>You own: <strong>{selectedSellStock.shares} shares</strong></p>
+                  <p>Your balance: <strong>${currentBalance.toFixed(2)}</strong></p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="sellShares">Number of shares to sell</Label>
+              <Input
+                id="sellShares"
+                type="number"
+                min="1"
+                max={selectedSellStock?.shares || 1}
+                step="1"
+                value={sellAmount}
+                onChange={(e) => setSellAmount(e.target.value)}
+                placeholder="Enter number of shares"
+              />
+            </div>
+            {selectedSellStock && sellAmount && parseInt(sellAmount) > 0 && (
+              <div className="bg-gray-50 p-3 rounded-lg">
+                <p className="text-sm">
+                  Sale value: <strong>${(parseInt(sellAmount) * selectedSellStock.currentPrice).toFixed(2)}</strong>
+                </p>
+                <p className="text-sm text-gray-600">
+                  New balance: <strong>${(currentBalance + (parseInt(sellAmount) * selectedSellStock.currentPrice)).toFixed(2)}</strong>
+                </p>
+              </div>
+            )}
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsSellDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (selectedSellStock && sellAmount) {
+                    sellStockMutation.mutate({
+                      purchaseId: selectedSellStock.id,
+                      sharesToSell: parseInt(sellAmount),
+                      currentPrice: selectedSellStock.currentPrice
+                    });
+                  }
+                }}
+                disabled={!sellAmount || parseInt(sellAmount) <= 0 || parseInt(sellAmount) > selectedSellStock?.shares || sellStockMutation.isPending}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                {sellStockMutation.isPending ? "Processing..." : "Sell Stock"}
               </Button>
             </div>
           </div>

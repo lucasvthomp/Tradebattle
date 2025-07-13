@@ -341,4 +341,72 @@ router.post('/tournaments/:id/purchase', asyncHandler(async (req, res) => {
   });
 }));
 
+/**
+ * POST /api/tournaments/:id/sell
+ * Sell stock in a tournament
+ */
+router.post('/tournaments/:id/sell', asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const { purchaseId, sharesToSell, currentPrice } = req.body;
+  
+  if (!purchaseId || !sharesToSell || !currentPrice) {
+    throw new ValidationError('Purchase ID, shares to sell, and current price are required');
+  }
+
+  // Get the original purchase
+  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
+  const purchase = purchases.find(p => p.id === parseInt(purchaseId));
+  
+  if (!purchase) {
+    throw new ValidationError('Purchase not found');
+  }
+
+  const sharesToSellNum = parseInt(sharesToSell);
+  if (sharesToSellNum <= 0 || sharesToSellNum > purchase.shares) {
+    throw new ValidationError('Invalid number of shares to sell');
+  }
+
+  const saleValue = sharesToSellNum * parseFloat(currentPrice);
+  
+  // Get current balance
+  const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
+  
+  // Update balance with sale proceeds
+  await storage.updateTournamentBalance(tournamentId, userId, currentBalance + saleValue);
+
+  // If selling all shares, delete the purchase record
+  if (sharesToSellNum === purchase.shares) {
+    await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
+  } else {
+    // Update the purchase record to reduce shares
+    // Note: This would need to be implemented in storage
+    // For now, we'll delete and recreate with remaining shares
+    await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
+    
+    if (purchase.shares - sharesToSellNum > 0) {
+      await storage.purchaseTournamentStock(tournamentId, userId, {
+        symbol: purchase.symbol,
+        companyName: purchase.companyName,
+        shares: purchase.shares - sharesToSellNum,
+        purchasePrice: purchase.purchasePrice,
+        totalCost: (purchase.shares - sharesToSellNum) * purchase.purchasePrice
+      });
+    }
+  }
+
+  res.json({
+    success: true,
+    data: { 
+      saleValue,
+      newBalance: currentBalance + saleValue 
+    },
+  });
+}));
+
 export default router;
