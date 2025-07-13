@@ -9,6 +9,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
+import Portfolio from "@/pages/portfolio";
 import Contact from "@/pages/contact";
 import About from "@/pages/about";
 import Privacy from "@/pages/privacy";
@@ -51,6 +52,7 @@ function Router() {
           ) : (
             <>
               <Route path="/dashboard" component={Dashboard} />
+              <Route path="/portfolio" component={Portfolio} />
               <Route path="/contact" component={Contact} />
               <Route path="/about" component={About} />
               <Route path="/privacy" component={Privacy} />

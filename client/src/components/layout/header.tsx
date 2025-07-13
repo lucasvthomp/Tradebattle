@@ -19,7 +19,10 @@ export default function Header() {
 
   const navItems = [
     { href: "/", label: "Home" },
-    ...(user ? [{ href: "/dashboard", label: "Tournaments" }] : []),
+    ...(user ? [
+      { href: "/dashboard", label: "Tournaments" },
+      { href: "/portfolio", label: "Portfolio" }
+    ] : []),
     { href: "/contact", label: "Contact Us" },
   ];
 
