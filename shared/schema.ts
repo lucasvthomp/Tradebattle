@@ -35,6 +35,7 @@ export const users = pgTable("users", {
   balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
   subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, premium
   personalBalance: numeric("personal_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Personal portfolio balance
+  totalDeposited: numeric("total_deposited", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Total amount deposited into personal account
   personalPortfolioStartDate: timestamp("personal_portfolio_start_date"), // When user started personal portfolio
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

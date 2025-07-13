@@ -784,10 +784,7 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
   const userPortfolios = [];
   
   for (const user of users) {
-    // Skip users without personal portfolios
-    if (!user.portfolioCreatedAt) continue;
-    
-    // Calculate portfolio value
+    // Calculate portfolio value for all users (personal portfolios are always available)
     const purchases = await storage.getPersonalStockPurchases(user.id);
     let portfolioValue = parseFloat(user.personalBalance) || 10000;
     
@@ -803,15 +800,15 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
       }
     }
     
-    // Calculate percentage change from starting balance
-    const startingBalance = 10000; // Standard starting balance for personal portfolios
-    const percentageChange = ((portfolioValue - startingBalance) / startingBalance) * 100;
+    // Calculate percentage change from total deposited amount
+    const totalDeposited = parseFloat(user.totalDeposited) || 10000;
+    const percentageChange = ((portfolioValue - totalDeposited) / totalDeposited) * 100;
     
     userPortfolios.push({
       ...user,
       portfolioValue,
       percentageChange,
-      startingBalance
+      startingBalance: totalDeposited
     });
   }
   
