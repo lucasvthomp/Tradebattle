@@ -169,3 +169,6 @@ Preferred communication style: Simple, everyday language.
 - **Authentication Pages Dark Mode** (January 2025): Updated login and signup pages to use consistent dark mode styling with proper CSS variables and color schemes
 - **Portfolio Enhancement** (January 2025): Added comprehensive portfolio table with purchase price, current price, dollar/percentage change calculations, and real-time price updates
 - **Buy-in System Removal** (January 2025): Completely removed buy-in functionality from the entire platform - tournaments now provide standard $10,000 starting balance without buy-in requirements, simplifying tournament creation and participation
+- **Personal Portfolio Trading System** (January 2025): Implemented complete personal portfolio trading system with stock purchase/sell functionality, real-time price lookup, balance validation, and transaction processing
+- **Personal Trading UI** (January 2025): Added "Buy Stock" and "Sell" buttons with modal dialogs for stock trading, real-time price fetching, and comprehensive transaction validation
+- **Personal Portfolio API** (January 2025): Created complete API endpoints for personal portfolio trading including purchase, sell, and portfolio management with database integration

@@ -37,16 +37,20 @@ export default function Portfolio() {
   const hasPremium = user?.subscriptionTier === 'premium';
 
   // Fetch personal portfolio balance and data
-  const { data: personalPortfolio } = useQuery({
+  const { data: personalPortfolioData } = useQuery({
     queryKey: ['/api/personal-portfolio'],
     enabled: !!user && hasPremium,
   });
 
+  const personalPortfolio = personalPortfolioData?.data;
+
   // Fetch personal stock purchases
-  const { data: personalPurchases = [] } = useQuery({
+  const { data: personalPurchasesData } = useQuery({
     queryKey: ['/api/personal-purchases'],
     enabled: !!user && hasPremium,
   });
+
+  const personalPurchases = personalPurchasesData?.data || [];
 
   // Fetch current prices for personal stocks
   const purchasedSymbols = personalPurchases.map((purchase: any) => purchase.symbol);
@@ -93,7 +97,7 @@ export default function Portfolio() {
   const totalGainLoss = portfolioValue - totalInvested;
   const totalGainLossPercent = totalInvested > 0 ? (totalGainLoss / totalInvested) * 100 : 0;
 
-  const currentBalance = personalPortfolio?.balance || 10000;
+  const currentBalance = parseFloat(personalPortfolio?.balance) || 10000;
   const totalPortfolioValue = currentBalance + portfolioValue;
 
   // Calculate days with personal portfolio
