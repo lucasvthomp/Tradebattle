@@ -2,7 +2,7 @@ import yahooFinance from 'yahoo-finance2';
 import { StockQuote, HistoricalDataPoint, CompanyProfile, SearchResult } from '../types/finance.js';
 
 // Define timeframe options
-export type TimeFrame = '1D' | '5D' | '1M' | '6M' | 'YTD' | '1Y' | '5Y';
+export type TimeFrame = '1D' | '5D' | '1W' | '1M' | '6M' | 'YTD' | '1Y' | '5Y';
 
 // Helper function to calculate date ranges
 export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: string; interval: string } {
@@ -16,9 +16,9 @@ export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: 
     return date.toISOString().split('T')[0];
   };
   
-  // Helper to get start of current year
+  // Helper to get start of current year (first trading day)
   const getYearStart = (): string => {
-    return `${now.getFullYear()}-01-01`;
+    return `${now.getFullYear()}-01-02`;
   };
   
   // Helper to get date N years ago
@@ -39,6 +39,13 @@ export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: 
     case '5D':
       return {
         period1: getDaysAgo(7), // Get 7 days ago to ensure we have 5 trading days
+        period2: today,
+        interval: '1d' // Daily intervals
+      };
+    
+    case '1W':
+      return {
+        period1: getDaysAgo(8), // Get 8 days ago to ensure we have 1 week of trading data
         period2: today,
         interval: '1d' // Daily intervals
       };
@@ -508,17 +515,20 @@ export async function getStockPerformance(symbol: string, timeFrame: TimeFrame):
       throw new Error(`No historical data available for ${symbol}`);
     }
 
-    const previousPrice = historicalData[0].close;
-    const startPrice = historicalData[0].close; // The close price from the start of the timeframe
+    // Sort historical data by date to get the earliest entry
+    const sortedData = historicalData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    // For accurate timeframe calculation, use the earliest available data point
+    const startPrice = sortedData[0].close; // The close price from the start of the timeframe
     const currentPrice = currentQuote.price;
-    const change = currentPrice - previousPrice;
-    const percentChange = calculatePercentChange(currentPrice, previousPrice);
+    const change = currentPrice - startPrice;
+    const percentChange = calculatePercentChange(currentPrice, startPrice);
 
     const performance = {
       symbol,
       timeFrame,
       currentPrice,
-      previousPrice,
+      previousPrice: startPrice, // Use start price as previous price for timeframe calculations
       startPrice,
       change,
       percentChange,

@@ -74,7 +74,7 @@ router.get('/historical/:symbol', asyncHandler(async (req, res) => {
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1D', '5D', '1M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1D', '5D', '1W', '1M', '6M', 'YTD', '1Y', '5Y'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
@@ -104,7 +104,7 @@ router.get('/performance/:symbol/:timeframe', asyncHandler(async (req, res) => {
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1D', '5D', '1M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1D', '5D', '1W', '1M', '6M', 'YTD', '1Y', '5Y'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
