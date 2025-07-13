@@ -238,8 +238,9 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(tournaments.createdAt));
   }
 
-  async getTournamentParticipants(tournamentId: number): Promise<TournamentParticipant[]> {
-    return await db
+  async getTournamentParticipants(tournamentId: number): Promise<any[]> {
+    // Get participants with their basic info and stock purchases
+    const participantsWithPurchases = await db
       .select({
         id: tournamentParticipants.id,
         tournamentId: tournamentParticipants.tournamentId,
@@ -247,12 +248,60 @@ export class DatabaseStorage implements IStorage {
         balance: tournamentParticipants.balance,
         joinedAt: tournamentParticipants.joinedAt,
         firstName: users.firstName,
-        lastName: users.lastName
+        lastName: users.lastName,
+        stockPurchases: {
+          id: tournamentStockPurchases.id,
+          symbol: tournamentStockPurchases.symbol,
+          quantity: tournamentStockPurchases.quantity,
+          price: tournamentStockPurchases.price,
+          purchaseDate: tournamentStockPurchases.purchaseDate
+        }
       })
       .from(tournamentParticipants)
       .innerJoin(users, eq(tournamentParticipants.userId, users.id))
+      .leftJoin(tournamentStockPurchases, 
+        and(
+          eq(tournamentParticipants.userId, tournamentStockPurchases.userId),
+          eq(tournamentParticipants.tournamentId, tournamentStockPurchases.tournamentId)
+        )
+      )
       .where(eq(tournamentParticipants.tournamentId, tournamentId))
       .orderBy(asc(tournamentParticipants.joinedAt));
+
+    // Group by participant and aggregate stock purchases
+    const participantMap = new Map();
+    
+    participantsWithPurchases.forEach(row => {
+      const participantKey = row.userId;
+      
+      if (!participantMap.has(participantKey)) {
+        participantMap.set(participantKey, {
+          id: row.id,
+          tournamentId: row.tournamentId,
+          userId: row.userId,
+          balance: row.balance,
+          joinedAt: row.joinedAt,
+          firstName: row.firstName,
+          lastName: row.lastName,
+          stockPurchases: []
+        });
+      }
+      
+      const participant = participantMap.get(participantKey);
+      
+      // Add stock purchase if it exists
+      if (row.stockPurchases.id) {
+        participant.stockPurchases.push({
+          id: row.stockPurchases.id,
+          symbol: row.stockPurchases.symbol,
+          quantity: row.stockPurchases.quantity,
+          price: row.stockPurchases.price,
+          purchaseDate: row.stockPurchases.purchaseDate
+        });
+      }
+    });
+
+    return Array.from(participantMap.values());
   }
 
   // Tournament trading operations

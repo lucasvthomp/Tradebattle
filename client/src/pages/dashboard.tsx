@@ -1788,6 +1788,55 @@ export default function Dashboard() {
                               )}
                             </CardContent>
                           </Card>
+
+                          {/* Tournament Leaderboard */}
+                          <Card className="border-0 shadow-lg">
+                            <CardHeader>
+                              <CardTitle className="flex items-center">
+                                <Trophy className="w-5 h-5 mr-2" />
+                                Tournament Leaderboard
+                              </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              {isLoadingParticipants ? (
+                                <div className="text-center py-8">
+                                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                                  <div className="mt-2 text-sm text-muted-foreground">Loading leaderboard...</div>
+                                </div>
+                              ) : tournamentParticipants?.data?.length > 0 ? (
+                                <div className="space-y-4">
+                                  {tournamentParticipants.data.map((participant: any, index: number) => (
+                                    <div key={participant.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                                      <div className="flex items-center space-x-3">
+                                        <div className="flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full font-bold">
+                                          {index + 1}
+                                        </div>
+                                        <div>
+                                          <p className="font-medium">{participant.firstName} {participant.lastName}</p>
+                                          <p className="text-sm text-muted-foreground">
+                                            Joined {new Date(participant.joinedAt).toLocaleDateString()}
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div className="text-right">
+                                        <p className="font-bold text-lg">${participant.totalValue?.toFixed(2) || '0.00'}</p>
+                                        <div className="text-sm text-muted-foreground">
+                                          <p>Cash: ${parseFloat(participant.balance || '0').toFixed(2)}</p>
+                                          <p>Stocks: ${participant.stockValue?.toFixed(2) || '0.00'}</p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="text-center py-8">
+                                  <Trophy className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                                  <p className="text-muted-foreground mb-2">No participants yet</p>
+                                  <p className="text-sm text-muted-foreground">Invite others to join this tournament!</p>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
                         </div>
                       );
                     })()}

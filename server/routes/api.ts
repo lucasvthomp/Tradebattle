@@ -259,7 +259,7 @@ router.get('/tournaments', asyncHandler(async (req, res) => {
 
 /**
  * GET /api/tournaments/:id/participants
- * Get tournament participants with user names
+ * Get tournament participants with user names and portfolio values
  */
 router.get('/tournaments/:id/participants', asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
@@ -271,9 +271,77 @@ router.get('/tournaments/:id/participants', asyncHandler(async (req, res) => {
 
   const participants = await storage.getTournamentParticipants(tournamentId);
 
+  // Calculate portfolio values with current stock prices
+  const participantsWithValues = await Promise.all(
+    participants.map(async (participant) => {
+      let stockValue = 0;
+      const stockSymbols = [...new Set(participant.stockPurchases.map((p: any) => p.symbol))];
+      
+      // Get current prices for all symbols
+      const stockPrices: { [symbol: string]: number } = {};
+      for (const symbol of stockSymbols) {
+        try {
+          const { getStockQuote } = await import('../services/yahooFinance');
+          const quote = await getStockQuote(symbol);
+          stockPrices[symbol] = quote.price;
+        } catch (error) {
+          console.error(`Error fetching price for ${symbol}:`, error);
+          stockPrices[symbol] = 0;
+        }
+      }
+
+      // Calculate total stock value
+      const stockHoldings: { [symbol: string]: { quantity: number; averagePrice: number } } = {};
+      
+      participant.stockPurchases.forEach((purchase: any) => {
+        const symbol = purchase.symbol;
+        const quantity = parseInt(purchase.quantity);
+        const price = parseFloat(purchase.price);
+        
+        if (!stockHoldings[symbol]) {
+          stockHoldings[symbol] = { quantity: 0, averagePrice: 0 };
+        }
+        
+        const currentHolding = stockHoldings[symbol];
+        const totalQuantity = currentHolding.quantity + quantity;
+        const totalCost = (currentHolding.quantity * currentHolding.averagePrice) + (quantity * price);
+        
+        stockHoldings[symbol] = {
+          quantity: totalQuantity,
+          averagePrice: totalCost / totalQuantity
+        };
+      });
+
+      // Calculate current value of all holdings
+      Object.entries(stockHoldings).forEach(([symbol, holding]) => {
+        const currentPrice = stockPrices[symbol] || 0;
+        stockValue += holding.quantity * currentPrice;
+      });
+
+      const balance = parseFloat(participant.balance);
+      const totalValue = balance + stockValue;
+
+      return {
+        ...participant,
+        stockValue,
+        totalValue,
+        stockHoldings: Object.entries(stockHoldings).map(([symbol, holding]) => ({
+          symbol,
+          quantity: holding.quantity,
+          averagePrice: holding.averagePrice,
+          currentPrice: stockPrices[symbol] || 0,
+          currentValue: holding.quantity * (stockPrices[symbol] || 0)
+        }))
+      };
+    })
+  );
+
+  // Sort by total value (highest first)
+  participantsWithValues.sort((a, b) => b.totalValue - a.totalValue);
+
   res.json({
     success: true,
-    data: participants,
+    data: participantsWithValues,
   });
 }));
 
