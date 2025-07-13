@@ -516,6 +516,30 @@ export default function Dashboard() {
     cacheTime: 0
   });
 
+  // Tournament participants query
+  const { data: tournamentParticipants, isLoading: isLoadingParticipants } = useQuery({
+    queryKey: ['tournament-participants', tournamentId],
+    queryFn: async () => {
+      if (!tournamentId) return null;
+
+      const response = await fetch(`/api/tournaments/${tournamentId}/participants`, {
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch participants');
+      }
+      const data = await response.json();
+      return data;
+    },
+    enabled: !!user && !!tournamentId,
+    refetchOnWindowFocus: false,
+    staleTime: 30000, // 30 seconds
+    cacheTime: 60000 // 1 minute
+  });
+
   // Use tournament data when available, otherwise use regular balance
   const currentBalance = selectedTournament?.tournaments?.id 
     ? Number(tournamentBalance?.data?.balance || selectedTournament?.balance || 0)
@@ -642,6 +666,8 @@ export default function Dashboard() {
       // Invalidate balance query for the newly created tournament
       queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournament.id, user?.id] });
       queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournament.id, user?.id] });
+      // Invalidate participants cache for the new tournament
+      queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournament.id] });
       toast({
         title: "Tournament created!",
         description: `Tournament "${tournament.name}" has been created. Code: ${tournament.code}`,
@@ -674,6 +700,8 @@ export default function Dashboard() {
       setIsJoinTournamentDialogOpen(false);
       setJoinGameCode("");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
+      // Invalidate participants cache for the joined tournament
+      queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournament.tournamentId] });
       toast({
         title: "Joined tournament!",
         description: `Successfully joined tournament "${tournament.name}". Code: ${tournament.code}`,
@@ -1601,7 +1629,21 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <p className="text-sm text-muted-foreground">Players</p>
-                                  <p className="text-lg font-semibold">{selectedTournament.tournaments.currentPlayers}/{selectedTournament.tournaments.maxPlayers}</p>
+                                  {isLoadingParticipants ? (
+                                    <p className="text-sm text-muted-foreground">Loading...</p>
+                                  ) : (
+                                    <div className="space-y-1">
+                                      <p className="text-lg font-semibold">{tournamentParticipants?.data?.length || 0}/{selectedTournament.tournaments.maxPlayers}</p>
+                                      <div className="text-sm text-muted-foreground">
+                                        {tournamentParticipants?.data?.map((participant: any, index: number) => (
+                                          <span key={participant.id}>
+                                            {participant.firstName}
+                                            {index < (tournamentParticipants.data.length - 1) ? ', ' : ''}
+                                          </span>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </div>
                             </CardContent>

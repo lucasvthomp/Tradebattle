@@ -258,6 +258,26 @@ router.get('/tournaments', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * GET /api/tournaments/:id/participants
+ * Get tournament participants with user names
+ */
+router.get('/tournaments/:id/participants', asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const participants = await storage.getTournamentParticipants(tournamentId);
+
+  res.json({
+    success: true,
+    data: participants,
+  });
+}));
+
+/**
  * GET /api/tournaments/:id/balance
  * Get tournament balance for user
  */

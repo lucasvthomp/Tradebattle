@@ -240,8 +240,17 @@ export class DatabaseStorage implements IStorage {
 
   async getTournamentParticipants(tournamentId: number): Promise<TournamentParticipant[]> {
     return await db
-      .select()
+      .select({
+        id: tournamentParticipants.id,
+        tournamentId: tournamentParticipants.tournamentId,
+        userId: tournamentParticipants.userId,
+        balance: tournamentParticipants.balance,
+        joinedAt: tournamentParticipants.joinedAt,
+        firstName: users.firstName,
+        lastName: users.lastName
+      })
       .from(tournamentParticipants)
+      .innerJoin(users, eq(tournamentParticipants.userId, users.id))
       .where(eq(tournamentParticipants.tournamentId, tournamentId))
       .orderBy(asc(tournamentParticipants.joinedAt));
   }
