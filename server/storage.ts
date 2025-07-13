@@ -91,7 +91,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    const result = await db.insert(users).values(userData).returning();
+    // Get the next available userId by finding the highest existing userId and adding 1
+    const maxUserIdResult = await db.select({ maxUserId: sql`COALESCE(MAX(user_id), -1)` }).from(users);
+    const nextUserId = (maxUserIdResult[0]?.maxUserId || -1) + 1;
+    
+    // Insert user with automatically assigned userId
+    const result = await db.insert(users).values({
+      ...userData,
+      userId: nextUserId
+    }).returning();
+    
     return result[0];
   }
 
