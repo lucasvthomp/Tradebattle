@@ -190,7 +190,7 @@ export default function Admin() {
       setEditUserOpen(false);
       toast({
         title: "User updated",
-        description: "User subscription has been updated successfully.",
+        description: "User premium status has been updated successfully.",
         variant: "default",
       });
     },
@@ -293,14 +293,14 @@ export default function Admin() {
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Paid Users</CardTitle>
+                    <CardTitle className="text-sm font-medium">Premium Users</CardTitle>
                     <Activity className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allUsers?.filter(u => u.subscriptionTier !== 'novice').length || 0}
+                      {allUsers?.filter(u => u.subscriptionTier === 'premium').length || 0}
                     </div>
-                    <p className="text-xs text-gray-500">Subscription holders</p>
+                    <p className="text-xs text-gray-500">Premium subscribers</p>
                   </CardContent>
                 </Card>
 
@@ -311,9 +311,9 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allUsers?.filter(u => u.subscriptionTier === 'novice').length || 0}
+                      {allUsers?.filter(u => u.subscriptionTier !== 'premium').length || 0}
                     </div>
-                    <p className="text-xs text-gray-500">Novice plan users</p>
+                    <p className="text-xs text-gray-500">Free plan users</p>
                   </CardContent>
                 </Card>
               </div>
@@ -332,11 +332,11 @@ export default function Admin() {
                 <CardContent>
                   <div className="space-y-4">
                     <div className="rounded-lg border">
-                      <div className="grid grid-cols-7 gap-4 p-4 border-b bg-gray-50 font-semibold">
+                      <div className="grid grid-cols-7 gap-4 p-4 border-b bg-gray-50 dark:bg-gray-800 font-semibold">
                         <div>User ID</div>
                         <div>Name</div>
                         <div>Email</div>
-                        <div>Account</div>
+                        <div>Premium</div>
                         <div>Created</div>
                         <div>Status</div>
                         <div>Actions</div>
@@ -361,8 +361,8 @@ export default function Admin() {
                               {user.email.length > 8 ? `${user.email.substring(0, 8)}...` : user.email}
                             </div>
                             <div>
-                              <Badge variant="outline" className="capitalize">
-                                Free
+                              <Badge variant="outline" className={user.subscriptionTier === 'premium' ? "text-yellow-600" : "text-gray-600"}>
+                                {user.subscriptionTier === 'premium' ? 'Premium' : 'Free'}
                               </Badge>
                             </div>
                             <div className="text-sm text-gray-500">
@@ -627,7 +627,7 @@ export default function Admin() {
             <DialogHeader>
               <DialogTitle>Edit User</DialogTitle>
               <DialogDescription>
-                Update user subscription tier and permissions
+                Update user premium status and permissions
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -638,7 +638,7 @@ export default function Admin() {
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium">Subscription Tier</label>
+                <label className="text-sm font-medium">Premium Status</label>
                 <Select
                   defaultValue={selectedUser?.subscriptionTier}
                   onValueChange={(value) => {
@@ -654,8 +654,8 @@ export default function Admin() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="novice">Novice (Free)</SelectItem>
-                    <SelectItem value="explorer">Explorer ($9.99/month)</SelectItem>
+                    <SelectItem value="free">Free Account</SelectItem>
+                    <SelectItem value="premium">Premium Account</SelectItem>
                     <SelectItem value="analyst">Analyst ($19.99/month)</SelectItem>
                     <SelectItem value="professional">Professional ($49.99/month)</SelectItem>
                   </SelectContent>
