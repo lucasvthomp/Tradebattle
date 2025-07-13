@@ -203,6 +203,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to update user subscription tier
+  app.put("/api/admin/users/:userId/subscription", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      const targetUserId = parseInt(req.params.userId);
+      const { subscriptionTier } = req.body;
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      // Validate subscription tier
+      if (!subscriptionTier || !['free', 'premium'].includes(subscriptionTier)) {
+        return res.status(400).json({ message: "Invalid subscription tier. Must be 'free' or 'premium'." });
+      }
+      
+      // Update the user's subscription tier
+      await storage.updateUser(targetUserId, { subscriptionTier });
+      
+      res.json({ message: "User subscription tier updated successfully." });
+    } catch (error) {
+      console.error("Error updating user subscription tier:", error);
+      res.status(500).json({ message: "Failed to update subscription tier" });
+    }
+  });
+
+  // Admin endpoint to get user logs
+  app.get("/api/admin/logs/:userId", requireAuth, async (req: any, res) => {
+    try {
+      const adminUserId = req.user.userId;
+      const targetUserId = parseInt(req.params.userId);
+      
+      // Check if user is admin (userId 0, 1, or 2)
+      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+      
+      const logs = await storage.getAdminLogs(targetUserId);
+      res.json(logs);
+    } catch (error) {
+      console.error("Error fetching admin logs:", error);
+      res.status(500).json({ message: "Failed to fetch admin logs" });
+    }
+  });
+
   // Admin endpoint to delete a user (only for userId 0 or 1)
   app.delete("/api/admin/users/:userEmail", requireAuth, async (req: any, res) => {
     try {

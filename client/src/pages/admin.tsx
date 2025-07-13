@@ -258,10 +258,9 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="users">User Management</TabsTrigger>
               <TabsTrigger value="system">System Status</TabsTrigger>
-              <TabsTrigger value="partners">Partner Panel</TabsTrigger>
             </TabsList>
 
             <TabsContent value="users" className="space-y-6">
@@ -591,33 +590,7 @@ export default function Admin() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="partners" className="space-y-6">
-              {/* Partner Panel Preview */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <UserPlus className="h-5 w-5" />
-                    Partner Panel
-                  </CardTitle>
-                  <CardDescription>
-                    Manage partner staff and research collaboration
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8">
-                    <UserPlus className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                    <h3 className="text-lg font-semibold mb-2">Partner Panel Coming Soon</h3>
-                    <p className="text-gray-600 mb-4">
-                      This section will allow partners to manage research requests, 
-                      communicate with clients, and publish research content.
-                    </p>
-                    <Button variant="outline">
-                      Configure Partner Access
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
+
           </Tabs>
         </motion.div>
 
