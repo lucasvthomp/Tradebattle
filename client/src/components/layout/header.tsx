@@ -19,7 +19,7 @@ export default function Header() {
 
   const navItems = [
     { href: "/", label: "Home" },
-    ...(user ? [{ href: "/dashboard", label: "Dashboard" }] : []),
+    ...(user ? [{ href: "/dashboard", label: "Tournaments" }] : []),
     { href: "/contact", label: "Contact Us" },
   ];
 
@@ -84,7 +84,7 @@ export default function Header() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = "/dashboard"}>
                     <List className="w-4 h-4 mr-2" />
-                    Dashboard
+                    Tournaments
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
                     <Settings className="w-4 h-4 mr-2" />
