@@ -1943,7 +1943,7 @@ export default function Dashboard() {
             </div>
             {selectedTradingStock && shareAmount && parseInt(shareAmount) > 0 && (
               <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-sm">
+                <p className="text-sm text-gray-600">
                   Total cost: <strong>${(parseInt(shareAmount) * selectedTradingStock.price).toFixed(2)}</strong>
                 </p>
                 <p className="text-sm text-gray-600">
@@ -1999,7 +1999,7 @@ export default function Dashboard() {
             </div>
             {selectedSellStock && sellAmount && parseInt(sellAmount) > 0 && (
               <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-sm">
+                <p className="text-sm text-gray-600">
                   Sale value: <strong>${(parseInt(sellAmount) * selectedSellStock.currentPrice).toFixed(2)}</strong>
                 </p>
                 <p className="text-sm text-gray-600">
