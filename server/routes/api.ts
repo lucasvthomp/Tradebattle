@@ -295,8 +295,8 @@ router.get('/tournaments/:id/participants', asyncHandler(async (req, res) => {
       
       participant.stockPurchases.forEach((purchase: any) => {
         const symbol = purchase.symbol;
-        const quantity = parseInt(purchase.quantity);
-        const price = parseFloat(purchase.price);
+        const quantity = parseInt(purchase.shares);
+        const price = parseFloat(purchase.purchasePrice);
         
         if (!stockHoldings[symbol]) {
           stockHoldings[symbol] = { quantity: 0, averagePrice: 0 };
