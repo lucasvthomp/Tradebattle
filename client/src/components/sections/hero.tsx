@@ -27,19 +27,7 @@ export default function Hero() {
               Compete with traders worldwide using virtual portfolios and real market data.
               Test your skills, climb the leaderboards, and win prizes.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Button
-                size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 transform hover:-translate-y-1"
-                onClick={() => window.location.href = "/signup"}
-              >
-                Start Trading
-              </Button>
-              <Button variant="ghost" size="lg" className="text-muted-foreground hover:text-foreground">
-                <Play className="w-5 h-5 mr-2" />
-                Watch Demo
-              </Button>
-            </div>
+
           </motion.div>
         </div>
       </div>
