@@ -221,7 +221,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Update the user's subscription tier
-      await storage.updateUser(targetUserId, { subscriptionTier });
+      const updateData: any = { subscriptionTier };
+      
+      // Set premium upgrade date if upgrading to premium
+      if (subscriptionTier === 'premium') {
+        updateData.premiumUpgradeDate = new Date();
+      }
+      
+      await storage.updateUser(targetUserId, updateData);
       
       res.json({ message: "User subscription tier updated successfully." });
     } catch (error) {

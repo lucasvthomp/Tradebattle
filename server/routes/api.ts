@@ -511,6 +511,7 @@ router.post('/user/upgrade-premium', asyncHandler(async (req, res) => {
   // Update user subscription tier to premium
   const updatedUser = await storage.updateUser(userId, {
     subscriptionTier: 'premium',
+    premiumUpgradeDate: new Date(),
     personalBalance: 10000,
     portfolioCreatedAt: new Date()
   });
