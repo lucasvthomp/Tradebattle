@@ -110,6 +110,14 @@ export default function Header() {
               </DropdownMenu>
             ) : (
               <div className="flex items-center space-x-2">
+                <Link href="/login">
+                  <Button
+                    className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
+                  >
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Log In
+                  </Button>
+                </Link>
                 <Link href="/signup">
                   <Button
                     className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
