@@ -1314,7 +1314,7 @@ export default function Dashboard() {
                 <select 
                   className="px-3 py-2 border rounded-md bg-background text-foreground"
                   value={changePeriod}
-                  onChange={(e) => setChangePeriod(e.target.value as '1D' | '1W' | '1M' | '3M' | '6M' | '1Y' | 'YTD')}
+                  onChange={(e) => setChangePeriod(e.target.value as '1D' | '1W' | '1M' | '3M' | '6M' | '1Y' | '5Y' | 'YTD')}
                 >
                   <option value="1D">1 Day</option>
                   <option value="1W">1 Week</option>
@@ -1322,6 +1322,7 @@ export default function Dashboard() {
                   <option value="3M">3 Months</option>
                   <option value="6M">6 Months</option>
                   <option value="1Y">1 Year</option>
+                  <option value="5Y">5 Years</option>
                   <option value="YTD">Year to Date</option>
                 </select>
                 <select 
@@ -1988,11 +1989,13 @@ export default function Dashboard() {
                     >
                       <option value="1D">1 Day</option>
                       <option value="5D">5 Days</option>
+                      <option value="1W">1 Week</option>
                       <option value="1M">1 Month</option>
+                      <option value="3M">3 Months</option>
                       <option value="6M">6 Months</option>
-                      <option value="YTD">Year to Date</option>
                       <option value="1Y">1 Year</option>
                       <option value="5Y">5 Years</option>
+                      <option value="YTD">Year to Date</option>
                     </select>
                     <Button
                       variant="outline"
