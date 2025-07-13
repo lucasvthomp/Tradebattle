@@ -721,6 +721,10 @@ export default function Dashboard() {
       setIsBuyDialogOpen(false);
       setSelectedTradingStock(null);
       setShareAmount("");
+      // Clear the search bar after successful purchase
+      setTradingSearchQuery("");
+      setTradingStockData([]);
+      setShowTradingSearchResults(false);
     },
     onError: (error: Error) => {
       toast({
