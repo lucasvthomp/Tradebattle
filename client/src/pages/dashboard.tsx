@@ -1617,6 +1617,7 @@ export default function Dashboard() {
                                         <th className="text-right p-2 font-medium text-muted-foreground">Current Price</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Change</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Total Value</th>
+                                        <th className="text-center p-2 font-medium text-muted-foreground">Actions</th>
                                       </tr>
                                     </thead>
                                     <tbody>
@@ -1645,6 +1646,19 @@ export default function Dashboard() {
                                               </div>
                                             </td>
                                             <td className="p-2 text-right font-medium">${totalValue.toFixed(2)}</td>
+                                            <td className="p-2 text-center">
+                                              <Button
+                                                size="sm"
+                                                variant="outline"
+                                                className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+                                                onClick={() => {
+                                                  // TODO: Implement sell functionality
+                                                  console.log('Sell', purchase.symbol, purchase.shares);
+                                                }}
+                                              >
+                                                Sell
+                                              </Button>
+                                            </td>
                                           </tr>
                                         );
                                       })}
