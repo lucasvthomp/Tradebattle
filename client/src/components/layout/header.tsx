@@ -21,7 +21,8 @@ export default function Header() {
     { href: "/", label: "Home" },
     ...(user ? [
       { href: "/dashboard", label: "Tournaments" },
-      { href: "/portfolio", label: "Portfolio" }
+      { href: "/portfolio", label: "Portfolio" },
+      { href: "/premium", label: "Premium" }
     ] : []),
     { href: "/contact", label: "Contact Us" },
   ];

@@ -33,6 +33,9 @@ export const users = pgTable("users", {
   lastName: varchar("last_name", { length: 255 }).notNull(),
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
+  subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, premium
+  personalBalance: numeric("personal_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Personal portfolio balance
+  personalPortfolioStartDate: timestamp("personal_portfolio_start_date"), // When user started personal portfolio
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -51,6 +54,19 @@ export const watchlist = pgTable("watchlist", {
 
 // Stock purchases table for tracking user trading activity
 export const stockPurchases = pgTable("stock_purchases", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  symbol: varchar("symbol").notNull(),
+  companyName: varchar("company_name").notNull(),
+  shares: integer("shares").notNull(),
+  purchasePrice: numeric("purchase_price", { precision: 15, scale: 2 }).notNull(),
+  totalCost: numeric("total_cost", { precision: 15, scale: 2 }).notNull(),
+  purchaseDate: timestamp("purchase_date").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Personal stock purchases table (separate from tournament purchases)
+export const personalStockPurchases = pgTable("personal_stock_purchases", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
   symbol: varchar("symbol").notNull(),
@@ -178,6 +194,14 @@ export const insertTournamentStockPurchaseSchema = createInsertSchema(tournament
   totalCost: true,
 });
 
+export const insertPersonalStockPurchaseSchema = createInsertSchema(personalStockPurchases).pick({
+  symbol: true,
+  companyName: true,
+  shares: true,
+  purchasePrice: true,
+  totalCost: true,
+});
+
 // Type exports
 // User schemas for new authentication system
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -220,3 +244,5 @@ export type TournamentParticipant = typeof tournamentParticipants.$inferSelect;
 export type InsertTournamentParticipant = z.infer<typeof insertTournamentParticipantSchema>;
 export type TournamentStockPurchase = typeof tournamentStockPurchases.$inferSelect;
 export type InsertTournamentStockPurchase = z.infer<typeof insertTournamentStockPurchaseSchema>;
+export type PersonalStockPurchase = typeof personalStockPurchases.$inferSelect;
+export type InsertPersonalStockPurchase = z.infer<typeof insertPersonalStockPurchaseSchema>;
