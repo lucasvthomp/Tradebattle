@@ -1267,22 +1267,28 @@ export default function Dashboard() {
                     placeholder="Search stocks to add to watchlist..."
                     value={searchQuery}
                     onChange={(e) => handleSearch(e.target.value)}
-                    className="pl-10 min-w-[250px]"
+                    className="pl-10 min-w-[350px]"
                   />
                   {showSearchResults && (
                     <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
                       {searchResults.map((stock) => (
                         <div
                           key={stock.symbol}
-                          className="p-3 hover:bg-accent cursor-pointer border-b last:border-b-0"
-                          onClick={() => addToWatchlist(stock)}
+                          className="p-3 hover:bg-accent border-b last:border-b-0"
                         >
                           <div className="flex items-center justify-between">
                             <div>
                               <div className="font-medium">{stock.symbol}</div>
                               <div className="text-sm text-muted-foreground">{stock.name}</div>
+                              <div className="text-xs text-muted-foreground">{stock.exchange}</div>
                             </div>
-                            <div className="text-sm text-muted-foreground">{stock.exchange}</div>
+                            <Button
+                              size="sm"
+                              onClick={() => addToWatchlist(stock)}
+                              className="ml-2"
+                            >
+                              Add
+                            </Button>
                           </div>
                         </div>
                       ))}
