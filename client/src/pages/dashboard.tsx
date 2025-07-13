@@ -1516,8 +1516,8 @@ export default function Dashboard() {
                                   <p className="font-mono text-lg font-semibold">{selectedTournament.tournaments.code}</p>
                                 </div>
                                 <div>
-                                  <p className="text-sm text-muted-foreground">Buy-in Amount</p>
-                                  <p className="text-lg font-semibold">${selectedTournament.tournaments.buyInAmount}</p>
+                                  <p className="text-sm text-muted-foreground">Starting Balance</p>
+                                  <p className="text-lg font-semibold">${selectedTournament.tournaments.startingBalance}</p>
                                 </div>
                                 <div>
                                   <p className="text-sm text-muted-foreground">Players</p>
