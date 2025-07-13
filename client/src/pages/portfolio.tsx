@@ -3,9 +3,14 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock, ShoppingCart, Minus } from "lucide-react";
 import { motion } from "framer-motion";
 import { queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -23,6 +28,10 @@ const staggerContainer = {
 
 export default function Portfolio() {
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
+  const [sellDialogOpen, setSellDialogOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<any>(null);
 
   // Check if user has premium subscription
   const hasPremium = user?.subscriptionTier === 'premium';
@@ -88,22 +97,67 @@ export default function Portfolio() {
   const totalPortfolioValue = currentBalance + portfolioValue;
 
   // Calculate days with personal portfolio
-  const portfolioStartDate = user?.personalPortfolioStartDate ? new Date(user.personalPortfolioStartDate) : null;
+  const portfolioStartDate = user?.portfolioCreatedAt ? new Date(user.portfolioCreatedAt) : null;
   const daysWithPortfolio = portfolioStartDate ? 
     Math.floor((Date.now() - portfolioStartDate.getTime()) / (1000 * 60 * 60 * 24)) : 0;
 
-  // Initialize personal portfolio mutation
-  const initializePortfolioMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/personal-portfolio/initialize', {
+  // Purchase stock mutation
+  const purchaseStockMutation = useMutation({
+    mutationFn: async (data: { symbol: string; companyName: string; shares: number; purchasePrice: number }) => {
+      const response = await fetch('/api/personal-portfolio/purchase', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
+      if (!response.ok) throw new Error('Purchase failed');
       return response.json();
     },
     onSuccess: () => {
+      toast({
+        title: "Stock Purchased",
+        description: "Successfully purchased stock in your personal portfolio",
+      });
       queryClient.invalidateQueries({ queryKey: ['/api/personal-portfolio'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/personal-purchases'] });
       queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+      setPurchaseDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Purchase Failed",
+        description: error.message || "Failed to purchase stock",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Sell stock mutation
+  const sellStockMutation = useMutation({
+    mutationFn: async (data: { purchaseId: number; sharesToSell: number; currentPrice: number }) => {
+      const response = await fetch('/api/personal-portfolio/sell', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) throw new Error('Sale failed');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Stock Sold",
+        description: "Successfully sold stock from your personal portfolio",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/personal-portfolio'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/personal-purchases'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+      setSellDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Sale Failed",
+        description: error.message || "Failed to sell stock",
+        variant: "destructive",
+      });
     },
   });
 
@@ -270,9 +324,29 @@ export default function Portfolio() {
           <motion.div variants={fadeInUp}>
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <BarChart3 className="w-5 h-5 mr-2" />
-                  Personal Holdings ({personalPurchases.length})
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <BarChart3 className="w-5 h-5 mr-2" />
+                    Personal Holdings ({personalPurchases.length})
+                  </div>
+                  <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button className="bg-green-600 hover:bg-green-700">
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Buy Stock
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Buy Stock</DialogTitle>
+                      </DialogHeader>
+                      <PurchaseDialog 
+                        currentBalance={currentBalance}
+                        onPurchase={purchaseStockMutation.mutate}
+                        isPending={purchaseStockMutation.isPending}
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -288,6 +362,7 @@ export default function Portfolio() {
                           <th className="text-left py-2 px-4 font-medium">Market Value</th>
                           <th className="text-left py-2 px-4 font-medium">Gain/Loss</th>
                           <th className="text-left py-2 px-4 font-medium">% Change</th>
+                          <th className="text-left py-2 px-4 font-medium">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -317,6 +392,20 @@ export default function Portfolio() {
                                   {gainLoss >= 0 ? '+' : ''}{gainLossPercent.toFixed(2)}%
                                 </Badge>
                               </td>
+                              <td className="py-2 px-4">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => {
+                                    setSelectedStock({ ...purchase, currentPrice });
+                                    setSellDialogOpen(true);
+                                  }}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Minus className="w-4 h-4 mr-1" />
+                                  Sell
+                                </Button>
+                              </td>
                             </tr>
                           );
                         })}
@@ -328,21 +417,246 @@ export default function Portfolio() {
                     <p className="text-muted-foreground mb-4">
                       Your personal portfolio is empty. Start by making your first trade!
                     </p>
-                    {!portfolioStartDate && (
-                      <Button 
-                        onClick={() => initializePortfolioMutation.mutate()}
-                        disabled={initializePortfolioMutation.isPending}
-                      >
-                        {initializePortfolioMutation.isPending ? 'Starting...' : 'Start Personal Portfolio'}
-                      </Button>
-                    )}
+                    <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-green-600 hover:bg-green-700">
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          Buy Your First Stock
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Buy Stock</DialogTitle>
+                        </DialogHeader>
+                        <PurchaseDialog 
+                          currentBalance={currentBalance}
+                          onPurchase={purchaseStockMutation.mutate}
+                          isPending={purchaseStockMutation.isPending}
+                        />
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 )}
               </CardContent>
             </Card>
           </motion.div>
+
+          {/* Sell Dialog */}
+          <Dialog open={sellDialogOpen} onOpenChange={setSellDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Sell Stock</DialogTitle>
+              </DialogHeader>
+              {selectedStock && (
+                <SellDialog 
+                  stock={selectedStock}
+                  onSell={sellStockMutation.mutate}
+                  isPending={sellStockMutation.isPending}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
         </motion.div>
       </div>
     </div>
+  );
+}
+
+// Purchase Dialog Component
+function PurchaseDialog({ 
+  currentBalance, 
+  onPurchase, 
+  isPending 
+}: { 
+  currentBalance: number; 
+  onPurchase: (data: any) => void; 
+  isPending: boolean; 
+}) {
+  const [symbol, setSymbol] = useState('');
+  const [shares, setShares] = useState('');
+  const [currentPrice, setCurrentPrice] = useState<number | null>(null);
+  const [isLoadingPrice, setIsLoadingPrice] = useState(false);
+  const [companyName, setCompanyName] = useState('');
+
+  const fetchStockPrice = async (stockSymbol: string) => {
+    if (!stockSymbol || stockSymbol.length < 1) return;
+    
+    setIsLoadingPrice(true);
+    try {
+      const response = await fetch(`/api/quote/${stockSymbol.toUpperCase()}`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setCurrentPrice(result.data.price);
+          setCompanyName(result.data.symbol); // Use symbol as company name fallback
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching stock price:', error);
+    } finally {
+      setIsLoadingPrice(false);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!symbol || !shares || !currentPrice) return;
+    
+    const totalCost = parseFloat(shares) * currentPrice;
+    if (totalCost > currentBalance) {
+      alert('Insufficient balance for this purchase');
+      return;
+    }
+
+    onPurchase({
+      symbol: symbol.toUpperCase(),
+      companyName: companyName || symbol.toUpperCase(),
+      shares: parseInt(shares),
+      purchasePrice: currentPrice,
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <Label htmlFor="symbol">Stock Symbol</Label>
+        <Input
+          id="symbol"
+          value={symbol}
+          onChange={(e) => {
+            setSymbol(e.target.value);
+            if (e.target.value.length >= 1) {
+              fetchStockPrice(e.target.value);
+            }
+          }}
+          placeholder="e.g., AAPL"
+          className="uppercase"
+        />
+      </div>
+
+      <div>
+        <Label htmlFor="shares">Number of Shares</Label>
+        <Input
+          id="shares"
+          type="number"
+          value={shares}
+          onChange={(e) => setShares(e.target.value)}
+          placeholder="Enter number of shares"
+          min="1"
+        />
+      </div>
+
+      {isLoadingPrice && (
+        <div className="text-center py-2">
+          <span className="text-muted-foreground">Loading current price...</span>
+        </div>
+      )}
+
+      {currentPrice && (
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span>Current Price:</span>
+            <span className="font-medium">${currentPrice.toFixed(2)}</span>
+          </div>
+          {shares && (
+            <div className="flex justify-between">
+              <span>Total Cost:</span>
+              <span className="font-medium">${(parseFloat(shares) * currentPrice).toFixed(2)}</span>
+            </div>
+          )}
+          <div className="flex justify-between">
+            <span>Available Balance:</span>
+            <span className="font-medium">${currentBalance.toFixed(2)}</span>
+          </div>
+        </div>
+      )}
+
+      <Button
+        type="submit"
+        disabled={!symbol || !shares || !currentPrice || isPending || isLoadingPrice}
+        className="w-full bg-green-600 hover:bg-green-700"
+      >
+        {isPending ? 'Purchasing...' : 'Purchase Stock'}
+      </Button>
+    </form>
+  );
+}
+
+// Sell Dialog Component
+function SellDialog({ 
+  stock, 
+  onSell, 
+  isPending 
+}: { 
+  stock: any; 
+  onSell: (data: any) => void; 
+  isPending: boolean; 
+}) {
+  const [sharesToSell, setSharesToSell] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!sharesToSell || parseInt(sharesToSell) <= 0) return;
+
+    onSell({
+      purchaseId: stock.id,
+      sharesToSell: parseInt(sharesToSell),
+      currentPrice: stock.currentPrice,
+    });
+  };
+
+  const saleValue = sharesToSell ? parseInt(sharesToSell) * stock.currentPrice : 0;
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <div className="flex justify-between">
+          <span>Stock:</span>
+          <span className="font-medium">{stock.symbol}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Shares Owned:</span>
+          <span className="font-medium">{stock.shares}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Current Price:</span>
+          <span className="font-medium">${stock.currentPrice.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <div>
+        <Label htmlFor="sharesToSell">Shares to Sell</Label>
+        <Input
+          id="sharesToSell"
+          type="number"
+          value={sharesToSell}
+          onChange={(e) => setSharesToSell(e.target.value)}
+          placeholder="Enter number of shares to sell"
+          min="1"
+          max={stock.shares}
+        />
+      </div>
+
+      {sharesToSell && (
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span>Sale Value:</span>
+            <span className="font-medium">${saleValue.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Remaining Shares:</span>
+            <span className="font-medium">{stock.shares - parseInt(sharesToSell)}</span>
+          </div>
+        </div>
+      )}
+
+      <Button
+        type="submit"
+        disabled={!sharesToSell || parseInt(sharesToSell) <= 0 || parseInt(sharesToSell) > stock.shares || isPending}
+        className="w-full bg-red-600 hover:bg-red-700"
+      >
+        {isPending ? 'Selling...' : 'Sell Stock'}
+      </Button>
+    </form>
   );
 }

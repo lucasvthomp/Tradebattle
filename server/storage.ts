@@ -2,6 +2,7 @@ import {
   users,
   watchlist,
   stockPurchases,
+  personalStockPurchases,
   contactSubmissions,
   adminLogs,
   tournaments,
@@ -23,6 +24,8 @@ import {
   type InsertTournamentParticipant,
   type TournamentStockPurchase,
   type InsertTournamentStockPurchase,
+  type PersonalStockPurchase,
+  type InsertPersonalStockPurchase,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql } from "drizzle-orm";
@@ -68,6 +71,11 @@ export interface IStorage {
   purchaseTournamentStock(tournamentId: number, userId: number, purchase: InsertTournamentStockPurchase): Promise<TournamentStockPurchase>;
   getTournamentStockPurchases(tournamentId: number, userId: number): Promise<TournamentStockPurchase[]>;
   deleteTournamentPurchase(tournamentId: number, userId: number, purchaseId: number): Promise<void>;
+  
+  // Personal portfolio operations
+  purchasePersonalStock(userId: number, purchase: InsertPersonalStockPurchase): Promise<PersonalStockPurchase>;
+  getPersonalStockPurchases(userId: number): Promise<PersonalStockPurchase[]>;
+  deletePersonalPurchase(userId: number, purchaseId: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -326,6 +334,32 @@ export class DatabaseStorage implements IStorage {
         eq(tournamentStockPurchases.id, purchaseId),
         eq(tournamentStockPurchases.tournamentId, tournamentId),
         eq(tournamentStockPurchases.userId, userId)
+      ));
+  }
+
+  // Personal portfolio operations
+  async purchasePersonalStock(userId: number, purchase: InsertPersonalStockPurchase): Promise<PersonalStockPurchase> {
+    const result = await db
+      .insert(personalStockPurchases)
+      .values({ ...purchase, userId })
+      .returning();
+    return result[0];
+  }
+
+  async getPersonalStockPurchases(userId: number): Promise<PersonalStockPurchase[]> {
+    return await db
+      .select()
+      .from(personalStockPurchases)
+      .where(eq(personalStockPurchases.userId, userId))
+      .orderBy(desc(personalStockPurchases.createdAt));
+  }
+
+  async deletePersonalPurchase(userId: number, purchaseId: number): Promise<void> {
+    await db
+      .delete(personalStockPurchases)
+      .where(and(
+        eq(personalStockPurchases.id, purchaseId),
+        eq(personalStockPurchases.userId, userId)
       ));
   }
 }

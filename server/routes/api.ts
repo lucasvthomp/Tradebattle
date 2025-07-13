@@ -521,4 +521,177 @@ router.post('/user/upgrade-premium', asyncHandler(async (req, res) => {
   });
 }));
 
+/**
+ * GET /api/personal-portfolio
+ * Get personal portfolio data
+ */
+router.get('/personal-portfolio', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const user = await storage.getUser(userId);
+  
+  if (!user || user.subscriptionTier !== 'premium') {
+    throw new ValidationError('Premium subscription required');
+  }
+
+  res.json({
+    success: true,
+    data: {
+      balance: user.personalBalance || 10000,
+      portfolioCreatedAt: user.portfolioCreatedAt
+    },
+  });
+}));
+
+/**
+ * GET /api/personal-purchases
+ * Get personal stock purchases
+ */
+router.get('/personal-purchases', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const user = await storage.getUser(userId);
+  
+  if (!user || user.subscriptionTier !== 'premium') {
+    throw new ValidationError('Premium subscription required');
+  }
+
+  const purchases = await storage.getPersonalStockPurchases(userId);
+
+  res.json({
+    success: true,
+    data: purchases,
+  });
+}));
+
+/**
+ * POST /api/personal-portfolio/purchase
+ * Purchase stock in personal portfolio
+ */
+router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const user = await storage.getUser(userId);
+  
+  if (!user || user.subscriptionTier !== 'premium') {
+    throw new ValidationError('Premium subscription required');
+  }
+
+  const { symbol, companyName, shares, purchasePrice } = req.body;
+  
+  if (!symbol || !companyName || !shares || !purchasePrice) {
+    throw new ValidationError('All purchase fields are required');
+  }
+
+  const totalCost = shares * purchasePrice;
+  const currentBalance = user.personalBalance || 10000;
+
+  // Check if user has enough balance
+  if (currentBalance < totalCost) {
+    throw new ValidationError('Insufficient balance for this purchase');
+  }
+
+  // Create purchase record
+  const purchase = await storage.purchasePersonalStock(userId, {
+    symbol: sanitizeInput(symbol),
+    companyName: sanitizeInput(companyName),
+    shares: parseInt(shares),
+    purchasePrice: parseFloat(purchasePrice),
+    totalCost: totalCost
+  });
+
+  // Update user balance
+  await storage.updateUser(userId, {
+    personalBalance: currentBalance - totalCost
+  });
+
+  res.status(201).json({
+    success: true,
+    data: { purchase },
+  });
+}));
+
+/**
+ * POST /api/personal-portfolio/sell
+ * Sell stock in personal portfolio
+ */
+router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const user = await storage.getUser(userId);
+  
+  if (!user || user.subscriptionTier !== 'premium') {
+    throw new ValidationError('Premium subscription required');
+  }
+
+  const { purchaseId, sharesToSell, currentPrice } = req.body;
+  
+  if (!purchaseId || !sharesToSell || !currentPrice) {
+    throw new ValidationError('Purchase ID, shares to sell, and current price are required');
+  }
+
+  // Get the original purchase
+  const purchases = await storage.getPersonalStockPurchases(userId);
+  const purchase = purchases.find(p => p.id === parseInt(purchaseId));
+  
+  if (!purchase) {
+    throw new ValidationError('Purchase not found');
+  }
+
+  const sharesToSellNum = parseInt(sharesToSell);
+  if (sharesToSellNum <= 0 || sharesToSellNum > purchase.shares) {
+    throw new ValidationError('Invalid number of shares to sell');
+  }
+
+  const saleValue = sharesToSellNum * parseFloat(currentPrice);
+  const currentBalance = user.personalBalance || 10000;
+  
+  // Update balance with sale proceeds
+  await storage.updateUser(userId, {
+    personalBalance: currentBalance + saleValue
+  });
+
+  // If selling all shares, delete the purchase record
+  if (sharesToSellNum === purchase.shares) {
+    await storage.deletePersonalPurchase(userId, purchase.id);
+  } else {
+    // Update the purchase record to reduce shares
+    await storage.deletePersonalPurchase(userId, purchase.id);
+    
+    if (purchase.shares - sharesToSellNum > 0) {
+      await storage.purchasePersonalStock(userId, {
+        symbol: purchase.symbol,
+        companyName: purchase.companyName,
+        shares: purchase.shares - sharesToSellNum,
+        purchasePrice: purchase.purchasePrice,
+        totalCost: (purchase.shares - sharesToSellNum) * purchase.purchasePrice
+      });
+    }
+  }
+
+  res.json({
+    success: true,
+    data: { 
+      saleValue,
+      newBalance: currentBalance + saleValue 
+    },
+  });
+}));
+
 export default router;
