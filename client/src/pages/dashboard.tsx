@@ -413,9 +413,7 @@ export default function Dashboard() {
   const [isWatchlistExpanded, setIsWatchlistExpanded] = useState(false);
   const [isCreateTournamentDialogOpen, setIsCreateTournamentDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState("");
-  const [buyInAmount, setBuyInAmount] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("10");
-  const [startingCash, setStartingCash] = useState("10000");
   const [createdTournament, setCreatedTournament] = useState<any>(null);
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
@@ -635,9 +633,7 @@ export default function Dashboard() {
       setCreatedTournament(tournament);
       setIsCreateTournamentDialogOpen(false);
       setTournamentName("");
-      setBuyInAmount("");
       setMaxPlayers("10");
-      setStartingCash("10000");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       // Invalidate balance query for the newly created tournament
       queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournament.id, user?.id] });
@@ -1370,36 +1366,7 @@ export default function Dashboard() {
                         placeholder="Enter tournament name"
                       />
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="buy-in" className="text-right">
-                        Buy-in ($)
-                      </Label>
-                      <Input
-                        id="buy-in"
-                        type="number"
-                        value={buyInAmount}
-                        onChange={(e) => setBuyInAmount(e.target.value)}
-                        className="col-span-3"
-                        placeholder="0.00"
-                        min="0"
-                        step="0.01"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="starting-cash" className="text-right">
-                        Starting Cash ($)
-                      </Label>
-                      <Input
-                        id="starting-cash"
-                        type="number"
-                        value={startingCash}
-                        onChange={(e) => setStartingCash(e.target.value)}
-                        className="col-span-3"
-                        placeholder="10000.00"
-                        min="1"
-                        step="0.01"
-                      />
-                    </div>
+
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="max-players" className="text-right">
                         Max Players
@@ -1421,16 +1388,14 @@ export default function Dashboard() {
                     </Button>
                     <Button 
                       onClick={() => {
-                        if (tournamentName && buyInAmount && startingCash) {
+                        if (tournamentName) {
                           createTournamentMutation.mutate({
                             name: tournamentName,
-                            buyInAmount: parseFloat(buyInAmount),
-                            maxPlayers: parseInt(maxPlayers),
-                            startingCash: parseFloat(startingCash)
+                            maxPlayers: parseInt(maxPlayers)
                           });
                         }
                       }}
-                      disabled={!tournamentName || !buyInAmount || !startingCash || createTournamentMutation.isPending}
+                      disabled={!tournamentName || createTournamentMutation.isPending}
                     >
                       {createTournamentMutation.isPending ? 'Creating...' : 'Create Tournament'}
                     </Button>

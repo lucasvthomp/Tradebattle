@@ -193,11 +193,11 @@ export class DatabaseStorage implements IStorage {
       creatorId
     }).returning();
     
-    // Add creator as first participant with initial balance
+    // Add creator as first participant with default balance of $10,000
     await db.insert(tournamentParticipants).values({
       tournamentId: result[0].id,
       userId: creatorId,
-      balance: tournament.startingCash.toString()
+      balance: "10000.00"
     });
     
     return result[0];

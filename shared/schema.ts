@@ -93,7 +93,6 @@ export const tournaments = pgTable("tournaments", {
   name: varchar("name").notNull(),
   code: varchar("code", { length: 8 }).unique().notNull(), // 8-character unique code
   creatorId: integer("creator_id").references(() => users.id).notNull(),
-  buyInAmount: numeric("buy_in_amount", { precision: 15, scale: 2 }).notNull(),
   maxPlayers: integer("max_players").default(10).notNull(),
   currentPlayers: integer("current_players").default(1).notNull(),
   status: varchar("status").default("waiting"), // waiting, active, completed
@@ -160,9 +159,7 @@ export const insertAdminLogSchema = createInsertSchema(adminLogs).pick({
 
 export const insertTournamentSchema = createInsertSchema(tournaments).pick({
   name: true,
-  buyInAmount: true,
   maxPlayers: true,
-  startingCash: true,
 });
 
 export const insertTournamentParticipantSchema = createInsertSchema(tournamentParticipants).pick({

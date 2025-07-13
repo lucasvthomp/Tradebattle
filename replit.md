@@ -168,3 +168,4 @@ Preferred communication style: Simple, everyday language.
 - **Tournament Purchase System**: Fixed stock purchasing system to work with tournament-specific balances and validation
 - **Authentication Pages Dark Mode** (January 2025): Updated login and signup pages to use consistent dark mode styling with proper CSS variables and color schemes
 - **Portfolio Enhancement** (January 2025): Added comprehensive portfolio table with purchase price, current price, dollar/percentage change calculations, and real-time price updates
+- **Buy-in System Removal** (January 2025): Completely removed buy-in functionality from the entire platform - tournaments now provide standard $10,000 starting balance without buy-in requirements, simplifying tournament creation and participation
