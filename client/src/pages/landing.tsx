@@ -154,7 +154,10 @@ export default function Landing() {
               <p className="text-xl text-gray-300 mb-8">
                 Join thousands of traders competing in paper trading competitions
               </p>
-
+              <Button size="lg" className="bg-white text-black hover:bg-gray-100">
+                Get Started Today
+                <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
             </motion.div>
           </div>
         </div>

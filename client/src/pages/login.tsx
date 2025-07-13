@@ -92,7 +92,20 @@ export default function Login() {
                 </div>
               </div>
 
-
+              <Button
+                type="submit"
+                disabled={loginMutation.isPending}
+                className="w-full bg-black text-white hover:bg-neutral-800"
+              >
+                {loginMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Logging in...
+                  </>
+                ) : (
+                  "Log in"
+                )}
+              </Button>
 
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
