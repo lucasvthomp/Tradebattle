@@ -732,6 +732,7 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
           portfolioValue += currentValue;
         } catch (error) {
           // If stock quote fails, use purchase price as fallback
+          console.log(`Error getting quote for ${purchase.symbol}, using purchase price:`, error.message);
           portfolioValue += purchase.shares * parseFloat(purchase.purchasePrice);
         }
       }
@@ -739,6 +740,14 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
       // Calculate percentage change from tournament's actual starting balance
       const startingBalance = parseFloat(tournament.startingBalance);
       const percentageChange = ((portfolioValue - startingBalance) / startingBalance) * 100;
+      
+      // Debug log for troubleshooting
+      console.log(`Debug: User ${participant.userId} in tournament ${tournament.id}:`, {
+        balance: participant.balance,
+        portfolioValue,
+        startingBalance,
+        percentageChange
+      });
       
       allParticipants.push({
         ...participant,
