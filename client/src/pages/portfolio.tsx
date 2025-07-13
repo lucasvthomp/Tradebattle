@@ -86,12 +86,14 @@ export default function Portfolio() {
 
   // Calculate portfolio metrics
   const portfolioValue = personalPurchases.reduce((total: number, purchase: any) => {
-    const currentPrice = stockPrices[purchase.symbol] || purchase.purchasePrice;
+    const purchasePrice = parseFloat(purchase.purchasePrice);
+    const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
     return total + (currentPrice * purchase.shares);
   }, 0);
 
   const totalInvested = personalPurchases.reduce((total: number, purchase: any) => {
-    return total + (purchase.purchasePrice * purchase.shares);
+    const purchasePrice = parseFloat(purchase.purchasePrice);
+    return total + (purchasePrice * purchase.shares);
   }, 0);
 
   const totalGainLoss = portfolioValue - totalInvested;
@@ -371,9 +373,10 @@ export default function Portfolio() {
                       </thead>
                       <tbody>
                         {personalPurchases.map((purchase: any) => {
-                          const currentPrice = stockPrices[purchase.symbol] || purchase.purchasePrice;
+                          const purchasePrice = parseFloat(purchase.purchasePrice);
+                          const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
                           const marketValue = currentPrice * purchase.shares;
-                          const totalCost = purchase.purchasePrice * purchase.shares;
+                          const totalCost = purchasePrice * purchase.shares;
                           const gainLoss = marketValue - totalCost;
                           const gainLossPercent = totalCost > 0 ? (gainLoss / totalCost) * 100 : 0;
                           
@@ -383,7 +386,7 @@ export default function Portfolio() {
                                 <div className="font-medium">{purchase.symbol}</div>
                               </td>
                               <td className="py-2 px-4">{purchase.shares}</td>
-                              <td className="py-2 px-4">${purchase.purchasePrice.toFixed(2)}</td>
+                              <td className="py-2 px-4">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
                               <td className="py-2 px-4">${currentPrice.toFixed(2)}</td>
                               <td className="py-2 px-4">${marketValue.toFixed(2)}</td>
                               <td className="py-2 px-4">
