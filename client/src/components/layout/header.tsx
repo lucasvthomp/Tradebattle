@@ -22,6 +22,7 @@ export default function Header() {
     ...(user ? [
       { href: "/dashboard", label: "Tournaments" },
       { href: "/portfolio", label: "Portfolio" },
+      { href: "/leaderboard", label: "Leaderboard" },
       { href: "/premium", label: "Premium" }
     ] : []),
     { href: "/contact", label: "Contact Us" },

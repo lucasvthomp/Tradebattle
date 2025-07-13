@@ -695,4 +695,127 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
   });
 }));
 
+/**
+ * GET /api/tournaments/leaderboard
+ * Get tournaments leaderboard data
+ */
+router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+  
+  // Get all tournaments with participants and their portfolio values
+  const tournaments = await storage.getAllTournaments();
+  const allParticipants = [];
+  
+  for (const tournament of tournaments) {
+    const participants = await storage.getTournamentParticipants(tournament.id);
+    
+    for (const participant of participants) {
+      // Calculate portfolio value for each participant
+      const purchases = await storage.getTournamentStockPurchases(tournament.id, participant.userId);
+      let portfolioValue = parseFloat(participant.balance);
+      
+      // Add current value of all stock holdings
+      for (const purchase of purchases) {
+        try {
+          const currentQuote = await getStockQuote(purchase.symbol);
+          const currentValue = purchase.shares * currentQuote.price;
+          portfolioValue += currentValue;
+        } catch (error) {
+          // If stock quote fails, use purchase price as fallback
+          portfolioValue += purchase.shares * parseFloat(purchase.purchasePrice);
+        }
+      }
+      
+      allParticipants.push({
+        ...participant,
+        portfolioValue,
+        tournamentName: tournament.name,
+        tournamentId: tournament.id
+      });
+    }
+  }
+  
+  // Sort by portfolio value (highest first)
+  allParticipants.sort((a, b) => b.portfolioValue - a.portfolioValue);
+  
+  // Find user's rank
+  const userRank = allParticipants.findIndex(p => p.userId === userId) + 1;
+  
+  res.json({
+    success: true,
+    data: {
+      rankings: allParticipants.slice(0, 50), // Top 50
+      totalTournaments: tournaments.length,
+      totalParticipants: allParticipants.length,
+      yourRank: userRank || null
+    }
+  });
+}));
+
+/**
+ * GET /api/personal/leaderboard
+ * Get personal portfolio leaderboard data
+ */
+router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+  
+  // Get all users with personal portfolios
+  const users = await storage.getAllUsers();
+  const userPortfolios = [];
+  
+  for (const user of users) {
+    // Skip users without personal portfolios
+    if (!user.portfolioCreatedAt) continue;
+    
+    // Calculate portfolio value
+    const purchases = await storage.getPersonalStockPurchases(user.id);
+    let portfolioValue = parseFloat(user.personalBalance) || 10000;
+    
+    // Add current value of all stock holdings
+    for (const purchase of purchases) {
+      try {
+        const currentQuote = await getStockQuote(purchase.symbol);
+        const currentValue = purchase.shares * currentQuote.price;
+        portfolioValue += currentValue;
+      } catch (error) {
+        // If stock quote fails, use purchase price as fallback
+        portfolioValue += purchase.shares * parseFloat(purchase.purchasePrice);
+      }
+    }
+    
+    userPortfolios.push({
+      ...user,
+      portfolioValue,
+      initialBalance: 10000 // Standard starting balance
+    });
+  }
+  
+  // Sort by portfolio value (highest first)
+  userPortfolios.sort((a, b) => b.portfolioValue - a.portfolioValue);
+  
+  // Find user's rank
+  const userRank = userPortfolios.findIndex(p => p.id === userId) + 1;
+  
+  // Count premium users
+  const premiumUsers = userPortfolios.filter(p => p.subscriptionTier === 'premium').length;
+  
+  res.json({
+    success: true,
+    data: {
+      rankings: userPortfolios.slice(0, 50), // Top 50
+      totalTraders: userPortfolios.length,
+      premiumUsers,
+      yourRank: userRank || null
+    }
+  });
+}));
+
 export default router;

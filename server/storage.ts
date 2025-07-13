@@ -76,6 +76,9 @@ export interface IStorage {
   purchasePersonalStock(userId: number, purchase: InsertPersonalStockPurchase): Promise<PersonalStockPurchase>;
   getPersonalStockPurchases(userId: number): Promise<PersonalStockPurchase[]>;
   deletePersonalPurchase(userId: number, purchaseId: number): Promise<void>;
+  
+  // Tournament operations
+  getAllTournaments(): Promise<Tournament[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -370,6 +373,10 @@ export class DatabaseStorage implements IStorage {
         eq(personalStockPurchases.id, purchaseId),
         eq(personalStockPurchases.userId, userId)
       ));
+  }
+
+  async getAllTournaments(): Promise<Tournament[]> {
+    return await db.select().from(tournaments);
   }
 }
 
