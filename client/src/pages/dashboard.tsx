@@ -1329,8 +1329,7 @@ export default function Dashboard() {
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                 >
-                  <option value="symbol">Alphabetical</option>
-                  <option value="companyName">Company</option>
+                  <option value="companyName">Alphabetical</option>
                   <option value="currentPrice">Price</option>
                   <option value="changePercent">% Change</option>
                   <option value="volume">Volume</option>
