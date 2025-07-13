@@ -1394,7 +1394,7 @@ export default function Dashboard() {
                             ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
                           </td>
                           <td className="py-3 px-4 text-sm text-muted-foreground">
-                            {stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A'}
+                            {stock.isLoadingData ? 'Loading...' : (stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A')}
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-1">
@@ -2059,7 +2059,7 @@ export default function Dashboard() {
                                 ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
                               </td>
                               <td className="py-3 px-4 text-sm text-muted-foreground">
-                                {stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A'}
+                                {stock.isLoadingData ? 'Loading...' : (stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A')}
                               </td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
