@@ -479,15 +479,37 @@ function PurchaseDialog({
   onPurchase: (data: any) => void; 
   isPending: boolean; 
 }) {
-  const [symbol, setSymbol] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<any>(null);
   const [shares, setShares] = useState('');
   const [currentPrice, setCurrentPrice] = useState<number | null>(null);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
-  const [companyName, setCompanyName] = useState('');
+
+  const searchStocks = async (query: string) => {
+    if (!query || query.length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    
+    setIsLoadingSearch(true);
+    try {
+      const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setSearchResults(result.data.slice(0, 10)); // Limit to 10 results
+        }
+      }
+    } catch (error) {
+      console.error('Error searching stocks:', error);
+    } finally {
+      setIsLoadingSearch(false);
+    }
+  };
 
   const fetchStockPrice = async (stockSymbol: string) => {
-    if (!stockSymbol || stockSymbol.length < 1) return;
-    
     setIsLoadingPrice(true);
     try {
       const response = await fetch(`/api/quote/${stockSymbol.toUpperCase()}`);
@@ -495,7 +517,6 @@ function PurchaseDialog({
         const result = await response.json();
         if (result.success) {
           setCurrentPrice(result.data.price);
-          setCompanyName(result.data.symbol); // Use symbol as company name fallback
         }
       }
     } catch (error) {
@@ -505,9 +526,16 @@ function PurchaseDialog({
     }
   };
 
+  const handleStockSelect = (stock: any) => {
+    setSelectedStock(stock);
+    setSearchQuery('');
+    setSearchResults([]);
+    fetchStockPrice(stock.symbol);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!symbol || !shares || !currentPrice) return;
+    if (!selectedStock || !shares || !currentPrice) return;
     
     const totalCost = parseFloat(shares) * currentPrice;
     if (totalCost > currentBalance) {
@@ -516,8 +544,8 @@ function PurchaseDialog({
     }
 
     onPurchase({
-      symbol: symbol.toUpperCase(),
-      companyName: companyName || symbol.toUpperCase(),
+      symbol: selectedStock.symbol,
+      companyName: selectedStock.name,
       shares: parseInt(shares),
       purchasePrice: currentPrice,
     });
@@ -525,66 +553,112 @@ function PurchaseDialog({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label htmlFor="symbol">Stock Symbol</Label>
-        <Input
-          id="symbol"
-          value={symbol}
-          onChange={(e) => {
-            setSymbol(e.target.value);
-            if (e.target.value.length >= 1) {
-              fetchStockPrice(e.target.value);
-            }
-          }}
-          placeholder="e.g., AAPL"
-          className="uppercase"
-        />
-      </div>
-
-      <div>
-        <Label htmlFor="shares">Number of Shares</Label>
-        <Input
-          id="shares"
-          type="number"
-          value={shares}
-          onChange={(e) => setShares(e.target.value)}
-          placeholder="Enter number of shares"
-          min="1"
-        />
-      </div>
-
-      {isLoadingPrice && (
-        <div className="text-center py-2">
-          <span className="text-muted-foreground">Loading current price...</span>
-        </div>
-      )}
-
-      {currentPrice && (
+      {!selectedStock ? (
         <div className="space-y-2">
-          <div className="flex justify-between">
-            <span>Current Price:</span>
-            <span className="font-medium">${currentPrice.toFixed(2)}</span>
-          </div>
-          {shares && (
-            <div className="flex justify-between">
-              <span>Total Cost:</span>
-              <span className="font-medium">${(parseFloat(shares) * currentPrice).toFixed(2)}</span>
+          <Label htmlFor="search">Search for a stock</Label>
+          <Input
+            id="search"
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              searchStocks(e.target.value);
+            }}
+            placeholder="Search by company name or symbol..."
+            className="w-full"
+          />
+          
+          {isLoadingSearch && (
+            <div className="text-center py-2">
+              <span className="text-muted-foreground">Searching stocks...</span>
             </div>
           )}
-          <div className="flex justify-between">
-            <span>Available Balance:</span>
-            <span className="font-medium">${currentBalance.toFixed(2)}</span>
+          
+          {searchResults.length > 0 && (
+            <div className="border rounded-md max-h-60 overflow-y-auto">
+              {searchResults.map((stock) => (
+                <button
+                  key={stock.symbol}
+                  type="button"
+                  onClick={() => handleStockSelect(stock)}
+                  className="w-full p-3 text-left hover:bg-accent/50 border-b last:border-b-0 flex justify-between items-center"
+                >
+                  <div>
+                    <div className="font-medium">{stock.symbol}</div>
+                    <div className="text-sm text-muted-foreground truncate">{stock.name}</div>
+                  </div>
+                  <div className="text-sm text-muted-foreground">{stock.exchange}</div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border rounded-md p-3">
+            <div>
+              <div className="font-medium">{selectedStock.symbol}</div>
+              <div className="text-sm text-muted-foreground">{selectedStock.name}</div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSelectedStock(null);
+                setCurrentPrice(null);
+                setShares('');
+              }}
+            >
+              Change
+            </Button>
           </div>
+
+          <div>
+            <Label htmlFor="shares">Number of Shares</Label>
+            <Input
+              id="shares"
+              type="number"
+              value={shares}
+              onChange={(e) => setShares(e.target.value)}
+              placeholder="Enter number of shares"
+              min="1"
+            />
+          </div>
+
+          {isLoadingPrice && (
+            <div className="text-center py-2">
+              <span className="text-muted-foreground">Loading current price...</span>
+            </div>
+          )}
+
+          {currentPrice && (
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span>Current Price:</span>
+                <span className="font-medium">${currentPrice.toFixed(2)}</span>
+              </div>
+              {shares && (
+                <div className="flex justify-between">
+                  <span>Total Cost:</span>
+                  <span className="font-medium">${(parseFloat(shares) * currentPrice).toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between">
+                <span>Available Balance:</span>
+                <span className="font-medium">${currentBalance.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            disabled={!selectedStock || !shares || !currentPrice || isPending || isLoadingPrice}
+            className="w-full bg-green-600 hover:bg-green-700"
+          >
+            {isPending ? 'Purchasing...' : 'Purchase Stock'}
+          </Button>
         </div>
       )}
-
-      <Button
-        type="submit"
-        disabled={!symbol || !shares || !currentPrice || isPending || isLoadingPrice}
-        className="w-full bg-green-600 hover:bg-green-700"
-      >
-        {isPending ? 'Purchasing...' : 'Purchase Stock'}
-      </Button>
     </form>
   );
 }
