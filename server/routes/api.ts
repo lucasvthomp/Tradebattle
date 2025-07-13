@@ -736,8 +736,8 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
         }
       }
       
-      // Calculate percentage change from starting balance
-      const startingBalance = 10000; // Standard tournament starting balance
+      // Calculate percentage change from tournament's actual starting balance
+      const startingBalance = parseFloat(tournament.startingBalance);
       const percentageChange = ((portfolioValue - startingBalance) / startingBalance) * 100;
       
       allParticipants.push({
