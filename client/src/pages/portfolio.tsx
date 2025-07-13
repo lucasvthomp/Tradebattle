@@ -363,11 +363,9 @@ export default function Portfolio() {
                         <tr className="border-b">
                           <th className="text-left py-2 px-4 font-medium">Symbol</th>
                           <th className="text-left py-2 px-4 font-medium">Shares</th>
-                          <th className="text-left py-2 px-4 font-medium">Avg Cost</th>
+                          <th className="text-left py-2 px-4 font-medium">Purchase Price</th>
                           <th className="text-left py-2 px-4 font-medium">Current Price</th>
-                          <th className="text-left py-2 px-4 font-medium">Market Value</th>
-                          <th className="text-left py-2 px-4 font-medium">Gain/Loss</th>
-                          <th className="text-left py-2 px-4 font-medium">% Change</th>
+                          <th className="text-left py-2 px-4 font-medium">Change</th>
                           <th className="text-left py-2 px-4 font-medium">Actions</th>
                         </tr>
                       </thead>
@@ -388,16 +386,15 @@ export default function Portfolio() {
                               <td className="py-2 px-4">{purchase.shares}</td>
                               <td className="py-2 px-4">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
                               <td className="py-2 px-4">${currentPrice.toFixed(2)}</td>
-                              <td className="py-2 px-4">${marketValue.toFixed(2)}</td>
                               <td className="py-2 px-4">
-                                <span className={gainLoss >= 0 ? 'text-green-600' : 'text-red-600'}>
-                                  ${gainLoss.toFixed(2)}
-                                </span>
-                              </td>
-                              <td className="py-2 px-4">
-                                <Badge variant={gainLoss >= 0 ? 'default' : 'destructive'}>
-                                  {gainLoss >= 0 ? '+' : ''}{gainLossPercent.toFixed(2)}%
-                                </Badge>
+                                <div className="flex flex-col">
+                                  <span className={`font-medium ${gainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    ${gainLoss >= 0 ? '+' : ''}{gainLoss.toFixed(2)}
+                                  </span>
+                                  <span className={`text-xs ${gainLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                    {gainLoss >= 0 ? '+' : ''}{gainLossPercent.toFixed(2)}%
+                                  </span>
+                                </div>
                               </td>
                               <td className="py-2 px-4">
                                 <Button
