@@ -146,7 +146,7 @@ export default function Leaderboard() {
                               <div>
                                 <div className="font-semibold">{participant.firstName} {participant.lastName}</div>
                                 <div className="text-sm text-muted-foreground">
-                                  {participant.tournamentName} • Starting: {formatCurrency(participant.startingBalance)}
+                                  {participant.tournamentName} (ID: {participant.tournamentId}) • Starting: {formatCurrency(participant.startingBalance)}
                                 </div>
                               </div>
                             </div>
