@@ -497,4 +497,28 @@ router.post('/tournaments/:id/sell', asyncHandler(async (req, res) => {
   });
 }));
 
+/**
+ * POST /api/user/upgrade-premium
+ * Upgrade user to premium subscription
+ */
+router.post('/user/upgrade-premium', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  // Update user subscription tier to premium
+  const updatedUser = await storage.updateUser(userId, {
+    subscriptionTier: 'premium',
+    personalBalance: 10000,
+    portfolioCreatedAt: new Date()
+  });
+
+  res.json({
+    success: true,
+    data: updatedUser,
+  });
+}));
+
 export default router;
