@@ -99,6 +99,8 @@ export default function Admin() {
   const [adminLogsOpen, setAdminLogsOpen] = useState(false);
   const [editUserOpen, setEditUserOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("users");
+  const [selectedTournament, setSelectedTournament] = useState<any>(null);
+  const [endTournamentOpen, setEndTournamentOpen] = useState(false);
 
   // Check if user is admin (based on userId)
   const isAdmin = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
@@ -300,12 +302,44 @@ export default function Admin() {
   };
 
   const handleEndTournament = (tournament: any) => {
-    toast({
-      title: "Feature Not Available",
-      description: `Tournament "${tournament.name}" can only be ended naturally when the time expires. Early termination requires additional business logic.`,
-      variant: "default",
-      duration: 4000,
-    });
+    setSelectedTournament(tournament);
+    setEndTournamentOpen(true);
+  };
+
+  const confirmEndTournament = async () => {
+    if (!selectedTournament) return;
+    
+    try {
+      const response = await apiRequest(`/api/admin/tournaments/${selectedTournament.id}/end`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      if (response.success) {
+        toast({
+          title: "Tournament Ended",
+          description: response.message,
+          variant: "default",
+        });
+        
+        // Refresh the tournaments list
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/tournaments"] });
+        setEndTournamentOpen(false);
+        setSelectedTournament(null);
+      } else {
+        toast({
+          title: "Error",
+          description: response.message || "Failed to end tournament",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to end tournament",
+        variant: "destructive",
+      });
+    }
   };
 
   // Show loading state
@@ -928,6 +962,27 @@ export default function Admin() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* End Tournament Confirmation Dialog */}
+        <AlertDialog open={endTournamentOpen} onOpenChange={setEndTournamentOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>End Tournament Early?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will immediately end the tournament <strong>"{selectedTournament?.name}"</strong> and mark it as completed.
+                All participants will be notified and the tournament will be finalized.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setEndTournamentOpen(false)}>
+                Cancel
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={confirmEndTournament}>
+                End Tournament
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteState.step === 'first'} onOpenChange={(open) => {

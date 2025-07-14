@@ -17,6 +17,9 @@ import {
   NotFoundError 
 } from '../utils/errorHandler.js';
 import { storage } from '../storage.js';
+import { db } from '../db.js';
+import { tournaments, tournamentParticipants } from '../../shared/schema.js';
+import { eq } from 'drizzle-orm';
 
 const router = Router();
 
@@ -922,6 +925,65 @@ router.get('/admin/tournaments', asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: tournamentsWithCounts
+  });
+}));
+
+/**
+ * POST /api/admin/tournaments/:id/end
+ * End a tournament early (admin only)
+ */
+router.post('/admin/tournaments/:id/end', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  const tournamentId = parseInt(req.params.id);
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  // Check if user is admin
+  const user = await storage.getUser(userId);
+  if (!user || !(user.userId === 0 || user.userId === 1 || user.userId === 2)) {
+    throw new ValidationError('Access denied. Admin privileges required.');
+  }
+
+  // Get the tournament
+  const tournaments = await storage.getAllTournaments();
+  const tournament = tournaments.find(t => t.id === tournamentId);
+  
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  // Check if tournament is already ended
+  if (tournament.status === 'completed') {
+    throw new ValidationError('Tournament is already ended');
+  }
+
+  // Update tournament status to completed and set end date
+  await db.update(tournaments)
+    .set({ 
+      status: 'completed',
+      endedAt: new Date()
+    })
+    .where(eq(tournaments.id, tournamentId));
+
+  // Log the admin action
+  await storage.createAdminLog({
+    adminUserId: userId,
+    targetUserId: tournament.creatorId,
+    action: 'tournament_ended',
+    oldValue: 'active',
+    newValue: 'completed',
+    notes: `Admin ended tournament "${tournament.name}" (${tournament.code}) early`
+  });
+
+  res.json({
+    success: true,
+    message: `Tournament "${tournament.name}" has been ended successfully`
   });
 }));
 
