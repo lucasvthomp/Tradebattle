@@ -69,7 +69,7 @@ export default function People() {
   });
 
   // Filter users based on search query
-  const filteredUsers = allUsers?.filter((u: any) => 
+  const filteredUsers = allUsers?.data?.filter((u: any) => 
     u.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.lastName.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
@@ -126,17 +126,17 @@ export default function People() {
                   <div className="flex items-center space-x-6">
                     <Avatar className="w-24 h-24">
                       <AvatarFallback className="text-2xl font-bold">
-                        {profileUser?.firstName?.[0]}{profileUser?.lastName?.[0]}
+                        {profileUser?.data?.firstName?.[0]}{profileUser?.data?.lastName?.[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <h1 className="text-3xl font-bold text-foreground mb-2">
-                        {profileUser?.firstName} {profileUser?.lastName}
+                        {profileUser?.data?.firstName} {profileUser?.data?.lastName}
                       </h1>
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
                           <Crown className="w-3 h-3 mr-1" />
-                          {profileUser?.subscriptionTier === 'premium' ? 'Premium' : 'Free'} Trader
+                          {profileUser?.data?.subscriptionTier === 'premium' ? 'Premium' : 'Free'} Trader
                         </Badge>
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                           <Calendar className="w-3 h-3 mr-1" />
