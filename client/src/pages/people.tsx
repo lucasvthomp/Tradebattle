@@ -50,11 +50,11 @@ const achievements = [
   // Uncommon (Green)
   { id: 4, name: "Profit Maker", description: "Made money on trade (tournament)", icon: DollarSign, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
   { id: 5, name: "Top 3 Finisher", description: "Finished in top 3 position in tournament", icon: Award, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
-  // Rare (Blue)
-  { id: 6, name: "5% Portfolio Growth", description: "Made over 5% on tournament portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100" },
-  // Epic (Purple)
-  { id: 7, name: "Tournament Leader", description: "Reached top 1 position in tournament", icon: Crown, rarity: "epic", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100" },
-  { id: 8, name: "10% Portfolio Growth", description: "Made over 10% on tournament portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100" },
+  // Rare (Bright Blue)
+  { id: 6, name: "5% Portfolio Growth", description: "Made over 5% on tournament portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
+  // Epic (Rich Purple)
+  { id: 7, name: "Tournament Leader", description: "Reached top 1 position in tournament", icon: Crown, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
+  { id: 8, name: "10% Portfolio Growth", description: "Made over 10% on tournament portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
   // Legendary (Bright Orange)
   { id: 9, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
   { id: 10, name: "25% Portfolio Growth", description: "Made over 25% on tournament portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
