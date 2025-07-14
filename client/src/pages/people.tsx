@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   User, 
   Users, 
@@ -65,6 +66,7 @@ export default function People() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("browse");
+  const [showAchievements, setShowAchievements] = useState(false);
 
   // Fetch all users for browsing
   const { data: allUsers, isLoading: isLoadingUsers } = useQuery({
@@ -260,14 +262,54 @@ export default function People() {
 
           {/* Search */}
           <motion.div className="mb-8" variants={fadeInUp}>
-            <div className="relative max-w-md">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search people..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
+            <div className="flex items-center space-x-4">
+              <div className="relative max-w-md">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search people..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              
+              {/* Achievements Button */}
+              <Dialog open={showAchievements} onOpenChange={setShowAchievements}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="flex items-center space-x-2">
+                    <Trophy className="w-4 h-4" />
+                    <span>Achievements</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle className="flex items-center space-x-2">
+                      <Trophy className="w-5 h-5" />
+                      <span>All Achievements</span>
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className="mt-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {achievements.map((achievement) => (
+                        <div key={achievement.id} className="flex items-center space-x-3 p-4 rounded-lg border bg-card">
+                          <div className={`w-12 h-12 rounded-full ${achievement.color} flex items-center justify-center`}>
+                            <achievement.icon className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <p className="font-medium text-foreground">{achievement.name}</p>
+                              <Badge variant="secondary" className="text-xs">
+                                {achievement.rarity}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </motion.div>
 
