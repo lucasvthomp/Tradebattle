@@ -396,22 +396,7 @@ export default function People() {
                           </div>
                         </div>
 
-                        {/* Achievements Preview */}
-                        <div className="mb-4">
-                          <p className="text-sm text-muted-foreground mb-2">Latest Achievements</p>
-                          <div className="flex space-x-2">
-                            {personAchievements.slice(0, 3).map((achievement) => (
-                              <div key={achievement.id} className={`w-8 h-8 rounded-full ${achievement.color} flex items-center justify-center`}>
-                                <achievement.icon className="w-4 h-4" />
-                              </div>
-                            ))}
-                            {personAchievements.length > 3 && (
-                              <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                <span className="text-xs font-medium">+{personAchievements.length - 3}</span>
-                              </div>
-                            )}
-                          </div>
-                        </div>
+                        {/* Achievement preview removed for performance - full achievements shown on profile page */}
 
                         <Button 
                           className="w-full" 
