@@ -19,7 +19,7 @@ import {
 import { storage } from '../storage.js';
 import { db } from '../db.js';
 import { tournaments, tournamentParticipants } from '../../shared/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { requireAuth } from '../auth.js';
 
 const router = Router();
@@ -965,12 +965,11 @@ router.post('/admin/tournaments/:id/end', requireAuth, asyncHandler(async (req, 
   }
 
   // Update tournament status to completed and set end date
-  await db.update(tournaments)
-    .set({ 
-      status: 'completed',
-      endedAt: new Date()
-    })
-    .where(eq(tournaments.id, tournamentId));
+  await db.execute(sql`
+    UPDATE tournaments 
+    SET status = 'completed', ended_at = NOW() 
+    WHERE id = ${tournamentId}
+  `);
 
   // Log the admin action
   await storage.createAdminLog({
