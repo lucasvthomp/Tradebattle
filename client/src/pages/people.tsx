@@ -88,10 +88,18 @@ export default function People() {
   const getUserAchievements = (userId: number) => {
     const userAchievements = [];
     
-    // For now, only assign basic achievements since no tournaments are completed
-    // Common achievements that most users would have
+    // Find user data from the users list or profile user
+    const userData = allUsers?.data?.find(u => u.id === userId) || 
+                    (profileUser?.data?.id === userId ? profileUser.data : null);
+    
+    // Basic achievements that most users would have
     userAchievements.push(achievements.find(a => a.name === "First Trade")); // Assume all users have made a trade
     userAchievements.push(achievements.find(a => a.name === "Tournament Joiner")); // Assume users have joined tournaments
+    
+    // Premium achievement based on subscription tier
+    if (userData?.subscriptionTier === 'premium') {
+      userAchievements.push(achievements.find(a => a.name === "Premium Trader"));
+    }
     
     // Filter out null/undefined achievements
     return userAchievements.filter(Boolean);
