@@ -55,10 +55,10 @@ const achievements = [
   // Epic (Purple)
   { id: 7, name: "Tournament Leader", description: "Reached top 1 position in tournament", icon: Crown, rarity: "epic", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100" },
   { id: 8, name: "10% Portfolio Growth", description: "Made over 10% on tournament portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100" },
-  // Legendary (Orange)
-  { id: 9, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100" },
-  { id: 10, name: "25% Portfolio Growth", description: "Made over 25% on tournament portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100" },
-  { id: 11, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100" },
+  // Legendary (Bright Orange)
+  { id: 9, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+  { id: 10, name: "25% Portfolio Growth", description: "Made over 25% on tournament portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+  { id: 11, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
 ];
 
 export default function People() {
