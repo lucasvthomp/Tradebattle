@@ -960,6 +960,7 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
   }
 
   // Delete related data in the correct order (foreign key constraints)
+  await db.execute(sql`DELETE FROM trade_history WHERE tournament_id = ${tournamentId}`);
   await db.execute(sql`DELETE FROM tournament_stock_purchases WHERE tournament_id = ${tournamentId}`);
   await db.execute(sql`DELETE FROM tournament_participants WHERE tournament_id = ${tournamentId}`);
   await db.execute(sql`DELETE FROM tournaments WHERE id = ${tournamentId}`);
