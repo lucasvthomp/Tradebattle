@@ -359,9 +359,8 @@ export default function People() {
               ) : (
                 filteredUsers.map((person: any) => {
                   const stats = getUserStats(person);
-                  // For the people browsing list, we don't fetch individual achievements
-                  // Only show achievement count on individual profile pages
-                  const achievementCount = 0; // Placeholder for list view
+                  // For the people browsing list, show actual achievement count
+                  const achievementCount = person.achievementCount || 0;
                   
                   return (
                     <Card key={person.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">

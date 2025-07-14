@@ -1014,6 +1014,10 @@ router.get('/users/public', asyncHandler(async (req, res) => {
     // Get total trade count from trade history
     const totalTrades = await storage.getUserTradeCount(user.id);
     
+    // Get achievement count
+    const achievements = await storage.getUserAchievements(user.id);
+    const achievementCount = achievements.length;
+    
     return {
       id: user.id,
       firstName: user.firstName,
@@ -1021,6 +1025,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
       totalTrades: totalTrades,
+      achievementCount: achievementCount,
       // Don't include sensitive information like email, password, balances, etc.
     };
   }));
