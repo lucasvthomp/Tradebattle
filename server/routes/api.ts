@@ -833,4 +833,72 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
   });
 }));
 
+/**
+ * GET /api/users/public
+ * Get all users with public profile information
+ */
+router.get('/users/public', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+  
+  // Get all users with only public information
+  const users = await storage.getAllUsers();
+  
+  const publicUsers = users.map(user => ({
+    id: user.id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    subscriptionTier: user.subscriptionTier,
+    createdAt: user.createdAt,
+    // Don't include sensitive information like email, password, balances, etc.
+  }));
+  
+  res.json({
+    success: true,
+    data: publicUsers
+  });
+}));
+
+/**
+ * GET /api/users/public/:userId
+ * Get specific user's public profile information
+ */
+router.get('/users/public/:userId', asyncHandler(async (req, res) => {
+  const requestingUserId = req.user?.id;
+  const targetUserId = parseInt(req.params.userId);
+  
+  if (!requestingUserId) {
+    throw new ValidationError('User not authenticated');
+  }
+  
+  if (isNaN(targetUserId)) {
+    throw new ValidationError('Invalid user ID');
+  }
+  
+  // Get the target user
+  const targetUser = await storage.getUser(targetUserId);
+  
+  if (!targetUser) {
+    throw new NotFoundError('User not found');
+  }
+  
+  // Return only public information
+  const publicUser = {
+    id: targetUser.id,
+    firstName: targetUser.firstName,
+    lastName: targetUser.lastName,
+    subscriptionTier: targetUser.subscriptionTier,
+    createdAt: targetUser.createdAt,
+    // Don't include sensitive information like email, password, balances, etc.
+  };
+  
+  res.json({
+    success: true,
+    data: publicUser
+  });
+}));
+
 export default router;

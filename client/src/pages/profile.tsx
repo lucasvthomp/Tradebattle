@@ -136,7 +136,7 @@ export default function Profile() {
           {/* Header */}
           <motion.div className="mb-8" variants={fadeInUp}>
             <h1 className="text-3xl font-bold text-foreground mb-2">My Account</h1>
-            <p className="text-muted-foreground">Manage your account and preferences</p>
+            <p className="text-muted-foreground">Manage your public profile and account settings</p>
           </motion.div>
 
           {/* User Overview Card */}
@@ -171,18 +171,22 @@ export default function Profile() {
 
           {/* Main Content */}
           <motion.div variants={fadeInUp}>
-            <Tabs defaultValue="profile" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="profile" className="flex items-center space-x-2">
+            <Tabs defaultValue="public" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="public" className="flex items-center space-x-2">
                   <User className="w-4 h-4" />
-                  <span>Profile</span>
+                  <span>Public Profile</span>
+                </TabsTrigger>
+                <TabsTrigger value="account" className="flex items-center space-x-2">
+                  <Settings className="w-4 h-4" />
+                  <span>Account Settings</span>
                 </TabsTrigger>
                 <TabsTrigger value="subscription" className="flex items-center space-x-2">
                   <Crown className="w-4 h-4" />
                   <span>Subscription</span>
                 </TabsTrigger>
                 <TabsTrigger value="preferences" className="flex items-center space-x-2">
-                  <Settings className="w-4 h-4" />
+                  <Bell className="w-4 h-4" />
                   <span>Preferences</span>
                 </TabsTrigger>
                 <TabsTrigger value="security" className="flex items-center space-x-2">
@@ -191,12 +195,125 @@ export default function Profile() {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="profile">
+              <TabsContent value="public">
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle>Personal Information</CardTitle>
+                    <CardTitle>Public Profile</CardTitle>
                     <CardDescription>
-                      Update your personal details and contact information
+                      This information is visible to other users on the platform
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <Label>Display Name</Label>
+                        <Input 
+                          value={`${user.firstName} ${user.lastName}`} 
+                          className="bg-muted cursor-not-allowed" 
+                          disabled 
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Your name as it appears to other users
+                        </p>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Member Since</Label>
+                        <Input 
+                          value={joinDate} 
+                          className="bg-muted cursor-not-allowed" 
+                          disabled 
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          When you joined the platform
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>Account Type</Label>
+                      <div className="flex items-center space-x-2">
+                        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                          <Crown className="w-3 h-3 mr-1" />
+                          {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Free'} Trader
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Your subscription tier is visible to other users
+                      </p>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-foreground">Trading Achievements</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* Mock achievements - these would come from the database */}
+                        <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
+                            <User className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">First Trade</p>
+                            <p className="text-sm text-muted-foreground">Made your first stock purchase</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+                          <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                            <Crown className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-medium text-foreground">Premium Member</p>
+                            <p className="text-sm text-muted-foreground">Upgraded to premium account</p>
+                          </div>
+                        </div>
+                        <div className="text-center p-4 border-2 border-dashed border-muted rounded-lg">
+                          <p className="text-sm text-muted-foreground">More achievements coming soon!</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-foreground">Profile Visibility</h4>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-foreground">Show achievements</p>
+                            <p className="text-sm text-muted-foreground">Display your trading achievements on public profile</p>
+                          </div>
+                          <Switch defaultChecked />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-foreground">Show join date</p>
+                            <p className="text-sm text-muted-foreground">Display when you joined the platform</p>
+                          </div>
+                          <Switch defaultChecked />
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium text-foreground">Show trading stats</p>
+                            <p className="text-sm text-muted-foreground">Display trading performance metrics</p>
+                          </div>
+                          <Switch defaultChecked />
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button className="w-full">
+                      Update Public Profile
+                    </Button>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="account">
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle>Account Settings</CardTitle>
+                    <CardDescription>
+                      Manage your private account information and settings
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
