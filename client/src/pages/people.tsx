@@ -40,14 +40,24 @@ const staggerChildren = {
   }
 };
 
-// Mock achievement data - this would come from the database
+// Achievement system with proper badge tiers and colors
 const achievements = [
-  { id: 1, name: "First Trade", description: "Made your first stock purchase", icon: Target, color: "bg-blue-500" },
-  { id: 2, name: "Profit Maker", description: "Achieved positive returns", icon: TrendingUp, color: "bg-green-500" },
-  { id: 3, name: "Tournament Winner", description: "Won a trading tournament", icon: Trophy, color: "bg-yellow-500" },
-  { id: 4, name: "Consistent Trader", description: "Active trading for 30 days", icon: Calendar, color: "bg-purple-500" },
-  { id: 5, name: "High Roller", description: "Portfolio value over $50,000", icon: DollarSign, color: "bg-orange-500" },
-  { id: 6, name: "Social Trader", description: "Connected with 10+ traders", icon: Users, color: "bg-pink-500" },
+  // Common (Gray)
+  { id: 1, name: "First Trade", description: "Made your first trade", icon: Target, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+  { id: 2, name: "Tournament Joiner", description: "Joined a tournament", icon: Users, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+  { id: 3, name: "Learning Experience", description: "Lost money on a trade", icon: TrendingUp, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+  // Uncommon (Green)
+  { id: 4, name: "Profit Maker", description: "Made money on trade (tournament)", icon: DollarSign, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
+  { id: 5, name: "Top 3 Finisher", description: "Finished in top 3 position in tournament", icon: Award, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
+  // Rare (Blue)
+  { id: 6, name: "5% Portfolio Growth", description: "Made over 5% on tournament portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100" },
+  // Epic (Purple)
+  { id: 7, name: "Tournament Leader", description: "Reached top 1 position in tournament", icon: Crown, rarity: "epic", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100" },
+  { id: 8, name: "10% Portfolio Growth", description: "Made over 10% on tournament portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-100" },
+  // Legendary (Orange)
+  { id: 9, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100" },
+  { id: 10, name: "25% Portfolio Growth", description: "Made over 25% on tournament portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100" },
+  { id: 11, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100" },
 ];
 
 export default function People() {
@@ -81,7 +91,6 @@ export default function People() {
     totalProfitLoss: (Math.random() * 10000 - 5000),
     tournamentsWon: Math.floor(Math.random() * 5),
     achievementsCount: Math.floor(Math.random() * 6) + 1,
-    joinDate: new Date(2024, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28)),
     lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7))
   });
 
@@ -140,7 +149,7 @@ export default function People() {
                         </Badge>
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                           <Calendar className="w-3 h-3 mr-1" />
-                          Since {stats.joinDate.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+                          Since {profileUser?.data?.createdAt ? new Date(profileUser.data.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
                         </Badge>
                         <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100">
                           <Clock className="w-3 h-3 mr-1" />
@@ -189,7 +198,7 @@ export default function People() {
                     {userAchievements.map((achievement) => (
                       <div key={achievement.id} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
                         <div className={`w-10 h-10 rounded-full ${achievement.color} flex items-center justify-center`}>
-                          <achievement.icon className="w-5 h-5 text-white" />
+                          <achievement.icon className="w-5 h-5" />
                         </div>
                         <div>
                           <p className="font-medium text-foreground">{achievement.name}</p>
@@ -301,6 +310,9 @@ export default function People() {
                             <p className="text-sm text-muted-foreground">
                               {person.subscriptionTier === 'premium' ? 'Premium' : 'Free'} Trader
                             </p>
+                            <p className="text-xs text-muted-foreground">
+                              Member since {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
+                            </p>
                           </div>
                         </div>
 
@@ -322,7 +334,7 @@ export default function People() {
                           <div className="flex space-x-2">
                             {personAchievements.slice(0, 3).map((achievement) => (
                               <div key={achievement.id} className={`w-8 h-8 rounded-full ${achievement.color} flex items-center justify-center`}>
-                                <achievement.icon className="w-4 h-4 text-white" />
+                                <achievement.icon className="w-4 h-4" />
                               </div>
                             ))}
                             {personAchievements.length > 3 && (

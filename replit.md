@@ -180,3 +180,5 @@ Preferred communication style: Simple, everyday language.
 - **Profile System Restructure** (January 2025): Split profile page into Public Profile and Account Settings sections - public profile shows achievements, trading stats, and visibility settings while account settings manages private information
 - **User Public API Endpoints** (January 2025): Added API endpoints for fetching all users (/api/users/public) and individual user profiles (/api/users/public/:userId) with only public information exposed
 - **Navigation Enhancement** (January 2025): Added People tab to main navigation allowing authenticated users to browse all platform users and view public profiles with achievements and trading statistics
+- **Real Member Since Dates** (January 2025): Updated People page to display actual user creation dates instead of hardcoded mock values, showing authentic "Member Since" information from database
+- **5-Tier Badge System** (January 2025): Implemented comprehensive achievement badge system with Gray (Common), Green (Uncommon), Blue (Rare), Purple (Epic), and Orange (Legendary) tiers based on specific trading accomplishments and milestones
