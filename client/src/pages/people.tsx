@@ -82,31 +82,42 @@ export default function People() {
     enabled: !!profileUserId,
   });
 
+  // Fetch user achievements when viewing profile
+  const { data: userAchievements, isLoading: isLoadingAchievements } = useQuery({
+    queryKey: ['/api/achievements', profileUserId],
+    enabled: !!profileUserId,
+  });
+
   // Filter users based on search query
   const filteredUsers = allUsers?.data?.filter((u: any) => 
     u.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     u.lastName.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-  // Get user achievements based on actual data (placeholder logic until we have real tournament data)
-  const getUserAchievements = (userId: number) => {
-    const userAchievements = [];
-    
-    // Find user data from the users list or profile user
-    const userData = allUsers?.data?.find(u => u.id === userId) || 
-                    (profileUser?.data?.id === userId ? profileUser.data : null);
-    
-    // Basic achievements that most users would have
-    userAchievements.push(achievements.find(a => a.name === "First Trade")); // Assume all users have made a trade
-    userAchievements.push(achievements.find(a => a.name === "Tournament Joiner")); // Assume users have joined tournaments
-    
-    // Premium achievement based on subscription tier
-    if (userData?.subscriptionTier === 'premium') {
-      userAchievements.push(achievements.find(a => a.name === "Premium Trader"));
+  // Map achievement types to display data
+  const getAchievementDisplay = (achievement: any) => {
+    const displayData = achievements.find(a => a.name === achievement.achievementName);
+    return displayData || {
+      id: achievement.id,
+      name: achievement.achievementName,
+      description: achievement.achievementDescription,
+      icon: Trophy,
+      rarity: achievement.achievementTier,
+      color: getColorForTier(achievement.achievementTier)
+    };
+  };
+
+  // Get color for achievement tier
+  const getColorForTier = (tier: string) => {
+    switch(tier) {
+      case 'common': return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100";
+      case 'uncommon': return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100";
+      case 'rare': return "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100";
+      case 'epic': return "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100";
+      case 'legendary': return "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100";
+      case 'mythic': return "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100";
+      default: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100";
     }
-    
-    // Filter out null/undefined achievements
-    return userAchievements.filter(Boolean);
   };
 
   // Get user stats from API data
@@ -117,7 +128,7 @@ export default function People() {
 
   // If viewing a specific user profile
   if (profileUserId) {
-    if (isLoadingProfile) {
+    if (isLoadingProfile || isLoadingAchievements) {
       return (
         <div className="min-h-screen bg-background flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
@@ -126,7 +137,7 @@ export default function People() {
     }
 
     const stats = getUserStats(profileUser?.data);
-    const userAchievements = getUserAchievements(parseInt(profileUserId));
+    const displayAchievements = userAchievements?.data?.map(getAchievementDisplay) || [];
 
     return (
       <div className="min-h-screen bg-background">
@@ -185,7 +196,7 @@ export default function People() {
                           <p className="text-sm text-muted-foreground">Total Trades</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{userAchievements.length}</p>
+                          <p className="text-2xl font-bold text-foreground">{displayAchievements.length}</p>
                           <p className="text-sm text-muted-foreground">Achievements</p>
                         </div>
                       </div>
@@ -206,7 +217,7 @@ export default function People() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {userAchievements.map((achievement) => (
+                    {displayAchievements.length > 0 ? displayAchievements.map((achievement) => (
                       <div key={achievement.id} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
                         <div className={`w-10 h-10 rounded-full ${achievement.color} flex items-center justify-center`}>
                           <achievement.icon className="w-5 h-5" />
@@ -216,7 +227,11 @@ export default function People() {
                           <p className="text-sm text-muted-foreground">{achievement.description}</p>
                         </div>
                       </div>
-                    ))}
+                    )) : (
+                      <div className="col-span-full text-center py-4">
+                        <p className="text-muted-foreground">No achievements yet</p>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
