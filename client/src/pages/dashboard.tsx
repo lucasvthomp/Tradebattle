@@ -417,6 +417,7 @@ export default function Dashboard() {
   const [tournamentName, setTournamentName] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("10");
   const [startingBalance, setStartingBalance] = useState("10000");
+  const [timeframe, setTimeframe] = useState("4 weeks");
   const [createdTournament, setCreatedTournament] = useState<any>(null);
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
@@ -713,6 +714,7 @@ export default function Dashboard() {
       setTournamentName("");
       setMaxPlayers("10");
       setStartingBalance("10000");
+      setTimeframe("4 weeks");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       // Invalidate balance query for the newly created tournament
       queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournament.id, user?.id] });
@@ -1526,9 +1528,43 @@ export default function Dashboard() {
                         max="10"
                       />
                     </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="timeframe" className="text-right">
+                        Timeframe
+                      </Label>
+                      <Select value={timeframe} onValueChange={setTimeframe}>
+                        <SelectTrigger className="col-span-3">
+                          <SelectValue placeholder="Select timeframe" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1 week">1 Week</SelectItem>
+                          <SelectItem value="2 weeks">2 Weeks</SelectItem>
+                          <SelectItem value="3 weeks">3 Weeks</SelectItem>
+                          <SelectItem value="4 weeks">4 Weeks</SelectItem>
+                          <SelectItem value="5 weeks">5 Weeks</SelectItem>
+                          <SelectItem value="6 weeks">6 Weeks</SelectItem>
+                          <SelectItem value="7 weeks">7 Weeks</SelectItem>
+                          <SelectItem value="8 weeks">8 Weeks</SelectItem>
+                          <SelectItem value="9 weeks">9 Weeks</SelectItem>
+                          <SelectItem value="10 weeks">10 Weeks</SelectItem>
+                          <SelectItem value="15 weeks">15 Weeks</SelectItem>
+                          <SelectItem value="20 weeks">20 Weeks</SelectItem>
+                          <SelectItem value="25 weeks">25 Weeks</SelectItem>
+                          <SelectItem value="30 weeks">30 Weeks</SelectItem>
+                          <SelectItem value="40 weeks">40 Weeks</SelectItem>
+                          <SelectItem value="1 year">1 Year</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setIsCreateTournamentDialogOpen(false)}>
+                    <Button variant="outline" onClick={() => {
+                      setIsCreateTournamentDialogOpen(false);
+                      setTournamentName("");
+                      setMaxPlayers("10");
+                      setStartingBalance("10000");
+                      setTimeframe("4 weeks");
+                    }}>
                       Cancel
                     </Button>
                     <Button 
@@ -1537,7 +1573,8 @@ export default function Dashboard() {
                           createTournamentMutation.mutate({
                             name: tournamentName,
                             maxPlayers: parseInt(maxPlayers),
-                            startingBalance: parseFloat(startingBalance)
+                            startingBalance: parseFloat(startingBalance),
+                            timeframe: timeframe
                           });
                         }
                       }}
