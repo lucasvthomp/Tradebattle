@@ -88,10 +88,6 @@ export default function Header() {
                     <User className="w-4 h-4 mr-2" />
                     My ORSATH
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/dashboard"}>
-                    <List className="w-4 h-4 mr-2" />
-                    Tournaments
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = "/archive"}>
                     <Archive className="w-4 h-4 mr-2" />
                     Archive
