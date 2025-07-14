@@ -114,10 +114,10 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="w-96">
           <CardContent className="p-6 text-center">
-            <p className="text-gray-600">Please log in to view your profile.</p>
+            <p className="text-muted-foreground">Please log in to view your profile.</p>
           </CardContent>
         </Card>
       </div>
@@ -125,7 +125,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8 px-4">
         <motion.div
           className="max-w-4xl mx-auto"
@@ -135,8 +135,8 @@ export default function Profile() {
         >
           {/* Header */}
           <motion.div className="mb-8" variants={fadeInUp}>
-            <h1 className="text-3xl font-bold text-black mb-2">My ORSATH</h1>
-            <p className="text-gray-600">Manage your account and preferences</p>
+            <h1 className="text-3xl font-bold text-foreground mb-2">My Account</h1>
+            <p className="text-muted-foreground">Manage your account and preferences</p>
           </motion.div>
 
           {/* User Overview Card */}
@@ -144,18 +144,18 @@ export default function Profile() {
             <Card className="mb-8 border-0 shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center">
-                    <User className="w-8 h-8 text-gray-400" />
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
+                    <User className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-black">{user.firstName} {user.lastName}</h2>
-                    <p className="text-gray-600">{user.email}</p>
+                    <h2 className="text-xl font-bold text-foreground">{user.firstName} {user.lastName}</h2>
+                    <p className="text-muted-foreground">{user.email}</p>
                     <div className="flex items-center space-x-4 mt-2">
-                      <Badge className="bg-blue-100 text-blue-800">
+                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
                         <Crown className="w-3 h-3 mr-1" />
                         {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Novice'} Plan
                       </Badge>
-                      <Badge className="bg-green-100 text-green-800">
+                      <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                         <Calendar className="w-3 h-3 mr-1" />
                         Member since {joinDate}
                       </Badge>
@@ -207,10 +207,10 @@ export default function Profile() {
                           <Input 
                             id="userId" 
                             value={user.userId !== null ? user.userId : "Not assigned"} 
-                            className="bg-gray-50 cursor-not-allowed" 
+                            className="bg-muted cursor-not-allowed" 
                             disabled 
                           />
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted-foreground">
                             Your unique account identifier
                           </p>
                         </div>
@@ -222,7 +222,7 @@ export default function Profile() {
                             placeholder="Enter your first name"
                           />
                           {form.formState.errors.firstName && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                               {form.formState.errors.firstName.message}
                             </p>
                           )}
@@ -235,7 +235,7 @@ export default function Profile() {
                             placeholder="Enter your last name"
                           />
                           {form.formState.errors.lastName && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                               {form.formState.errors.lastName.message}
                             </p>
                           )}
@@ -243,7 +243,7 @@ export default function Profile() {
                         <div className="space-y-2">
                           <Label htmlFor="email">Email Address</Label>
                           <div className="relative">
-                            <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
                               id="email" 
                               type="email" 
@@ -253,7 +253,7 @@ export default function Profile() {
                             />
                           </div>
                           {form.formState.errors.email && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                               {form.formState.errors.email.message}
                             </p>
                           )}
@@ -261,7 +261,7 @@ export default function Profile() {
                         <div className="space-y-2">
                           <Label htmlFor="joinDate">Member Since</Label>
                           <div className="relative">
-                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input 
                               id="joinDate" 
                               value={joinDate} 
@@ -287,68 +287,51 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle>Subscription Details</CardTitle>
                     <CardDescription>
-                      Manage your ORSATH subscription and billing
+                      Manage your subscription and billing
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className="font-semibold text-black flex items-center">
-                            <Crown className="w-5 h-5 mr-2 text-blue-600" />
+                          <h3 className="font-semibold text-foreground flex items-center">
+                            <Crown className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
                             {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Novice'} Plan
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-muted-foreground">
                             {user.subscriptionTier === 'novice' ? 'Free' : 
-                             user.subscriptionTier === 'explorer' ? '$9.99/month' :
-                             user.subscriptionTier === 'analyst' ? '$19.99/month' :
-                             user.subscriptionTier === 'professional' ? '$49.99/month' : 'Free'} • 
+                             user.subscriptionTier === 'premium' ? '$19.99/month' : 'Free'} • 
                              Next billing: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </p>
                         </div>
-                        <Badge className="bg-green-100 text-green-800">Active</Badge>
+                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Active</Badge>
                       </div>
                     </div>
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold text-black">Plan Features</h4>
-                      <ul className="space-y-2 text-sm text-gray-600">
+                      <h4 className="font-semibold text-foreground">Plan Features</h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
                         {user.subscriptionTier === 'novice' ? (
                           <>
-                            <li>✓ Limited watchlist (5 equities)</li>
-                            <li>✓ Limited news access</li>
+                            <li>✓ Tournament participation</li>
+                            <li>✓ Basic watchlist</li>
                             <li>✓ Email support</li>
-                            <li>✓ Basic market insights</li>
+                            <li>✓ Competition leaderboards</li>
                           </>
-                        ) : user.subscriptionTier === 'explorer' ? (
+                        ) : user.subscriptionTier === 'premium' ? (
                           <>
-                            <li>✓ Access to 50+ research studies monthly</li>
-                            <li>✓ Basic market news and insights</li>
-                            <li>✓ Email support</li>
-                            <li>✓ Basic portfolio tracking</li>
-                            <li>✓ Weekend market analysis</li>
-                          </>
-                        ) : user.subscriptionTier === 'analyst' ? (
-                          <>
-                            <li>✓ Everything in Explorer</li>
-                            <li>✓ Unlimited research studies access</li>
-                            <li>✓ Priority breaking news alerts</li>
-                            <li>✓ Advanced portfolio analytics</li>
-                            <li>✓ Instant email news alerts</li>
-                            <li>✓ Weekend support</li>
-                          </>
-                        ) : user.subscriptionTier === 'professional' ? (
-                          <>
-                            <li>✓ Everything in Analyst</li>
-                            <li>✓ Custom case studies</li>
+                            <li>✓ Everything in Free</li>
+                            <li>✓ Personal portfolio trading</li>
+                            <li>✓ Advanced analytics</li>
                             <li>✓ Priority support</li>
+                            <li>✓ Unlimited watchlist</li>
                           </>
                         ) : (
                           <>
-                            <li>✓ Limited watchlist (5 equities)</li>
-                            <li>✓ Limited news access</li>
+                            <li>✓ Tournament participation</li>
+                            <li>✓ Basic watchlist</li>
                             <li>✓ Email support</li>
-                            <li>✓ Basic market insights</li>
+                            <li>✓ Competition leaderboards</li>
                           </>
                         )}
                       </ul>
@@ -388,32 +371,32 @@ export default function Profile() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-black">Breaking News Alerts</h4>
-                          <p className="text-sm text-gray-600">Get notified about urgent market developments</p>
+                          <h4 className="font-medium text-foreground">Tournament Updates</h4>
+                          <p className="text-sm text-muted-foreground">Get notified about tournament results and new competitions</p>
                         </div>
                         <Switch defaultChecked />
                       </div>
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-black">Research Reports</h4>
-                          <p className="text-sm text-gray-600">Weekly digest of new research studies</p>
+                          <h4 className="font-medium text-foreground">Market Alerts</h4>
+                          <p className="text-sm text-muted-foreground">Important market movements and trading opportunities</p>
                         </div>
                         <Switch defaultChecked />
                       </div>
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-black">Watchlist Updates</h4>
-                          <p className="text-sm text-gray-600">Changes to companies in your watchlist</p>
+                          <h4 className="font-medium text-foreground">Watchlist Updates</h4>
+                          <p className="text-sm text-muted-foreground">Changes to companies in your watchlist</p>
                         </div>
                         <Switch defaultChecked />
                       </div>
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-black">Marketing Emails</h4>
-                          <p className="text-sm text-gray-600">Product updates and promotional content</p>
+                          <h4 className="font-medium text-foreground">Marketing Emails</h4>
+                          <p className="text-sm text-muted-foreground">Product updates and promotional content</p>
                         </div>
                         <Switch />
                       </div>
@@ -422,11 +405,11 @@ export default function Profile() {
                     <Separator />
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold text-black">Display Settings</h4>
+                      <h4 className="font-semibold text-foreground">Display Settings</h4>
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-black">Dark Mode</h4>
-                          <p className="text-sm text-gray-600">Switch between light and dark themes</p>
+                          <h4 className="font-medium text-foreground">Dark Mode</h4>
+                          <p className="text-sm text-muted-foreground">Switch between light and dark themes</p>
                         </div>
                         <Switch 
                           checked={theme === "dark"}
@@ -438,19 +421,19 @@ export default function Profile() {
                     <Separator />
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold text-black">Email Frequency</h4>
+                      <h4 className="font-semibold text-foreground">Email Frequency</h4>
                       <div className="space-y-2">
                         <label className="flex items-center space-x-2">
                           <input type="radio" name="frequency" defaultChecked />
-                          <span className="text-sm">Real-time (as they happen)</span>
+                          <span className="text-sm text-foreground">Real-time (as they happen)</span>
                         </label>
                         <label className="flex items-center space-x-2">
                           <input type="radio" name="frequency" />
-                          <span className="text-sm">Daily digest</span>
+                          <span className="text-sm text-foreground">Daily digest</span>
                         </label>
                         <label className="flex items-center space-x-2">
                           <input type="radio" name="frequency" />
-                          <span className="text-sm">Weekly summary</span>
+                          <span className="text-sm text-foreground">Weekly summary</span>
                         </label>
                       </div>
                     </div>
@@ -471,7 +454,7 @@ export default function Profile() {
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div>
-                        <h4 className="font-medium text-black mb-2">Change Password</h4>
+                        <h4 className="font-medium text-foreground mb-2">Change Password</h4>
                         <div className="space-y-3">
                           <Input type="password" placeholder="Current password" />
                           <Input type="password" placeholder="New password" />
@@ -484,8 +467,8 @@ export default function Profile() {
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-black">Two-Factor Authentication</h4>
-                          <p className="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                          <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
+                          <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
                         </div>
                         <Button variant="outline">Enable 2FA</Button>
                       </div>
@@ -493,12 +476,12 @@ export default function Profile() {
                       <Separator />
 
                       <div>
-                        <h4 className="font-medium text-black mb-2">Active Sessions</h4>
+                        <h4 className="font-medium text-foreground mb-2">Active Sessions</h4>
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between p-3 bg-gray-50 rounded">
+                          <div className="flex items-center justify-between p-3 bg-muted rounded">
                             <div>
-                              <p className="text-sm font-medium">Current Session</p>
-                              <p className="text-xs text-gray-600">Chrome on macOS • New York, NY</p>
+                              <p className="text-sm font-medium text-foreground">Current Session</p>
+                              <p className="text-xs text-muted-foreground">Chrome on macOS • New York, NY</p>
                             </div>
                             <Badge variant="secondary">Active</Badge>
                           </div>
@@ -511,7 +494,7 @@ export default function Profile() {
                       <Separator />
 
                       <div className="space-y-2">
-                        <h4 className="font-medium text-black">Account Actions</h4>
+                        <h4 className="font-medium text-foreground">Account Actions</h4>
                         <div className="space-y-2">
                           <Button variant="outline" className="w-full justify-start">
                             <Download className="w-4 h-4 mr-2" />
