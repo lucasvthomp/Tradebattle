@@ -76,7 +76,7 @@ export default function Landing() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
@@ -86,8 +86,8 @@ export default function Landing() {
                 transition={{ duration: 0.6 }}
                 viewport={{ once: true }}
               >
-                <h2 className="text-4xl font-bold text-black mb-6">How It Works</h2>
-                <p className="text-xl text-gray-600">
+                <h2 className="text-4xl font-bold text-foreground mb-6">How It Works</h2>
+                <p className="text-xl text-muted-foreground">
                   Start competing in paper trading competitions in three simple steps
                 </p>
               </motion.div>
@@ -124,13 +124,13 @@ export default function Landing() {
                   <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-center">
                     <CardContent className="p-6">
                       <div className="flex justify-center mb-4">
-                        <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center text-xl font-bold">
+                        <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xl font-bold">
                           {step.step}
                         </div>
                       </div>
-                      <step.icon className="w-8 h-8 mx-auto mb-4 text-black" />
-                      <h3 className="text-xl font-bold text-black mb-3">{step.title}</h3>
-                      <p className="text-gray-600">{step.description}</p>
+                      <step.icon className="w-8 h-8 mx-auto mb-4 text-foreground" />
+                      <h3 className="text-xl font-bold text-foreground mb-3">{step.title}</h3>
+                      <p className="text-muted-foreground">{step.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
