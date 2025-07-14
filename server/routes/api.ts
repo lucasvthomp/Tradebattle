@@ -847,13 +847,31 @@ router.get('/users/public', asyncHandler(async (req, res) => {
   // Get all users with only public information
   const users = await storage.getAllUsers();
   
-  const publicUsers = users.map(user => ({
-    id: user.id,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    subscriptionTier: user.subscriptionTier,
-    createdAt: user.createdAt,
-    // Don't include sensitive information like email, password, balances, etc.
+  const publicUsers = await Promise.all(users.map(async (user) => {
+    // Get trade counts from all sources
+    const personalPurchases = await storage.getPersonalStockPurchases(user.id);
+    const personalTradeCount = personalPurchases.length;
+    
+    // Get tournament trade counts (sum across all tournaments)
+    const tournaments = await storage.getUserTournaments(user.id);
+    let tournamentTradeCount = 0;
+    
+    for (const tournament of tournaments) {
+      const tournamentPurchases = await storage.getTournamentStockPurchases(tournament.id, user.id);
+      tournamentTradeCount += tournamentPurchases.length;
+    }
+    
+    const totalTrades = personalTradeCount + tournamentTradeCount;
+    
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      subscriptionTier: user.subscriptionTier,
+      createdAt: user.createdAt,
+      totalTrades: totalTrades,
+      // Don't include sensitive information like email, password, balances, etc.
+    };
   }));
   
   res.json({
@@ -885,6 +903,21 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
     throw new NotFoundError('User not found');
   }
   
+  // Get trade counts from all sources
+  const personalPurchases = await storage.getPersonalStockPurchases(targetUserId);
+  const personalTradeCount = personalPurchases.length;
+  
+  // Get tournament trade counts (sum across all tournaments)
+  const tournaments = await storage.getUserTournaments(targetUserId);
+  let tournamentTradeCount = 0;
+  
+  for (const tournament of tournaments) {
+    const tournamentPurchases = await storage.getTournamentStockPurchases(tournament.id, targetUserId);
+    tournamentTradeCount += tournamentPurchases.length;
+  }
+  
+  const totalTrades = personalTradeCount + tournamentTradeCount;
+
   // Return only public information
   const publicUser = {
     id: targetUser.id,
@@ -892,6 +925,7 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
     lastName: targetUser.lastName,
     subscriptionTier: targetUser.subscriptionTier,
     createdAt: targetUser.createdAt,
+    totalTrades: totalTrades,
     // Don't include sensitive information like email, password, balances, etc.
   };
   

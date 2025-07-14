@@ -84,13 +84,22 @@ export default function People() {
     u.lastName.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
-  // Calculate user stats (mock data - would come from database)
-  const getUserStats = (userId: number) => ({
-    totalTrades: Math.floor(Math.random() * 100) + 10,
-    winRate: Math.floor(Math.random() * 40) + 50,
-    totalProfitLoss: (Math.random() * 10000 - 5000),
-    tournamentsWon: Math.floor(Math.random() * 5),
-    achievementsCount: Math.floor(Math.random() * 6) + 1,
+  // Get user achievements based on actual data (placeholder logic until we have real tournament data)
+  const getUserAchievements = (userId: number) => {
+    const userAchievements = [];
+    
+    // For now, only assign basic achievements since no tournaments are completed
+    // Common achievements that most users would have
+    userAchievements.push(achievements.find(a => a.name === "First Trade")); // Assume all users have made a trade
+    userAchievements.push(achievements.find(a => a.name === "Tournament Joiner")); // Assume users have joined tournaments
+    
+    // Filter out null/undefined achievements
+    return userAchievements.filter(Boolean);
+  };
+
+  // Get user stats from API data
+  const getUserStats = (user: any) => ({
+    totalTrades: user.totalTrades || 0,
     lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7))
   });
 
@@ -104,8 +113,8 @@ export default function People() {
       );
     }
 
-    const stats = getUserStats(parseInt(profileUserId));
-    const userAchievements = achievements.slice(0, stats.achievementsCount);
+    const stats = getUserStats(profileUser?.data);
+    const userAchievements = getUserAchievements(parseInt(profileUserId));
 
     return (
       <div className="min-h-screen bg-background">
@@ -158,24 +167,14 @@ export default function People() {
                       </div>
                       
                       {/* Quick Stats */}
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 gap-4">
                         <div className="text-center">
                           <p className="text-2xl font-bold text-foreground">{stats.totalTrades}</p>
                           <p className="text-sm text-muted-foreground">Total Trades</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{stats.winRate}%</p>
-                          <p className="text-sm text-muted-foreground">Win Rate</p>
-                        </div>
-                        <div className="text-center">
-                          <p className={`text-2xl font-bold ${stats.totalProfitLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                            ${stats.totalProfitLoss.toFixed(0)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">P&L</p>
-                        </div>
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{stats.tournamentsWon}</p>
-                          <p className="text-sm text-muted-foreground">Tournaments Won</p>
+                          <p className="text-2xl font-bold text-foreground">{userAchievements.length}</p>
+                          <p className="text-sm text-muted-foreground">Achievements</p>
                         </div>
                       </div>
                     </div>
@@ -291,8 +290,8 @@ export default function People() {
                 </div>
               ) : (
                 filteredUsers.map((person: any) => {
-                  const stats = getUserStats(person.id);
-                  const personAchievements = achievements.slice(0, stats.achievementsCount);
+                  const stats = getUserStats(person);
+                  const personAchievements = getUserAchievements(person.id);
                   
                   return (
                     <Card key={person.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
@@ -323,8 +322,8 @@ export default function People() {
                             <p className="text-xs text-muted-foreground">Trades</p>
                           </div>
                           <div className="text-center">
-                            <p className="text-lg font-bold text-foreground">{stats.winRate}%</p>
-                            <p className="text-xs text-muted-foreground">Win Rate</p>
+                            <p className="text-lg font-bold text-foreground">{personAchievements.length}</p>
+                            <p className="text-xs text-muted-foreground">Achievements</p>
                           </div>
                         </div>
 
