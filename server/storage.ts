@@ -98,6 +98,7 @@ export interface IStorage {
   // Tournament status operations
   updateTournamentStatus(tournamentId: number, status: string, endedAt?: Date): Promise<Tournament>;
   getExpiredTournaments(): Promise<Tournament[]>;
+  getWaitingTournaments(): Promise<Tournament[]>;
   getArchivedTournaments(userId: number): Promise<Tournament[]>;
 }
 
@@ -479,6 +480,13 @@ export class DatabaseStorage implements IStorage {
       const expirationDate = new Date(createdAt.getTime() + timeframeMs);
       return now > expirationDate;
     });
+  }
+
+  async getWaitingTournaments(): Promise<Tournament[]> {
+    return await db
+      .select()
+      .from(tournaments)
+      .where(eq(tournaments.status, 'waiting'));
   }
 
   private parseTimeframe(timeframe: string): number {

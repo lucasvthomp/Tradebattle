@@ -15,6 +15,10 @@ export class TournamentExpirationService {
    * Check for expired tournaments and process them
    */
   async processExpiredTournaments(): Promise<void> {
+    // First, start any waiting tournaments that should be active
+    await this.startWaitingTournaments();
+    
+    // Then process expired tournaments
     const expiredTournaments = await storage.getExpiredTournaments();
     
     for (const tournament of expiredTournaments) {
@@ -30,6 +34,21 @@ export class TournamentExpirationService {
       await storage.updateTournamentStatus(tournament.id, 'completed', new Date());
       
       console.log(`Tournament ${tournament.name} completed successfully`);
+    }
+  }
+
+  /**
+   * Start waiting tournaments that should be active
+   */
+  private async startWaitingTournaments(): Promise<void> {
+    const waitingTournaments = await storage.getWaitingTournaments();
+    console.log(`Found ${waitingTournaments.length} waiting tournaments`);
+    
+    for (const tournament of waitingTournaments) {
+      // For now, start tournaments immediately when they're created
+      // You could add logic here to start based on time, player count, etc.
+      console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id})`);
+      await storage.updateTournamentStatus(tournament.id, 'active', new Date());
     }
   }
 
