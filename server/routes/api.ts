@@ -20,6 +20,7 @@ import { storage } from '../storage.js';
 import { db } from '../db.js';
 import { tournaments, tournamentParticipants } from '../../shared/schema.js';
 import { eq } from 'drizzle-orm';
+import { requireAuth } from '../auth.js';
 
 const router = Router();
 
@@ -888,7 +889,7 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
  * GET /api/admin/tournaments
  * Get all tournaments for admin management
  */
-router.get('/admin/tournaments', asyncHandler(async (req, res) => {
+router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   
   if (!userId) {
@@ -932,7 +933,7 @@ router.get('/admin/tournaments', asyncHandler(async (req, res) => {
  * POST /api/admin/tournaments/:id/end
  * End a tournament early (admin only)
  */
-router.post('/admin/tournaments/:id/end', asyncHandler(async (req, res) => {
+router.post('/admin/tournaments/:id/end', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   const tournamentId = parseInt(req.params.id);
   
