@@ -301,10 +301,10 @@ export default function Admin() {
 
   const handleEndTournament = (tournament: any) => {
     toast({
-      title: "End Tournament Feature",
-      description: `This feature would allow ending tournament "${tournament.name}" early. Implementation depends on business requirements.`,
-      variant: "destructive",
-      duration: 5000,
+      title: "Feature Not Available",
+      description: `Tournament "${tournament.name}" can only be ended naturally when the time expires. Early termination requires additional business logic.`,
+      variant: "default",
+      duration: 4000,
     });
   };
 
