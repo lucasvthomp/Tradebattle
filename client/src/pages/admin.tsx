@@ -147,8 +147,8 @@ export default function Admin() {
   });
 
   // Fetch all tournaments
-  const { data: allTournaments, isLoading: tournamentsLoading } = useQuery({
-    queryKey: ["/api/tournaments/leaderboard"],
+  const { data: tournamentData, isLoading: tournamentsLoading } = useQuery({
+    queryKey: ["/api/admin/tournaments"],
     enabled: isAdmin,
     onError: (error: Error) => {
       if (error.message.includes("401")) {
@@ -163,6 +163,9 @@ export default function Admin() {
       }
     },
   });
+
+  // Extract tournaments from the response data
+  const allTournaments = tournamentData?.data || [];
 
   // Delete user mutation
   const deleteMutation = useMutation({

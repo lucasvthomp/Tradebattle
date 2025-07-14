@@ -882,6 +882,42 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * GET /api/admin/tournaments
+ * Get all tournaments for admin management
+ */
+router.get('/admin/tournaments', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  // Check if user is admin
+  if (!(userId === 0 || userId === 1 || userId === 2)) {
+    throw new ValidationError('Access denied. Admin privileges required.');
+  }
+
+  // Get all tournaments
+  const tournaments = await storage.getAllTournaments();
+  
+  // Get participant counts for each tournament
+  const tournamentsWithCounts = await Promise.all(
+    tournaments.map(async (tournament) => {
+      const participants = await storage.getTournamentParticipants(tournament.id);
+      return {
+        ...tournament,
+        memberCount: participants.length,
+      };
+    })
+  );
+
+  res.json({
+    success: true,
+    data: tournamentsWithCounts
+  });
+}));
+
+/**
  * GET /api/users/public
  * Get all users with public profile information
  */
