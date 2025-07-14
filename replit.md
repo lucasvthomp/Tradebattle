@@ -191,3 +191,4 @@ Preferred communication style: Simple, everyday language.
 - **Automated Tournament Processing** (January 2025): Created background scheduler service that runs every 5 minutes to check for expired tournaments, calculate final standings, award achievements, and mark tournaments as completed
 - **Archive Page Implementation** (January 2025): Built comprehensive archive page with tabs for completed tournaments and earned achievements, accessible from profile dropdown menu with proper authentication and responsive design
 - **Archive Page Simplification** (January 2025): Removed achievements tab from archive page, simplified to only show completed tournaments as requested by user
+- **1 Minute Tournament Option** (January 2025): Added 1 minute tournament option to dropdown for rapid testing of tournament expiration system, updated backend parseTimeframe function to handle minutes in milliseconds, and updated countdown timer to support minute-based tournaments

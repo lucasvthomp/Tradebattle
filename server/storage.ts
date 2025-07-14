@@ -475,31 +475,34 @@ export class DatabaseStorage implements IStorage {
     // Filter expired tournaments in JavaScript since SQL interval parsing can be complex
     return results.filter(tournament => {
       const createdAt = new Date(tournament.createdAt);
-      const timeframeDays = this.parseTimeframe(tournament.timeframe);
-      const expirationDate = new Date(createdAt.getTime() + timeframeDays * 24 * 60 * 60 * 1000);
+      const timeframeMs = this.parseTimeframe(tournament.timeframe);
+      const expirationDate = new Date(createdAt.getTime() + timeframeMs);
       return now > expirationDate;
     });
   }
 
   private parseTimeframe(timeframe: string): number {
-    const match = timeframe.match(/(\d+)\s*(day|days|week|weeks|month|months)/i);
-    if (!match) return 28; // Default to 4 weeks
+    const match = timeframe.match(/(\d+)\s*(minute|minutes|day|days|week|weeks|month|months)/i);
+    if (!match) return 28 * 24 * 60 * 60 * 1000; // Default to 4 weeks in milliseconds
     
     const value = parseInt(match[1]);
     const unit = match[2].toLowerCase();
     
     switch (unit) {
+      case 'minute':
+      case 'minutes':
+        return value * 60 * 1000; // Convert minutes to milliseconds
       case 'day':
       case 'days':
-        return value;
+        return value * 24 * 60 * 60 * 1000; // Convert days to milliseconds
       case 'week':
       case 'weeks':
-        return value * 7;
+        return value * 7 * 24 * 60 * 60 * 1000; // Convert weeks to milliseconds
       case 'month':
       case 'months':
-        return value * 30;
+        return value * 30 * 24 * 60 * 60 * 1000; // Convert months to milliseconds
       default:
-        return 28;
+        return 28 * 24 * 60 * 60 * 1000; // Default to 4 weeks in milliseconds
     }
   }
 

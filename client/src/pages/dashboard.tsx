@@ -398,6 +398,7 @@ const TournamentCountdown = ({ startedAt, timeframe }: { startedAt: string; time
       
       // Parse timeframe to get duration in milliseconds
       const timeframeMap: { [key: string]: number } = {
+        "1 minute": 1 * 60 * 1000,
         "1 week": 7 * 24 * 60 * 60 * 1000,
         "2 weeks": 14 * 24 * 60 * 60 * 1000,
         "3 weeks": 21 * 24 * 60 * 60 * 1000,
@@ -1605,6 +1606,7 @@ export default function Dashboard() {
                           <SelectValue placeholder="Select timeframe" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="1 minute">1 Minute</SelectItem>
                           <SelectItem value="1 week">1 Week</SelectItem>
                           <SelectItem value="2 weeks">2 Weeks</SelectItem>
                           <SelectItem value="3 weeks">3 Weeks</SelectItem>
