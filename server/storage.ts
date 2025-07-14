@@ -94,6 +94,7 @@ export interface IStorage {
   getUserAchievements(userId: number): Promise<UserAchievement[]>;
   awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
   hasAchievement(userId: number, achievementType: string, tournamentId?: number): Promise<boolean>;
+  ensureWelcomeAchievement(userId: number): Promise<void>;
   
   // Tournament status operations
   updateTournamentStatus(tournamentId: number, status: string, endedAt?: Date): Promise<Tournament>;
@@ -436,6 +437,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserAchievements(userId: number): Promise<UserAchievement[]> {
+    // Ensure user has Welcome achievement before returning achievements
+    await this.ensureWelcomeAchievement(userId);
+    
     return await db
       .select()
       .from(userAchievements)
@@ -557,6 +561,22 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(tournaments.endedAt));
+  }
+
+  // Ensure user has Welcome achievement
+  async ensureWelcomeAchievement(userId: number): Promise<void> {
+    const hasWelcome = await this.hasAchievement(userId, 'welcome');
+    if (!hasWelcome) {
+      await this.awardAchievement({
+        userId: userId,
+        achievementType: 'welcome',
+        achievementTier: 'common',
+        achievementName: 'Welcome',
+        achievementDescription: 'Joined the platform',
+        earnedAt: new Date(),
+        createdAt: new Date()
+      });
+    }
   }
 }
 

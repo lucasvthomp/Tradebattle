@@ -1014,7 +1014,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
     // Get total trade count from trade history
     const totalTrades = await storage.getUserTradeCount(user.id);
     
-    // Get achievement count
+    // Get achievement count (this will automatically ensure Welcome achievement exists)
     const achievements = await storage.getUserAchievements(user.id);
     const achievementCount = achievements.length;
     
