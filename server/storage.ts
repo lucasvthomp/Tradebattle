@@ -34,7 +34,7 @@ import {
   type InsertUserAchievement,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, asc, and, or, sql } from "drizzle-orm";
+import { eq, desc, asc, and, or, sql, ne } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for email/password auth
@@ -275,7 +275,12 @@ export class DatabaseStorage implements IStorage {
       })
       .from(tournaments)
       .innerJoin(tournamentParticipants, eq(tournaments.id, tournamentParticipants.tournamentId))
-      .where(eq(tournamentParticipants.userId, userId))
+      .where(
+        and(
+          eq(tournamentParticipants.userId, userId),
+          ne(tournaments.status, 'completed')
+        )
+      )
       .orderBy(desc(tournaments.createdAt));
   }
 
