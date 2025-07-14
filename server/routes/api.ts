@@ -857,7 +857,8 @@ router.get('/users/public', asyncHandler(async (req, res) => {
     let tournamentTradeCount = 0;
     
     for (const tournament of tournaments) {
-      const tournamentPurchases = await storage.getTournamentStockPurchases(tournament.id, user.id);
+      const tournamentId = tournament.tournaments?.id || tournament.id;
+      const tournamentPurchases = await storage.getTournamentStockPurchases(tournamentId, user.id);
       tournamentTradeCount += tournamentPurchases.length;
     }
     
@@ -912,11 +913,20 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   let tournamentTradeCount = 0;
   
   for (const tournament of tournaments) {
-    const tournamentPurchases = await storage.getTournamentStockPurchases(tournament.id, targetUserId);
+    const tournamentId = tournament.tournaments?.id || tournament.id;
+    const tournamentPurchases = await storage.getTournamentStockPurchases(tournamentId, targetUserId);
     tournamentTradeCount += tournamentPurchases.length;
   }
   
   const totalTrades = personalTradeCount + tournamentTradeCount;
+  
+  // Debug logging
+  console.log(`User ${targetUserId} trade counts:`, {
+    personalTradeCount,
+    tournamentTradeCount,
+    totalTrades,
+    tournamentsCount: tournaments.length
+  });
 
   // Return only public information
   const publicUser = {
