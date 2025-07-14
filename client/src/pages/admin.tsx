@@ -26,7 +26,9 @@ import {
   Globe,
   Database,
   Clock,
-  AlertTriangle
+  AlertTriangle,
+  Trophy,
+  GamepadIcon
 } from "lucide-react";
 import {
   AlertDialog,
@@ -144,6 +146,24 @@ export default function Admin() {
     refetchInterval: 15000, // Refresh every 15 seconds to show Yahoo Finance updates
   });
 
+  // Fetch all tournaments
+  const { data: allTournaments, isLoading: tournamentsLoading } = useQuery({
+    queryKey: ["/api/tournaments/leaderboard"],
+    enabled: isAdmin,
+    onError: (error: Error) => {
+      if (error.message.includes("401")) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+      }
+    },
+  });
+
   // Delete user mutation
   const deleteMutation = useMutation({
     mutationFn: async (email: string) => {
@@ -258,8 +278,9 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="users">User Management</TabsTrigger>
+              <TabsTrigger value="tournaments">Tournament Management</TabsTrigger>
               <TabsTrigger value="system">System Status</TabsTrigger>
             </TabsList>
 
@@ -404,6 +425,175 @@ export default function Admin() {
                         ))}
                       </div>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="tournaments" className="space-y-6">
+              {/* Tournament Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total Tournaments</CardTitle>
+                    <Trophy className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">{allTournaments?.length || 0}</div>
+                    <p className="text-xs text-gray-500">Active competitions</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Active Players</CardTitle>
+                    <GamepadIcon className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {allTournaments?.reduce((total, tournament) => total + tournament.memberCount, 0) || 0}
+                    </div>
+                    <p className="text-xs text-gray-500">Tournament participants</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Avg. Players</CardTitle>
+                    <Users className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {allTournaments?.length ? Math.round((allTournaments?.reduce((total, tournament) => total + tournament.memberCount, 0) || 0) / allTournaments.length) : 0}
+                    </div>
+                    <p className="text-xs text-gray-500">Players per tournament</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Active Tournaments</CardTitle>
+                    <Activity className="h-4 w-4 text-gray-500" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {allTournaments?.filter(t => new Date(t.endsAt) > new Date()).length || 0}
+                    </div>
+                    <p className="text-xs text-gray-500">Still running</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Tournaments Table */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5" />
+                    Tournament Management
+                  </CardTitle>
+                  <CardDescription>
+                    Manage active tournaments and competitions
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {tournamentsLoading ? (
+                      <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                        <p className="mt-2 text-sm text-gray-600">Loading tournaments...</p>
+                      </div>
+                    ) : (
+                      <div className="rounded-lg border">
+                        <div className="grid grid-cols-6 gap-4 p-4 border-b bg-gray-50 dark:bg-gray-800 font-semibold">
+                          <div>Tournament ID</div>
+                          <div>Name</div>
+                          <div>Members</div>
+                          <div>Time Left</div>
+                          <div>Status</div>
+                          <div>Actions</div>
+                        </div>
+                        <div className="divide-y">
+                          {allTournaments?.map((tournament) => {
+                            const timeLeft = new Date(tournament.endsAt).getTime() - new Date().getTime();
+                            const isActive = timeLeft > 0;
+                            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                            
+                            return (
+                              <div key={tournament.id} className="grid grid-cols-6 gap-4 p-4 items-center">
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary">
+                                    <Trophy className="h-3 w-3 mr-1" />
+                                    {tournament.id}
+                                  </Badge>
+                                </div>
+                                <div>
+                                  <div className="font-medium">{tournament.name}</div>
+                                  <div className="text-sm text-gray-500">Code: {tournament.code}</div>
+                                </div>
+                                <div>
+                                  <Badge variant="outline" className="text-blue-600">
+                                    <Users className="h-3 w-3 mr-1" />
+                                    {tournament.memberCount}
+                                  </Badge>
+                                </div>
+                                <div>
+                                  {isActive ? (
+                                    <div className="text-sm">
+                                      <div className="font-medium">
+                                        {days > 0 ? `${days}d ` : ''}
+                                        {hours > 0 ? `${hours}h ` : ''}
+                                        {minutes}m
+                                      </div>
+                                      <div className="text-gray-500">remaining</div>
+                                    </div>
+                                  ) : (
+                                    <div className="text-sm text-gray-500">
+                                      <div className="font-medium">Ended</div>
+                                      <div>{new Date(tournament.endsAt).toLocaleDateString()}</div>
+                                    </div>
+                                  )}
+                                </div>
+                                <div>
+                                  <Badge variant="outline" className={isActive ? "text-green-600" : "text-red-600"}>
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    {isActive ? 'Active' : 'Ended'}
+                                  </Badge>
+                                </div>
+                                <div>
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button variant="ghost" size="sm">
+                                        <MoreHorizontal className="h-4 w-4" />
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem>
+                                        <Eye className="h-4 w-4 mr-2" />
+                                        View Details
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem>
+                                        <Users className="h-4 w-4 mr-2" />
+                                        View Participants
+                                      </DropdownMenuItem>
+                                      <DropdownMenuSeparator />
+                                      <DropdownMenuItem
+                                        className="text-red-600 hover:text-red-700"
+                                        disabled={!isActive}
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        End Tournament
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
