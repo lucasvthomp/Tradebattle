@@ -420,6 +420,18 @@ router.post('/tournaments/:id/purchase', asyncHandler(async (req, res) => {
     totalCost: totalCost
   });
 
+  // Record the trade in trade history
+  await storage.recordTrade({
+    userId: userId,
+    tournamentId: tournamentId,
+    symbol: sanitizeInput(symbol),
+    companyName: sanitizeInput(companyName),
+    tradeType: 'buy',
+    shares: parseInt(shares),
+    price: parseFloat(purchasePrice),
+    totalValue: totalCost
+  });
+
   // Update user balance
   await storage.updateTournamentBalance(tournamentId, userId, currentBalance - totalCost);
 
@@ -461,6 +473,18 @@ router.post('/tournaments/:id/sell', asyncHandler(async (req, res) => {
   }
 
   const saleValue = sharesToSellNum * parseFloat(currentPrice);
+  
+  // Record the sell trade in trade history
+  await storage.recordTrade({
+    userId: userId,
+    tournamentId: tournamentId,
+    symbol: purchase.symbol,
+    companyName: purchase.companyName,
+    tradeType: 'sell',
+    shares: sharesToSellNum,
+    price: parseFloat(currentPrice),
+    totalValue: saleValue
+  });
   
   // Get current balance
   const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
@@ -613,6 +637,18 @@ router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
     totalCost: totalCost
   });
 
+  // Record the trade in trade history
+  await storage.recordTrade({
+    userId: userId,
+    tournamentId: null, // null for personal trades
+    symbol: sanitizeInput(symbol),
+    companyName: sanitizeInput(companyName),
+    tradeType: 'buy',
+    shares: parseInt(shares),
+    price: parseFloat(purchasePrice),
+    totalValue: totalCost
+  });
+
   // Update user balance
   await storage.updateUser(userId, {
     personalBalance: currentBalance - totalCost
@@ -662,6 +698,18 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
 
   const saleValue = sharesToSellNum * parseFloat(currentPrice);
   const currentBalance = parseFloat(user.personalBalance) || 10000;
+  
+  // Record the sell trade in trade history
+  await storage.recordTrade({
+    userId: userId,
+    tournamentId: null, // null for personal trades
+    symbol: purchase.symbol,
+    companyName: purchase.companyName,
+    tradeType: 'sell',
+    shares: sharesToSellNum,
+    price: parseFloat(currentPrice),
+    totalValue: saleValue
+  });
   
   // Update balance with sale proceeds
   await storage.updateUser(userId, {
@@ -848,21 +896,8 @@ router.get('/users/public', asyncHandler(async (req, res) => {
   const users = await storage.getAllUsers();
   
   const publicUsers = await Promise.all(users.map(async (user) => {
-    // Get trade counts from all sources
-    const personalPurchases = await storage.getPersonalStockPurchases(user.id);
-    const personalTradeCount = personalPurchases.length;
-    
-    // Get tournament trade counts (sum across all tournaments)
-    const tournaments = await storage.getUserTournaments(user.id);
-    let tournamentTradeCount = 0;
-    
-    for (const tournament of tournaments) {
-      const tournamentId = tournament.tournaments?.id || tournament.id;
-      const tournamentPurchases = await storage.getTournamentStockPurchases(tournamentId, user.id);
-      tournamentTradeCount += tournamentPurchases.length;
-    }
-    
-    const totalTrades = personalTradeCount + tournamentTradeCount;
+    // Get total trade count from trade history
+    const totalTrades = await storage.getUserTradeCount(user.id);
     
     return {
       id: user.id,
@@ -904,29 +939,8 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
     throw new NotFoundError('User not found');
   }
   
-  // Get trade counts from all sources
-  const personalPurchases = await storage.getPersonalStockPurchases(targetUserId);
-  const personalTradeCount = personalPurchases.length;
-  
-  // Get tournament trade counts (sum across all tournaments)
-  const tournaments = await storage.getUserTournaments(targetUserId);
-  let tournamentTradeCount = 0;
-  
-  for (const tournament of tournaments) {
-    const tournamentId = tournament.tournaments?.id || tournament.id;
-    const tournamentPurchases = await storage.getTournamentStockPurchases(tournamentId, targetUserId);
-    tournamentTradeCount += tournamentPurchases.length;
-  }
-  
-  const totalTrades = personalTradeCount + tournamentTradeCount;
-  
-  // Debug logging
-  console.log(`User ${targetUserId} trade counts:`, {
-    personalTradeCount,
-    tournamentTradeCount,
-    totalTrades,
-    tournamentsCount: tournaments.length
-  });
+  // Get total trade count from trade history
+  const totalTrades = await storage.getUserTradeCount(targetUserId);
 
   // Return only public information
   const publicUser = {

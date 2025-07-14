@@ -8,6 +8,7 @@ import {
   tournaments,
   tournamentParticipants,
   tournamentStockPurchases,
+  tradeHistory,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -26,6 +27,8 @@ import {
   type InsertTournamentStockPurchase,
   type PersonalStockPurchase,
   type InsertPersonalStockPurchase,
+  type TradeHistory,
+  type InsertTradeHistory,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql } from "drizzle-orm";
@@ -79,6 +82,10 @@ export interface IStorage {
   
   // Tournament operations
   getAllTournaments(): Promise<Tournament[]>;
+  
+  // Trade tracking operations
+  recordTrade(trade: InsertTradeHistory): Promise<TradeHistory>;
+  getUserTradeCount(userId: number): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -377,6 +384,23 @@ export class DatabaseStorage implements IStorage {
 
   async getAllTournaments(): Promise<Tournament[]> {
     return await db.select().from(tournaments);
+  }
+
+  // Trade tracking operations
+  async recordTrade(trade: InsertTradeHistory): Promise<TradeHistory> {
+    const result = await db
+      .insert(tradeHistory)
+      .values(trade)
+      .returning();
+    return result[0];
+  }
+
+  async getUserTradeCount(userId: number): Promise<number> {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(tradeHistory)
+      .where(eq(tradeHistory.userId, userId));
+    return result[0].count;
   }
 }
 

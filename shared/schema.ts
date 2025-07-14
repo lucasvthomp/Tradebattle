@@ -206,6 +206,32 @@ export const insertPersonalStockPurchaseSchema = createInsertSchema(personalStoc
   totalCost: true,
 });
 
+// Trade history table for tracking all trading actions (buy/sell)
+export const tradeHistory = pgTable("trade_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  tournamentId: integer("tournament_id").references(() => tournaments.id), // null for personal trades
+  symbol: text("symbol").notNull(),
+  companyName: text("company_name").notNull(),
+  tradeType: text("trade_type").notNull(), // 'buy' or 'sell'
+  shares: integer("shares").notNull(),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  totalValue: numeric("total_value", { precision: 10, scale: 2 }).notNull(),
+  tradeDate: timestamp("trade_date").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertTradeHistorySchema = createInsertSchema(tradeHistory).pick({
+  userId: true,
+  tournamentId: true,
+  symbol: true,
+  companyName: true,
+  tradeType: true,
+  shares: true,
+  price: true,
+  totalValue: true,
+});
+
 // Type exports
 // User schemas for new authentication system
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -250,3 +276,5 @@ export type TournamentStockPurchase = typeof tournamentStockPurchases.$inferSele
 export type InsertTournamentStockPurchase = z.infer<typeof insertTournamentStockPurchaseSchema>;
 export type PersonalStockPurchase = typeof personalStockPurchases.$inferSelect;
 export type InsertPersonalStockPurchase = z.infer<typeof insertPersonalStockPurchaseSchema>;
+export type TradeHistory = typeof tradeHistory.$inferSelect;
+export type InsertTradeHistory = z.infer<typeof insertTradeHistorySchema>;
