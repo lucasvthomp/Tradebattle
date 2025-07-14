@@ -64,6 +64,8 @@ const staggerChildren = {
   }
 };
 
+
+
 // Mock data for demonstration with different time periods
 const mockWatchlist = [
   { 
@@ -384,6 +386,72 @@ const stockSearchResults = [
   { symbol: "PSA", name: "Public Storage", price: 358.92, sector: "Real Estate" },
   { symbol: "EXR", name: "Extended Stay America Inc.", price: 158.45, sector: "Real Estate" },
 ];
+
+// Tournament Countdown Component
+const TournamentCountdown = ({ startedAt, timeframe }: { startedAt: string; timeframe: string }) => {
+  const [timeLeft, setTimeLeft] = useState<string>("");
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date().getTime();
+      const startTime = new Date(startedAt).getTime();
+      
+      // Parse timeframe to get duration in milliseconds
+      const timeframeMap: { [key: string]: number } = {
+        "1 week": 7 * 24 * 60 * 60 * 1000,
+        "2 weeks": 14 * 24 * 60 * 60 * 1000,
+        "3 weeks": 21 * 24 * 60 * 60 * 1000,
+        "4 weeks": 28 * 24 * 60 * 60 * 1000,
+        "5 weeks": 35 * 24 * 60 * 60 * 1000,
+        "6 weeks": 42 * 24 * 60 * 60 * 1000,
+        "7 weeks": 49 * 24 * 60 * 60 * 1000,
+        "8 weeks": 56 * 24 * 60 * 60 * 1000,
+        "9 weeks": 63 * 24 * 60 * 60 * 1000,
+        "10 weeks": 70 * 24 * 60 * 60 * 1000,
+        "15 weeks": 105 * 24 * 60 * 60 * 1000,
+        "20 weeks": 140 * 24 * 60 * 60 * 1000,
+        "25 weeks": 175 * 24 * 60 * 60 * 1000,
+        "30 weeks": 210 * 24 * 60 * 60 * 1000,
+        "40 weeks": 280 * 24 * 60 * 60 * 1000,
+        "1 year": 365 * 24 * 60 * 60 * 1000,
+      };
+      
+      const duration = timeframeMap[timeframe] || timeframeMap["4 weeks"];
+      const endTime = startTime + duration;
+      const difference = endTime - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        if (days > 0) {
+          setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+        } else if (hours > 0) {
+          setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+        } else if (minutes > 0) {
+          setTimeLeft(`${minutes}m ${seconds}s`);
+        } else {
+          setTimeLeft(`${seconds}s`);
+        }
+      } else {
+        setTimeLeft("Tournament Ended");
+      }
+    };
+
+    calculateTimeLeft();
+    const timer = setInterval(calculateTimeLeft, 1000);
+
+    return () => clearInterval(timer);
+  }, [startedAt, timeframe]);
+
+  return (
+    <p className="text-lg font-semibold text-orange-600">
+      {timeLeft}
+    </p>
+  );
+};
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
@@ -1722,7 +1790,7 @@ export default function Dashboard() {
                               </CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <div>
                                   <p className="text-sm text-muted-foreground">Join Code</p>
                                   <p className="font-mono text-lg font-semibold">{selectedTournament.tournaments.code}</p>
@@ -1730,6 +1798,13 @@ export default function Dashboard() {
                                 <div>
                                   <p className="text-sm text-muted-foreground">Your Balance</p>
                                   <p className="text-lg font-semibold">${currentBalance.toFixed(2)}</p>
+                                </div>
+                                <div>
+                                  <p className="text-sm text-muted-foreground">Time Remaining</p>
+                                  <TournamentCountdown 
+                                    startedAt={selectedTournament.tournaments.startedAt || selectedTournament.tournaments.createdAt} 
+                                    timeframe={selectedTournament.tournaments.timeframe} 
+                                  />
                                 </div>
                                 <div>
                                   <p className="text-sm text-muted-foreground">Players</p>
