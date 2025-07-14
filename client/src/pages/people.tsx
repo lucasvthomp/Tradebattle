@@ -96,14 +96,15 @@ export default function People() {
 
   // Map achievement types to display data
   const getAchievementDisplay = (achievement: any) => {
-    const displayData = achievements.find(a => a.name === achievement.achievementName);
+    // The API returns snake_case field names from the database
+    const displayData = achievements.find(a => a.name === achievement.achievement_name);
     return displayData || {
       id: achievement.id,
-      name: achievement.achievementName,
-      description: achievement.achievementDescription,
+      name: achievement.achievement_name,
+      description: achievement.achievement_description,
       icon: Trophy,
-      rarity: achievement.achievementTier,
-      color: getColorForTier(achievement.achievementTier)
+      rarity: achievement.achievement_tier,
+      color: getColorForTier(achievement.achievement_tier)
     };
   };
 
@@ -137,6 +138,10 @@ export default function People() {
     }
 
     const stats = getUserStats(profileUser?.data);
+    
+    // Debug: Log the raw achievement data
+    console.log('Raw achievement data:', userAchievements?.data);
+    
     const displayAchievements = userAchievements?.data?.map(getAchievementDisplay) || [];
 
     return (
