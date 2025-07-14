@@ -310,15 +310,13 @@ export default function Admin() {
     if (!selectedTournament) return;
     
     try {
-      const response = await apiRequest(`/api/admin/tournaments/${selectedTournament.id}/end`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      const response = await apiRequest('POST', `/api/admin/tournaments/${selectedTournament.id}/end`);
+      const data = await response.json();
       
-      if (response.success) {
+      if (data.success) {
         toast({
           title: "Tournament Ended",
-          description: response.message,
+          description: data.message,
           variant: "default",
         });
         
@@ -329,7 +327,7 @@ export default function Admin() {
       } else {
         toast({
           title: "Error",
-          description: response.message || "Failed to end tournament",
+          description: data.message || "Failed to end tournament",
           variant: "destructive",
         });
       }
