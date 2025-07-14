@@ -125,7 +125,20 @@ export class DatabaseStorage implements IStorage {
       userId: nextUserId
     }).returning();
     
-    return result[0];
+    const newUser = result[0];
+    
+    // Automatically award the "Welcome" achievement to all new users
+    await this.awardAchievement({
+      userId: newUser.id,
+      achievementType: 'welcome',
+      achievementTier: 'common',
+      achievementName: 'Welcome',
+      achievementDescription: 'Joined the platform',
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
+    
+    return newUser;
   }
 
   async updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt'>>): Promise<User> {
