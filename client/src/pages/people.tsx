@@ -358,7 +358,9 @@ export default function People() {
               ) : (
                 filteredUsers.map((person: any) => {
                   const stats = getUserStats(person);
-                  const personAchievements = getUserAchievements(person.id);
+                  // For the people browsing list, we don't fetch individual achievements
+                  // Only show achievement count on individual profile pages
+                  const achievementCount = 0; // Placeholder for list view
                   
                   return (
                     <Card key={person.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
@@ -389,7 +391,7 @@ export default function People() {
                             <p className="text-xs text-muted-foreground">Trades</p>
                           </div>
                           <div className="text-center">
-                            <p className="text-lg font-bold text-foreground">{personAchievements.length}</p>
+                            <p className="text-lg font-bold text-foreground">{achievementCount}</p>
                             <p className="text-xs text-muted-foreground">Achievements</p>
                           </div>
                         </div>
