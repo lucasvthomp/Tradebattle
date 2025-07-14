@@ -892,21 +892,29 @@ router.get('/admin/tournaments', asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  // Check if user is admin
-  if (!(userId === 0 || userId === 1 || userId === 2)) {
+  // Check if user is admin (using the same logic as other admin endpoints)
+  const user = await storage.getUser(userId);
+  if (!user || !(user.userId === 0 || user.userId === 1 || user.userId === 2)) {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 
   // Get all tournaments
   const tournaments = await storage.getAllTournaments();
   
-  // Get participant counts for each tournament
+  // Get participant counts for each tournament and calculate end dates
   const tournamentsWithCounts = await Promise.all(
     tournaments.map(async (tournament) => {
       const participants = await storage.getTournamentParticipants(tournament.id);
+      
+      // Calculate end date based on creation date and timeframe
+      const createdAt = new Date(tournament.createdAt);
+      const timeframeWeeks = parseInt(tournament.timeframe.split(' ')[0]) || 4;
+      const endDate = new Date(createdAt.getTime() + (timeframeWeeks * 7 * 24 * 60 * 60 * 1000));
+      
       return {
         ...tournament,
         memberCount: participants.length,
+        endsAt: endDate.toISOString(), // Add calculated end date
       };
     })
   );
