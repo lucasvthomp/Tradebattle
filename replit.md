@@ -190,3 +190,4 @@ Preferred communication style: Simple, everyday language.
 - **Achievement System Database** (January 2025): Added user_achievements table with full CRUD operations, storing achievement type, tier, name, description, and tournament association for persistent achievement tracking
 - **Automated Tournament Processing** (January 2025): Created background scheduler service that runs every 5 minutes to check for expired tournaments, calculate final standings, award achievements, and mark tournaments as completed
 - **Archive Page Implementation** (January 2025): Built comprehensive archive page with tabs for completed tournaments and earned achievements, accessible from profile dropdown menu with proper authentication and responsive design
+- **Archive Page Simplification** (January 2025): Removed achievements tab from archive page, simplified to only show completed tournaments as requested by user
