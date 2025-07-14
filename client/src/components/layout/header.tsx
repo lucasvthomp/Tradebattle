@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn, Shield, Users } from "lucide-react";
+import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn, Shield, Users, Archive } from "lucide-react";
 import { useState } from "react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
@@ -91,6 +91,10 @@ export default function Header() {
                   <DropdownMenuItem onClick={() => window.location.href = "/dashboard"}>
                     <List className="w-4 h-4 mr-2" />
                     Tournaments
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => window.location.href = "/archive"}>
+                    <Archive className="w-4 h-4 mr-2" />
+                    Archive
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
                     <Settings className="w-4 h-4 mr-2" />

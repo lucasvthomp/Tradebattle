@@ -144,7 +144,18 @@ export const tournamentStockPurchases = pgTable("tournament_stock_purchases", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-
+// User achievements table for tracking earned achievements
+export const userAchievements = pgTable("user_achievements", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  achievementType: varchar("achievement_type").notNull(), // 'tournament_winner', 'tournament_top3', 'first_trade', etc.
+  achievementTier: varchar("achievement_tier").notNull(), // 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'
+  achievementName: varchar("achievement_name").notNull(),
+  achievementDescription: text("achievement_description").notNull(),
+  tournamentId: integer("tournament_id").references(() => tournaments.id), // null for non-tournament achievements
+  earnedAt: timestamp("earned_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
 // Zod schemas for validation
 export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
@@ -232,6 +243,15 @@ export const insertTradeHistorySchema = createInsertSchema(tradeHistory).pick({
   totalValue: true,
 });
 
+export const insertUserAchievementSchema = createInsertSchema(userAchievements).pick({
+  userId: true,
+  achievementType: true,
+  achievementTier: true,
+  achievementName: true,
+  achievementDescription: true,
+  tournamentId: true,
+});
+
 // Type exports
 // User schemas for new authentication system
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -278,3 +298,5 @@ export type PersonalStockPurchase = typeof personalStockPurchases.$inferSelect;
 export type InsertPersonalStockPurchase = z.infer<typeof insertPersonalStockPurchaseSchema>;
 export type TradeHistory = typeof tradeHistory.$inferSelect;
 export type InsertTradeHistory = z.infer<typeof insertTradeHistorySchema>;
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;

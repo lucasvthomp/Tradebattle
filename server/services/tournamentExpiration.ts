@@ -1,0 +1,214 @@
+import { storage } from "../storage";
+import { getStockQuote } from "./yahooFinance";
+
+interface TournamentResult {
+  userId: number;
+  finalBalance: number;
+  totalValue: number;
+  rank: number;
+  firstName: string;
+  lastName: string;
+}
+
+export class TournamentExpirationService {
+  /**
+   * Check for expired tournaments and process them
+   */
+  async processExpiredTournaments(): Promise<void> {
+    const expiredTournaments = await storage.getExpiredTournaments();
+    
+    for (const tournament of expiredTournaments) {
+      console.log(`Processing expired tournament: ${tournament.name} (ID: ${tournament.id})`);
+      
+      // Calculate final standings
+      const results = await this.calculateFinalStandings(tournament.id);
+      
+      // Award achievements based on results
+      await this.awardTournamentAchievements(tournament.id, results);
+      
+      // Mark tournament as completed
+      await storage.updateTournamentStatus(tournament.id, 'completed', new Date());
+      
+      console.log(`Tournament ${tournament.name} completed successfully`);
+    }
+  }
+
+  /**
+   * Calculate final standings for a tournament
+   */
+  private async calculateFinalStandings(tournamentId: number): Promise<TournamentResult[]> {
+    const participants = await storage.getTournamentParticipants(tournamentId);
+    const results: TournamentResult[] = [];
+
+    for (const participant of participants) {
+      const purchases = await storage.getTournamentStockPurchases(tournamentId, participant.userId);
+      
+      let totalValue = participant.balance;
+      
+      // Calculate current value of all holdings
+      for (const purchase of purchases) {
+        try {
+          const currentQuote = await getStockQuote(purchase.symbol);
+          const currentValue = purchase.shares * currentQuote.price;
+          totalValue += currentValue;
+        } catch (error) {
+          console.error(`Error fetching quote for ${purchase.symbol}:`, error);
+          // Use purchase price as fallback
+          totalValue += purchase.shares * purchase.purchasePrice;
+        }
+      }
+
+      results.push({
+        userId: participant.userId,
+        finalBalance: participant.balance,
+        totalValue,
+        rank: 0, // Will be set after sorting
+        firstName: participant.firstName,
+        lastName: participant.lastName
+      });
+    }
+
+    // Sort by total value (descending) and assign ranks
+    results.sort((a, b) => b.totalValue - a.totalValue);
+    results.forEach((result, index) => {
+      result.rank = index + 1;
+    });
+
+    return results;
+  }
+
+  /**
+   * Award achievements based on tournament results
+   */
+  private async awardTournamentAchievements(tournamentId: number, results: TournamentResult[]): Promise<void> {
+    for (const result of results) {
+      const { userId, rank, totalValue } = result;
+      
+      // Award based on rank
+      if (rank === 1) {
+        await this.awardAchievement(userId, tournamentId, {
+          type: 'tournament_winner',
+          tier: 'legendary',
+          name: 'Tournament Champion',
+          description: 'Won 1st place in a tournament'
+        });
+      } else if (rank === 2) {
+        await this.awardAchievement(userId, tournamentId, {
+          type: 'tournament_second',
+          tier: 'epic',
+          name: 'Silver Medalist',
+          description: 'Finished 2nd in a tournament'
+        });
+      } else if (rank === 3) {
+        await this.awardAchievement(userId, tournamentId, {
+          type: 'tournament_third',
+          tier: 'rare',
+          name: 'Bronze Medalist',
+          description: 'Finished 3rd in a tournament'
+        });
+      } else if (rank <= 5) {
+        await this.awardAchievement(userId, tournamentId, {
+          type: 'tournament_top5',
+          tier: 'uncommon',
+          name: 'Top 5 Finisher',
+          description: 'Finished in the top 5 of a tournament'
+        });
+      }
+
+      // Award based on performance
+      if (totalValue >= 15000) {
+        await this.awardAchievement(userId, tournamentId, {
+          type: 'high_performer',
+          tier: 'epic',
+          name: 'High Performer',
+          description: 'Achieved over 50% profit in a tournament'
+        });
+      } else if (totalValue >= 12000) {
+        await this.awardAchievement(userId, tournamentId, {
+          type: 'profit_maker',
+          tier: 'rare',
+          name: 'Profit Maker',
+          description: 'Achieved over 20% profit in a tournament'
+        });
+      }
+
+      // Award participation achievement
+      await this.awardAchievement(userId, tournamentId, {
+        type: 'tournament_participant',
+        tier: 'common',
+        name: 'Tournament Participant',
+        description: 'Participated in a tournament'
+      });
+    }
+  }
+
+  /**
+   * Award an achievement if the user doesn't already have it
+   */
+  private async awardAchievement(
+    userId: number, 
+    tournamentId: number, 
+    achievement: {
+      type: string;
+      tier: string;
+      name: string;
+      description: string;
+    }
+  ): Promise<void> {
+    const hasAchievement = await storage.hasAchievement(userId, achievement.type, tournamentId);
+    
+    if (!hasAchievement) {
+      await storage.awardAchievement({
+        userId,
+        tournamentId,
+        achievementType: achievement.type,
+        achievementTier: achievement.tier,
+        achievementName: achievement.name,
+        achievementDescription: achievement.description
+      });
+      
+      console.log(`Awarded ${achievement.name} to user ${userId} for tournament ${tournamentId}`);
+    }
+  }
+
+  /**
+   * Check if a tournament has expired
+   */
+  async isTournamentExpired(tournamentId: number): Promise<boolean> {
+    const tournament = await storage.getTournamentByCode(''); // We need to get by ID, not code
+    if (!tournament) return false;
+    
+    const createdAt = new Date(tournament.createdAt);
+    const timeframeDays = this.parseTimeframe(tournament.timeframe);
+    const expirationDate = new Date(createdAt.getTime() + timeframeDays * 24 * 60 * 60 * 1000);
+    
+    return new Date() > expirationDate;
+  }
+
+  /**
+   * Parse timeframe string to days
+   */
+  private parseTimeframe(timeframe: string): number {
+    const match = timeframe.match(/(\d+)\s*(day|days|week|weeks|month|months)/i);
+    if (!match) return 28; // Default to 4 weeks
+    
+    const value = parseInt(match[1]);
+    const unit = match[2].toLowerCase();
+    
+    switch (unit) {
+      case 'day':
+      case 'days':
+        return value;
+      case 'week':
+      case 'weeks':
+        return value * 7;
+      case 'month':
+      case 'months':
+        return value * 30;
+      default:
+        return 28;
+    }
+  }
+}
+
+export const tournamentExpirationService = new TournamentExpirationService();

@@ -9,6 +9,7 @@ import {
   tournamentParticipants,
   tournamentStockPurchases,
   tradeHistory,
+  userAchievements,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -29,6 +30,8 @@ import {
   type InsertPersonalStockPurchase,
   type TradeHistory,
   type InsertTradeHistory,
+  type UserAchievement,
+  type InsertUserAchievement,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql } from "drizzle-orm";
@@ -86,6 +89,16 @@ export interface IStorage {
   // Trade tracking operations
   recordTrade(trade: InsertTradeHistory): Promise<TradeHistory>;
   getUserTradeCount(userId: number): Promise<number>;
+  
+  // Achievement operations
+  getUserAchievements(userId: number): Promise<UserAchievement[]>;
+  awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
+  hasAchievement(userId: number, achievementType: string, tournamentId?: number): Promise<boolean>;
+  
+  // Tournament status operations
+  updateTournamentStatus(tournamentId: number, status: string, endedAt?: Date): Promise<Tournament>;
+  getExpiredTournaments(): Promise<Tournament[]>;
+  getArchivedTournaments(userId: number): Promise<Tournament[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -401,6 +414,120 @@ export class DatabaseStorage implements IStorage {
       .from(tradeHistory)
       .where(eq(tradeHistory.userId, userId));
     return result[0].count;
+  }
+
+  async getUserAchievements(userId: number): Promise<UserAchievement[]> {
+    return await db
+      .select()
+      .from(userAchievements)
+      .where(eq(userAchievements.userId, userId))
+      .orderBy(desc(userAchievements.earnedAt));
+  }
+
+  async awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> {
+    const result = await db
+      .insert(userAchievements)
+      .values(achievement)
+      .returning();
+    return result[0];
+  }
+
+  async hasAchievement(userId: number, achievementType: string, tournamentId?: number): Promise<boolean> {
+    const conditions = [
+      eq(userAchievements.userId, userId),
+      eq(userAchievements.achievementType, achievementType)
+    ];
+    
+    if (tournamentId) {
+      conditions.push(eq(userAchievements.tournamentId, tournamentId));
+    }
+
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(userAchievements)
+      .where(and(...conditions));
+    
+    return result[0].count > 0;
+  }
+
+  async updateTournamentStatus(tournamentId: number, status: string, endedAt?: Date): Promise<Tournament> {
+    const updateData: any = { status };
+    if (endedAt) {
+      updateData.endedAt = endedAt;
+    }
+
+    const result = await db
+      .update(tournaments)
+      .set(updateData)
+      .where(eq(tournaments.id, tournamentId))
+      .returning();
+    return result[0];
+  }
+
+  async getExpiredTournaments(): Promise<Tournament[]> {
+    const now = new Date();
+    // For now, we'll use a simple approach - tournaments that have been active for more than their timeframe
+    const results = await db
+      .select()
+      .from(tournaments)
+      .where(eq(tournaments.status, 'active'));
+    
+    // Filter expired tournaments in JavaScript since SQL interval parsing can be complex
+    return results.filter(tournament => {
+      const createdAt = new Date(tournament.createdAt);
+      const timeframeDays = this.parseTimeframe(tournament.timeframe);
+      const expirationDate = new Date(createdAt.getTime() + timeframeDays * 24 * 60 * 60 * 1000);
+      return now > expirationDate;
+    });
+  }
+
+  private parseTimeframe(timeframe: string): number {
+    const match = timeframe.match(/(\d+)\s*(day|days|week|weeks|month|months)/i);
+    if (!match) return 28; // Default to 4 weeks
+    
+    const value = parseInt(match[1]);
+    const unit = match[2].toLowerCase();
+    
+    switch (unit) {
+      case 'day':
+      case 'days':
+        return value;
+      case 'week':
+      case 'weeks':
+        return value * 7;
+      case 'month':
+      case 'months':
+        return value * 30;
+      default:
+        return 28;
+    }
+  }
+
+  async getArchivedTournaments(userId: number): Promise<Tournament[]> {
+    return await db
+      .select({
+        id: tournaments.id,
+        name: tournaments.name,
+        code: tournaments.code,
+        creatorId: tournaments.creatorId,
+        maxPlayers: tournaments.maxPlayers,
+        currentPlayers: tournaments.currentPlayers,
+        startingBalance: tournaments.startingBalance,
+        timeframe: tournaments.timeframe,
+        status: tournaments.status,
+        createdAt: tournaments.createdAt,
+        startedAt: tournaments.startedAt,
+        endedAt: tournaments.endedAt,
+      })
+      .from(tournaments)
+      .innerJoin(tournamentParticipants, eq(tournaments.id, tournamentParticipants.tournamentId))
+      .where(
+        and(
+          eq(tournamentParticipants.userId, userId),
+          eq(tournaments.status, 'completed')
+        )
+      )
+      .orderBy(desc(tournaments.endedAt));
   }
 }
 

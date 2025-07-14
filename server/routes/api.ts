@@ -409,6 +409,13 @@ router.post('/tournaments/:id/purchase', asyncHandler(async (req, res) => {
 
   const totalCost = shares * purchasePrice;
 
+  // Check if tournament is completed (no trading allowed)
+  const tournaments = await storage.getAllTournaments();
+  const tournament = tournaments.find(t => t.id === tournamentId);
+  if (tournament && tournament.status === 'completed') {
+    throw new ValidationError('Cannot trade in completed tournaments');
+  }
+
   // Check if user has enough balance
   const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
   if (currentBalance < totalCost) {
@@ -477,6 +484,13 @@ router.post('/tournaments/:id/sell', asyncHandler(async (req, res) => {
   }
 
   const saleValue = sharesToSellNum * parseFloat(currentPrice);
+  
+  // Check if tournament is completed (no trading allowed)
+  const tournaments = await storage.getAllTournaments();
+  const tournament = tournaments.find(t => t.id === tournamentId);
+  if (tournament && tournament.status === 'completed') {
+    throw new ValidationError('Cannot trade in completed tournaments');
+  }
   
   // Record the sell trade in trade history
   await storage.recordTrade({
@@ -1057,6 +1071,58 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: publicUser
+  });
+}));
+
+/**
+ * GET /api/tournaments/archived
+ * Get archived tournaments for the current user
+ */
+router.get('/tournaments/archived', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const archivedTournaments = await storage.getArchivedTournaments(userId);
+  
+  res.json({
+    success: true,
+    data: archivedTournaments
+  });
+}));
+
+/**
+ * GET /api/achievements/:userId
+ * Get user achievements
+ */
+router.get('/achievements/:userId', asyncHandler(async (req, res) => {
+  const userId = parseInt(req.params.userId);
+  
+  if (isNaN(userId)) {
+    throw new ValidationError('Invalid user ID');
+  }
+  
+  const achievements = await storage.getUserAchievements(userId);
+  
+  res.json({
+    success: true,
+    data: achievements
+  });
+}));
+
+/**
+ * POST /api/tournaments/check-expiration
+ * Check and process expired tournaments (admin only)
+ */
+router.post('/tournaments/check-expiration', requireAuth, asyncHandler(async (req, res) => {
+  // Check if user is admin
+  if (!req.user.email.includes('admin')) {
+    throw new UnauthorizedError('Admin access required');
+  }
+  
+  const { tournamentExpirationService } = await import('../services/tournamentExpiration');
+  await tournamentExpirationService.processExpiredTournaments();
+  
+  res.json({
+    success: true,
+    message: 'Expired tournaments processed successfully'
   });
 }));
 
