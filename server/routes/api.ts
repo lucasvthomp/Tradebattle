@@ -930,10 +930,10 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
 }));
 
 /**
- * POST /api/admin/tournaments/:id/end
- * End a tournament early (admin only)
+ * DELETE /api/admin/tournaments/:id
+ * Delete a tournament completely (admin only)
  */
-router.post('/admin/tournaments/:id/end', requireAuth, asyncHandler(async (req, res) => {
+router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user?.id;
   const tournamentId = parseInt(req.params.id);
   
@@ -959,31 +959,24 @@ router.post('/admin/tournaments/:id/end', requireAuth, asyncHandler(async (req, 
     throw new NotFoundError('Tournament not found');
   }
 
-  // Check if tournament is already ended
-  if (tournament.status === 'completed') {
-    throw new ValidationError('Tournament is already ended');
-  }
-
-  // Update tournament status to completed and set end date
-  await db.execute(sql`
-    UPDATE tournaments 
-    SET status = 'completed', ended_at = NOW() 
-    WHERE id = ${tournamentId}
-  `);
+  // Delete related data in the correct order (foreign key constraints)
+  await db.execute(sql`DELETE FROM tournament_stock_purchases WHERE tournament_id = ${tournamentId}`);
+  await db.execute(sql`DELETE FROM tournament_participants WHERE tournament_id = ${tournamentId}`);
+  await db.execute(sql`DELETE FROM tournaments WHERE id = ${tournamentId}`);
 
   // Log the admin action
   await storage.createAdminLog({
     adminUserId: userId,
     targetUserId: tournament.creatorId,
-    action: 'tournament_ended',
+    action: 'tournament_deleted',
     oldValue: 'active',
-    newValue: 'completed',
-    notes: `Admin ended tournament "${tournament.name}" (${tournament.code}) early`
+    newValue: 'deleted',
+    notes: `Admin deleted tournament "${tournament.name}" (${tournament.code}) completely`
   });
 
   res.json({
     success: true,
-    message: `Tournament "${tournament.name}" has been ended successfully`
+    message: `Tournament "${tournament.name}" has been deleted successfully`
   });
 }));
 

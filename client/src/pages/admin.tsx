@@ -301,21 +301,21 @@ export default function Admin() {
     }
   };
 
-  const handleEndTournament = (tournament: any) => {
+  const handleDeleteTournament = (tournament: any) => {
     setSelectedTournament(tournament);
     setEndTournamentOpen(true);
   };
 
-  const confirmEndTournament = async () => {
+  const confirmDeleteTournament = async () => {
     if (!selectedTournament) return;
     
     try {
-      const response = await apiRequest('POST', `/api/admin/tournaments/${selectedTournament.id}/end`);
+      const response = await apiRequest('DELETE', `/api/admin/tournaments/${selectedTournament.id}`);
       const data = await response.json();
       
       if (data.success) {
         toast({
-          title: "Tournament Ended",
+          title: "Tournament Deleted",
           description: data.message,
           variant: "default",
         });
@@ -327,14 +327,14 @@ export default function Admin() {
       } else {
         toast({
           title: "Error",
-          description: data.message || "Failed to end tournament",
+          description: data.message || "Failed to delete tournament",
           variant: "destructive",
         });
       }
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Failed to end tournament",
+        description: error.message || "Failed to delete tournament",
         variant: "destructive",
       });
     }
@@ -672,12 +672,11 @@ export default function Admin() {
                                       </DropdownMenuItem>
                                       <DropdownMenuSeparator />
                                       <DropdownMenuItem
-                                        onClick={() => handleEndTournament(tournament)}
+                                        onClick={() => handleDeleteTournament(tournament)}
                                         className="text-red-600 hover:text-red-700"
-                                        disabled={!isActive}
                                       >
                                         <Trash2 className="h-4 w-4 mr-2" />
-                                        End Tournament
+                                        Delete Tournament
                                       </DropdownMenuItem>
                                     </DropdownMenuContent>
                                   </DropdownMenu>
@@ -961,22 +960,22 @@ export default function Admin() {
           </DialogContent>
         </Dialog>
 
-        {/* End Tournament Confirmation Dialog */}
+        {/* Delete Tournament Confirmation Dialog */}
         <AlertDialog open={endTournamentOpen} onOpenChange={setEndTournamentOpen}>
           <AlertDialogContent>
             <AlertDialogHeader>
-              <AlertDialogTitle>End Tournament Early?</AlertDialogTitle>
+              <AlertDialogTitle>Delete Tournament Permanently?</AlertDialogTitle>
               <AlertDialogDescription>
-                This will immediately end the tournament <strong>"{selectedTournament?.name}"</strong> and mark it as completed.
-                All participants will be notified and the tournament will be finalized.
+                This will permanently delete the tournament <strong>"{selectedTournament?.name}"</strong> and all its data.
+                This action cannot be undone and will remove all participants, purchases, and tournament history.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel onClick={() => setEndTournamentOpen(false)}>
                 Cancel
               </AlertDialogCancel>
-              <AlertDialogAction onClick={confirmEndTournament}>
-                End Tournament
+              <AlertDialogAction onClick={confirmDeleteTournament} className="bg-red-600 hover:bg-red-700">
+                Delete Tournament
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
