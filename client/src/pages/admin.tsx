@@ -250,6 +250,64 @@ export default function Admin() {
     setAdminLogsOpen(true);
   };
 
+  // Handle tournament actions
+  const handleViewTournamentDetails = (tournament: any) => {
+    const timeLeft = new Date(tournament.endsAt).getTime() - new Date().getTime();
+    const isActive = timeLeft > 0;
+    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    
+    const timeDisplay = isActive 
+      ? `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes}m remaining`
+      : 'Tournament ended';
+    
+    toast({
+      title: `Tournament: ${tournament.name}`,
+      description: `Code: ${tournament.code} | ${tournament.memberCount} participants | ${timeDisplay} | Starting Balance: $${tournament.startingBalance}`,
+      duration: 5000,
+    });
+  };
+
+  const handleViewTournamentParticipants = async (tournament: any) => {
+    try {
+      const response = await fetch(`/api/tournaments/${tournament.id}/participants`, {
+        credentials: 'include',
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        const participantNames = data.data.map((p: any) => `${p.firstName} ${p.lastName}`).join(', ');
+        toast({
+          title: `${tournament.name} Participants (${tournament.memberCount})`,
+          description: participantNames || 'No participants yet',
+          duration: 8000,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to load participants",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load participants",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEndTournament = (tournament: any) => {
+    toast({
+      title: "End Tournament Feature",
+      description: `This feature would allow ending tournament "${tournament.name}" early. Implementation depends on business requirements.`,
+      variant: "destructive",
+      duration: 5000,
+    });
+  };
+
   // Show loading state
   if (authLoading || usersLoading) {
     return (
@@ -572,16 +630,17 @@ export default function Admin() {
                                       </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                      <DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => handleViewTournamentDetails(tournament)}>
                                         <Eye className="h-4 w-4 mr-2" />
                                         View Details
                                       </DropdownMenuItem>
-                                      <DropdownMenuItem>
+                                      <DropdownMenuItem onClick={() => handleViewTournamentParticipants(tournament)}>
                                         <Users className="h-4 w-4 mr-2" />
                                         View Participants
                                       </DropdownMenuItem>
                                       <DropdownMenuSeparator />
                                       <DropdownMenuItem
+                                        onClick={() => handleEndTournament(tournament)}
                                         className="text-red-600 hover:text-red-700"
                                         disabled={!isActive}
                                       >
