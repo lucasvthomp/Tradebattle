@@ -215,6 +215,17 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
     timeframe: timeframe || '4 weeks'
   }, userId);
 
+  // Award Tournament Creator achievement (rare)
+  await storage.awardAchievement({
+    userId: userId,
+    achievementType: 'tournament_creator',
+    achievementTier: 'rare',
+    achievementName: 'Tournament Creator',
+    achievementDescription: 'Created a tournament',
+    earnedAt: new Date(),
+    createdAt: new Date()
+  });
+
   // Award Tournament Participant achievement
   await storage.awardAchievement({
     userId: userId,
