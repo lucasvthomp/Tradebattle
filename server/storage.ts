@@ -34,7 +34,7 @@ import {
   type InsertUserAchievement,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, asc, and, or, sql, ne } from "drizzle-orm";
+import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
 
 export interface IStorage {
   // User operations for email/password auth
@@ -451,7 +451,27 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .insert(userAchievements)
       .values(achievement)
+      .onConflictDoNothing()
       .returning();
+    
+    if (result.length === 0) {
+      // Achievement already exists, return existing one
+      const existing = await db
+        .select()
+        .from(userAchievements)
+        .where(
+          and(
+            eq(userAchievements.userId, achievement.userId),
+            eq(userAchievements.achievementType, achievement.achievementType),
+            achievement.tournamentId 
+              ? eq(userAchievements.tournamentId, achievement.tournamentId)
+              : isNull(userAchievements.tournamentId)
+          )
+        )
+        .limit(1);
+      return existing[0];
+    }
+    
     return result[0];
   }
 

@@ -162,7 +162,7 @@ export class TournamentExpirationService {
   }
 
   /**
-   * Award an achievement if the user doesn't already have it
+   * Award an achievement to a user for a tournament
    */
   private async awardAchievement(
     userId: number, 
@@ -174,20 +174,16 @@ export class TournamentExpirationService {
       description: string;
     }
   ): Promise<void> {
-    const hasAchievement = await storage.hasAchievement(userId, achievement.type, tournamentId);
+    await storage.awardAchievement({
+      userId,
+      tournamentId,
+      achievementType: achievement.type,
+      achievementTier: achievement.tier,
+      achievementName: achievement.name,
+      achievementDescription: achievement.description
+    });
     
-    if (!hasAchievement) {
-      await storage.awardAchievement({
-        userId,
-        tournamentId,
-        achievementType: achievement.type,
-        achievementTier: achievement.tier,
-        achievementName: achievement.name,
-        achievementDescription: achievement.description
-      });
-      
-      console.log(`Awarded ${achievement.name} to user ${userId} for tournament ${tournamentId}`);
-    }
+    console.log(`Awarded ${achievement.name} to user ${userId} for tournament ${tournamentId}`);
   }
 
   /**

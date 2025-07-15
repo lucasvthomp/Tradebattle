@@ -9,6 +9,7 @@ import {
   boolean,
   integer,
   numeric,
+  unique,
 } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -156,7 +157,10 @@ export const userAchievements = pgTable("user_achievements", {
   tournamentId: integer("tournament_id").references(() => tournaments.id), // null for non-tournament achievements
   earnedAt: timestamp("earned_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
-});
+}, (table) => ({
+  // Unique constraint: user can only have one of each achievement type per tournament
+  uniqueUserAchievement: unique("unique_user_achievement").on(table.userId, table.achievementType, table.tournamentId),
+}));
 
 // Zod schemas for validation
 export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
