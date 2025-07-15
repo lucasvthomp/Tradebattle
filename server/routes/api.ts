@@ -207,6 +207,20 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
     timeframe: timeframe || '4 weeks'
   }, userId);
 
+  // Award Tournament Participant achievement if not already earned
+  const hasAchievement = await storage.hasAchievement(userId, 'Tournament Participant');
+  if (!hasAchievement) {
+    await storage.awardAchievement({
+      userId: userId,
+      achievementType: 'tournament_participant',
+      achievementTier: 'common',
+      achievementName: 'Tournament Participant',
+      achievementDescription: 'Joined a tournament',
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
+  }
+
   res.json({
     success: true,
     data: tournament,
