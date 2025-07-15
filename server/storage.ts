@@ -574,6 +574,8 @@ export class DatabaseStorage implements IStorage {
             let portfolioValue = p.tournament_participants.balance;
             
             console.log(`User ${p.users.id} cash balance: ${portfolioValue}`);
+            console.log(`All stock purchases for tournament ${tournamentId}:`, stockPurchases.map(sp => ({user_id: sp.user_id, symbol: sp.symbol, shares: sp.shares})));
+            console.log(`User ${p.users.id} stock purchases:`, userPurchases.map(sp => ({symbol: sp.symbol, shares: sp.shares, price: sp.purchase_price})));
             
             // Calculate stock value for each purchase using purchase price (since tournament is completed)
             for (const purchase of userPurchases) {
