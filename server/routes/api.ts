@@ -64,7 +64,7 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
         achievementType: '5_percent_growth',
         achievementTier: 'rare',
         achievementName: '5% Portfolio Growth',
-        achievementDescription: 'Made over 5% on personal portfolio'
+        achievementDescription: 'Made over 5% on any portfolio'
       });
     }
     
@@ -75,7 +75,7 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
         achievementType: '10_percent_growth',
         achievementTier: 'epic',
         achievementName: '10% Portfolio Growth',
-        achievementDescription: 'Made over 10% on personal portfolio'
+        achievementDescription: 'Made over 10% on any portfolio'
       });
     }
     
@@ -86,7 +86,7 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
         achievementType: '25_percent_growth',
         achievementTier: 'legendary',
         achievementName: '25% Portfolio Growth',
-        achievementDescription: 'Made over 25% on personal portfolio'
+        achievementDescription: 'Made over 25% on any portfolio'
       });
     }
   } catch (error) {
