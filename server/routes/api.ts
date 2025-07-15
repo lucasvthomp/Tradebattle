@@ -236,6 +236,20 @@ router.post('/tournaments/:code/join', asyncHandler(async (req, res) => {
 
   const participant = await storage.joinTournament(tournament.id, userId);
 
+  // Award Tournament Participant achievement if not already earned
+  const hasAchievement = await storage.hasAchievement(userId, 'Tournament Participant');
+  if (!hasAchievement) {
+    await storage.awardAchievement({
+      userId: userId,
+      achievementType: 'tournament_participant',
+      achievementTier: 'common',
+      achievementName: 'Tournament Participant',
+      achievementDescription: 'Joined a tournament',
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
+  }
+
   res.json({
     success: true,
     data: participant,
@@ -445,6 +459,20 @@ router.post('/tournaments/:id/purchase', asyncHandler(async (req, res) => {
 
   // Update user balance
   await storage.updateTournamentBalance(tournamentId, userId, currentBalance - totalCost);
+
+  // Award First Trade achievement if not already earned
+  const hasFirstTrade = await storage.hasAchievement(userId, 'First Trade');
+  if (!hasFirstTrade) {
+    await storage.awardAchievement({
+      userId: userId,
+      achievementType: 'first_trade',
+      achievementTier: 'common',
+      achievementName: 'First Trade',
+      achievementDescription: 'Made your first trade',
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
+  }
 
   res.status(201).json({
     success: true,
@@ -671,6 +699,20 @@ router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
   await storage.updateUser(userId, {
     personalBalance: currentBalance - totalCost
   });
+
+  // Award First Trade achievement if not already earned
+  const hasFirstTrade = await storage.hasAchievement(userId, 'First Trade');
+  if (!hasFirstTrade) {
+    await storage.awardAchievement({
+      userId: userId,
+      achievementType: 'first_trade',
+      achievementTier: 'common',
+      achievementName: 'First Trade',
+      achievementDescription: 'Made your first trade',
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
+  }
 
   res.status(201).json({
     success: true,
