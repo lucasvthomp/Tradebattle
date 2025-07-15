@@ -777,6 +777,21 @@ export default function Dashboard() {
       return res.json();
     },
     onSuccess: (response) => {
+      // Check if this is a premium restriction response
+      if (response.message && !response.data) {
+        toast({
+          title: "Premium Required",
+          description: response.message,
+          variant: "destructive",
+        });
+        setIsCreateTournamentDialogOpen(false);
+        setTournamentName("");
+        setMaxPlayers("10");
+        setStartingBalance("10000");
+        setTimeframe("4 weeks");
+        return;
+      }
+      
       const tournament = response.data;
       setCreatedTournament(tournament);
       setIsCreateTournamentDialogOpen(false);
