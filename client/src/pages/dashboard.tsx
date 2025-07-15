@@ -793,7 +793,6 @@ export default function Dashboard() {
       }
       
       const tournament = response.data;
-      setCreatedTournament(tournament);
       setIsCreateTournamentDialogOpen(false);
       setTournamentName("");
       setMaxPlayers("10");
@@ -1724,33 +1723,7 @@ export default function Dashboard() {
 
 
               <TabsContent value="tournament" className="space-y-6">
-                {/* Tournament Code Display */}
-                {createdTournament && (
-                  <Card className="border-0 shadow-lg border-green-200 bg-green-50">
-                    <CardHeader>
-                      <CardTitle className="flex items-center text-green-800">
-                        <CheckCircle className="w-5 h-5 mr-2" />
-                        Tournament Created Successfully!
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <p className="text-green-700">
-                          <strong>Tournament:</strong> {createdTournament?.name || 'Unknown'}
-                        </p>
-                        <p className="text-green-700">
-                          <strong>Join Code:</strong> <span className="font-mono text-lg">{createdTournament?.code || 'N/A'}</span>
-                        </p>
-                        <p className="text-green-700">
-                          <strong>Buy-in:</strong> ${createdTournament?.buyInAmount || 0}
-                        </p>
-                        <p className="text-sm text-green-600">
-                          Share this code with other players so they can join your tournament!
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+
 
                 {/* Tournament Header & Selector */}
                 {userTournaments.length > 0 ? (
