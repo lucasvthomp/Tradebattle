@@ -805,11 +805,6 @@ export default function Dashboard() {
       queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournament.id, user?.id] });
       // Invalidate participants cache for the new tournament
       queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournament.id] });
-      toast({
-        title: "Tournament created!",
-        description: `Tournament "${tournament.name}" has been created. Code: ${tournament.code}`,
-        className: "fixed bottom-4 right-4 w-96"
-      });
       
       // Auto-select the newly created tournament after a short delay to ensure queries are updated
       setTimeout(() => {
