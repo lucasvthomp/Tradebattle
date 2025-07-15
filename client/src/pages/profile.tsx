@@ -342,34 +342,7 @@ export default function Profile() {
                       </div>
                     </div>
 
-                    <Separator />
 
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-foreground">Profile Visibility</h4>
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-foreground">Show achievements</p>
-                            <p className="text-sm text-muted-foreground">Display your trading achievements on public profile</p>
-                          </div>
-                          <Switch defaultChecked />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-foreground">Show join date</p>
-                            <p className="text-sm text-muted-foreground">Display when you joined the platform</p>
-                          </div>
-                          <Switch defaultChecked />
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-medium text-foreground">Show trading stats</p>
-                            <p className="text-sm text-muted-foreground">Display trading performance metrics</p>
-                          </div>
-                          <Switch defaultChecked />
-                        </div>
-                      </div>
-                    </div>
 
                     <Button 
                       className="w-full" 
