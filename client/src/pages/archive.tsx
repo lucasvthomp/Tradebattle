@@ -77,7 +77,7 @@ export default function ArchivePage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="text-xl">{tournament.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">Code: {tournament.code}</p>
+                    <p className="text-sm text-muted-foreground">Tournament ID: {tournament.id}</p>
                   </div>
                   <Badge variant="secondary" className="bg-green-100 text-green-800">
                     Completed
