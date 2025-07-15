@@ -332,6 +332,7 @@ export class DatabaseStorage implements IStorage {
             ...participant,
             firstName: user[0]?.firstName || '',
             lastName: user[0]?.lastName || '',
+            displayName: user[0]?.displayName || user[0]?.firstName || `${user[0]?.firstName} ${user[0]?.lastName}`.trim(),
             stockPurchases: stockPurchases || []
           };
         })
@@ -601,7 +602,7 @@ export class DatabaseStorage implements IStorage {
 
             return {
               userId: p.users.id,
-              name: p.users.displayName || `${p.users.firstName} ${p.users.lastName}`.trim(),
+              name: p.users.displayName || p.users.firstName || `${p.users.firstName} ${p.users.lastName}`.trim(),
               finalBalance: p.tournament_participants.balance,
               portfolioValue: portfolioValue,
               position: 0 // Will be set after sorting
