@@ -89,6 +89,17 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
         achievementDescription: 'Made over 25% on any portfolio'
       });
     }
+    
+    // Award 100% Portfolio Growth achievement
+    if (growthPercentage >= 100) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '100_percent_growth',
+        achievementTier: 'mythic',
+        achievementName: '100% Portfolio Growth',
+        achievementDescription: 'Made over 100% on any portfolio'
+      });
+    }
   } catch (error) {
     console.log('Error checking portfolio growth achievements:', error);
   }

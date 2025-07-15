@@ -95,6 +95,7 @@ export default function Profile() {
     { id: 13, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
     // Mythic (Red)
     { id: 14, name: "Tournament Legend", description: "Won 10 tournaments", icon: Trophy, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
+    { id: 15, name: "100% Portfolio Growth", description: "Made over 100% on any portfolio", icon: TrendingUp, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
   ];
 
   // Map achievement types to display data
