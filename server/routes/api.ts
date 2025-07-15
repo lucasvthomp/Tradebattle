@@ -981,11 +981,14 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
   }
 
   // Get all tournaments
-  const tournaments = await storage.getAllTournaments();
+  const allTournaments = await storage.getAllTournaments();
+  
+  // Filter out completed tournaments
+  const activeTournaments = allTournaments.filter(tournament => tournament.status !== 'completed');
   
   // Get participant counts for each tournament and calculate end dates
   const tournamentsWithCounts = await Promise.all(
-    tournaments.map(async (tournament) => {
+    activeTournaments.map(async (tournament) => {
       const participants = await storage.getTournamentParticipants(tournament.id);
       
       // Calculate end date based on creation date and timeframe
