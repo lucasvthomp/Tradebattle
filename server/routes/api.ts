@@ -55,6 +55,19 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
     // Calculate growth percentage
     const growthPercentage = ((currentPortfolioValue - initialDeposit) / initialDeposit) * 100;
     
+    console.log(`Portfolio growth check for user ${userId}: ${growthPercentage.toFixed(2)}% (${currentPortfolioValue} vs ${initialDeposit})`);
+    
+    // Award 5% Portfolio Growth achievement
+    if (growthPercentage >= 5) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '5_percent_growth',
+        achievementTier: 'rare',
+        achievementName: '5% Portfolio Growth',
+        achievementDescription: 'Made over 5% on personal portfolio'
+      });
+    }
+    
     // Award 10% Portfolio Growth achievement
     if (growthPercentage >= 10) {
       await storage.awardAchievement({
@@ -1337,6 +1350,22 @@ router.put('/user/display-name', requireAuth, asyncHandler(async (req, res) => {
       subscriptionTier: updatedUser.subscriptionTier,
       createdAt: updatedUser.createdAt
     }
+  });
+}));
+
+/**
+ * POST /api/check-portfolio-growth
+ * Manual trigger for portfolio growth achievement check
+ */
+router.post('/check-portfolio-growth', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  
+  // Manually trigger portfolio growth check
+  await checkPersonalPortfolioGrowthAchievements(userId);
+
+  res.json({
+    success: true,
+    message: 'Portfolio growth check completed',
   });
 }));
 
