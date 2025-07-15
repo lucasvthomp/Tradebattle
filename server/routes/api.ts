@@ -831,6 +831,11 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
   let activeTournaments = 0;
   
   for (const tournament of tournaments) {
+    // Skip expired/completed tournaments
+    if (tournament.status === 'completed') {
+      continue;
+    }
+    
     const participants = await storage.getTournamentParticipants(tournament.id);
     
     // Count as active if it has participants
