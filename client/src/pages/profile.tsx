@@ -19,12 +19,13 @@ import {
   Mail,
   Phone,
   Calendar,
-  MapPin
+  MapPin,
+  Trophy
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -58,6 +59,35 @@ export default function Profile() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const queryClient = useQueryClient();
+  
+  // Fetch user achievements for profile display
+  const { data: userAchievements, isLoading: isLoadingAchievements } = useQuery({
+    queryKey: ['/api/achievements', user?.id],
+    enabled: !!user?.id,
+  });
+
+  // Achievement display functions (matching people.tsx)
+  const getAchievementDisplay = (achievement: any) => {
+    const achievementTypes = {
+      'Welcome': { icon: User, color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100' },
+      'First Trade': { icon: User, color: 'bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100' },
+      'Tournament Participant': { icon: Crown, color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' },
+      'Tournament Champion': { icon: Crown, color: 'bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100' },
+    };
+    
+    const display = achievementTypes[achievement.achievementName] || { icon: Trophy, color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100' };
+    
+    return {
+      id: achievement.id,
+      name: achievement.achievementName,
+      description: achievement.achievementDescription,
+      icon: display.icon,
+      color: display.color,
+      tier: achievement.achievementTier
+    };
+  };
+
+  const displayAchievements = userAchievements?.data?.map(getAchievementDisplay) || [];
   
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -252,28 +282,28 @@ export default function Profile() {
                     <div className="space-y-4">
                       <h4 className="font-medium text-foreground">Trading Achievements</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {/* Mock achievements - these would come from the database */}
-                        <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
-                          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center">
-                            <User className="w-5 h-5 text-white" />
+                        {isLoadingAchievements ? (
+                          <div className="col-span-full text-center py-4">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                            <p className="text-muted-foreground mt-2">Loading achievements...</p>
                           </div>
-                          <div>
-                            <p className="font-medium text-foreground">First Trade</p>
-                            <p className="text-sm text-muted-foreground">Made your first stock purchase</p>
+                        ) : displayAchievements.length > 0 ? (
+                          displayAchievements.map((achievement) => (
+                            <div key={achievement.id} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
+                              <div className={`w-10 h-10 rounded-full ${achievement.color} flex items-center justify-center`}>
+                                <achievement.icon className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-foreground">{achievement.name}</p>
+                                <p className="text-sm text-muted-foreground">{achievement.description}</p>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="col-span-full text-center p-4 border-2 border-dashed border-muted rounded-lg">
+                            <p className="text-sm text-muted-foreground">No achievements yet</p>
                           </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
-                          <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                            <Crown className="w-5 h-5 text-white" />
-                          </div>
-                          <div>
-                            <p className="font-medium text-foreground">Premium Member</p>
-                            <p className="text-sm text-muted-foreground">Upgraded to premium account</p>
-                          </div>
-                        </div>
-                        <div className="text-center p-4 border-2 border-dashed border-muted rounded-lg">
-                          <p className="text-sm text-muted-foreground">More achievements coming soon!</p>
-                        </div>
+                        )}
                       </div>
                     </div>
 
