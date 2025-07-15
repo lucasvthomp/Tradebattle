@@ -575,8 +575,8 @@ export class DatabaseStorage implements IStorage {
             
             // Calculate stock value for each purchase using purchase price (since tournament is completed)
             for (const purchase of userPurchases) {
-              const stockValue = purchase.shares * purchase.purchasePrice;
-              portfolioValue += stockValue;
+              const stockValue = Number(purchase.shares) * Number(purchase.purchasePrice);
+              portfolioValue = Number(portfolioValue) + stockValue;
             }
 
             return {
