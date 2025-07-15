@@ -93,7 +93,7 @@ export interface IStorage {
   // Achievement operations
   getUserAchievements(userId: number): Promise<UserAchievement[]>;
   awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
-  hasAchievement(userId: number, achievementType: string, tournamentId?: number): Promise<boolean>;
+  hasAchievement(userId: number, achievementType: string): Promise<boolean>;
   ensureWelcomeAchievement(userId: number): Promise<void>;
   
   // Tournament status operations
@@ -463,10 +463,7 @@ export class DatabaseStorage implements IStorage {
         .where(
           and(
             eq(userAchievements.userId, achievement.userId),
-            eq(userAchievements.achievementType, achievement.achievementType),
-            achievement.tournamentId 
-              ? eq(userAchievements.tournamentId, achievement.tournamentId)
-              : isNull(userAchievements.tournamentId)
+            eq(userAchievements.achievementType, achievement.achievementType)
           )
         )
         .limit(1);
@@ -476,20 +473,16 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async hasAchievement(userId: number, achievementType: string, tournamentId?: number): Promise<boolean> {
-    const conditions = [
-      eq(userAchievements.userId, userId),
-      eq(userAchievements.achievementType, achievementType)
-    ];
-    
-    if (tournamentId) {
-      conditions.push(eq(userAchievements.tournamentId, tournamentId));
-    }
-
+  async hasAchievement(userId: number, achievementType: string): Promise<boolean> {
     const result = await db
       .select({ count: sql<number>`count(*)` })
       .from(userAchievements)
-      .where(and(...conditions));
+      .where(
+        and(
+          eq(userAchievements.userId, userId),
+          eq(userAchievements.achievementType, achievementType)
+        )
+      );
     
     return result[0].count > 0;
   }

@@ -113,21 +113,21 @@ export class TournamentExpirationService {
           description: 'Won 1st place in a tournament'
         });
       } else if (rank === 2) {
-        await this.awardAchievement(userId, tournamentId, {
+        await this.awardGlobalAchievement(userId, {
           type: 'tournament_second',
           tier: 'epic',
           name: 'Silver Medalist',
           description: 'Finished 2nd in a tournament'
         });
       } else if (rank === 3) {
-        await this.awardAchievement(userId, tournamentId, {
+        await this.awardGlobalAchievement(userId, {
           type: 'tournament_third',
           tier: 'rare',
           name: 'Bronze Medalist',
           description: 'Finished 3rd in a tournament'
         });
       } else if (rank <= 5) {
-        await this.awardAchievement(userId, tournamentId, {
+        await this.awardGlobalAchievement(userId, {
           type: 'tournament_top5',
           tier: 'uncommon',
           name: 'Top 5 Finisher',
@@ -135,16 +135,16 @@ export class TournamentExpirationService {
         });
       }
 
-      // Award based on performance (tournament-specific)
+      // Award based on performance (global achievements)
       if (totalValue >= 15000) {
-        await this.awardAchievement(userId, tournamentId, {
+        await this.awardGlobalAchievement(userId, {
           type: 'high_performer',
           tier: 'epic',
           name: 'High Performer',
           description: 'Achieved over 50% profit in a tournament'
         });
       } else if (totalValue >= 12000) {
-        await this.awardAchievement(userId, tournamentId, {
+        await this.awardGlobalAchievement(userId, {
           type: 'profit_maker',
           tier: 'rare',
           name: 'Profit Maker',
@@ -169,33 +169,10 @@ export class TournamentExpirationService {
     }
   }
 
-  /**
-   * Award an achievement to a user for a tournament
-   */
-  private async awardAchievement(
-    userId: number, 
-    tournamentId: number, 
-    achievement: {
-      type: string;
-      tier: string;
-      name: string;
-      description: string;
-    }
-  ): Promise<void> {
-    await storage.awardAchievement({
-      userId,
-      tournamentId,
-      achievementType: achievement.type,
-      achievementTier: achievement.tier,
-      achievementName: achievement.name,
-      achievementDescription: achievement.description
-    });
-    
-    console.log(`Awarded ${achievement.name} to user ${userId} for tournament ${tournamentId}`);
-  }
+
 
   /**
-   * Award a global achievement to a user (not tournament-specific)
+   * Award a global achievement to a user (max 1 per person)
    */
   private async awardGlobalAchievement(
     userId: number, 

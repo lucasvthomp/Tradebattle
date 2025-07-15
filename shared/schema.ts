@@ -154,12 +154,11 @@ export const userAchievements = pgTable("user_achievements", {
   achievementTier: varchar("achievement_tier").notNull(), // 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'
   achievementName: varchar("achievement_name").notNull(),
   achievementDescription: text("achievement_description").notNull(),
-  tournamentId: integer("tournament_id").references(() => tournaments.id), // null for non-tournament achievements
   earnedAt: timestamp("earned_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 }, (table) => ({
-  // Unique constraint: user can only have one of each achievement type per tournament
-  uniqueUserAchievement: unique("unique_user_achievement").on(table.userId, table.achievementType, table.tournamentId),
+  // Unique constraint: user can only have one of each achievement type globally
+  uniqueUserAchievement: unique("unique_user_achievement").on(table.userId, table.achievementType),
 }));
 
 // Zod schemas for validation
@@ -254,7 +253,6 @@ export const insertUserAchievementSchema = createInsertSchema(userAchievements).
   achievementTier: true,
   achievementName: true,
   achievementDescription: true,
-  tournamentId: true,
 });
 
 // Type exports
