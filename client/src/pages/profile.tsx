@@ -83,6 +83,7 @@ export default function Profile() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
+      console.log("Sending profile update data:", data);
       return await apiRequest('/api/user/profile', {
         method: 'PUT',
         headers: {
@@ -91,7 +92,8 @@ export default function Profile() {
         body: JSON.stringify(data),
       });
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      console.log("Profile update successful:", result);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/public"] });
       toast({
@@ -100,6 +102,7 @@ export default function Profile() {
       });
     },
     onError: (error: Error) => {
+      console.error("Profile update error:", error);
       toast({
         title: "Update Failed",
         description: error.message,
