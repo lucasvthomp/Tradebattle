@@ -536,8 +536,8 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async getArchivedTournaments(userId: number): Promise<Tournament[]> {
-    return await db
+  async getArchivedTournaments(userId: number): Promise<any[]> {
+    const userTournaments = await db
       .select({
         id: tournaments.id,
         name: tournaments.name,
@@ -561,6 +561,36 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(tournaments.endedAt));
+
+    // Get participants with final portfolio values for each tournament
+    const tournamentsWithParticipants = await Promise.all(
+      userTournaments.map(async (tournament) => {
+        const participants = await db
+          .select({
+            userId: users.id,
+            displayName: users.displayName,
+            firstName: users.firstName,
+            lastName: users.lastName,
+            finalBalance: tournamentParticipants.finalBalance,
+            portfolioValue: tournamentParticipants.portfolioValue,
+            position: tournamentParticipants.position,
+          })
+          .from(tournamentParticipants)
+          .innerJoin(users, eq(tournamentParticipants.userId, users.id))
+          .where(eq(tournamentParticipants.tournamentId, tournament.id))
+          .orderBy(asc(tournamentParticipants.position));
+
+        return {
+          ...tournament,
+          participants: participants.map(p => ({
+            ...p,
+            name: p.displayName || `${p.firstName} ${p.lastName}`.trim()
+          }))
+        };
+      })
+    );
+
+    return tournamentsWithParticipants;
   }
 
   // Ensure user has Welcome achievement

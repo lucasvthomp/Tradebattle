@@ -1,8 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Trophy, Users, TrendingUp, Archive } from "lucide-react";
+import { Calendar, Trophy, Users, TrendingUp, Archive, Crown, Medal, Award } from "lucide-react";
 import { format } from "date-fns";
+
+interface Participant {
+  userId: number;
+  name: string;
+  finalBalance: number;
+  portfolioValue: number;
+  position: number;
+}
 
 interface ArchivedTournament {
   id: number;
@@ -14,6 +22,7 @@ interface ArchivedTournament {
   createdAt: string;
   endedAt: string;
   startingBalance: number;
+  participants: Participant[];
 }
 
 
@@ -76,7 +85,7 @@ export default function ArchivePage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
                   <div className="flex items-center gap-2">
                     <Users className="w-4 h-4 text-muted-foreground" />
                     <span>{tournament.currentPlayers}/{tournament.maxPlayers} players</span>
@@ -92,6 +101,56 @@ export default function ArchivePage() {
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-muted-foreground" />
                     <span>Ended: {format(new Date(tournament.endedAt), 'MMM d, yyyy')}</span>
+                  </div>
+                </div>
+                
+                {/* Final Results */}
+                <div className="border-t pt-4">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Trophy className="w-4 h-4" />
+                    Final Results
+                  </h4>
+                  <div className="space-y-2">
+                    {tournament.participants?.map((participant, index) => {
+                      const getPositionIcon = (position: number) => {
+                        switch (position) {
+                          case 1: return <Crown className="w-4 h-4 text-yellow-500" />;
+                          case 2: return <Medal className="w-4 h-4 text-gray-400" />;
+                          case 3: return <Award className="w-4 h-4 text-amber-600" />;
+                          default: return null;
+                        }
+                      };
+                      
+                      const getPositionBadge = (position: number) => {
+                        switch (position) {
+                          case 1: return "bg-yellow-100 text-yellow-800";
+                          case 2: return "bg-gray-100 text-gray-800";
+                          case 3: return "bg-amber-100 text-amber-800";
+                          default: return "bg-blue-100 text-blue-800";
+                        }
+                      };
+                      
+                      return (
+                        <div key={participant.userId} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
+                          <div className="flex items-center gap-3">
+                            <Badge variant="secondary" className={`${getPositionBadge(participant.position)} min-w-[3rem] justify-center`}>
+                              #{participant.position}
+                            </Badge>
+                            <div className="flex items-center gap-2">
+                              {getPositionIcon(participant.position)}
+                              <span className="font-medium">{participant.name}</span>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-semibold">${participant.portfolioValue?.toLocaleString() || 0}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {participant.portfolioValue > tournament.startingBalance ? '+' : ''}
+                              ${(participant.portfolioValue - tournament.startingBalance).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </CardContent>
