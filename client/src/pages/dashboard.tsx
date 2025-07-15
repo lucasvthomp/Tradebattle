@@ -588,7 +588,7 @@ export default function Dashboard() {
     cacheTime: 0
   });
 
-  // Tournament participants query
+  // Tournament participants query with real-time updates
   const { data: tournamentParticipants, isLoading: isLoadingParticipants } = useQuery({
     queryKey: ['tournament-participants', tournamentId],
     queryFn: async () => {
@@ -607,9 +607,10 @@ export default function Dashboard() {
       return data;
     },
     enabled: !!user && !!tournamentId,
-    refetchOnWindowFocus: false,
-    staleTime: 30000, // 30 seconds
-    cacheTime: 60000 // 1 minute
+    refetchOnWindowFocus: true,
+    refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
+    staleTime: 0, // Always consider data stale to ensure fresh updates
+    cacheTime: 10000 // Short cache time for real-time feel
   });
 
   // Use tournament data when available, otherwise use regular balance
@@ -909,6 +910,7 @@ export default function Dashboard() {
       if (tournamentId) {
         queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
         // Also refetch immediately
         refetchBalance();
         refetchPurchases();
@@ -949,6 +951,7 @@ export default function Dashboard() {
       if (tournamentId) {
         queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
         // Also refetch immediately
         refetchBalance();
         refetchPurchases();
