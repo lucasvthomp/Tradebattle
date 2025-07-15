@@ -105,7 +105,8 @@ export class TournamentExpirationService {
       
       // Award based on rank
       if (rank === 1) {
-        await this.awardAchievement(userId, tournamentId, {
+        // Award Tournament Champion as global achievement (can only be earned once)
+        await this.awardGlobalAchievement(userId, {
           type: 'tournament_winner',
           tier: 'legendary',
           name: 'Tournament Champion',
@@ -134,7 +135,7 @@ export class TournamentExpirationService {
         });
       }
 
-      // Award based on performance
+      // Award based on performance (tournament-specific)
       if (totalValue >= 15000) {
         await this.awardAchievement(userId, tournamentId, {
           type: 'high_performer',
@@ -149,6 +150,19 @@ export class TournamentExpirationService {
           name: 'Profit Maker',
           description: 'Achieved over 20% profit in a tournament'
         });
+      }
+
+      // Check for Tournament Legend achievement (global - 10 tournament wins)
+      if (rank === 1) {
+        const winCount = await this.getTournamentWinCount(userId);
+        if (winCount >= 10) {
+          await this.awardGlobalAchievement(userId, {
+            type: 'tournament_legend',
+            tier: 'mythic',
+            name: 'Tournament Legend',
+            description: 'Won 10 tournaments'
+          });
+        }
       }
 
       // Participation achievement is awarded when joining tournaments, not at expiration
@@ -178,6 +192,59 @@ export class TournamentExpirationService {
     });
     
     console.log(`Awarded ${achievement.name} to user ${userId} for tournament ${tournamentId}`);
+  }
+
+  /**
+   * Award a global achievement to a user (not tournament-specific)
+   */
+  private async awardGlobalAchievement(
+    userId: number, 
+    achievement: {
+      type: string;
+      tier: string;
+      name: string;
+      description: string;
+    }
+  ): Promise<void> {
+    await storage.awardAchievement({
+      userId,
+      achievementType: achievement.type,
+      achievementTier: achievement.tier,
+      achievementName: achievement.name,
+      achievementDescription: achievement.description
+    });
+    
+    console.log(`Awarded global ${achievement.name} to user ${userId}`);
+  }
+
+  /**
+   * Get the number of tournament wins for a user
+   */
+  private async getTournamentWinCount(userId: number): Promise<number> {
+    const completedTournaments = await db
+      .select({
+        id: tournaments.id,
+        name: tournaments.name,
+        status: tournaments.status,
+        endedAt: tournaments.endedAt
+      })
+      .from(tournaments)
+      .where(eq(tournaments.status, 'completed'));
+
+    let winCount = 0;
+    
+    for (const tournament of completedTournaments) {
+      // Get tournament results for this tournament
+      const results = await this.getTournamentResults(tournament.id);
+      
+      // Check if this user won (rank 1)
+      const userResult = results.find(r => r.userId === userId);
+      if (userResult && userResult.rank === 1) {
+        winCount++;
+      }
+    }
+    
+    return winCount;
   }
 
   /**
