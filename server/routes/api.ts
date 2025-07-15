@@ -200,8 +200,7 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
   const user = await storage.getUser(userId);
   if (!user || user.subscriptionTier !== 'premium') {
     return res.json({
-      success: false,
-      message: 'You need premium to create tournaments, but joining tournaments is always free!'
+      message: 'You need premium to create tournaments. Joining one is free!'
     });
   }
 
