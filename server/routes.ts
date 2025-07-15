@@ -27,7 +27,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedData = z.object({
         firstName: z.string().min(1),
         lastName: z.string().min(1),
-        email: z.string().email()
+        email: z.string().email(),
+        displayName: z.string().optional()
       }).parse(req.body);
       
       const updatedUser = await storage.updateUser(userId, validatedData);

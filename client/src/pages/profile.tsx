@@ -48,6 +48,7 @@ const profileSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
+  displayName: z.string().optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -64,6 +65,7 @@ export default function Profile() {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       email: user?.email || "",
+      displayName: user?.displayName || "",
     },
   });
 
@@ -74,18 +76,24 @@ export default function Profile() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
+        displayName: user.displayName || "",
       });
     }
   }, [user, form]);
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
-      const res = await apiRequest("PUT", "/api/user/profile", data);
-      return await res.json();
+      return await apiRequest('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
     },
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["/api/user"], updatedUser);
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users/public"] });
       toast({
         title: "Profile Updated",
         description: "Your profile has been successfully updated.",
@@ -206,14 +214,14 @@ export default function Profile() {
                   <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label>Display Name</Label>
+                        <Label htmlFor="displayName">Display Name</Label>
                         <Input 
-                          value={`${user.firstName} ${user.lastName}`} 
-                          className="bg-muted cursor-not-allowed" 
-                          disabled 
+                          id="displayName"
+                          {...form.register("displayName")}
+                          placeholder={`${user.firstName} ${user.lastName}`}
                         />
                         <p className="text-xs text-muted-foreground">
-                          Your name as it appears to other users
+                          Your display name as it appears to other users. Leave blank to use your full name.
                         </p>
                       </div>
                       <div className="space-y-2">
@@ -301,8 +309,15 @@ export default function Profile() {
                       </div>
                     </div>
 
-                    <Button className="w-full">
-                      Update Public Profile
+                    <Button 
+                      className="w-full" 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        form.handleSubmit(handleSaveProfile)();
+                      }}
+                      disabled={updateProfileMutation.isPending}
+                    >
+                      {updateProfileMutation.isPending ? "Updating..." : "Update Public Profile"}
                     </Button>
                   </CardContent>
                 </Card>
