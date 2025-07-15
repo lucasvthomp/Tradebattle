@@ -65,7 +65,7 @@ export default function Profile() {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       email: user?.email || "",
-      displayName: user?.displayName || user?.firstName || "",
+      displayName: user?.displayName || "",
     },
   });
 
@@ -76,7 +76,7 @@ export default function Profile() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
-        displayName: user.displayName || user.firstName || "",
+        displayName: user.displayName || "",
       });
     }
   }, [user, form]);
