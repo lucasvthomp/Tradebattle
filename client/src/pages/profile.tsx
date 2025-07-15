@@ -84,13 +84,7 @@ export default function Profile() {
   const updateProfileMutation = useMutation({
     mutationFn: async (data: ProfileFormData) => {
       console.log("Sending profile update data:", data);
-      return await apiRequest('/api/user/profile', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      return await apiRequest('PUT', '/api/user/profile', data);
     },
     onSuccess: (result) => {
       console.log("Profile update successful:", result);
