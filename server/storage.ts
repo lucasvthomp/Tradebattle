@@ -570,21 +570,14 @@ export class DatabaseStorage implements IStorage {
         // Calculate final portfolio values and rank participants
         const participants = await Promise.all(
           participantData.map(async (p) => {
-            const userPurchases = stockPurchases.filter(sp => sp.user_id === p.users.id);
+            const userPurchases = stockPurchases.filter(sp => sp.userId === p.users.id);
             let portfolioValue = p.tournament_participants.balance;
-            
-            console.log(`User ${p.users.id} cash balance: ${portfolioValue}`);
-            console.log(`All stock purchases for tournament ${tournamentId}:`, stockPurchases.map(sp => ({user_id: sp.user_id, symbol: sp.symbol, shares: sp.shares})));
-            console.log(`User ${p.users.id} stock purchases:`, userPurchases.map(sp => ({symbol: sp.symbol, shares: sp.shares, price: sp.purchase_price})));
             
             // Calculate stock value for each purchase using purchase price (since tournament is completed)
             for (const purchase of userPurchases) {
-              const stockValue = purchase.shares * purchase.purchase_price;
+              const stockValue = purchase.shares * purchase.purchasePrice;
               portfolioValue += stockValue;
-              console.log(`Added stock ${purchase.symbol}: ${purchase.shares} * ${purchase.purchase_price} = ${stockValue}, total now: ${portfolioValue}`);
             }
-            
-            console.log(`Final portfolio value for user ${p.users.id}: ${portfolioValue}`);
 
             return {
               userId: p.users.id,
