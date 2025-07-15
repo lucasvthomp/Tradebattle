@@ -538,20 +538,7 @@ export class DatabaseStorage implements IStorage {
 
   async getArchivedTournaments(userId: number): Promise<any[]> {
     const userTournaments = await db
-      .select({
-        id: tournaments.id,
-        name: tournaments.name,
-        code: tournaments.code,
-        creatorId: tournaments.creatorId,
-        maxPlayers: tournaments.maxPlayers,
-        currentPlayers: tournaments.currentPlayers,
-        startingBalance: tournaments.startingBalance,
-        timeframe: tournaments.timeframe,
-        status: tournaments.status,
-        createdAt: tournaments.createdAt,
-        startedAt: tournaments.startedAt,
-        endedAt: tournaments.endedAt,
-      })
+      .select()
       .from(tournaments)
       .innerJoin(tournamentParticipants, eq(tournaments.id, tournamentParticipants.tournamentId))
       .where(
@@ -564,28 +551,53 @@ export class DatabaseStorage implements IStorage {
 
     // Get participants with final portfolio values for each tournament
     const tournamentsWithParticipants = await Promise.all(
-      userTournaments.map(async (tournament) => {
-        const participants = await db
-          .select({
-            userId: users.id,
-            displayName: users.displayName,
-            firstName: users.firstName,
-            lastName: users.lastName,
-            finalBalance: tournamentParticipants.finalBalance,
-            portfolioValue: tournamentParticipants.portfolioValue,
-            position: tournamentParticipants.position,
-          })
+      userTournaments.map(async (tournamentData) => {
+        const tournament = tournamentData.tournaments;
+        
+        // Get all participants for this tournament
+        const participantData = await db
+          .select()
           .from(tournamentParticipants)
           .innerJoin(users, eq(tournamentParticipants.userId, users.id))
-          .where(eq(tournamentParticipants.tournamentId, tournament.id))
-          .orderBy(asc(tournamentParticipants.position));
+          .where(eq(tournamentParticipants.tournamentId, tournament.id));
+
+        // Get stock purchases for all participants to calculate portfolio values
+        const stockPurchases = await db
+          .select()
+          .from(tournamentStockPurchases)
+          .where(eq(tournamentStockPurchases.tournamentId, tournament.id));
+
+        // Calculate final portfolio values and rank participants
+        const participants = await Promise.all(
+          participantData.map(async (p) => {
+            const userPurchases = stockPurchases.filter(sp => sp.user_id === p.users.id);
+            let portfolioValue = p.tournament_participants.balance;
+            
+            // Calculate stock value for each purchase using purchase price (since tournament is completed)
+            for (const purchase of userPurchases) {
+              const stockValue = purchase.shares * purchase.purchase_price;
+              portfolioValue += stockValue;
+            }
+
+            return {
+              userId: p.users.id,
+              name: p.users.displayName || `${p.users.firstName} ${p.users.lastName}`.trim(),
+              finalBalance: p.tournament_participants.balance,
+              portfolioValue: portfolioValue,
+              position: 0 // Will be set after sorting
+            };
+          })
+        );
+
+        // Sort by portfolio value and assign positions
+        participants.sort((a, b) => b.portfolioValue - a.portfolioValue);
+        participants.forEach((p, index) => {
+          p.position = index + 1;
+        });
 
         return {
           ...tournament,
-          participants: participants.map(p => ({
-            ...p,
-            name: p.displayName || `${p.firstName} ${p.lastName}`.trim()
-          }))
+          participants
         };
       })
     );
