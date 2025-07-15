@@ -990,8 +990,35 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
       
       // Calculate end date based on creation date and timeframe
       const createdAt = new Date(tournament.createdAt);
-      const timeframeWeeks = parseInt(tournament.timeframe.split(' ')[0]) || 4;
-      const endDate = new Date(createdAt.getTime() + (timeframeWeeks * 7 * 24 * 60 * 60 * 1000));
+      
+      // Parse timeframe properly for different units (minutes, days, weeks, months)
+      const parseTimeframe = (timeframe: string): number => {
+        const match = timeframe.match(/(\d+)\s*(minute|minutes|day|days|week|weeks|month|months)/i);
+        if (!match) return 28 * 24 * 60 * 60 * 1000; // Default to 4 weeks
+        
+        const value = parseInt(match[1]);
+        const unit = match[2].toLowerCase();
+        
+        switch (unit) {
+          case 'minute':
+          case 'minutes':
+            return value * 60 * 1000;
+          case 'day':
+          case 'days':
+            return value * 24 * 60 * 60 * 1000;
+          case 'week':
+          case 'weeks':
+            return value * 7 * 24 * 60 * 60 * 1000;
+          case 'month':
+          case 'months':
+            return value * 30 * 24 * 60 * 60 * 1000;
+          default:
+            return 28 * 24 * 60 * 60 * 1000;
+        }
+      };
+      
+      const timeframeMs = parseTimeframe(tournament.timeframe);
+      const endDate = new Date(createdAt.getTime() + timeframeMs);
       
       return {
         ...tournament,
