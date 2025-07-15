@@ -211,3 +211,4 @@ Preferred communication style: Simple, everyday language.
 - **Display Name Update Fix** (January 2025): Fixed display name save functionality by correcting API request format from fetch options to apiRequest method signature (method, url, data)
 - **Tournament Participant Achievement Deduplication** (January 2025): Removed tournament-specific participant achievements to prevent duplicates, ensuring only one global tournament participant achievement per user regardless of number of tournaments joined
 - **Tournament Champion Global Achievement** (January 2025): Fixed Tournament Champion achievement to be a global achievement that can only be earned once per user, not once per tournament, preventing duplicate legendary achievements
+- **Display Name Default to First Name** (January 2025): Updated display name system to default to first name instead of empty string, applied consistently across profile forms, public profiles, people browsing, and header display

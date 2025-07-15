@@ -173,7 +173,7 @@ export default function People() {
                     </Avatar>
                     <div className="flex-1">
                       <h1 className="text-3xl font-bold text-foreground mb-2">
-                        {profileUser?.data?.displayName || `${profileUser?.data?.firstName} ${profileUser?.data?.lastName}`}
+                        {profileUser?.data?.displayName || profileUser?.data?.firstName || `${profileUser?.data?.firstName} ${profileUser?.data?.lastName}`}
                       </h1>
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
@@ -357,7 +357,7 @@ export default function People() {
                           </Avatar>
                           <div className="flex-1">
                             <h3 className="text-lg font-semibold text-foreground">
-                              {person.displayName || `${person.firstName} ${person.lastName}`}
+                              {person.displayName || person.firstName || `${person.firstName} ${person.lastName}`}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               {person.subscriptionTier === 'premium' ? 'Premium' : 'Free'} Trader

@@ -65,7 +65,7 @@ export default function Profile() {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
       email: user?.email || "",
-      displayName: user?.displayName || "",
+      displayName: user?.displayName || user?.firstName || "",
     },
   });
 
@@ -76,7 +76,7 @@ export default function Profile() {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
-        displayName: user.displayName || "",
+        displayName: user.displayName || user.firstName || "",
       });
     }
   }, [user, form]);
@@ -215,10 +215,10 @@ export default function Profile() {
                         <Input 
                           id="displayName"
                           {...form.register("displayName")}
-                          placeholder={`${user.firstName} ${user.lastName}`}
+                          placeholder={user?.firstName || "Your display name"}
                         />
                         <p className="text-xs text-muted-foreground">
-                          Your display name as it appears to other users. Leave blank to use your full name.
+                          Your display name as it appears to other users. Defaults to your first name.
                         </p>
                       </div>
                       <div className="space-y-2">
