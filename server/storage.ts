@@ -573,11 +573,16 @@ export class DatabaseStorage implements IStorage {
             const userPurchases = stockPurchases.filter(sp => sp.user_id === p.users.id);
             let portfolioValue = p.tournament_participants.balance;
             
+            console.log(`User ${p.users.id} cash balance: ${portfolioValue}`);
+            
             // Calculate stock value for each purchase using purchase price (since tournament is completed)
             for (const purchase of userPurchases) {
               const stockValue = purchase.shares * purchase.purchase_price;
               portfolioValue += stockValue;
+              console.log(`Added stock ${purchase.symbol}: ${purchase.shares} * ${purchase.purchase_price} = ${stockValue}, total now: ${portfolioValue}`);
             }
+            
+            console.log(`Final portfolio value for user ${p.users.id}: ${portfolioValue}`);
 
             return {
               userId: p.users.id,
