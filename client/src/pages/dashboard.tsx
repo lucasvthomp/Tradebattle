@@ -1899,10 +1899,10 @@ export default function Dashboard() {
                                       <tr className="border-b">
                                         <th className="text-left p-2 font-medium text-muted-foreground">Stock</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Shares</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Total Value</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Purchase Price</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Current Price</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Change</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Total Value</th>
                                         <th className="text-center p-2 font-medium text-muted-foreground">Actions</th>
                                       </tr>
                                     </thead>
@@ -1923,6 +1923,7 @@ export default function Dashboard() {
                                               </div>
                                             </td>
                                             <td className="p-2 text-right font-medium">{purchase.shares}</td>
+                                            <td className="p-2 text-right font-medium">${totalValue.toFixed(2)}</td>
                                             <td className="p-2 text-right">${purchasePrice.toFixed(2)}</td>
                                             <td className="p-2 text-right">${currentPrice.toFixed(2)}</td>
                                             <td className="p-2 text-right">
@@ -1931,7 +1932,6 @@ export default function Dashboard() {
                                                 <div className="text-xs">({percentChange.toFixed(2)}%)</div>
                                               </div>
                                             </td>
-                                            <td className="p-2 text-right font-medium">${totalValue.toFixed(2)}</td>
                                             <td className="p-2 text-center">
                                               <Button
                                                 size="sm"
