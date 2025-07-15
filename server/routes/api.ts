@@ -201,9 +201,7 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
   if (!user || user.subscriptionTier !== 'premium') {
     return res.json({
       success: false,
-      requiresPremium: true,
-      message: 'You need premium to create tournaments, but joining tournaments is always free! Upgrade to premium to start organizing your own competitions.',
-      upgradeUrl: '/premium'
+      message: 'You need premium to create tournaments, but joining tournaments is always free!'
     });
   }
 
