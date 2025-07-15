@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,9 +23,13 @@ import {
   ChevronRight,
   MapPin,
   Clock,
-  DollarSign
+  DollarSign,
+  Edit3,
+  Check,
+  X
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { apiRequest } from "@/lib/queryClient";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -69,6 +73,42 @@ export default function People() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("browse");
   const [showAchievements, setShowAchievements] = useState(false);
+  const [isEditingDisplayName, setIsEditingDisplayName] = useState(false);
+  const [displayNameValue, setDisplayNameValue] = useState("");
+  const queryClient = useQueryClient();
+
+  // Mutation for updating display name
+  const updateDisplayNameMutation = useMutation({
+    mutationFn: async (displayName: string) => {
+      return await apiRequest('/api/user/display-name', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ displayName }),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/public'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/users/public', profileUserId] });
+      setIsEditingDisplayName(false);
+    },
+  });
+
+  const handleSaveDisplayName = () => {
+    updateDisplayNameMutation.mutate(displayNameValue);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingDisplayName(false);
+    setDisplayNameValue("");
+  };
+
+  const startEditing = (currentDisplayName: string) => {
+    setDisplayNameValue(currentDisplayName || "");
+    setIsEditingDisplayName(true);
+  };
 
   // Fetch all users for browsing
   const { data: allUsers, isLoading: isLoadingUsers } = useQuery({
@@ -123,7 +163,6 @@ export default function People() {
 
   // Get user stats from API data
   const getUserStats = (user: any) => ({
-    totalTrades: user.totalTrades || 0,
     lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7))
   });
 
@@ -172,9 +211,47 @@ export default function People() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h1 className="text-3xl font-bold text-foreground mb-2">
-                        {profileUser?.data?.firstName} {profileUser?.data?.lastName}
-                      </h1>
+                      <div className="flex items-center space-x-3 mb-2">
+                        {isEditingDisplayName ? (
+                          <div className="flex items-center space-x-2 flex-1">
+                            <Input
+                              value={displayNameValue}
+                              onChange={(e) => setDisplayNameValue(e.target.value)}
+                              placeholder="Enter display name"
+                              className="text-2xl font-bold"
+                            />
+                            <Button
+                              size="sm"
+                              onClick={handleSaveDisplayName}
+                              disabled={updateDisplayNameMutation.isPending}
+                            >
+                              <Check className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={handleCancelEdit}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <>
+                            <h1 className="text-3xl font-bold text-foreground">
+                              {profileUser?.data?.displayName || `${profileUser?.data?.firstName} ${profileUser?.data?.lastName}`}
+                            </h1>
+                            {user?.id === parseInt(profileUserId || "") && (
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => startEditing(profileUser?.data?.displayName || "")}
+                              >
+                                <Edit3 className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </>
+                        )}
+                      </div>
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
                           <Crown className="w-3 h-3 mr-1" />
@@ -191,11 +268,7 @@ export default function People() {
                       </div>
                       
                       {/* Quick Stats */}
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{stats.totalTrades}</p>
-                          <p className="text-sm text-muted-foreground">Total Trades</p>
-                        </div>
+                      <div className="grid grid-cols-1 gap-4">
                         <div className="text-center">
                           <p className="text-2xl font-bold text-foreground">{displayAchievements.length}</p>
                           <p className="text-sm text-muted-foreground">Achievements</p>
@@ -239,23 +312,7 @@ export default function People() {
             </motion.div>
 
             {/* Trading Performance */}
-            <motion.div variants={fadeInUp}>
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <TrendingUp className="w-5 h-5 mr-2" />
-                    Trading Performance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">
-                      Detailed trading performance metrics would appear here
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+
           </motion.div>
         </div>
       </div>
@@ -373,7 +430,7 @@ export default function People() {
                           </Avatar>
                           <div className="flex-1">
                             <h3 className="text-lg font-semibold text-foreground">
-                              {person.firstName} {person.lastName}
+                              {person.displayName || `${person.firstName} ${person.lastName}`}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               {person.subscriptionTier === 'premium' ? 'Premium' : 'Free'} Trader
@@ -385,11 +442,7 @@ export default function People() {
                         </div>
 
                         {/* Quick Stats */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                          <div className="text-center">
-                            <p className="text-lg font-bold text-foreground">{stats.totalTrades}</p>
-                            <p className="text-xs text-muted-foreground">Trades</p>
-                          </div>
+                        <div className="grid grid-cols-1 gap-4 mb-4">
                           <div className="text-center">
                             <p className="text-lg font-bold text-foreground">{achievementCount}</p>
                             <p className="text-xs text-muted-foreground">Achievements</p>

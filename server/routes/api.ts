@@ -1011,9 +1011,6 @@ router.get('/users/public', asyncHandler(async (req, res) => {
   const users = await storage.getAllUsers();
   
   const publicUsers = await Promise.all(users.map(async (user) => {
-    // Get total trade count from trade history
-    const totalTrades = await storage.getUserTradeCount(user.id);
-    
     // Get achievement count (this will automatically ensure Welcome achievement exists)
     const achievements = await storage.getUserAchievements(user.id);
     const achievementCount = achievements.length;
@@ -1022,11 +1019,11 @@ router.get('/users/public', asyncHandler(async (req, res) => {
       id: user.id,
       firstName: user.firstName,
       lastName: user.lastName,
+      displayName: user.displayName,
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
-      totalTrades: totalTrades,
       achievementCount: achievementCount,
-      // Don't include sensitive information like email, password, balances, etc.
+      // Don't include sensitive information like email, password, balances, trading performance, etc.
     };
   }));
   
@@ -1059,18 +1056,15 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
     throw new NotFoundError('User not found');
   }
   
-  // Get total trade count from trade history
-  const totalTrades = await storage.getUserTradeCount(targetUserId);
-
   // Return only public information
   const publicUser = {
     id: targetUser.id,
     firstName: targetUser.firstName,
     lastName: targetUser.lastName,
+    displayName: targetUser.displayName,
     subscriptionTier: targetUser.subscriptionTier,
     createdAt: targetUser.createdAt,
-    totalTrades: totalTrades,
-    // Don't include sensitive information like email, password, balances, etc.
+    // Don't include sensitive information like email, password, balances, trading performance, etc.
   };
   
   res.json({
@@ -1128,6 +1122,38 @@ router.post('/tournaments/check-expiration', requireAuth, asyncHandler(async (re
   res.json({
     success: true,
     message: 'Expired tournaments processed successfully'
+  });
+}));
+
+/**
+ * PUT /api/user/display-name
+ * Update user's display name
+ */
+router.put('/user/display-name', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { displayName } = req.body;
+  
+  // Validate display name
+  if (displayName && (typeof displayName !== 'string' || displayName.trim().length === 0 || displayName.trim().length > 255)) {
+    throw new ValidationError('Display name must be a non-empty string with maximum 255 characters');
+  }
+  
+  // Update user's display name
+  const updatedUser = await storage.updateUser(userId, { 
+    displayName: displayName ? displayName.trim() : null 
+  });
+  
+  res.json({
+    success: true,
+    data: {
+      id: updatedUser.id,
+      firstName: updatedUser.firstName,
+      lastName: updatedUser.lastName,
+      displayName: updatedUser.displayName,
+      email: updatedUser.email,
+      subscriptionTier: updatedUser.subscriptionTier,
+      createdAt: updatedUser.createdAt
+    }
   });
 }));
 

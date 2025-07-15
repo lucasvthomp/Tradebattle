@@ -31,6 +31,7 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).unique().notNull(),
   firstName: varchar("first_name", { length: 255 }).notNull(),
   lastName: varchar("last_name", { length: 255 }).notNull(),
+  displayName: varchar("display_name", { length: 255 }), // Optional public display name
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
   subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, premium
@@ -258,6 +259,7 @@ export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   firstName: true,
   lastName: true,
+  displayName: true,
   password: true,
   userId: true,
 });
