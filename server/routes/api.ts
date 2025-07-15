@@ -198,6 +198,7 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
 
   // Check if user has premium subscription
   const user = await storage.getUser(userId);
+  console.log('Tournament creation - User ID:', userId, 'Subscription Tier:', user?.subscriptionTier);
   if (!user || user.subscriptionTier !== 'premium') {
     throw new ValidationError('Premium subscription required to create tournaments');
   }
