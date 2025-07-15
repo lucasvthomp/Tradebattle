@@ -154,7 +154,10 @@ export class TournamentExpirationService {
 
       // Check for Tournament Legend achievement (global - 10 tournament wins)
       if (rank === 1) {
-        const winCount = await this.getTournamentWinCount(userId);
+        // Increment the private win counter
+        await storage.incrementTournamentWins(userId);
+        
+        const winCount = await storage.getTournamentWins(userId);
         if (winCount >= 10) {
           await this.awardGlobalAchievement(userId, {
             type: 'tournament_legend',
@@ -194,35 +197,7 @@ export class TournamentExpirationService {
     console.log(`Awarded global ${achievement.name} to user ${userId}`);
   }
 
-  /**
-   * Get the number of tournament wins for a user
-   */
-  private async getTournamentWinCount(userId: number): Promise<number> {
-    const completedTournaments = await db
-      .select({
-        id: tournaments.id,
-        name: tournaments.name,
-        status: tournaments.status,
-        endedAt: tournaments.endedAt
-      })
-      .from(tournaments)
-      .where(eq(tournaments.status, 'completed'));
 
-    let winCount = 0;
-    
-    for (const tournament of completedTournaments) {
-      // Get tournament results for this tournament
-      const results = await this.getTournamentResults(tournament.id);
-      
-      // Check if this user won (rank 1)
-      const userResult = results.find(r => r.userId === userId);
-      if (userResult && userResult.rank === 1) {
-        winCount++;
-      }
-    }
-    
-    return winCount;
-  }
 
   /**
    * Check if a tournament has expired

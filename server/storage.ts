@@ -41,7 +41,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins'>>): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   
@@ -101,6 +101,10 @@ export interface IStorage {
   getExpiredTournaments(): Promise<Tournament[]>;
   getWaitingTournaments(): Promise<Tournament[]>;
   getArchivedTournaments(userId: number): Promise<Tournament[]>;
+  
+  // Tournament win tracking
+  incrementTournamentWins(userId: number): Promise<void>;
+  getTournamentWins(userId: number): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -142,7 +146,7 @@ export class DatabaseStorage implements IStorage {
     return newUser;
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins'>>): Promise<User> {
     const result = await db
       .update(users)
       .set({ ...updates, updatedAt: new Date() })
@@ -633,6 +637,25 @@ export class DatabaseStorage implements IStorage {
         createdAt: new Date()
       });
     }
+  }
+
+  async incrementTournamentWins(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({
+        tournamentWins: sql`${users.tournamentWins} + 1`
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async getTournamentWins(userId: number): Promise<number> {
+    const result = await db
+      .select({ tournamentWins: users.tournamentWins })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    
+    return result[0]?.tournamentWins || 0;
   }
 }
 

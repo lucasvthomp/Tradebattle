@@ -40,6 +40,7 @@ export const users = pgTable("users", {
   personalBalance: numeric("personal_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Personal portfolio balance
   totalDeposited: numeric("total_deposited", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Total amount deposited into personal account
   personalPortfolioStartDate: timestamp("personal_portfolio_start_date"), // When user started personal portfolio
+  tournamentWins: integer("tournament_wins").default(0).notNull(), // Private counter for tournament wins
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
