@@ -151,13 +151,7 @@ export class TournamentExpirationService {
         });
       }
 
-      // Award participation achievement
-      await this.awardAchievement(userId, tournamentId, {
-        type: 'tournament_participant',
-        tier: 'common',
-        name: 'Tournament Participant',
-        description: 'Participated in a tournament'
-      });
+      // Participation achievement is awarded when joining tournaments, not at expiration
     }
   }
 
