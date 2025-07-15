@@ -196,6 +196,12 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
+  // Check if user has premium subscription
+  const user = await storage.getUser(userId);
+  if (!user || user.subscriptionTier !== 'premium') {
+    throw new ValidationError('Premium subscription required to create tournaments');
+  }
+
   if (!name || !startingBalance) {
     throw new ValidationError('Tournament name and starting balance are required');
   }
