@@ -380,6 +380,7 @@ export default function Portfolio() {
                         <tr className="border-b">
                           <th className="text-left py-2 px-4 font-medium">Symbol</th>
                           <th className="text-left py-2 px-4 font-medium">Shares</th>
+                          <th className="text-left py-2 px-4 font-medium">Total Value</th>
                           <th className="text-left py-2 px-4 font-medium">Purchase Price</th>
                           <th className="text-left py-2 px-4 font-medium">Current Price</th>
                           <th className="text-left py-2 px-4 font-medium">Change</th>
@@ -401,6 +402,9 @@ export default function Portfolio() {
                                 <div className="font-medium">{purchase.symbol}</div>
                               </td>
                               <td className="py-2 px-4">{purchase.shares}</td>
+                              <td className="py-2 px-4">
+                                <span className="font-medium">${marketValue.toFixed(2)}</span>
+                              </td>
                               <td className="py-2 px-4">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
                               <td className="py-2 px-4">${currentPrice.toFixed(2)}</td>
                               <td className="py-2 px-4">
