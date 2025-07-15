@@ -20,7 +20,13 @@ import {
   Phone,
   Calendar,
   MapPin,
-  Trophy
+  Trophy,
+  Target,
+  TrendingUp,
+  Award,
+  Star,
+  Users,
+  DollarSign
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -66,25 +72,54 @@ export default function Profile() {
     enabled: !!user?.id,
   });
 
-  // Achievement display functions (matching people.tsx)
+  // Achievement system with proper badge tiers and colors (matching people.tsx)
+  const achievements = [
+    // Common (Gray)
+    { id: 1, name: "Welcome", description: "Welcome to the platform", icon: User, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+    { id: 2, name: "First Trade", description: "Made your first trade", icon: Target, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+    { id: 3, name: "Tournament Participant", description: "Joined a tournament", icon: Users, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+    { id: 4, name: "Learning Experience", description: "Lost money on a trade", icon: TrendingUp, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+    // Uncommon (Green)
+    { id: 5, name: "Profit Maker", description: "Made money on trade (tournament)", icon: DollarSign, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
+    // Rare (Bright Blue)
+    { id: 6, name: "5% Portfolio Growth", description: "Made over 5% on tournament portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
+    // Epic (Rich Purple)
+    { id: 7, name: "Top 3 Finisher", description: "Finished in top 3 position in tournament", icon: Award, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
+    { id: 8, name: "Tournament Leader", description: "Reached top 1 position in tournament", icon: Crown, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
+    { id: 9, name: "10% Portfolio Growth", description: "Made over 10% on tournament portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
+    // Legendary (Bright Orange)
+    { id: 10, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+    { id: 11, name: "25% Portfolio Growth", description: "Made over 25% on tournament portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+    { id: 12, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+    // Mythic (Red)
+    { id: 13, name: "Tournament Legend", description: "Won 10 tournaments", icon: Trophy, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
+  ];
+
+  // Map achievement types to display data
   const getAchievementDisplay = (achievement: any) => {
-    const achievementTypes = {
-      'Welcome': { icon: User, color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100' },
-      'First Trade': { icon: User, color: 'bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100' },
-      'Tournament Participant': { icon: Crown, color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100' },
-      'Tournament Champion': { icon: Crown, color: 'bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100' },
-    };
-    
-    const display = achievementTypes[achievement.achievementName] || { icon: Trophy, color: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100' };
-    
-    return {
+    // The API returns camelCase field names
+    const displayData = achievements.find(a => a.name === achievement.achievementName);
+    return displayData || {
       id: achievement.id,
       name: achievement.achievementName,
       description: achievement.achievementDescription,
-      icon: display.icon,
-      color: display.color,
-      tier: achievement.achievementTier
+      icon: Trophy,
+      rarity: achievement.achievementTier,
+      color: getColorForTier(achievement.achievementTier)
     };
+  };
+
+  // Get color for achievement tier
+  const getColorForTier = (tier: string) => {
+    switch(tier) {
+      case 'common': return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100";
+      case 'uncommon': return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100";
+      case 'rare': return "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100";
+      case 'epic': return "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100";
+      case 'legendary': return "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100";
+      case 'mythic': return "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100";
+      default: return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100";
+    }
   };
 
   const displayAchievements = userAchievements?.data?.map(getAchievementDisplay) || [];
