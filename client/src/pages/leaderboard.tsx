@@ -16,16 +16,22 @@ export default function Leaderboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("tournaments");
 
-  // Fetch tournaments leaderboard data
+  // Fetch tournaments leaderboard data with 5-minute refresh
   const { data: tournamentLeaderboard, isLoading: tournamentsLoading } = useQuery({
     queryKey: ['/api/tournaments/leaderboard'],
-    enabled: activeTab === "tournaments"
+    enabled: activeTab === "tournaments",
+    refetchInterval: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
+    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
   });
 
-  // Fetch personal leaderboard data
+  // Fetch personal leaderboard data with 5-minute refresh
   const { data: personalLeaderboard, isLoading: personalLoading } = useQuery({
     queryKey: ['/api/personal/leaderboard'],
-    enabled: activeTab === "personal"
+    enabled: activeTab === "personal",
+    refetchInterval: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: true,
+    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
   });
 
   const getRankIcon = (rank: number) => {

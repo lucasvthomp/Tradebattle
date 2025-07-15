@@ -204,3 +204,5 @@ Preferred communication style: Simple, everyday language.
 - **Tournament Expiration System Fix** (January 2025): Fixed issue where 1-minute tournaments remained in "waiting" status and weren't properly processed - tournaments now correctly transition from waiting → active → completed with automated expiration processing
 - **Admin Panel Tournament Filtering** (January 2025): Updated admin panel to only show active tournaments, hiding completed tournaments from the management interface for cleaner organization
 - **Archive Tournament ID Display** (January 2025): Changed archive page to display tournament ID instead of join code for better identification and tracking of completed tournaments
+- **Real-time Tournament Leaderboard** (January 2025): Added real-time updates to tournament leaderboards with 5-second refresh intervals and immediate cache invalidation on trade actions for instant ranking updates
+- **Global Leaderboard Auto-refresh** (January 2025): Implemented 5-minute auto-refresh for global leaderboard on both tournament and personal portfolio sections with window focus refetch and proper stale time management
