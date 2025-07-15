@@ -143,10 +143,6 @@ export default function ArchivePage() {
                           </div>
                           <div className="text-right">
                             <div className="font-semibold">${participant.portfolioValue?.toLocaleString() || 0}</div>
-                            <div className="text-xs text-muted-foreground">
-                              {participant.portfolioValue > tournament.startingBalance ? '+' : ''}
-                              ${(participant.portfolioValue - tournament.startingBalance).toLocaleString()}
-                            </div>
                           </div>
                         </div>
                       );
