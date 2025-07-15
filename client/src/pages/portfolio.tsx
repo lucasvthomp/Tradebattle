@@ -96,11 +96,15 @@ export default function Portfolio() {
     return total + (purchasePrice * purchase.shares);
   }, 0);
 
-  const totalGainLoss = portfolioValue - totalInvested;
-  const totalGainLossPercent = totalInvested > 0 ? (totalGainLoss / totalInvested) * 100 : 0;
-
   const currentBalance = parseFloat(personalPortfolio?.balance) || 10000;
   const totalPortfolioValue = currentBalance + portfolioValue;
+  
+  // Initial deposit amount (money given to user)
+  const initialDeposit = parseFloat(user?.totalDeposited) || 10000;
+  
+  // Calculate gain/loss based on initial deposit vs current total portfolio value
+  const totalGainLoss = totalPortfolioValue - initialDeposit;
+  const totalGainLossPercent = initialDeposit > 0 ? (totalGainLoss / initialDeposit) * 100 : 0;
 
   // Calculate days with personal portfolio
   const portfolioStartDate = user?.portfolioCreatedAt ? new Date(user.portfolioCreatedAt) : null;
@@ -266,7 +270,20 @@ export default function Portfolio() {
           </motion.div>
 
           {/* Portfolio Summary Cards */}
-          <motion.div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8" variants={fadeInUp}>
+          <motion.div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8" variants={fadeInUp}>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Initial Deposit</CardTitle>
+                <BarChart3 className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">${initialDeposit.toFixed(2)}</div>
+                <p className="text-xs text-muted-foreground">
+                  Starting amount given
+                </p>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Portfolio Value</CardTitle>

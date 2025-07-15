@@ -206,3 +206,4 @@ Preferred communication style: Simple, everyday language.
 - **Archive Tournament ID Display** (January 2025): Changed archive page to display tournament ID instead of join code for better identification and tracking of completed tournaments
 - **Real-time Tournament Leaderboard** (January 2025): Added real-time updates to tournament leaderboards with 5-second refresh intervals and immediate cache invalidation on trade actions for instant ranking updates
 - **Global Leaderboard Auto-refresh** (January 2025): Implemented 5-minute auto-refresh for global leaderboard on both tournament and personal portfolio sections with window focus refetch and proper stale time management
+- **Initial Deposit Tracking** (January 2025): Added new info bubble in personal portfolio showing initial deposit amount given to users, updated gain/loss calculation to compare current total portfolio value against initial deposit instead of individual stock investments
