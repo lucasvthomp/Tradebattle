@@ -409,7 +409,7 @@ export default function Portfolio() {
                                     ${gainLoss >= 0 ? '+' : ''}{gainLoss.toFixed(2)}
                                   </span>
                                   <span className={`text-xs ${gainLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                    {gainLoss >= 0 ? '+' : ''}{gainLossPercent.toFixed(2)}%
+                                    {gainLoss >= 0 ? '+' : ''}{Math.abs(gainLossPercent) < 0.01 ? gainLossPercent.toFixed(4) : gainLossPercent.toFixed(2)}%
                                   </span>
                                 </div>
                               </td>
