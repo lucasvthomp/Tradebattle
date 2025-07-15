@@ -610,6 +610,20 @@ router.post('/user/upgrade-premium', asyncHandler(async (req, res) => {
     portfolioCreatedAt: new Date()
   });
 
+  // Award Premium Trader achievement
+  try {
+    await storage.awardAchievement({
+      userId,
+      achievementType: 'premium_trader',
+      achievementTier: 'legendary',
+      achievementName: 'Premium Trader',
+      achievementDescription: 'Premium user'
+    });
+  } catch (error) {
+    // Achievement might already exist, ignore the error
+    console.log('Premium Trader achievement already exists or error:', error);
+  }
+
   res.json({
     success: true,
     data: updatedUser,
