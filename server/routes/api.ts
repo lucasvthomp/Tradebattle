@@ -25,6 +25,63 @@ import { requireAuth } from '../auth.js';
 const router = Router();
 
 /**
+ * Helper function to calculate portfolio growth and award achievements
+ */
+async function checkPersonalPortfolioGrowthAchievements(userId: number) {
+  try {
+    const user = await storage.getUser(userId);
+    if (!user) return;
+
+    const purchases = await storage.getPersonalStockPurchases(userId);
+    const currentBalance = parseFloat(user.personalBalance) || 10000;
+    const initialDeposit = parseFloat(user.totalDeposited) || 10000;
+    
+    // Calculate current portfolio value
+    let currentPortfolioValue = currentBalance;
+    
+    for (const purchase of purchases) {
+      // Get current price for each stock
+      try {
+        const quote = await getStockQuote(purchase.symbol);
+        const currentValue = purchase.shares * quote.price;
+        currentPortfolioValue += currentValue;
+      } catch (error) {
+        // If unable to get current price, use purchase price as fallback
+        const purchaseValue = purchase.shares * purchase.purchasePrice;
+        currentPortfolioValue += purchaseValue;
+      }
+    }
+    
+    // Calculate growth percentage
+    const growthPercentage = ((currentPortfolioValue - initialDeposit) / initialDeposit) * 100;
+    
+    // Award 10% Portfolio Growth achievement
+    if (growthPercentage >= 10) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '10_percent_growth',
+        achievementTier: 'epic',
+        achievementName: '10% Portfolio Growth',
+        achievementDescription: 'Made over 10% on personal portfolio'
+      });
+    }
+    
+    // Award 25% Portfolio Growth achievement
+    if (growthPercentage >= 25) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '25_percent_growth',
+        achievementTier: 'legendary',
+        achievementName: '25% Portfolio Growth',
+        achievementDescription: 'Made over 25% on personal portfolio'
+      });
+    }
+  } catch (error) {
+    console.log('Error checking portfolio growth achievements:', error);
+  }
+}
+
+/**
  * GET /api/quote/:symbol
  * Fetch current stock quote data
  */
@@ -749,6 +806,9 @@ router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
     createdAt: new Date()
   });
 
+  // Check for portfolio growth achievements
+  await checkPersonalPortfolioGrowthAchievements(userId);
+
   res.status(201).json({
     success: true,
     data: { purchase },
@@ -829,6 +889,9 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
       });
     }
   }
+
+  // Check for portfolio growth achievements after selling
+  await checkPersonalPortfolioGrowthAchievements(userId);
 
   res.json({
     success: true,

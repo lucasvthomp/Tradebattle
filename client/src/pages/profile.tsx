@@ -88,10 +88,10 @@ export default function Profile() {
     // Epic (Rich Purple)
     { id: 8, name: "Top 3 Finisher", description: "Finished in top 3 position in tournament", icon: Award, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
     { id: 9, name: "Tournament Leader", description: "Reached top 1 position in tournament", icon: Crown, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
-    { id: 10, name: "10% Portfolio Growth", description: "Made over 10% on tournament portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
+    { id: 10, name: "10% Portfolio Growth", description: "Made over 10% on personal portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
     // Legendary (Bright Orange)
     { id: 11, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
-    { id: 12, name: "25% Portfolio Growth", description: "Made over 25% on tournament portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+    { id: 12, name: "25% Portfolio Growth", description: "Made over 25% on personal portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
     { id: 13, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
     // Mythic (Red)
     { id: 14, name: "Tournament Legend", description: "Won 10 tournaments", icon: Trophy, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
