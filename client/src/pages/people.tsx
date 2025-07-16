@@ -180,7 +180,8 @@ export default function People() {
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
                           <Crown className="w-3 h-3 mr-1" />
-                          {profileUser?.data?.subscriptionTier === 'premium' ? 'Premium' : 'Free'} Trader
+                          {profileUser?.data?.subscriptionTier === 'premium' ? 'Premium' : 
+                           profileUser?.data?.subscriptionTier === 'administrator' ? 'Administrator' : 'Free'} Trader
                         </Badge>
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                           <Calendar className="w-3 h-3 mr-1" />
@@ -362,7 +363,8 @@ export default function People() {
                               {person.displayName || person.firstName || `${person.firstName} ${person.lastName}`}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              {person.subscriptionTier === 'premium' ? 'Premium' : 'Free'} Trader
+                              {person.subscriptionTier === 'premium' ? 'Premium' : 
+                               person.subscriptionTier === 'administrator' ? 'Administrator' : 'Free'} Trader
                             </p>
                             <p className="text-xs text-muted-foreground">
                               Member since {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
