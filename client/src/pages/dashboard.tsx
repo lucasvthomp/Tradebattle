@@ -1901,9 +1901,10 @@ export default function Dashboard() {
                                         <th className="text-right p-2 font-medium text-muted-foreground">Shares</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Total Purchase Value</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Current Value</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Change</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Purchase Price</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Current Price</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Change</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Per Share Change</th>
                                         <th className="text-center p-2 font-medium text-muted-foreground">Actions</th>
                                       </tr>
                                     </thead>
@@ -1911,10 +1912,12 @@ export default function Dashboard() {
                                       {currentPurchases.map((purchase: any, index: number) => {
                                         const purchasePrice = Number(purchase.purchasePrice);
                                         const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
-                                        const change = currentPrice - purchasePrice;
-                                        const percentChange = ((change / purchasePrice) * 100);
+                                        const perShareChange = currentPrice - purchasePrice;
+                                        const perSharePercentChange = ((perShareChange / purchasePrice) * 100);
                                         const totalPurchaseValue = purchasePrice * purchase.shares;
                                         const currentValue = currentPrice * purchase.shares;
+                                        const totalValueChange = currentValue - totalPurchaseValue;
+                                        const totalValuePercentChange = ((totalValueChange / totalPurchaseValue) * 100);
                                         
                                         return (
                                           <tr key={index} className="border-b hover:bg-muted/50">
@@ -1927,12 +1930,18 @@ export default function Dashboard() {
                                             <td className="p-2 text-right font-medium">{purchase.shares}</td>
                                             <td className="p-2 text-right font-medium">${totalPurchaseValue.toFixed(2)}</td>
                                             <td className="p-2 text-right font-medium">${currentValue.toFixed(2)}</td>
+                                            <td className="p-2 text-right">
+                                              <div className={`${totalValueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                <div>${totalValueChange.toFixed(2)}</div>
+                                                <div className="text-xs">({totalValuePercentChange.toFixed(2)}%)</div>
+                                              </div>
+                                            </td>
                                             <td className="p-2 text-right">${purchasePrice.toFixed(2)}</td>
                                             <td className="p-2 text-right">${currentPrice.toFixed(2)}</td>
                                             <td className="p-2 text-right">
-                                              <div className={`${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                <div>${change.toFixed(2)}</div>
-                                                <div className="text-xs">({percentChange.toFixed(2)}%)</div>
+                                              <div className={`${perShareChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                                <div>${perShareChange.toFixed(2)}</div>
+                                                <div className="text-xs">({perSharePercentChange.toFixed(2)}%)</div>
                                               </div>
                                             </td>
                                             <td className="p-2 text-center">
