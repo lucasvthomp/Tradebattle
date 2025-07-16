@@ -501,13 +501,13 @@ export default function Dashboard() {
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
-    // Free tier gets 15-minute intervals for 1D and 5D, 1-day intervals for longer periods
-    if (user?.subscriptionTier === 'novice') {
-      return (timeframe === '1D' || timeframe === '5D') ? 15 * 60 * 1000 : 24 * 60 * 60 * 1000;
+    // Free tier gets 10-minute intervals for all timeframes
+    if (user?.subscriptionTier === 'free') {
+      return 10 * 60 * 1000; // 10 minutes
     }
     
-    // Paid tiers get 1-minute intervals for 1D and 5D, 5-minute for longer periods
-    return (timeframe === '1D' || timeframe === '5D') ? 1 * 60 * 1000 : 5 * 60 * 1000;
+    // Premium/Admin tiers get 30-second intervals for better real-time experience
+    return 30 * 1000; // 30 seconds
   };
 
   // Fetch user's watchlist
@@ -652,7 +652,7 @@ export default function Dashboard() {
       return prices;
     },
     enabled: purchasedSymbols.length > 0,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: user?.subscriptionTier === 'free' ? 10 * 60 * 1000 : 30000, // Free: 10 minutes, Premium/Admin: 30 seconds
   });
 
   // Update stock prices when new data comes in

@@ -81,7 +81,7 @@ export default function Portfolio() {
       return prices;
     },
     enabled: purchasedSymbols.length > 0 && hasPremium,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: user?.subscriptionTier === 'free' ? 10 * 60 * 1000 : 30000, // Free: 10 minutes, Premium/Admin: 30 seconds
   });
 
   // Calculate portfolio metrics
