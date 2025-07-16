@@ -238,6 +238,9 @@ export default function Leaderboard() {
                                   {trader.subscriptionTier === 'premium' && (
                                     <Badge variant="outline" className="text-xs">Premium</Badge>
                                   )}
+                                  {trader.subscriptionTier === 'administrator' && (
+                                    <Badge variant="outline" className="text-xs text-blue-600">Administrator</Badge>
+                                  )}
                                 </div>
                                 <div className="text-sm text-muted-foreground">
                                   Premium since: {trader.premiumUpgradeDate ? new Date(trader.premiumUpgradeDate).toLocaleDateString() : 'N/A'} • Starting: {formatCurrency(trader.startingBalance)}
