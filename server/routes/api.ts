@@ -18,7 +18,7 @@ import {
 } from '../utils/errorHandler.js';
 import { storage } from '../storage.js';
 import { db } from '../db.js';
-import { tournaments, tournamentParticipants } from '../../shared/schema.js';
+import { tournaments, tournamentParticipants, tradeHistory } from '../../shared/schema.js';
 import { eq, sql } from 'drizzle-orm';
 import { requireAuth } from '../auth.js';
 
@@ -751,6 +751,55 @@ router.post('/user/upgrade-administrator', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * Helper function to calculate trading streak
+ */
+async function calculateTradingStreak(userId: number): Promise<number> {
+  try {
+    // Get all trades for the user ordered by date (most recent first)
+    const trades = await db.query.tradeHistory.findMany({
+      where: (tradeHistory, { eq }) => eq(tradeHistory.userId, userId),
+      orderBy: (tradeHistory, { desc }) => [desc(tradeHistory.createdAt)]
+    });
+
+    if (trades.length === 0) {
+      return 0;
+    }
+
+    // Group trades by date
+    const tradesByDate = new Map<string, any[]>();
+    trades.forEach(trade => {
+      const dateStr = trade.createdAt.toISOString().split('T')[0];
+      if (!tradesByDate.has(dateStr)) {
+        tradesByDate.set(dateStr, []);
+      }
+      tradesByDate.get(dateStr)!.push(trade);
+    });
+
+    // Calculate streak starting from today
+    let streak = 0;
+    const today = new Date();
+    
+    for (let i = 0; i < 365; i++) { // Check up to 365 days
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      
+      if (tradesByDate.has(dateStr)) {
+        streak++;
+      } else {
+        // If no trades on this date, break the streak
+        break;
+      }
+    }
+
+    return streak;
+  } catch (error) {
+    console.error('Error calculating trading streak:', error);
+    return 0;
+  }
+}
+
+/**
  * GET /api/personal-portfolio
  * Get personal portfolio data
  */
@@ -767,11 +816,15 @@ router.get('/personal-portfolio', asyncHandler(async (req, res) => {
     throw new ValidationError('Premium subscription required');
   }
 
+  // Calculate trading streak
+  const tradingStreak = await calculateTradingStreak(userId);
+
   res.json({
     success: true,
     data: {
       balance: user.personalBalance || 10000,
-      portfolioCreatedAt: user.portfolioCreatedAt
+      portfolioCreatedAt: user.portfolioCreatedAt,
+      tradingStreak: tradingStreak
     },
   });
 }));

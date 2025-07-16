@@ -111,6 +111,9 @@ export default function Portfolio() {
   const daysWithPortfolio = portfolioStartDate ? 
     Math.floor((Date.now() - portfolioStartDate.getTime()) / (1000 * 60 * 60 * 24)) : 0;
 
+  // Get trading streak from portfolio data
+  const tradingStreak = personalPortfolio?.tradingStreak || 0;
+
   // Purchase stock mutation
   const purchaseStockMutation = useMutation({
     mutationFn: async (data: { symbol: string; companyName: string; shares: number; purchasePrice: number }) => {
@@ -260,11 +263,11 @@ export default function Portfolio() {
               </div>
               <div className="text-right">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Calendar className="w-5 h-5 text-muted-foreground" />
-                  <span className="text-lg font-semibold">{daysWithPortfolio}</span>
+                  <Activity className="w-5 h-5 text-muted-foreground" />
+                  <span className="text-lg font-semibold">{tradingStreak}</span>
                   <span className="text-sm text-muted-foreground">days</span>
                 </div>
-                <p className="text-xs text-muted-foreground">Portfolio streak</p>
+                <p className="text-xs text-muted-foreground">Trading streak</p>
               </div>
             </div>
           </motion.div>
