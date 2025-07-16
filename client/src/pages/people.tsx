@@ -70,7 +70,7 @@ const achievements = [
   // Special (Unique gradient designs)
   { id: 15, name: "Tournament Overlord", description: "Ranked #1 on tournament leaderboard", icon: Crown, rarity: "special", color: "bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 text-white font-bold shadow-lg border-2 border-yellow-300" },
   { id: 16, name: "Portfolio Emperor", description: "Ranked #1 on personal portfolio leaderboard", icon: Trophy, rarity: "special", color: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold shadow-lg border-2 border-purple-300" },
-  { id: 17, name: "Streak Master", description: "Ranked #1 on trading streak leaderboard", icon: Zap, rarity: "special", color: "bg-gradient-to-r from-blue-500 via-cyan-500 to-green-500 text-white font-bold shadow-lg border-2 border-blue-300" },
+  { id: 17, name: "Streak Master", description: "Ranked #1 on trading streak leaderboard", icon: Zap, rarity: "special", color: "bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-600 text-white font-bold shadow-lg border-2 border-emerald-300" },
 ];
 
 export default function People() {
