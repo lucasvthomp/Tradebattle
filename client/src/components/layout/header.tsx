@@ -96,7 +96,7 @@ export default function Header() {
                     <Settings className="w-4 h-4 mr-2" />
                     Settings
                   </DropdownMenuItem>
-                  {(user.userId === 0 || user.userId === 1 || user.userId === 2) && (
+                  {(user.userId === 1 || user.userId === 2 || user.userId === 3) && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => window.location.href = "/admin"}>

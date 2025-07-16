@@ -103,7 +103,7 @@ export default function Admin() {
   const [endTournamentOpen, setEndTournamentOpen] = useState(false);
 
   // Check if user is admin (based on userId)
-  const isAdmin = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
+  const isAdmin = user?.userId === 1 || user?.userId === 2 || user?.userId === 3;
 
   // Redirect if not admin
   useEffect(() => {
@@ -458,8 +458,8 @@ export default function Admin() {
                         {allUsers?.map((user) => (
                           <div key={user.id} className="grid grid-cols-7 gap-4 p-4 items-center">
                             <div className="flex items-center gap-2">
-                              <Badge variant={user.userId === 0 || user.userId === 1 || user.userId === 2 ? "default" : "secondary"}>
-                                {user.userId === 0 || user.userId === 1 || user.userId === 2 ? (
+                              <Badge variant={user.userId === 1 || user.userId === 2 || user.userId === 3 ? "default" : "secondary"}>
+                                {user.userId === 1 || user.userId === 2 || user.userId === 3 ? (
                                   <Crown className="h-3 w-3 mr-1" />
                                 ) : (
                                   <Users className="h-3 w-3 mr-1" />
@@ -511,7 +511,7 @@ export default function Admin() {
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem
                                     onClick={() => handleDeleteUser(user.email)}
-                                    disabled={user.userId === 0 || user.userId === 1 || user.userId === 2}
+                                    disabled={user.userId === 1 || user.userId === 2 || user.userId === 3}
                                     className="text-red-600 hover:text-red-700"
                                   >
                                     <Trash2 className="h-4 w-4 mr-2" />
