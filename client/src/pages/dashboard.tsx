@@ -1899,7 +1899,8 @@ export default function Dashboard() {
                                       <tr className="border-b">
                                         <th className="text-left p-2 font-medium text-muted-foreground">Stock</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Shares</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Total Value</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Total Purchase Value</th>
+                                        <th className="text-right p-2 font-medium text-muted-foreground">Current Value</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Purchase Price</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Current Price</th>
                                         <th className="text-right p-2 font-medium text-muted-foreground">Change</th>
@@ -1912,7 +1913,8 @@ export default function Dashboard() {
                                         const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
                                         const change = currentPrice - purchasePrice;
                                         const percentChange = ((change / purchasePrice) * 100);
-                                        const totalValue = currentPrice * purchase.shares;
+                                        const totalPurchaseValue = purchasePrice * purchase.shares;
+                                        const currentValue = currentPrice * purchase.shares;
                                         
                                         return (
                                           <tr key={index} className="border-b hover:bg-muted/50">
@@ -1923,7 +1925,8 @@ export default function Dashboard() {
                                               </div>
                                             </td>
                                             <td className="p-2 text-right font-medium">{purchase.shares}</td>
-                                            <td className="p-2 text-right font-medium">${totalValue.toFixed(2)}</td>
+                                            <td className="p-2 text-right font-medium">${totalPurchaseValue.toFixed(2)}</td>
+                                            <td className="p-2 text-right font-medium">${currentValue.toFixed(2)}</td>
                                             <td className="p-2 text-right">${purchasePrice.toFixed(2)}</td>
                                             <td className="p-2 text-right">${currentPrice.toFixed(2)}</td>
                                             <td className="p-2 text-right">
