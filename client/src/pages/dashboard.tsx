@@ -1442,9 +1442,7 @@ export default function Dashboard() {
                 <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
                   <RefreshCw className="w-4 h-4 text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
-                    {(changePeriod === '1D' || changePeriod === '5D') ? 
-                      '1min' : 
-                      '5min'} refresh
+                    {user?.subscriptionTier === 'free' ? '10min' : '30sec'} refresh
                   </span>
                 </div>
               </div>
@@ -2136,9 +2134,7 @@ export default function Dashboard() {
                     <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
                       <RefreshCw className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm text-muted-foreground">
-                        {(changePeriod === '1D' || changePeriod === '5D') ? 
-                          '1min' : 
-                          '5min'} refresh
+                        {user?.subscriptionTier === 'free' ? '10min' : '30sec'} refresh
                       </span>
                     </div>
                   </div>

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock, ShoppingCart, Minus } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock, ShoppingCart, Minus, RefreshCw } from "lucide-react";
 import { motion } from "framer-motion";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -352,13 +352,20 @@ export default function Portfolio() {
                     <BarChart3 className="w-5 h-5 mr-2" />
                     Personal Holdings ({personalPurchases.length})
                   </div>
-                  <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button className="bg-green-600 hover:bg-green-700">
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        Buy Stock
-                      </Button>
-                    </DialogTrigger>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
+                      <RefreshCw className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        {user?.subscriptionTier === 'free' ? '10min' : '30sec'} refresh
+                      </span>
+                    </div>
+                    <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button className="bg-green-600 hover:bg-green-700">
+                          <ShoppingCart className="w-4 h-4 mr-2" />
+                          Buy Stock
+                        </Button>
+                      </DialogTrigger>
                     <DialogContent>
                       <DialogHeader>
                         <DialogTitle>Buy Stock</DialogTitle>
@@ -369,7 +376,8 @@ export default function Portfolio() {
                         isPending={purchaseStockMutation.isPending}
                       />
                     </DialogContent>
-                  </Dialog>
+                    </Dialog>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
