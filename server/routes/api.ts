@@ -277,9 +277,9 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  // Check if user has premium subscription
+  // Check if user has premium or administrator subscription
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== 'premium') {
+  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
     return res.json({
       message: 'You need premium to create tournaments. Joining one is free!'
     });
@@ -712,6 +712,45 @@ router.post('/user/upgrade-premium', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * POST /api/user/upgrade-administrator
+ * Upgrade user to administrator subscription
+ */
+router.post('/user/upgrade-administrator', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  // Update user subscription tier to administrator
+  const updatedUser = await storage.updateUser(userId, {
+    subscriptionTier: 'administrator',
+    premiumUpgradeDate: new Date(),
+    personalBalance: 10000,
+    portfolioCreatedAt: new Date()
+  });
+
+  // Award Premium Trader achievement (same features as premium)
+  try {
+    await storage.awardAchievement({
+      userId,
+      achievementType: 'premium_trader',
+      achievementTier: 'legendary',
+      achievementName: 'Premium Trader',
+      achievementDescription: 'Premium user'
+    });
+  } catch (error) {
+    // Achievement might already exist, ignore the error
+    console.log('Premium Trader achievement already exists or error:', error);
+  }
+
+  res.json({
+    success: true,
+    data: updatedUser,
+  });
+}));
+
+/**
  * GET /api/personal-portfolio
  * Get personal portfolio data
  */
@@ -724,7 +763,7 @@ router.get('/personal-portfolio', asyncHandler(async (req, res) => {
 
   const user = await storage.getUser(userId);
   
-  if (!user || user.subscriptionTier !== 'premium') {
+  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
     throw new ValidationError('Premium subscription required');
   }
 
@@ -750,7 +789,7 @@ router.get('/personal-purchases', asyncHandler(async (req, res) => {
 
   const user = await storage.getUser(userId);
   
-  if (!user || user.subscriptionTier !== 'premium') {
+  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
     throw new ValidationError('Premium subscription required');
   }
 
@@ -775,7 +814,7 @@ router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
 
   const user = await storage.getUser(userId);
   
-  if (!user || user.subscriptionTier !== 'premium') {
+  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
     throw new ValidationError('Premium subscription required');
   }
 
@@ -852,7 +891,7 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
 
   const user = await storage.getUser(userId);
   
-  if (!user || user.subscriptionTier !== 'premium') {
+  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
     throw new ValidationError('Premium subscription required');
   }
 
@@ -1020,8 +1059,8 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
   const userPortfolios = [];
   
   for (const user of users) {
-    // Only include premium users (non-premium accounts don't have access to personal portfolios)
-    if (user.subscriptionTier !== 'premium') continue;
+    // Only include premium or administrator users (non-premium accounts don't have access to personal portfolios)
+    if (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator') continue;
     
     // Calculate portfolio value for premium users
     const purchases = await storage.getPersonalStockPurchases(user.id);

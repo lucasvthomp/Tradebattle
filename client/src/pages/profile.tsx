@@ -470,7 +470,8 @@ export default function Profile() {
                           </h3>
                           <p className="text-sm text-muted-foreground">
                             {user.subscriptionTier === 'novice' ? 'Free' : 
-                             user.subscriptionTier === 'premium' ? '$19.99/month' : 'Free'} • 
+                             user.subscriptionTier === 'premium' ? '$19.99/month' : 
+                             user.subscriptionTier === 'administrator' ? 'Administrator' : 'Free'} • 
                              Next billing: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </p>
                         </div>

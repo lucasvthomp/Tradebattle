@@ -33,8 +33,8 @@ export default function Portfolio() {
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
 
-  // Check if user has premium subscription
-  const hasPremium = user?.subscriptionTier === 'premium';
+  // Check if user has premium or administrator subscription
+  const hasPremium = user?.subscriptionTier === 'premium' || user?.subscriptionTier === 'administrator';
 
   // Fetch personal portfolio balance and data
   const { data: personalPortfolioData } = useQuery({

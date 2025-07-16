@@ -474,8 +474,14 @@ export default function Admin() {
                               {user.email.length > 8 ? `${user.email.substring(0, 8)}...` : user.email}
                             </div>
                             <div>
-                              <Badge variant="outline" className={user.subscriptionTier === 'premium' ? "text-yellow-600" : "text-gray-600"}>
-                                {user.subscriptionTier === 'premium' ? 'Premium' : 'Free'}
+                              <Badge variant="outline" className={
+                                user.subscriptionTier === 'premium' ? "text-yellow-600" : 
+                                user.subscriptionTier === 'administrator' ? "text-blue-600" : 
+                                "text-gray-600"
+                              }>
+                                {user.subscriptionTier === 'premium' ? 'Premium' : 
+                                 user.subscriptionTier === 'administrator' ? 'Administrator' : 
+                                 'Free'}
                               </Badge>
                             </div>
                             <div className="text-sm text-gray-500">
@@ -912,6 +918,7 @@ export default function Admin() {
                   <SelectContent>
                     <SelectItem value="free">Free Account</SelectItem>
                     <SelectItem value="premium">Premium Account</SelectItem>
+                    <SelectItem value="administrator">Administrator Account</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
