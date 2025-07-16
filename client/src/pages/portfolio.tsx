@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock, ShoppingCart, Minus, RefreshCw } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock, ShoppingCart, Minus, RefreshCw, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -32,6 +32,7 @@ export default function Portfolio() {
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
+  const [streakInfoOpen, setStreakInfoOpen] = useState(false);
 
   // Check if user has premium or administrator subscription
   const hasPremium = user?.subscriptionTier === 'premium' || user?.subscriptionTier === 'administrator';
@@ -266,6 +267,14 @@ export default function Portfolio() {
                   <Activity className="w-5 h-5 text-muted-foreground" />
                   <span className="text-lg font-semibold">{tradingStreak}</span>
                   <span className="text-sm text-muted-foreground">days</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-auto"
+                    onClick={() => setStreakInfoOpen(true)}
+                  >
+                    <HelpCircle className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                  </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">Trading streak</p>
               </div>
@@ -495,6 +504,52 @@ export default function Portfolio() {
                   isPending={sellStockMutation.isPending}
                 />
               )}
+            </DialogContent>
+          </Dialog>
+
+          {/* Trading Streak Info Dialog */}
+          <Dialog open={streakInfoOpen} onOpenChange={setStreakInfoOpen}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle className="flex items-center">
+                  <Activity className="w-5 h-5 mr-2" />
+                  Trading Streak Explained
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h4 className="font-semibold">What is a Trading Streak?</h4>
+                  <p className="text-sm text-muted-foreground">
+                    Your trading streak counts consecutive days where you made at least one trade (buy or sell) in your personal portfolio.
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-semibold">How it Works:</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• <strong>Day 1:</strong> You buy AAPL → Streak: 1 day</li>
+                    <li>• <strong>Day 2:</strong> You sell NVDA → Streak: 2 days</li>
+                    <li>• <strong>Day 3:</strong> No trades → Streak: 0 days (resets)</li>
+                    <li>• <strong>Day 4:</strong> You buy MSFT → Streak: 1 day (starts fresh)</li>
+                  </ul>
+                </div>
+                
+                <div className="space-y-2">
+                  <h4 className="font-semibold">Tips to Maintain Your Streak:</h4>
+                  <ul className="text-sm text-muted-foreground space-y-1">
+                    <li>• Make at least one trade every day</li>
+                    <li>• Both buying and selling count as trading activity</li>
+                    <li>• Tournament trades don't count toward personal streak</li>
+                    <li>• Streak resets if you skip a day without trading</li>
+                  </ul>
+                </div>
+                
+                <div className="p-3 bg-muted rounded-lg">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Current Streak:</strong> {tradingStreak} {tradingStreak === 1 ? 'day' : 'days'}
+                  </p>
+                </div>
+              </div>
             </DialogContent>
           </Dialog>
         </motion.div>
