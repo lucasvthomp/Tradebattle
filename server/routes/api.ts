@@ -801,6 +801,70 @@ async function calculateTradingStreak(userId: number): Promise<number> {
 }
 
 /**
+ * Helper function to award streak achievements
+ */
+async function awardStreakAchievements(userId: number, streak: number) {
+  try {
+    // 5 day streak - Uncommon
+    if (streak >= 5) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '5_day_streak',
+        achievementTier: 'uncommon',
+        achievementName: '5 Day Streak',
+        achievementDescription: 'Traded for 5 consecutive days'
+      });
+    }
+
+    // 15 day streak - Rare
+    if (streak >= 15) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '15_day_streak',
+        achievementTier: 'rare',
+        achievementName: '15 Day Streak',
+        achievementDescription: 'Traded for 15 consecutive days'
+      });
+    }
+
+    // 50 day streak - Epic
+    if (streak >= 50) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '50_day_streak',
+        achievementTier: 'epic',
+        achievementName: '50 Day Streak',
+        achievementDescription: 'Traded for 50 consecutive days'
+      });
+    }
+
+    // 100 day streak - Legendary
+    if (streak >= 100) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '100_day_streak',
+        achievementTier: 'legendary',
+        achievementName: '100 Day Streak',
+        achievementDescription: 'Traded for 100 consecutive days'
+      });
+    }
+
+    // 365 day streak - Mythic
+    if (streak >= 365) {
+      await storage.awardAchievement({
+        userId,
+        achievementType: '365_day_streak',
+        achievementTier: 'mythic',
+        achievementName: '365 Day Streak',
+        achievementDescription: 'Traded every day for a full year'
+      });
+    }
+  } catch (error) {
+    console.error('Error awarding streak achievements:', error);
+  }
+}
+
+/**
  * GET /api/personal-portfolio
  * Get personal portfolio data
  */
@@ -819,6 +883,9 @@ router.get('/personal-portfolio', asyncHandler(async (req, res) => {
 
   // Calculate trading streak
   const tradingStreak = await calculateTradingStreak(userId);
+
+  // Award streak achievements based on current streak
+  await awardStreakAchievements(userId, tradingStreak);
 
   res.json({
     success: true,
@@ -926,6 +993,10 @@ router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
   // Check for portfolio growth achievements
   await checkPersonalPortfolioGrowthAchievements(userId);
 
+  // Check for streak achievements after purchase
+  const tradingStreak = await calculateTradingStreak(userId);
+  await awardStreakAchievements(userId, tradingStreak);
+
   res.status(201).json({
     success: true,
     data: { purchase },
@@ -1009,6 +1080,10 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
 
   // Check for portfolio growth achievements after selling
   await checkPersonalPortfolioGrowthAchievements(userId);
+
+  // Check for streak achievements after selling
+  const tradingStreak = await calculateTradingStreak(userId);
+  await awardStreakAchievements(userId, tradingStreak);
 
   res.json({
     success: true,
