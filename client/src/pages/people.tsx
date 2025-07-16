@@ -25,7 +25,9 @@ import {
   Clock,
   DollarSign,
   Plus,
-  Activity
+  Activity,
+  Zap,
+  Flame
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -65,6 +67,10 @@ const achievements = [
   // Mythic (Red)
   { id: 13, name: "365 Day Streak", description: "Traded every day for a full year", icon: Activity, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
   { id: 14, name: "100% Portfolio Growth", description: "Doubled your portfolio value", icon: TrendingUp, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
+  // Special (Unique gradient designs)
+  { id: 15, name: "Tournament Overlord", description: "Ranked #1 on tournament leaderboard", icon: Crown, rarity: "special", color: "bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 text-white font-bold shadow-lg border-2 border-yellow-300" },
+  { id: 16, name: "Portfolio Emperor", description: "Ranked #1 on personal portfolio leaderboard", icon: Trophy, rarity: "special", color: "bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-white font-bold shadow-lg border-2 border-purple-300" },
+  { id: 17, name: "Streak Master", description: "Ranked #1 on trading streak leaderboard", icon: Zap, rarity: "special", color: "bg-gradient-to-r from-blue-500 via-cyan-500 to-green-500 text-white font-bold shadow-lg border-2 border-blue-300" },
 ];
 
 export default function People() {

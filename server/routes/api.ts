@@ -1158,6 +1158,22 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
   // Sort by percentage change (highest first)
   allParticipants.sort((a, b) => b.percentageChange - a.percentageChange);
   
+  // Award special achievement to #1 ranked user
+  if (allParticipants.length > 0) {
+    const topUser = allParticipants[0];
+    try {
+      await storage.awardAchievement({
+        userId: topUser.userId,
+        achievementType: 'tournament_overlord',
+        achievementTier: 'special',
+        achievementName: 'Tournament Overlord',
+        achievementDescription: 'Ranked #1 on tournament leaderboard'
+      });
+    } catch (error) {
+      console.error('Error awarding Tournament Overlord achievement:', error);
+    }
+  }
+  
   // Find user's rank
   const userRank = allParticipants.findIndex(p => p.userId === userId) + 1;
   
@@ -1222,6 +1238,22 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
   // Sort by percentage change (highest first)
   userPortfolios.sort((a, b) => b.percentageChange - a.percentageChange);
   
+  // Award special achievement to #1 ranked user
+  if (userPortfolios.length > 0) {
+    const topUser = userPortfolios[0];
+    try {
+      await storage.awardAchievement({
+        userId: topUser.id,
+        achievementType: 'portfolio_emperor',
+        achievementTier: 'special',
+        achievementName: 'Portfolio Emperor',
+        achievementDescription: 'Ranked #1 on personal portfolio leaderboard'
+      });
+    } catch (error) {
+      console.error('Error awarding Portfolio Emperor achievement:', error);
+    }
+  }
+  
   // Find user's rank
   const userRank = userPortfolios.findIndex(p => p.id === userId) + 1;
   
@@ -1266,6 +1298,22 @@ router.get('/streak/leaderboard', asyncHandler(async (req, res) => {
   
   // Sort by trading streak (highest first)
   userStreaks.sort((a, b) => b.tradingStreak - a.tradingStreak);
+  
+  // Award special achievement to #1 ranked user
+  if (userStreaks.length > 0) {
+    const topUser = userStreaks[0];
+    try {
+      await storage.awardAchievement({
+        userId: topUser.id,
+        achievementType: 'streak_master',
+        achievementTier: 'special',
+        achievementName: 'Streak Master',
+        achievementDescription: 'Ranked #1 on trading streak leaderboard'
+      });
+    } catch (error) {
+      console.error('Error awarding Streak Master achievement:', error);
+    }
+  }
   
   // Find user's rank
   const userRank = userStreaks.findIndex(p => p.id === userId) + 1;
