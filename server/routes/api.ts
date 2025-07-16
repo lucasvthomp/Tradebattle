@@ -775,10 +775,11 @@ async function calculateTradingStreak(userId: number): Promise<number> {
       tradesByDate.get(dateStr)!.push(trade);
     });
 
-    // Calculate streak starting from today
+    // Calculate streak starting from today backwards
     let streak = 0;
     const today = new Date();
     
+    // Start with today and go backwards
     for (let i = 0; i < 365; i++) { // Check up to 365 days
       const checkDate = new Date(today);
       checkDate.setDate(today.getDate() - i);
