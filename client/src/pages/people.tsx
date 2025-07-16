@@ -24,7 +24,8 @@ import {
   MapPin,
   Clock,
   DollarSign,
-  Plus
+  Plus,
+  Activity
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -45,24 +46,25 @@ const staggerChildren = {
 // Achievement system with proper badge tiers and colors
 const achievements = [
   // Common (Gray)
-  { id: 1, name: "First Trade", description: "Made your first trade", icon: Target, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
-  { id: 2, name: "Tournament Joiner", description: "Joined a tournament", icon: Users, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
-  { id: 3, name: "Learning Experience", description: "Lost money on a trade", icon: TrendingUp, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+  { id: 1, name: "Welcome", description: "Welcome to the platform", icon: User, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+  { id: 2, name: "First Trade", description: "Made your first trade", icon: Target, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
+  { id: 3, name: "Tournament Participant", description: "Joined a tournament", icon: Users, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
   // Uncommon (Green)
-  { id: 4, name: "Profit Maker", description: "Made money on trade (tournament)", icon: DollarSign, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
+  { id: 4, name: "5 Day Streak", description: "Traded for 5 consecutive days", icon: Activity, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
+  { id: 5, name: "10% Portfolio Growth", description: "Made over 10% on portfolio", icon: TrendingUp, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
   // Rare (Bright Blue)
-  { id: 5, name: "Tournament Creator", description: "Created a tournament", icon: Plus, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
-  { id: 6, name: "5% Portfolio Growth", description: "Made over 5% on tournament portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
+  { id: 6, name: "Tournament Creator", description: "Created a tournament", icon: Plus, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
+  { id: 7, name: "15 Day Streak", description: "Traded for 15 consecutive days", icon: Activity, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
+  { id: 8, name: "25% Portfolio Growth", description: "Made over 25% on portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
   // Epic (Rich Purple)
-  { id: 7, name: "Top 3 Finisher", description: "Finished in top 3 position in tournament", icon: Award, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
-  { id: 8, name: "Tournament Leader", description: "Reached top 1 position in tournament", icon: Crown, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
-  { id: 9, name: "10% Portfolio Growth", description: "Made over 10% on tournament portfolio", icon: TrendingUp, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
+  { id: 9, name: "50 Day Streak", description: "Traded for 50 consecutive days", icon: Activity, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },
   // Legendary (Bright Orange)
   { id: 10, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
-  { id: 11, name: "25% Portfolio Growth", description: "Made over 25% on tournament portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+  { id: 11, name: "100 Day Streak", description: "Traded for 100 consecutive days", icon: Activity, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
   { id: 12, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
   // Mythic (Red)
-  { id: 13, name: "Tournament Legend", description: "Won 10 tournaments", icon: Trophy, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
+  { id: 13, name: "365 Day Streak", description: "Traded every day for a full year", icon: Activity, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
+  { id: 14, name: "100% Portfolio Growth", description: "Doubled your portfolio value", icon: TrendingUp, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
 ];
 
 export default function People() {
