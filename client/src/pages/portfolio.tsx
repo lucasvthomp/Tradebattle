@@ -378,46 +378,51 @@ export default function Portfolio() {
                     <table className="w-full">
                       <thead>
                         <tr className="border-b">
-                          <th className="text-left py-2 px-4 font-medium">Symbol</th>
-                          <th className="text-left py-2 px-4 font-medium">Shares</th>
-                          <th className="text-left py-2 px-4 font-medium">Total Value</th>
-                          <th className="text-left py-2 px-4 font-medium">Purchase Price</th>
-                          <th className="text-left py-2 px-4 font-medium">Current Price</th>
-                          <th className="text-left py-2 px-4 font-medium">Change</th>
-                          <th className="text-left py-2 px-4 font-medium">Actions</th>
+                          <th className="text-left py-2 px-4 font-medium">Stock</th>
+                          <th className="text-right py-2 px-4 font-medium">Shares</th>
+                          <th className="text-right py-2 px-4 font-medium">Total Purchase Value</th>
+                          <th className="text-right py-2 px-4 font-medium">Current Value</th>
+                          <th className="text-right py-2 px-4 font-medium">Change</th>
+                          <th className="text-right py-2 px-4 font-medium">Purchase Price</th>
+                          <th className="text-right py-2 px-4 font-medium">Current Price</th>
+                          <th className="text-right py-2 px-4 font-medium">Per Share Change</th>
+                          <th className="text-center py-2 px-4 font-medium">Actions</th>
                         </tr>
                       </thead>
                       <tbody>
                         {personalPurchases.map((purchase: any) => {
                           const purchasePrice = parseFloat(purchase.purchasePrice);
                           const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
-                          const marketValue = currentPrice * purchase.shares;
-                          const totalCost = purchasePrice * purchase.shares;
-                          const gainLoss = marketValue - totalCost;
-                          const gainLossPercent = totalCost > 0 ? (gainLoss / totalCost) * 100 : 0;
+                          const perShareChange = currentPrice - purchasePrice;
+                          const perSharePercentChange = ((perShareChange / purchasePrice) * 100);
+                          const totalPurchaseValue = purchasePrice * purchase.shares;
+                          const currentValue = currentPrice * purchase.shares;
+                          const totalValueChange = currentValue - totalPurchaseValue;
+                          const totalValuePercentChange = ((totalValueChange / totalPurchaseValue) * 100);
                           
                           return (
                             <tr key={purchase.id} className="border-b hover:bg-accent/50">
                               <td className="py-2 px-4">
                                 <div className="font-medium">{purchase.symbol}</div>
                               </td>
-                              <td className="py-2 px-4">{purchase.shares}</td>
-                              <td className="py-2 px-4">
-                                <span className="font-medium">${marketValue.toFixed(2)}</span>
-                              </td>
-                              <td className="py-2 px-4">${parseFloat(purchase.purchasePrice).toFixed(2)}</td>
-                              <td className="py-2 px-4">${currentPrice.toFixed(2)}</td>
-                              <td className="py-2 px-4">
-                                <div className="flex flex-col">
-                                  <span className={`font-medium ${gainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    ${gainLoss >= 0 ? '+' : ''}{gainLoss.toFixed(2)}
-                                  </span>
-                                  <span className={`text-xs ${gainLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                    {gainLoss >= 0 ? '+' : ''}{Math.abs(gainLossPercent) < 0.01 ? gainLossPercent.toFixed(4) : gainLossPercent.toFixed(2)}%
-                                  </span>
+                              <td className="py-2 px-4 text-right font-medium">{purchase.shares}</td>
+                              <td className="py-2 px-4 text-right font-medium">${totalPurchaseValue.toFixed(2)}</td>
+                              <td className="py-2 px-4 text-right font-medium">${currentValue.toFixed(2)}</td>
+                              <td className="py-2 px-4 text-right">
+                                <div className={`${totalValueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  <div>${totalValueChange.toFixed(2)}</div>
+                                  <div className="text-xs">({totalValuePercentChange.toFixed(2)}%)</div>
                                 </div>
                               </td>
-                              <td className="py-2 px-4">
+                              <td className="py-2 px-4 text-right">${purchasePrice.toFixed(2)}</td>
+                              <td className="py-2 px-4 text-right">${currentPrice.toFixed(2)}</td>
+                              <td className="py-2 px-4 text-right">
+                                <div className={`${perShareChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  <div>${perShareChange.toFixed(2)}</div>
+                                  <div className="text-xs">({perSharePercentChange.toFixed(2)}%)</div>
+                                </div>
+                              </td>
+                              <td className="py-2 px-4 text-center">
                                 <Button
                                   variant="outline"
                                   size="sm"
