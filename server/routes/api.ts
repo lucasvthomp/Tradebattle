@@ -1237,6 +1237,51 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * GET /api/streak/leaderboard
+ * Get trading streak leaderboard data
+ */
+router.get('/streak/leaderboard', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+  
+  // Get all users with personal portfolios
+  const users = await storage.getAllUsers();
+  const userStreaks = [];
+  
+  for (const user of users) {
+    // Only include premium or administrator users (non-premium accounts don't have access to personal portfolios)
+    if (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator') continue;
+    
+    // Calculate trading streak
+    const tradingStreak = await calculateTradingStreak(user.id);
+    
+    userStreaks.push({
+      ...user,
+      tradingStreak
+    });
+  }
+  
+  // Sort by trading streak (highest first)
+  userStreaks.sort((a, b) => b.tradingStreak - a.tradingStreak);
+  
+  // Find user's rank
+  const userRank = userStreaks.findIndex(p => p.id === userId) + 1;
+  
+  res.json({
+    success: true,
+    data: {
+      rankings: userStreaks.slice(0, 50), // Top 50
+      totalTraders: userStreaks.length, // Only premium users are shown
+      premiumUsers: userStreaks.length, // All displayed users are premium
+      yourRank: userRank || null
+    }
+  });
+}));
+
+/**
  * GET /api/admin/tournaments
  * Get all tournaments for admin management
  */
