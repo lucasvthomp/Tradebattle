@@ -13,9 +13,9 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Paper Trading{" "}
+              Compete. Trade Win.{" "}
               <span className="relative">
-                Competitions
+                No risk, all reward.
                 <motion.div
                   className="absolute right-0 top-0 h-full w-0.5 bg-primary"
                   animate={{ opacity: [1, 0, 1] }}
