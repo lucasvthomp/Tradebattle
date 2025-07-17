@@ -52,8 +52,8 @@ export default function About() {
                     <div className="text-sm text-muted-foreground">Tracked Equities</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">3</div>
-                    <div className="text-sm text-muted-foreground">Real-time Leaderboards</div>
+                    <div className="text-3xl font-bold text-primary mb-2">Real-time</div>
+                    <div className="text-sm text-muted-foreground">3 Leaderboards</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-primary mb-2">Premium</div>
