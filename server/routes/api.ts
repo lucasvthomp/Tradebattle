@@ -775,25 +775,46 @@ async function calculateTradingStreak(userId: number): Promise<number> {
       tradesByDate.get(dateStr)!.push(trade);
     });
 
-    // Calculate streak starting from today backwards
-    let streak = 0;
-    const today = new Date();
+    // Get all unique trading dates and sort them
+    const tradingDates = Array.from(tradesByDate.keys()).sort().reverse(); // Most recent first
     
-    // Start with today and go backwards
+    if (tradingDates.length === 0) {
+      return 0;
+    }
+
+    // Calculate streak: count consecutive days starting from the most recent trading day
+    let streak = 0;
+    const today = new Date().toISOString().split('T')[0];
+    
+    // Start checking from today going backwards
+    const startDate = new Date();
+    let currentStreakCount = 0;
+    
     for (let i = 0; i < 365; i++) { // Check up to 365 days
-      const checkDate = new Date(today);
-      checkDate.setDate(today.getDate() - i);
+      const checkDate = new Date(startDate);
+      checkDate.setDate(startDate.getDate() - i);
       const dateStr = checkDate.toISOString().split('T')[0];
       
       if (tradesByDate.has(dateStr)) {
-        streak++;
+        currentStreakCount++;
       } else {
-        // If no trades on this date, break the streak
-        break;
+        // If we've started counting and hit a gap, stop
+        if (currentStreakCount > 0) {
+          break;
+        }
+        // If we haven't started counting yet, continue looking backward
       }
     }
 
-    return streak;
+    console.log(`Trading streak calculation for user ${userId}:`, {
+      totalTrades: trades.length,
+      uniqueTradingDays: tradingDates.length,
+      mostRecentTradingDay: tradingDates[0],
+      calculatedStreak: currentStreakCount,
+      today
+    });
+
+    return currentStreakCount;
   } catch (error) {
     console.error('Error calculating trading streak:', error);
     return 0;
