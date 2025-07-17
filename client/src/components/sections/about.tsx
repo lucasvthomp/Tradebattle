@@ -44,7 +44,7 @@ export default function About() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <div className="bg-card rounded-lg p-6 h-[420px]">
+              <div className="bg-card rounded-lg p-6 h-[480px]">
                 <h3 className="text-lg font-semibold mb-4 text-foreground">Platform Stats</h3>
                 <div className="space-y-5">
                   <div className="text-center">
@@ -69,9 +69,6 @@ export default function About() {
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Premium Users:</span>
                         <span className="text-primary font-medium">30 seconds</span>
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-2">
-                        Live Yahoo Finance data
                       </div>
                     </div>
                   </div>
