@@ -44,9 +44,9 @@ export default function About() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <div className="bg-card rounded-lg p-6 h-80">
+              <div className="bg-card rounded-lg p-6 h-96">
                 <h3 className="text-lg font-semibold mb-4 text-foreground">Platform Stats</h3>
-                <div className="space-y-6">
+                <div className="space-y-5">
                   <div className="text-center">
                     <div className="text-3xl font-bold text-primary mb-2">8,000+</div>
                     <div className="text-sm text-muted-foreground">Tracked Equities</div>
@@ -59,9 +59,21 @@ export default function About() {
                     <div className="text-3xl font-bold text-primary mb-2">Premium</div>
                     <div className="text-sm text-muted-foreground">Personal Portfolio</div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">Real-time</div>
-                    <div className="text-sm text-muted-foreground">Market Data Updates</div>
+                  <div className="text-center border-t pt-4">
+                    <div className="text-lg font-semibold text-foreground mb-2">Market Data Updates</div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Free Users:</span>
+                        <span className="text-foreground font-medium">10 minutes</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Premium Users:</span>
+                        <span className="text-primary font-medium">30 seconds</span>
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-2">
+                        Live Yahoo Finance data
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
