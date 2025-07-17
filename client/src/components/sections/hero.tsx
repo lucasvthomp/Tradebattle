@@ -12,17 +12,19 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Compete. Trade Win.{" "}
-              <span className="relative">
+            <div className="mb-6">
+              <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-2">
+                Compete. Trade. Win.
+              </h1>
+              <p className="text-2xl md:text-3xl text-muted-foreground relative">
                 No risk, all reward.
                 <motion.div
                   className="absolute right-0 top-0 h-full w-0.5 bg-primary"
                   animate={{ opacity: [1, 0, 1] }}
                   transition={{ duration: 1, repeat: Infinity }}
                 />
-              </span>
-            </h1>
+              </p>
+            </div>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Compete with traders worldwide using virtual portfolios and real market data.
               Test your skills, climb the leaderboards, and win prizes.
