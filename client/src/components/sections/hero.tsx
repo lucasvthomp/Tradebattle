@@ -16,13 +16,8 @@ export default function Hero() {
               <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-2">
                 Compete. Trade. Win.
               </h1>
-              <p className="text-2xl md:text-3xl text-muted-foreground relative">
+              <p className="text-2xl md:text-3xl text-muted-foreground">
                 No risk, all reward.
-                <motion.div
-                  className="absolute right-0 top-0 h-full w-0.5 bg-primary"
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ duration: 1, repeat: Infinity }}
-                />
               </p>
             </div>
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
