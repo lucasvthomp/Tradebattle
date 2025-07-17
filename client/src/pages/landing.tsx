@@ -99,7 +99,7 @@ export default function Landing() {
                   step: "1",
                   icon: Users,
                   title: "Join Competition",
-                  description: "Join your friends' contests with a unique code or browse available competitions",
+                  description: "Join your friends' contests with a unique code",
                 },
                 {
                   step: "2",
