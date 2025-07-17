@@ -79,9 +79,9 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-card">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
@@ -89,9 +89,9 @@ export default function Contact() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-5xl font-bold text-black mb-6">Get in Touch</h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Ready to explore qualitative investment research? Contact our team to learn more about our platform and services.
+              <h1 className="text-5xl font-bold text-foreground mb-6">Get in Touch</h1>
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Have questions about our paper trading competitions? Need help with your account? Our team is here to help you succeed.
               </p>
             </motion.div>
           </div>
@@ -109,52 +109,50 @@ export default function Contact() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <Card className="h-full">
+                <Card className="h-full bg-card border-border">
                   <CardContent className="p-8">
-                    <h2 className="text-3xl font-bold text-black mb-8">Contact Information</h2>
+                    <h2 className="text-3xl font-bold text-foreground mb-8">Contact Information</h2>
                     
                     <div className="space-y-6">
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
-                          <Mail className="w-6 h-6 text-white" />
+                        <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                          <Mail className="w-6 h-6 text-primary-foreground" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-black">Email</h3>
-                          <p className="text-gray-600">contact@orsath.com</p>
+                          <h3 className="font-semibold text-foreground">Email</h3>
+                          <p className="text-muted-foreground">support@tradingplatform.com</p>
                         </div>
                       </div>
                       
                       <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
-                          <Phone className="w-6 h-6 text-white" />
+                        <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
+                          <Phone className="w-6 h-6 text-primary-foreground" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-black">Phone</h3>
-                          <p className="text-gray-600">To be added</p>
+                          <h3 className="font-semibold text-foreground">Phone</h3>
+                          <p className="text-muted-foreground">+1 (555) 123-4567</p>
                         </div>
                       </div>
-                      
-
                     </div>
 
                     <div className="mt-12">
-                      <h3 className="text-xl font-bold text-black mb-6">Business Hours</h3>
+                      <h3 className="text-xl font-bold text-foreground mb-6">Support Hours</h3>
                       <div className="space-y-3">
                         <div className="flex items-center space-x-3">
-                          <Clock className="w-5 h-5 text-gray-600" />
+                          <Clock className="w-5 h-5 text-muted-foreground" />
                           <div className="flex-1">
                             <div className="flex justify-between">
-                              <span className="text-gray-600">Monday - Friday</span>
-                              <span className="text-black font-medium">8:00 AM - 6:00 PM</span>
+                              <span className="text-muted-foreground">Monday - Friday</span>
+                              <span className="text-foreground font-medium">9:00 AM - 6:00 PM EST</span>
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                          <Clock className="w-5 h-5 text-gray-600" />
+                          <Clock className="w-5 h-5 text-muted-foreground" />
                           <div className="flex-1">
                             <div className="flex justify-between">
-                              <span className="text-gray-600">Weekend Research</span>
-                              <span className="text-green-600 font-medium">Analyst+ only</span>
+                              <span className="text-muted-foreground">Weekend</span>
+                              <span className="text-primary font-medium">10:00 AM - 4:00 PM EST</span>
                             </div>
                           </div>
                         </div>
@@ -162,19 +160,23 @@ export default function Contact() {
                     </div>
 
                     <div className="mt-12">
-                      <h3 className="text-xl font-bold text-black mb-4">Why Choose ORSATH?</h3>
-                      <ul className="space-y-3 text-gray-600">
+                      <h3 className="text-xl font-bold text-foreground mb-4">Why Choose Our Platform?</h3>
+                      <ul className="space-y-3 text-muted-foreground">
                         <li className="flex items-start space-x-3">
-                          <div className="w-1.5 h-1.5 bg-black rounded-full mt-2"></div>
-                          <span>Qualitative research approach focused on real-world events</span>
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2"></div>
+                          <span>Real-time market data with no financial risk</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <div className="w-1.5 h-1.5 bg-black rounded-full mt-2"></div>
-                          <span>Weekend research opportunities for Monday market openings</span>
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2"></div>
+                          <span>Competitive tournaments with achievement system</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <div className="w-1.5 h-1.5 bg-black rounded-full mt-2"></div>
-                          <span>Professional tools and analysis by experienced researchers</span>
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2"></div>
+                          <span>Personal portfolio tracking and analytics</span>
+                        </li>
+                        <li className="flex items-start space-x-3">
+                          <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2"></div>
+                          <span>Social features and leaderboards</span>
                         </li>
                       </ul>
                     </div>
@@ -188,13 +190,13 @@ export default function Contact() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6 }}
               >
-                <Card className="h-full">
+                <Card className="h-full bg-card border-border">
                   <CardContent className="p-8">
-                    <h2 className="text-3xl font-bold text-black mb-8">Send us a Message</h2>
+                    <h2 className="text-3xl font-bold text-foreground mb-8">Send us a Message</h2>
                     
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div>
-                        <Label htmlFor="name" className="text-black font-medium">
+                        <Label htmlFor="name" className="text-foreground font-medium">
                           Name *
                         </Label>
                         <Input
@@ -202,15 +204,15 @@ export default function Contact() {
                           type="text"
                           value={formData.name}
                           onChange={(e) => handleChange("name", e.target.value)}
-                          className="mt-2"
+                          className="mt-2 bg-background border-border text-foreground"
                           placeholder="Your full name"
                           required
                         />
-                        {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                        {errors.name && <p className="text-destructive text-sm mt-1">{errors.name}</p>}
                       </div>
 
                       <div>
-                        <Label htmlFor="email" className="text-black font-medium">
+                        <Label htmlFor="email" className="text-foreground font-medium">
                           Email *
                         </Label>
                         <Input
@@ -218,15 +220,15 @@ export default function Contact() {
                           type="email"
                           value={formData.email}
                           onChange={(e) => handleChange("email", e.target.value)}
-                          className="mt-2"
+                          className="mt-2 bg-background border-border text-foreground"
                           placeholder="your@email.com"
                           required
                         />
-                        {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                        {errors.email && <p className="text-destructive text-sm mt-1">{errors.email}</p>}
                       </div>
 
                       <div>
-                        <Label htmlFor="subject" className="text-black font-medium">
+                        <Label htmlFor="subject" className="text-foreground font-medium">
                           Subject *
                         </Label>
                         <Input
@@ -234,32 +236,32 @@ export default function Contact() {
                           type="text"
                           value={formData.subject}
                           onChange={(e) => handleChange("subject", e.target.value)}
-                          className="mt-2"
-                          placeholder="Research inquiry"
+                          className="mt-2 bg-background border-border text-foreground"
+                          placeholder="Account help, Tournament question, etc."
                           required
                         />
-                        {errors.subject && <p className="text-red-500 text-sm mt-1">{errors.subject}</p>}
+                        {errors.subject && <p className="text-destructive text-sm mt-1">{errors.subject}</p>}
                       </div>
 
                       <div>
-                        <Label htmlFor="message" className="text-black font-medium">
+                        <Label htmlFor="message" className="text-foreground font-medium">
                           Message *
                         </Label>
                         <Textarea
                           id="message"
                           value={formData.message}
                           onChange={(e) => handleChange("message", e.target.value)}
-                          className="mt-2 min-h-[120px]"
-                          placeholder="Tell us about your research needs and how we can help..."
+                          className="mt-2 min-h-[120px] bg-background border-border text-foreground"
+                          placeholder="Tell us how we can help you with your trading experience..."
                           required
                         />
-                        {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+                        {errors.message && <p className="text-destructive text-sm mt-1">{errors.message}</p>}
                       </div>
 
                       <Button
                         type="submit"
                         disabled={contactMutation.isPending}
-                        className="w-full bg-black text-white hover:bg-gray-800 transition-colors py-3"
+                        className="w-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors py-3"
                       >
                         {contactMutation.isPending ? "Sending..." : "Send Message"}
                       </Button>
