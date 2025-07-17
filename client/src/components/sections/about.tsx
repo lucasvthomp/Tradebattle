@@ -44,7 +44,7 @@ export default function About() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <div className="bg-card rounded-lg p-6 h-96">
+              <div className="bg-card rounded-lg p-6 h-[420px]">
                 <h3 className="text-lg font-semibold mb-4 text-foreground">Platform Stats</h3>
                 <div className="space-y-5">
                   <div className="text-center">
