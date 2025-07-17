@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   User, 
   Settings, 
@@ -66,6 +67,7 @@ export default function Profile() {
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
   const queryClient = useQueryClient();
+  const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false);
   
   // Fetch user achievements for profile display
   const { data: userAchievements, isLoading: isLoadingAchievements } = useQuery({
@@ -165,6 +167,31 @@ export default function Profile() {
     },
     onError: (error: Error) => {
       console.error("Profile update error:", error);
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const changeSubscriptionMutation = useMutation({
+    mutationFn: async (newTier: string) => {
+      const res = await apiRequest("PUT", "/api/user/subscription", {
+        subscriptionTier: newTier
+      });
+      return await res.json();
+    },
+    onSuccess: (updatedUser) => {
+      queryClient.setQueryData(["/api/user"], updatedUser);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({
+        title: "Subscription Updated",
+        description: `Your subscription has been changed to ${updatedUser.subscriptionTier}.`,
+      });
+      setIsChangePlanDialogOpen(false);
+    },
+    onError: (error: Error) => {
       toast({
         title: "Update Failed",
         description: error.message,
@@ -519,12 +546,82 @@ export default function Profile() {
                         <Download className="w-4 h-4 mr-2" />
                         Download Invoices
                       </Button>
-                      <Button 
-                        variant="outline"
-                        onClick={() => window.location.href = "/pricing"}
-                      >
-                        Change Plan
-                      </Button>
+                      <Dialog open={isChangePlanDialogOpen} onOpenChange={setIsChangePlanDialogOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">
+                            Change Plan
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[500px]">
+                          <DialogHeader>
+                            <DialogTitle>Change Your Subscription Plan</DialogTitle>
+                            <DialogDescription>
+                              Switch between Free and Premium tiers to access different features.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            {/* Free Tier */}
+                            <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                              user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                            }`}>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h3 className="font-semibold text-foreground">Free Tier</h3>
+                                  <p className="text-sm text-muted-foreground">$0/month</p>
+                                  <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                                    <li>• Tournament participation</li>
+                                    <li>• Basic watchlist</li>
+                                    <li>• Email support</li>
+                                    <li>• Competition leaderboards</li>
+                                  </ul>
+                                </div>
+                                <Button 
+                                  variant={user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier ? "default" : "outline"}
+                                  disabled={changeSubscriptionMutation.isPending || user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier}
+                                  onClick={() => changeSubscriptionMutation.mutate('free')}
+                                >
+                                  {changeSubscriptionMutation.isPending ? 'Switching...' : 
+                                   (user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier) ? 'Current' : 'Switch to Free'}
+                                </Button>
+                              </div>
+                            </div>
+
+                            {/* Premium Tier */}
+                            <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
+                              user?.subscriptionTier === 'premium'
+                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' 
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
+                            }`}>
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <h3 className="font-semibold text-foreground flex items-center">
+                                    <Crown className="w-4 h-4 mr-1 text-yellow-500" />
+                                    Premium Tier
+                                  </h3>
+                                  <p className="text-sm text-muted-foreground">$19.99/month</p>
+                                  <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                                    <li>• Everything in Free</li>
+                                    <li>• Personal portfolio trading</li>
+                                    <li>• Advanced analytics</li>
+                                    <li>• Priority support</li>
+                                    <li>• Unlimited watchlist</li>
+                                  </ul>
+                                </div>
+                                <Button 
+                                  variant={user?.subscriptionTier === 'premium' ? "default" : "outline"}
+                                  disabled={changeSubscriptionMutation.isPending || user?.subscriptionTier === 'premium'}
+                                  onClick={() => changeSubscriptionMutation.mutate('premium')}
+                                >
+                                  {changeSubscriptionMutation.isPending ? 'Switching...' : 
+                                   user?.subscriptionTier === 'premium' ? 'Current' : 'Upgrade to Premium'}
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </CardContent>
                 </Card>
