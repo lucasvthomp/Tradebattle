@@ -48,16 +48,16 @@ export default function About() {
                 <h3 className="text-lg font-semibold mb-4 text-foreground">Platform Stats</h3>
                 <div className="space-y-6">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">$10,000</div>
-                    <div className="text-sm text-muted-foreground">Starting Virtual Balance</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">17</div>
-                    <div className="text-sm text-muted-foreground">Total Achievements</div>
+                    <div className="text-3xl font-bold text-primary mb-2">8,000+</div>
+                    <div className="text-sm text-muted-foreground">Tracked Equities</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-primary mb-2">3</div>
-                    <div className="text-sm text-muted-foreground">Leaderboard Categories</div>
+                    <div className="text-sm text-muted-foreground">Real-time Leaderboards</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary mb-2">Premium</div>
+                    <div className="text-sm text-muted-foreground">Personal Portfolio</div>
                   </div>
                   <div className="text-center">
                     <div className="text-3xl font-bold text-primary mb-2">Real-time</div>
