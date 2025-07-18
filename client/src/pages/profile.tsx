@@ -127,7 +127,21 @@ export default function Profile() {
     }
   };
 
-  const displayAchievements = userAchievements?.data?.map(getAchievementDisplay) || [];
+  // Get tier ranking for sorting (higher number = rarer)
+  const getTierRanking = (tier: string) => {
+    switch(tier) {
+      case 'mythic': return 6;
+      case 'legendary': return 5;
+      case 'epic': return 4;
+      case 'rare': return 3;
+      case 'uncommon': return 2;
+      case 'common': return 1;
+      default: return 0;
+    }
+  };
+
+  const displayAchievements = (userAchievements?.data?.map(getAchievementDisplay) || [])
+    .sort((a, b) => getTierRanking(b.rarity) - getTierRanking(a.rarity));
   
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),

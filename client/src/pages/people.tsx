@@ -133,6 +133,19 @@ export default function People() {
     }
   };
 
+  // Get tier ranking for sorting (higher number = rarer)
+  const getTierRanking = (tier: string) => {
+    switch(tier) {
+      case 'mythic': return 6;
+      case 'legendary': return 5;
+      case 'epic': return 4;
+      case 'rare': return 3;
+      case 'uncommon': return 2;
+      case 'common': return 1;
+      default: return 0;
+    }
+  };
+
   // Get user stats from API data
   const getUserStats = (user: any) => ({
     lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7))
@@ -149,7 +162,8 @@ export default function People() {
     }
 
     const stats = getUserStats(profileUser?.data);
-    const displayAchievements = userAchievements?.data?.map(getAchievementDisplay) || [];
+    const displayAchievements = (userAchievements?.data?.map(getAchievementDisplay) || [])
+      .sort((a, b) => getTierRanking(b.rarity) - getTierRanking(a.rarity));
 
     return (
       <div className="min-h-screen bg-background">
