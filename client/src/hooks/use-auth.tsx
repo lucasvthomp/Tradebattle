@@ -100,6 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Logged out",
         description: "You have been logged out successfully",
       });
+      // Navigate to home page after logout
+      navigate("/");
     },
     onError: (error: Error) => {
       toast({
