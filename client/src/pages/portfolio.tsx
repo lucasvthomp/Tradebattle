@@ -41,7 +41,7 @@ export default function Portfolio() {
   const { data: personalPortfolioData } = useQuery({
     queryKey: ['/api/personal-portfolio'],
     enabled: !!user && hasPremium,
-    refetchInterval: 60 * 60 * 1000, // 1 hour refresh for streak calculation
+    refetchInterval: user?.subscriptionTier === 'free' ? 10 * 60 * 1000 : 30000, // Free: 10 minutes, Premium/Admin: 30 seconds
     staleTime: 0, // Always consider data stale to ensure fresh streak calculation
   });
 
@@ -51,6 +51,7 @@ export default function Portfolio() {
   const { data: personalPurchasesData } = useQuery({
     queryKey: ['/api/personal-purchases'],
     enabled: !!user && hasPremium,
+    refetchInterval: user?.subscriptionTier === 'free' ? 10 * 60 * 1000 : 30000, // Free: 10 minutes, Premium/Admin: 30 seconds
   });
 
   const personalPurchases = personalPurchasesData?.data || [];
