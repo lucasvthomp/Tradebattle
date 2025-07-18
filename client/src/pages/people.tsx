@@ -53,10 +53,11 @@ const achievements = [
   { id: 3, name: "Tournament Participant", description: "Joined a tournament", icon: Users, rarity: "common", color: "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100" },
   // Uncommon (Green)
   { id: 4, name: "5 Day Streak", description: "Traded for 5 consecutive days", icon: Activity, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
-  { id: 5, name: "10% Portfolio Growth", description: "Made over 10% on portfolio", icon: TrendingUp, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
+  { id: 5, name: "5% Portfolio Growth", description: "Made over 5% on portfolio", icon: TrendingUp, rarity: "uncommon", color: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100" },
   // Rare (Bright Blue)
   { id: 6, name: "Tournament Creator", description: "Created a tournament", icon: Plus, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
-  { id: 7, name: "15 Day Streak", description: "Traded for 15 consecutive days", icon: Activity, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
+  { id: 7, name: "10% Portfolio Growth", description: "Made over 10% on portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
+  { id: 8, name: "15 Day Streak", description: "Traded for 15 consecutive days", icon: Activity, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
   { id: 8, name: "25% Portfolio Growth", description: "Made over 25% on portfolio", icon: TrendingUp, rarity: "rare", color: "bg-blue-200 text-blue-900 dark:bg-blue-700 dark:text-blue-100" },
   // Epic (Rich Purple)
   { id: 9, name: "50 Day Streak", description: "Traded for 50 consecutive days", icon: Activity, rarity: "epic", color: "bg-purple-200 text-purple-900 dark:bg-purple-700 dark:text-purple-100" },

@@ -62,7 +62,7 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
       await storage.awardAchievement({
         userId,
         achievementType: '5_percent_growth',
-        achievementTier: 'rare',
+        achievementTier: 'uncommon',
         achievementName: '5% Portfolio Growth',
         achievementDescription: 'Made over 5% on any portfolio'
       });
@@ -73,7 +73,7 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
       await storage.awardAchievement({
         userId,
         achievementType: '10_percent_growth',
-        achievementTier: 'epic',
+        achievementTier: 'rare',
         achievementName: '10% Portfolio Growth',
         achievementDescription: 'Made over 10% on any portfolio'
       });
