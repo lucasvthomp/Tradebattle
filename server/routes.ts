@@ -50,6 +50,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User subscription route (protected)
+  app.put('/api/user/subscription', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { subscriptionTier } = req.body;
+      
+      // Validate subscription tier
+      if (!subscriptionTier || !['free', 'novice', 'premium'].includes(subscriptionTier)) {
+        return res.status(400).json({ message: "Invalid subscription tier. Must be 'free', 'novice', or 'premium'." });
+      }
+      
+      // Update the user's subscription tier
+      const updateData: any = { subscriptionTier };
+      
+      // Set premium upgrade date if upgrading to premium
+      if (subscriptionTier === 'premium') {
+        updateData.premiumUpgradeDate = new Date();
+      }
+      
+      const updatedUser = await storage.updateUser(userId, updateData);
+      
+      res.json(updatedUser);
+    } catch (error) {
+      console.error("Error updating user subscription:", error);
+      res.status(500).json({ message: "Failed to update subscription tier" });
+    }
+  });
+
   // Watchlist routes (protected)
   app.get('/api/watchlist', requireAuth, async (req: any, res) => {
     try {
