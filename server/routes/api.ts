@@ -270,7 +270,7 @@ router.get('/health', (req, res) => {
  * Create a new tournament
  */
 router.post('/tournaments', asyncHandler(async (req, res) => {
-  const { name, maxPlayers, startingBalance, timeframe } = req.body;
+  const { name, maxPlayers, startingBalance, timeframe, buyInAmount, tradingRestriction, isPublic } = req.body;
   const userId = req.user?.id;
   
   if (!userId) {
@@ -293,7 +293,10 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
     name: sanitizeInput(name),
     maxPlayers: maxPlayers || 10,
     startingBalance: parseFloat(startingBalance),
-    timeframe: timeframe || '4 weeks'
+    timeframe: timeframe || '4 weeks',
+    buyInAmount: parseFloat(buyInAmount) || 0,
+    tradingRestriction: tradingRestriction || 'none',
+    isPublic: isPublic !== undefined ? isPublic : true
   }, userId);
 
   // Award Tournament Creator achievement (rare)

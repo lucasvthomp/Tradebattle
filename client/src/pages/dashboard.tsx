@@ -37,7 +37,21 @@ import {
   Settings,
   Download,
   Building,
-  Trophy
+  Trophy,
+  Lock,
+  Globe,
+  Building2,
+  Coins,
+  Briefcase,
+  Factory,
+  Cpu,
+  Car,
+  Home,
+  ShoppingCart,
+  Heart,
+  Lightbulb,
+  Landmark,
+  Zap
 } from "lucide-react";
 import {
   Dialog,
@@ -51,6 +65,120 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RegionalChat } from "@/components/ui/regional-chat";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+
+// Duration Wheel Component
+const DurationWheel = ({ value, onChange }: { value: { value: number, unit: string }, onChange: (value: { value: number, unit: string }) => void }) => {
+  const units = [
+    { key: "minutes", label: "Minutes", min: 10, max: 60 },
+    { key: "hours", label: "Hours", min: 1, max: 24 },
+    { key: "days", label: "Days", min: 1, max: 30 },
+    { key: "weeks", label: "Weeks", min: 1, max: 8 }
+  ];
+
+  const currentUnit = units.find(u => u.key === value.unit) || units[3];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-center">
+        <div className="relative w-48 h-48 border-4 border-primary rounded-full bg-gradient-to-br from-primary/10 to-primary/20">
+          {/* Clock face */}
+          <div className="absolute inset-4 border-2 border-primary/30 rounded-full flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-foreground">{value.value}</div>
+              <div className="text-sm text-muted-foreground capitalize">{value.unit}</div>
+            </div>
+          </div>
+          
+          {/* Clock ticks */}
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-0.5 h-6 bg-primary/60"
+              style={{
+                top: '4px',
+                left: '50%',
+                transformOrigin: '50% 92px',
+                transform: `translateX(-50%) rotate(${i * 30}deg)`
+              }}
+            />
+          ))}
+          
+          {/* Clock hands */}
+          <div
+            className="absolute top-1/2 left-1/2 w-0.5 h-16 bg-primary origin-bottom"
+            style={{
+              transform: `translate(-50%, -100%) rotate(${(value.value / currentUnit.max) * 360}deg)`
+            }}
+          />
+          <div className="absolute top-1/2 left-1/2 w-3 h-3 bg-primary rounded-full transform -translate-x-1/2 -translate-y-1/2" />
+        </div>
+      </div>
+      
+      <div className="space-y-3">
+        <div>
+          <Label className="text-sm font-medium">Time Unit</Label>
+          <Select 
+            value={value.unit} 
+            onValueChange={(unit) => {
+              const newUnit = units.find(u => u.key === unit);
+              if (newUnit) {
+                const clampedValue = Math.min(Math.max(value.value, newUnit.min), newUnit.max);
+                onChange({ value: clampedValue, unit });
+              }
+            }}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {units.map((unit) => (
+                <SelectItem key={unit.key} value={unit.key}>
+                  {unit.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        
+        <div>
+          <Label className="text-sm font-medium">Duration: {value.value} {value.unit}</Label>
+          <Slider
+            value={[value.value]}
+            onValueChange={([newValue]) => onChange({ ...value, value: newValue })}
+            min={currentUnit.min}
+            max={currentUnit.max}
+            step={1}
+            className="mt-2"
+          />
+          <div className="flex justify-between text-xs text-muted-foreground mt-1">
+            <span>{currentUnit.min}</span>
+            <span>{currentUnit.max}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Trading Restriction Options
+const tradingRestrictions = [
+  { value: "none", label: "No Restrictions", icon: Globe, description: "Trade any stocks" },
+  { value: "blue_chip", label: "Blue Chip Only", icon: Building2, description: "Large, established companies (S&P 500)" },
+  { value: "tech", label: "Technology Sector", icon: Cpu, description: "Tech companies only" },
+  { value: "finance", label: "Financial Sector", icon: Landmark, description: "Banks, insurance, financial services" },
+  { value: "healthcare", label: "Healthcare Sector", icon: Heart, description: "Pharmaceutical, biotech, medical" },
+  { value: "energy", label: "Energy Sector", icon: Zap, description: "Oil, gas, renewable energy" },
+  { value: "consumer", label: "Consumer Goods", icon: ShoppingCart, description: "Retail, consumer products" },
+  { value: "industrial", label: "Industrial Sector", icon: Factory, description: "Manufacturing, machinery, aerospace" },
+  { value: "automotive", label: "Automotive Sector", icon: Car, description: "Car manufacturers, auto parts" },
+  { value: "real_estate", label: "Real Estate", icon: Home, description: "REITs, property companies" },
+  { value: "crypto_related", label: "Crypto-Related", icon: Coins, description: "Cryptocurrency and blockchain stocks" },
+  { value: "small_cap", label: "Small Cap Only", icon: Briefcase, description: "Companies under $2B market cap" },
+  { value: "dividend", label: "Dividend Stocks", icon: Lightbulb, description: "Companies that pay regular dividends" }
+];
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -494,6 +622,12 @@ export default function Dashboard() {
   const [maxPlayers, setMaxPlayers] = useState("10");
   const [startingBalance, setStartingBalance] = useState("10000");
   const [timeframe, setTimeframe] = useState("4 weeks");
+  
+  // Enhanced tournament creation fields
+  const [buyInAmount, setBuyInAmount] = useState("0"); // Real money buy-in amount
+  const [tradingRestriction, setTradingRestriction] = useState("none");
+  const [isPublicTournament, setIsPublicTournament] = useState(true);
+  const [customDuration, setCustomDuration] = useState({ value: 4, unit: "weeks" }); // For duration wheel
   const [createdTournament, setCreatedTournament] = useState<any>(null);
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedTournamentId, setSelectedTournamentId] = useState<string | null>(null);
@@ -834,6 +968,14 @@ export default function Dashboard() {
       setMaxPlayers("10");
       setStartingBalance("10000");
       setTimeframe("4 weeks");
+      setBuyInAmount("0");
+      setTradingRestriction("none");
+      setIsPublicTournament(true);
+      setCustomDuration({ value: 4, unit: "weeks" });
+      setBuyInAmount("0");
+      setTradingRestriction("none");
+      setIsPublicTournament(true);
+      setCustomDuration({ value: 4, unit: "weeks" });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       // Invalidate balance query for the newly created tournament
       queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournament.id, user?.id] });
@@ -1707,10 +1849,14 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
-            <motion.div variants={fadeInUp}>
+            <motion.div variants={fadeInUp} className="space-y-6">
+              {/* Basic Settings */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Tournament Settings</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Trophy className="w-5 h-5" />
+                    <span>Basic Tournament Settings</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
@@ -1720,36 +1866,202 @@ export default function Dashboard() {
                       value={tournamentName}
                       onChange={(e) => setTournamentName(e.target.value)}
                       placeholder="Enter tournament name"
+                      className="mt-2"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="max-players">Max Players</Label>
-                    <Input
-                      id="max-players"
-                      type="number"
-                      value={maxPlayers}
-                      onChange={(e) => setMaxPlayers(e.target.value)}
-                      min="2"
-                      max="10"
-                    />
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="max-players">Max Players</Label>
+                      <Input
+                        id="max-players"
+                        type="number"
+                        value={maxPlayers}
+                        onChange={(e) => setMaxPlayers(e.target.value)}
+                        min="2"
+                        max="100"
+                        className="mt-2"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="starting-balance">Starting Fake Money</Label>
+                      <Input
+                        id="starting-balance"
+                        type="number"
+                        value={startingBalance}
+                        onChange={(e) => setStartingBalance(e.target.value)}
+                        min="1000"
+                        max="1000000"
+                        placeholder="10000"
+                        className="mt-2"
+                      />
+                    </div>
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Buy-in Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <DollarSign className="w-5 h-5" />
+                    <span>Buy-in Amount</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div>
-                    <Label htmlFor="timeframe">Duration</Label>
-                    <Select value={timeframe} onValueChange={setTimeframe}>
-                      <SelectTrigger>
+                    <Label>Entry Fee (Real Money)</Label>
+                    <Select value={buyInAmount} onValueChange={setBuyInAmount}>
+                      <SelectTrigger className="mt-2">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="1 week">1 Week</SelectItem>
-                        <SelectItem value="2 weeks">2 Weeks</SelectItem>
-                        <SelectItem value="4 weeks">4 Weeks</SelectItem>
-                        <SelectItem value="8 weeks">8 Weeks</SelectItem>
+                        <SelectItem value="0">Free Tournament</SelectItem>
+                        <SelectItem value="5">$5 Buy-in</SelectItem>
+                        <SelectItem value="10">$10 Buy-in</SelectItem>
+                        <SelectItem value="25">$25 Buy-in</SelectItem>
+                        <SelectItem value="50">$50 Buy-in</SelectItem>
+                        <SelectItem value="100">$100 Buy-in</SelectItem>
+                        <SelectItem value="250">$250 Buy-in</SelectItem>
+                        <SelectItem value="500">$500 Buy-in</SelectItem>
+                        <SelectItem value="1000">$1,000 Buy-in</SelectItem>
                       </SelectContent>
                     </Select>
+                    {buyInAmount === "0" && (
+                      <p className="text-sm text-green-600 mt-2">✓ Free to join for everyone</p>
+                    )}
+                    {buyInAmount !== "0" && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Participants pay ${buyInAmount} to join. Winner takes the prize pool.
+                      </p>
+                    )}
                   </div>
-                  <Button className="w-full">Create Tournament</Button>
                 </CardContent>
               </Card>
+
+              {/* Trading Restrictions */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Building2 className="w-5 h-5" />
+                    <span>Trading Restrictions</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label>Allowed Trading Categories</Label>
+                    <Select value={tradingRestriction} onValueChange={setTradingRestriction}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {tradingRestrictions.map((restriction) => (
+                          <SelectItem key={restriction.value} value={restriction.value}>
+                            <div className="flex items-center space-x-2">
+                              <restriction.icon className="w-4 h-4" />
+                              <span>{restriction.label}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {(() => {
+                      const selected = tradingRestrictions.find(r => r.value === tradingRestriction);
+                      return selected && (
+                        <p className="text-sm text-muted-foreground mt-2">
+                          {selected.description}
+                        </p>
+                      );
+                    })()}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Duration Wheel */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Clock className="w-5 h-5" />
+                    <span>Tournament Duration</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DurationWheel 
+                    value={customDuration} 
+                    onChange={setCustomDuration}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Privacy Settings */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    {isPublicTournament ? <Globe className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
+                    <span>Privacy Settings</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label>Tournament Visibility</Label>
+                      <p className="text-sm text-muted-foreground">
+                        {isPublicTournament ? "Anyone can discover and join this tournament" : "Only people with the join code can participate"}
+                      </p>
+                    </div>
+                    <Switch
+                      checked={isPublicTournament}
+                      onCheckedChange={setIsPublicTournament}
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2 p-3 bg-muted/50 rounded-lg">
+                    {isPublicTournament ? (
+                      <>
+                        <Globe className="w-4 h-4 text-green-600" />
+                        <span className="text-sm font-medium text-green-600">Public Tournament</span>
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-4 h-4 text-blue-600" />
+                        <span className="text-sm font-medium text-blue-600">Private Tournament</span>
+                      </>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Create Button */}
+              <Button 
+                className="w-full h-12 text-lg font-semibold" 
+                onClick={() => {
+                  // Convert duration to the format expected by the backend
+                  const durationString = `${customDuration.value} ${customDuration.unit}`;
+                  
+                  createTournamentMutation.mutate({
+                    name: tournamentName,
+                    maxPlayers: parseInt(maxPlayers),
+                    startingBalance: parseFloat(startingBalance),
+                    timeframe: durationString,
+                    buyInAmount: parseFloat(buyInAmount),
+                    tradingRestriction: tradingRestriction,
+                    isPublic: isPublicTournament
+                  });
+                }}
+                disabled={!tournamentName || !maxPlayers || !startingBalance || createTournamentMutation.isPending}
+              >
+                {createTournamentMutation.isPending ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    <span>Creating Tournament...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <Trophy className="w-5 h-5" />
+                    <span>Create Tournament</span>
+                    {buyInAmount !== "0" && <span>(${buyInAmount} Buy-in)</span>}
+                  </div>
+                )}
+              </Button>
             </motion.div>
           </motion.div>
         </div>
