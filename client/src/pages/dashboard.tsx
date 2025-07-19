@@ -2209,10 +2209,24 @@ export default function Dashboard() {
     );
   }
 
+  // Fetch tournament participants when tournament is selected
+  const { data: participants, isLoading: participantsLoading } = useQuery({
+    queryKey: [`/api/tournaments/${selectedTournamentId}/participants`],
+    enabled: !!selectedTournamentId,
+  });
+
+  // Fetch tournament purchases when tournament is selected
+  const { data: purchases, isLoading: purchasesLoading } = useQuery({
+    queryKey: [`/api/tournaments/${selectedTournamentId}/purchases`],
+    enabled: !!selectedTournamentId,
+  });
+
   // Tournament Detail View
   if (currentView === 'tournament-detail' && selectedTournament) {
     const tournamentData = selectedTournament.tournaments;
     const balance = parseFloat(selectedTournament.balance || '0');
+    
+
     
     // Calculate time remaining
     const parseTimeframe = (timeframe: string) => {
@@ -2333,9 +2347,9 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : purchases && purchases.length > 0 ? (
+                      ) : purchases?.data && purchases.data.length > 0 ? (
                         <div className="space-y-3">
-                          {purchases.map((purchase) => (
+                          {purchases.data.map((purchase) => (
                             <div key={purchase.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                               <div>
                                 <div className="font-semibold">{purchase.symbol}</div>
@@ -2439,9 +2453,9 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : participants && participants.length > 0 ? (
+                      ) : participants?.data && participants.data.length > 0 ? (
                         <div className="space-y-3">
-                          {participants
+                          {participants.data
                             .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance))
                             .map((participant, index) => (
                               <div key={participant.userId} className="flex items-center space-x-3">
