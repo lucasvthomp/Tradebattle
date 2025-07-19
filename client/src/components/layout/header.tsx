@@ -85,16 +85,12 @@ export default function Header() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
-                    <User className="w-4 h-4 mr-2" />
-                    My ORSATH
+                    <Settings className="w-4 h-4 mr-2" />
+                    Settings
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = "/archive"}>
                     <Archive className="w-4 h-4 mr-2" />
                     Archive
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    Settings
                   </DropdownMenuItem>
                   {(user.userId === 1 || user.userId === 2 || user.userId === 3) && (
                     <>
