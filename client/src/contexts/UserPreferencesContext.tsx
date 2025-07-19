@@ -112,6 +112,13 @@ export const translations = {
     enterPassword: "Enter your password",
     logIn: "Log in",
     loggingIn: "Logging in...",
+    
+    // Support
+    support: "Support",
+    helpCenter: "Help Center",
+    faq: "FAQs",
+    guides: "Guides",
+    contactUs: "Contact Us",
   },
   
   Portuguese: {
@@ -223,6 +230,13 @@ export const translations = {
     enterPassword: "Digite sua senha",
     logIn: "Entrar",
     loggingIn: "Entrando...",
+    
+    // Support
+    support: "Suporte",
+    helpCenter: "Central de Ajuda",
+    faq: "Perguntas Frequentes",
+    guides: "Guias",
+    contactUs: "Contate-nos",
   },
   
   Spanish: {
@@ -333,6 +347,13 @@ export const translations = {
     enterPassword: "Ingresa tu contraseña",
     logIn: "Iniciar sesión",
     loggingIn: "Iniciando sesión...",
+    
+    // Support
+    support: "Soporte",
+    helpCenter: "Centro de Ayuda",
+    faq: "Preguntas Frecuentes",
+    guides: "Guías",
+    contactUs: "Contáctanos",
   },
 };
 

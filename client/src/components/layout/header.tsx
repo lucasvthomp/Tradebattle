@@ -28,7 +28,7 @@ export default function Header() {
       { href: "/people", label: t('people') },
       { href: "/premium", label: "Premium" }
     ] : []),
-    { href: "/contact", label: t('contact') },
+    { href: "/contact", label: "Support" },
   ];
 
   const isActive = (href: string) => {
