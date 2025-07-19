@@ -3,102 +3,154 @@ import { Play } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Hero() {
-  // Generate stock chart path data
-  const generateChartPath = () => {
+  // Generate realistic stock chart with candlestick-like movement
+  const generateStockChart = () => {
     const points = [];
-    const width = 800;
-    const height = 400;
-    const segments = 50;
+    const candlesticks = [];
+    const width = 1200;
+    const height = 600;
+    const segments = 80;
     
-    let currentY = height * 0.7; // Start at 70% from top
+    let basePrice = height * 0.6; // Start at 60% from top
+    let currentPrice = basePrice;
     
     for (let i = 0; i <= segments; i++) {
       const x = (i / segments) * width;
-      // Add some randomness with upward trend
-      const variation = (Math.random() - 0.3) * 40; // Slight upward bias
-      currentY += variation;
-      // Keep within bounds
-      currentY = Math.max(height * 0.2, Math.min(height * 0.9, currentY));
-      points.push(`${x},${currentY}`);
+      
+      // Generate more realistic stock movement
+      const volatility = 25;
+      const trend = Math.sin(i * 0.1) * 10; // Gentle wave trend
+      const randomChange = (Math.random() - 0.5) * volatility;
+      
+      currentPrice += randomChange + trend * 0.3;
+      currentPrice = Math.max(height * 0.15, Math.min(height * 0.85, currentPrice));
+      
+      points.push(`${x},${currentPrice}`);
+      
+      // Add candlestick data for volume bars
+      if (i % 4 === 0) {
+        candlesticks.push({
+          x: x,
+          height: Math.random() * 40 + 10,
+          y: height - 80
+        });
+      }
     }
     
-    return `M ${points.join(' L ')}`;
+    return { 
+      path: `M ${points.join(' L ')}`,
+      candlesticks: candlesticks
+    };
   };
 
-  const chartPath = generateChartPath();
+  const { path: chartPath, candlesticks } = generateStockChart();
 
   return (
     <section className="relative py-20 bg-gradient-to-b from-background to-card overflow-hidden">
-      {/* Background Stock Chart SVG */}
-      <div className="absolute inset-0 opacity-20">
+      {/* Large Background Stock Chart */}
+      <div className="absolute inset-0 opacity-40">
         <svg
-          className="w-full h-full object-cover filter blur-sm"
-          viewBox="0 0 800 400"
+          className="w-full h-full scale-110 transform rotate-1"
+          viewBox="0 0 1200 600"
           preserveAspectRatio="xMidYMid slice"
         >
           <defs>
             <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
-              <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.5" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6" />
+              <stop offset="30%" stopColor="#1d4ed8" stopOpacity="0.8" />
+              <stop offset="70%" stopColor="#2563eb" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#1e40af" stopOpacity="0.5" />
             </linearGradient>
-            <linearGradient id="chartFill" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.05" />
+            <linearGradient id="fillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#1e40af" stopOpacity="0.1" />
+            </linearGradient>
+            <linearGradient id="volumeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.2" />
             </linearGradient>
           </defs>
           
-          {/* Grid lines */}
-          <g opacity="0.1">
-            {Array.from({ length: 6 }, (_, i) => (
+          {/* Grid system */}
+          <g opacity="0.15">
+            {Array.from({ length: 8 }, (_, i) => (
               <line
                 key={`h-${i}`}
                 x1="0"
-                y1={i * 80}
-                x2="800"
-                y2={i * 80}
-                stroke="hsl(var(--primary))"
+                y1={i * 75}
+                x2="1200"
+                y2={i * 75}
+                stroke="#3b82f6"
                 strokeWidth="1"
+                strokeDasharray="5,5"
               />
             ))}
-            {Array.from({ length: 9 }, (_, i) => (
+            {Array.from({ length: 13 }, (_, i) => (
               <line
                 key={`v-${i}`}
                 x1={i * 100}
                 y1="0"
                 x2={i * 100}
-                y2="400"
-                stroke="hsl(var(--primary))"
+                y2="600"
+                stroke="#3b82f6"
                 strokeWidth="1"
+                strokeDasharray="5,5"
+              />
+            ))}
+          </g>
+          
+          {/* Volume bars */}
+          <g opacity="0.3">
+            {candlesticks.map((bar, i) => (
+              <rect
+                key={`vol-${i}`}
+                x={bar.x - 8}
+                y={bar.y}
+                width="16"
+                height={bar.height}
+                fill="url(#volumeGradient)"
+                rx="2"
               />
             ))}
           </g>
           
           {/* Chart area fill */}
           <path
-            d={`${chartPath} L 800,400 L 0,400 Z`}
-            fill="url(#chartFill)"
+            d={`${chartPath} L 1200,600 L 0,600 Z`}
+            fill="url(#fillGradient)"
           />
           
-          {/* Chart line */}
+          {/* Main chart line with glow */}
           <path
             d={chartPath}
             fill="none"
             stroke="url(#chartGradient)"
-            strokeWidth="3"
+            strokeWidth="4"
             strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))"
           />
           
-          {/* Glow effect */}
-          <path
-            d={chartPath}
-            fill="none"
-            stroke="hsl(var(--primary))"
-            strokeWidth="6"
-            strokeLinecap="round"
-            opacity="0.3"
-            filter="blur(3px)"
-          />
+          {/* Price points */}
+          <g opacity="0.6">
+            {chartPath.split(' L ').slice(0, -1).map((point, i) => {
+              if (i % 8 === 0) {
+                const [x, y] = point.replace('M ', '').split(',').map(Number);
+                return (
+                  <circle
+                    key={`point-${i}`}
+                    cx={x}
+                    cy={y}
+                    r="3"
+                    fill="#1d4ed8"
+                    stroke="#ffffff"
+                    strokeWidth="1"
+                  />
+                );
+              }
+              return null;
+            })}
+          </g>
         </svg>
       </div>
 
