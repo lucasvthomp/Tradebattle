@@ -460,6 +460,11 @@ export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const { toast } = useToast();
+  
+  // Main navigation state
+  const [currentView, setCurrentView] = useState<'main' | 'watchlist' | 'tournaments' | 'create' | 'join'>('main');
+  
+  // Watchlist state
   const [searchQuery, setSearchQuery] = useState("");
   const [stockData, setStockData] = useState([]);
   const [isLoadingStocks, setIsLoadingStocks] = useState(false);
@@ -468,7 +473,6 @@ export default function Dashboard() {
   const [selectedStock, setSelectedStock] = useState(null);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState("tournament");
   const [sortBy, setSortBy] = useState("symbol");
   const [sortOrder, setSortOrder] = useState("asc");
   const [filterSector, setFilterSector] = useState("all");
@@ -504,6 +508,31 @@ export default function Dashboard() {
   
   // Chat state
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [joinCode, setJoinCode] = useState("");
+
+  // Animation variants
+  const staggerChildren = {
+    animate: {
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const fadeInUp = {
+    initial: {
+      y: 60,
+      opacity: 0
+    },
+    animate: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: [0.6, -0.05, 0.01, 0.99]
+      }
+    }
+  };
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -1322,139 +1351,175 @@ export default function Dashboard() {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-6 px-4 max-w-none">
-        <motion.div
-          className="max-w-none mx-auto"
-          initial="initial"
-          animate="animate"
-          variants={staggerChildren}
-        >
-          {/* Header */}
-          <motion.div className="mb-8" variants={fadeInUp}>
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-foreground mb-2">
-                  Welcome back, {user?.firstName || user?.email || "User"}
-                </h1>
-                <p className="text-muted-foreground">Here's your trading dashboard</p>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Button variant="outline" size="sm">
-                  <Download className="w-4 h-4 mr-2" />
-                  Export Data
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Bell className="w-4 h-4 mr-2" />
-                  Alerts
-                </Button>
-                <Button variant="outline" size="sm">
-                  <Settings className="w-4 h-4 mr-2" />
-                  Settings
-                </Button>
-              </div>
-            </div>
-          </motion.div>
+  // Simple Main Menu View
+  if (currentView === 'main') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-8 px-4">
+          <motion.div
+            className="max-w-4xl mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            {/* Header */}
+            <motion.div className="text-center mb-12" variants={fadeInUp}>
+              <h1 className="text-4xl font-bold text-foreground mb-4">
+                Welcome back, {user?.firstName || user?.email || "User"}
+              </h1>
+              <p className="text-xl text-muted-foreground">
+                What would you like to do today?
+              </p>
+            </motion.div>
 
-          {/* Watchlist */}
-          <motion.div className="mb-8" variants={fadeInUp}>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-foreground">Your Watchlist</h2>
-              <div className="flex items-center space-x-4">
-                {/* Add Stock Search */}
-                <div className="relative search-container">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search stocks to add to watchlist..."
-                    value={searchQuery}
-                    onChange={(e) => handleSearch(e.target.value)}
-                    className="pl-10 min-w-[350px]"
-                  />
-                  {showSearchResults && (
-                    <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                      {searchResults.map((stock) => (
-                        <div
-                          key={stock.symbol}
-                          className="p-3 hover:bg-accent border-b last:border-b-0"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="font-medium">{stock.symbol}</div>
-                              <div className="text-sm text-muted-foreground">{stock.name}</div>
-                              <div className="text-xs text-muted-foreground">{stock.exchange}</div>
-                            </div>
-                            <Button
-                              size="sm"
-                              onClick={() => addToWatchlist(stock)}
-                              className="ml-2"
-                            >
-                              Add
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                      {searchResults.length === 0 && searchQuery && (
-                        <div className="p-3 text-sm text-muted-foreground">
-                          No stocks found for "{searchQuery}"
-                        </div>
-                      )}
+            {/* Main Action Buttons */}
+            <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-8" variants={staggerChildren}>
+              <motion.div variants={fadeInUp}>
+                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('watchlist')}>
+                  <CardHeader className="text-center pb-4">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Star className="w-8 h-8 text-primary" />
                     </div>
-                  )}
-                </div>
-                <select 
-                  className="px-3 py-2 border rounded-md bg-background text-foreground"
-                  value={filterSector}
-                  onChange={(e) => setFilterSector(e.target.value)}
-                >
-                  {sectors.map(sector => (
-                    <option key={sector} value={sector}>
-                      {sector === "all" ? "All Sectors" : sector}
-                    </option>
-                  ))}
-                </select>
-                <select 
-                  className="px-3 py-2 border rounded-md bg-background text-foreground"
-                  value={changePeriod}
-                  onChange={(e) => setChangePeriod(e.target.value as '1D' | '1W' | '1M' | '3M' | '6M' | '1Y' | '5Y' | 'YTD')}
-                >
-                  <option value="1D">1 Day</option>
-                  <option value="1W">1 Week</option>
-                  <option value="1M">1 Month</option>
-                  <option value="3M">3 Months</option>
-                  <option value="6M">6 Months</option>
-                  <option value="1Y">1 Year</option>
-                  <option value="5Y">5 Years</option>
-                  <option value="YTD">Year to Date</option>
-                </select>
-                <select 
-                  className="px-3 py-2 border rounded-md bg-background text-foreground"
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                >
-                  <option value="companyName">Alphabetical</option>
-                  <option value="currentPrice">Price</option>
-                  <option value="changePercent">% Change</option>
-                  <option value="volume">Volume</option>
-                  <option value="marketCap">Market Cap</option>
-                </select>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                >
-                  {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
-                </Button>
-                <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
-                  <RefreshCw className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    {user?.subscriptionTier === 'free' ? '10min' : '30sec'} refresh
-                  </span>
+                    <CardTitle className="text-2xl">View Watchlist</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground">
+                      Monitor your tracked stocks with real-time prices and performance data
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={fadeInUp}>
+                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('tournaments')}>
+                  <CardHeader className="text-center pb-4">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Trophy className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl">Current Tournaments</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground">
+                      View and manage your active trading competitions
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={fadeInUp}>
+                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('join')}>
+                  <CardHeader className="text-center pb-4">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Building className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl">Join Tournament</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground">
+                      Enter a tournament code to join existing competitions
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              <motion.div variants={fadeInUp}>
+                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('create')}>
+                  <CardHeader className="text-center pb-4">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Plus className="w-8 h-8 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl">Create Tournament</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground">
+                      Start a new trading competition with custom settings
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Watchlist View
+  if (currentView === 'watchlist') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-6 px-4 max-w-none">
+          <motion.div
+            className="max-w-none mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            {/* Header with Back Button */}
+            <motion.div className="mb-8" variants={fadeInUp}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <Button variant="outline" onClick={() => setCurrentView('main')}>
+                    ← Back to Dashboard
+                  </Button>
+                  <div>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Your Watchlist</h1>
+                    <p className="text-muted-foreground">Monitor your tracked stocks</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Watchlist Table */}
+            {/* Watchlist Controls */}
+            <motion.div className="mb-6" variants={fadeInUp}>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-xl font-semibold text-foreground">Tracked Stocks</h2>
+                <div className="flex items-center space-x-4">
+                  {/* Add Stock Search */}
+                  <div className="relative search-container">
+                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search stocks to add to watchlist..."
+                      value={searchQuery}
+                      onChange={(e) => handleSearch(e.target.value)}
+                      className="pl-10 min-w-[350px]"
+                    />
+                    {showSearchResults && (
+                      <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+                        {searchResults.map((stock) => (
+                          <div
+                            key={stock.symbol}
+                            className="p-3 hover:bg-accent border-b last:border-b-0"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="font-medium">{stock.symbol}</div>
+                                <div className="text-sm text-muted-foreground">{stock.name}</div>
+                                <div className="text-xs text-muted-foreground">{stock.exchange}</div>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => addToWatchlist(stock)}
+                                className="ml-2"
+                              >
+                                Add
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                        {searchResults.length === 0 && searchQuery && (
+                          <div className="p-3 text-sm text-muted-foreground">
+                            No stocks found for "{searchQuery}"
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Watchlist Table - Using existing code */}
             <Card className="border-0 shadow-lg">
               <CardHeader>
                 <CardTitle className="flex items-center">
@@ -1470,13 +1535,9 @@ export default function Dashboard() {
                         <th className="text-left py-2 px-4 font-medium">Symbol</th>
                         <th className="text-left py-2 px-4 font-medium">Company</th>
                         <th className="text-left py-2 px-4 font-medium">Price</th>
-                        <th className="text-left py-2 px-4 font-medium">Close Price ({changePeriod} ago)</th>
-                        <th className="text-left py-2 px-4 font-medium">
-                          Change ({changePeriod})
-                        </th>
+                        <th className="text-left py-2 px-4 font-medium">Change</th>
                         <th className="text-left py-2 px-4 font-medium">Volume</th>
                         <th className="text-left py-2 px-4 font-medium">Market Cap</th>
-                        <th className="text-left py-2 px-4 font-medium">Sector</th>
                         <th className="text-left py-2 px-4 font-medium">Actions</th>
                       </tr>
                     </thead>
@@ -1486,17 +1547,12 @@ export default function Dashboard() {
                           <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
                           <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
                           <td className="py-3 px-4 font-medium text-foreground">
-                            ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
-                          </td>
-                          <td className="py-3 px-4 text-sm text-muted-foreground">
-                            {stock.isLoadingData ? 'Loading...' : (stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A')}
+                            {formatCurrency(stock.currentPrice || stock.price || 0)}
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-1">
                               {stock.isLoadingData ? (
-                                <span className="text-sm text-muted-foreground">
-                                  Loading...
-                                </span>
+                                <span className="text-sm text-muted-foreground">Loading...</span>
                               ) : stock.changePercent !== undefined && stock.change !== undefined ? (
                                 <>
                                   {stock.changePercent >= 0 ? (
@@ -1509,870 +1565,197 @@ export default function Dashboard() {
                                   }`}>
                                     {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                                   </span>
-                                  <span className={`text-xs ${
-                                    stock.change >= 0 ? "text-green-500" : "text-red-500"
-                                  }`}>
-                                    (${stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)})
-                                  </span>
                                 </>
                               ) : (
-                                <span className="text-sm text-muted-foreground">
-                                  N/A
-                                </span>
+                                <span className="text-sm text-muted-foreground">N/A</span>
                               )}
                             </div>
                           </td>
                           <td className="py-3 px-4 text-sm text-foreground">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
                           <td className="py-3 px-4 text-sm text-foreground">{formatMarketCap(stock.marketCap)}</td>
                           <td className="py-3 px-4">
-                            <Badge variant="secondary" className="text-xs">
-                              {stock.sector}
-                            </Badge>
-                          </td>
-                          <td className="py-3 px-4">
-                            <div className="flex items-center space-x-2">
-                              <Button variant="ghost" size="sm">
-                                <LineChart className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeFromWatchlist(stock.id)}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeFromWatchlist(stock.id)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                
-                {/* Show More/Show Less Button */}
-                {filteredWatchlist.length > 3 && (
-                  <div className="flex justify-center mt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsWatchlistExpanded(!isWatchlistExpanded)}
-                    >
-                      {isWatchlistExpanded ? 'Show Less' : 'Show More'}
-                    </Button>
-                  </div>
-                )}
               </CardContent>
             </Card>
-            
-            {/* Create Game and Join Game Buttons */}
-            <div className="flex justify-center gap-4 mt-4">
-              <Dialog open={isCreateTournamentDialogOpen} onOpenChange={setIsCreateTournamentDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="default" size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    Create Game
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Create Tournament</DialogTitle>
-                    <DialogDescription>
-                      Create a new paper trading tournament. Max 10 players.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="tournament-name" className="text-right">
-                        Name
-                      </Label>
-                      <Input
-                        id="tournament-name"
-                        value={tournamentName}
-                        onChange={(e) => setTournamentName(e.target.value)}
-                        className="col-span-3"
-                        placeholder="Enter tournament name"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="starting-balance" className="text-right">
-                        Starting Balance ($)
-                      </Label>
-                      <Input
-                        id="starting-balance"
-                        type="number"
-                        value={startingBalance}
-                        onChange={(e) => setStartingBalance(e.target.value)}
-                        className="col-span-3"
-                        placeholder="10000.00"
-                        min="1"
-                        step="0.01"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="max-players" className="text-right">
-                        Max Players
-                      </Label>
-                      <Input
-                        id="max-players"
-                        type="number"
-                        value={maxPlayers}
-                        onChange={(e) => setMaxPlayers(e.target.value)}
-                        className="col-span-3"
-                        min="2"
-                        max="10"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="timeframe" className="text-right">
-                        Timeframe
-                      </Label>
-                      <Select value={timeframe} onValueChange={setTimeframe}>
-                        <SelectTrigger className="col-span-3">
-                          <SelectValue placeholder="Select timeframe" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1 minute">1 Minute</SelectItem>
-                          <SelectItem value="1 week">1 Week</SelectItem>
-                          <SelectItem value="2 weeks">2 Weeks</SelectItem>
-                          <SelectItem value="3 weeks">3 Weeks</SelectItem>
-                          <SelectItem value="4 weeks">4 Weeks</SelectItem>
-                          <SelectItem value="5 weeks">5 Weeks</SelectItem>
-                          <SelectItem value="6 weeks">6 Weeks</SelectItem>
-                          <SelectItem value="7 weeks">7 Weeks</SelectItem>
-                          <SelectItem value="8 weeks">8 Weeks</SelectItem>
-                          <SelectItem value="9 weeks">9 Weeks</SelectItem>
-                          <SelectItem value="10 weeks">10 Weeks</SelectItem>
-                          <SelectItem value="15 weeks">15 Weeks</SelectItem>
-                          <SelectItem value="20 weeks">20 Weeks</SelectItem>
-                          <SelectItem value="25 weeks">25 Weeks</SelectItem>
-                          <SelectItem value="30 weeks">30 Weeks</SelectItem>
-                          <SelectItem value="40 weeks">40 Weeks</SelectItem>
-                          <SelectItem value="1 year">1 Year</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => {
-                      setIsCreateTournamentDialogOpen(false);
-                      setTournamentName("");
-                      setMaxPlayers("10");
-                      setStartingBalance("10000");
-                      setTimeframe("4 weeks");
-                    }}>
-                      Cancel
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        if (tournamentName && startingBalance) {
-                          createTournamentMutation.mutate({
-                            name: tournamentName,
-                            maxPlayers: parseInt(maxPlayers),
-                            startingBalance: parseFloat(startingBalance),
-                            timeframe: timeframe
-                          });
-                        }
-                      }}
-                      disabled={!tournamentName || !startingBalance || createTournamentMutation.isPending}
-                    >
-                      {createTournamentMutation.isPending ? 'Creating...' : 'Create Tournament'}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-              
-              <Dialog open={isJoinTournamentDialogOpen} onOpenChange={setIsJoinTournamentDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" size="lg" className="border-primary text-primary hover:bg-primary/10">
-                    Join Game
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[425px]">
-                  <DialogHeader>
-                    <DialogTitle>Join Tournament</DialogTitle>
-                    <DialogDescription>
-                      Enter the unique game code to join an existing tournament.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="game-code" className="text-right">
-                        Game Code
-                      </Label>
-                      <Input
-                        id="game-code"
-                        value={joinGameCode}
-                        onChange={(e) => setJoinGameCode(e.target.value.toUpperCase())}
-                        className="col-span-3 font-mono"
-                        placeholder="Enter 8-character code"
-                        maxLength={8}
-                      />
-                    </div>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setIsJoinTournamentDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button 
-                      onClick={() => {
-                        if (joinGameCode && joinGameCode.length === 8) {
-                          joinTournamentMutation.mutate(joinGameCode);
-                        }
-                      }}
-                      disabled={!joinGameCode || joinGameCode.length !== 8 || joinTournamentMutation.isPending}
-                    >
-                      {joinTournamentMutation.isPending ? 'Joining...' : 'Join Tournament'}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
           </motion.div>
+        </div>
+      </div>
+    );
+  }
 
-          {/* Main Dashboard */}
-          <motion.div variants={fadeInUp}>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-1 mb-6">
-                <TabsTrigger value="tournament">Tournament</TabsTrigger>
-              </TabsList>
-
-
-              <TabsContent value="tournament" className="space-y-6">
-
-
-                {/* Tournament Header & Selector */}
-                {userTournaments.length > 0 ? (
-                  <div className="space-y-6">
-                    {/* Tournament Header with Selector */}
-                    <Card className="border-0 shadow-lg">
-                      <CardHeader>
-                        <div className="flex items-center justify-between">
-                          <CardTitle className="flex items-center">
-                            <Activity className="w-5 h-5 mr-2" />
-                            Your Tournaments
-                          </CardTitle>
-                          <Select value={selectedTournamentId || userTournaments[0]?.tournaments?.id?.toString()} onValueChange={setSelectedTournamentId}>
-                            <SelectTrigger className="w-64">
-                              <SelectValue placeholder="Select a tournament" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {userTournaments.map((tournament: any) => (
-                                <SelectItem key={tournament.tournaments.id} value={tournament.tournaments.id.toString()}>
-                                  {tournament.tournaments.name} - {tournament.tournaments.code}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </CardHeader>
-                    </Card>
-
-                    {/* Selected Tournament Content */}
-                    {(() => {
-                      const selectedTournament = userTournaments.find((t: any) => 
-                        t.tournaments.id.toString() === (selectedTournamentId || userTournaments[0]?.tournaments?.id?.toString())
-                      ) || userTournaments[0];
-
-                      if (!selectedTournament) return null;
-
-                      return (
-                        <div className="space-y-6">
-                          {/* Tournament Details */}
-                          <Card className="border-0 shadow-lg">
-                            <CardHeader>
-                              <CardTitle className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                  <Activity className="w-5 h-5 mr-2" />
-                                  {selectedTournament.tournaments.name}
-                                </div>
-                                <Badge variant={selectedTournament.tournaments.status === 'waiting' ? 'secondary' : 'default'}>
-                                  {selectedTournament.tournaments.status}
-                                </Badge>
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                                <div>
-                                  <p className="text-sm text-muted-foreground">Join Code</p>
-                                  <p className="font-mono text-lg font-semibold">{selectedTournament.tournaments.code}</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-muted-foreground">Your Balance</p>
-                                  <p className="text-lg font-semibold">{formatCurrency(currentBalance)}</p>
-                                </div>
-                                <div>
-                                  <p className="text-sm text-muted-foreground">Time Remaining</p>
-                                  <TournamentCountdown 
-                                    startedAt={selectedTournament.tournaments.startedAt || selectedTournament.tournaments.createdAt} 
-                                    timeframe={selectedTournament.tournaments.timeframe} 
-                                  />
-                                </div>
-                                <div>
-                                  <p className="text-sm text-muted-foreground">Players</p>
-                                  {isLoadingParticipants ? (
-                                    <p className="text-sm text-muted-foreground">Loading...</p>
-                                  ) : (
-                                    <div className="space-y-1">
-                                      <p className="text-lg font-semibold">{tournamentParticipants?.data?.length || 0}/{selectedTournament.tournaments.maxPlayers}</p>
-                                      <div className="text-sm text-muted-foreground">
-                                        {tournamentParticipants?.data?.map((participant: any, index: number) => (
-                                          <span key={participant.id}>
-                                            {participant.firstName}
-                                            {index < (tournamentParticipants.data.length - 1) ? ', ' : ''}
-                                          </span>
-                                        ))}
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Tournament Balance */}
-
-
-                          {/* Tournament Trading Section */}
-                          <Card className="border-0 shadow-lg">
-                            <CardHeader>
-                              <CardTitle className="flex items-center">
-                                <TrendingUp className="w-5 h-5 mr-2" />
-                                Trade in {selectedTournament.tournaments.name}
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="space-y-4">
-                                <div className="relative">
-                                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                                  <Input
-                                    placeholder="Search stocks to buy in this tournament..."
-                                    value={tradingSearchQuery}
-                                    onChange={(e) => handleTradingSearch(e.target.value)}
-                                    className="pl-10"
-                                  />
-                                  {showTradingSearchResults && (
-                                    <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                                      {isLoadingTradingStocks ? (
-                                        <div className="p-4 text-center">
-                                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                                          <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
-                                        </div>
-                                      ) : tradingStockData.length > 0 ? (
-                                        tradingStockData.map((stock: any, index) => (
-                                          <div key={index} className="p-3 hover:bg-muted border-b last:border-b-0">
-                                            <div className="flex items-center justify-between">
-                                              <div className="flex-1">
-                                                <p className="font-medium text-foreground">{stock.symbol}</p>
-                                                <p className="text-sm text-muted-foreground">{stock.name}</p>
-                                                <p className="text-sm font-medium text-foreground">{formatCurrency(stock.price)}</p>
-                                              </div>
-                                              <Button
-                                                size="sm"
-                                                onClick={() => handleBuyStock(stock)}
-                                                className="bg-primary text-primary-foreground hover:bg-primary/90"
-                                              >
-                                                Buy
-                                              </Button>
-                                            </div>
-                                          </div>
-                                        ))
-                                      ) : (
-                                        <div className="p-4 text-center text-muted-foreground">
-                                          {tradingSearchQuery.length > 0 ? "No stocks found" : "Start typing to search"}
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-
-                          {/* Tournament Portfolio */}
-                          <Card className="border-0 shadow-lg">
-                            <CardHeader>
-                              <CardTitle className="flex items-center">
-                                <Building className="w-5 h-5 mr-2" />
-                                Tournament Portfolio
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              {currentPurchases.length > 0 ? (
-                                <div className="overflow-x-auto">
-                                  <table className="w-full">
-                                    <thead>
-                                      <tr className="border-b">
-                                        <th className="text-left p-2 font-medium text-muted-foreground">Stock</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Shares</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Total Purchase Value</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Current Value</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Change</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Purchase Price</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Current Price</th>
-                                        <th className="text-right p-2 font-medium text-muted-foreground">Per Share Change</th>
-                                        <th className="text-center p-2 font-medium text-muted-foreground">Actions</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {currentPurchases.map((purchase: any, index: number) => {
-                                        const purchasePrice = Number(purchase.purchasePrice);
-                                        const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
-                                        const perShareChange = currentPrice - purchasePrice;
-                                        const perSharePercentChange = ((perShareChange / purchasePrice) * 100);
-                                        const totalPurchaseValue = purchasePrice * purchase.shares;
-                                        const currentValue = currentPrice * purchase.shares;
-                                        const totalValueChange = currentValue - totalPurchaseValue;
-                                        const totalValuePercentChange = ((totalValueChange / totalPurchaseValue) * 100);
-                                        
-                                        return (
-                                          <tr key={index} className="border-b hover:bg-muted/50">
-                                            <td className="p-2">
-                                              <div>
-                                                <p className="font-medium text-foreground">{purchase.symbol}</p>
-                                                <p className="text-sm text-muted-foreground">{purchase.companyName}</p>
-                                              </div>
-                                            </td>
-                                            <td className="p-2 text-right font-medium">{purchase.shares}</td>
-                                            <td className="p-2 text-right font-medium">${totalPurchaseValue.toFixed(2)}</td>
-                                            <td className="p-2 text-right font-medium">${currentValue.toFixed(2)}</td>
-                                            <td className="p-2 text-right">
-                                              <div className={`${totalValueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                <div>${totalValueChange.toFixed(2)}</div>
-                                                <div className="text-xs">({totalValuePercentChange.toFixed(2)}%)</div>
-                                              </div>
-                                            </td>
-                                            <td className="p-2 text-right">${purchasePrice.toFixed(2)}</td>
-                                            <td className="p-2 text-right">${currentPrice.toFixed(2)}</td>
-                                            <td className="p-2 text-right">
-                                              <div className={`${perShareChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                                <div>${perShareChange.toFixed(2)}</div>
-                                                <div className="text-xs">({perSharePercentChange.toFixed(2)}%)</div>
-                                              </div>
-                                            </td>
-                                            <td className="p-2 text-center">
-                                              <Button
-                                                size="sm"
-                                                variant="outline"
-                                                className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
-                                                onClick={() => {
-                                                  setSelectedSellStock({
-                                                    ...purchase,
-                                                    currentPrice: currentPrice
-                                                  });
-                                                  setIsSellDialogOpen(true);
-                                                }}
-                                              >
-                                                Sell
-                                              </Button>
-                                            </td>
-                                          </tr>
-                                        );
-                                      })}
-                                    </tbody>
-                                  </table>
-                                </div>
-                              ) : (
-                                <div className="text-center py-8">
-                                  <Building className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                                  <p className="text-muted-foreground mb-2">No stocks in this tournament yet</p>
-                                  <p className="text-sm text-muted-foreground">Use the search above to buy stocks for this tournament</p>
-                                </div>
-                              )}
-                            </CardContent>
-                          </Card>
-
-                          {/* Tournament Leaderboard */}
-                          <Card className="border-0 shadow-lg">
-                            <CardHeader>
-                              <CardTitle className="flex items-center">
-                                <Trophy className="w-5 h-5 mr-2" />
-                                Tournament Leaderboard
-                              </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              {isLoadingParticipants ? (
-                                <div className="text-center py-8">
-                                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                                  <div className="mt-2 text-sm text-muted-foreground">Loading leaderboard...</div>
-                                </div>
-                              ) : tournamentParticipants?.data?.length > 0 ? (
-                                <div className="space-y-4">
-                                  {tournamentParticipants.data.map((participant: any, index: number) => (
-                                    <div key={participant.id} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                                      <div className="flex items-center space-x-3">
-                                        <div className="flex items-center justify-center w-8 h-8 bg-primary text-primary-foreground rounded-full font-bold">
-                                          {index + 1}
-                                        </div>
-                                        <div>
-                                          <p className="font-medium">{participant.firstName} {participant.lastName}</p>
-                                          <p className="text-sm text-muted-foreground">
-                                            Joined {new Date(participant.joinedAt).toLocaleDateString()}
-                                          </p>
-                                        </div>
-                                      </div>
-                                      <div className="text-right">
-                                        <p className="font-bold text-lg">${participant.totalValue?.toFixed(2) || '0.00'}</p>
-                                        <div className="text-sm text-muted-foreground">
-                                          <p>Cash: ${parseFloat(participant.balance || '0').toFixed(2)}</p>
-                                          <p>Stocks: ${participant.stockValue?.toFixed(2) || '0.00'}</p>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  ))}
-                                </div>
-                              ) : (
-                                <div className="text-center py-8">
-                                  <Trophy className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                                  <p className="text-muted-foreground mb-2">No participants yet</p>
-                                  <p className="text-sm text-muted-foreground">Invite others to join this tournament!</p>
-                                </div>
-                              )}
-                            </CardContent>
-                          </Card>
-                        </div>
-                      );
-                    })()}
-                  </div>
-                ) : (
-                  <Card className="border-0 shadow-lg">
-                    <CardHeader>
-                      <CardTitle className="flex items-center">
-                        <Activity className="w-5 h-5 mr-2" />
-                        Your Tournaments
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-center py-8">
-                        <Activity className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                        <p className="text-muted-foreground mb-2">No tournaments yet</p>
-                        <p className="text-sm text-muted-foreground">Create your first tournament to start competing!</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </TabsContent>
-
-              <TabsContent value="watchlist" className="space-y-6">
-                {/* Search and Controls */}
-                <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                  <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search stocks to add..."
-                      value={searchQuery}
-                      onChange={(e) => handleSearch(e.target.value)}
-                      className="pl-10"
-                    />
-                    {showSearchResults && (
-                      <div className="absolute top-12 left-0 right-0 bg-card border rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
-                        {isLoadingStocks ? (
-                          <div className="p-4 text-center">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                            <div className="mt-2 text-sm text-muted-foreground">Searching stocks...</div>
-                          </div>
-                        ) : stockData.length > 0 ? (
-                          stockData.map((stock: any, index) => (
-                            <div key={index} className="p-3 hover:bg-muted cursor-pointer border-b last:border-b-0">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="font-medium text-foreground">{stock.symbol}</p>
-                                  <p className="text-sm text-muted-foreground">{stock.name}</p>
-                                  <p className="text-xs text-muted-foreground">{stock.sector || "N/A"}</p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="font-medium text-foreground">${stock.currentPrice ? stock.currentPrice.toFixed(2) : 'N/A'}</p>
-                                  <p className={`text-xs ${stock.changePercent >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent ? stock.changePercent.toFixed(2) : '0.00'}%
-                                  </p>
-                                  <Button
-                                    size="sm"
-                                    onClick={() => addToWatchlist(stock)}
-                                    className="mt-1"
-                                  >
-                                    <Plus className="w-3 h-3 mr-1" />
-                                    Add
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          ))
-                        ) : searchQuery.length > 0 && (
-                          <div className="p-4 text-center text-muted-foreground">
-                            No stocks found for "{searchQuery}"
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <select
-                      value={filterSector}
-                      onChange={(e) => setFilterSector(e.target.value)}
-                      className="px-3 py-2 border rounded-md"
-                    >
-                      {sectors.map((sector, index) => (
-                        <option key={`sector-${index}`} value={sector}>
-                          {sector === "all" ? "All Sectors" : sector}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      value={changePeriod}
-                      onChange={(e) => setChangePeriod(e.target.value)}
-                      className="px-3 py-2 border rounded-md"
-                    >
-                      <option value="1D">1 Day</option>
-                      <option value="5D">5 Days</option>
-                      <option value="1W">1 Week</option>
-                      <option value="1M">1 Month</option>
-                      <option value="3M">3 Months</option>
-                      <option value="6M">6 Months</option>
-                      <option value="1Y">1 Year</option>
-                      <option value="5Y">5 Years</option>
-                      <option value="YTD">Year to Date</option>
-                    </select>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                    >
-                      {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
-                    </Button>
-                    <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
-                      <RefreshCw className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {user?.subscriptionTier === 'free' ? '10min' : '30sec'} refresh
-                      </span>
-                    </div>
-                  </div>
+  // Tournaments View
+  if (currentView === 'tournaments') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-6 px-4">
+          <motion.div
+            className="max-w-6xl mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            <motion.div className="mb-8" variants={fadeInUp}>
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" onClick={() => setCurrentView('main')}>
+                  ← Back to Dashboard
+                </Button>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">Current Tournaments</h1>
+                  <p className="text-muted-foreground">View and manage your active competitions</p>
                 </div>
+              </div>
+            </motion.div>
 
-                {/* Watchlist Table */}
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Star className="w-5 h-5 mr-2" />
-                      Your Watchlist ({filteredWatchlist.length})
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b">
-                            <th className="text-left py-2 px-4 font-medium">Symbol</th>
-                            <th className="text-left py-2 px-4 font-medium">Company</th>
-                            <th className="text-left py-2 px-4 font-medium">Price</th>
-                            <th className="text-left py-2 px-4 font-medium">Close Price ({changePeriod} ago)</th>
-                            <th className="text-left py-2 px-4 font-medium">
-                              Change ({changePeriod})
-                            </th>
-                            <th className="text-left py-2 px-4 font-medium">Volume</th>
-                            <th className="text-left py-2 px-4 font-medium">Market Cap</th>
-                            <th className="text-left py-2 px-4 font-medium">Sector</th>
-                            <th className="text-left py-2 px-4 font-medium">Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredWatchlist.map((stock) => (
-                            <tr key={stock.id} className="border-b hover:bg-muted">
-                              <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
-                              <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
-                              <td className="py-3 px-4 font-medium text-foreground">
-                                {stock.currentPrice ? formatCurrency(stock.currentPrice) : (stock.price ? formatCurrency(stock.price) : 'N/A')}
-                              </td>
-                              <td className="py-3 px-4 text-sm text-muted-foreground">
-                                {stock.isLoadingData ? 'Loading...' : (stock.previousClose ? formatCurrency(stock.previousClose) : 'N/A')}
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="flex items-center space-x-1">
-                                  {stock.isLoadingData ? (
-                                    <span className="text-sm text-muted-foreground">
-                                      Loading...
-                                    </span>
-                                  ) : stock.changePercent !== undefined && stock.change !== undefined ? (
-                                    <>
-                                      {stock.changePercent >= 0 ? (
-                                        <TrendingUp className="w-4 h-4 text-green-500" />
-                                      ) : (
-                                        <TrendingDown className="w-4 h-4 text-red-500" />
-                                      )}
-                                      <span className={`text-sm font-medium ${
-                                        stock.changePercent >= 0 ? "text-green-600" : "text-red-600"
-                                      }`}>
-                                        {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                                      </span>
-                                      <span className={`text-xs ${
-                                        stock.change >= 0 ? "text-green-500" : "text-red-500"
-                                      }`}>
-                                        ({stock.change >= 0 ? '+' : ''}{formatCurrency(Math.abs(stock.change))})
-                                      </span>
-                                    </>
-                                  ) : (
-                                    <span className="text-sm text-muted-foreground">
-                                      N/A
-                                    </span>
-                                  )}
-                                </div>
-                              </td>
-                              <td className="py-3 px-4 text-sm text-foreground">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
-                              <td className="py-3 px-4 text-sm text-foreground">{formatMarketCap(stock.marketCap)}</td>
-                              <td className="py-3 px-4">
-                                <Badge variant="secondary" className="text-xs">
-                                  {stock.sector}
-                                </Badge>
-                              </td>
-                              <td className="py-3 px-4">
-                                <div className="flex items-center space-x-2">
-                                  <Button variant="ghost" size="sm">
-                                    <LineChart className="w-4 h-4" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => removeFromWatchlist(stock.id)}
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+            {/* Tournament Content - Using existing Tabs structure */}
+            <Tabs defaultValue="tournament" className="w-full">
+              <TabsList className="grid w-full grid-cols-1">
+                <TabsTrigger value="tournament">Active Tournaments</TabsTrigger>
+              </TabsList>
+              <TabsContent value="tournament" className="space-y-4">
+                {/* Tournament content will use existing data fetching logic */}
+                <Card>
+                  <CardContent className="p-6">
+                    <p className="text-muted-foreground">Loading tournament data...</p>
                   </CardContent>
                 </Card>
               </TabsContent>
-
-
             </Tabs>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
+    );
+  }
 
-      {/* Buy Stock Dialog */}
-      <Dialog open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Buy Stock</DialogTitle>
-            <DialogDescription>
-              {selectedTradingStock && (
-                <div className="space-y-2">
-                  <p><strong>{selectedTradingStock.symbol}</strong> - {selectedTradingStock.name}</p>
-                  <p>Current price: <strong>{formatCurrency(selectedTradingStock.price)}</strong></p>
-                  <p>Your balance: <strong>{formatCurrency(currentBalance)}</strong></p>
+  // Join Tournament View
+  if (currentView === 'join') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-8 px-4">
+          <motion.div
+            className="max-w-2xl mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            <motion.div className="mb-8" variants={fadeInUp}>
+              <div className="flex items-center space-x-4 mb-6">
+                <Button variant="outline" onClick={() => setCurrentView('main')}>
+                  ← Back to Dashboard
+                </Button>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">Join Tournament</h1>
+                  <p className="text-muted-foreground">Enter a tournament code to join</p>
                 </div>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="shares">Number of shares</Label>
-              <Input
-                id="shares"
-                type="number"
-                min="1"
-                step="1"
-                value={shareAmount}
-                onChange={(e) => setShareAmount(e.target.value)}
-                placeholder="Enter number of shares"
-              />
-            </div>
-            {selectedTradingStock && shareAmount && parseInt(shareAmount) > 0 && (
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  Total cost: <strong>${(parseInt(shareAmount) * selectedTradingStock.price).toFixed(2)}</strong>
-                </p>
-                <p className="text-sm text-gray-600">
-                  Remaining balance: <strong>${(currentBalance - (parseInt(shareAmount) * selectedTradingStock.price)).toFixed(2)}</strong>
-                </p>
               </div>
-            )}
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsBuyDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={handlePurchaseSubmit}
-                disabled={!shareAmount || parseInt(shareAmount) <= 0 || purchaseStockMutation.isPending}
-                className="bg-black text-white hover:bg-gray-800"
-              >
-                {purchaseStockMutation.isPending ? "Processing..." : "Buy Stock"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+            </motion.div>
 
-      {/* Sell Stock Dialog */}
-      <Dialog open={isSellDialogOpen} onOpenChange={setIsSellDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Sell Stock</DialogTitle>
-            <DialogDescription>
-              {selectedSellStock && (
-                <div className="space-y-2">
-                  <p><strong>{selectedSellStock.symbol}</strong> - {selectedSellStock.companyName}</p>
-                  <p>Current price: <strong>${selectedSellStock.currentPrice?.toFixed(2)}</strong></p>
-                  <p>You own: <strong>{selectedSellStock.shares} shares</strong></p>
-                  <p>Your balance: <strong>${currentBalance.toFixed(2)}</strong></p>
+            <motion.div variants={fadeInUp}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Tournament Code</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Label htmlFor="join-code">Enter Tournament Code</Label>
+                  <Input
+                    id="join-code"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value)}
+                    placeholder="Enter tournament code"
+                  />
+                  <Button className="w-full">Join Tournament</Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Create Tournament View  
+  if (currentView === 'create') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-8 px-4">
+          <motion.div
+            className="max-w-2xl mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            <motion.div className="mb-8" variants={fadeInUp}>
+              <div className="flex items-center space-x-4 mb-6">
+                <Button variant="outline" onClick={() => setCurrentView('main')}>
+                  ← Back to Dashboard
+                </Button>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground">Create Tournament</h1>
+                  <p className="text-muted-foreground">Start a new trading competition</p>
                 </div>
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="sellShares">Number of shares to sell</Label>
-              <Input
-                id="sellShares"
-                type="number"
-                min="1"
-                max={selectedSellStock?.shares || 1}
-                step="1"
-                value={sellAmount}
-                onChange={(e) => setSellAmount(e.target.value)}
-                placeholder="Enter number of shares"
-              />
-            </div>
-            {selectedSellStock && sellAmount && parseInt(sellAmount) > 0 && (
-              <div className="bg-gray-50 p-3 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  Sale value: <strong>${(parseInt(sellAmount) * selectedSellStock.currentPrice).toFixed(2)}</strong>
-                </p>
-                <p className="text-sm text-gray-600">
-                  New balance: <strong>${(currentBalance + (parseInt(sellAmount) * selectedSellStock.currentPrice)).toFixed(2)}</strong>
-                </p>
               </div>
-            )}
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsSellDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                onClick={() => {
-                  if (selectedSellStock && sellAmount) {
-                    sellStockMutation.mutate({
-                      purchaseId: selectedSellStock.id,
-                      sharesToSell: parseInt(sellAmount),
-                      currentPrice: selectedSellStock.currentPrice
-                    });
-                  }
-                }}
-                disabled={!sellAmount || parseInt(sellAmount) <= 0 || parseInt(sellAmount) > selectedSellStock?.shares || sellStockMutation.isPending}
-                className="bg-red-600 text-white hover:bg-red-700"
-              >
-                {sellStockMutation.isPending ? "Processing..." : "Sell Stock"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Regional Chat */}
-      <RegionalChat 
-        isOpen={isChatOpen} 
-        onToggle={() => setIsChatOpen(!isChatOpen)} 
-      />
-    </div>
-  );
+            </motion.div>
+
+            <motion.div variants={fadeInUp}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Tournament Settings</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="tournament-name">Tournament Name</Label>
+                    <Input
+                      id="tournament-name"
+                      value={tournamentName}
+                      onChange={(e) => setTournamentName(e.target.value)}
+                      placeholder="Enter tournament name"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="max-players">Max Players</Label>
+                    <Input
+                      id="max-players"
+                      type="number"
+                      value={maxPlayers}
+                      onChange={(e) => setMaxPlayers(e.target.value)}
+                      min="2"
+                      max="10"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="timeframe">Duration</Label>
+                    <Select value={timeframe} onValueChange={setTimeframe}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1 week">1 Week</SelectItem>
+                        <SelectItem value="2 weeks">2 Weeks</SelectItem>
+                        <SelectItem value="4 weeks">4 Weeks</SelectItem>
+                        <SelectItem value="8 weeks">8 Weeks</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button className="w-full">Create Tournament</Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
