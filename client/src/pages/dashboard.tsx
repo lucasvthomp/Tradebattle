@@ -53,7 +53,9 @@ import {
   Landmark,
   Zap,
   Package,
-  Users
+  Users,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import {
   Dialog,
@@ -618,7 +620,7 @@ export default function Dashboard() {
   const [tradingStockData, setTradingStockData] = useState<any[]>([]);
   const [showTradingSearchResults, setShowTradingSearchResults] = useState(false);
   const [isLoadingTradingStocks, setIsLoadingTradingStocks] = useState(false);
-
+  const [isWatchlistExpanded, setIsWatchlistExpanded] = useState(false);
   const [isCreateTournamentDialogOpen, setIsCreateTournamentDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("10");
@@ -1492,8 +1494,8 @@ export default function Dashboard() {
       }
     });
 
-  // Display complete watchlist
-  const displayedWatchlist = filteredWatchlist;
+  // Limit watchlist display to 3 items by default, but show all when on watchlist page
+  const displayedWatchlist = currentView === 'watchlist' ? filteredWatchlist : (isWatchlistExpanded ? filteredWatchlist : filteredWatchlist.slice(0, 3));
 
   const sectors = ["all", ...allSectors];
 
@@ -1508,13 +1510,13 @@ export default function Dashboard() {
     );
   }
 
-  // Simple Main Menu View
+  // Main Dashboard View with Watchlist Preview
   if (currentView === 'main') {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto py-8 px-4">
           <motion.div
-            className="max-w-4xl mx-auto"
+            className="max-w-6xl mx-auto"
             initial="initial"
             animate="animate"
             variants={staggerChildren}
@@ -1525,12 +1527,12 @@ export default function Dashboard() {
                 Welcome back, {user?.displayName || user?.username || user?.email || "User"}
               </h1>
               <p className="text-xl text-muted-foreground">
-                What would you like to do today?
+                Ready to track and trade? Here's your dashboard.
               </p>
             </motion.div>
 
             {/* Main Action Buttons */}
-            <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-8" variants={staggerChildren}>
+            <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12" variants={staggerChildren}>
               <motion.div variants={fadeInUp}>
                 <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('watchlist')}>
                   <CardHeader className="text-center pb-4">
@@ -1595,6 +1597,165 @@ export default function Dashboard() {
                 </Card>
               </motion.div>
             </motion.div>
+
+            {/* Watchlist Preview Section */}
+            <motion.div variants={fadeInUp}>
+              <Card className="border-0 shadow-lg">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="flex items-center">
+                      <Star className="w-5 h-5 mr-2" />
+                      Your Watchlist ({filteredWatchlist.length})
+                    </CardTitle>
+                    <div className="flex items-center space-x-4">
+                      {/* Add Stock Search */}
+                      <div className="relative search-container">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Search stocks to add..."
+                          value={searchQuery}
+                          onChange={(e) => handleSearch(e.target.value)}
+                          className="pl-10 min-w-[300px]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {watchlistLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                      <p className="text-muted-foreground">Loading your watchlist...</p>
+                    </div>
+                  ) : filteredWatchlist.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Star className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold mb-2">Your watchlist is empty</h3>
+                      <p className="text-muted-foreground mb-4">
+                        Start tracking stocks by searching and adding them to your watchlist.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b">
+                              <th className="text-left py-2 px-4 font-medium">Symbol</th>
+                              <th className="text-left py-2 px-4 font-medium">Company</th>
+                              <th className="text-left py-2 px-4 font-medium">Price</th>
+                              <th className="text-left py-2 px-4 font-medium">Change</th>
+                              <th className="text-left py-2 px-4 font-medium">Volume</th>
+                              <th className="text-left py-2 px-4 font-medium">Market Cap</th>
+                              <th className="text-left py-2 px-4 font-medium">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {displayedWatchlist.map((stock) => (
+                              <tr key={stock.id} className="border-b hover:bg-muted">
+                                <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
+                                <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
+                                <td className="py-3 px-4 font-medium text-foreground">
+                                  {formatCurrency(stock.currentPrice || stock.price || 0)}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <div className="flex items-center space-x-1">
+                                    {stock.isLoadingData ? (
+                                      <span className="text-sm text-muted-foreground">Loading...</span>
+                                    ) : stock.changePercent !== undefined && stock.change !== undefined ? (
+                                      <>
+                                        {stock.changePercent >= 0 ? (
+                                          <TrendingUp className="w-4 h-4 text-green-500" />
+                                        ) : (
+                                          <TrendingDown className="w-4 h-4 text-red-500" />
+                                        )}
+                                        <span className={`text-sm font-medium ${
+                                          stock.changePercent >= 0 ? "text-green-600" : "text-red-600"
+                                        }`}>
+                                          {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                                        </span>
+                                      </>
+                                    ) : (
+                                      <span className="text-sm text-muted-foreground">N/A</span>
+                                    )}
+                                  </div>
+                                </td>
+                                <td className="py-3 px-4 text-sm text-foreground">{stock.volume ? stock.volume.toLocaleString() : 'N/A'}</td>
+                                <td className="py-3 px-4 text-sm text-foreground">{formatMarketCap(stock.marketCap)}</td>
+                                <td className="py-3 px-4">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => removeFromWatchlist(stock.id)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      
+                      {/* Expand/Collapse Button for Main Dashboard */}
+                      {filteredWatchlist.length > 3 && (
+                        <div className="text-center mt-4">
+                          <Button
+                            variant="outline"
+                            onClick={() => setIsWatchlistExpanded(!isWatchlistExpanded)}
+                          >
+                            {isWatchlistExpanded ? (
+                              <>
+                                <ChevronUp className="w-4 h-4 mr-2" />
+                                Show Less
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="w-4 h-4 mr-2" />
+                                Show All ({filteredWatchlist.length})
+                              </>
+                            )}
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Search Results */}
+            {showSearchResults && searchResults.length > 0 && (
+              <motion.div className="mt-6" variants={fadeInUp}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Search Results</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {searchResults.map((result) => (
+                        <div
+                          key={result.symbol}
+                          className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted cursor-pointer"
+                          onClick={() => addToWatchlist(result)}
+                        >
+                          <div>
+                            <span className="font-semibold">{result.symbol}</span>
+                            <span className="text-sm text-muted-foreground ml-2">
+                              {result.name}
+                            </span>
+                          </div>
+                          <Button size="sm" variant="outline">
+                            <Plus className="w-4 h-4 mr-1" />
+                            Add
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>
