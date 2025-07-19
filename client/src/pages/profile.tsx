@@ -38,6 +38,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PortfolioGraph } from "@/components/ui/portfolio-graph";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -386,7 +387,18 @@ export default function Profile() {
                       </div>
                     </div>
 
+                    <Separator />
 
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-foreground">Portfolio Performance</h4>
+                      <PortfolioGraph 
+                        userId={user.id}
+                        portfolioType="personal"
+                        title="Your Portfolio Since Account Creation"
+                        height={250}
+                        showStats={true}
+                      />
+                    </div>
 
                     <Button 
                       className="w-full" 

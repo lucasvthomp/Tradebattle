@@ -1662,4 +1662,44 @@ router.post('/check-portfolio-growth', requireAuth, asyncHandler(async (req, res
   });
 }));
 
+// Portfolio history endpoints
+router.get('/portfolio-history/:userId', asyncHandler(async (req, res) => {
+  const userId = parseInt(req.params.userId);
+  const portfolioType = req.query.type as 'personal' | 'tournament' || 'personal';
+  const tournamentId = req.query.tournamentId ? parseInt(req.query.tournamentId as string) : undefined;
+
+  if (isNaN(userId)) {
+    throw new ValidationError('Invalid user ID');
+  }
+
+  const history = await storage.getUserPortfolioHistory(userId, portfolioType, tournamentId);
+  
+  res.json({
+    success: true,
+    data: history
+  });
+}));
+
+router.post('/portfolio-history', requireAuth, asyncHandler(async (req, res) => {
+  const { userId, portfolioType, tournamentId, totalValue, cashBalance, stockValue } = req.body;
+
+  if (!userId || !portfolioType || !totalValue || !cashBalance || !stockValue) {
+    throw new ValidationError('Missing required fields');
+  }
+
+  const record = await storage.recordPortfolioValue({
+    userId,
+    portfolioType,
+    tournamentId: tournamentId || null,
+    totalValue: totalValue.toString(),
+    cashBalance: cashBalance.toString(),
+    stockValue: stockValue.toString()
+  });
+
+  res.json({
+    success: true,
+    data: record
+  });
+}));
+
 export default router;

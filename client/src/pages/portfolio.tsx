@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import { PortfolioGraph } from "@/components/ui/portfolio-graph";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -356,6 +357,18 @@ export default function Portfolio() {
                 </p>
               </CardContent>
             </Card>
+          </motion.div>
+
+          {/* Portfolio Performance Graph */}
+          <motion.div variants={fadeInUp}>
+            <PortfolioGraph 
+              userId={user.id}
+              portfolioType="personal"
+              title="Detailed Portfolio Performance"
+              height={400}
+              showStats={true}
+              className="mb-8"
+            />
           </motion.div>
 
           {/* Holdings Table */}

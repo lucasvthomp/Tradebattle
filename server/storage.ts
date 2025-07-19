@@ -10,6 +10,7 @@ import {
   tournamentStockPurchases,
   tradeHistory,
   userAchievements,
+  portfolioHistory,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -32,6 +33,8 @@ import {
   type InsertTradeHistory,
   type UserAchievement,
   type InsertUserAchievement,
+  type PortfolioHistory,
+  type InsertPortfolioHistory,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -105,6 +108,10 @@ export interface IStorage {
   // Tournament win tracking
   incrementTournamentWins(userId: number): Promise<void>;
   getTournamentWins(userId: number): Promise<number>;
+
+  // Portfolio history operations
+  recordPortfolioValue(record: InsertPortfolioHistory): Promise<PortfolioHistory>;
+  getUserPortfolioHistory(userId: number, portfolioType: 'personal' | 'tournament', tournamentId?: number): Promise<PortfolioHistory[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -656,6 +663,35 @@ export class DatabaseStorage implements IStorage {
       .limit(1);
     
     return result[0]?.tournamentWins || 0;
+  }
+
+  // Portfolio history operations
+  async recordPortfolioValue(record: InsertPortfolioHistory): Promise<PortfolioHistory> {
+    const result = await db.insert(portfolioHistory).values(record).returning();
+    return result[0];
+  }
+
+  async getUserPortfolioHistory(userId: number, portfolioType: 'personal' | 'tournament', tournamentId?: number): Promise<PortfolioHistory[]> {
+    let query = db
+      .select()
+      .from(portfolioHistory)
+      .where(and(
+        eq(portfolioHistory.userId, userId),
+        eq(portfolioHistory.portfolioType, portfolioType)
+      ));
+
+    if (portfolioType === 'tournament' && tournamentId) {
+      query = db
+        .select()
+        .from(portfolioHistory)
+        .where(and(
+          eq(portfolioHistory.userId, userId),
+          eq(portfolioHistory.portfolioType, portfolioType),
+          eq(portfolioHistory.tournamentId, tournamentId)
+        ));
+    }
+
+    return await query.orderBy(asc(portfolioHistory.recordedAt));
   }
 }
 

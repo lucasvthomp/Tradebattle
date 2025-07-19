@@ -83,6 +83,18 @@ export const personalStockPurchases = pgTable("personal_stock_purchases", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Portfolio history table for tracking portfolio value over time
+export const portfolioHistory = pgTable("portfolio_history", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  portfolioType: varchar("portfolio_type").notNull(), // 'personal' or 'tournament'
+  tournamentId: integer("tournament_id"), // null for personal portfolio
+  totalValue: numeric("total_value", { precision: 15, scale: 2 }).notNull(),
+  cashBalance: numeric("cash_balance", { precision: 15, scale: 2 }).notNull(),
+  stockValue: numeric("stock_value", { precision: 15, scale: 2 }).notNull(),
+  recordedAt: timestamp("recorded_at").defaultNow().notNull(),
+});
+
 // Contact form submissions
 export const contactSubmissions = pgTable("contact_submissions", {
   id: serial("id").primaryKey(),
@@ -222,6 +234,15 @@ export const insertPersonalStockPurchaseSchema = createInsertSchema(personalStoc
   totalCost: true,
 });
 
+export const insertPortfolioHistorySchema = createInsertSchema(portfolioHistory).pick({
+  userId: true,
+  portfolioType: true,
+  tournamentId: true,
+  totalValue: true,
+  cashBalance: true,
+  stockValue: true,
+});
+
 // Trade history table for tracking all trading actions (buy/sell)
 export const tradeHistory = pgTable("trade_history", {
   id: serial("id").primaryKey(),
@@ -305,3 +326,5 @@ export type TradeHistory = typeof tradeHistory.$inferSelect;
 export type InsertTradeHistory = z.infer<typeof insertTradeHistorySchema>;
 export type UserAchievement = typeof userAchievements.$inferSelect;
 export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
+export type PortfolioHistory = typeof portfolioHistory.$inferSelect;
+export type InsertPortfolioHistory = z.infer<typeof insertPortfolioHistorySchema>;
