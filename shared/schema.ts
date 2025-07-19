@@ -34,6 +34,9 @@ export const users = pgTable("users", {
   lastName: varchar("last_name", { length: 255 }).notNull(),
   displayName: varchar("display_name", { length: 255 }), // Optional public display name
   password: varchar("password", { length: 255 }).notNull(), // hashed password
+  country: varchar("country", { length: 100 }), // User's country
+  language: varchar("language", { length: 50 }).default("English"), // User's preferred language
+  currency: varchar("currency", { length: 10 }).default("USD"), // User's preferred currency
   balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
   subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, premium, administrator
   premiumUpgradeDate: timestamp("premium_upgrade_date"), // When user upgraded to premium
@@ -286,6 +289,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
   displayName: true,
   password: true,
   userId: true,
+  country: true,
+  language: true,
+  currency: true,
 });
 
 
@@ -300,6 +306,10 @@ export const registerSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
+  country: z.string().optional(),
+  language: z.string().default("English"),
+  currency: z.string().default("USD"),
+  wantsPremium: z.boolean().default(false),
 });
 
 export type User = typeof users.$inferSelect;

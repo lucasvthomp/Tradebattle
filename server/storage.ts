@@ -96,6 +96,7 @@ export interface IStorage {
   // Achievement operations
   getUserAchievements(userId: number): Promise<UserAchievement[]>;
   awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
+  awardAchievementByParams(userId: number, achievementType: string, tier: string, name: string, description: string): Promise<UserAchievement>;
   hasAchievement(userId: number, achievementType: string): Promise<boolean>;
   ensureWelcomeAchievement(userId: number): Promise<void>;
   
@@ -482,6 +483,18 @@ export class DatabaseStorage implements IStorage {
     }
     
     return result[0];
+  }
+
+  async awardAchievementByParams(userId: number, achievementType: string, tier: string, name: string, description: string): Promise<UserAchievement> {
+    return await this.awardAchievement({
+      userId,
+      achievementType,
+      achievementTier: tier,
+      achievementName: name,
+      achievementDescription: description,
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
   }
 
   async hasAchievement(userId: number, achievementType: string): Promise<boolean> {
