@@ -7,10 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { Loader2, Eye, EyeOff } from "lucide-react";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 export default function Login() {
   const [, navigate] = useLocation();
   const { loginMutation, user } = useAuth();
+  const { t } = useUserPreferences();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -40,34 +42,34 @@ export default function Login() {
             </div>
           </div>
           <h2 className="mt-6 text-3xl font-bold text-foreground">
-            Sign in to ORSATH
+            {t('signIn')} ORSATH
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            Access your paper trading competition platform
+            {t('signInDescription')}
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">Welcome Back</CardTitle>
+            <CardTitle className="text-center">{t('welcomeBack')}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email">{t('emailAddress')}</Label>
                 <Input
                   id="email"
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
+                  placeholder={t('enterEmail')}
                   className="mt-1"
                 />
               </div>
 
               <div>
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('password')}</Label>
                 <div className="relative mt-1">
                   <Input
                     id="password"
@@ -75,7 +77,7 @@ export default function Login() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
+                    placeholder={t('enterPassword')}
                     className="pr-10"
                   />
                   <button
@@ -100,18 +102,18 @@ export default function Login() {
                 {loginMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Logging in...
+                    {t('loggingIn')}
                   </>
                 ) : (
-                  "Log in"
+                  t('logIn')
                 )}
               </Button>
 
               <div className="text-center">
                 <p className="text-sm text-muted-foreground">
-                  Don't have an account?{" "}
+                  {t('dontHaveAccount')}{" "}
                   <Link href="/signup" className="font-medium text-primary hover:underline">
-                    Sign up
+                    {t('signUp')}
                   </Link>
                 </p>
               </div>

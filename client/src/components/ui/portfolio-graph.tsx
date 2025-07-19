@@ -2,6 +2,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Card, CardContent, CardHeader, CardTitle } from './card';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 interface PortfolioGraphProps {
   userId: number;
@@ -29,6 +30,7 @@ export function PortfolioGraph({
   showStats = true,
   className = ''
 }: PortfolioGraphProps) {
+  const { formatCurrency } = useUserPreferences();
   const { data: portfolioHistory, isLoading } = useQuery({
     queryKey: [`/api/portfolio-history/${userId}`, portfolioType, tournamentId],
     queryFn: async () => {
@@ -116,11 +118,11 @@ export function PortfolioGraph({
             <div className="flex items-center space-x-4">
               <div className="text-right">
                 <p className="text-2xl font-bold text-foreground">
-                  ${currentValue.toLocaleString()}
+                  {formatCurrency(currentValue)}
                 </p>
                 <div className={`flex items-center text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
                   {isPositive ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
-                  ${Math.abs(totalChange).toLocaleString()} ({isPositive ? '+' : ''}{percentChange.toFixed(2)}%)
+                  {formatCurrency(Math.abs(totalChange))} ({isPositive ? '+' : ''}{percentChange.toFixed(2)}%)
                 </div>
               </div>
             </div>
@@ -141,7 +143,7 @@ export function PortfolioGraph({
             />
             <YAxis 
               tick={{ fontSize: 12 }}
-              tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+              tickFormatter={(value) => formatCurrency(value / 1000) + 'k'}
             />
             <Tooltip 
               labelFormatter={(value) => {
@@ -149,7 +151,7 @@ export function PortfolioGraph({
                 return date.toLocaleDateString();
               }}
               formatter={(value: number, name: string) => [
-                `$${value.toLocaleString()}`,
+                formatCurrency(value),
                 name === 'value' ? 'Total Value' : 
                 name === 'stockValue' ? 'Stock Value' : 'Cash Balance'
               ]}

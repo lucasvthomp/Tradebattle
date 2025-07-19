@@ -89,6 +89,29 @@ export const translations = {
     typeMessage: "Type your message...",
     regionalChat: "Regional Chat",
     sendMessage: "Send",
+    connectTraders: "Connect with traders in your region",
+    noMessages: "No messages yet",
+    firstConversation: "Be the first to start a conversation!",
+    user: "User",
+    
+    // Portfolio
+    initialDeposit: "Initial Deposit",
+    totalGainLoss: "Total Gain/Loss",
+    totalInvested: "Total Invested",
+    availableCash: "Available Cash",
+    
+    // Authentication
+    signIn: "Sign in to",
+    signInDescription: "Access your paper trading competition platform",
+    welcomeBack: "Welcome Back",
+    signUp: "Sign up",
+    dontHaveAccount: "Don't have an account?",
+    emailAddress: "Email address",
+    password: "Password",
+    enterEmail: "Enter your email",
+    enterPassword: "Enter your password",
+    logIn: "Log in",
+    loggingIn: "Logging in...",
   },
   
   Portuguese: {
@@ -177,6 +200,29 @@ export const translations = {
     typeMessage: "Digite sua mensagem...",
     regionalChat: "Chat Regional",
     sendMessage: "Enviar",
+    connectTraders: "Conecte-se com traders da sua região",
+    noMessages: "Ainda sem mensagens",
+    firstConversation: "Seja o primeiro a iniciar uma conversa!",
+    user: "Usuário",
+    
+    // Portfolio
+    initialDeposit: "Depósito Inicial",
+    totalGainLoss: "Ganho/Perda Total",
+    totalInvested: "Total Investido",
+    availableCash: "Dinheiro Disponível",
+    
+    // Authentication
+    signIn: "Entrar em",
+    signInDescription: "Acesse sua plataforma de competição de negociação simulada",
+    welcomeBack: "Bem-vindo de Volta",
+    signUp: "Cadastrar-se",
+    dontHaveAccount: "Não tem uma conta?",
+    emailAddress: "Endereço de e-mail",
+    password: "Senha",
+    enterEmail: "Digite seu e-mail",
+    enterPassword: "Digite sua senha",
+    logIn: "Entrar",
+    loggingIn: "Entrando...",
   },
   
   Spanish: {
@@ -233,7 +279,6 @@ export const translations = {
     lastName: "Apellido",
     displayName: "Nombre Mostrado",
     email: "Email",
-    password: "Contraseña",
     country: "País",
     language: "Idioma",
     currency: "Moneda",
@@ -265,6 +310,29 @@ export const translations = {
     typeMessage: "Escribe tu mensaje...",
     regionalChat: "Chat Regional",
     sendMessage: "Enviar",
+    connectTraders: "Conecta con traders de tu región",
+    noMessages: "Aún no hay mensajes",
+    firstConversation: "¡Sé el primero en iniciar una conversación!",
+    user: "Usuario",
+    
+    // Portfolio
+    initialDeposit: "Depósito Inicial",
+    totalGainLoss: "Ganancia/Pérdida Total",
+    totalInvested: "Total Invertido",
+    availableCash: "Efectivo Disponible",
+    
+    // Authentication
+    signIn: "Iniciar sesión en",
+    signInDescription: "Accede a tu plataforma de competición de trading simulado",
+    welcomeBack: "Bienvenido de Vuelta",
+    signUp: "Registrarse",
+    dontHaveAccount: "¿No tienes una cuenta?",
+    emailAddress: "Dirección de correo electrónico",
+    password: "Contraseña",
+    enterEmail: "Ingresa tu email",
+    enterPassword: "Ingresa tu contraseña",
+    logIn: "Iniciar sesión",
+    loggingIn: "Iniciando sesión...",
   },
 };
 

@@ -1797,7 +1797,7 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <p className="text-sm text-muted-foreground">Your Balance</p>
-                                  <p className="text-lg font-semibold">${currentBalance.toFixed(2)}</p>
+                                  <p className="text-lg font-semibold">{formatCurrency(currentBalance)}</p>
                                 </div>
                                 <div>
                                   <p className="text-sm text-muted-foreground">Time Remaining</p>
@@ -1863,7 +1863,7 @@ export default function Dashboard() {
                                               <div className="flex-1">
                                                 <p className="font-medium text-foreground">{stock.symbol}</p>
                                                 <p className="text-sm text-muted-foreground">{stock.name}</p>
-                                                <p className="text-sm font-medium text-foreground">${stock.price}</p>
+                                                <p className="text-sm font-medium text-foreground">{formatCurrency(stock.price)}</p>
                                               </div>
                                               <Button
                                                 size="sm"
@@ -2178,10 +2178,10 @@ export default function Dashboard() {
                               <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
                               <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
                               <td className="py-3 px-4 font-medium text-foreground">
-                                ${stock.currentPrice ? stock.currentPrice.toFixed(2) : (stock.price ? stock.price.toFixed(2) : 'N/A')}
+                                {stock.currentPrice ? formatCurrency(stock.currentPrice) : (stock.price ? formatCurrency(stock.price) : 'N/A')}
                               </td>
                               <td className="py-3 px-4 text-sm text-muted-foreground">
-                                {stock.isLoadingData ? 'Loading...' : (stock.previousClose ? `$${stock.previousClose.toFixed(2)}` : 'N/A')}
+                                {stock.isLoadingData ? 'Loading...' : (stock.previousClose ? formatCurrency(stock.previousClose) : 'N/A')}
                               </td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center space-x-1">
@@ -2204,7 +2204,7 @@ export default function Dashboard() {
                                       <span className={`text-xs ${
                                         stock.change >= 0 ? "text-green-500" : "text-red-500"
                                       }`}>
-                                        (${stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)})
+                                        ({stock.change >= 0 ? '+' : ''}{formatCurrency(Math.abs(stock.change))})
                                       </span>
                                     </>
                                   ) : (
@@ -2259,8 +2259,8 @@ export default function Dashboard() {
               {selectedTradingStock && (
                 <div className="space-y-2">
                   <p><strong>{selectedTradingStock.symbol}</strong> - {selectedTradingStock.name}</p>
-                  <p>Current price: <strong>${selectedTradingStock.price}</strong></p>
-                  <p>Your balance: <strong>${currentBalance.toFixed(2)}</strong></p>
+                  <p>Current price: <strong>{formatCurrency(selectedTradingStock.price)}</strong></p>
+                  <p>Your balance: <strong>{formatCurrency(currentBalance)}</strong></p>
                 </div>
               )}
             </DialogDescription>

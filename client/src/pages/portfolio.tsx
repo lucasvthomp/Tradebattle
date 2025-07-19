@@ -295,11 +295,11 @@ export default function Portfolio() {
           <motion.div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8" variants={fadeInUp}>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Initial Deposit</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('initialDeposit')}</CardTitle>
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${initialDeposit.toFixed(2)}</div>
+                <div className="text-2xl font-bold">{formatCurrency(initialDeposit)}</div>
                 <p className="text-xs text-muted-foreground">
                   Starting amount given
                 </p>
@@ -308,20 +308,20 @@ export default function Portfolio() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Portfolio Value</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalValue')}</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${totalPortfolioValue.toFixed(2)}</div>
+                <div className="text-2xl font-bold">{formatCurrency(totalPortfolioValue)}</div>
                 <p className="text-xs text-muted-foreground">
-                  Cash: ${currentBalance.toFixed(2)} | Stocks: ${portfolioValue.toFixed(2)}
+                  Cash: {formatCurrency(currentBalance)} | Stocks: {formatCurrency(portfolioValue)}
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Gain/Loss</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalGainLoss')}</CardTitle>
                 {totalGainLoss >= 0 ? (
                   <TrendingUp className="h-4 w-4 text-green-600" />
                 ) : (
@@ -330,7 +330,7 @@ export default function Portfolio() {
               </CardHeader>
               <CardContent>
                 <div className={`text-2xl font-bold ${totalGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  ${totalGainLoss.toFixed(2)}
+                  {formatCurrency(totalGainLoss)}
                 </div>
                 <p className={`text-xs ${totalGainLoss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {totalGainLoss >= 0 ? '+' : ''}{totalGainLossPercent.toFixed(2)}%
@@ -340,11 +340,11 @@ export default function Portfolio() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Invested</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('totalInvested')}</CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${totalInvested.toFixed(2)}</div>
+                <div className="text-2xl font-bold">{formatCurrency(totalInvested)}</div>
                 <p className="text-xs text-muted-foreground">
                   Across {personalPurchases.length} positions
                 </p>
@@ -353,11 +353,11 @@ export default function Portfolio() {
 
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Available Cash</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('availableCash')}</CardTitle>
                 <PieChart className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${currentBalance.toFixed(2)}</div>
+                <div className="text-2xl font-bold">{formatCurrency(currentBalance)}</div>
                 <p className="text-xs text-muted-foreground">
                   {totalPortfolioValue > 0 ? ((currentBalance / totalPortfolioValue) * 100).toFixed(1) : '0'}% of portfolio
                 </p>

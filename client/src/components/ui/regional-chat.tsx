@@ -182,7 +182,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center space-x-2">
                     <Globe className="w-5 h-5" />
-                    <span>Regional Chat</span>
+                    <span>{t('regionalChat')}</span>
                     {user?.country && (
                       <Badge variant="secondary" className="text-xs">
                         {getCountryFlag(user.country)} {user.country}
@@ -194,7 +194,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Connect with traders in your region
+                  {t('connectTraders')}
                 </p>
               </CardHeader>
 
@@ -205,8 +205,8 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                     {messages.length === 0 ? (
                       <div className="text-center py-8">
                         <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                        <p className="text-muted-foreground">No messages yet</p>
-                        <p className="text-sm text-muted-foreground">Be the first to start a conversation!</p>
+                        <p className="text-muted-foreground">{t('noMessages')}</p>
+                        <p className="text-sm text-muted-foreground">{t('firstConversation')}</p>
                       </div>
                     ) : (
                       messages.map((message: ChatMessage & { firstName?: string; lastName?: string; displayName?: string }) => (
@@ -223,7 +223,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="text-xs font-medium">
-                                  {message.displayName || message.firstName || 'User'}
+                                  {message.displayName || message.firstName || t('user')}
                                 </span>
                               </div>
                             )}
