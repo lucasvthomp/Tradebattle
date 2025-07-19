@@ -1,5 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,19 +15,20 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function Header() {
   const { user, logoutMutation } = useAuth();
+  const { t } = useUserPreferences();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
     { href: "/", label: "Home" },
     ...(user ? [
-      { href: "/dashboard", label: "Tournaments" },
-      { href: "/portfolio", label: "Portfolio" },
-      { href: "/leaderboard", label: "Leaderboard" },
-      { href: "/people", label: "People" },
+      { href: "/dashboard", label: t('dashboard') },
+      { href: "/portfolio", label: t('portfolio') },
+      { href: "/leaderboard", label: t('leaderboard') },
+      { href: "/people", label: t('people') },
       { href: "/premium", label: "Premium" }
     ] : []),
-    { href: "/contact", label: "Contact Us" },
+    { href: "/contact", label: t('contact') },
   ];
 
   const isActive = (href: string) => {
@@ -86,11 +88,11 @@ export default function Header() {
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
                     <Settings className="w-4 h-4 mr-2" />
-                    Settings
+                    {t('settings')}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => window.location.href = "/archive"}>
                     <Archive className="w-4 h-4 mr-2" />
-                    Archive
+                    {t('archive')}
                   </DropdownMenuItem>
                   {(user.userId === 1 || user.userId === 2 || user.userId === 3) && (
                     <>
@@ -106,7 +108,7 @@ export default function Header() {
                     logoutMutation.mutate();
                   }}>
                     <LogOut className="w-4 h-4 mr-2" />
-                    Sign Out
+                    {t('logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

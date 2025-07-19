@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { 
   User, 
@@ -28,11 +29,14 @@ import {
   Star,
   Users,
   DollarSign,
-  Plus
+  Plus,
+  Globe,
+  Languages
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/use-theme";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useForm } from "react-hook-form";
@@ -67,6 +71,7 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+  const { t, language, currency, updatePreferences } = useUserPreferences();
   const queryClient = useQueryClient();
   const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false);
   
@@ -301,8 +306,8 @@ export default function Profile() {
                   <span>Subscription</span>
                 </TabsTrigger>
                 <TabsTrigger value="preferences" className="flex items-center space-x-2">
-                  <Bell className="w-4 h-4" />
-                  <span>Preferences</span>
+                  <Languages className="w-4 h-4" />
+                  <span>{t('preferences')}</span>
                 </TabsTrigger>
                 <TabsTrigger value="security" className="flex items-center space-x-2">
                   <Shield className="w-4 h-4" />
@@ -656,13 +661,72 @@ export default function Profile() {
               <TabsContent value="preferences">
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle>Notification Preferences</CardTitle>
+                    <CardTitle>{t('preferences')}</CardTitle>
                     <CardDescription>
-                      Choose how you want to receive updates and alerts
+                      Manage your language, currency, and notification settings
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    {/* Language and Currency Settings */}
                     <div className="space-y-4">
+                      <h4 className="font-semibold text-foreground flex items-center">
+                        <Languages className="w-4 h-4 mr-2" />
+                        {t('language')} & {t('currency')}
+                      </h4>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="language">{t('language')}</Label>
+                          <Select 
+                            value={language} 
+                            onValueChange={(value) => updatePreferences(value, undefined)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select language" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="English">English</SelectItem>
+                              <SelectItem value="Portuguese">Português</SelectItem>
+                              <SelectItem value="Spanish">Español</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="currency">{t('currency')}</Label>
+                          <Select 
+                            value={currency} 
+                            onValueChange={(value) => updatePreferences(undefined, value)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select currency" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="USD">USD ($)</SelectItem>
+                              <SelectItem value="BRL">BRL (R$)</SelectItem>
+                              <SelectItem value="ARS">ARS ($)</SelectItem>
+                              <SelectItem value="MXN">MXN ($)</SelectItem>
+                              <SelectItem value="CAD">CAD (C$)</SelectItem>
+                              <SelectItem value="COP">COP ($)</SelectItem>
+                              <SelectItem value="CLP">CLP ($)</SelectItem>
+                              <SelectItem value="PEN">PEN (S/)</SelectItem>
+                              <SelectItem value="UYU">UYU ($U)</SelectItem>
+                              <SelectItem value="EUR">EUR (€)</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <Separator />
+
+                    {/* Notification Settings */}
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-foreground flex items-center">
+                        <Bell className="w-4 h-4 mr-2" />
+                        Notifications
+                      </h4>
+                      <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
                           <h4 className="font-medium text-foreground">Tournament Updates</h4>
@@ -693,6 +757,7 @@ export default function Profile() {
                           <p className="text-sm text-muted-foreground">Product updates and promotional content</p>
                         </div>
                         <Switch />
+                      </div>
                       </div>
                     </div>
 

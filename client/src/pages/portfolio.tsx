@@ -1,4 +1,5 @@
 import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +30,7 @@ const staggerContainer = {
 
 export default function Portfolio() {
   const { user } = useAuth();
+  const { t, formatCurrency } = useUserPreferences();
   const { toast } = useToast();
   const [purchaseDialogOpen, setPurchaseDialogOpen] = useState(false);
   const [sellDialogOpen, setSellDialogOpen] = useState(false);

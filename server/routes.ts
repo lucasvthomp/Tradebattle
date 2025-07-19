@@ -50,6 +50,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User preferences route (protected)
+  app.put('/api/user/preferences', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = z.object({
+        language: z.string().optional(),
+        currency: z.string().optional()
+      }).parse(req.body);
+      
+      const updatedUser = await storage.updateUser(userId, validatedData);
+      res.json(updatedUser);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error updating user preferences:", error);
+      res.status(500).json({ message: "Failed to update preferences" });
+    }
+  });
+
   // User subscription route (protected)
   app.put('/api/user/subscription', requireAuth, async (req: any, res) => {
     try {

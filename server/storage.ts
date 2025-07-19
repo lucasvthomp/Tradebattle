@@ -44,7 +44,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   
@@ -154,7 +154,7 @@ export class DatabaseStorage implements IStorage {
     return newUser;
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User> {
     const result = await db
       .update(users)
       .set({ ...updates, updatedAt: new Date() })

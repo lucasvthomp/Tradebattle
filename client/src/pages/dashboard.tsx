@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { WatchlistItem, InsertWatchlistItem, StockPurchase, InsertStockPurchase, Tournament, InsertTournament } from "@shared/schema";
@@ -456,6 +457,7 @@ const TournamentCountdown = ({ startedAt, timeframe }: { startedAt: string; time
 
 export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
+  const { t, formatCurrency } = useUserPreferences();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [stockData, setStockData] = useState([]);
