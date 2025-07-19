@@ -1,0 +1,32 @@
+2dashboard.tsx:2337 Uncaught ReferenceError: Package is not defined
+    at Dashboard (dashboard.tsx:2337:26)
+    at renderWithHooks (chunk-RPCDYKBN.js?v=e5eefd4a:11548:26)
+    at updateFunctionComponent (chunk-RPCDYKBN.js?v=e5eefd4a:14582:28)
+    at beginWork (chunk-RPCDYKBN.js?v=e5eefd4a:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-RPCDYKBN.js?v=e5eefd4a:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-RPCDYKBN.js?v=e5eefd4a:3699:24)
+    at invokeGuardedCallback (chunk-RPCDYKBN.js?v=e5eefd4a:3733:39)
+    at beginWork$1 (chunk-RPCDYKBN.js?v=e5eefd4a:19765:15)
+    at performUnitOfWork (chunk-RPCDYKBN.js?v=e5eefd4a:19198:20)
+    at workLoopSync (chunk-RPCDYKBN.js?v=e5eefd4a:19137:13)Understand this error
+chunk-RPCDYKBN.js?v=e5eefd4a:14032 The above error occurred in the <Dashboard> component:
+
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:666:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=e5eefd4a:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=e5eefd4a:379:17)
+    at main
+    at div
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=-nwIBILBXRkRNL-K9sU_j:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-5AJU3CG7.js?v=e5eefd4a:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=e5eefd4a:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=e5eefd4a:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-RPCDYKBN.js?v=e5eefd4a:14032Understand this error
+chunk-RPCDYKBN.js?v=e5eefd4a:9129 Uncaught ReferenceError: Package is not defined
+    at Dashboard (dashboard.tsx:2337:26)

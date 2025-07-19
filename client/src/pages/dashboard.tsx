@@ -51,7 +51,9 @@ import {
   Heart,
   Lightbulb,
   Landmark,
-  Zap
+  Zap,
+  Package,
+  Users
 } from "lucide-react";
 import {
   Dialog,
