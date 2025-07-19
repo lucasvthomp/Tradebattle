@@ -1805,7 +1805,7 @@ export default function Dashboard() {
                         onClick={() => {
                           setSelectedTournament(tournament);
                           setSelectedTournamentId(tournamentData.id.toString());
-                          setCurrentView('main');
+                          setCurrentView('tournament-detail');
                         }}
                       >
                         <CardHeader className="pb-3">
@@ -2203,6 +2203,310 @@ export default function Dashboard() {
                 )}
               </Button>
             </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tournament Detail View
+  if (currentView === 'tournament-detail' && selectedTournament) {
+    const tournamentData = selectedTournament.tournaments;
+    const balance = parseFloat(selectedTournament.balance || '0');
+    
+    // Calculate time remaining
+    const parseTimeframe = (timeframe: string) => {
+      const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks)/i;
+      const match = timeframe.match(regex);
+      if (!match) return 0;
+      
+      const value = parseInt(match[1]);
+      const unit = match[2].toLowerCase();
+      
+      let multiplier = 1;
+      if (unit.includes('minute')) multiplier = 60 * 1000;
+      else if (unit.includes('hour')) multiplier = 60 * 60 * 1000;
+      else if (unit.includes('day')) multiplier = 24 * 60 * 60 * 1000;
+      else if (unit.includes('week')) multiplier = 7 * 24 * 60 * 60 * 1000;
+      
+      return value * multiplier;
+    };
+
+    const getTimeRemaining = () => {
+      if (!tournamentData.startedAt) return "Not started";
+      
+      const startTime = new Date(tournamentData.startedAt).getTime();
+      const duration = parseTimeframe(tournamentData.timeframe);
+      const endTime = startTime + duration;
+      const now = Date.now();
+      const remaining = endTime - now;
+      
+      if (remaining <= 0) return "Tournament ended";
+      
+      const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+      const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+      const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+      
+      if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+      if (hours > 0) return `${hours}h ${minutes}m`;
+      return `${minutes}m`;
+    };
+
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-6 px-4">
+          <motion.div
+            className="max-w-7xl mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            {/* Header */}
+            <motion.div className="mb-8" variants={fadeInUp}>
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" onClick={() => setCurrentView('tournaments')}>
+                  ← Back to Tournaments
+                </Button>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="text-3xl font-bold text-foreground mb-2">{tournamentData.name}</h1>
+                      <div className="flex items-center space-x-4 text-muted-foreground">
+                        <span>Code: {tournamentData.code}</span>
+                        <Badge variant={tournamentData.status === 'active' ? 'default' : tournamentData.status === 'waiting' ? 'secondary' : 'outline'}>
+                          {tournamentData.status}
+                        </Badge>
+                        <span>Time Remaining: {getTimeRemaining()}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-2xl font-bold text-green-600">${balance.toLocaleString()}</div>
+                      <div className="text-sm text-muted-foreground">Your Balance</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Main Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column - Portfolio & Trading */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Portfolio Graph */}
+                <motion.div variants={fadeInUp}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <LineChart className="w-5 h-5" />
+                        <span>Portfolio Performance</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-64 flex items-center justify-center bg-muted/20 rounded-lg">
+                        <div className="text-center text-muted-foreground">
+                          <BarChart3 className="w-12 h-12 mx-auto mb-2" />
+                          <p>Portfolio graph will be implemented with actual trading data</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Current Holdings */}
+                <motion.div variants={fadeInUp}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Package className="w-5 h-5" />
+                        <span>Current Holdings</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {purchasesLoading ? (
+                        <div className="space-y-3">
+                          {[1, 2, 3].map((i) => (
+                            <div key={i} className="animate-pulse flex space-x-4">
+                              <div className="h-4 bg-muted rounded w-1/4"></div>
+                              <div className="h-4 bg-muted rounded w-1/4"></div>
+                              <div className="h-4 bg-muted rounded w-1/4"></div>
+                              <div className="h-4 bg-muted rounded w-1/4"></div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : purchases && purchases.length > 0 ? (
+                        <div className="space-y-3">
+                          {purchases.map((purchase) => (
+                            <div key={purchase.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
+                              <div>
+                                <div className="font-semibold">{purchase.symbol}</div>
+                                <div className="text-sm text-muted-foreground">{purchase.companyName}</div>
+                              </div>
+                              <div className="text-right">
+                                <div className="font-semibold">{purchase.shares} shares</div>
+                                <div className="text-sm text-muted-foreground">${purchase.purchasePrice.toFixed(2)}/share</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          <Package className="w-12 h-12 mx-auto mb-2" />
+                          <p>No holdings yet. Start trading to build your portfolio!</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+
+              {/* Right Column - Tournament Info & Leaderboard */}
+              <div className="space-y-6">
+                {/* Tournament Info */}
+                <motion.div variants={fadeInUp}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Trophy className="w-5 h-5" />
+                        <span>Tournament Info</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Players</span>
+                        <span>{tournamentData.currentPlayers}/{tournamentData.maxPlayers}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Duration</span>
+                        <span>{tournamentData.timeframe}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Starting Balance</span>
+                        <span>${parseFloat(tournamentData.startingBalance).toLocaleString()}</span>
+                      </div>
+                      {tournamentData.buyInAmount && parseFloat(tournamentData.buyInAmount) > 0 && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Buy-in</span>
+                          <Badge variant="outline">${parseFloat(tournamentData.buyInAmount).toLocaleString()}</Badge>
+                        </div>
+                      )}
+                      {tournamentData.tradingRestriction && tournamentData.tradingRestriction !== 'none' && (
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Trading</span>
+                          <Badge variant="secondary" className="text-xs">
+                            {tradingRestrictions.find(r => r.value === tournamentData.tradingRestriction)?.label || tournamentData.tradingRestriction}
+                          </Badge>
+                        </div>
+                      )}
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Privacy</span>
+                        <div className="flex items-center space-x-1">
+                          {tournamentData.isPublic ? (
+                            <>
+                              <Globe className="w-3 h-3" />
+                              <span className="text-sm">Public</span>
+                            </>
+                          ) : (
+                            <>
+                              <Lock className="w-3 h-3" />
+                              <span className="text-sm">Private</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Participants/Leaderboard */}
+                <motion.div variants={fadeInUp}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Users className="w-5 h-5" />
+                        <span>Leaderboard</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      {participantsLoading ? (
+                        <div className="space-y-3">
+                          {[1, 2, 3].map((i) => (
+                            <div key={i} className="animate-pulse flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-muted rounded-full"></div>
+                              <div className="flex-1">
+                                <div className="h-4 bg-muted rounded w-3/4 mb-1"></div>
+                                <div className="h-3 bg-muted rounded w-1/2"></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : participants && participants.length > 0 ? (
+                        <div className="space-y-3">
+                          {participants
+                            .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance))
+                            .map((participant, index) => (
+                              <div key={participant.userId} className="flex items-center space-x-3">
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                                  index === 0 ? 'bg-yellow-500 text-white' : 
+                                  index === 1 ? 'bg-gray-400 text-white' :
+                                  index === 2 ? 'bg-amber-600 text-white' : 
+                                  'bg-muted text-muted-foreground'
+                                }`}>
+                                  {index + 1}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-semibold">{participant.displayName || participant.username || `User ${participant.userId}`}</div>
+                                  <div className="text-sm text-muted-foreground">
+                                    ${parseFloat(participant.balance).toLocaleString()}
+                                  </div>
+                                </div>
+                                {participant.userId === user?.userId && (
+                                  <Badge variant="outline" className="text-xs">You</Badge>
+                                )}
+                              </div>
+                            ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-4 text-muted-foreground">
+                          <Users className="w-8 h-8 mx-auto mb-2" />
+                          <p>No participants yet</p>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Quick Actions */}
+                <motion.div variants={fadeInUp}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Quick Actions</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      <Button 
+                        className="w-full" 
+                        onClick={() => setCurrentView('main')}
+                      >
+                        <Search className="w-4 h-4 mr-2" />
+                        Trade Stocks
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full"
+                        onClick={() => {
+                          // Refresh tournament data
+                          queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
+                          queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentData.id}/participants`] });
+                          queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentData.id}/purchases`] });
+                        }}
+                      >
+                        <RefreshCw className="w-4 h-4 mr-2" />
+                        Refresh Data
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
