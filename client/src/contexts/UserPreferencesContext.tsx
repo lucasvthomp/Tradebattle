@@ -84,6 +84,11 @@ export const translations = {
     administrator: "Administrator",
     upgrade: "Upgrade",
     upgraded: "Upgraded",
+    
+    // Chat
+    typeMessage: "Type your message...",
+    regionalChat: "Regional Chat",
+    sendMessage: "Send",
   },
   
   Portuguese: {
@@ -167,6 +172,11 @@ export const translations = {
     administrator: "Administrador",
     upgrade: "Atualizar",
     upgraded: "Atualizado",
+    
+    // Chat
+    typeMessage: "Digite sua mensagem...",
+    regionalChat: "Chat Regional",
+    sendMessage: "Enviar",
   },
   
   Spanish: {
@@ -250,6 +260,11 @@ export const translations = {
     administrator: "Administrador",
     upgrade: "Mejorar",
     upgraded: "Mejorado",
+    
+    // Chat
+    typeMessage: "Escribe tu mensaje...",
+    regionalChat: "Chat Regional",
+    sendMessage: "Enviar",
   },
 };
 

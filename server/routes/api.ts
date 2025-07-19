@@ -1702,4 +1702,57 @@ router.post('/portfolio-history', requireAuth, asyncHandler(async (req, res) => 
   });
 }));
 
+/**
+ * GET /api/chat
+ * Get chat messages for user's region
+ */
+router.get('/chat', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const user = await storage.getUser(userId);
+  
+  if (!user) {
+    throw new ValidationError('User not found');
+  }
+
+  const messages = await storage.getChatMessages(user.country || 'Unknown');
+  
+  res.json({
+    success: true,
+    data: messages
+  });
+}));
+
+/**
+ * POST /api/chat
+ * Send a chat message
+ */
+router.post('/chat', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { message } = req.body;
+  
+  if (!message || typeof message !== 'string' || message.trim().length === 0) {
+    throw new ValidationError('Message is required');
+  }
+  
+  if (message.length > 500) {
+    throw new ValidationError('Message must be 500 characters or less');
+  }
+  
+  const user = await storage.getUser(userId);
+  if (!user) {
+    throw new ValidationError('User not found');
+  }
+  
+  const newMessage = await storage.createChatMessage({
+    userId: user.userId,
+    message: message.trim(),
+    country: user.country || 'Unknown'
+  });
+  
+  res.json({
+    success: true,
+    data: newMessage
+  });
+}));
+
 export default router;

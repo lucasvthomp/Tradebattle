@@ -13,6 +13,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { PortfolioGraph } from "@/components/ui/portfolio-graph";
+import { RegionalChat } from "@/components/ui/regional-chat";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -36,6 +37,9 @@ export default function Portfolio() {
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
   const [streakInfoOpen, setStreakInfoOpen] = useState(false);
+  
+  // Chat state
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Check if user has premium or administrator subscription
   const hasPremium = user?.subscriptionTier === 'premium' || user?.subscriptionTier === 'administrator';
@@ -572,6 +576,12 @@ export default function Portfolio() {
           </Dialog>
         </motion.div>
       </div>
+      
+      {/* Regional Chat */}
+      <RegionalChat 
+        isOpen={isChatOpen} 
+        onToggle={() => setIsChatOpen(!isChatOpen)} 
+      />
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   tradeHistory,
   userAchievements,
   portfolioHistory,
+  chatMessages,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -35,6 +36,8 @@ import {
   type InsertUserAchievement,
   type PortfolioHistory,
   type InsertPortfolioHistory,
+  type ChatMessage,
+  type InsertChatMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -113,6 +116,10 @@ export interface IStorage {
   // Portfolio history operations
   recordPortfolioValue(record: InsertPortfolioHistory): Promise<PortfolioHistory>;
   getUserPortfolioHistory(userId: number, portfolioType: 'personal' | 'tournament', tournamentId?: number): Promise<PortfolioHistory[]>;
+  
+  // Chat operations
+  getChatMessages(country: string): Promise<(ChatMessage & { firstName?: string; lastName?: string; displayName?: string })[]>;
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -705,6 +712,35 @@ export class DatabaseStorage implements IStorage {
     }
 
     return await query.orderBy(asc(portfolioHistory.recordedAt));
+  }
+
+  // Chat operations
+  async getChatMessages(country: string): Promise<(ChatMessage & { firstName?: string; lastName?: string; displayName?: string })[]> {
+    const result = await db
+      .select({
+        id: chatMessages.id,
+        userId: chatMessages.userId,
+        message: chatMessages.message,
+        country: chatMessages.country,
+        isEdited: chatMessages.isEdited,
+        createdAt: chatMessages.createdAt,
+        updatedAt: chatMessages.updatedAt,
+        firstName: users.firstName,
+        lastName: users.lastName,
+        displayName: users.displayName,
+      })
+      .from(chatMessages)
+      .leftJoin(users, eq(chatMessages.userId, users.userId))
+      .where(eq(chatMessages.country, country))
+      .orderBy(asc(chatMessages.createdAt))
+      .limit(100); // Limit to recent 100 messages
+
+    return result;
+  }
+
+  async createChatMessage(messageData: InsertChatMessage): Promise<ChatMessage> {
+    const result = await db.insert(chatMessages).values(messageData).returning();
+    return result[0];
   }
 }
 

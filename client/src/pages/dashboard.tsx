@@ -50,6 +50,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RegionalChat } from "@/components/ui/regional-chat";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -500,6 +501,9 @@ export default function Dashboard() {
   const [isSellDialogOpen, setIsSellDialogOpen] = useState(false);
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
   const [sellAmount, setSellAmount] = useState("");
+  
+  // Chat state
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Helper function to determine refresh interval based on subscription tier and timeframe
   const getRefreshInterval = (timeframe: string) => {
@@ -2363,6 +2367,12 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Regional Chat */}
+      <RegionalChat 
+        isOpen={isChatOpen} 
+        onToggle={() => setIsChatOpen(!isChatOpen)} 
+      />
     </div>
   );
 }
