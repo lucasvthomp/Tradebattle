@@ -618,7 +618,7 @@ export default function Dashboard() {
   const [tradingStockData, setTradingStockData] = useState<any[]>([]);
   const [showTradingSearchResults, setShowTradingSearchResults] = useState(false);
   const [isLoadingTradingStocks, setIsLoadingTradingStocks] = useState(false);
-  const [isWatchlistExpanded, setIsWatchlistExpanded] = useState(false);
+
   const [isCreateTournamentDialogOpen, setIsCreateTournamentDialogOpen] = useState(false);
   const [tournamentName, setTournamentName] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("10");
@@ -1492,8 +1492,8 @@ export default function Dashboard() {
       }
     });
 
-  // Limit watchlist display to 3 items by default
-  const displayedWatchlist = isWatchlistExpanded ? filteredWatchlist : filteredWatchlist.slice(0, 3);
+  // Display complete watchlist
+  const displayedWatchlist = filteredWatchlist;
 
   const sectors = ["all", ...allSectors];
 
