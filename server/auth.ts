@@ -86,12 +86,23 @@ export function setupAuth(app: Express) {
   // Registration endpoint
   app.post("/api/register", async (req, res, next) => {
     try {
-      const { email, firstName, lastName, password, country, language, currency, wantsPremium } = req.body;
+      const { email, username, password, country, language, currency, wantsPremium } = req.body;
 
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
         return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Validate username
+      if (!username || username.length < 3 || username.length > 15 || !/^[a-zA-Z0-9_]+$/.test(username)) {
+        return res.status(400).json({ message: "Username must be 3-15 characters and contain only letters, numbers, and underscores" });
+      }
+
+      // Check if username is already taken
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ message: "Username is already taken" });
       }
 
       // Determine subscription tier and upgrade date
@@ -101,8 +112,7 @@ export function setupAuth(app: Express) {
       // Create user (password will be hashed in storage)
       const userData: any = {
         email,
-        firstName,
-        lastName,
+        username,
         password,
         country: country || null,
         language: language || "English",
@@ -134,8 +144,7 @@ export function setupAuth(app: Express) {
           id: user.id,
           userId: user.userId,
           email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          username: user.username,
           displayName: user.displayName,
           country: user.country,
           language: user.language,

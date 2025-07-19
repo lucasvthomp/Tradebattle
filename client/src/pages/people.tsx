@@ -194,12 +194,12 @@ export default function People() {
                   <div className="flex items-center space-x-6">
                     <Avatar className="w-24 h-24">
                       <AvatarFallback className="text-2xl font-bold">
-                        {profileUser?.data?.firstName?.[0]}{profileUser?.data?.lastName?.[0]}
+                        {profileUser?.data?.username?.[0]?.toUpperCase()}{profileUser?.data?.username?.[1]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <h1 className="text-3xl font-bold text-foreground mb-2">
-                        {profileUser?.data?.displayName || profileUser?.data?.firstName || `${profileUser?.data?.firstName} ${profileUser?.data?.lastName}`}
+                        {profileUser?.data?.displayName || profileUser?.data?.username}
                       </h1>
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
@@ -388,12 +388,12 @@ export default function People() {
                         <div className="flex items-center space-x-4 mb-4">
                           <Avatar className="w-16 h-16">
                             <AvatarFallback className="text-lg font-bold">
-                              {person.firstName?.[0]}{person.lastName?.[0]}
+                              {person.username?.[0]?.toUpperCase()}{person.username?.[1]?.toUpperCase()}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <h3 className="text-lg font-semibold text-foreground">
-                              {person.displayName || person.firstName || `${person.firstName} ${person.lastName}`}
+                              {person.displayName || person.username}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               {person.subscriptionTier === 'premium' ? 'Premium Trader' : 

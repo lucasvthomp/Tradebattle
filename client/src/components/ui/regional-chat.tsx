@@ -209,7 +209,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                         <p className="text-sm text-muted-foreground">{t('firstConversation')}</p>
                       </div>
                     ) : (
-                      messages.map((message: ChatMessage & { firstName?: string; lastName?: string; displayName?: string }) => (
+                      messages.map((message: ChatMessage & { username?: string; displayName?: string }) => (
                         <div
                           key={message.id}
                           className={`flex ${message.userId === user?.userId ? 'justify-end' : 'justify-start'}`}
@@ -219,11 +219,11 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                               <div className="flex items-center space-x-2 mb-2">
                                 <Avatar className="w-6 h-6">
                                   <AvatarFallback className="text-xs">
-                                    {message.displayName?.[0] || message.firstName?.[0] || 'U'}
+                                    {message.displayName?.[0] || message.username?.[0] || 'U'}
                                   </AvatarFallback>
                                 </Avatar>
                                 <span className="text-xs font-medium">
-                                  {message.displayName || message.firstName || t('user')}
+                                  {message.displayName || message.username || t('user')}
                                 </span>
                               </div>
                             )}

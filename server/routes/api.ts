@@ -1501,8 +1501,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
     
     return {
       id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
+      username: user.username,
       displayName: user.displayName,
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
@@ -1547,8 +1546,7 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   // Return only public information
   const publicUser = {
     id: targetUser.id,
-    firstName: targetUser.firstName,
-    lastName: targetUser.lastName,
+    username: targetUser.username,
     displayName: targetUser.displayName,
     subscriptionTier: targetUser.subscriptionTier,
     createdAt: targetUser.createdAt,

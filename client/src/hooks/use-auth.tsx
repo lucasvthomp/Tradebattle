@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome back!",
-        description: `Good to see you again, ${user.firstName || user.email}`,
+        description: `Good to see you again, ${user.username || user.email}`,
       });
       navigate("/dashboard");
     },

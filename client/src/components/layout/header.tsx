@@ -80,7 +80,7 @@ export default function Header() {
                       <User className="w-5 h-5" />
                     )}
                     <span className="text-sm font-medium">
-                      {user?.displayName || user?.firstName || (user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : user?.email || "User")}
+                      {user?.displayName || user?.username || user?.email || "User"}
                     </span>
                     <ChevronDown className="w-4 h-4" />
                   </Button>

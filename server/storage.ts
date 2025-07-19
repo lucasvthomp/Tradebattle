@@ -46,8 +46,9 @@ export interface IStorage {
   // User operations for email/password auth
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   
@@ -118,7 +119,7 @@ export interface IStorage {
   getUserPortfolioHistory(userId: number, portfolioType: 'personal' | 'tournament', tournamentId?: number): Promise<PortfolioHistory[]>;
   
   // Chat operations
-  getChatMessages(country: string): Promise<(ChatMessage & { firstName?: string; lastName?: string; displayName?: string })[]>;
+  getChatMessages(country: string): Promise<(ChatMessage & { username?: string; displayName?: string })[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
@@ -131,6 +132,11 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const result = await db.select().from(users).where(eq(users.email, email));
+    return result[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.username, username));
     return result[0];
   }
 
@@ -161,7 +167,7 @@ export class DatabaseStorage implements IStorage {
     return newUser;
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'firstName' | 'lastName' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User> {
     const result = await db
       .update(users)
       .set({ ...updates, updatedAt: new Date() })
@@ -715,7 +721,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Chat operations
-  async getChatMessages(country: string): Promise<(ChatMessage & { firstName?: string; lastName?: string; displayName?: string })[]> {
+  async getChatMessages(country: string): Promise<(ChatMessage & { username?: string; displayName?: string })[]> {
     const result = await db
       .select({
         id: chatMessages.id,
@@ -725,8 +731,7 @@ export class DatabaseStorage implements IStorage {
         isEdited: chatMessages.isEdited,
         createdAt: chatMessages.createdAt,
         updatedAt: chatMessages.updatedAt,
-        firstName: users.firstName,
-        lastName: users.lastName,
+        username: users.username,
         displayName: users.displayName,
       })
       .from(chatMessages)

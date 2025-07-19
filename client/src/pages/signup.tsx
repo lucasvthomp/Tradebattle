@@ -54,9 +54,9 @@ const translations = {
     currency: "Currency",
     next: "Next",
     back: "Back",
-    name: "What's your name?",
-    firstName: "First Name",
-    lastName: "Last Name",
+    username: "Choose a username",
+    usernameDescription: "3-15 characters, letters, numbers, and underscores only",
+    usernamePlaceholder: "Enter your username",
     email: "What's your email address?",
     emailPlaceholder: "Enter your email",
     password: "Create a password",
@@ -75,9 +75,9 @@ const translations = {
     currency: "Moneda",
     next: "Siguiente",
     back: "Atrás",
-    name: "¿Cuál es tu nombre?",
-    firstName: "Nombre",
-    lastName: "Apellido",
+    username: "Elige un nombre de usuario",
+    usernameDescription: "3-15 caracteres, letras, números y guiones bajos solamente",
+    usernamePlaceholder: "Ingresa tu nombre de usuario",
     email: "¿Cuál es tu dirección de correo?",
     emailPlaceholder: "Ingresa tu correo",
     password: "Crea una contraseña",
@@ -96,9 +96,9 @@ const translations = {
     currency: "Moeda",
     next: "Próximo",
     back: "Voltar",
-    name: "Qual é o seu nome?",
-    firstName: "Primeiro Nome",
-    lastName: "Sobrenome",
+    username: "Escolha um nome de usuário",
+    usernameDescription: "3-15 caracteres, letras, números e sublinhados apenas",
+    usernamePlaceholder: "Digite seu nome de usuário",
     email: "Qual é o seu endereço de email?",
     emailPlaceholder: "Digite seu email",
     password: "Crie uma senha",
@@ -119,8 +119,7 @@ export default function Signup() {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -155,8 +154,7 @@ export default function Signup() {
     registerMutation.mutate({ 
       email, 
       password, 
-      firstName, 
-      lastName,
+      username,
       country: selectedCountry,
       language: selectedLanguage,
       currency: selectedCurrency,
@@ -240,27 +238,18 @@ export default function Signup() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold">{t.name}</h2>
+              <h2 className="text-2xl font-bold">{t.username}</h2>
+              <p className="text-sm text-muted-foreground mt-2">{t.usernameDescription}</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>{t.firstName}</Label>
-                <Input
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder={t.firstName}
-                  className="h-12"
-                />
-              </div>
-              <div>
-                <Label>{t.lastName}</Label>
-                <Input
-                  value={lastName}
-                  onChange={(e) => setLastName(e.target.value)}
-                  placeholder={t.lastName}
-                  className="h-12"
-                />
-              </div>
+            <div>
+              <Input
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder={t.usernamePlaceholder}
+                className="h-12 text-center"
+                pattern="[a-zA-Z0-9_]{3,15}"
+                maxLength={15}
+              />
             </div>
           </div>
         );
@@ -362,7 +351,7 @@ export default function Signup() {
   const canProceed = () => {
     switch (step) {
       case 1: return selectedCountry !== "";
-      case 2: return firstName !== "" && lastName !== "";
+      case 2: return username !== "" && username.length >= 3 && username.length <= 15 && /^[a-zA-Z0-9_]+$/.test(username);
       case 3: return email !== "";
       case 4: return password !== "";
       default: return true;

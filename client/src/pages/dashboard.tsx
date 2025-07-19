@@ -1365,7 +1365,7 @@ export default function Dashboard() {
             {/* Header */}
             <motion.div className="text-center mb-12" variants={fadeInUp}>
               <h1 className="text-4xl font-bold text-foreground mb-4">
-                Welcome back, {user?.firstName || user?.email || "User"}
+                Welcome back, {user?.displayName || user?.username || user?.email || "User"}
               </h1>
               <p className="text-xl text-muted-foreground">
                 What would you like to do today?

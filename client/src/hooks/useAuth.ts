@@ -5,8 +5,7 @@ export function useAuth() {
   
   const mockUser = isAuthenticated ? {
     id: '1',
-    firstName: 'Alexander',
-    lastName: 'Thompson',
+    username: 'alex_thompson',
     email: 'alex.thompson@email.com',
     profileImageUrl: null
   } : null;

@@ -268,7 +268,7 @@ export default function Profile() {
                     <User className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-foreground">{user.firstName} {user.lastName}</h2>
+                    <h2 className="text-xl font-bold text-foreground">{user.displayName || user.username}</h2>
                     <p className="text-muted-foreground">{user.email}</p>
                     <div className="flex items-center space-x-4 mt-2">
                       <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">

@@ -33,8 +33,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").unique(), // New field for admin identification (Lucas=0, Murilo=1)
   email: varchar("email", { length: 255 }).unique().notNull(),
-  firstName: varchar("first_name", { length: 255 }).notNull(),
-  lastName: varchar("last_name", { length: 255 }).notNull(),
+  username: varchar("username", { length: 15 }).unique().notNull(), // 3-15 characters, letters/numbers/underscores only
   displayName: varchar("display_name", { length: 255 }), // Optional public display name
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   country: varchar("country", { length: 100 }), // User's country
@@ -284,30 +283,44 @@ export const insertUserAchievementSchema = createInsertSchema(userAchievements).
 });
 
 // Type exports
+// Username validation schema
+export const usernameSchema = z.string()
+  .min(3, "Username must be at least 3 characters")
+  .max(15, "Username must be no more than 15 characters")
+  .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores");
+
 // User schemas for new authentication system
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
-  firstName: true,
-  lastName: true,
+  username: true,
   displayName: true,
   password: true,
   userId: true,
   country: true,
   language: true,
   currency: true,
+}).extend({
+  username: usernameSchema,
 });
-
-
 
 export const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+// Registration schema for signup
+export const registrationSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  username: usernameSchema,
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  country: z.string().optional(),
+  language: z.string().default("English"),
+  currency: z.string().default("USD"),
+});
+
 export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
+  username: usernameSchema,
   password: z.string().min(6, "Password must be at least 6 characters"),
   country: z.string().optional(),
   language: z.string().default("English"),
