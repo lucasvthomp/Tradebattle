@@ -1760,20 +1760,142 @@ export default function Dashboard() {
               </div>
             </motion.div>
 
-            {/* Tournament Content - Using existing Tabs structure */}
-            <Tabs defaultValue="tournament" className="w-full">
-              <TabsList className="grid w-full grid-cols-1">
-                <TabsTrigger value="tournament">Active Tournaments</TabsTrigger>
-              </TabsList>
-              <TabsContent value="tournament" className="space-y-4">
-                {/* Tournament content will use existing data fetching logic */}
+            {/* Tournament Cards */}
+            <motion.div variants={fadeInUp}>
+              {tournamentsLoading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {[1, 2, 3].map((i) => (
+                    <Card key={i} className="animate-pulse">
+                      <CardContent className="p-6">
+                        <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
+                        <div className="h-3 bg-muted rounded w-1/2 mb-2"></div>
+                        <div className="h-3 bg-muted rounded w-2/3"></div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : userTournaments && userTournaments.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {userTournaments.map((tournament) => {
+                    const tournamentData = tournament.tournaments;
+                    const balance = parseFloat(tournament.balance || '0');
+                    
+                    return (
+                      <Card 
+                        key={tournamentData.id} 
+                        className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary group"
+                        onClick={() => {
+                          setSelectedTournament(tournament);
+                          setSelectedTournamentId(tournamentData.id.toString());
+                          setCurrentView('main');
+                        }}
+                      >
+                        <CardHeader className="pb-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                                <Trophy className="w-6 h-6 text-primary" />
+                              </div>
+                              <div>
+                                <CardTitle className="text-lg line-clamp-1">{tournamentData.name}</CardTitle>
+                                <p className="text-sm text-muted-foreground">Code: {tournamentData.code}</p>
+                              </div>
+                            </div>
+                            <Badge variant={tournamentData.status === 'active' ? 'default' : tournamentData.status === 'waiting' ? 'secondary' : 'outline'}>
+                              {tournamentData.status}
+                            </Badge>
+                          </div>
+                        </CardHeader>
+                        <CardContent className="pt-0">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">Your Balance</span>
+                              <span className="font-semibold text-green-600">${balance.toLocaleString()}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">Players</span>
+                              <span className="text-sm">{tournamentData.currentPlayers}/{tournamentData.maxPlayers}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-muted-foreground">Duration</span>
+                              <span className="text-sm">{tournamentData.timeframe}</span>
+                            </div>
+                            {tournamentData.buyInAmount && parseFloat(tournamentData.buyInAmount) > 0 && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">Buy-in</span>
+                                <Badge variant="outline" className="text-xs">
+                                  ${parseFloat(tournamentData.buyInAmount).toLocaleString()}
+                                </Badge>
+                              </div>
+                            )}
+                            {tournamentData.tradingRestriction && tournamentData.tradingRestriction !== 'none' && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">Trading</span>
+                                <Badge variant="secondary" className="text-xs">
+                                  {tradingRestrictions.find(r => r.value === tournamentData.tradingRestriction)?.label || tournamentData.tradingRestriction}
+                                </Badge>
+                              </div>
+                            )}
+                            <div className="pt-2 border-t">
+                              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                <span>Created {new Date(tournamentData.createdAt).toLocaleDateString()}</span>
+                                <div className="flex items-center space-x-1">
+                                  {tournamentData.isPublic ? (
+                                    <>
+                                      <Globe className="w-3 h-3" />
+                                      <span>Public</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Lock className="w-3 h-3" />
+                                      <span>Private</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              ) : (
                 <Card>
-                  <CardContent className="p-6">
-                    <p className="text-muted-foreground">Loading tournament data...</p>
+                  <CardContent className="p-8 text-center">
+                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Trophy className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">No Active Tournaments</h3>
+                    <p className="text-muted-foreground mb-4">
+                      You're not currently participating in any tournaments.
+                    </p>
+                    <div className="space-x-3">
+                      <Button onClick={() => setCurrentView('create')}>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Create Tournament
+                      </Button>
+                      <Button variant="outline" onClick={() => setCurrentView('join')}>
+                        Join Tournament
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
-            </Tabs>
+              )}
+            </motion.div>
+
+            {/* Action Buttons */}
+            {userTournaments && userTournaments.length > 0 && (
+              <motion.div variants={fadeInUp} className="mt-8 flex justify-center space-x-4">
+                <Button onClick={() => setCurrentView('create')} size="lg">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create New Tournament
+                </Button>
+                <Button variant="outline" onClick={() => setCurrentView('join')} size="lg">
+                  Join Tournament
+                </Button>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       </div>
