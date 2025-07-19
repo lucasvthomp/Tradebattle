@@ -1049,6 +1049,17 @@ export default function Dashboard() {
   // Extract tournaments from response
   const userTournaments = tournamentResponse?.data || [];
   
+  // Fetch tournament participants when tournament is selected
+  const { data: participants, isLoading: participantsLoading } = useQuery({
+    queryKey: [`/api/tournaments/${selectedTournamentId}/participants`],
+    enabled: !!selectedTournamentId,
+  });
+
+  // Fetch tournament purchases when tournament is selected
+  const { data: purchases, isLoading: purchasesLoading } = useQuery({
+    queryKey: [`/api/tournaments/${selectedTournamentId}/purchases`],
+    enabled: !!selectedTournamentId,
+  });
 
 
   // Auto-select first tournament if none selected
@@ -1803,15 +1814,9 @@ export default function Dashboard() {
                         key={tournamentData.id} 
                         className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary group"
                         onClick={() => {
-                          console.log('Tournament card clicked:', {
-                            tournament,
-                            tournamentData,
-                            id: tournamentData.id
-                          });
                           setSelectedTournament(tournament);
                           setSelectedTournamentId(tournamentData.id.toString());
                           setCurrentView('tournament-detail');
-                          console.log('State updated - view set to tournament-detail');
                         }}
                       >
                         <CardHeader className="pb-3">
@@ -2215,25 +2220,9 @@ export default function Dashboard() {
     );
   }
 
-  // Fetch tournament participants when tournament is selected
-  const { data: participants, isLoading: participantsLoading } = useQuery({
-    queryKey: [`/api/tournaments/${selectedTournamentId}/participants`],
-    enabled: !!selectedTournamentId,
-  });
 
-  // Fetch tournament purchases when tournament is selected
-  const { data: purchases, isLoading: purchasesLoading } = useQuery({
-    queryKey: [`/api/tournaments/${selectedTournamentId}/purchases`],
-    enabled: !!selectedTournamentId,
-  });
 
-  // Debug current view and tournament data
-  console.log('Dashboard Debug:', {
-    currentView,
-    selectedTournament,
-    selectedTournamentId,
-    userTournaments: userTournaments?.length
-  });
+
 
   // Tournament Detail View
   if (currentView === 'tournament-detail' && selectedTournament) {
@@ -2541,17 +2530,6 @@ export default function Dashboard() {
     );
   }
 
-  // Default fallback if no view matches
-  console.log('No view matched, defaulting to main view');
-  return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-6">
-        <div className="text-center py-8">
-          <h2 className="text-2xl font-bold mb-4">Dashboard Loading...</h2>
-          <p className="text-muted-foreground">Current view: {currentView}</p>
-          <p className="text-muted-foreground">Selected tournament: {selectedTournament ? 'Yes' : 'No'}</p>
-        </div>
-      </div>
-    </div>
-  );
+  // Default fallback - should not reach here in normal operation
+  return null;
 }
