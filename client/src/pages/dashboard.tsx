@@ -1041,13 +1041,15 @@ export default function Dashboard() {
   });
 
   // Fetch user tournaments
-  const { data: tournamentResponse, isLoading: tournamentsLoading } = useQuery({
+  const { data: tournamentResponse, isLoading: tournamentsLoading, error: tournamentsError } = useQuery({
     queryKey: ["/api/tournaments"],
     enabled: !!user,
   });
 
   // Extract tournaments from response
   const userTournaments = tournamentResponse?.data || [];
+  
+
 
   // Auto-select first tournament if none selected
   useEffect(() => {
@@ -1762,7 +1764,23 @@ export default function Dashboard() {
 
             {/* Tournament Cards */}
             <motion.div variants={fadeInUp}>
-              {tournamentsLoading ? (
+              {tournamentsError ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <AlertCircle className="w-8 h-8 text-destructive" />
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">Unable to Load Tournaments</h3>
+                    <p className="text-muted-foreground mb-4">
+                      {tournamentsError.message || "Please try refreshing the page or check your connection."}
+                    </p>
+                    <Button onClick={() => window.location.reload()}>
+                      <RefreshCw className="w-4 h-4 mr-2" />
+                      Refresh Page
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : tournamentsLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {[1, 2, 3].map((i) => (
                     <Card key={i} className="animate-pulse">
