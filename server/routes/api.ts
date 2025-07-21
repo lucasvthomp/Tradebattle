@@ -1364,9 +1364,9 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  // Check if user is admin (using the same logic as other admin endpoints)
+  // Check if user is admin (using subscription tier)
   const user = await storage.getUser(userId);
-  if (!user || !(user.userId === 1 || user.userId === 2 || user.userId === 3)) {
+  if (!user || user.subscriptionTier !== 'administrator') {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 
@@ -1445,7 +1445,7 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || !(user.userId === 0 || user.userId === 1 || user.userId === 2)) {
+  if (!user || user.subscriptionTier !== 'administrator') {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 

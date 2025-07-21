@@ -447,7 +447,7 @@ export default function Admin() {
                     <div className="rounded-lg border">
                       <div className="grid grid-cols-7 gap-4 p-4 border-b bg-gray-50 dark:bg-gray-800 font-semibold">
                         <div>User ID</div>
-                        <div>Name</div>
+                        <div>Username</div>
                         <div>Email</div>
                         <div>Premium</div>
                         <div>Created</div>
@@ -468,7 +468,7 @@ export default function Admin() {
                               </Badge>
                             </div>
                             <div>
-                              <div className="font-medium">{user.firstName} {user.lastName}</div>
+                              <div className="font-medium">{user.username}</div>
                             </div>
                             <div className="text-sm text-gray-500" title={user.email}>
                               {user.email.length > 8 ? `${user.email.substring(0, 8)}...` : user.email}
