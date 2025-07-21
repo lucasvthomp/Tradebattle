@@ -2313,6 +2313,7 @@ export default function Dashboard() {
   if (currentView === 'tournament-detail' && selectedTournament) {
     const tournamentData = selectedTournament.tournaments;
     const balance = parseFloat(selectedTournament.balance || '0');
+    const [timeRemaining, setTimeRemaining] = useState<string>("");
     
 
     
@@ -2334,10 +2335,13 @@ export default function Dashboard() {
       return value * multiplier;
     };
 
-    const getTimeRemaining = () => {
-      if (!tournamentData.startedAt) return "Not started";
+    const calculateTimeRemaining = () => {
+      // Use startedAt if available, otherwise use createdAt for active tournaments
+      const startDateStr = tournamentData.startedAt || (tournamentData.status === 'active' ? tournamentData.createdAt : null);
       
-      const startTime = new Date(tournamentData.startedAt).getTime();
+      if (!startDateStr) return "Not started";
+      
+      const startTime = new Date(startDateStr).getTime();
       const duration = parseTimeframe(tournamentData.timeframe);
       const endTime = startTime + duration;
       const now = Date.now();
@@ -2348,11 +2352,25 @@ export default function Dashboard() {
       const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
       const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
       const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+      const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
       
       if (days > 0) return `${days}d ${hours}h ${minutes}m`;
       if (hours > 0) return `${hours}h ${minutes}m`;
-      return `${minutes}m`;
+      if (minutes > 0) return `${minutes}m ${seconds}s`;
+      return `${seconds}s`;
     };
+
+    // Update timer every second
+    useEffect(() => {
+      const updateTimer = () => {
+        setTimeRemaining(calculateTimeRemaining());
+      };
+
+      updateTimer(); // Initial update
+      const interval = setInterval(updateTimer, 1000);
+
+      return () => clearInterval(interval);
+    }, [tournamentData]);
 
     return (
       <div className="min-h-screen bg-background">
@@ -2378,7 +2396,7 @@ export default function Dashboard() {
                         <Badge variant={tournamentData.status === 'active' ? 'default' : tournamentData.status === 'waiting' ? 'secondary' : 'outline'}>
                           {tournamentData.status}
                         </Badge>
-                        <span>Time Remaining: {getTimeRemaining()}</span>
+                        <span>Time Remaining: <span className="text-red-500 font-semibold">{timeRemaining}</span></span>
                       </div>
                     </div>
                     <div className="text-right">
