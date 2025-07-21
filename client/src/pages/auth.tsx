@@ -137,13 +137,14 @@ export default function Auth() {
                 <TabsContent value="signup">
                   <form onSubmit={handleSignup} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="name">Full Name</Label>
+                      <Label htmlFor="signup-email">Email</Label>
                       <div className="relative">
-                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input
-                          id="name"
-                          type="text"
-                          placeholder="Enter your full name"
+                          id="signup-email"
+                          name="email"
+                          type="email"
+                          placeholder="Enter your email"
                           className="pl-10"
                           required
                         />
@@ -151,13 +152,14 @@ export default function Auth() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
+                      <Label htmlFor="signup-username">Username</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input
-                          id="signup-email"
-                          type="email"
-                          placeholder="Enter your email"
+                          id="signup-username"
+                          name="username"
+                          type="text"
+                          placeholder="Choose a username"
                           className="pl-10"
                           required
                         />
@@ -170,6 +172,7 @@ export default function Auth() {
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input
                           id="signup-password"
+                          name="password"
                           type={showPassword ? "text" : "password"}
                           placeholder="Create a password"
                           className="pl-10 pr-10"
@@ -188,9 +191,9 @@ export default function Auth() {
                     <Button 
                       type="submit" 
                       className="w-full bg-black hover:bg-gray-800"
-                      disabled={isLoading}
+                      disabled={registerMutation.isPending}
                     >
-                      {isLoading ? "Creating account..." : "Create Account"}
+                      {registerMutation.isPending ? "Creating account..." : "Create Account"}
                     </Button>
 
                     <p className="text-xs text-gray-600 text-center">
