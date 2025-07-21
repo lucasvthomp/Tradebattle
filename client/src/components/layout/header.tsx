@@ -94,7 +94,7 @@ export default function Header() {
                     <Archive className="w-4 h-4 mr-2" />
                     {t('archive')}
                   </DropdownMenuItem>
-                  {(user.userId === 1 || user.userId === 2 || user.userId === 3) && (
+                  {user.subscriptionTier === 'administrator' && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem onClick={() => window.location.href = "/admin"}>
