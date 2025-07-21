@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/use-auth";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -16,43 +17,34 @@ const fadeInUp = {
 
 export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { loginMutation, registerMutation } = useAuth();
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const credentials = {
+      username: formData.get('username') as string,
+      password: formData.get('password') as string,
+    };
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Set authentication state
-      localStorage.setItem('orsath_auth', 'true');
-      toast({
-        title: "Login Successful",
-        description: "Welcome back to ORSATH!",
-      });
-      // Redirect to dashboard
-      window.location.href = "/dashboard";
-    }, 1500);
+    loginMutation.mutate(credentials);
   };
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
+    const formData = new FormData(e.currentTarget);
+    const credentials = {
+      email: formData.get('email') as string,
+      username: formData.get('username') as string,
+      password: formData.get('password') as string,
+      country: formData.get('country') as string || undefined,
+      language: formData.get('language') as string || 'English',
+      currency: formData.get('currency') as string || 'USD',
+      wantsPremium: false,
+    };
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      // Set authentication state
-      localStorage.setItem('orsath_auth', 'true');
-      toast({
-        title: "Account Created",
-        description: "Welcome to ORSATH! Your account has been created successfully.",
-      });
-      // Redirect to dashboard
-      window.location.href = "/dashboard";
-    }, 1500);
+    registerMutation.mutate(credentials);
   };
 
   return (
@@ -90,13 +82,14 @@ export default function Auth() {
                 <TabsContent value="login">
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
+                      <Label htmlFor="username">Username</Label>
                       <div className="relative">
-                        <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input
-                          id="email"
-                          type="email"
-                          placeholder="Enter your email"
+                          id="username"
+                          name="username"
+                          type="text"
+                          placeholder="Enter your username"
                           className="pl-10"
                           required
                         />
@@ -109,6 +102,7 @@ export default function Auth() {
                         <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
                         <Input
                           id="password"
+                          name="password"
                           type={showPassword ? "text" : "password"}
                           placeholder="Enter your password"
                           className="pl-10 pr-10"
@@ -127,9 +121,9 @@ export default function Auth() {
                     <Button 
                       type="submit" 
                       className="w-full bg-black hover:bg-gray-800"
-                      disabled={isLoading}
+                      disabled={loginMutation.isPending}
                     >
-                      {isLoading ? "Signing in..." : "Sign In"}
+                      {loginMutation.isPending ? "Signing in..." : "Sign In"}
                     </Button>
 
                     <div className="text-center">
