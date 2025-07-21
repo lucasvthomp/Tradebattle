@@ -594,7 +594,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   
   // Main navigation state
-  const [currentView, setCurrentView] = useState<'main' | 'watchlist' | 'tournaments' | 'create' | 'join'>('main');
+  const [currentView, setCurrentView] = useState<'main' | 'watchlist' | 'tournaments' | 'create' | 'join' | 'tournament-detail'>('main');
   
   // Watchlist state
   const [searchQuery, setSearchQuery] = useState("");
@@ -638,6 +638,66 @@ export default function Dashboard() {
   const [isJoinTournamentDialogOpen, setIsJoinTournamentDialogOpen] = useState(false);
   const [joinGameCode, setJoinGameCode] = useState("");
   const [stockPrices, setStockPrices] = useState<{[key: string]: number}>({});
+  
+  // Tournament detail state
+  const [timeRemaining, setTimeRemaining] = useState<string>("");
+  
+  // Tournament timer effect
+  useEffect(() => {
+    if (currentView === 'tournament-detail' && selectedTournament) {
+      const parseTimeframe = (timeframe: string) => {
+        const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks)/i;
+        const match = timeframe.match(regex);
+        if (!match) return 0;
+        
+        const value = parseInt(match[1]);
+        const unit = match[2].toLowerCase();
+        
+        let multiplier = 1;
+        if (unit.includes('minute')) multiplier = 60 * 1000;
+        else if (unit.includes('hour')) multiplier = 60 * 60 * 1000;
+        else if (unit.includes('day')) multiplier = 24 * 60 * 60 * 1000;
+        else if (unit.includes('week')) multiplier = 7 * 24 * 60 * 60 * 1000;
+        
+        return value * multiplier;
+      };
+
+      const calculateTimeRemaining = () => {
+        const tournamentData = selectedTournament.tournaments;
+        // Use startedAt if available, otherwise use createdAt for active tournaments
+        const startDateStr = tournamentData.startedAt || (tournamentData.status === 'active' ? tournamentData.createdAt : null);
+        
+        if (!startDateStr) return "Not started";
+        
+        const startTime = new Date(startDateStr).getTime();
+        const duration = parseTimeframe(tournamentData.timeframe);
+        const endTime = startTime + duration;
+        const now = Date.now();
+        const remaining = endTime - now;
+        
+        if (remaining <= 0) return "Tournament ended";
+        
+        const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+        const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+        const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+        
+        if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+        if (hours > 0) return `${hours}h ${minutes}m`;
+        if (minutes > 0) return `${minutes}m ${seconds}s`;
+        return `${seconds}s`;
+      };
+
+      const updateTimer = () => {
+        setTimeRemaining(calculateTimeRemaining());
+      };
+
+      updateTimer(); // Initial update
+      const interval = setInterval(updateTimer, 1000);
+
+      return () => clearInterval(interval);
+    }
+  }, [currentView, selectedTournament]);
   
   // Sell dialog state
   const [isSellDialogOpen, setIsSellDialogOpen] = useState(false);
@@ -2313,64 +2373,11 @@ export default function Dashboard() {
   if (currentView === 'tournament-detail' && selectedTournament) {
     const tournamentData = selectedTournament.tournaments;
     const balance = parseFloat(selectedTournament.balance || '0');
-    const [timeRemaining, setTimeRemaining] = useState<string>("");
     
 
-    
-    // Calculate time remaining
-    const parseTimeframe = (timeframe: string) => {
-      const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks)/i;
-      const match = timeframe.match(regex);
-      if (!match) return 0;
-      
-      const value = parseInt(match[1]);
-      const unit = match[2].toLowerCase();
-      
-      let multiplier = 1;
-      if (unit.includes('minute')) multiplier = 60 * 1000;
-      else if (unit.includes('hour')) multiplier = 60 * 60 * 1000;
-      else if (unit.includes('day')) multiplier = 24 * 60 * 60 * 1000;
-      else if (unit.includes('week')) multiplier = 7 * 24 * 60 * 60 * 1000;
-      
-      return value * multiplier;
-    };
 
-    const calculateTimeRemaining = () => {
-      // Use startedAt if available, otherwise use createdAt for active tournaments
-      const startDateStr = tournamentData.startedAt || (tournamentData.status === 'active' ? tournamentData.createdAt : null);
-      
-      if (!startDateStr) return "Not started";
-      
-      const startTime = new Date(startDateStr).getTime();
-      const duration = parseTimeframe(tournamentData.timeframe);
-      const endTime = startTime + duration;
-      const now = Date.now();
-      const remaining = endTime - now;
-      
-      if (remaining <= 0) return "Tournament ended";
-      
-      const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
-      const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-      const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-      const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
-      
-      if (days > 0) return `${days}d ${hours}h ${minutes}m`;
-      if (hours > 0) return `${hours}h ${minutes}m`;
-      if (minutes > 0) return `${minutes}m ${seconds}s`;
-      return `${seconds}s`;
-    };
 
-    // Update timer every second
-    useEffect(() => {
-      const updateTimer = () => {
-        setTimeRemaining(calculateTimeRemaining());
-      };
 
-      updateTimer(); // Initial update
-      const interval = setInterval(updateTimer, 1000);
-
-      return () => clearInterval(interval);
-    }, [tournamentData]);
 
     return (
       <div className="min-h-screen bg-background">
