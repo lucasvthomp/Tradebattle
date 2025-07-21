@@ -1678,6 +1678,81 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
+
+              {/* Filters and Controls */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                  {/* Timeframe Selector */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-foreground">Timeframe:</span>
+                    <Select value={changePeriod} onValueChange={setChangePeriod}>
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1D">1 Day</SelectItem>
+                        <SelectItem value="5D">5 Days</SelectItem>
+                        <SelectItem value="1M">1 Month</SelectItem>
+                        <SelectItem value="3M">3 Months</SelectItem>
+                        <SelectItem value="6M">6 Months</SelectItem>
+                        <SelectItem value="YTD">YTD</SelectItem>
+                        <SelectItem value="1Y">1 Year</SelectItem>
+                        <SelectItem value="2Y">2 Years</SelectItem>
+                        <SelectItem value="5Y">5 Years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Sector Filter */}
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-foreground">Sector:</span>
+                    <Select value={filterSector} onValueChange={setFilterSector}>
+                      <SelectTrigger className="w-[150px]">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Sectors</SelectItem>
+                        <SelectItem value="Technology">Technology</SelectItem>
+                        <SelectItem value="Healthcare">Healthcare</SelectItem>
+                        <SelectItem value="Financials">Financials</SelectItem>
+                        <SelectItem value="Consumer Discretionary">Consumer Discretionary</SelectItem>
+                        <SelectItem value="Consumer Staples">Consumer Staples</SelectItem>
+                        <SelectItem value="Energy">Energy</SelectItem>
+                        <SelectItem value="Industrials">Industrials</SelectItem>
+                        <SelectItem value="Materials">Materials</SelectItem>
+                        <SelectItem value="Real Estate">Real Estate</SelectItem>
+                        <SelectItem value="Telecommunications">Telecommunications</SelectItem>
+                        <SelectItem value="Utilities">Utilities</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  {/* Sort Controls */}
+                  <span className="text-sm font-medium text-foreground">Sort by:</span>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="symbol">Symbol</SelectItem>
+                      <SelectItem value="companyName">Company</SelectItem>
+                      <SelectItem value="currentPrice">Price</SelectItem>
+                      <SelectItem value="changePercent">Change %</SelectItem>
+                      <SelectItem value="volume">Volume</SelectItem>
+                      <SelectItem value="marketCap">Market Cap</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  >
+                    {sortOrder === "asc" ? <SortAsc className="w-4 h-4" /> : <SortDesc className="w-4 h-4" />}
+                  </Button>
+                </div>
+              </div>
             </motion.div>
 
             {/* Watchlist Table - Using existing code */}
