@@ -1771,6 +1771,7 @@ export default function Dashboard() {
                         <th className="text-left py-2 px-4 font-medium">Symbol</th>
                         <th className="text-left py-2 px-4 font-medium">Company</th>
                         <th className="text-left py-2 px-4 font-medium">Price</th>
+                        <th className="text-left py-2 px-4 font-medium">Price ({changePeriod})</th>
                         <th className="text-left py-2 px-4 font-medium">Change</th>
                         <th className="text-left py-2 px-4 font-medium">Volume</th>
                         <th className="text-left py-2 px-4 font-medium">Market Cap</th>
@@ -1784,6 +1785,9 @@ export default function Dashboard() {
                           <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
                           <td className="py-3 px-4 font-medium text-foreground">
                             {formatCurrency(stock.currentPrice || stock.price || 0)}
+                          </td>
+                          <td className="py-3 px-4 font-medium text-muted-foreground">
+                            {stock.previousClose ? formatCurrency(stock.previousClose) : 'N/A'}
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center space-x-1">
