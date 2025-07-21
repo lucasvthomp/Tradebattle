@@ -355,9 +355,9 @@ export class DatabaseStorage implements IStorage {
 
           return {
             ...participant,
-            firstName: user[0]?.firstName || '',
-            lastName: user[0]?.lastName || '',
-            displayName: user[0]?.displayName || user[0]?.firstName || `${user[0]?.firstName} ${user[0]?.lastName}`.trim(),
+            username: user[0]?.username || '',
+            displayName: user[0]?.displayName || user[0]?.username || `User ${participant.userId}`,
+            email: user[0]?.email || '',
             stockPurchases: stockPurchases || []
           };
         })
