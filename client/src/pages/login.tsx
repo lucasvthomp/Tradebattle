@@ -13,7 +13,7 @@ export default function Login() {
   const [, navigate] = useLocation();
   const { loginMutation, user } = useAuth();
   const { t } = useUserPreferences();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -25,7 +25,7 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({ email, password }, {
+    loginMutation.mutate({ username, password }, {
       onSuccess: () => {
         navigate("/dashboard");
       }
@@ -56,14 +56,14 @@ export default function Login() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="email">{t('emailAddress')}</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
-                  id="email"
-                  type="email"
+                  id="username"
+                  type="text"
                   required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('enterEmail')}
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username"
                   className="mt-1"
                 />
               </div>
