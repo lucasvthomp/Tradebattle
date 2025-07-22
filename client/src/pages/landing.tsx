@@ -60,12 +60,14 @@ export default function Landing() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <CardContent className="p-6">
+                  <Card className="h-full interactive-card hover-lift particle-effect animate-slide-up">
+                    <CardContent className="p-6 relative z-10">
                       <div className="flex items-center mb-4">
-                        <feature.icon className={`mr-3 w-8 h-8 ${feature.color}`} />
+                        <div className="gradient-primary p-2 rounded-lg mr-3 neon-glow">
+                          <feature.icon className="w-6 h-6 text-primary-foreground" />
+                        </div>
                       </div>
-                      <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
+                      <h3 className="text-xl font-bold gradient-text mb-3">{feature.title}</h3>
                       <p className="text-muted-foreground mb-4">{feature.description}</p>
                     </CardContent>
                   </Card>

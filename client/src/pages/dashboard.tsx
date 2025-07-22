@@ -1957,7 +1957,7 @@ export default function Dashboard() {
                     return (
                       <Card 
                         key={tournamentData.id} 
-                        className="hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary group"
+                        className="interactive-card hover-lift cursor-pointer border-2 hover:border-neon group animate-fade-in particle-effect"
                         onClick={() => {
                           setSelectedTournament(tournament);
                           setSelectedTournamentId(tournamentData.id.toString());
@@ -1967,15 +1967,21 @@ export default function Dashboard() {
                         <CardHeader className="pb-3">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-3">
-                              <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                <Trophy className="w-6 h-6 text-primary" />
+                              <div className="w-12 h-12 gradient-primary rounded-full flex items-center justify-center group-hover:neon-glow transition-all duration-300 animate-pulse-slow">
+                                <Trophy className="w-6 h-6 text-primary-foreground" />
                               </div>
                               <div>
                                 <CardTitle className="text-lg line-clamp-1">{tournamentData.name}</CardTitle>
                                 <p className="text-sm text-muted-foreground">Code: {tournamentData.code}</p>
                               </div>
                             </div>
-                            <Badge variant={tournamentData.status === 'active' ? 'default' : tournamentData.status === 'waiting' ? 'secondary' : 'outline'}>
+                            <Badge className={`${
+                              tournamentData.status === 'active' 
+                                ? 'status-active neon-glow' 
+                                : tournamentData.status === 'waiting' 
+                                  ? 'btn-secondary' 
+                                  : 'btn-secondary'
+                            } font-semibold`}>
                               {tournamentData.status}
                             </Badge>
                           </div>
@@ -1984,7 +1990,7 @@ export default function Dashboard() {
                           <div className="space-y-3">
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-muted-foreground">Your Balance</span>
-                              <span className="font-semibold text-green-600">${balance.toLocaleString()}</span>
+                              <span className="font-semibold gradient-text-profit animate-glow">${balance.toLocaleString()}</span>
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-muted-foreground">Players</span>

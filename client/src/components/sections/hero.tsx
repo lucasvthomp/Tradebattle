@@ -46,7 +46,7 @@ export default function Hero() {
   const { path: chartPath, candlesticks } = generateStockChart();
 
   return (
-    <section className="relative py-20 bg-gradient-to-b from-background to-card overflow-hidden">
+    <section className="relative py-20 gradient-card overflow-hidden particle-effect animate-fade-in">
       {/* Large Background Stock Chart */}
       <div className="absolute inset-0 opacity-40">
         <svg
@@ -56,18 +56,18 @@ export default function Hero() {
         >
           <defs>
             <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.6" />
-              <stop offset="30%" stopColor="#1d4ed8" stopOpacity="0.8" />
-              <stop offset="70%" stopColor="#2563eb" stopOpacity="0.7" />
-              <stop offset="100%" stopColor="#1e40af" stopOpacity="0.5" />
+              <stop offset="0%" stopColor="hsl(142, 76%, 36%)" stopOpacity="0.6" />
+              <stop offset="30%" stopColor="hsl(142, 76%, 46%)" stopOpacity="0.8" />
+              <stop offset="70%" stopColor="hsl(51, 100%, 50%)" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="hsl(200, 100%, 50%)" stopOpacity="0.5" />
             </linearGradient>
             <linearGradient id="fillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="#1e40af" stopOpacity="0.1" />
+              <stop offset="0%" stopColor="hsl(142, 76%, 36%)" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="hsl(240, 10%, 8%)" stopOpacity="0.1" />
             </linearGradient>
             <linearGradient id="volumeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#60a5fa" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.2" />
+              <stop offset="0%" stopColor="hsl(51, 100%, 50%)" stopOpacity="0.4" />
+              <stop offset="100%" stopColor="hsl(142, 76%, 36%)" stopOpacity="0.2" />
             </linearGradient>
           </defs>
           
@@ -128,7 +128,7 @@ export default function Hero() {
             strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
-            filter="drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))"
+            filter="drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))"
           />
           
           {/* Price points */}
@@ -142,8 +142,8 @@ export default function Hero() {
                     cx={x}
                     cy={y}
                     r="3"
-                    fill="#1d4ed8"
-                    stroke="#ffffff"
+                    fill="hsl(142, 76%, 36%)"
+                    stroke="hsl(51, 100%, 50%)"
                     strokeWidth="1"
                   />
                 );
@@ -162,26 +162,26 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <div className="mb-6">
-              <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-2">
+              <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-4 animate-glow">
                 Compete. Trade. Win.
               </h1>
-              <p className="text-2xl md:text-3xl text-muted-foreground">
+              <p className="text-2xl md:text-3xl text-muted-foreground animate-fade-in">
                 No risk, all reward.
               </p>
             </div>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up">
               Compete with traders worldwide using virtual portfolios and real market data.
               Test your skills, climb the leaderboards, and win prizes.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 animate-slide-up">
               <Button
                 size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 transition-all duration-300 transform hover:-translate-y-1"
+                className="btn-primary hover-lift neon-glow animate-pulse-slow"
                 onClick={() => window.location.href = "/signup"}
               >
-                Start Trading
+                🚀 Start Trading
               </Button>
-              <Button variant="ghost" size="lg" className="text-muted-foreground hover:text-foreground">
+              <Button variant="ghost" size="lg" className="btn-secondary hover-lift">
                 <Play className="w-5 h-5 mr-2" />
                 Watch Demo
               </Button>
