@@ -23,7 +23,7 @@ import Signup from "@/pages/signup";
 import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
 import Archive from "@/pages/archive";
-import Header from "@/components/layout/header";
+import Layout from "@/components/layout/layout";
 import Footer from "@/components/layout/footer";
 
 function Router() {
@@ -38,44 +38,41 @@ function Router() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1">
-        <Switch>
-          {/* Home route always shows landing page */}
-          <Route path="/" component={Landing} />
-          
-          {!user ? (
-            <>
-              <Route path="/contact" component={Contact} />
-              <Route path="/about" component={About} />
-              <Route path="/privacy" component={Privacy} />
-              <Route path="/terms" component={Terms} />
-              <Route path="/login" component={Login} />
-              <Route path="/signup" component={Signup} />
-            </>
-          ) : (
-            <>
-              <Route path="/dashboard" component={Dashboard} />
-              <Route path="/portfolio" component={Portfolio} />
-              <Route path="/leaderboard" component={Leaderboard} />
-              <Route path="/people" component={People} />
-              <Route path="/people/:userId" component={People} />
-              <Route path="/premium" component={Premium} />
-              <Route path="/contact" component={Contact} />
-              <Route path="/about" component={About} />
-              <Route path="/privacy" component={Privacy} />
-              <Route path="/terms" component={Terms} />
-              <Route path="/profile" component={Profile} />
-              <Route path="/admin" component={Admin} />
-              <Route path="/archive" component={Archive} />
-            </>
-          )}
-          <Route component={NotFound} />
-        </Switch>
-      </main>
+    <Layout>
+      <Switch>
+        {/* Home route always shows landing page */}
+        <Route path="/" component={Landing} />
+        
+        {!user ? (
+          <>
+            <Route path="/contact" component={Contact} />
+            <Route path="/about" component={About} />
+            <Route path="/privacy" component={Privacy} />
+            <Route path="/terms" component={Terms} />
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={Signup} />
+          </>
+        ) : (
+          <>
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/portfolio" component={Portfolio} />
+            <Route path="/leaderboard" component={Leaderboard} />
+            <Route path="/people" component={People} />
+            <Route path="/people/:userId" component={People} />
+            <Route path="/premium" component={Premium} />
+            <Route path="/contact" component={Contact} />
+            <Route path="/about" component={About} />
+            <Route path="/privacy" component={Privacy} />
+            <Route path="/terms" component={Terms} />
+            <Route path="/profile" component={Profile} />
+            <Route path="/admin" component={Admin} />
+            <Route path="/archive" component={Archive} />
+          </>
+        )}
+        <Route component={NotFound} />
+      </Switch>
       <Footer />
-    </div>
+    </Layout>
   );
 }
 

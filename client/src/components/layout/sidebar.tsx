@@ -1,0 +1,104 @@
+import { Link, useLocation } from "wouter";
+import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { 
+  Home, 
+  BarChart3, 
+  Briefcase, 
+  Trophy, 
+  Users, 
+  Crown, 
+  Phone, 
+  Menu,
+  X
+} from "lucide-react";
+import { useState } from "react";
+
+interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
+  const { user } = useAuth();
+  const { t } = useUserPreferences();
+  const [location] = useLocation();
+
+  const navItems = [
+    { href: "/", label: "Home", icon: Home },
+    ...(user ? [
+      { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
+      { href: "/portfolio", label: t('portfolio'), icon: Briefcase },
+      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
+      { href: "/people", label: t('people'), icon: Users },
+      { href: "/premium", label: "Premium", icon: Crown }
+    ] : []),
+    { href: "/contact", label: "Support", icon: Phone },
+  ];
+
+  const isActive = (href: string) => {
+    if (href === "/" && location === "/") return true;
+    if (href !== "/" && location.startsWith(href)) return true;
+    return false;
+  };
+
+  return (
+    <div className={`fixed left-0 top-0 h-full z-40 transition-transform duration-300 ${
+      isOpen ? 'translate-x-0' : '-translate-x-full'
+    }`}>
+      <div className="w-64 h-full gradient-card border-r border-border">
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center neon-glow">
+              <span className="text-primary-foreground font-bold text-sm">O</span>
+            </div>
+            <span className="text-lg font-bold gradient-text">ORSATH</span>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onClose}
+            className="hover-lift"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+
+        {/* Navigation Items */}
+        <nav className="p-4 space-y-2">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={onClose}
+              className={`sidebar-nav-item flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300 hover-lift ${
+                isActive(item.href)
+                  ? "gradient-primary text-primary-foreground neon-glow font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover-glow"
+              }`}
+            >
+              <item.icon className="w-5 h-5" />
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </div>
+  );
+}
+
+export function SidebarTrigger({ onOpen }: { onOpen: () => void }) {
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={onOpen}
+      className="hover-lift neon-glow"
+    >
+      <Menu className="w-5 h-5" />
+    </Button>
+  );
+}

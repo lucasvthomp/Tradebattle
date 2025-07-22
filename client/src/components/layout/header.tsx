@@ -1,4 +1,4 @@
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
@@ -9,78 +9,42 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, Menu, Settings, List, Crown, LogOut, UserPlus, LogIn, Shield, Users, Archive } from "lucide-react";
-import { useState } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { User, ChevronDown, Settings, LogOut, UserPlus, LogIn, Shield, Archive } from "lucide-react";
+import { SidebarTrigger } from "./sidebar";
+import { ChatTrigger } from "./chat-panel";
 
-export default function Header() {
+interface HeaderProps {
+  onSidebarOpen: () => void;
+  onChatOpen: () => void;
+}
+
+export default function Header({ onSidebarOpen, onChatOpen }: HeaderProps) {
   const { user, logoutMutation } = useAuth();
   const { t } = useUserPreferences();
-  const [location] = useLocation();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const navItems = [
-    { href: "/", label: "Home" },
-    ...(user ? [
-      { href: "/dashboard", label: t('dashboard') },
-      { href: "/portfolio", label: t('portfolio') },
-      { href: "/leaderboard", label: t('leaderboard') },
-      { href: "/people", label: t('people') },
-      { href: "/premium", label: "Premium" }
-    ] : []),
-    { href: "/contact", label: "Support" },
-  ];
-
-  const isActive = (href: string) => {
-    if (href === "/" && location === "/") return true;
-    if (href !== "/" && location.startsWith(href)) return true;
-    return false;
-  };
 
   return (
     <header className="gradient-card border-b border-border sticky top-0 z-50 backdrop-blur-md bg-background/80">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 hover-lift transition-all duration-300">
-            <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center neon-glow animate-pulse-slow">
-              <span className="text-primary-foreground font-bold text-sm">O</span>
-            </div>
-            <span className="text-xl font-bold gradient-text animate-glow">ORSATH</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`nav-link transition-all duration-300 py-2 px-4 rounded-lg hover-lift ${
-                  isActive(item.href) 
-                    ? "gradient-primary text-primary-foreground neon-glow font-semibold" 
-                    : "text-muted-foreground hover:text-foreground hover-glow"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
+          {/* Left side - Sidebar trigger and Logo */}
+          <div className="flex items-center space-x-4">
+            <SidebarTrigger onOpen={onSidebarOpen} />
+            <Link href="/" className="flex items-center space-x-2 hover-lift transition-all duration-300">
+              <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center neon-glow animate-pulse-slow">
+                <span className="text-primary-foreground font-bold text-sm">O</span>
+              </div>
+              <span className="text-xl font-bold gradient-text animate-glow">ORSATH</span>
+            </Link>
           </div>
 
-          {/* Profile Section */}
+          {/* Right side - Chat, Profile, Auth */}
           <div className="flex items-center space-x-4">
+            <ChatTrigger onOpen={onChatOpen} />
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="flex items-center space-x-2 btn-secondary hover-lift">
-                    {user?.profileImageUrl ? (
-                      <img
-                        src={user.profileImageUrl}
-                        alt="Profile"
-                        className="w-6 h-6 rounded-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-5 h-5" />
-                    )}
+                    <User className="w-5 h-5" />
                     <span className="text-sm font-medium">
                       {user?.displayName || user?.username || user?.email || "User"}
                     </span>
@@ -117,48 +81,19 @@ export default function Header() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Link href="/login">
-                  <Button
-                    className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
-                  >
+                  <Button className="btn-secondary hover-lift">
                     <LogIn className="w-4 h-4 mr-2" />
                     Log In
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button
-                    className="bg-black text-white hover:bg-gray-800 transition-colors duration-300"
-                  >
+                  <Button className="btn-primary hover-lift neon-glow">
                     <UserPlus className="w-4 h-4 mr-2" />
                     Sign Up
                   </Button>
                 </Link>
               </div>
             )}
-
-            {/* Mobile Menu Button */}
-            <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Menu className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-64">
-                <div className="flex flex-col space-y-4 mt-8">
-                  {navItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`text-lg font-medium transition-colors ${
-                        isActive(item.href) ? "text-black" : "text-gray-700 hover:text-black"
-                      }`}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </SheetContent>
-            </Sheet>
           </div>
         </nav>
       </div>

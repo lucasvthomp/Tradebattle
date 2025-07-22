@@ -508,3 +508,34 @@ textarea:focus-visible {
   background: linear-gradient(135deg, var(--gold), hsl(51, 100%, 60%));
   @apply text-black font-semibold;
 }
+
+/* Sidebar and Chat Panel Enhancements */
+.sidebar-nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+
+.sidebar-nav-item:hover::before {
+  left: 100%;
+}
+
+.chat-message-animation {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Enhanced overlay */
+.overlay-blur {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
