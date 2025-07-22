@@ -37,49 +37,51 @@ export default function Header({ onSidebarOpen, onChatOpen }: HeaderProps) {
             </Link>
           </div>
 
-          {/* Right side - Chat, Profile, Auth */}
+          {/* Right side - Profile, Auth, Chat */}
           <div className="flex items-center space-x-4">
-            <ChatTrigger onOpen={onChatOpen} />
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2 btn-secondary hover-lift">
-                    <User className="w-5 h-5" />
-                    <span className="text-sm font-medium">
-                      {user?.displayName || user?.username || user?.email || "User"}
-                    </span>
-                    <ChevronDown className="w-4 h-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
-                    <Settings className="w-4 h-4 mr-2" />
-                    {t('settings')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => window.location.href = "/archive"}>
-                    <Archive className="w-4 h-4 mr-2" />
-                    {t('archive')}
-                  </DropdownMenuItem>
-                  {user.subscriptionTier === 'administrator' && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={() => window.location.href = "/admin"}>
-                        <Shield className="w-4 h-4 mr-2" />
-                        Admin Panel
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => {
-                    logoutMutation.mutate();
-                  }}>
-                    <LogOut className="w-4 h-4 mr-2" />
-                    {t('logout')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+{user ? (
+              <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center space-x-2 btn-secondary hover-lift">
+                      <User className="w-5 h-5" />
+                      <span className="text-sm font-medium">
+                        {user?.displayName || user?.username || user?.email || "User"}
+                      </span>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
+                      <Settings className="w-4 h-4 mr-2" />
+                      {t('settings')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => window.location.href = "/archive"}>
+                      <Archive className="w-4 h-4 mr-2" />
+                      {t('archive')}
+                    </DropdownMenuItem>
+                    {user.subscriptionTier === 'administrator' && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => window.location.href = "/admin"}>
+                          <Shield className="w-4 h-4 mr-2" />
+                          Admin Panel
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={() => {
+                      logoutMutation.mutate();
+                    }}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      {t('logout')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                <ChatTrigger onOpen={onChatOpen} />
+              </>
             ) : (
-              <div className="flex items-center space-x-2">
+              <>
                 <Link href="/login">
                   <Button className="btn-secondary hover-lift">
                     <LogIn className="w-4 h-4 mr-2" />
@@ -92,7 +94,8 @@ export default function Header({ onSidebarOpen, onChatOpen }: HeaderProps) {
                     Sign Up
                   </Button>
                 </Link>
-              </div>
+                <ChatTrigger onOpen={onChatOpen} />
+              </>
             )}
           </div>
         </nav>

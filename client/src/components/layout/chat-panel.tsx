@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageCircle, X, Send, Bot, User } from "lucide-react";
+import { MessageCircle, X, Send, Bot, User, Users } from "lucide-react";
 
 interface ChatPanelProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "1",
-      text: "Hello! I'm your trading assistant. How can I help you today?",
+      text: "Welcome to the ORSATH community! Share your trading strategies and connect with fellow traders.",
       isBot: true,
       timestamp: new Date()
     }
@@ -40,11 +40,11 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
     setMessages(prev => [...prev, userMessage]);
     setInputMessage("");
 
-    // Simulate bot response
+    // Simulate community response
     setTimeout(() => {
       const botResponse: ChatMessage = {
         id: (Date.now() + 1).toString(),
-        text: "Thanks for your message! Our support team will get back to you shortly.",
+        text: "Message sent to the community! Other traders will see your message and can respond.",
         isBot: true,
         timestamp: new Date()
       };
@@ -67,9 +67,9 @@ export function ChatPanel({ isOpen, onClose }: ChatPanelProps) {
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 gradient-primary rounded-full flex items-center justify-center neon-glow">
-              <MessageCircle className="w-4 h-4 text-primary-foreground" />
+              <Users className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-semibold gradient-text">Support Chat</span>
+            <span className="font-semibold gradient-text">Community Chat</span>
           </div>
           <Button
             variant="ghost"
@@ -146,10 +146,11 @@ export function ChatTrigger({ onOpen }: { onOpen: () => void }) {
   return (
     <Button
       onClick={onOpen}
-      className="btn-secondary hover-lift relative"
+      variant="ghost"
+      size="icon"
+      className="hover-lift relative neon-glow"
     >
-      <MessageCircle className="w-4 h-4 mr-2" />
-      Chat
+      <MessageCircle className="w-5 h-5" />
       <div className="absolute -top-1 -right-1 w-3 h-3 bg-neon-green rounded-full animate-pulse"></div>
     </Button>
   );
