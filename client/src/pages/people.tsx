@@ -102,9 +102,10 @@ export default function People() {
   });
 
   // Filter users based on search query
-  const filteredUsers = allUsers?.data?.filter((u: any) => 
-    u.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = (allUsers as any)?.data?.filter((u: any) => 
+    u.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    u.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
   ) || [];
 
   // Map achievement types to display data
@@ -162,9 +163,9 @@ export default function People() {
       );
     }
 
-    const stats = getUserStats(profileUser?.data);
-    const displayAchievements = (userAchievements?.data?.map(getAchievementDisplay) || [])
-      .sort((a, b) => getTierRanking(b.rarity) - getTierRanking(a.rarity));
+    const stats = getUserStats((profileUser as any)?.data);
+    const displayAchievements = ((userAchievements as any)?.data?.map((achievement: any) => getAchievementDisplay(achievement)) || [])
+      .sort((a: any, b: any) => getTierRanking(b.rarity) - getTierRanking(a.rarity));
 
     return (
       <div className="min-h-screen bg-background">
@@ -194,22 +195,22 @@ export default function People() {
                   <div className="flex items-center space-x-6">
                     <Avatar className="w-24 h-24">
                       <AvatarFallback className="text-2xl font-bold">
-                        {profileUser?.data?.username?.[0]?.toUpperCase()}{profileUser?.data?.username?.[1]?.toUpperCase()}
+                        {(profileUser as any)?.data?.username?.[0]?.toUpperCase()}{(profileUser as any)?.data?.username?.[1]?.toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <h1 className="text-3xl font-bold text-foreground mb-2">
-                        {profileUser?.data?.displayName || profileUser?.data?.username}
+                        {(profileUser as any)?.data?.displayName || (profileUser as any)?.data?.username}
                       </h1>
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
                           <Crown className="w-3 h-3 mr-1" />
-                          {profileUser?.data?.subscriptionTier === 'premium' ? 'Premium Trader' : 
-                           profileUser?.data?.subscriptionTier === 'administrator' ? 'Administrator' : 'Free Trader'}
+                          {(profileUser as any)?.data?.subscriptionTier === 'premium' ? 'Premium Trader' : 
+                           (profileUser as any)?.data?.subscriptionTier === 'administrator' ? 'Administrator' : 'Free Trader'}
                         </Badge>
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                           <Calendar className="w-3 h-3 mr-1" />
-                          Since {profileUser?.data?.createdAt ? new Date(profileUser.data.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
+                          Since {(profileUser as any)?.data?.createdAt ? new Date((profileUser as any).data.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
                         </Badge>
                         <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-100">
                           <Clock className="w-3 h-3 mr-1" />
@@ -220,7 +221,7 @@ export default function People() {
                       {/* Quick Stats */}
                       <div className="grid grid-cols-2 gap-4">
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{profileUser?.data?.totalTrades || 0}</p>
+                          <p className="text-2xl font-bold text-foreground">{(profileUser as any)?.data?.totalTrades || 0}</p>
                           <p className="text-sm text-muted-foreground">Total Trades</p>
                         </div>
                         <div className="text-center">
@@ -245,7 +246,7 @@ export default function People() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {displayAchievements.length > 0 ? displayAchievements.map((achievement) => (
+                    {displayAchievements.length > 0 ? displayAchievements.map((achievement: any) => (
                       <div key={achievement.id} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
                         <div className={`w-10 h-10 rounded-full ${achievement.color} flex items-center justify-center`}>
                           <achievement.icon className="w-5 h-5" />
