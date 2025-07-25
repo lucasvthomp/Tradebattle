@@ -716,6 +716,9 @@ export default function Dashboard() {
   // Chat state
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [joinCode, setJoinCode] = useState("");
+  
+  // Performance period state
+  const [changePeriod, setChangePeriod] = useState("1D");
 
   // Animation variants
   const staggerChildren = {
@@ -793,7 +796,7 @@ export default function Dashboard() {
       return results.filter(Boolean);
     },
     enabled: !!user && watchlistSymbols.length > 0,
-    refetchInterval: getRefreshInterval(changePeriod),
+    refetchInterval: getRefreshInterval("1D"),
   });
 
   // Tournament-specific trading queries with unique keys
