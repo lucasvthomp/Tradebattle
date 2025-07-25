@@ -608,9 +608,15 @@ export default function Dashboard() {
   const [stockSearchTerm, setStockSearchTerm] = useState("");
   const [stockSearchResults, setStockSearchResults] = useState([]);
   const [stockSearchLoading, setStockSearchLoading] = useState(false);
+  
+  // Missing state variables
   const [sortOrder, setSortOrder] = useState("asc");
+  const [sortBy, setSortBy] = useState("symbol");
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  
+
   const [filterSector, setFilterSector] = useState("all");
-  const [changePeriod, setChangePeriod] = useState("1D");
   
 
   
@@ -745,6 +751,20 @@ export default function Dashboard() {
     return 30 * 1000; // 30 seconds
   };
 
+  // Fetch popular stocks
+  const { data: popularStocksData, isLoading: popularStocksLoading } = useQuery({
+    queryKey: ["/api/popular"],
+    enabled: !!user,
+  });
+
+  // Fetch user tournaments
+  const { data: userTournaments, isLoading: tournamentsLoading, error: tournamentsError } = useQuery({
+    queryKey: ["/api/tournaments"],
+    enabled: !!user,
+  });
+
+  // Tournament participants query declared above
+
   // Fetch user's watchlist
   const { data: watchlist = [], isLoading: watchlistLoading, refetch: refetchWatchlist } = useQuery({
     queryKey: ["/api/watchlist"],
@@ -796,8 +816,7 @@ export default function Dashboard() {
     },
     enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: false,
-    staleTime: 0,
-    cacheTime: 0
+    staleTime: 0
   });
 
   const { data: tournamentPurchases, refetch: refetchPurchases, isLoading: isLoadingPurchases } = useQuery({
@@ -819,8 +838,7 @@ export default function Dashboard() {
     },
     enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: false,
-    staleTime: 0,
-    cacheTime: 0
+    staleTime: 0
   });
 
   // Tournament participants query with real-time updates
@@ -844,8 +862,7 @@ export default function Dashboard() {
     enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: true,
     refetchInterval: 5000, // Refetch every 5 seconds for real-time updates
-    staleTime: 0, // Always consider data stale to ensure fresh updates
-    cacheTime: 10000 // Short cache time for real-time feel
+    staleTime: 0 // Always consider data stale to ensure fresh updates
   });
 
   // Use tournament data when available, otherwise use regular balance
@@ -1220,20 +1237,11 @@ export default function Dashboard() {
     },
   });
 
-  // Fetch user tournaments
-  const { data: tournamentResponse, isLoading: tournamentsLoading, error: tournamentsError } = useQuery({
-    queryKey: ["/api/tournaments"],
-    enabled: !!user,
-  });
+  // Fetch tournament response - already declared above, removing duplicate
 
-  // Extract tournaments from response
-  const userTournaments = tournamentResponse?.data || [];
+  // Extract tournaments from response - using already declared variable
   
-  // Fetch tournament participants when tournament is selected
-  const { data: participants, isLoading: participantsLoading } = useQuery({
-    queryKey: [`/api/tournaments/${selectedTournamentId}/participants`],
-    enabled: !!selectedTournamentId,
-  });
+  // Participants query already declared above
 
   // Fetch tournament purchases when tournament is selected
   const { data: purchases, isLoading: purchasesLoading } = useQuery({
@@ -1502,12 +1510,7 @@ export default function Dashboard() {
 
   // Authentication handled by router
 
-  // Add query for popular stocks
-  const { data: popularStocksData, isLoading: cachedLoading } = useQuery({
-    queryKey: ["/api/popular"],
-    enabled: !!user,
-    refetchInterval: getRefreshInterval(changePeriod),
-  });
+  // Popular stocks query already declared above
 
   // Use popular stocks data
   useEffect(() => {
