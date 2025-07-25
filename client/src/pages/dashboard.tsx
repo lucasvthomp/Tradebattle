@@ -3009,6 +3009,16 @@ export default function Dashboard() {
                   </SelectContent>
                 </Select>
               </div>
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="private-tournament"
+                  checked={!isPublicTournament}
+                  onCheckedChange={(checked) => setIsPublicTournament(!checked)}
+                />
+                <Label htmlFor="private-tournament" className="text-sm">
+                  Make tournament private (only joinable by code)
+                </Label>
+              </div>
               <div className="flex justify-end space-x-2">
                 <Button variant="outline" onClick={() => setIsCreateTournamentDialogOpen(false)}>
                   Cancel
