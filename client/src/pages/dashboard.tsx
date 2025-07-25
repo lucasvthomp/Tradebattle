@@ -2934,67 +2934,121 @@ export default function Dashboard() {
           </DialogContent>
         </Dialog>
 
-        {/* Create Tournament Dialog */}
+        {/* Create Tournament Dialog - Full Featured */}
         <Dialog open={isCreateTournamentDialogOpen} onOpenChange={setIsCreateTournamentDialogOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Create Tournament</DialogTitle>
+              <DialogTitle className="flex items-center space-x-2">
+                <Trophy className="w-5 h-5" />
+                <span>Create Tournament</span>
+              </DialogTitle>
               <DialogDescription>
-                Set up a new trading competition
+                Set up a new trading competition with custom settings
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="tournament-name">Tournament Name</Label>
-                <Input
-                  id="tournament-name"
-                  value={tournamentName}
-                  onChange={(e) => setTournamentName(e.target.value)}
-                  placeholder="Enter tournament name"
-                  className="mt-2"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-6">
+              {/* Basic Settings */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold flex items-center space-x-2">
+                  <Trophy className="w-5 h-5" />
+                  <span>Basic Tournament Settings</span>
+                </h3>
                 <div>
-                  <Label htmlFor="max-players">Max Players</Label>
+                  <Label htmlFor="tournament-name">Tournament Name</Label>
                   <Input
-                    id="max-players"
-                    type="number"
-                    value={maxPlayers}
-                    onChange={(e) => setMaxPlayers(e.target.value)}
-                    min="2"
-                    max="100"
+                    id="tournament-name"
+                    value={tournamentName}
+                    onChange={(e) => setTournamentName(e.target.value)}
+                    placeholder="Enter tournament name"
                     className="mt-2"
                   />
                 </div>
-                <div>
-                  <Label htmlFor="starting-balance">Starting Balance</Label>
-                  <Input
-                    id="starting-balance"
-                    type="number"
-                    value={startingBalance}
-                    onChange={(e) => setStartingBalance(e.target.value)}
-                    min="1000"
-                    max="1000000"
-                    placeholder="10000"
-                    className="mt-2"
-                  />
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="max-players">Max Players</Label>
+                    <Input
+                      id="max-players"
+                      type="number"
+                      value={maxPlayers}
+                      onChange={(e) => setMaxPlayers(e.target.value)}
+                      min="2"
+                      max="100"
+                      className="mt-2"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="starting-balance">Starting Fake Money</Label>
+                    <Input
+                      id="starting-balance"
+                      type="number"
+                      value={startingBalance}
+                      onChange={(e) => setStartingBalance(e.target.value)}
+                      min="1000"
+                      max="1000000"
+                      placeholder="10000"
+                      className="mt-2"
+                    />
+                  </div>
                 </div>
               </div>
-              <div>
-                <Label htmlFor="buy-in-amount">Buy-in Amount ($)</Label>
-                <Input
-                  id="buy-in-amount"
-                  type="number"
-                  value={buyInAmount}
-                  onChange={(e) => setBuyInAmount(e.target.value)}
-                  min="0"
-                  placeholder="Enter amount (0 for free)"
-                  className="mt-2"
-                />
+
+              {/* Creator Benefits & Jackpot System */}
+              <div className="border border-green-500/20 bg-green-500/5 rounded-lg p-4">
+                <h3 className="text-lg font-semibold flex items-center space-x-2 text-green-600 mb-2">
+                  <Trophy className="w-5 h-5" />
+                  <span>Creator Benefits & Jackpot System</span>
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  As a tournament creator, you earn 5% of the total jackpot! The more players that join, the bigger your reward.
+                </p>
+                
+                <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800 mb-4">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <DollarSign className="w-4 h-4 text-green-600" />
+                    <span className="font-semibold text-green-700 dark:text-green-400">Creator Reward Calculation</span>
+                  </div>
+                  <div className="text-sm space-y-1">
+                    <p>• Total Jackpot = Buy-in Amount × Number of Players</p>
+                    <p>• Your Creator Reward = 5% of Total Jackpot</p>
+                    <p>• Winner Prize Pool = 95% of Total Jackpot</p>
+                  </div>
+                  <div className="mt-3 p-2 bg-white dark:bg-gray-800 rounded border">
+                    <p className="text-xs text-gray-600 dark:text-gray-400">Example: $10 buy-in × 20 players = $200 total jackpot</p>
+                    <p className="text-xs font-semibold text-green-600">Your reward: $10 (5%) | Winner gets: $190 (95%)</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="buy-in-amount">Required Buy-in Amount (Minimum $5)</Label>
+                  <Input
+                    id="buy-in-amount"
+                    type="number"
+                    value={buyInAmount}
+                    onChange={(e) => setBuyInAmount(e.target.value)}
+                    min="5"
+                    placeholder="Enter amount (minimum $5)"
+                    className="mt-2"
+                  />
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Each player must pay this amount to join. You earn 5% of the total collected amount.
+                  </p>
+                  {buyInAmount && parseFloat(buyInAmount) >= 5 && (
+                    <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="text-sm space-y-1">
+                        <p><strong>With {maxPlayers} max players:</strong></p>
+                        <p>• Total Jackpot: ${(parseFloat(buyInAmount) * parseInt(maxPlayers)).toLocaleString()}</p>
+                        <p>• Your Creator Reward: ${((parseFloat(buyInAmount) * parseInt(maxPlayers)) * 0.05).toLocaleString()}</p>
+                        <p>• Winner Prize Pool: ${((parseFloat(buyInAmount) * parseInt(maxPlayers)) * 0.95).toLocaleString()}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
+
+              {/* Duration */}
               <div>
-                <Label htmlFor="timeframe">Duration</Label>
+                <Label htmlFor="timeframe">Tournament Duration</Label>
                 <Select value={timeframe} onValueChange={setTimeframe}>
                   <SelectTrigger className="mt-2">
                     <SelectValue />
@@ -3009,6 +3063,8 @@ export default function Dashboard() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* Privacy Setting */}
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="private-tournament"
@@ -3019,7 +3075,9 @@ export default function Dashboard() {
                   Make tournament private (only joinable by code)
                 </Label>
               </div>
-              <div className="flex justify-end space-x-2">
+
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-2 pt-4 border-t">
                 <Button variant="outline" onClick={() => setIsCreateTournamentDialogOpen(false)}>
                   Cancel
                 </Button>
@@ -3038,8 +3096,20 @@ export default function Dashboard() {
                     }
                   }}
                   disabled={!tournamentName.trim() || createTournamentMutation.isPending}
+                  className="min-w-[140px]"
                 >
-                  {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
+                  {createTournamentMutation.isPending ? (
+                    <div className="flex items-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Creating...</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center space-x-2">
+                      <Trophy className="w-5 h-5" />
+                      <span>Create Tournament</span>
+                      <span>(${buyInAmount} Buy-in • Earn 5%)</span>
+                    </div>
+                  )}
                 </Button>
               </div>
             </div>
