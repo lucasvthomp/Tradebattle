@@ -107,12 +107,14 @@ export function PortfolioGraph({
   const isPositive = totalChange >= 0;
 
   return (
-    <Card className={className}>
+    <Card className={`${className} gradient-card border-0 shadow-lg`}>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center">
-            <TrendingUp className="w-5 h-5 mr-2" />
-            {title}
+            <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center neon-glow mr-3">
+              <TrendingUp className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <span className="gradient-text">{title}</span>
           </div>
           {showStats && (
             <div className="flex items-center space-x-4">
@@ -129,26 +131,71 @@ export function PortfolioGraph({
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-lg pointer-events-none"></div>
         <ResponsiveContainer width="100%" height={height}>
-          <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+          <LineChart 
+            data={data} 
+            margin={{ top: 20, right: 30, left: 65, bottom: 35 }}
+          >
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="hsl(var(--neon-blue))" />
+                <stop offset="50%" stopColor="hsl(var(--primary))" />
+                <stop offset="100%" stopColor="hsl(var(--neon-purple))" />
+              </linearGradient>
+            </defs>
+            <CartesianGrid 
+              strokeDasharray="2 2" 
+              stroke="hsl(var(--muted-foreground))" 
+              opacity={0.2}
+              horizontal={true}
+              vertical={false}
+            />
             <XAxis 
               dataKey="date" 
-              tick={{ fontSize: 12 }}
+              tick={{ 
+                fontSize: 11, 
+                fill: 'hsl(var(--muted-foreground))',
+                fontWeight: 500
+              }}
+              tickLine={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
+              axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+              tickMargin={8}
+              interval="preserveStartEnd"
               tickFormatter={(value) => {
                 const date = new Date(value);
                 return `${date.getMonth() + 1}/${date.getDate()}`;
               }}
             />
             <YAxis 
-              tick={{ fontSize: 12 }}
-              tickFormatter={(value) => formatCurrency(value / 1000) + 'k'}
+              tick={{ 
+                fontSize: 11, 
+                fill: 'hsl(var(--muted-foreground))',
+                fontWeight: 500
+              }}
+              tickLine={{ stroke: 'hsl(var(--muted-foreground))', strokeWidth: 1 }}
+              axisLine={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
+              tickMargin={8}
+              width={55}
+              tickCount={6}
+              domain={['dataMin - 200', 'dataMax + 200']}
+              tickFormatter={(value) => {
+                if (value >= 1000) {
+                  return formatCurrency(value / 1000) + 'k';
+                } else {
+                  return formatCurrency(value);
+                }
+              }}
             />
             <Tooltip 
               labelFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString();
+                return date.toLocaleDateString('en-US', { 
+                  month: 'short', 
+                  day: 'numeric',
+                  year: 'numeric'
+                });
               }}
               formatter={(value: number, name: string) => [
                 formatCurrency(value),
@@ -156,18 +203,37 @@ export function PortfolioGraph({
                 name === 'stockValue' ? 'Stock Value' : 'Cash Balance'
               ]}
               contentStyle={{
-                backgroundColor: 'hsl(var(--card))',
+                backgroundColor: 'hsl(var(--background))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px'
+                borderRadius: '8px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                fontSize: '12px',
+                fontWeight: 500
+              }}
+              labelStyle={{
+                color: 'hsl(var(--foreground))',
+                fontWeight: 600,
+                marginBottom: '4px'
               }}
             />
             <Line 
               type="monotone" 
               dataKey="value" 
-              stroke="hsl(var(--primary))" 
-              strokeWidth={2}
+              stroke="url(#gradient)" 
+              strokeWidth={3}
               dot={false}
-              activeDot={{ r: 4, fill: 'hsl(var(--primary))' }}
+              activeDot={{ 
+                r: 6, 
+                fill: 'hsl(var(--neon-blue))',
+                stroke: 'hsl(var(--background))',
+                strokeWidth: 3,
+                style: {
+                  filter: 'drop-shadow(0 0 8px hsl(var(--neon-blue)))'
+                }
+              }}
+              style={{
+                filter: 'drop-shadow(0 0 4px hsl(var(--primary)))'
+              }}
             />
           </LineChart>
         </ResponsiveContainer>
