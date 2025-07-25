@@ -595,7 +595,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   
   // Main navigation state
-  const [currentView, setCurrentView] = useState<'main' | 'watchlist' | 'tournaments' | 'create' | 'join' | 'tournament-detail'>('main');
+  const [currentView, setCurrentView] = useState<'main' | 'watchlist' | 'tournaments' | 'create' | 'join' | 'tournament-detail' | 'tournament-browser' | 'logs'>('main');
   
   // Watchlist state
   const [searchQuery, setSearchQuery] = useState("");
@@ -762,15 +762,19 @@ export default function Dashboard() {
   });
 
   // Fetch user tournaments
-  const { data: userTournaments, isLoading: tournamentsLoading, error: tournamentsError } = useQuery({
+  const { data: userTournaments = [], isLoading: tournamentsLoading, error: tournamentsError } = useQuery<any[]>({
     queryKey: ["/api/tournaments"],
     enabled: !!user,
   });
 
-  // Tournament participants query declared above
+  // Tournament participants query
+  const { data: participants = [], isLoading: participantsLoading } = useQuery<any[]>({
+    queryKey: ['tournament-participants', selectedTournament?.tournaments?.id],
+    enabled: !!selectedTournament?.tournaments?.id,
+  });
 
   // Fetch user's watchlist
-  const { data: watchlist = [], isLoading: watchlistLoading, refetch: refetchWatchlist } = useQuery({
+  const { data: watchlist = [], isLoading: watchlistLoading, refetch: refetchWatchlist } = useQuery<WatchlistItem[]>({
     queryKey: ["/api/watchlist"],
     enabled: !!user,
   });
@@ -3021,6 +3025,36 @@ export default function Dashboard() {
     );
   }
 
-  // Default fallback - should not reach here in normal operation
-  return null;
+  // Default case - show loading or main dashboard
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+          <p className="mt-4 text-muted-foreground">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Please log in</h2>
+          <p className="text-muted-foreground">You need to be logged in to access the dashboard.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Default dashboard view if no specific view is matched
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
+        <p>Welcome to your trading dashboard!</p>
+      </div>
+    </div>
+  );
 }
