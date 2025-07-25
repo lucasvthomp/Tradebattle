@@ -137,11 +137,11 @@
   
   /* Enhanced animations */
   .animate-pulse-slow {
-    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    /* Removed pulse animation to prevent moving gradients */
   }
   
   .animate-glow {
-    animation: glow 2s ease-in-out infinite alternate;
+    /* Removed glow animation to prevent moving gradients */
   }
   
   .animate-slide-up {
@@ -153,7 +153,7 @@
   }
   
   .animate-float {
-    animation: float 6s ease-in-out infinite;
+    /* Removed float animation to prevent moving gradients */
   }
   
   /* Interactive hover effects */
@@ -486,7 +486,7 @@ textarea:focus-visible {
     transparent 50%
   );
   opacity: 0.1;
-  animation: float 6s ease-in-out infinite;
+  /* Removed float animation to prevent moving gradients */
   pointer-events: none;
 }
 
@@ -496,7 +496,7 @@ textarea:focus-visible {
   color: hsl(0, 0%, 100%);
   @apply text-white font-semibold;
   box-shadow: 0 0 20px var(--neon-green);
-  animation: pulse-glow 2s ease-in-out infinite alternate;
+  /* Removed pulse-glow animation to prevent moving gradients */
 }
 
 .status-inactive {
