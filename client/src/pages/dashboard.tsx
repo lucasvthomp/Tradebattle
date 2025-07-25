@@ -603,9 +603,11 @@ export default function Dashboard() {
   const [popularStocks, setPopularStocks] = useState([]);
   const [isLoadingPopular, setIsLoadingPopular] = useState(true);
   const [selectedStock, setSelectedStock] = useState(null);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [sortBy, setSortBy] = useState("symbol");
+  
+  // Tournament stock search state
+  const [stockSearchTerm, setStockSearchTerm] = useState("");
+  const [stockSearchResults, setStockSearchResults] = useState([]);
+  const [stockSearchLoading, setStockSearchLoading] = useState(false);
   const [sortOrder, setSortOrder] = useState("asc");
   const [filterSector, setFilterSector] = useState("all");
   const [changePeriod, setChangePeriod] = useState("1D");
@@ -1003,6 +1005,120 @@ export default function Dashboard() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showSearchResults]);
+
+  // Tournament stock search functionality
+  useEffect(() => {
+    const handleTournamentStockSearch = async () => {
+      if (stockSearchTerm.trim() === "") {
+        setStockSearchResults([]);
+        setStockSearchLoading(false);
+        return;
+      }
+
+      if (stockSearchTerm.length < 2) return;
+
+      setStockSearchLoading(true);
+      try {
+        const response = await fetch(`/api/search/${encodeURIComponent(stockSearchTerm)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setStockSearchResults(data.data);
+          }
+        }
+      } catch (error) {
+        console.error("Error searching stocks for tournament:", error);
+      } finally {
+        setStockSearchLoading(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(handleTournamentStockSearch, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [stockSearchTerm]);
+
+  // Tournament stock purchase handler
+  const handleTournamentStockPurchase = async (stock: any) => {
+    if (!selectedTournament?.tournaments?.id) {
+      toast({
+        title: "Error",
+        description: "No tournament selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Get current stock price
+    try {
+      const response = await fetch(`/api/quote/${stock.symbol}`);
+      if (!response.ok) throw new Error('Failed to fetch stock price');
+      
+      const priceData = await response.json();
+      if (!priceData.success) throw new Error('Failed to get stock price');
+
+      const currentPrice = priceData.data.price;
+      const maxShares = Math.floor(currentBalance / currentPrice);
+
+      if (maxShares === 0) {
+        toast({
+          title: "Insufficient Funds",
+          description: `You need at least ${formatCurrency(currentPrice)} to buy one share of ${stock.symbol}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // For now, buy 1 share (could be expanded to show a dialog for quantity)
+      const sharesToBuy = 1;
+      const totalCost = sharesToBuy * currentPrice;
+
+      if (totalCost > currentBalance) {
+        toast({
+          title: "Insufficient Funds",
+          description: `You need ${formatCurrency(totalCost)} but only have ${formatCurrency(currentBalance)}`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Make the purchase
+      const purchaseResponse = await apiRequest("POST", `/api/tournaments/${selectedTournament.tournaments.id}/purchase`, {
+        symbol: stock.symbol,
+        companyName: stock.companyName || stock.name,
+        shares: sharesToBuy,
+        purchasePrice: currentPrice
+      });
+
+      const purchaseResult = await purchaseResponse.json();
+
+      if (purchaseResult.success) {
+        toast({
+          title: "Purchase Successful",
+          description: `Bought ${sharesToBuy} share${sharesToBuy > 1 ? 's' : ''} of ${stock.symbol} for ${formatCurrency(totalCost)}`,
+        });
+
+        // Refresh tournament data
+        refetchBalance();
+        refetchPurchases();
+        
+        // Clear search
+        setStockSearchTerm("");
+        setStockSearchResults([]);
+      } else {
+        toast({
+          title: "Purchase Failed",
+          description: purchaseResult.message || "Failed to purchase stock",
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to purchase stock",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
@@ -2490,6 +2606,101 @@ export default function Dashboard() {
                     </CardContent>
                   </Card>
                 </motion.div>
+
+                {/* Stock Search and Trading */}
+                <motion.div variants={fadeInUp}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center space-x-2">
+                        <Search className="w-5 h-5" />
+                        <span>Search & Trade Stocks</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Stock Search Input */}
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+                        <Input
+                          placeholder="Search stocks to trade..."
+                          value={stockSearchTerm}
+                          onChange={(e) => setStockSearchTerm(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+
+                      {/* Search Results */}
+                      {stockSearchTerm && (
+                        <div className="max-h-64 overflow-y-auto border rounded-lg">
+                          {stockSearchResults.length > 0 ? (
+                            <div className="divide-y">
+                              {stockSearchResults.slice(0, 8).map((stock) => (
+                                <div 
+                                  key={stock.symbol} 
+                                  className="p-3 hover:bg-muted cursor-pointer flex items-center justify-between"
+                                  onClick={() => handleTournamentStockPurchase(stock)}
+                                >
+                                  <div className="flex-1">
+                                    <div className="font-semibold text-sm">{stock.symbol}</div>
+                                    <div className="text-xs text-muted-foreground line-clamp-1">
+                                      {stock.companyName}
+                                    </div>
+                                  </div>
+                                  <div className="text-right">
+                                    <div className="font-semibold text-sm">
+                                      {formatCurrency(stock.price || 0)}
+                                    </div>
+                                    <Button size="sm" variant="outline" className="mt-1">
+                                      <Plus className="w-3 h-3 mr-1" />
+                                      Buy
+                                    </Button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : stockSearchLoading ? (
+                            <div className="p-4 text-center">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                              <p className="text-sm text-muted-foreground mt-2">Searching...</p>
+                            </div>
+                          ) : stockSearchTerm.length >= 2 ? (
+                            <div className="p-4 text-center text-muted-foreground">
+                              <Package className="w-8 h-8 mx-auto mb-2" />
+                              <p className="text-sm">No stocks found for "{stockSearchTerm}"</p>
+                            </div>
+                          ) : null}
+                        </div>
+                      )}
+
+                      {/* Popular Stocks Quick Trade */}
+                      {!stockSearchTerm && (
+                        <div>
+                          <h4 className="text-sm font-semibold mb-3">Popular Stocks</h4>
+                          <div className="grid grid-cols-2 gap-2">
+                            {popularStocksData?.data?.slice(0, 4).map((stock) => (
+                              <div
+                                key={stock.symbol}
+                                className="p-2 border rounded-lg hover:bg-muted cursor-pointer transition-colors"
+                                onClick={() => handleTournamentStockPurchase(stock)}
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div className="font-semibold text-xs">{stock.symbol}</div>
+                                    <div className="text-xs text-green-600">
+                                      {formatCurrency(stock.price || 0)}
+                                    </div>
+                                  </div>
+                                  <Button size="sm" variant="ghost" className="p-1">
+                                    <Plus className="w-3 h-3" />
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                </motion.div>
               </div>
 
               {/* Right Column - Tournament Info & Leaderboard */}
@@ -2615,13 +2826,6 @@ export default function Dashboard() {
                       <CardTitle>Quick Actions</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <Button 
-                        className="w-full" 
-                        onClick={() => setCurrentView('main')}
-                      >
-                        <Search className="w-4 h-4 mr-2" />
-                        Trade Stocks
-                      </Button>
                       <Button 
                         variant="outline" 
                         className="w-full"
