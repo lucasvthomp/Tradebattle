@@ -636,7 +636,7 @@ export default function Dashboard() {
   const [timeframe, setTimeframe] = useState("4 weeks");
   
   // Enhanced tournament creation fields
-  const [buyInAmount, setBuyInAmount] = useState("0"); // Real money buy-in amount
+  const [buyInAmount, setBuyInAmount] = useState("5"); // Real money buy-in amount
   const [tradingRestriction, setTradingRestriction] = useState("none");
   const [isPublicTournament, setIsPublicTournament] = useState(true);
   const [customDuration, setCustomDuration] = useState({ value: 4, unit: "weeks" }); // For duration wheel
@@ -2321,82 +2321,66 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              {/* Buy-in Settings */}
-              <Card>
+              {/* Creator Benefits & Jackpot System */}
+              <Card className="border-green-500/20 bg-green-500/5">
                 <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <DollarSign className="w-5 h-5" />
-                    <span>Buy-in Amount</span>
+                  <CardTitle className="flex items-center space-x-2 text-green-600">
+                    <Trophy className="w-5 h-5" />
+                    <span>Creator Benefits & Jackpot System</span>
                   </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    As a tournament creator, you earn 5% of the total jackpot! The more players that join, the bigger your reward.
+                  </p>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                      <span className="font-semibold text-green-700 dark:text-green-400">Creator Reward Calculation</span>
+                    </div>
+                    <div className="text-sm space-y-1">
+                      <p>• Total Jackpot = Buy-in Amount × Number of Players</p>
+                      <p>• Your Creator Reward = 5% of Total Jackpot</p>
+                      <p>• Winner Prize Pool = 95% of Total Jackpot</p>
+                    </div>
+                    <div className="mt-3 p-2 bg-white dark:bg-gray-800 rounded border">
+                      <p className="text-xs text-gray-600 dark:text-gray-400">Example: $10 buy-in × 20 players = $200 total jackpot</p>
+                      <p className="text-xs font-semibold text-green-600">Your reward: $10 (5%) | Winner gets: $190 (95%)</p>
+                    </div>
+                  </div>
+                  
                   <div>
-                    <Label>Entry Fee (Real Money)</Label>
-                    <Select value={buyInAmount} onValueChange={setBuyInAmount}>
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="0">Free Tournament</SelectItem>
-                        <SelectItem value="5">$5 Buy-in</SelectItem>
-                        <SelectItem value="10">$10 Buy-in</SelectItem>
-                        <SelectItem value="25">$25 Buy-in</SelectItem>
-                        <SelectItem value="50">$50 Buy-in</SelectItem>
-                        <SelectItem value="100">$100 Buy-in</SelectItem>
-                        <SelectItem value="250">$250 Buy-in</SelectItem>
-                        <SelectItem value="500">$500 Buy-in</SelectItem>
-                        <SelectItem value="1000">$1,000 Buy-in</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    {buyInAmount === "0" && (
-                      <p className="text-sm text-green-600 mt-2">✓ Free to join for everyone</p>
-                    )}
-                    {buyInAmount !== "0" && (
-                      <p className="text-sm text-muted-foreground mt-2">
-                        Participants pay ${buyInAmount} to join. Winner takes the prize pool.
-                      </p>
+                    <Label htmlFor="buy-in-amount">Required Buy-in Amount (Minimum $5)</Label>
+                    <Input
+                      id="buy-in-amount"
+                      type="number"
+                      value={buyInAmount}
+                      onChange={(e) => setBuyInAmount(e.target.value)}
+                      min="5"
+                      placeholder="Enter amount (minimum $5)"
+                      className="mt-2"
+                    />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Each player must pay this amount to join. You earn 5% of the total collected amount.
+                    </p>
+                    {buyInAmount && parseFloat(buyInAmount) >= 5 && (
+                      <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <div className="text-sm space-y-1">
+                          <p className="font-semibold text-blue-700 dark:text-blue-400">Potential Earnings Preview:</p>
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div>10 players: <span className="font-semibold text-green-600">${(parseFloat(buyInAmount) * 10 * 0.05).toFixed(2)}</span></div>
+                            <div>20 players: <span className="font-semibold text-green-600">${(parseFloat(buyInAmount) * 20 * 0.05).toFixed(2)}</span></div>
+                            <div>50 players: <span className="font-semibold text-green-600">${(parseFloat(buyInAmount) * 50 * 0.05).toFixed(2)}</span></div>
+                            <div>100 players: <span className="font-semibold text-green-600">${(parseFloat(buyInAmount) * 100 * 0.05).toFixed(2)}</span></div>
+                          </div>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Trading Restrictions */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Building2 className="w-5 h-5" />
-                    <span>Trading Restrictions</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label>Allowed Trading Categories</Label>
-                    <Select value={tradingRestriction} onValueChange={setTradingRestriction}>
-                      <SelectTrigger className="mt-2">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {tradingRestrictions.map((restriction) => (
-                          <SelectItem key={restriction.value} value={restriction.value}>
-                            <div className="flex items-center space-x-2">
-                              <restriction.icon className="w-4 h-4" />
-                              <span>{restriction.label}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {(() => {
-                      const selected = tradingRestrictions.find(r => r.value === tradingRestriction);
-                      return selected && (
-                        <p className="text-sm text-muted-foreground mt-2">
-                          {selected.description}
-                        </p>
-                      );
-                    })()}
-                  </div>
-                </CardContent>
-              </Card>
+
 
               {/* Duration Wheel */}
               <Card>
@@ -2468,7 +2452,7 @@ export default function Dashboard() {
                     isPublic: isPublicTournament
                   });
                 }}
-                disabled={!tournamentName || !maxPlayers || !startingBalance || createTournamentMutation.isPending}
+                disabled={!tournamentName || !maxPlayers || !startingBalance || parseFloat(buyInAmount) < 5 || createTournamentMutation.isPending}
               >
                 {createTournamentMutation.isPending ? (
                   <div className="flex items-center space-x-2">
@@ -2479,7 +2463,7 @@ export default function Dashboard() {
                   <div className="flex items-center space-x-2">
                     <Trophy className="w-5 h-5" />
                     <span>Create Tournament</span>
-                    {buyInAmount !== "0" && <span>(${buyInAmount} Buy-in)</span>}
+                    <span>(${buyInAmount} Buy-in • Earn 5%)</span>
                   </div>
                 )}
               </Button>

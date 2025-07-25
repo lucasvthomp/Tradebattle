@@ -182,6 +182,20 @@ export const userAchievements = pgTable("user_achievements", {
   uniqueUserAchievement: unique("unique_user_achievement").on(table.userId, table.achievementType),
 }));
 
+// Tournament creator rewards table for tracking 5% creator benefits
+export const tournamentCreatorRewards = pgTable("tournament_creator_rewards", {
+  id: serial("id").primaryKey(),
+  tournamentId: integer("tournament_id").references(() => tournaments.id).notNull(),
+  creatorId: integer("creator_id").references(() => users.id).notNull(),
+  totalJackpot: numeric("total_jackpot", { precision: 15, scale: 2 }).notNull(), // Total buy-in amount collected
+  creatorReward: numeric("creator_reward", { precision: 15, scale: 2 }).notNull(), // 5% of total jackpot
+  participantCount: integer("participant_count").notNull(), // Number of participants who paid buy-in
+  rewardPaid: boolean("reward_paid").default(false).notNull(), // Whether reward has been distributed
+  calculatedAt: timestamp("calculated_at").defaultNow().notNull(),
+  paidAt: timestamp("paid_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Zod schemas for validation
 export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
   symbol: true,
@@ -221,6 +235,14 @@ export const insertTournamentSchema = createInsertSchema(tournaments).pick({
   buyInAmount: true,
   tradingRestriction: true,
   isPublic: true,
+});
+
+export const insertCreatorRewardSchema = createInsertSchema(tournamentCreatorRewards).pick({
+  tournamentId: true,
+  creatorId: true,
+  totalJackpot: true,
+  creatorReward: true,
+  participantCount: true,
 });
 
 export const insertTournamentParticipantSchema = createInsertSchema(tournamentParticipants).pick({
