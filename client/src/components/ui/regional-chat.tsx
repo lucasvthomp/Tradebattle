@@ -28,10 +28,10 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const wsRef = useRef<WebSocket | null>(null);
 
-  // Fetch chat messages for user's region
+  // Fetch global chat messages (last 50)
   const { data: messagesData, refetch: refetchMessages } = useQuery({
-    queryKey: ['/api/chat', user?.country],
-    enabled: !!user && isOpen,
+    queryKey: ['/api/chat/global'],
+    enabled: isOpen,
     refetchInterval: 5000, // Fallback polling every 5 seconds
   });
 
@@ -44,7 +44,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
     },
     onSuccess: () => {
       setNewMessage("");
-      queryClient.invalidateQueries({ queryKey: ['/api/chat'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/chat/global'] });
       scrollToBottom();
     },
     onError: (error) => {
@@ -58,7 +58,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
-    if (!user || !isOpen) return;
+    if (!isOpen) return;
 
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     const wsUrl = `${protocol}//${window.location.host}/ws`;
@@ -69,15 +69,15 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
 
       ws.onopen = () => {
         console.log('Chat WebSocket connected');
-        // Join room for user's country
-        ws.send(JSON.stringify({ type: 'join', country: user.country }));
+        // Join global chat room
+        ws.send(JSON.stringify({ type: 'join', room: 'global' }));
       };
 
       ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data);
           if (data.type === 'newMessage') {
-            queryClient.invalidateQueries({ queryKey: ['/api/chat'] });
+            queryClient.invalidateQueries({ queryKey: ['/api/chat/global'] });
             scrollToBottom();
           }
         } catch (error) {
@@ -122,7 +122,6 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
     sendMessageMutation.mutate({
       userId: user.userId,
       message: newMessage.trim(),
-      country: user.country || 'Unknown',
     });
   };
 
@@ -133,25 +132,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
     }
   };
 
-  const formatTime = (timestamp: string) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
 
-  const getCountryFlag = (country: string) => {
-    const flagMap: Record<string, string> = {
-      'Brazil': '🇧🇷',
-      'Argentina': '🇦🇷',
-      'Mexico': '🇲🇽',
-      'Canada': '🇨🇦',
-      'Colombia': '🇨🇴',
-      'Chile': '🇨🇱',
-      'Peru': '🇵🇪',
-      'Uruguay': '🇺🇾',
-      'United States': '🇺🇸',
-    };
-    return flagMap[country] || '🌍';
-  };
 
   return (
     <AnimatePresence>
@@ -182,19 +163,14 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-lg flex items-center space-x-2">
                     <Globe className="w-5 h-5" />
-                    <span>{t('regionalChat')}</span>
-                    {user?.country && (
-                      <Badge variant="secondary" className="text-xs">
-                        {getCountryFlag(user.country)} {user.country}
-                      </Badge>
-                    )}
+                    <span>Global Chat</span>
                   </CardTitle>
                   <Button variant="ghost" size="icon" onClick={onToggle}>
                     <X className="w-4 h-4" />
                   </Button>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {t('connectTraders')}
+                  Connect with traders worldwide
                 </p>
               </CardHeader>
 
@@ -228,11 +204,6 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                               </div>
                             )}
                             <p className="text-sm break-words">{message.message}</p>
-                            <div className="flex justify-end mt-1">
-                              <span className={`text-xs ${message.userId === user?.userId ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
-                                {formatTime(message.createdAt)}
-                              </span>
-                            </div>
                           </div>
                         </div>
                       ))
@@ -246,16 +217,17 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
                 {/* Message Input */}
                 <div className="flex space-x-2 pb-4">
                   <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder={t('typeMessage') || "Type your message..."}
+                    value={user ? newMessage : ""}
+                    onChange={(e) => user && setNewMessage(e.target.value)}
+                    onKeyPress={user ? handleKeyPress : undefined}
+                    placeholder={user ? (t('typeMessage') || "Type your message...") : "Please login to use chat"}
                     maxLength={500}
-                    disabled={sendMessageMutation.isPending}
+                    disabled={!user || sendMessageMutation.isPending}
+                    readOnly={!user}
                   />
                   <Button
                     onClick={handleSendMessage}
-                    disabled={!newMessage.trim() || sendMessageMutation.isPending}
+                    disabled={!user || !newMessage.trim() || sendMessageMutation.isPending}
                     size="icon"
                   >
                     <Send className="w-4 h-4" />

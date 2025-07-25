@@ -391,45 +391,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   const httpServer = createServer(app);
   
-  // Add WebSocket server for real-time chat
+  // Add WebSocket server for real-time global chat
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
   
-  // Store connected clients by country
-  const clientsByCountry = new Map<string, Set<WebSocket>>();
+  // Store all connected global chat clients
+  const globalChatClients = new Set<WebSocket>();
   
   wss.on('connection', (ws: WebSocket) => {
     console.log('WebSocket client connected');
-    let clientCountry: string | null = null;
     
     ws.on('message', (data: Buffer) => {
       try {
         const message = JSON.parse(data.toString());
         
-        if (message.type === 'join' && message.country) {
-          clientCountry = message.country;
-          
-          // Add client to country group
-          if (!clientsByCountry.has(clientCountry)) {
-            clientsByCountry.set(clientCountry, new Set());
-          }
-          clientsByCountry.get(clientCountry)!.add(ws);
-          
-          console.log(`Client joined ${clientCountry} chat room`);
+        if (message.type === 'join' && message.room === 'global') {
+          // Add client to global chat
+          globalChatClients.add(ws);
+          console.log('Client joined global chat room');
         }
         
-        if (message.type === 'newMessage' && clientCountry) {
-          // Broadcast new message to all clients in the same country
-          const countryClients = clientsByCountry.get(clientCountry);
-          if (countryClients) {
-            countryClients.forEach(client => {
-              if (client.readyState === WebSocket.OPEN) {
-                client.send(JSON.stringify({
-                  type: 'newMessage',
-                  country: clientCountry
-                }));
-              }
-            });
-          }
+        if (message.type === 'newMessage') {
+          // Broadcast new message to all global chat clients
+          globalChatClients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+              client.send(JSON.stringify({
+                type: 'newMessage'
+              }));
+            }
+          });
         }
       } catch (error) {
         console.error('Error processing WebSocket message:', error);
@@ -438,20 +427,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     ws.on('close', () => {
       console.log('WebSocket client disconnected');
-      
-      // Remove client from country group
-      if (clientCountry && clientsByCountry.has(clientCountry)) {
-        clientsByCountry.get(clientCountry)!.delete(ws);
-        
-        // Clean up empty country groups
-        if (clientsByCountry.get(clientCountry)!.size === 0) {
-          clientsByCountry.delete(clientCountry);
-        }
-      }
+      globalChatClients.delete(ws);
     });
     
     ws.on('error', (error) => {
       console.error('WebSocket error:', error);
+      globalChatClients.delete(ws);
     });
   });
   

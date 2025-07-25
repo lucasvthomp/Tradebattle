@@ -1704,18 +1704,11 @@ router.post('/portfolio-history', requireAuth, asyncHandler(async (req, res) => 
 }));
 
 /**
- * GET /api/chat
- * Get chat messages for user's region
+ * GET /api/chat/global
+ * Get global chat messages (last 50)
  */
-router.get('/chat', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const user = await storage.getUser(userId);
-  
-  if (!user) {
-    throw new ValidationError('User not found');
-  }
-
-  const messages = await storage.getChatMessages(user.country || 'Unknown');
+router.get('/chat/global', asyncHandler(async (req, res) => {
+  const messages = await storage.getGlobalChatMessages(50);
   
   res.json({
     success: true,
@@ -1725,7 +1718,7 @@ router.get('/chat', requireAuth, asyncHandler(async (req, res) => {
 
 /**
  * POST /api/chat
- * Send a chat message
+ * Send a global chat message (authenticated users only)
  */
 router.post('/chat', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
@@ -1744,11 +1737,13 @@ router.post('/chat', requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError('User not found');
   }
   
-  const newMessage = await storage.createChatMessage({
+  const newMessage = await storage.createGlobalChatMessage({
     userId: user.userId,
-    message: message.trim(),
-    country: user.country || 'Unknown'
+    message: message.trim()
   });
+  
+  // Trigger WebSocket broadcast (this will be handled by the server WebSocket logic)
+  // No need to do anything here as the client will refetch after mutation success
   
   res.json({
     success: true,

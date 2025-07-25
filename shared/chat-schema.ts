@@ -6,7 +6,6 @@ export const chatMessages = pgTable("chat_messages", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
   userId: integer("user_id").notNull(),
   message: text("message").notNull(),
-  country: text("country").notNull(), // Region-based filtering
   isEdited: boolean("is_edited").default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),

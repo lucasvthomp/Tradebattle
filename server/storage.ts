@@ -119,8 +119,8 @@ export interface IStorage {
   getUserPortfolioHistory(userId: number, portfolioType: 'personal' | 'tournament', tournamentId?: number): Promise<PortfolioHistory[]>;
   
   // Chat operations
-  getChatMessages(country: string): Promise<(ChatMessage & { username?: string; displayName?: string })[]>;
-  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getGlobalChatMessages(limit: number): Promise<(ChatMessage & { username?: string; displayName?: string })[]>;
+  createGlobalChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -734,13 +734,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Chat operations
-  async getChatMessages(country: string): Promise<(ChatMessage & { username?: string; displayName?: string })[]> {
+  async getGlobalChatMessages(limit: number): Promise<(ChatMessage & { username?: string; displayName?: string })[]> {
     const result = await db
       .select({
         id: chatMessages.id,
         userId: chatMessages.userId,
         message: chatMessages.message,
-        country: chatMessages.country,
         isEdited: chatMessages.isEdited,
         createdAt: chatMessages.createdAt,
         updatedAt: chatMessages.updatedAt,
@@ -749,15 +748,37 @@ export class DatabaseStorage implements IStorage {
       })
       .from(chatMessages)
       .leftJoin(users, eq(chatMessages.userId, users.userId))
-      .where(eq(chatMessages.country, country))
-      .orderBy(asc(chatMessages.createdAt))
-      .limit(100); // Limit to recent 100 messages
+      .orderBy(desc(chatMessages.createdAt))
+      .limit(limit);
 
-    return result;
+    // Return in ascending order (oldest first)
+    return result.reverse();
   }
 
-  async createChatMessage(messageData: InsertChatMessage): Promise<ChatMessage> {
+  async createGlobalChatMessage(messageData: InsertChatMessage): Promise<ChatMessage> {
     const result = await db.insert(chatMessages).values(messageData).returning();
+    
+    // Ensure we only keep the latest 50 messages
+    const messageCount = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(chatMessages);
+    
+    const count = Number(messageCount[0]?.count || 0);
+    if (count > 50) {
+      // Delete oldest messages beyond 50
+      const oldestMessages = await db
+        .select({ id: chatMessages.id })
+        .from(chatMessages)
+        .orderBy(asc(chatMessages.createdAt))
+        .limit(count - 50);
+      
+      if (oldestMessages.length > 0) {
+        for (const message of oldestMessages) {
+          await db.delete(chatMessages).where(eq(chatMessages.id, message.id));
+        }
+      }
+    }
+    
     return result[0];
   }
 }
