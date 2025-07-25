@@ -141,9 +141,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    // Get the next available userId by finding the highest existing userId and adding 1
-    const maxUserIdResult = await db.select({ maxUserId: sql`COALESCE(MAX(user_id), -1)` }).from(users);
-    const nextUserId = (maxUserIdResult[0]?.maxUserId || -1) + 1;
+    try {
+      // Get the next available userId by finding the highest existing userId and adding 1
+      const maxUserIdResult = await db.select({ maxUserId: sql`COALESCE(MAX(user_id), -1)` }).from(users);
+      const maxUserId = maxUserIdResult[0]?.maxUserId;
+      const nextUserId = (maxUserId >= 0) ? maxUserId + 1 : 0;
+      
+
     
     // Insert user with automatically assigned userId
     const result = await db.insert(users).values({
@@ -154,17 +158,26 @@ export class DatabaseStorage implements IStorage {
     const newUser = result[0];
     
     // Automatically award the "Welcome" achievement to all new users
-    await this.awardAchievement({
-      userId: newUser.id,
-      achievementType: 'welcome',
-      achievementTier: 'common',
-      achievementName: 'Welcome',
-      achievementDescription: 'Joined the platform',
-      earnedAt: new Date(),
-      createdAt: new Date()
-    });
+    try {
+      await this.awardAchievement({
+        userId: newUser.id,
+        achievementType: 'welcome',
+        achievementTier: 'common',
+        achievementName: 'Welcome',
+        achievementDescription: 'Joined the platform',
+        earnedAt: new Date(),
+        createdAt: new Date()
+      });
+    } catch (achievementError) {
+      console.error('Error awarding welcome achievement:', achievementError);
+      // Don't fail user creation if achievement fails
+    }
     
     return newUser;
+    } catch (error) {
+      console.error('Error in createUser:', error);
+      throw error;
+    }
   }
 
   async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User> {
