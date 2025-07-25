@@ -2894,6 +2894,147 @@ export default function Dashboard() {
             </motion.div>
           </motion.div>
         </div>
+
+        {/* Join Tournament Dialog */}
+        <Dialog open={isJoinTournamentDialogOpen} onOpenChange={setIsJoinTournamentDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Join Tournament</DialogTitle>
+              <DialogDescription>
+                Enter the tournament code to join an existing competition
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="join-code">Tournament Code</Label>
+                <Input
+                  id="join-code"
+                  value={joinGameCode}
+                  onChange={(e) => setJoinGameCode(e.target.value)}
+                  placeholder="Enter tournament code"
+                  className="mt-2"
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setIsJoinTournamentDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => {
+                    if (joinGameCode.trim()) {
+                      joinTournamentMutation.mutate(joinGameCode.trim());
+                    }
+                  }}
+                  disabled={!joinGameCode.trim() || joinTournamentMutation.isPending}
+                >
+                  {joinTournamentMutation.isPending ? "Joining..." : "Join Tournament"}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Create Tournament Dialog */}
+        <Dialog open={isCreateTournamentDialogOpen} onOpenChange={setIsCreateTournamentDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create Tournament</DialogTitle>
+              <DialogDescription>
+                Set up a new trading competition
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="tournament-name">Tournament Name</Label>
+                <Input
+                  id="tournament-name"
+                  value={tournamentName}
+                  onChange={(e) => setTournamentName(e.target.value)}
+                  placeholder="Enter tournament name"
+                  className="mt-2"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="max-players">Max Players</Label>
+                  <Input
+                    id="max-players"
+                    type="number"
+                    value={maxPlayers}
+                    onChange={(e) => setMaxPlayers(e.target.value)}
+                    min="2"
+                    max="100"
+                    className="mt-2"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="starting-balance">Starting Balance</Label>
+                  <Input
+                    id="starting-balance"
+                    type="number"
+                    value={startingBalance}
+                    onChange={(e) => setStartingBalance(e.target.value)}
+                    min="1000"
+                    max="1000000"
+                    placeholder="10000"
+                    className="mt-2"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="buy-in-amount">Buy-in Amount ($)</Label>
+                <Input
+                  id="buy-in-amount"
+                  type="number"
+                  value={buyInAmount}
+                  onChange={(e) => setBuyInAmount(e.target.value)}
+                  min="0"
+                  placeholder="Enter amount (0 for free)"
+                  className="mt-2"
+                />
+              </div>
+              <div>
+                <Label htmlFor="timeframe">Duration</Label>
+                <Select value={timeframe} onValueChange={setTimeframe}>
+                  <SelectTrigger className="mt-2">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1 minute">1 Minute</SelectItem>
+                    <SelectItem value="1 hour">1 Hour</SelectItem>
+                    <SelectItem value="1 day">1 Day</SelectItem>
+                    <SelectItem value="1 week">1 Week</SelectItem>
+                    <SelectItem value="2 weeks">2 Weeks</SelectItem>
+                    <SelectItem value="4 weeks">4 Weeks</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setIsCreateTournamentDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => {
+                    if (tournamentName.trim()) {
+                      createTournamentMutation.mutate({
+                        name: tournamentName.trim(),
+                        maxPlayers: parseInt(maxPlayers),
+                        startingBalance: parseFloat(startingBalance),
+                        timeframe,
+                        buyInAmount: parseFloat(buyInAmount) || 0,
+                        tradingRestriction,
+                        isPublic: isPublicTournament
+                      });
+                    }
+                  }}
+                  disabled={!tournamentName.trim() || createTournamentMutation.isPending}
+                >
+                  {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -3055,6 +3196,153 @@ export default function Dashboard() {
         <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
         <p>Welcome to your trading dashboard!</p>
       </div>
+
+      {/* Join Tournament Dialog */}
+      <Dialog open={isJoinTournamentDialogOpen} onOpenChange={setIsJoinTournamentDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Join Tournament</DialogTitle>
+            <DialogDescription>
+              Enter the tournament code to join an existing competition
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="join-code">Tournament Code</Label>
+              <Input
+                id="join-code"
+                value={joinGameCode}
+                onChange={(e) => setJoinGameCode(e.target.value)}
+                placeholder="Enter tournament code"
+                className="mt-2"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsJoinTournamentDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (joinGameCode.trim()) {
+                    joinTournamentMutation.mutate(joinGameCode.trim());
+                  }
+                }}
+                disabled={!joinGameCode.trim() || joinTournamentMutation.isPending}
+              >
+                {joinTournamentMutation.isPending ? "Joining..." : "Join Tournament"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Tournament Dialog */}
+      <Dialog open={isCreateTournamentDialogOpen} onOpenChange={setIsCreateTournamentDialogOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Tournament</DialogTitle>
+            <DialogDescription>
+              Set up a new trading competition
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="tournament-name">Tournament Name</Label>
+              <Input
+                id="tournament-name"
+                value={tournamentName}
+                onChange={(e) => setTournamentName(e.target.value)}
+                placeholder="Enter tournament name"
+                className="mt-2"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="max-players">Max Players</Label>
+                <Input
+                  id="max-players"
+                  type="number"
+                  value={maxPlayers}
+                  onChange={(e) => setMaxPlayers(e.target.value)}
+                  min="2"
+                  max="100"
+                  className="mt-2"
+                />
+              </div>
+              <div>
+                <Label htmlFor="starting-balance">Starting Balance</Label>
+                <Input
+                  id="starting-balance"
+                  type="number"
+                  value={startingBalance}
+                  onChange={(e) => setStartingBalance(e.target.value)}
+                  min="1000"
+                  max="1000000"
+                  placeholder="10000"
+                  className="mt-2"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="buy-in-amount">Buy-in Amount ($)</Label>
+              <Input
+                id="buy-in-amount"
+                type="number"
+                value={buyInAmount}
+                onChange={(e) => setBuyInAmount(e.target.value)}
+                min="0"
+                placeholder="Enter amount (0 for free)"
+                className="mt-2"
+              />
+            </div>
+            <div>
+              <Label htmlFor="timeframe">Duration</Label>
+              <Select value={timeframe} onValueChange={setTimeframe}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1 minute">1 Minute</SelectItem>
+                  <SelectItem value="1 hour">1 Hour</SelectItem>
+                  <SelectItem value="1 day">1 Day</SelectItem>
+                  <SelectItem value="1 week">1 Week</SelectItem>
+                  <SelectItem value="2 weeks">2 Weeks</SelectItem>
+                  <SelectItem value="4 weeks">4 Weeks</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setIsCreateTournamentDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  if (tournamentName.trim()) {
+                    createTournamentMutation.mutate({
+                      name: tournamentName.trim(),
+                      maxPlayers: parseInt(maxPlayers),
+                      startingBalance: parseFloat(startingBalance),
+                      timeframe,
+                      buyInAmount: parseFloat(buyInAmount) || 0,
+                      tradingRestriction,
+                      isPublic: isPublicTournament
+                    });
+                  }
+                }}
+                disabled={!tournamentName.trim() || createTournamentMutation.isPending}
+              >
+                {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Regional Chat */}
+      <RegionalChat
+        isOpen={isChatOpen}
+        onToggle={() => setIsChatOpen(!isChatOpen)}
+      />
     </div>
   );
 }
