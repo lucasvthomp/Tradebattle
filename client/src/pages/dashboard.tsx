@@ -55,7 +55,8 @@ import {
   Package,
   Users,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  FileText
 } from "lucide-react";
 import {
   Dialog,
@@ -1734,7 +1735,7 @@ export default function Dashboard() {
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                       <Trophy className="w-8 h-8 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl">Current Tournaments</CardTitle>
+                    <CardTitle className="text-2xl">My Tournaments</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground">
@@ -1745,32 +1746,32 @@ export default function Dashboard() {
               </motion.div>
 
               <motion.div variants={fadeInUp}>
-                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('join')}>
+                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('tournament-browser')}>
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Building className="w-8 h-8 text-primary" />
+                      <Users className="w-8 h-8 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl">Join Tournament</CardTitle>
+                    <CardTitle className="text-2xl">Join & Create</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground">
-                      Enter a tournament code to join existing competitions
+                      Browse open tournaments or create your own competition
                     </p>
                   </CardContent>
                 </Card>
               </motion.div>
 
               <motion.div variants={fadeInUp}>
-                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('create')}>
+                <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('logs')}>
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Plus className="w-8 h-8 text-primary" />
+                      <FileText className="w-8 h-8 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl">Create Tournament</CardTitle>
+                    <CardTitle className="text-2xl">Transaction Logs</CardTitle>
                   </CardHeader>
                   <CardContent className="text-center">
                     <p className="text-muted-foreground">
-                      Start a new trading competition with custom settings
+                      View your tournament activity and transaction history
                     </p>
                   </CardContent>
                 </Card>
@@ -2831,6 +2832,186 @@ export default function Dashboard() {
                 </motion.div>
               </div>
             </div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Tournament Browser View
+  if (currentView === 'tournament-browser') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-6 px-4">
+          <motion.div
+            className="max-w-6xl mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            {/* Header */}
+            <motion.div className="mb-8" variants={fadeInUp}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <Button variant="outline" onClick={() => setCurrentView('main')}>
+                    ← Back to Dashboard
+                  </Button>
+                  <div>
+                    <h1 className="text-3xl font-bold text-foreground mb-2">Tournament Browser</h1>
+                    <p className="text-muted-foreground">Join existing tournaments or create your own</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Button onClick={() => setIsJoinTournamentDialogOpen(true)} variant="outline">
+                    <Building className="w-4 h-4 mr-2" />
+                    Join by Code
+                  </Button>
+                  <Button onClick={() => setIsCreateTournamentDialogOpen(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Tournament
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Tournament Cards Grid */}
+            <motion.div variants={fadeInUp}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="text-center py-12 text-muted-foreground col-span-full">
+                  <Trophy className="w-16 h-16 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold mb-2">Tournament Browser Coming Soon</h3>
+                  <p className="mb-4">Browse and join open tournaments with real participant data</p>
+                  <p className="text-sm">For now, use the "Join by Code" button to join existing tournaments</p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // Transaction Logs View
+  if (currentView === 'logs') {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto py-6 px-4">
+          <motion.div
+            className="max-w-6xl mx-auto"
+            initial="initial"
+            animate="animate"
+            variants={staggerChildren}
+          >
+            {/* Header */}
+            <motion.div className="mb-8" variants={fadeInUp}>
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" onClick={() => setCurrentView('main')}>
+                  ← Back to Dashboard
+                </Button>
+                <div>
+                  <h1 className="text-3xl font-bold text-foreground mb-2">Transaction Logs</h1>
+                  <p className="text-muted-foreground">Your tournament activity and trading history</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Tabs for different log types */}
+            <motion.div variants={fadeInUp}>
+              <Tabs defaultValue="tournaments" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="tournaments">Tournament Activity</TabsTrigger>
+                  <TabsTrigger value="trading">Stock Trading</TabsTrigger>
+                  <TabsTrigger value="financial">Financial History</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="tournaments" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Tournament Transactions</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {/* Sample tournament transactions */}
+                        {[
+                          { type: "join", tournament: "Tech Giants Battle", amount: 25, date: "2025-01-20" },
+                          { type: "create", tournament: "My First Tournament", amount: 0, date: "2025-01-18" },
+                          { type: "cashout", tournament: "Weekly Challenge", amount: 150, date: "2025-01-15" }
+                        ].map((transaction, i) => (
+                          <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                transaction.type === 'join' ? 'bg-blue-100 text-blue-600' :
+                                transaction.type === 'create' ? 'bg-green-100 text-green-600' :
+                                'bg-yellow-100 text-yellow-600'
+                              }`}>
+                                {transaction.type === 'join' ? <Users className="w-5 h-5" /> :
+                                 transaction.type === 'create' ? <Plus className="w-5 h-5" /> :
+                                 <DollarSign className="w-5 h-5" />}
+                              </div>
+                              <div>
+                                <p className="font-semibold">
+                                  {transaction.type === 'join' ? 'Joined' :
+                                   transaction.type === 'create' ? 'Created' : 'Cash Out from'} {transaction.tournament}
+                                </p>
+                                <p className="text-sm text-muted-foreground">{transaction.date}</p>
+                              </div>
+                            </div>
+                            <div className={`font-semibold ${
+                              transaction.type === 'cashout' ? 'text-green-600' : 
+                              transaction.type === 'join' ? 'text-red-600' : 'text-muted-foreground'
+                            }`}>
+                              {transaction.type === 'cashout' ? '+' : transaction.type === 'join' ? '-' : ''}${transaction.amount}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="trading" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Stock Trading History</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-center py-8 text-muted-foreground">
+                        <Activity className="w-12 h-12 mx-auto mb-4" />
+                        <p>Your stock trading history will appear here</p>
+                        <p className="text-sm">This includes all buy/sell transactions from tournaments</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="financial" className="space-y-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Financial Summary</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="text-center p-4 border rounded-lg">
+                          <DollarSign className="w-8 h-8 mx-auto mb-2 text-green-600" />
+                          <p className="text-2xl font-bold text-green-600">+$247</p>
+                          <p className="text-sm text-muted-foreground">Total Winnings</p>
+                        </div>
+                        <div className="text-center p-4 border rounded-lg">
+                          <Trophy className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+                          <p className="text-2xl font-bold">3</p>
+                          <p className="text-sm text-muted-foreground">Tournaments Won</p>
+                        </div>
+                        <div className="text-center p-4 border rounded-lg">
+                          <Activity className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                          <p className="text-2xl font-bold">127</p>
+                          <p className="text-sm text-muted-foreground">Total Trades</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </motion.div>
           </motion.div>
         </div>
       </div>
