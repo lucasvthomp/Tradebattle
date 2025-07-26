@@ -35,6 +35,7 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).unique().notNull(),
   username: varchar("username", { length: 15 }).unique().notNull(), // 3-15 characters, letters/numbers/underscores only
   displayName: varchar("display_name", { length: 255 }), // Optional public display name
+  lastUsernameChange: timestamp("last_username_change"), // Track when username was last changed (for 2-week restriction)
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   country: varchar("country", { length: 100 }), // User's country
   language: varchar("language", { length: 50 }).default("English"), // User's preferred language

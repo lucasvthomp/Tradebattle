@@ -48,7 +48,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   
@@ -181,7 +181,23 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User> {
+    // If username is being updated, check the two-week restriction
+    if (updates.username) {
+      const currentUser = await this.getUser(id);
+      if (currentUser?.lastUsernameChange) {
+        const twoWeeksAgo = new Date();
+        twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+        
+        if (new Date(currentUser.lastUsernameChange) > twoWeeksAgo) {
+          throw new Error('Username can only be changed once every two weeks');
+        }
+      }
+      
+      // Set the lastUsernameChange timestamp when username is updated
+      updates.lastUsernameChange = new Date();
+    }
+    
     const result = await db
       .update(users)
       .set({ ...updates, updatedAt: new Date() })

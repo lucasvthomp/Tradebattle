@@ -59,10 +59,9 @@ const staggerChildren = {
 };
 
 const profileSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Invalid email address"),
   displayName: z.string().optional(),
+  username: z.string().min(3, "Username must be at least 3 characters").max(15, "Username must be at most 15 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores").optional(),
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -152,10 +151,9 @@ export default function Profile() {
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      firstName: user?.firstName || "",
-      lastName: user?.lastName || "",
       email: user?.email || "",
       displayName: user?.displayName || "",
+      username: user?.username || "",
     },
   });
 
@@ -163,10 +161,9 @@ export default function Profile() {
   useEffect(() => {
     if (user) {
       form.reset({
-        firstName: user.firstName || "",
-        lastName: user.lastName || "",
         email: user.email || "",
         displayName: user.displayName || "",
+        username: user.username || "",
       });
     }
   }, [user, form]);
@@ -185,11 +182,24 @@ export default function Profile() {
         description: "Your profile has been successfully updated.",
       });
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       console.error("Profile update error:", error);
+      let errorMessage = "An error occurred while updating your profile";
+      
+      // Handle specific error cases
+      if (error.message) {
+        if (error.message.includes("Username can only be changed once every two weeks")) {
+          errorMessage = "Username can only be changed once every two weeks. Please try again later.";
+        } else if (error.message.includes("Username")) {
+          errorMessage = error.message;
+        } else {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: "Update Failed",
-        description: error.message,
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -330,22 +340,27 @@ export default function Profile() {
                         <Input 
                           id="displayName"
                           {...form.register("displayName")}
-                          placeholder={user?.firstName || "Your display name"}
+                          placeholder="Your display name"
                         />
                         <p className="text-xs text-muted-foreground">
-                          Your display name as it appears to other users. Defaults to your first name.
+                          Your display name as it appears to other users. Leave empty to use username.
                         </p>
                       </div>
                       <div className="space-y-2">
-                        <Label>Member Since</Label>
+                        <Label htmlFor="username">Username</Label>
                         <Input 
-                          value={joinDate} 
-                          className="bg-muted cursor-not-allowed" 
-                          disabled 
+                          id="username"
+                          {...form.register("username")}
+                          placeholder={user?.username}
                         />
                         <p className="text-xs text-muted-foreground">
-                          When you joined the platform
+                          Username can only be changed once every 2 weeks. Contains only letters, numbers, and underscores.
                         </p>
+                        {form.formState.errors.username && (
+                          <p className="text-sm text-destructive">
+                            {form.formState.errors.username.message}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -442,32 +457,7 @@ export default function Profile() {
                             Your unique account identifier
                           </p>
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="firstName">First Name</Label>
-                          <Input 
-                            id="firstName" 
-                            {...form.register("firstName")}
-                            placeholder="Enter your first name"
-                          />
-                          {form.formState.errors.firstName && (
-                            <p className="text-sm text-destructive">
-                              {form.formState.errors.firstName.message}
-                            </p>
-                          )}
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="lastName">Last Name</Label>
-                          <Input 
-                            id="lastName" 
-                            {...form.register("lastName")}
-                            placeholder="Enter your last name"
-                          />
-                          {form.formState.errors.lastName && (
-                            <p className="text-sm text-destructive">
-                              {form.formState.errors.lastName.message}
-                            </p>
-                          )}
-                        </div>
+
                         <div className="space-y-2">
                           <Label htmlFor="email">Email Address</Label>
                           <div className="relative">
@@ -779,23 +769,7 @@ export default function Profile() {
 
                     <Separator />
 
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-foreground">Email Frequency</h4>
-                      <div className="space-y-2">
-                        <label className="flex items-center space-x-2">
-                          <input type="radio" name="frequency" defaultChecked />
-                          <span className="text-sm text-foreground">Real-time (as they happen)</span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="radio" name="frequency" />
-                          <span className="text-sm text-foreground">Daily digest</span>
-                        </label>
-                        <label className="flex items-center space-x-2">
-                          <input type="radio" name="frequency" />
-                          <span className="text-sm text-foreground">Weekly summary</span>
-                        </label>
-                      </div>
-                    </div>
+
 
                     <Button>Save Preferences</Button>
                   </CardContent>

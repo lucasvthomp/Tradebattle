@@ -29,10 +29,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Request body:", req.body);
       
       const validatedData = z.object({
-        firstName: z.string().min(1),
-        lastName: z.string().min(1),
         email: z.string().email(),
-        displayName: z.string().optional().nullable()
+        displayName: z.string().optional().nullable(),
+        username: z.string().min(3, "Username must be at least 3 characters").max(15, "Username must be at most 15 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores").optional()
       }).parse(req.body);
       
       console.log("Validated data:", validatedData);
