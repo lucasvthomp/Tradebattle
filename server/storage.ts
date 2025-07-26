@@ -92,6 +92,7 @@ export interface IStorage {
   
   // Tournament operations
   getAllTournaments(): Promise<Tournament[]>;
+  getPublicTournaments(): Promise<Tournament[]>;
   
   // Trade tracking operations
   recordTrade(trade: InsertTradeHistory): Promise<TradeHistory>;
@@ -456,6 +457,14 @@ export class DatabaseStorage implements IStorage {
 
   async getAllTournaments(): Promise<Tournament[]> {
     return await db.select().from(tournaments);
+  }
+
+  async getPublicTournaments(): Promise<Tournament[]> {
+    return await db.select().from(tournaments)
+      .where(and(
+        eq(tournaments.isPublic, true),
+        eq(tournaments.status, 'active')
+      ));
   }
 
   // Trade tracking operations

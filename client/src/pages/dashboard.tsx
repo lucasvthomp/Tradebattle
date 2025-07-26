@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { WatchlistItem, InsertWatchlistItem, StockPurchase, InsertStockPurchase, Tournament, InsertTournament } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
@@ -593,6 +593,118 @@ export default function Dashboard() {
   const { user, isLoading: authLoading } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Public Tournaments Browser Component
+  const PublicTournamentBrowser = () => {
+    const { data: publicTournaments, isLoading } = useQuery({
+      queryKey: ['/api/tournaments/public'],
+      enabled: currentView === 'tournament-browser'
+    });
+
+    if (isLoading) {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="animate-pulse">
+              <Card>
+                <CardHeader>
+                  <div className="h-6 bg-muted rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-muted rounded w-1/2"></div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted rounded"></div>
+                    <div className="h-4 bg-muted rounded w-2/3"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    if (!publicTournaments?.data || publicTournaments.data.length === 0) {
+      return (
+        <div className="text-center py-12 text-muted-foreground">
+          <Trophy className="w-16 h-16 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold mb-2">No Public Tournaments</h3>
+          <p className="mb-4">Be the first to create a public tournament!</p>
+          <Button onClick={() => setIsCreateTournamentDialogOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Create Tournament
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {publicTournaments.data.map((tournament) => (
+          <Card key={tournament.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="truncate">{tournament.name}</span>
+                <Badge variant="outline" className="ml-2">
+                  {tournament.status}
+                </Badge>
+              </CardTitle>
+              <CardDescription>
+                Code: {tournament.code}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Players:</span>
+                  <span>{tournament.currentPlayers}/{tournament.maxPlayers}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Duration:</span>
+                  <span>{tournament.timeframe}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Starting Balance:</span>
+                  <span>${parseFloat(tournament.startingBalance).toLocaleString()}</span>
+                </div>
+                {tournament.buyInAmount && parseFloat(tournament.buyInAmount) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Buy-in:</span>
+                    <span className="text-green-600 font-semibold">${parseFloat(tournament.buyInAmount)}</span>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 flex space-x-2">
+                <Button 
+                  size="sm" 
+                  className="flex-1"
+                  onClick={() => {
+                    setJoinGameCode(tournament.code);
+                    joinTournamentMutation.mutate(tournament.code);
+                  }}
+                  disabled={joinTournamentMutation.isPending}
+                >
+                  <Building className="w-4 h-4 mr-1" />
+                  Join
+                </Button>
+                <Button 
+                  size="sm" 
+                  variant="outline"
+                  onClick={() => {
+                    setSelectedTournament(tournament.id);
+                    setCurrentView('tournament-detail');
+                  }}
+                >
+                  <Eye className="w-4 h-4" />
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  };
   
   // Main navigation state
   const [currentView, setCurrentView] = useState<'main' | 'watchlist' | 'tournaments' | 'create' | 'join' | 'tournament-detail' | 'tournament-browser' | 'logs'>('main');
@@ -2883,14 +2995,7 @@ export default function Dashboard() {
 
             {/* Tournament Cards Grid */}
             <motion.div variants={fadeInUp}>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div className="text-center py-12 text-muted-foreground col-span-full">
-                  <Trophy className="w-16 h-16 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Tournament Browser Coming Soon</h3>
-                  <p className="mb-4">Browse and join open tournaments with real participant data</p>
-                  <p className="text-sm">For now, use the "Join by Code" button to join existing tournaments</p>
-                </div>
-              </div>
+              <PublicTournamentBrowser />
             </motion.div>
           </motion.div>
         </div>

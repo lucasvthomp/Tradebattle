@@ -387,6 +387,25 @@ router.get('/tournaments', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * GET /api/tournaments/public
+ * Get public tournaments for browsing
+ */
+router.get('/tournaments/public', asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const publicTournaments = await storage.getPublicTournaments();
+
+  res.json({
+    success: true,
+    data: publicTournaments,
+  });
+}));
+
+/**
  * GET /api/tournaments/:id/participants
  * Get tournament participants with user names and portfolio values
  */
