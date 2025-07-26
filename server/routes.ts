@@ -360,6 +360,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Code redemption endpoint
+  app.post("/api/codes/redeem", requireAuth, async (req: any, res) => {
+    try {
+      const { code } = req.body;
+      const userId = req.user.id;
+
+      // Validate code input
+      if (!code || typeof code !== 'string') {
+        return res.status(400).json({ message: "Invalid code format" });
+      }
+
+      const trimmedCode = code.trim().toUpperCase();
+      if (trimmedCode.length < 4) {
+        return res.status(400).json({ message: "Code must be at least 4 characters long" });
+      }
+
+      // Get current user
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Predefined redemption codes with rewards
+      const validCodes: Record<string, { type: string; amount?: number; message: string; reward: string }> = {
+        'WELCOME500': {
+          type: 'balance',
+          amount: 500,
+          message: 'Welcome bonus redeemed! $500 added to your balance.',
+          reward: '$500 Balance Boost'
+        },
+        'STARTER1000': {
+          type: 'balance',
+          amount: 1000,
+          message: 'Starter pack redeemed! $1,000 added to your balance.',
+          reward: '$1,000 Balance Boost'
+        },
+        'BIGBOOST2500': {
+          type: 'balance',
+          amount: 2500,
+          message: 'Big boost redeemed! $2,500 added to your balance.',
+          reward: '$2,500 Balance Boost'
+        },
+        'MEGABOOST5000': {
+          type: 'balance',
+          amount: 5000,
+          message: 'Mega boost redeemed! $5,000 added to your balance.',
+          reward: '$5,000 Balance Boost'
+        },
+        'FREEMONEY': {
+          type: 'balance',
+          amount: 100,
+          message: 'Free money code redeemed! $100 added to your balance.',
+          reward: '$100 Balance Boost'
+        }
+      };
+
+      // Check if code exists
+      const codeData = validCodes[trimmedCode];
+      if (!codeData) {
+        return res.status(400).json({ message: "Invalid or expired code" });
+      }
+
+      // Apply the reward based on type
+      if (codeData.type === 'balance' && codeData.amount) {
+        const currentBalance = parseFloat(user.balance.toString());
+        const newBalance = currentBalance + codeData.amount;
+
+        // Update user balance
+        await storage.updateUser(userId, { 
+          balance: newBalance.toString() 
+        });
+
+        // Log the code redemption
+        await storage.createAdminLog({
+          adminUserId: userId,
+          targetUserId: userId,
+          action: 'code_redemption',
+          oldValue: currentBalance.toString(),
+          newValue: newBalance.toString(),
+          notes: `User redeemed code "${trimmedCode}" for $${codeData.amount}`
+        });
+
+        res.json({ 
+          success: true, 
+          message: codeData.message,
+          reward: codeData.reward,
+          newBalance: newBalance
+        });
+      } else {
+        // Handle other reward types in the future (premium features, items, etc.)
+        res.json({ 
+          success: true, 
+          message: codeData.message,
+          reward: codeData.reward
+        });
+      }
+    } catch (error) {
+      console.error("Error redeeming code:", error);
+      res.status(500).json({ message: "Failed to redeem code" });
+    }
+  });
+
   // Admin endpoint to get user logs
   app.get("/api/admin/logs/:userId", requireAuth, async (req: any, res) => {
     try {
