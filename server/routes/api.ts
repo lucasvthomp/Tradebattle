@@ -1373,12 +1373,8 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
  * GET /api/users/public
  * Get all users with public profile information
  */
-router.get('/users/public', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/users/public', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
   
   // Get all users with only public information
   const users = await storage.getAllUsers();
@@ -1413,13 +1409,9 @@ router.get('/users/public', asyncHandler(async (req, res) => {
  * GET /api/users/public/:userId
  * Get specific user's public profile information
  */
-router.get('/users/public/:userId', asyncHandler(async (req, res) => {
-  const requestingUserId = req.user?.id;
+router.get('/users/public/:userId', requireAuth, asyncHandler(async (req, res) => {
+  const requestingUserId = req.user.id;
   const targetUserId = parseInt(req.params.userId);
-  
-  if (!requestingUserId) {
-    throw new ValidationError('User not authenticated');
-  }
   
   if (isNaN(targetUserId)) {
     throw new ValidationError('Invalid user ID');
