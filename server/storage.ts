@@ -48,7 +48,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   
@@ -145,7 +145,7 @@ export class DatabaseStorage implements IStorage {
     try {
       // Get the next available userId by finding the highest existing userId and adding 1
       const maxUserIdResult = await db.select({ maxUserId: sql`COALESCE(MAX(user_id), -1)` }).from(users);
-      const maxUserId = maxUserIdResult[0]?.maxUserId;
+      const maxUserId = (maxUserIdResult[0]?.maxUserId as number) || -1;
       const nextUserId = (maxUserId >= 0) ? maxUserId + 1 : 0;
       
 
@@ -181,7 +181,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'portfolioCreatedAt' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User> {
     // If username is being updated, check the two-week restriction
     if (updates.username) {
       const currentUser = await this.getUser(id);

@@ -249,6 +249,116 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
 
+  // Balance management endpoints
+  app.post("/api/balance/deposit", requireAuth, async (req: any, res) => {
+    try {
+      const { amount } = req.body;
+      const userId = req.user.id;
+
+      // Validate amount
+      if (!amount || isNaN(amount) || amount <= 0) {
+        return res.status(400).json({ message: "Invalid deposit amount" });
+      }
+
+      if (amount < 1) {
+        return res.status(400).json({ message: "Minimum deposit amount is $1.00" });
+      }
+
+      if (amount > 10000) {
+        return res.status(400).json({ message: "Maximum deposit amount is $10,000.00 per transaction" });
+      }
+
+      // Get current user
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Calculate new balance
+      const currentBalance = parseFloat(user.balance.toString());
+      const newBalance = currentBalance + amount;
+
+      // Update user balance
+      await storage.updateUser(userId, { 
+        balance: newBalance.toString() 
+      });
+
+      // Log the transaction
+      await storage.createAdminLog({
+        adminUserId: userId,
+        targetUserId: userId,
+        action: 'balance_deposit',
+        oldValue: currentBalance.toString(),
+        newValue: newBalance.toString(),
+        notes: `User deposited $${amount.toFixed(2)}`
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Deposit successful",
+        newBalance: newBalance
+      });
+    } catch (error) {
+      console.error("Error processing deposit:", error);
+      res.status(500).json({ message: "Failed to process deposit" });
+    }
+  });
+
+  app.post("/api/balance/withdraw", requireAuth, async (req: any, res) => {
+    try {
+      const { amount } = req.body;
+      const userId = req.user.id;
+
+      // Validate amount
+      if (!amount || isNaN(amount) || amount <= 0) {
+        return res.status(400).json({ message: "Invalid withdrawal amount" });
+      }
+
+      if (amount < 1) {
+        return res.status(400).json({ message: "Minimum withdrawal amount is $1.00" });
+      }
+
+      // Get current user
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const currentBalance = parseFloat(user.balance.toString());
+
+      // Check if user has sufficient funds
+      if (amount > currentBalance) {
+        return res.status(400).json({ message: "Insufficient funds" });
+      }
+
+      // Calculate new balance
+      const newBalance = currentBalance - amount;
+
+      // Update user balance
+      await storage.updateUser(userId, { 
+        balance: newBalance.toString() 
+      });
+
+      // Log the transaction
+      await storage.createAdminLog({
+        adminUserId: userId,
+        targetUserId: userId,
+        action: 'balance_withdrawal',
+        oldValue: currentBalance.toString(),
+        newValue: newBalance.toString(),
+        notes: `User withdrew $${amount.toFixed(2)}`
+      });
+
+      res.json({ 
+        success: true, 
+        message: "Withdrawal successful",
+        newBalance: newBalance
+      });
+    } catch (error) {
+      console.error("Error processing withdrawal:", error);
+      res.status(500).json({ message: "Failed to process withdrawal" });
+    }
+  });
 
   // Admin endpoint to get user logs
   app.get("/api/admin/logs/:userId", requireAuth, async (req: any, res) => {

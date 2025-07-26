@@ -2,6 +2,8 @@ import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { BalanceDialog } from "@/components/balance-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, Settings, LogOut, UserPlus, LogIn, Shield, Archive } from "lucide-react";
+import { User, ChevronDown, Settings, LogOut, UserPlus, LogIn, Shield, Archive, DollarSign } from "lucide-react";
 import { SidebarTrigger } from "./sidebar";
 import { ChatTrigger } from "./chat-panel";
 
@@ -20,7 +22,8 @@ interface HeaderProps {
 
 export default function Header({ onSidebarOpen, onChatOpen }: HeaderProps) {
   const { user, logoutMutation } = useAuth();
-  const { t } = useUserPreferences();
+  const { t, formatCurrency } = useUserPreferences();
+  const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
 
   return (
     <header className="gradient-card border-b border-border sticky top-0 z-50 backdrop-blur-md bg-background/80">
@@ -48,10 +51,19 @@ export default function Header({ onSidebarOpen, onChatOpen }: HeaderProps) {
                       <span className="text-sm font-medium">
                         {user?.displayName || user?.username || user?.email || "User"}
                       </span>
+                      <span className="text-sm text-muted-foreground">|</span>
+                      <span className="text-sm font-medium text-green-600">
+                        {formatCurrency(user?.balance || 0)}
+                      </span>
                       <ChevronDown className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => setBalanceDialogOpen(true)}>
+                      <DollarSign className="w-4 h-4 mr-2" />
+                      My Balance
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => window.location.href = "/profile"}>
                       <Settings className="w-4 h-4 mr-2" />
                       {t('settings')}
@@ -100,6 +112,13 @@ export default function Header({ onSidebarOpen, onChatOpen }: HeaderProps) {
           </div>
         </nav>
       </div>
+      
+      {/* Balance Dialog */}
+      <BalanceDialog 
+        open={balanceDialogOpen}
+        onOpenChange={setBalanceDialogOpen}
+        currentBalance={user?.balance || 0}
+      />
     </header>
   );
 }
