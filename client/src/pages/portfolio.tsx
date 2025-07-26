@@ -7,13 +7,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock, ShoppingCart, Minus, RefreshCw, HelpCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrendingUp, TrendingDown, DollarSign, Activity, PieChart, BarChart3, Crown, Calendar, Lock, ShoppingCart, Minus, RefreshCw, HelpCircle, Grid3X3, List } from "lucide-react";
 import { motion } from "framer-motion";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { PortfolioGraph } from "@/components/ui/portfolio-graph";
 import { RegionalChat } from "@/components/ui/regional-chat";
+import { WidgetGrid } from "@/components/WidgetGrid";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -37,6 +39,7 @@ export default function Portfolio() {
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
   const [streakInfoOpen, setStreakInfoOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   
   // Chat state
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -365,150 +368,183 @@ export default function Portfolio() {
             </Card>
           </motion.div>
 
-          {/* Portfolio Performance Graph */}
-          <motion.div variants={fadeInUp}>
-            <PortfolioGraph 
-              userId={user.id}
-              portfolioType="personal"
-              title="Detailed Portfolio Performance"
-              height={400}
-              showStats={true}
-              className="mb-8"
-            />
-          </motion.div>
-
-          {/* Holdings Table */}
-          <motion.div variants={fadeInUp}>
+          {/* Portfolio View Toggle */}
+          <motion.div variants={fadeInUp} className="mb-6">
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center">
-                    <BarChart3 className="w-5 h-5 mr-2" />
-                    Personal Holdings ({personalPurchases.length})
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
-                      <RefreshCw className="w-4 h-4 text-muted-foreground" />
-                      <span className="text-sm text-muted-foreground">
-                        {user?.subscriptionTier === 'free' ? '10min' : '30sec'} refresh
-                      </span>
+              <CardContent className="pt-6">
+                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'grid' | 'table')}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold">Portfolio View</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Choose how you want to view and manage your portfolio
+                      </p>
                     </div>
-                    <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button className="bg-green-600 hover:bg-green-700">
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Buy Stock
-                        </Button>
-                      </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Buy Stock</DialogTitle>
-                      </DialogHeader>
-                      <PurchaseDialog 
-                        currentBalance={currentBalance}
-                        onPurchase={purchaseStockMutation.mutate}
-                        isPending={purchaseStockMutation.isPending}
+                    <TabsList className="grid w-[200px] grid-cols-2">
+                      <TabsTrigger value="grid" className="flex items-center gap-2">
+                        <Grid3X3 className="w-4 h-4" />
+                        Grid
+                      </TabsTrigger>
+                      <TabsTrigger value="table" className="flex items-center gap-2">
+                        <List className="w-4 h-4" />
+                        Table
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+
+                  <TabsContent value="grid" className="mt-6">
+                    <div className="border rounded-lg bg-muted/10 p-4" style={{ minHeight: 'calc(100vh - 400px)' }}>
+                      <WidgetGrid />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="table" className="mt-6">
+                    {/* Portfolio Performance Graph */}
+                    <div className="mb-8">
+                      <PortfolioGraph 
+                        userId={user.id}
+                        portfolioType="personal"
+                        title="Detailed Portfolio Performance"
+                        height={400}
+                        showStats={true}
                       />
-                    </DialogContent>
-                    </Dialog>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {personalPurchases.length > 0 ? (
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b">
-                          <th className="text-left py-2 px-4 font-medium">Stock</th>
-                          <th className="text-right py-2 px-4 font-medium">Shares</th>
-                          <th className="text-right py-2 px-4 font-medium">Total Purchase Value</th>
-                          <th className="text-right py-2 px-4 font-medium">Current Value</th>
-                          <th className="text-right py-2 px-4 font-medium">Change</th>
-                          <th className="text-right py-2 px-4 font-medium">Purchase Price</th>
-                          <th className="text-right py-2 px-4 font-medium">Current Price</th>
-                          <th className="text-right py-2 px-4 font-medium">Per Share Change</th>
-                          <th className="text-center py-2 px-4 font-medium">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {personalPurchases.map((purchase: any) => {
-                          const purchasePrice = parseFloat(purchase.purchasePrice);
-                          const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
-                          const perShareChange = currentPrice - purchasePrice;
-                          const perSharePercentChange = ((perShareChange / purchasePrice) * 100);
-                          const totalPurchaseValue = purchasePrice * purchase.shares;
-                          const currentValue = currentPrice * purchase.shares;
-                          const totalValueChange = currentValue - totalPurchaseValue;
-                          const totalValuePercentChange = ((totalValueChange / totalPurchaseValue) * 100);
-                          
-                          return (
-                            <tr key={purchase.id} className="border-b hover:bg-accent/50">
-                              <td className="py-2 px-4">
-                                <div className="font-medium">{purchase.symbol}</div>
-                              </td>
-                              <td className="py-2 px-4 text-right font-medium">{purchase.shares}</td>
-                              <td className="py-2 px-4 text-right font-medium">${totalPurchaseValue.toFixed(2)}</td>
-                              <td className="py-2 px-4 text-right font-medium">${currentValue.toFixed(2)}</td>
-                              <td className="py-2 px-4 text-right">
-                                <div className={`${totalValueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  <div>${totalValueChange.toFixed(2)}</div>
-                                  <div className="text-xs">({totalValuePercentChange.toFixed(2)}%)</div>
-                                </div>
-                              </td>
-                              <td className="py-2 px-4 text-right">${purchasePrice.toFixed(2)}</td>
-                              <td className="py-2 px-4 text-right">${currentPrice.toFixed(2)}</td>
-                              <td className="py-2 px-4 text-right">
-                                <div className={`${perShareChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                  <div>${perShareChange.toFixed(2)}</div>
-                                  <div className="text-xs">({perSharePercentChange.toFixed(2)}%)</div>
-                                </div>
-                              </td>
-                              <td className="py-2 px-4 text-center">
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedStock({ ...purchase, currentPrice });
-                                    setSellDialogOpen(true);
-                                  }}
-                                  className="text-red-600 hover:text-red-700"
-                                >
-                                  <Minus className="w-4 h-4 mr-1" />
-                                  Sell
+                    </div>
+
+                    {/* Holdings Table */}
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <BarChart3 className="w-5 h-5 mr-2" />
+                            Personal Holdings ({personalPurchases.length})
+                          </div>
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-2 px-3 py-2 bg-muted rounded-md">
+                              <RefreshCw className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm text-muted-foreground">
+                                {user?.subscriptionTier === 'free' ? '10min' : '30sec'} refresh
+                              </span>
+                            </div>
+                            <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button className="bg-green-600 hover:bg-green-700">
+                                  <ShoppingCart className="w-4 h-4 mr-2" />
+                                  Buy Stock
                                 </Button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground mb-4">
-                      Your personal portfolio is empty. Start by making your first trade!
-                    </p>
-                    <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button className="bg-green-600 hover:bg-green-700">
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Buy Your First Stock
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Buy Stock</DialogTitle>
-                        </DialogHeader>
-                        <PurchaseDialog 
-                          currentBalance={currentBalance}
-                          onPurchase={purchaseStockMutation.mutate}
-                          isPending={purchaseStockMutation.isPending}
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                )}
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Buy Stock</DialogTitle>
+                                </DialogHeader>
+                                <PurchaseDialog 
+                                  currentBalance={currentBalance}
+                                  onPurchase={purchaseStockMutation.mutate}
+                                  isPending={purchaseStockMutation.isPending}
+                                />
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {personalPurchases.length > 0 ? (
+                          <div className="overflow-x-auto">
+                            <table className="w-full">
+                              <thead>
+                                <tr className="border-b">
+                                  <th className="text-left py-2 px-4 font-medium">Stock</th>
+                                  <th className="text-right py-2 px-4 font-medium">Shares</th>
+                                  <th className="text-right py-2 px-4 font-medium">Total Purchase Value</th>
+                                  <th className="text-right py-2 px-4 font-medium">Current Value</th>
+                                  <th className="text-right py-2 px-4 font-medium">Change</th>
+                                  <th className="text-right py-2 px-4 font-medium">Purchase Price</th>
+                                  <th className="text-right py-2 px-4 font-medium">Current Price</th>
+                                  <th className="text-right py-2 px-4 font-medium">Per Share Change</th>
+                                  <th className="text-center py-2 px-4 font-medium">Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {personalPurchases.map((purchase: any) => {
+                                  const purchasePrice = parseFloat(purchase.purchasePrice);
+                                  const currentPrice = stockPrices[purchase.symbol] || purchasePrice;
+                                  const perShareChange = currentPrice - purchasePrice;
+                                  const perSharePercentChange = ((perShareChange / purchasePrice) * 100);
+                                  const totalPurchaseValue = purchasePrice * purchase.shares;
+                                  const currentValue = currentPrice * purchase.shares;
+                                  const totalValueChange = currentValue - totalPurchaseValue;
+                                  const totalValuePercentChange = ((totalValueChange / totalPurchaseValue) * 100);
+                                  
+                                  return (
+                                    <tr key={purchase.id} className="border-b hover:bg-accent/50">
+                                      <td className="py-2 px-4">
+                                        <div className="font-medium">{purchase.symbol}</div>
+                                      </td>
+                                      <td className="py-2 px-4 text-right font-medium">{purchase.shares}</td>
+                                      <td className="py-2 px-4 text-right font-medium">${totalPurchaseValue.toFixed(2)}</td>
+                                      <td className="py-2 px-4 text-right font-medium">${currentValue.toFixed(2)}</td>
+                                      <td className="py-2 px-4 text-right">
+                                        <div className={`${totalValueChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                          <div>${totalValueChange.toFixed(2)}</div>
+                                          <div className="text-xs">({totalValuePercentChange.toFixed(2)}%)</div>
+                                        </div>
+                                      </td>
+                                      <td className="py-2 px-4 text-right">${purchasePrice.toFixed(2)}</td>
+                                      <td className="py-2 px-4 text-right">${currentPrice.toFixed(2)}</td>
+                                      <td className="py-2 px-4 text-right">
+                                        <div className={`${perShareChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                          <div>${perShareChange.toFixed(2)}</div>
+                                          <div className="text-xs">({perSharePercentChange.toFixed(2)}%)</div>
+                                        </div>
+                                      </td>
+                                      <td className="py-2 px-4 text-center">
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          onClick={() => {
+                                            setSelectedStock({ ...purchase, currentPrice });
+                                            setSellDialogOpen(true);
+                                          }}
+                                          className="text-red-600 hover:text-red-700"
+                                        >
+                                          <Minus className="w-4 h-4 mr-1" />
+                                          Sell
+                                        </Button>
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <p className="text-muted-foreground mb-4">
+                              Your personal portfolio is empty. Start by making your first trade!
+                            </p>
+                            <Dialog open={purchaseDialogOpen} onOpenChange={setPurchaseDialogOpen}>
+                              <DialogTrigger asChild>
+                                <Button className="bg-green-600 hover:bg-green-700">
+                                  <ShoppingCart className="w-4 h-4 mr-2" />
+                                  Buy Your First Stock
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>Buy Stock</DialogTitle>
+                                </DialogHeader>
+                                <PurchaseDialog 
+                                  currentBalance={currentBalance}
+                                  onPurchase={purchaseStockMutation.mutate}
+                                  isPending={purchaseStockMutation.isPending}
+                                />
+                              </DialogContent>
+                            </Dialog>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </motion.div>
