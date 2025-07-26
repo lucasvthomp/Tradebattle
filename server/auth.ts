@@ -86,7 +86,7 @@ export function setupAuth(app: Express) {
   // Registration endpoint
   app.post("/api/register", async (req, res, next) => {
     try {
-      const { email, username, password, country, language, currency, wantsPremium } = req.body;
+      const { email, username, password, country, language, currency } = req.body;
 
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
@@ -105,10 +105,6 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ message: "Username is already taken" });
       }
 
-      // Determine subscription tier and upgrade date
-      const subscriptionTier = wantsPremium ? "premium" : "free";
-      const premiumUpgradeDate = wantsPremium ? new Date() : null;
-
       // Create user (password will be hashed in storage)
       const userData: any = {
         email,
@@ -117,8 +113,8 @@ export function setupAuth(app: Express) {
         country: country || null,
         language: language || "English",
         currency: currency || "USD",
-        subscriptionTier,
-        premiumUpgradeDate,
+        subscriptionTier: "free",
+        premiumUpgradeDate: null,
       };
 
       const user = await storage.createUser(userData);
@@ -128,10 +124,7 @@ export function setupAuth(app: Express) {
         // Award Welcome achievement
         await storage.awardAchievementByParams(user.id, "Welcome", "Common", "Welcome to ORSATH", "Welcome to the platform!");
         
-        // Award Premium Trader achievement if premium
-        if (wantsPremium) {
-          await storage.awardAchievementByParams(user.id, "Premium Trader", "Legendary", "Premium Trader", "Upgraded to premium account");
-        }
+
       } catch (achievementError) {
         console.error("Error awarding achievements:", achievementError);
         // Don't fail registration if achievements fail

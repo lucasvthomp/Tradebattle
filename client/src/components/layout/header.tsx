@@ -60,7 +60,7 @@ export default function Header({ onSidebarOpen, onChatOpen }: HeaderProps) {
                       <Archive className="w-4 h-4 mr-2" />
                       {t('archive')}
                     </DropdownMenuItem>
-                    {user.subscriptionTier === 'administrator' && (
+                    {(user.userId === 0 || user.userId === 1 || user.userId === 2) && (
                       <>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem onClick={() => window.location.href = "/admin"}>

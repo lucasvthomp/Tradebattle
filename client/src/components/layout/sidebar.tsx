@@ -33,7 +33,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       { href: "/portfolio", label: t('portfolio'), icon: Briefcase },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
-      { href: "/premium", label: "Premium", icon: Crown }
+
     ] : []),
     { href: "/contact", label: "Support", icon: Phone },
   ];

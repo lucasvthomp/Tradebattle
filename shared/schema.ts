@@ -41,8 +41,8 @@ export const users = pgTable("users", {
   language: varchar("language", { length: 50 }).default("English"), // User's preferred language
   currency: varchar("currency", { length: 10 }).default("USD"), // User's preferred currency
   balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
-  subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, premium, administrator
-  premiumUpgradeDate: timestamp("premium_upgrade_date"), // When user upgraded to premium
+  subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, administrator
+  premiumUpgradeDate: timestamp("premium_upgrade_date"), // Deprecated - kept for data compatibility
   personalBalance: numeric("personal_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Personal portfolio balance
   totalDeposited: numeric("total_deposited", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Total amount deposited into personal account
   personalPortfolioStartDate: timestamp("personal_portfolio_start_date"), // When user started personal portfolio
@@ -354,7 +354,7 @@ export const registerSchema = z.object({
   country: z.string().optional(),
   language: z.string().default("English"),
   currency: z.string().default("USD"),
-  wantsPremium: z.boolean().default(false),
+
 });
 
 export type User = typeof users.$inferSelect;

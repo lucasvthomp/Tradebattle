@@ -13,7 +13,7 @@ import Dashboard from "@/pages/dashboard";
 import Portfolio from "@/pages/portfolio";
 import Leaderboard from "@/pages/leaderboard";
 import People from "@/pages/people";
-import Premium from "@/pages/premium";
+
 import Contact from "@/pages/contact";
 import About from "@/pages/about";
 import Privacy from "@/pages/privacy";
@@ -59,7 +59,7 @@ function Router() {
             <Route path="/leaderboard" component={Leaderboard} />
             <Route path="/people" component={People} />
             <Route path="/people/:userId" component={People} />
-            <Route path="/premium" component={Premium} />
+
             <Route path="/contact" component={Contact} />
             <Route path="/about" component={About} />
             <Route path="/privacy" component={Privacy} />

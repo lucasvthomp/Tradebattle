@@ -72,7 +72,7 @@ export default function Profile() {
   const { theme, setTheme } = useTheme();
   const { t, language, currency, updatePreferences } = useUserPreferences();
   const queryClient = useQueryClient();
-  const [isChangePlanDialogOpen, setIsChangePlanDialogOpen] = useState(false);
+
   
   // Fetch user achievements for profile display
   const { data: userAchievements, isLoading: isLoadingAchievements } = useQuery({
@@ -99,7 +99,7 @@ export default function Profile() {
     // Legendary (Bright Orange)
     { id: 11, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
     { id: 12, name: "25% Portfolio Growth", description: "Made over 25% on any portfolio", icon: TrendingUp, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
-    { id: 13, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+
     // Mythic (Red)
     { id: 14, name: "Tournament Legend", description: "Won 10 tournaments", icon: Trophy, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
     { id: 15, name: "100% Portfolio Growth", description: "Made over 100% on any portfolio", icon: TrendingUp, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
@@ -205,30 +205,7 @@ export default function Profile() {
     },
   });
 
-  const changeSubscriptionMutation = useMutation({
-    mutationFn: async (newTier: string) => {
-      const res = await apiRequest("PUT", "/api/user/subscription", {
-        subscriptionTier: newTier
-      });
-      return await res.json();
-    },
-    onSuccess: (updatedUser) => {
-      queryClient.setQueryData(["/api/user"], updatedUser);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({
-        title: "Subscription Updated",
-        description: `Your subscription has been changed to ${updatedUser.subscriptionTier}.`,
-      });
-      setIsChangePlanDialogOpen(false);
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Update Failed",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const handleSaveProfile = (data: ProfileFormData) => {
     updateProfileMutation.mutate(data);
@@ -281,10 +258,6 @@ export default function Profile() {
                     <h2 className="text-xl font-bold text-foreground">{user.displayName || user.username}</h2>
                     <p className="text-muted-foreground">{user.email}</p>
                     <div className="flex items-center space-x-4 mt-2">
-                      <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                        <Crown className="w-3 h-3 mr-1" />
-                        {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Novice'} Plan
-                      </Badge>
                       <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                         <Calendar className="w-3 h-3 mr-1" />
                         Member since {joinDate}
@@ -302,7 +275,7 @@ export default function Profile() {
           {/* Main Content */}
           <motion.div variants={fadeInUp}>
             <Tabs defaultValue="public" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-5">
+              <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="public" className="flex items-center space-x-2">
                   <User className="w-4 h-4" />
                   <span>Public Profile</span>
@@ -310,10 +283,6 @@ export default function Profile() {
                 <TabsTrigger value="account" className="flex items-center space-x-2">
                   <Settings className="w-4 h-4" />
                   <span>Account Settings</span>
-                </TabsTrigger>
-                <TabsTrigger value="subscription" className="flex items-center space-x-2">
-                  <Crown className="w-4 h-4" />
-                  <span>Subscription</span>
                 </TabsTrigger>
                 <TabsTrigger value="preferences" className="flex items-center space-x-2">
                   <Languages className="w-4 h-4" />
@@ -364,18 +333,7 @@ export default function Profile() {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <Label>Account Type</Label>
-                      <div className="flex items-center space-x-2">
-                        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                          <Crown className="w-3 h-3 mr-1" />
-                          {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Free'} Trader
-                        </Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground">
-                        Your subscription tier is visible to other users
-                      </p>
-                    </div>
+
 
                     <Separator />
 
@@ -496,154 +454,6 @@ export default function Profile() {
                         {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
                       </Button>
                     </form>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="subscription">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle>Subscription Details</CardTitle>
-                    <CardDescription>
-                      Manage your subscription and billing
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="font-semibold text-foreground flex items-center">
-                            <Crown className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
-                            {user.subscriptionTier ? user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1) : 'Novice'} Plan
-                          </h3>
-                          <p className="text-sm text-muted-foreground">
-                            {user.subscriptionTier === 'novice' ? 'Free' : 
-                             user.subscriptionTier === 'premium' ? '$19.99/month' : 
-                             user.subscriptionTier === 'administrator' ? 'Administrator' : 'Free'} • 
-                             Next billing: {new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </p>
-                        </div>
-                        <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">Active</Badge>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <h4 className="font-semibold text-foreground">Plan Features</h4>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
-                        {user.subscriptionTier === 'novice' ? (
-                          <>
-                            <li>✓ Tournament participation</li>
-                            <li>✓ Basic watchlist</li>
-                            <li>✓ Email support</li>
-                            <li>✓ Competition leaderboards</li>
-                          </>
-                        ) : user.subscriptionTier === 'premium' ? (
-                          <>
-                            <li>✓ Everything in Free</li>
-                            <li>✓ Personal portfolio trading</li>
-                            <li>✓ Advanced analytics</li>
-                            <li>✓ Priority support</li>
-                            <li>✓ Unlimited watchlist</li>
-                          </>
-                        ) : (
-                          <>
-                            <li>✓ Tournament participation</li>
-                            <li>✓ Basic watchlist</li>
-                            <li>✓ Email support</li>
-                            <li>✓ Competition leaderboards</li>
-                          </>
-                        )}
-                      </ul>
-                    </div>
-
-                    <Separator />
-
-                    <div className="flex space-x-4">
-                      <Button variant="outline">
-                        <CreditCard className="w-4 h-4 mr-2" />
-                        Update Payment Method
-                      </Button>
-                      <Button variant="outline">
-                        <Download className="w-4 h-4 mr-2" />
-                        Download Invoices
-                      </Button>
-                      <Dialog open={isChangePlanDialogOpen} onOpenChange={setIsChangePlanDialogOpen}>
-                        <DialogTrigger asChild>
-                          <Button variant="outline">
-                            Change Plan
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[500px]">
-                          <DialogHeader>
-                            <DialogTitle>Change Your Subscription Plan</DialogTitle>
-                            <DialogDescription>
-                              Switch between Free and Premium tiers to access different features.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4">
-                            {/* Free Tier */}
-                            <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                              user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier
-                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' 
-                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                            }`}>
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <h3 className="font-semibold text-foreground">Free Tier</h3>
-                                  <p className="text-sm text-muted-foreground">$0/month</p>
-                                  <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                                    <li>• Tournament participation</li>
-                                    <li>• Basic watchlist</li>
-                                    <li>• Email support</li>
-                                    <li>• Competition leaderboards</li>
-                                  </ul>
-                                </div>
-                                <Button 
-                                  variant={user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier ? "default" : "outline"}
-                                  disabled={changeSubscriptionMutation.isPending || user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier}
-                                  onClick={() => changeSubscriptionMutation.mutate('free')}
-                                >
-                                  {changeSubscriptionMutation.isPending ? 'Switching...' : 
-                                   (user?.subscriptionTier === 'free' || user?.subscriptionTier === 'novice' || !user?.subscriptionTier) ? 'Current' : 'Switch to Free'}
-                                </Button>
-                              </div>
-                            </div>
-
-                            {/* Premium Tier */}
-                            <div className={`border rounded-lg p-4 cursor-pointer transition-colors ${
-                              user?.subscriptionTier === 'premium'
-                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950' 
-                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'
-                            }`}>
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <h3 className="font-semibold text-foreground flex items-center">
-                                    <Crown className="w-4 h-4 mr-1 text-yellow-500" />
-                                    Premium Tier
-                                  </h3>
-                                  <p className="text-sm text-muted-foreground">$19.99/month</p>
-                                  <ul className="text-sm text-muted-foreground mt-2 space-y-1">
-                                    <li>• Everything in Free</li>
-                                    <li>• Personal portfolio trading</li>
-                                    <li>• Advanced analytics</li>
-                                    <li>• Priority support</li>
-                                    <li>• Unlimited watchlist</li>
-                                  </ul>
-                                </div>
-                                <Button 
-                                  variant={user?.subscriptionTier === 'premium' ? "default" : "outline"}
-                                  disabled={changeSubscriptionMutation.isPending || user?.subscriptionTier === 'premium'}
-                                  onClick={() => changeSubscriptionMutation.mutate('premium')}
-                                >
-                                  {changeSubscriptionMutation.isPending ? 'Switching...' : 
-                                   user?.subscriptionTier === 'premium' ? 'Current' : 'Upgrade to Premium'}
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

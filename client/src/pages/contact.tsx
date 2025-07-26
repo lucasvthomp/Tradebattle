@@ -111,7 +111,7 @@ export default function Support() {
         },
         {
           question: "How often are stock prices updated?",
-          answer: "Stock prices are updated in real-time during market hours. Premium users get 30-second updates, while free users receive updates every 10 minutes."
+          answer: "Stock prices are updated in real-time during market hours for all users."
         },
         {
           question: "Can I sell my stocks anytime?",
@@ -141,15 +141,15 @@ export default function Support() {
       ]
     },
     {
-      category: "Account & Premium",
+      category: "Account Features",
       questions: [
         {
-          question: "What are the benefits of Premium?",
-          answer: "Premium users get real-time price updates (30-second refresh), can create unlimited tournaments, and access advanced analytics. Free users can still join all tournaments and trade freely."
+          question: "What features are available?",
+          answer: "All users have access to tournament participation, personal portfolio trading, watchlists, leaderboards, and real-time market data."
         },
         {
-          question: "How do I upgrade to Premium?",
-          answer: "Visit the Premium page from your profile menu or navigation. Premium provides enhanced features for serious traders who want real-time data and tournament creation."
+          question: "How do I create tournaments?",
+          answer: "Visit the tournaments page to create and manage your own trading competitions. All users can participate in any tournament."
         },
         {
           question: "Can I change my display name?",
@@ -511,11 +511,8 @@ export default function Support() {
                       </div>
 
                       <div className="mt-8 p-4 bg-primary/5 rounded-lg border border-primary/20">
-                        <h4 className="font-semibold text-foreground mb-2">Priority Support</h4>
-                        <p className="text-sm text-muted-foreground mb-3">Premium users receive priority support with faster response times and dedicated assistance.</p>
-                        <Button variant="outline" size="sm">
-                          Upgrade to Premium
-                        </Button>
+                        <h4 className="font-semibold text-foreground mb-2">Community Support</h4>
+                        <p className="text-sm text-muted-foreground mb-3">All users receive the same level of support and assistance for trading questions and platform issues.</p>
                       </div>
                     </CardContent>
                   </Card>

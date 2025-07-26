@@ -70,33 +70,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User subscription route (protected)
-  app.put('/api/user/subscription', requireAuth, async (req: any, res) => {
-    try {
-      const userId = req.user.id;
-      const { subscriptionTier } = req.body;
-      
-      // Validate subscription tier
-      if (!subscriptionTier || !['free', 'novice', 'premium'].includes(subscriptionTier)) {
-        return res.status(400).json({ message: "Invalid subscription tier. Must be 'free', 'novice', or 'premium'." });
-      }
-      
-      // Update the user's subscription tier
-      const updateData: any = { subscriptionTier };
-      
-      // Set premium upgrade date if upgrading to premium
-      if (subscriptionTier === 'premium') {
-        updateData.premiumUpgradeDate = new Date();
-      }
-      
-      const updatedUser = await storage.updateUser(userId, updateData);
-      
-      res.json(updatedUser);
-    } catch (error) {
-      console.error("Error updating user subscription:", error);
-      res.status(500).json({ message: "Failed to update subscription tier" });
-    }
-  });
+
 
   // Watchlist routes (protected)
   app.get('/api/watchlist', requireAuth, async (req: any, res) => {
@@ -274,39 +248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to update user subscription tier
-  app.put("/api/admin/users/:userId/subscription", requireAuth, async (req: any, res) => {
-    try {
-      const adminUserId = req.user.userId;
-      const targetUserId = parseInt(req.params.userId);
-      const { subscriptionTier } = req.body;
-      
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
-        return res.status(403).json({ message: "Access denied. Admin privileges required." });
-      }
-      
-      // Validate subscription tier
-      if (!subscriptionTier || !['free', 'premium'].includes(subscriptionTier)) {
-        return res.status(400).json({ message: "Invalid subscription tier. Must be 'free' or 'premium'." });
-      }
-      
-      // Update the user's subscription tier
-      const updateData: any = { subscriptionTier };
-      
-      // Set premium upgrade date if upgrading to premium
-      if (subscriptionTier === 'premium') {
-        updateData.premiumUpgradeDate = new Date();
-      }
-      
-      await storage.updateUser(targetUserId, updateData);
-      
-      res.json({ message: "User subscription tier updated successfully." });
-    } catch (error) {
-      console.error("Error updating user subscription tier:", error);
-      res.status(500).json({ message: "Failed to update subscription tier" });
-    }
-  });
+
 
   // Admin endpoint to get user logs
   app.get("/api/admin/logs/:userId", requireAuth, async (req: any, res) => {

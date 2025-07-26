@@ -56,19 +56,14 @@ export default function About() {
                     <div className="text-sm text-muted-foreground">Real-time Leaderboards</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-2">Premium</div>
-                    <div className="text-sm text-muted-foreground">Personal Portfolio</div>
+                    <div className="text-3xl font-bold text-primary mb-2">24/7</div>
+                    <div className="text-sm text-muted-foreground">Platform Availability</div>
                   </div>
                   <div className="text-center border-t pt-4">
                     <div className="text-lg font-semibold text-foreground mb-2">Market Data Updates</div>
                     <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Free Users:</span>
-                        <span className="text-foreground font-medium">10 minutes</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Premium Users:</span>
-                        <span className="text-primary font-medium">30 seconds</span>
+                      <div className="flex justify-center text-sm">
+                        <span className="text-primary font-medium">Real-time updates for all users</span>
                       </div>
                     </div>
                   </div>

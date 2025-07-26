@@ -277,13 +277,7 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  // Check if user has premium or administrator subscription
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
-    return res.json({
-      message: 'You need premium to create tournaments. Joining one is free!'
-    });
-  }
 
   if (!name || !startingBalance) {
     throw new ValidationError('Tournament name and starting balance are required');
@@ -666,83 +660,9 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
   });
 }));
 
-/**
- * POST /api/user/upgrade-premium
- * Upgrade user to premium subscription
- */
-router.post('/user/upgrade-premium', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
 
-  // Update user subscription tier to premium
-  const updatedUser = await storage.updateUser(userId, {
-    subscriptionTier: 'premium',
-    premiumUpgradeDate: new Date(),
-    personalBalance: 10000,
-    portfolioCreatedAt: new Date()
-  });
 
-  // Award Premium Trader achievement
-  try {
-    await storage.awardAchievement({
-      userId,
-      achievementType: 'premium_trader',
-      achievementTier: 'legendary',
-      achievementName: 'Premium Trader',
-      achievementDescription: 'Premium user'
-    });
-  } catch (error) {
-    // Achievement might already exist, ignore the error
-    console.log('Premium Trader achievement already exists or error:', error);
-  }
 
-  res.json({
-    success: true,
-    data: updatedUser,
-  });
-}));
-
-/**
- * POST /api/user/upgrade-administrator
- * Upgrade user to administrator subscription
- */
-router.post('/user/upgrade-administrator', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
-
-  // Update user subscription tier to administrator
-  const updatedUser = await storage.updateUser(userId, {
-    subscriptionTier: 'administrator',
-    premiumUpgradeDate: new Date(),
-    personalBalance: 10000,
-    portfolioCreatedAt: new Date()
-  });
-
-  // Award Premium Trader achievement (same features as premium)
-  try {
-    await storage.awardAchievement({
-      userId,
-      achievementType: 'premium_trader',
-      achievementTier: 'legendary',
-      achievementName: 'Premium Trader',
-      achievementDescription: 'Premium user'
-    });
-  } catch (error) {
-    // Achievement might already exist, ignore the error
-    console.log('Premium Trader achievement already exists or error:', error);
-  }
-
-  res.json({
-    success: true,
-    data: updatedUser,
-  });
-}));
 
 /**
  * Helper function to calculate trading streak
@@ -891,10 +811,6 @@ router.get('/personal-portfolio', asyncHandler(async (req, res) => {
   }
 
   const user = await storage.getUser(userId);
-  
-  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
-    throw new ValidationError('Premium subscription required');
-  }
 
   // Calculate trading streak
   const tradingStreak = await calculateTradingStreak(userId);
@@ -924,10 +840,6 @@ router.get('/personal-purchases', asyncHandler(async (req, res) => {
   }
 
   const user = await storage.getUser(userId);
-  
-  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
-    throw new ValidationError('Premium subscription required');
-  }
 
   const purchases = await storage.getPersonalStockPurchases(userId);
 
@@ -949,10 +861,6 @@ router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
   }
 
   const user = await storage.getUser(userId);
-  
-  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
-    throw new ValidationError('Premium subscription required');
-  }
 
   const { symbol, companyName, shares, purchasePrice } = req.body;
   
@@ -1030,10 +938,6 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
   }
 
   const user = await storage.getUser(userId);
-  
-  if (!user || (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator')) {
-    throw new ValidationError('Premium subscription required');
-  }
 
   const { purchaseId, sharesToSell, currentPrice } = req.body;
   
@@ -1219,10 +1123,7 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
   const userPortfolios = [];
   
   for (const user of users) {
-    // Only include premium or administrator users (non-premium accounts don't have access to personal portfolios)
-    if (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator') continue;
-    
-    // Calculate portfolio value for premium users
+    // Calculate portfolio value for all users
     const purchases = await storage.getPersonalStockPurchases(user.id);
     let portfolioValue = parseFloat(user.personalBalance) || 10000;
     
@@ -1276,8 +1177,8 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
     success: true,
     data: {
       rankings: userPortfolios.slice(0, 50), // Top 50
-      totalTraders: userPortfolios.length, // Only premium users are shown
-      premiumUsers: userPortfolios.length, // All displayed users are premium
+      totalTraders: userPortfolios.length,
+      premiumUsers: userPortfolios.length,
       yourRank: userRank || null
     }
   });
@@ -1299,10 +1200,7 @@ router.get('/streak/leaderboard', asyncHandler(async (req, res) => {
   const userStreaks = [];
   
   for (const user of users) {
-    // Only include premium or administrator users (non-premium accounts don't have access to personal portfolios)
-    if (user.subscriptionTier !== 'premium' && user.subscriptionTier !== 'administrator') continue;
-    
-    // Calculate trading streak
+    // Calculate trading streak for all users
     const tradingStreak = await calculateTradingStreak(user.id);
     
     userStreaks.push({
@@ -1337,8 +1235,8 @@ router.get('/streak/leaderboard', asyncHandler(async (req, res) => {
     success: true,
     data: {
       rankings: userStreaks.slice(0, 50), // Top 50
-      totalTraders: userStreaks.length, // Only premium users are shown
-      premiumUsers: userStreaks.length, // All displayed users are premium
+      totalTraders: userStreaks.length,
+      premiumUsers: userStreaks.length,
       yourRank: userRank || null
     }
   });
@@ -1355,9 +1253,9 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError('User not authenticated');
   }
 
-  // Check if user is admin (using subscription tier)
+  // Check if user is admin (using user ID)
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== 'administrator') {
+  if (!user || (user.userId !== 0 && user.userId !== 1 && user.userId !== 2)) {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 
@@ -1436,7 +1334,7 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== 'administrator') {
+  if (!user || (user.userId !== 0 && user.userId !== 1 && user.userId !== 2)) {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 
