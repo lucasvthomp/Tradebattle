@@ -73,6 +73,7 @@ import { RegionalChat } from "@/components/ui/regional-chat";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Duration Wheel Component
 const DurationWheel = ({ value, onChange }: { value: { value: number, unit: string }, onChange: (value: { value: number, unit: string }) => void }) => {
@@ -600,7 +601,7 @@ export default function Dashboard() {
     const { data: publicTournaments, isLoading } = useQuery({
       queryKey: ['/api/tournaments/public'],
       enabled: currentView === 'tournament-browser'
-    });
+    }) as { data?: { success: boolean; data: any[] }; isLoading: boolean };
 
     if (isLoading) {
       return (
@@ -625,7 +626,7 @@ export default function Dashboard() {
       );
     }
 
-    if (!publicTournaments?.data || publicTournaments.data.length === 0) {
+    if (!publicTournaments?.data?.data || publicTournaments.data.data.length === 0) {
       return (
         <div className="text-center py-12 text-muted-foreground">
           <Trophy className="w-16 h-16 mx-auto mb-4" />
@@ -641,7 +642,7 @@ export default function Dashboard() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {publicTournaments.data.map((tournament) => (
+        {publicTournaments.data.data.map((tournament: any) => (
           <Card key={tournament.id} className="hover:shadow-lg transition-shadow cursor-pointer">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -1720,10 +1721,10 @@ export default function Dashboard() {
     const individualData = individualStockData.find((company: any) => company.symbol === stock.symbol);
     
     // Use current price from popular or individual data
-    const currentPrice = popularData?.price || individualData?.price || stock.price;
-    const volume = popularData?.volume || individualData?.volume || stock.volume || 0;
-    const marketCap = popularData?.marketCap || individualData?.marketCap || stock.marketCap || 0;
-    const sector = popularData?.sector || individualData?.sector || stock.sector || "N/A";
+    const currentPrice = popularData?.price || individualData?.price || (stock as any).price || 0;
+    const volume = popularData?.volume || individualData?.volume || (stock as any).volume || 0;
+    const marketCap = popularData?.marketCap || individualData?.marketCap || (stock as any).marketCap || 0;
+    const sector = popularData?.sector || individualData?.sector || (stock as any).sector || "N/A";
     
     // Get the correct historical close price based on timeframe
     let historicalClose = 0;
@@ -1761,8 +1762,8 @@ export default function Dashboard() {
         finalChangePercent = timeframeSpecificData.percentChange;
       } else {
         // Fallback to current data if timeframe data not available
-        finalChange = popularData?.change || individualData?.change || 0;
-        finalChangePercent = popularData?.percentChange || individualData?.percentChange || 0;
+        finalChange = (popularData as any)?.change || (individualData as any)?.change || 0;
+        finalChangePercent = (popularData as any)?.percentChange || (individualData as any)?.percentChange || 0;
       }
     }
     
@@ -1775,7 +1776,7 @@ export default function Dashboard() {
       sector,
       change: finalChange,
       changePercent: finalChangePercent,
-      currency: popularData?.currency || individualData?.currency || stock.currency || "USD",
+      currency: (popularData as any)?.currency || (individualData as any)?.currency || (stock as any).currency || "USD",
       lastUpdated: Date.now(),
       isLoadingData
     };
@@ -2689,9 +2690,9 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : purchases?.data && purchases.data.length > 0 ? (
+                      ) : purchases?.data && (purchases as any)?.data?.length > 0 ? (
                         <div className="space-y-3">
-                          {purchases.data.map((purchase) => (
+                          {(purchases as any).data.map((purchase: any) => (
                             <div key={purchase.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                               <div>
                                 <div className="font-semibold">{purchase.symbol}</div>
@@ -2890,11 +2891,11 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : participants?.data && participants.data.length > 0 ? (
+                      ) : participants?.data && (participants as any)?.data?.length > 0 ? (
                         <div className="space-y-3">
-                          {participants.data
-                            .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance))
-                            .map((participant, index) => (
+                          {(participants as any).data
+                            .sort((a: any, b: any) => parseFloat(b.balance) - parseFloat(a.balance))
+                            .map((participant: any, index: any) => (
                               <div key={participant.userId} className="flex items-center space-x-3">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
                                   index === 0 ? 'bg-yellow-500 text-white' : 
