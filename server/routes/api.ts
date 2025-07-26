@@ -269,9 +269,9 @@ router.get('/health', (req, res) => {
  * POST /api/tournaments
  * Create a new tournament
  */
-router.post('/tournaments', asyncHandler(async (req, res) => {
+router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
   const { name, maxPlayers, startingBalance, timeframe, buyInAmount, tradingRestriction, isPublic } = req.body;
-  const userId = req.user?.id;
+  const userId = req.user.id;
   
   if (!userId) {
     throw new ValidationError('User not authenticated');
@@ -331,9 +331,9 @@ router.post('/tournaments', asyncHandler(async (req, res) => {
  * POST /api/tournaments/:code/join
  * Join a tournament by code
  */
-router.post('/tournaments/:code/join', asyncHandler(async (req, res) => {
+router.post('/tournaments/:code/join', requireAuth, asyncHandler(async (req, res) => {
   const code = sanitizeInput(req.params.code.toUpperCase());
-  const userId = req.user?.id;
+  const userId = req.user.id;
   
   if (!userId) {
     throw new ValidationError('User not authenticated');
@@ -371,12 +371,8 @@ router.post('/tournaments/:code/join', asyncHandler(async (req, res) => {
  * GET /api/tournaments
  * Get user's tournaments
  */
-router.get('/tournaments', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/tournaments', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
   const tournaments = await storage.getUserTournaments(userId);
 
@@ -390,12 +386,8 @@ router.get('/tournaments', asyncHandler(async (req, res) => {
  * GET /api/tournaments/public
  * Get public tournaments for browsing
  */
-router.get('/tournaments/public', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/tournaments/public', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
   const publicTournaments = await storage.getPublicTournaments();
 
@@ -409,13 +401,9 @@ router.get('/tournaments/public', asyncHandler(async (req, res) => {
  * GET /api/tournaments/:id/participants
  * Get tournament participants with user names and portfolio values
  */
-router.get('/tournaments/:id/participants', asyncHandler(async (req, res) => {
+router.get('/tournaments/:id/participants', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+  const userId = req.user.id;
 
   const participants = await storage.getTournamentParticipants(tournamentId);
 
@@ -497,13 +485,9 @@ router.get('/tournaments/:id/participants', asyncHandler(async (req, res) => {
  * GET /api/tournaments/:id/balance
  * Get tournament balance for user
  */
-router.get('/tournaments/:id/balance', asyncHandler(async (req, res) => {
+router.get('/tournaments/:id/balance', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+  const userId = req.user.id;
 
   const balance = await storage.getTournamentBalance(tournamentId, userId);
 
@@ -517,13 +501,9 @@ router.get('/tournaments/:id/balance', asyncHandler(async (req, res) => {
  * GET /api/tournaments/:id/purchases
  * Get tournament purchases for user
  */
-router.get('/tournaments/:id/purchases', asyncHandler(async (req, res) => {
+router.get('/tournaments/:id/purchases', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+  const userId = req.user.id;
 
   const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
 
@@ -537,13 +517,9 @@ router.get('/tournaments/:id/purchases', asyncHandler(async (req, res) => {
  * POST /api/tournaments/:id/purchase
  * Purchase stock in a tournament
  */
-router.post('/tournaments/:id/purchase', asyncHandler(async (req, res) => {
+router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+  const userId = req.user.id;
 
   const { symbol, companyName, shares, purchasePrice } = req.body;
   
@@ -611,13 +587,9 @@ router.post('/tournaments/:id/purchase', asyncHandler(async (req, res) => {
  * POST /api/tournaments/:id/sell
  * Sell stock in a tournament
  */
-router.post('/tournaments/:id/sell', asyncHandler(async (req, res) => {
+router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+  const userId = req.user.id;
 
   const { purchaseId, sharesToSell, currentPrice } = req.body;
   
