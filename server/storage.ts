@@ -75,7 +75,7 @@ export interface IStorage {
   createTournament(tournament: InsertTournament, creatorId: number): Promise<Tournament>;
   joinTournament(tournamentId: number, userId: number): Promise<TournamentParticipant>;
   getTournamentByCode(code: string): Promise<Tournament | undefined>;
-  getUserTournaments(userId: number): Promise<Tournament[]>;
+  getUserTournaments(userId: number): Promise<any[]>;
   getTournamentParticipants(tournamentId: number): Promise<TournamentParticipant[]>;
   
   // Tournament trading operations
@@ -336,10 +336,10 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
-  async getUserTournaments(userId: number): Promise<any[]> {
-    return await db
+  async getUserTournaments(userId: number): Promise<Tournament[]> {
+    const results = await db
       .select({
-        tournaments: tournaments,
+        tournament: tournaments,
         balance: tournamentParticipants.balance
       })
       .from(tournaments)
@@ -351,6 +351,11 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(tournaments.createdAt));
+
+    return results.map(result => ({
+      ...result.tournament,
+      userBalance: result.balance
+    }));
   }
 
   async getTournamentParticipants(tournamentId: number): Promise<any[]> {
@@ -479,7 +484,7 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(tournaments)
       .where(and(
         eq(tournaments.isPublic, true),
-        eq(tournaments.status, 'active')
+        ne(tournaments.status, 'completed')
       ));
   }
 
