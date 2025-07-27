@@ -13,7 +13,8 @@ import {
   Gift,
   Settings,
   Archive,
-  Shield
+  Shield,
+  Calendar
 } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
@@ -32,6 +33,7 @@ export function SimplifiedSidebar() {
       { href: "/portfolio", label: t('portfolio'), icon: Briefcase },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
+      { href: "/events", label: "Events", icon: Calendar },
       { href: "/shop", label: "Shop", icon: ShoppingBag },
     ] : []),
     { href: "/contact", label: "Support", icon: Phone },

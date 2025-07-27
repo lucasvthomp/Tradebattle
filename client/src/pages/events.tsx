@@ -1,20 +1,9 @@
-import { useAuth } from "@/hooks/use-auth";
-import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { Calendar, Clock, MapPin, Users, Trophy, Star } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ShoppingBag, 
-  Star, 
-  Trophy, 
-  Crown, 
-  Coins,
-  TrendingUp
-} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-export default function Shop() {
-  const { user } = useAuth();
-  const { formatCurrency, t } = useUserPreferences();
-
+export default function Events() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-12 px-4">
@@ -22,11 +11,11 @@ export default function Shop() {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <ShoppingBag className="w-12 h-12 text-primary mr-3" />
-              <h1 className="text-4xl font-bold text-foreground">Shop</h1>
+              <Calendar className="w-12 h-12 text-primary mr-3" />
+              <h1 className="text-4xl font-bold text-foreground">Events</h1>
             </div>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Enhance your trading experience with premium features, tools, and exclusive content.
+              Discover upcoming trading competitions, workshops, and community events. Connect with fellow traders and enhance your skills.
             </p>
           </div>
 
@@ -37,7 +26,7 @@ export default function Shop() {
             </div>
             <h2 className="text-3xl font-bold text-foreground mb-4">Coming Soon</h2>
             <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-              We're developing an amazing shopping experience with premium features and exclusive content. Soon you'll be able to purchase:
+              We're working hard to bring you an amazing events experience. Soon you'll be able to join:
             </p>
             
             {/* Feature Preview Cards */}
@@ -45,23 +34,11 @@ export default function Shop() {
               <Card className="bg-card/50 border-dashed">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <Coins className="w-5 h-5 text-green-600" />
-                    <span>Balance Boosts</span>
-                  </CardTitle>
-                  <CardDescription>
-                    Instant virtual money additions for enhanced trading
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-              
-              <Card className="bg-card/50 border-dashed">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
                     <Trophy className="w-5 h-5 text-yellow-600" />
-                    <span>Premium Tournaments</span>
+                    <span>Live Trading Competitions</span>
                   </CardTitle>
                   <CardDescription>
-                    Exclusive access to high-stakes competitions
+                    Real-time tournaments with prizes and recognition
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -69,11 +46,11 @@ export default function Shop() {
               <Card className="bg-card/50 border-dashed">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <TrendingUp className="w-5 h-5 text-blue-600" />
-                    <span>Advanced Analytics</span>
+                    <Users className="w-5 h-5 text-blue-600" />
+                    <span>Community Workshops</span>
                   </CardTitle>
                   <CardDescription>
-                    Detailed portfolio insights and performance tracking
+                    Learning sessions with expert traders and analysts
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -81,11 +58,23 @@ export default function Shop() {
               <Card className="bg-card/50 border-dashed">
                 <CardHeader>
                   <CardTitle className="flex items-center space-x-2">
-                    <Crown className="w-5 h-5 text-purple-600" />
-                    <span>Exclusive Badges</span>
+                    <Clock className="w-5 h-5 text-green-600" />
+                    <span>Weekly Challenges</span>
                   </CardTitle>
                   <CardDescription>
-                    Unique achievement badges and profile customizations
+                    Short-term trading challenges with themed strategies
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+              
+              <Card className="bg-card/50 border-dashed">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <MapPin className="w-5 h-5 text-purple-600" />
+                    <span>Virtual Meetups</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Connect with traders from around the world
                   </CardDescription>
                 </CardHeader>
               </Card>
@@ -96,7 +85,7 @@ export default function Shop() {
                 Launch Expected: Q2 2025
               </Badge>
               <p className="text-sm text-muted-foreground">
-                Want early access? Keep an eye on your notifications for exclusive previews!
+                Want to be notified when events go live? Stay tuned to your dashboard for updates!
               </p>
             </div>
           </div>

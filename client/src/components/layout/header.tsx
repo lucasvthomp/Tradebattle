@@ -35,22 +35,17 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {user ? (
               <>
-                {/* Balance Display */}
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setBalanceDialogOpen(true)}
-                  className="text-sm font-medium text-green-600 hover:text-green-700 hover:bg-green-50"
-                >
-                  {formatCurrency(Number(user?.balance) || 0)}
-                </Button>
-                
-                {/* User Menu */}
+                {/* User Menu with integrated balance */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50">
+                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md">
                       <User className="w-4 h-4" />
                       <span className="text-sm font-medium">
                         {user?.displayName || user?.username || "User"}
+                      </span>
+                      <span className="text-muted-foreground mx-1">|</span>
+                      <span className="text-sm font-medium text-green-600">
+                        {formatCurrency(Number(user?.balance) || 0)}
                       </span>
                       <ChevronDown className="w-4 h-4" />
                     </Button>
