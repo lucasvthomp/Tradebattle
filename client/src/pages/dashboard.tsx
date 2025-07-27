@@ -1454,12 +1454,22 @@ export default function Dashboard() {
       const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/purchase`, dataWithoutTournamentId);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Clear entire query cache and reload
-        queryClient.clear();
-        setTimeout(() => window.location.reload(), 100);
+        // Force immediate refetch of tournament data
+        await queryClient.refetchQueries({ 
+          queryKey: ['tournament-purchases', tournamentId, user?.id],
+          type: 'active'
+        });
+        await queryClient.refetchQueries({ 
+          queryKey: ['tournament-balance', tournamentId, user?.id],
+          type: 'active'
+        });
+        await queryClient.refetchQueries({ 
+          queryKey: ['tournament-participants', tournamentId],
+          type: 'active'
+        });
       }
       toast({
         title: "Purchase Successful",
@@ -1497,12 +1507,22 @@ export default function Dashboard() {
       const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/sell`, dataWithoutTournamentId);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Clear entire query cache and reload
-        queryClient.clear();
-        setTimeout(() => window.location.reload(), 100);
+        // Force immediate refetch of tournament data
+        await queryClient.refetchQueries({ 
+          queryKey: ['tournament-purchases', tournamentId, user?.id],
+          type: 'active'
+        });
+        await queryClient.refetchQueries({ 
+          queryKey: ['tournament-balance', tournamentId, user?.id],
+          type: 'active'
+        });
+        await queryClient.refetchQueries({ 
+          queryKey: ['tournament-participants', tournamentId],
+          type: 'active'
+        });
       }
       toast({
         title: "Sale Successful",
