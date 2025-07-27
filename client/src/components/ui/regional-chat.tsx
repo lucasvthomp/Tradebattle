@@ -58,10 +58,23 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
 
   // WebSocket connection for real-time updates
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !user) return;
 
+    // Construct WebSocket URL with fallback for development
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const host = window.location.hostname;
+    const port = window.location.port;
+    
+    // For Replit development, use the full host with port
+    const wsUrl = `${protocol}//${host}${port ? `:${port}` : ''}/ws`;
+    
+    console.log('Attempting WebSocket connection to:', wsUrl);
+    console.log('Window location details:', {
+      protocol: window.location.protocol,
+      hostname: window.location.hostname,
+      port: window.location.port,
+      host: window.location.host
+    });
     
     try {
       const ws = new WebSocket(wsUrl);
@@ -91,9 +104,12 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
 
       ws.onerror = (error) => {
         console.error('Chat WebSocket error:', error);
+        console.error('WebSocket URL that failed:', wsUrl);
+        console.error('Window location:', window.location);
       };
     } catch (error) {
       console.error('Failed to create WebSocket connection:', error);
+      console.error('WebSocket URL that failed:', wsUrl);
     }
 
     return () => {

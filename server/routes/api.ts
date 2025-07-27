@@ -1605,6 +1605,19 @@ router.get('/chat/global', asyncHandler(async (req, res) => {
 }));
 
 /**
+ * GET /api/chat/global
+ * Get global chat messages (last 50)
+ */
+router.get('/chat/global', requireAuth, asyncHandler(async (req, res) => {
+  const messages = await storage.getGlobalChatMessages(50);
+  
+  res.json({
+    success: true,
+    data: messages
+  });
+}));
+
+/**
  * POST /api/chat
  * Send a global chat message (authenticated users only)
  */
