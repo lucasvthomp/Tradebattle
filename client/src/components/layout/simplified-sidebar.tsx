@@ -18,11 +18,7 @@ import {
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
 
-interface SimplifiedSidebarProps {
-  onChatOpen: () => void;
-}
-
-export function SimplifiedSidebar({ onChatOpen }: SimplifiedSidebarProps) {
+export function SimplifiedSidebar() {
   const { user } = useAuth();
   const { t } = useUserPreferences();
   const [location] = useLocation();

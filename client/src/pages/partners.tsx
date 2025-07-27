@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,19 +23,16 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  Send,
   Plus,
   Eye,
   Edit,
   Trash2,
-  Search,
   BookOpen,
   TrendingUp,
   BarChart3,
   FileDown,
   Globe,
   Settings,
-  User,
   Hash,
   DollarSign,
   Building,
@@ -64,11 +61,7 @@ export default function Partners() {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [newRequestOpen, setNewRequestOpen] = useState(false);
   const [newPublicationOpen, setNewPublicationOpen] = useState(false);
-  const [selectedChat, setSelectedChat] = useState<any>(null);
-  const [chatMessage, setChatMessage] = useState("");
-  const [userSearchQuery, setUserSearchQuery] = useState("");
-  const [selectedUser, setSelectedUser] = useState<any>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   
   // Research request dialog state (same as dashboard)
   const [researchStep, setResearchStep] = useState(1);
@@ -97,23 +90,9 @@ export default function Partners() {
     enabled: isPartner,
   });
 
-  // Fetch all users for partner search
-  const { data: allUsers, isLoading: usersLoading } = useQuery({
-    queryKey: ["/api/admin/users"],
-    enabled: isPartner,
-  });
 
-  // Fetch chat conversations
-  const { data: conversations, isLoading: conversationsLoading } = useQuery({
-    queryKey: ["/api/chat/conversations"],
-    enabled: isPartner,
-  });
 
-  // Fetch messages for selected chat
-  const { data: messages, isLoading: messagesLoading } = useQuery({
-    queryKey: ["/api/chat/messages", selectedChat?.conversationId],
-    enabled: isPartner && !!selectedChat?.conversationId,
-  });
+
 
   // Fetch research publications
   const { data: publications, isLoading: publicationsLoading } = useQuery({
@@ -121,10 +100,7 @@ export default function Partners() {
     enabled: isPartner,
   });
 
-  // Auto-scroll to bottom of messages
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+
 
   // Create research request mutation (same as dashboard)
   const createRequestMutation = useMutation({
@@ -175,25 +151,6 @@ export default function Partners() {
       description: researchDescription || `${researchType} analysis for ${researchTarget}`,
     });
   };
-
-  // Send message mutation
-  const sendMessageMutation = useMutation({
-    mutationFn: async (messageData: any) => {
-      await apiRequest("POST", "/api/chat/messages", messageData);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/chat/messages", selectedChat?.conversationId] });
-      queryClient.invalidateQueries({ queryKey: ["/api/chat/conversations"] });
-      setChatMessage("");
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
 
   // Create publication mutation
   const createPublicationMutation = useMutation({
@@ -276,28 +233,7 @@ export default function Partners() {
     createPublicationMutation.mutate(publicationData);
   };
 
-  const handleSendMessage = () => {
-    if (!chatMessage.trim() || !selectedChat) return;
-    
-    sendMessageMutation.mutate({
-      receiverUserId: selectedChat.otherUser.id,
-      message: chatMessage,
-    });
-  };
 
-  const handleStartChat = (selectedUser: any) => {
-    const conversationId = user.id < selectedUser.id 
-      ? `${user.id}_${selectedUser.id}` 
-      : `${selectedUser.id}_${user.id}`;
-    
-    setSelectedChat({
-      conversationId,
-      otherUser: selectedUser,
-    });
-    setActiveTab("communications");
-    setSelectedUser(null);
-    setUserSearchQuery("");
-  };
 
   const handlePublishToggle = (publication: any) => {
     updatePublicationMutation.mutate({
@@ -327,12 +263,7 @@ export default function Partners() {
     }
   };
 
-  const filteredUsers = allUsers?.filter(u => 
-    u.id !== user.id && 
-    (u.firstName.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
-     u.lastName.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
-     u.email.toLowerCase().includes(userSearchQuery.toLowerCase()))
-  ) || [];
+
 
   return (
     <div className="max-w-7xl mx-auto p-8">
@@ -351,16 +282,15 @@ export default function Partners() {
         {/* Partner Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
               <TabsTrigger value="requests">Research Requests</TabsTrigger>
-              <TabsTrigger value="communications">Communications</TabsTrigger>
               <TabsTrigger value="insights">Publish Research</TabsTrigger>
             </TabsList>
 
             <TabsContent value="dashboard" className="space-y-6">
               {/* Dashboard Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
@@ -396,16 +326,7 @@ export default function Partners() {
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Conversations</CardTitle>
-                    <MessageSquare className="h-4 w-4 text-gray-500" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{conversations?.length || 0}</div>
-                    <p className="text-xs text-gray-500">Active chats</p>
-                  </CardContent>
-                </Card>
+
               </div>
 
               {/* Recent Activity */}
@@ -602,146 +523,6 @@ export default function Partners() {
                 </CardContent>
               </Card>
             </TabsContent>
-
-            <TabsContent value="communications" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* User Search */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Search className="h-5 w-5" />
-                      Start New Chat
-                    </CardTitle>
-                    <CardDescription>
-                      Search for users to start a conversation
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <Input
-                        placeholder="Search users..."
-                        value={userSearchQuery}
-                        onChange={(e) => setUserSearchQuery(e.target.value)}
-                      />
-                      <div className="max-h-64 overflow-y-auto space-y-2">
-                        {filteredUsers.map((user) => (
-                          <div
-                            key={user.id}
-                            className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 cursor-pointer"
-                            onClick={() => handleStartChat(user)}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                                <User className="h-4 w-4" />
-                              </div>
-                              <div>
-                                <p className="font-medium">{user.firstName} {user.lastName}</p>
-                                <p className="text-sm text-gray-500">{user.email}</p>
-                              </div>
-                            </div>
-                            <MessageSquare className="h-4 w-4 text-gray-400" />
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Conversations List */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5" />
-                      Conversations
-                    </CardTitle>
-                    <CardDescription>
-                      Active conversations with clients
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      {conversations?.map((conversation) => (
-                        <div
-                          key={conversation.conversationId}
-                          className={`p-3 border rounded-lg cursor-pointer hover:bg-gray-50 ${
-                            selectedChat?.conversationId === conversation.conversationId ? 'bg-blue-50 border-blue-200' : ''
-                          }`}
-                          onClick={() => setSelectedChat(conversation)}
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-                              <User className="h-4 w-4" />
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-medium">{conversation.otherUser.firstName} {conversation.otherUser.lastName}</p>
-                              <p className="text-sm text-gray-500 truncate">{conversation.lastMessage.message}</p>
-                            </div>
-                          </div>
-                        </div>
-                      )) || (
-                        <div className="text-center py-8 text-gray-500">
-                          No conversations yet
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Chat Window */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5" />
-                      {selectedChat ? `Chat with ${selectedChat.otherUser.firstName} ${selectedChat.otherUser.lastName}` : 'Select a conversation'}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedChat ? (
-                      <div className="space-y-4">
-                        <div className="h-64 overflow-y-auto border rounded-lg p-4 space-y-3">
-                          {messages?.map((message) => (
-                            <div
-                              key={message.id}
-                              className={`flex ${message.senderUserId === user.id ? 'justify-end' : 'justify-start'}`}
-                            >
-                              <div
-                                className={`max-w-xs px-3 py-2 rounded-lg ${
-                                  message.senderUserId === user.id
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-200 text-gray-800'
-                                }`}
-                              >
-                                <p className="text-sm">{message.message}</p>
-                                <p className="text-xs mt-1 opacity-70">
-                                  {new Date(message.createdAt).toLocaleTimeString()}
-                                </p>
-                              </div>
-                            </div>
-                          ))}
-                          <div ref={messagesEndRef} />
-                        </div>
-                        <div className="flex gap-2">
-                          <Input
-                            placeholder="Type a message..."
-                            value={chatMessage}
-                            onChange={(e) => setChatMessage(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                          />
-                          <Button onClick={handleSendMessage} disabled={!chatMessage.trim()}>
-                            <Send className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-gray-500">
-                        Select a conversation to start chatting
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
             <TabsContent value="insights" className="space-y-6">
               <Card>
                 <CardHeader>

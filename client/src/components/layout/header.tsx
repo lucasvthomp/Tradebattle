@@ -12,13 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield } from "lucide-react";
-import { ChatTrigger } from "./chat-panel";
-
-interface HeaderProps {
-  onChatOpen: () => void;
-}
-
-export default function Header({ onChatOpen }: HeaderProps) {
+export default function Header() {
   const { user, logoutMutation } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
@@ -86,8 +80,6 @@ export default function Header({ onChatOpen }: HeaderProps) {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                
-                <ChatTrigger onOpen={onChatOpen} />
               </>
             ) : (
               <>
@@ -103,7 +95,6 @@ export default function Header({ onChatOpen }: HeaderProps) {
                     Sign Up
                   </Button>
                 </Link>
-                <ChatTrigger onOpen={onChatOpen} />
               </>
             )}
           </div>

@@ -85,14 +85,7 @@ export const translations = {
     upgrade: "Upgrade",
     upgraded: "Upgraded",
     
-    // Chat
-    typeMessage: "Type your message...",
-    regionalChat: "Regional Chat",
-    sendMessage: "Send",
-    connectTraders: "Connect with traders in your region",
-    noMessages: "No messages yet",
-    firstConversation: "Be the first to start a conversation!",
-    user: "User",
+
     
     // Portfolio
     initialDeposit: "Initial Deposit",
@@ -202,14 +195,7 @@ export const translations = {
     upgrade: "Atualizar",
     upgraded: "Atualizado",
     
-    // Chat
-    typeMessage: "Digite sua mensagem...",
-    regionalChat: "Chat Regional",
-    sendMessage: "Enviar",
-    connectTraders: "Conecte-se com traders da sua região",
-    noMessages: "Ainda sem mensagens",
-    firstConversation: "Seja o primeiro a iniciar uma conversa!",
-    user: "Usuário",
+
     
     // Portfolio
     initialDeposit: "Depósito Inicial",
@@ -318,14 +304,7 @@ export const translations = {
     upgrade: "Mejorar",
     upgraded: "Mejorado",
     
-    // Chat
-    typeMessage: "Escribe tu mensaje...",
-    regionalChat: "Chat Regional",
-    sendMessage: "Enviar",
-    connectTraders: "Conecta con traders de tu región",
-    noMessages: "Aún no hay mensajes",
-    firstConversation: "¡Sé el primero en iniciar una conversación!",
-    user: "Usuario",
+
     
     // Portfolio
     initialDeposit: "Depósito Inicial",

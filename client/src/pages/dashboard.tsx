@@ -69,7 +69,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RegionalChat } from "@/components/ui/regional-chat";
+
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
@@ -844,8 +844,7 @@ export default function Dashboard() {
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
   const [sellAmount, setSellAmount] = useState("");
   
-  // Chat state
-  const [isChatOpen, setIsChatOpen] = useState(false);
+
   const [joinCode, setJoinCode] = useState("");
   
   // Performance period state
@@ -3801,11 +3800,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Regional Chat */}
-      <RegionalChat
-        isOpen={isChatOpen}
-        onToggle={() => setIsChatOpen(!isChatOpen)}
-      />
+
     </div>
   );
 }

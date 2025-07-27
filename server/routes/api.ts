@@ -1591,65 +1591,6 @@ router.post('/portfolio-history', requireAuth, asyncHandler(async (req, res) => 
   });
 }));
 
-/**
- * GET /api/chat/global
- * Get global chat messages (last 50)
- */
-router.get('/chat/global', asyncHandler(async (req, res) => {
-  const messages = await storage.getGlobalChatMessages(50);
-  
-  res.json({
-    success: true,
-    data: messages
-  });
-}));
 
-/**
- * GET /api/chat/global
- * Get global chat messages (last 50)
- */
-router.get('/chat/global', requireAuth, asyncHandler(async (req, res) => {
-  const messages = await storage.getGlobalChatMessages(50);
-  
-  res.json({
-    success: true,
-    data: messages
-  });
-}));
-
-/**
- * POST /api/chat
- * Send a global chat message (authenticated users only)
- */
-router.post('/chat', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { message } = req.body;
-  
-  if (!message || typeof message !== 'string' || message.trim().length === 0) {
-    throw new ValidationError('Message is required');
-  }
-  
-  if (message.length > 500) {
-    throw new ValidationError('Message must be 500 characters or less');
-  }
-  
-  const user = await storage.getUser(userId);
-  if (!user) {
-    throw new ValidationError('User not found');
-  }
-  
-  const newMessage = await storage.createGlobalChatMessage({
-    userId: user.userId,
-    message: message.trim()
-  });
-  
-  // Trigger WebSocket broadcast (this will be handled by the server WebSocket logic)
-  // No need to do anything here as the client will refetch after mutation success
-  
-  res.json({
-    success: true,
-    data: newMessage
-  });
-}));
 
 export default router;

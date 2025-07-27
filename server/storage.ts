@@ -11,7 +11,6 @@ import {
   tradeHistory,
   userAchievements,
   portfolioHistory,
-  chatMessages,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -36,8 +35,6 @@ import {
   type InsertUserAchievement,
   type PortfolioHistory,
   type InsertPortfolioHistory,
-  type ChatMessage,
-  type InsertChatMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -119,9 +116,7 @@ export interface IStorage {
   recordPortfolioValue(record: InsertPortfolioHistory): Promise<PortfolioHistory>;
   getUserPortfolioHistory(userId: number, portfolioType: 'personal' | 'tournament', tournamentId?: number): Promise<PortfolioHistory[]>;
   
-  // Chat operations
-  getGlobalChatMessages(limit: number): Promise<(ChatMessage & { username?: string; displayName?: string })[]>;
-  createGlobalChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+
 }
 
 export class DatabaseStorage implements IStorage {
@@ -774,54 +769,7 @@ export class DatabaseStorage implements IStorage {
     return await query.orderBy(asc(portfolioHistory.recordedAt));
   }
 
-  // Chat operations
-  async getGlobalChatMessages(limit: number): Promise<(ChatMessage & { username?: string; displayName?: string })[]> {
-    const result = await db
-      .select({
-        id: chatMessages.id,
-        userId: chatMessages.userId,
-        message: chatMessages.message,
-        isEdited: chatMessages.isEdited,
-        createdAt: chatMessages.createdAt,
-        updatedAt: chatMessages.updatedAt,
-        username: users.username,
-        displayName: users.displayName,
-      })
-      .from(chatMessages)
-      .leftJoin(users, eq(chatMessages.userId, users.userId))
-      .orderBy(desc(chatMessages.createdAt))
-      .limit(limit);
 
-    // Return in ascending order (oldest first)
-    return result.reverse();
-  }
-
-  async createGlobalChatMessage(messageData: InsertChatMessage): Promise<ChatMessage> {
-    const result = await db.insert(chatMessages).values(messageData).returning();
-    
-    // Ensure we only keep the latest 50 messages
-    const messageCount = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(chatMessages);
-    
-    const count = Number(messageCount[0]?.count || 0);
-    if (count > 50) {
-      // Delete oldest messages beyond 50
-      const oldestMessages = await db
-        .select({ id: chatMessages.id })
-        .from(chatMessages)
-        .orderBy(asc(chatMessages.createdAt))
-        .limit(count - 50);
-      
-      if (oldestMessages.length > 0) {
-        for (const message of oldestMessages) {
-          await db.delete(chatMessages).where(eq(chatMessages.id, message.id));
-        }
-      }
-    }
-    
-    return result[0];
-  }
 }
 
 export const storage = new DatabaseStorage();

@@ -14,8 +14,7 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Import chat schema
-export * from "./chat-schema";
+
 
 // Session storage table for Replit Auth
 export const sessions = pgTable(
