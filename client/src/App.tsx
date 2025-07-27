@@ -9,7 +9,7 @@ import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
-import Dashboard from "@/pages/dashboard";
+import Dashboard from "@/pages/dashboard-simple";
 import Portfolio from "@/pages/portfolio";
 import Leaderboard from "@/pages/leaderboard";
 import People from "@/pages/people";
