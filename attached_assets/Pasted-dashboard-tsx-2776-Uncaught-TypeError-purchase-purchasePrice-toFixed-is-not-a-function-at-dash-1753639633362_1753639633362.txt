@@ -1,0 +1,28 @@
+dashboard.tsx:2776 Uncaught TypeError: purchase.purchasePrice.toFixed is not a function
+    at dashboard.tsx:2776:105
+    at Array.map (<anonymous>)
+    at Dashboard (dashboard.tsx:2768:52)
+chunk-276SZO74.js?v=cece715e:14032 The above error occurred in the <Dashboard> component:
+
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=CdwGf28wCbxqc_cUk6sp1:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…unner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…rkspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+chunk-276SZO74.js?v=cece715e:9129 Uncaught TypeError: purchase.purchasePrice.toFixed is not a function
+    at dashboard.tsx:2776:105
+    at Array.map (<anonymous>)
+    at Dashboard (dashboard.tsx:2768:52)

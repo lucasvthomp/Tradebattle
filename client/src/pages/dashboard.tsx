@@ -2773,7 +2773,7 @@ export default function Dashboard() {
                               </div>
                               <div className="text-right">
                                 <div className="font-semibold">{purchase.shares} shares</div>
-                                <div className="text-sm text-muted-foreground">${purchase.purchasePrice.toFixed(2)}/share</div>
+                                <div className="text-sm text-muted-foreground">${parseFloat(purchase.purchasePrice).toFixed(2)}/share</div>
                               </div>
                             </div>
                           ))}
