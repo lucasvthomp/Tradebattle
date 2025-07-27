@@ -2696,7 +2696,8 @@ export default function Dashboard() {
     console.log("Tournament Detail View - selectedTournament:", selectedTournament);
     // Handle both tournament data structures
     const tournamentData = selectedTournament.tournaments || selectedTournament;
-    const balance = parseFloat(selectedTournament.balance || selectedTournament.userBalance || '0');
+    // Use real-time balance from API, fallback to selectedTournament balance
+    const balance = tournamentBalance?.data?.balance ? parseFloat(tournamentBalance.data.balance) : parseFloat(selectedTournament.balance || selectedTournament.userBalance || '0');
     console.log("Tournament Detail View - tournamentData:", tournamentData, "balance:", balance);
     
 
