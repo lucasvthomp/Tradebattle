@@ -935,18 +935,28 @@ export default function Dashboard() {
   const { data: tournamentBalance, refetch: refetchBalance, isLoading: isLoadingBalance } = useQuery({
     queryKey: ['tournament-balance', tournamentId, user?.id],
     queryFn: async () => {
-      if (!tournamentId) return null;
+      if (!tournamentId) {
+        console.log("No tournament ID for balance query");
+        return null;
+      }
 
+      console.log(`Fetching balance for tournament ${tournamentId}`);
       const response = await fetch(`/api/tournaments/${tournamentId}/balance`, {
         credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         }
       });
+      
+      console.log(`Balance API response status: ${response.status}`);
+      
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Balance API error: ${response.status} - ${errorText}`);
         throw new Error('Failed to fetch balance');
       }
       const data = await response.json();
+      console.log("Balance API response data:", data);
       return data;
     },
     enabled: !!user && !!tournamentId,
@@ -1647,7 +1657,12 @@ export default function Dashboard() {
     const totalCost = shares * selectedTradingStock.price;
 
     // Check if user has enough tournament balance  
+    console.log("Tournament balance data:", JSON.stringify(tournamentBalance, null, 2));
+    console.log("Tournament ID:", selectedTournament?.tournaments?.id);
+    
     const tournamentBalanceAmount = parseFloat(tournamentBalance?.data?.balance?.toString() || '0');
+    console.log("Parsed balance amount:", tournamentBalanceAmount);
+    console.log("Total cost needed:", totalCost);
     
     if (totalCost > tournamentBalanceAmount) {
       toast({
