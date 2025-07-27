@@ -1337,8 +1337,7 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
  * GET /api/users/public
  * Get all users with public profile information
  */
-router.get('/users/public', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
+router.get('/users/public', asyncHandler(async (req, res) => {
   
   // Get all users with only public information
   const users = await storage.getAllUsers();
@@ -1373,8 +1372,7 @@ router.get('/users/public', requireAuth, asyncHandler(async (req, res) => {
  * GET /api/users/public/:userId
  * Get specific user's public profile information
  */
-router.get('/users/public/:userId', requireAuth, asyncHandler(async (req, res) => {
-  const requestingUserId = req.user.id;
+router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   const targetUserId = parseInt(req.params.userId);
   
   if (isNaN(targetUserId)) {
