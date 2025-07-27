@@ -1,0 +1,593 @@
+chunk-276SZO74.js?v=cece715e:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `13`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14290
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+dashboard.tsx:2258 Clicking My Tournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2259 tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627
+setTimeout
+scheduleFn @ @tanstack_react-query.js?v=cece715e:555
+flush @ @tanstack_react-query.js?v=cece715e:569
+batch @ @tanstack_react-query.js?v=cece715e:587
+dispatch_fn @ @tanstack_react-query.js?v=cece715e:996
+setData @ @tanstack_react-query.js?v=cece715e:696
+onSuccess @ @tanstack_react-query.js?v=cece715e:897
+resolve @ @tanstack_react-query.js?v=cece715e:456
+Promise.then
+run @ @tanstack_react-query.js?v=cece715e:498
+start @ @tanstack_react-query.js?v=cece715e:536
+fetch @ @tanstack_react-query.js?v=cece715e:926
+executeFetch_fn @ @tanstack_react-query.js?v=cece715e:2211
+setOptions @ @tanstack_react-query.js?v=cece715e:1955
+(anonymous) @ @tanstack_react-query.js?v=cece715e:3032
+commitHookEffectListMount @ chunk-276SZO74.js?v=cece715e:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cece715e:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cece715e:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cece715e:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cece715e:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cece715e:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cece715e:19447
+commitRootImpl @ chunk-276SZO74.js?v=cece715e:19416
+commitRoot @ chunk-276SZO74.js?v=cece715e:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+flushSync @ chunk-276SZO74.js?v=cece715e:18959
+finishEventHandler @ chunk-276SZO74.js?v=cece715e:3569
+batchedUpdates @ chunk-276SZO74.js?v=cece715e:3582
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=cece715e:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=cece715e:5478
+dispatchEvent @ chunk-276SZO74.js?v=cece715e:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=cece715e:5449Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+flushSync @ chunk-276SZO74.js?v=cece715e:18959
+finishEventHandler @ chunk-276SZO74.js?v=cece715e:3569
+batchedUpdates @ chunk-276SZO74.js?v=cece715e:3582
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=cece715e:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=cece715e:5478
+dispatchEvent @ chunk-276SZO74.js?v=cece715e:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=cece715e:5449Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+flushSync @ chunk-276SZO74.js?v=cece715e:18959
+finishEventHandler @ chunk-276SZO74.js?v=cece715e:3569
+batchedUpdates @ chunk-276SZO74.js?v=cece715e:3582
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=cece715e:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=cece715e:5478
+dispatchEvent @ chunk-276SZO74.js?v=cece715e:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=cece715e:5449Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+flushSync @ chunk-276SZO74.js?v=cece715e:18959
+finishEventHandler @ chunk-276SZO74.js?v=cece715e:3569
+batchedUpdates @ chunk-276SZO74.js?v=cece715e:3582
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=cece715e:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=cece715e:5478
+dispatchEvent @ chunk-276SZO74.js?v=cece715e:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=cece715e:5449Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18678
+workLoop @ chunk-276SZO74.js?v=cece715e:197
+flushWork @ chunk-276SZO74.js?v=cece715e:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=cece715e:384Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18678
+workLoop @ chunk-276SZO74.js?v=cece715e:197
+flushWork @ chunk-276SZO74.js?v=cece715e:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=cece715e:384Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performConcurrentWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18678
+workLoop @ chunk-276SZO74.js?v=cece715e:197
+flushWork @ chunk-276SZO74.js?v=cece715e:176
+performWorkUntilDeadline @ chunk-276SZO74.js?v=cece715e:384Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+flushSync @ chunk-276SZO74.js?v=cece715e:18959
+finishEventHandler @ chunk-276SZO74.js?v=cece715e:3569
+batchedUpdates @ chunk-276SZO74.js?v=cece715e:3582
+dispatchEventForPluginEventSystem @ chunk-276SZO74.js?v=cece715e:7173
+dispatchEventWithEnableCapturePhaseSelectiveHydrationWithoutDiscreteEventReplay @ chunk-276SZO74.js?v=cece715e:5478
+dispatchEvent @ chunk-276SZO74.js?v=cece715e:5472
+dispatchDiscreteEvent @ chunk-276SZO74.js?v=cece715e:5449Understand this error
+dashboard.tsx:1660 Tournament balance data: undefined
+dashboard.tsx:1661 Tournament ID: undefined
+dashboard.tsx:1664 Parsed balance amount: 0
+dashboard.tsx:1665 Total cost needed: 855.52
+dashboard.tsx:2662 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2666 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `5`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at _c9 (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:101:12)
+    at div
+    at _c (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=AQtlaJmmrSXqovW8upX7D:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14292
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error

@@ -931,7 +931,7 @@ export default function Dashboard() {
   });
 
   // Tournament-specific trading queries with unique keys
-  const tournamentId = selectedTournament?.tournaments?.id;
+  const tournamentId = selectedTournament?.id || selectedTournament?.tournaments?.id;
   console.log("Tournament query conditions - user:", !!user, "tournamentId:", tournamentId, "selectedTournament:", selectedTournament);
   
   const { data: tournamentBalance, refetch: refetchBalance, isLoading: isLoadingBalance } = useQuery({
@@ -1013,12 +1013,12 @@ export default function Dashboard() {
   });
 
   // Use tournament data when available, otherwise use regular balance
-  const currentBalance = selectedTournament?.tournaments?.id 
+  const currentBalance = (selectedTournament?.id || selectedTournament?.tournaments?.id)
     ? Number(tournamentBalance?.data?.balance || selectedTournament?.balance || 0)
     : 0;
   
   // Tournament balance is working correctly
-  const currentPurchases = selectedTournament?.tournaments?.id 
+  const currentPurchases = (selectedTournament?.id || selectedTournament?.tournaments?.id)
     ? tournamentPurchases?.data || []
     : [];
 
@@ -1660,7 +1660,7 @@ export default function Dashboard() {
 
     // Check if user has enough tournament balance  
     console.log("Tournament balance data:", JSON.stringify(tournamentBalance, null, 2));
-    console.log("Tournament ID:", selectedTournament?.tournaments?.id);
+    console.log("Tournament ID:", selectedTournament?.id || selectedTournament?.tournaments?.id);
     
     const tournamentBalanceAmount = parseFloat(tournamentBalance?.data?.balance?.toString() || '0');
     console.log("Parsed balance amount:", tournamentBalanceAmount);
@@ -1676,7 +1676,8 @@ export default function Dashboard() {
     }
 
     // Check if we're in tournament mode and have a tournament selected
-    if (currentView === 'tournament-detail' && selectedTournament?.tournaments?.id) {
+    const currentTournamentId = selectedTournament?.id || selectedTournament?.tournaments?.id;
+    if (currentView === 'tournament-detail' && currentTournamentId) {
       // Use tournament purchase API
       purchaseStockMutation.mutate({
         symbol: selectedTradingStock.symbol,
@@ -1684,6 +1685,7 @@ export default function Dashboard() {
         shares: shares,
         purchasePrice: selectedTradingStock.price.toString(),
         totalCost: totalCost.toString(),
+        tournamentId: currentTournamentId,
       });
     } else {
       toast({
