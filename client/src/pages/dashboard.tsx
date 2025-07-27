@@ -1516,7 +1516,22 @@ export default function Dashboard() {
       const data = await response.json();
       
       if (data.success) {
-        setTradingStockData(data.data);
+        // Fetch prices for search results
+        const stocksWithPrices = await Promise.all(
+          data.data.map(async (stock: any) => {
+            try {
+              const priceResponse = await fetch(`/api/quote/${stock.symbol}`);
+              const priceData = await priceResponse.json();
+              return {
+                ...stock,
+                price: priceData.success ? priceData.data.price : 0
+              };
+            } catch (error) {
+              return { ...stock, price: 0 };
+            }
+          })
+        );
+        setTradingStockData(stocksWithPrices);
       } else {
         setTradingStockData([]);
       }
@@ -1530,40 +1545,38 @@ export default function Dashboard() {
 
   // Handle buy button click
   const handleBuyStock = async (stock: any) => {
-    // If the stock already has a price, use it directly
-    if (stock.price && stock.price > 0) {
-      setSelectedTradingStock(stock);
-      setIsBuyDialogOpen(true);
-      return;
-    }
-
-    // Otherwise, fetch the current price
-    try {
-      const response = await fetch(`/api/quote/${stock.symbol}`);
-      const data = await response.json();
-      
-      if (data.success && data.data) {
-        const stockWithPrice = {
-          ...stock,
-          price: data.data.price,
-          name: data.data.name || stock.name,
-        };
-        setSelectedTradingStock(stockWithPrice);
-        setIsBuyDialogOpen(true);
-      } else {
+    // Stock should already have price from search, but verify
+    if (!stock.price || stock.price <= 0) {
+      try {
+        const response = await fetch(`/api/quote/${stock.symbol}`);
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          const stockWithPrice = {
+            ...stock,
+            price: data.data.price,
+            name: data.data.name || stock.name,
+          };
+          setSelectedTradingStock(stockWithPrice);
+          setIsBuyDialogOpen(true);
+        } else {
+          toast({
+            title: "Error",
+            description: "Unable to fetch current price for this stock",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching stock price:', error);
         toast({
           title: "Error",
           description: "Unable to fetch current price for this stock",
           variant: "destructive",
         });
       }
-    } catch (error) {
-      console.error('Error fetching stock price:', error);
-      toast({
-        title: "Error",
-        description: "Unable to fetch current price for this stock",
-        variant: "destructive",
-      });
+    } else {
+      setSelectedTradingStock(stock);
+      setIsBuyDialogOpen(true);
     }
   };
 
@@ -2787,7 +2800,7 @@ export default function Dashboard() {
                                   </div>
                                   <div className="text-right">
                                     <div className="font-semibold text-sm">
-                                      Click to see price
+                                      {formatCurrency(stock.price || 0)}
                                     </div>
                                     <Button size="sm" variant="outline" className="mt-1">
                                       <Plus className="w-3 h-3 mr-1" />
@@ -2981,6 +2994,80 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Buy Stock Dialog */}
+        <Dialog open={isBuyDialogOpen} onOpenChange={setIsBuyDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Buy Stock</DialogTitle>
+              <DialogDescription>
+                Purchase shares of {selectedTradingStock?.symbol} - {selectedTradingStock?.name}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Stock Symbol</Label>
+                  <div className="font-semibold text-lg">{selectedTradingStock?.symbol}</div>
+                </div>
+                <div>
+                  <Label>Current Price</Label>
+                  <div className="font-semibold text-lg text-green-600">
+                    {formatCurrency(selectedTradingStock?.price || 0)}
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="share-amount">Number of Shares</Label>
+                <Input
+                  id="share-amount"
+                  type="number"
+                  value={shareAmount}
+                  onChange={(e) => setShareAmount(e.target.value)}
+                  min="1"
+                  placeholder="Enter number of shares"
+                  className="mt-2"
+                />
+              </div>
+
+              {shareAmount && selectedTradingStock?.price && (
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Shares:</span>
+                      <span>{shareAmount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Price per share:</span>
+                      <span>{formatCurrency(selectedTradingStock.price)}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                      <span>Total Cost:</span>
+                      <span>{formatCurrency((selectedTradingStock.price * parseInt(shareAmount || "0")))}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => {
+                  setIsBuyDialogOpen(false);
+                  setSelectedTradingStock(null);
+                  setShareAmount("");
+                }}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handlePurchaseSubmit}
+                  disabled={!shareAmount || parseInt(shareAmount) <= 0 || !selectedTradingStock?.price}
+                >
+                  Buy Stock
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
