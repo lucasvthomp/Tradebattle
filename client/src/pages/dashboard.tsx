@@ -880,14 +880,10 @@ export default function Dashboard() {
     enabled: !!user,
   });
 
-  const userTournaments = tournamentsResponse?.data || [];
-  
-  // Debug tournaments data
-  console.log('Tournaments Response:', tournamentsResponse);
-  console.log('User Tournaments:', userTournaments);
+  const userTournaments = (tournamentsResponse as any)?.data || [];
 
   // Tournament participants query
-  const { data: participants = [], isLoading: participantsLoading } = useQuery<any[]>({
+  const { data: participants = [], isLoading: participantsLoading } = useQuery({
     queryKey: ['tournament-participants', selectedTournament?.tournaments?.id],
     enabled: !!selectedTournament?.tournaments?.id,
   });
@@ -2196,7 +2192,7 @@ export default function Dashboard() {
                 </div>
               ) : userTournaments && userTournaments.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {userTournaments.map((tournament) => {
+                  {userTournaments.map((tournament: any) => {
                     const tournamentData = tournament;
                     const balance = parseFloat(tournament.userBalance || '0');
                     
@@ -2571,8 +2567,8 @@ export default function Dashboard() {
                   
                   createTournamentMutation.mutate({
                     name: tournamentName,
-                    maxPlayers: parseInt(maxPlayers),
-                    startingBalance: parseFloat(startingBalance),
+                    maxPlayers: parseInt(maxPlayers as string),
+                    startingBalance: parseFloat(startingBalance as string),
                     timeframe: durationString,
                     buyInAmount: parseFloat(buyInAmount),
                     tradingRestriction: tradingRestriction,
@@ -3512,8 +3508,8 @@ export default function Dashboard() {
                   if (tournamentName.trim()) {
                     createTournamentMutation.mutate({
                       name: tournamentName.trim(),
-                      maxPlayers: parseInt(maxPlayers),
-                      startingBalance: parseFloat(startingBalance),
+                      maxPlayers: parseInt(maxPlayers as string),
+                      startingBalance: parseFloat(startingBalance as string),
                       timeframe,
                       buyInAmount: parseFloat(buyInAmount) || 0,
                       tradingRestriction,
