@@ -59,7 +59,7 @@ export function SimplifiedSidebar({ onChatOpen }: SimplifiedSidebarProps) {
     <>
       {/* Simplified Always-Visible Sidebar */}
       <div 
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-background/95 backdrop-blur-sm border-r border-border/50 z-30 transition-all duration-300 ease-in-out ${
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-background border-r border-border z-30 transition-all duration-300 ease-in-out ${
           expanded ? 'w-64' : 'w-16'
         }`}
         onMouseEnter={() => setExpanded(true)}
@@ -89,7 +89,7 @@ export function SimplifiedSidebar({ onChatOpen }: SimplifiedSidebarProps) {
 
         {/* Separator */}
         {user && (
-          <div className="mx-3 my-3 h-px bg-border/50" />
+          <div className="mx-3 my-3 h-px bg-border" />
         )}
 
         {/* User Actions */}
