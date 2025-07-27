@@ -967,8 +967,9 @@ export default function Dashboard() {
       return data;
     },
     enabled: !!user && !!tournamentId,
-    refetchOnWindowFocus: false,
-    staleTime: 0
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0
   });
 
   const { data: tournamentPurchases, refetch: refetchPurchases, isLoading: isLoadingPurchases } = useQuery({
@@ -989,8 +990,9 @@ export default function Dashboard() {
       return data;
     },
     enabled: !!user && !!tournamentId,
-    refetchOnWindowFocus: false,
-    staleTime: 0
+    refetchOnWindowFocus: true,
+    staleTime: 0,
+    gcTime: 0
   });
 
   // Tournament participants query with real-time updates
@@ -1453,12 +1455,18 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
-        // Also refetch immediately
-        refetchBalance();
-        refetchPurchases();
+        // Remove from cache and force immediate refetch
+        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.removeQueries({ queryKey: ['tournament-participants', tournamentId] });
+        
+        // Force immediate refetch with no cache
+        setTimeout(async () => {
+          await Promise.all([
+            refetchBalance(),
+            refetchPurchases()
+          ]);
+        }, 50);
       }
       toast({
         title: "Purchase Successful",
@@ -1498,11 +1506,18 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
-        refetchBalance();
-        refetchPurchases();
+        // Remove from cache and force immediate refetch
+        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.removeQueries({ queryKey: ['tournament-participants', tournamentId] });
+        
+        // Force immediate refetch with no cache
+        setTimeout(async () => {
+          await Promise.all([
+            refetchBalance(),
+            refetchPurchases()
+          ]);
+        }, 50);
       }
       toast({
         title: "Sale Successful",
