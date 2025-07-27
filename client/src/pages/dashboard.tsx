@@ -719,6 +719,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [stockData, setStockData] = useState([]);
   const [isLoadingStocks, setIsLoadingStocks] = useState(false);
+  const [forceRefreshKey, setForceRefreshKey] = useState(0);
   const [popularStocks, setPopularStocks] = useState([]);
   const [isLoadingPopular, setIsLoadingPopular] = useState(true);
   const [selectedStock, setSelectedStock] = useState(null);
@@ -940,7 +941,7 @@ export default function Dashboard() {
   console.log("Tournament query conditions - user:", !!user, "tournamentId:", tournamentId, "selectedTournament:", selectedTournament);
   
   const { data: tournamentBalance, refetch: refetchBalance, isLoading: isLoadingBalance } = useQuery({
-    queryKey: ['tournament-balance', tournamentId, user?.id],
+    queryKey: ['tournament-balance', tournamentId, user?.id, forceRefreshKey],
     queryFn: async () => {
       if (!tournamentId) {
         console.log("No tournament ID for balance query");
@@ -974,7 +975,7 @@ export default function Dashboard() {
   });
 
   const { data: tournamentPurchases, refetch: refetchPurchases, isLoading: isLoadingPurchases } = useQuery({
-    queryKey: ['tournament-purchases', tournamentId, user?.id],
+    queryKey: ['tournament-purchases', tournamentId, user?.id, forceRefreshKey],
     queryFn: async () => {
       if (!tournamentId) return null;
 
@@ -1456,15 +1457,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       // Force immediate UI update after purchase
-      const tournamentId = selectedTournament?.id;
-      if (tournamentId) {
-        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        setTimeout(() => {
-          refetchPurchases();
-          refetchBalance();
-        }, 100);
-      }
+      setForceRefreshKey(prev => prev + 1);
       
       toast({
         title: "Purchase Successful",
@@ -1504,15 +1497,7 @@ export default function Dashboard() {
     },
     onSuccess: () => {
       // Force immediate UI update after sale
-      const tournamentId = selectedTournament?.id;
-      if (tournamentId) {
-        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        setTimeout(() => {
-          refetchPurchases();
-          refetchBalance();
-        }, 100);
-      }
+      setForceRefreshKey(prev => prev + 1);
       
       toast({
         title: "Sale Successful",

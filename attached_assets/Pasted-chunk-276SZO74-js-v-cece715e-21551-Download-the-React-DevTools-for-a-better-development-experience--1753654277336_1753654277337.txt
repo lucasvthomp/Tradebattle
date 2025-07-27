@@ -1,0 +1,91 @@
+chunk-276SZO74.js?v=cece715e:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:2290 Clicking My Tournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2291 tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: {success: true, data: {…}}
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: {success: true, data: {…}}
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: {success: true, data: {…}}
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2694 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2698 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 9472.28
