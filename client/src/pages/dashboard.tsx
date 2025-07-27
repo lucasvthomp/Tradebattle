@@ -1399,11 +1399,7 @@ export default function Dashboard() {
   
   // Participants query already declared above
 
-  // Fetch tournament purchases when tournament is selected
-  const { data: purchases, isLoading: purchasesLoading } = useQuery({
-    queryKey: [`/api/tournaments/${selectedTournamentId}/purchases`],
-    enabled: !!selectedTournamentId,
-  });
+
 
 
   // Auto-select first tournament if none selected
@@ -2773,7 +2769,7 @@ export default function Dashboard() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {purchasesLoading ? (
+                      {isLoadingPurchases ? (
                         <div className="space-y-3">
                           {[1, 2, 3].map((i) => (
                             <div key={i} className="animate-pulse flex space-x-4">
@@ -2784,9 +2780,9 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : purchases && Array.isArray(purchases) && purchases?.length > 0 ? (
+                      ) : tournamentPurchases?.data && Array.isArray(tournamentPurchases.data) && tournamentPurchases.data.length > 0 ? (
                         <div className="space-y-3">
-                          {purchases.map((purchase: any) => (
+                          {tournamentPurchases.data.map((purchase: any) => (
                             <div key={purchase.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                               <div>
                                 <div className="font-semibold">{purchase.symbol}</div>
