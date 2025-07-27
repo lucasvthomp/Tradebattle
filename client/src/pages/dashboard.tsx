@@ -693,7 +693,8 @@ export default function Dashboard() {
                   size="sm" 
                   variant="outline"
                   onClick={() => {
-                    setSelectedTournament(tournament.id);
+                    console.log("Viewing tournament:", tournament);
+                    setSelectedTournament({ tournaments: tournament, balance: tournament.startingBalance || '0' });
                     setCurrentView('tournament-detail');
                   }}
                 >
@@ -2617,8 +2618,10 @@ export default function Dashboard() {
 
   // Tournament Detail View
   if (currentView === 'tournament-detail' && selectedTournament) {
+    console.log("Tournament Detail View - selectedTournament:", selectedTournament);
     const tournamentData = selectedTournament.tournaments;
     const balance = parseFloat(selectedTournament.balance || '0');
+    console.log("Tournament Detail View - tournamentData:", tournamentData, "balance:", balance);
     
 
 
