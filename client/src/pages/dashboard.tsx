@@ -2621,8 +2621,9 @@ export default function Dashboard() {
   // Tournament Detail View
   if (currentView === 'tournament-detail' && selectedTournament) {
     console.log("Tournament Detail View - selectedTournament:", selectedTournament);
-    const tournamentData = selectedTournament.tournaments;
-    const balance = parseFloat(selectedTournament.balance || '0');
+    // Handle both tournament data structures
+    const tournamentData = selectedTournament.tournaments || selectedTournament;
+    const balance = parseFloat(selectedTournament.balance || selectedTournament.userBalance || '0');
     console.log("Tournament Detail View - tournamentData:", tournamentData, "balance:", balance);
     
 

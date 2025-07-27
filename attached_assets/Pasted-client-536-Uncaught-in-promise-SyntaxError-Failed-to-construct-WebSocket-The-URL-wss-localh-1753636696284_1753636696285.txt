@@ -1,0 +1,198 @@
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=YbTjXR_w81c0' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)Understand this error
+chunk-276SZO74.js?v=cece715e:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `10`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=UeuI6k-YtmwEp3oRBde3a:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14290
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `4`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=UeuI6k-YtmwEp3oRBde3a:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+printWarning @ chunk-276SZO74.js?v=cece715e:521
+error @ chunk-276SZO74.js?v=cece715e:505
+warnOnInvalidKey @ chunk-276SZO74.js?v=cece715e:10219
+reconcileChildrenArray @ chunk-276SZO74.js?v=cece715e:10235
+reconcileChildFibers2 @ chunk-276SZO74.js?v=cece715e:10559
+reconcileChildren @ chunk-276SZO74.js?v=cece715e:14290
+updateHostComponent @ chunk-276SZO74.js?v=cece715e:14807
+beginWork @ chunk-276SZO74.js?v=cece715e:15935
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+dashboard.tsx:2219 Clicking My Tournament: {id: 12, name: 'hi', code: 'P7Q79PJL', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2220 tournamentData: {id: 12, name: 'hi', code: 'P7Q79PJL', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2623 Tournament Detail View - selectedTournament: {id: 12, name: 'hi', code: 'P7Q79PJL', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2626 Tournament Detail View - tournamentData: undefined balance: 0
+dashboard.tsx:2623 Tournament Detail View - selectedTournament: {id: 12, name: 'hi', code: 'P7Q79PJL', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2626 Tournament Detail View - tournamentData: undefined balance: 0
+dashboard.tsx:2844 Uncaught TypeError: Cannot read properties of undefined (reading 'currentPlayers')
+    at Dashboard (dashboard.tsx:2844:47)
+    at renderWithHooks (chunk-276SZO74.js?v=cece715e:11548:26)
+    at updateFunctionComponent (chunk-276SZO74.js?v=cece715e:14582:28)
+    at beginWork (chunk-276SZO74.js?v=cece715e:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-276SZO74.js?v=cece715e:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-276SZO74.js?v=cece715e:3699:24)
+    at invokeGuardedCallback (chunk-276SZO74.js?v=cece715e:3733:39)
+    at beginWork$1 (chunk-276SZO74.js?v=cece715e:19765:15)
+    at performUnitOfWork (chunk-276SZO74.js?v=cece715e:19198:20)
+    at workLoopSync (chunk-276SZO74.js?v=cece715e:19137:13)
+Dashboard @ dashboard.tsx:2844
+renderWithHooks @ chunk-276SZO74.js?v=cece715e:11548
+updateFunctionComponent @ chunk-276SZO74.js?v=cece715e:14582
+beginWork @ chunk-276SZO74.js?v=cece715e:15924
+callCallback2 @ chunk-276SZO74.js?v=cece715e:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=cece715e:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=cece715e:3733
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19765
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18874
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+dashboard.tsx:2623 Tournament Detail View - selectedTournament: {id: 12, name: 'hi', code: 'P7Q79PJL', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2626 Tournament Detail View - tournamentData: undefined balance: 0
+dashboard.tsx:2623 Tournament Detail View - selectedTournament: {id: 12, name: 'hi', code: 'P7Q79PJL', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2626 Tournament Detail View - tournamentData: undefined balance: 0
+dashboard.tsx:2844 Uncaught TypeError: Cannot read properties of undefined (reading 'currentPlayers')
+    at Dashboard (dashboard.tsx:2844:47)
+    at renderWithHooks (chunk-276SZO74.js?v=cece715e:11548:26)
+    at updateFunctionComponent (chunk-276SZO74.js?v=cece715e:14582:28)
+    at beginWork (chunk-276SZO74.js?v=cece715e:15924:22)
+    at HTMLUnknownElement.callCallback2 (chunk-276SZO74.js?v=cece715e:3674:22)
+    at Object.invokeGuardedCallbackDev (chunk-276SZO74.js?v=cece715e:3699:24)
+    at invokeGuardedCallback (chunk-276SZO74.js?v=cece715e:3733:39)
+    at beginWork$1 (chunk-276SZO74.js?v=cece715e:19765:15)
+    at performUnitOfWork (chunk-276SZO74.js?v=cece715e:19198:20)
+    at workLoopSync (chunk-276SZO74.js?v=cece715e:19137:13)
+Dashboard @ dashboard.tsx:2844
+renderWithHooks @ chunk-276SZO74.js?v=cece715e:11548
+updateFunctionComponent @ chunk-276SZO74.js?v=cece715e:14582
+beginWork @ chunk-276SZO74.js?v=cece715e:15924
+callCallback2 @ chunk-276SZO74.js?v=cece715e:3674
+invokeGuardedCallbackDev @ chunk-276SZO74.js?v=cece715e:3699
+invokeGuardedCallback @ chunk-276SZO74.js?v=cece715e:3733
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19765
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+recoverFromConcurrentError @ chunk-276SZO74.js?v=cece715e:18736
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18879
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+chunk-276SZO74.js?v=cece715e:14032 The above error occurred in the <Dashboard> component:
+
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=UeuI6k-YtmwEp3oRBde3a:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+logCapturedError @ chunk-276SZO74.js?v=cece715e:14032
+update.callback @ chunk-276SZO74.js?v=cece715e:14052
+callCallback @ chunk-276SZO74.js?v=cece715e:11248
+commitUpdateQueue @ chunk-276SZO74.js?v=cece715e:11265
+commitLayoutEffectOnFiber @ chunk-276SZO74.js?v=cece715e:17093
+commitLayoutMountEffects_complete @ chunk-276SZO74.js?v=cece715e:17980
+commitLayoutEffects_begin @ chunk-276SZO74.js?v=cece715e:17969
+commitLayoutEffects @ chunk-276SZO74.js?v=cece715e:17920
+commitRootImpl @ chunk-276SZO74.js?v=cece715e:19353
+commitRoot @ chunk-276SZO74.js?v=cece715e:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
+chunk-276SZO74.js?v=cece715e:9129 Uncaught TypeError: Cannot read properties of undefined (reading 'currentPlayers')
+    at Dashboard (dashboard.tsx:2844:47)
+    at renderWithHooks (chunk-276SZO74.js?v=cece715e:11548:26)
+    at updateFunctionComponent (chunk-276SZO74.js?v=cece715e:14582:28)
+    at beginWork (chunk-276SZO74.js?v=cece715e:15924:22)
+    at beginWork$1 (chunk-276SZO74.js?v=cece715e:19753:22)
+    at performUnitOfWork (chunk-276SZO74.js?v=cece715e:19198:20)
+    at workLoopSync (chunk-276SZO74.js?v=cece715e:19137:13)
+    at renderRootSync (chunk-276SZO74.js?v=cece715e:19116:15)
+    at recoverFromConcurrentError (chunk-276SZO74.js?v=cece715e:18736:28)
+    at performSyncWorkOnRoot (chunk-276SZO74.js?v=cece715e:18879:28)
+Dashboard @ dashboard.tsx:2844
+renderWithHooks @ chunk-276SZO74.js?v=cece715e:11548
+updateFunctionComponent @ chunk-276SZO74.js?v=cece715e:14582
+beginWork @ chunk-276SZO74.js?v=cece715e:15924
+beginWork$1 @ chunk-276SZO74.js?v=cece715e:19753
+performUnitOfWork @ chunk-276SZO74.js?v=cece715e:19198
+workLoopSync @ chunk-276SZO74.js?v=cece715e:19137
+renderRootSync @ chunk-276SZO74.js?v=cece715e:19116
+recoverFromConcurrentError @ chunk-276SZO74.js?v=cece715e:18736
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cece715e:18879
+flushSyncCallbacks @ chunk-276SZO74.js?v=cece715e:9119
+(anonymous) @ chunk-276SZO74.js?v=cece715e:18627Understand this error
