@@ -932,6 +932,8 @@ export default function Dashboard() {
 
   // Tournament-specific trading queries with unique keys
   const tournamentId = selectedTournament?.tournaments?.id;
+  console.log("Tournament query conditions - user:", !!user, "tournamentId:", tournamentId, "selectedTournament:", selectedTournament);
+  
   const { data: tournamentBalance, refetch: refetchBalance, isLoading: isLoadingBalance } = useQuery({
     queryKey: ['tournament-balance', tournamentId, user?.id],
     queryFn: async () => {
