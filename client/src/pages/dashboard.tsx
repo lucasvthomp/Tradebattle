@@ -1644,13 +1644,23 @@ export default function Dashboard() {
       return;
     }
 
-    purchaseStockMutation.mutate({
-      symbol: selectedTradingStock.symbol,
-      companyName: selectedTradingStock.name || selectedTradingStock.symbol,
-      shares: shares,
-      purchasePrice: selectedTradingStock.price.toString(),
-      totalCost: totalCost.toString(),
-    });
+    // Check if we're in tournament mode and have a tournament selected
+    if (currentView === 'tournament-detail' && selectedTournament?.tournaments?.id) {
+      // Use tournament purchase API
+      purchaseStockMutation.mutate({
+        symbol: selectedTradingStock.symbol,
+        companyName: selectedTradingStock.name || selectedTradingStock.symbol,
+        shares: shares,
+        purchasePrice: selectedTradingStock.price.toString(),
+        totalCost: totalCost.toString(),
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "No tournament selected for trading. Please select a tournament first.",
+        variant: "destructive",
+      });
+    }
   };
 
   // Authentication handled by router
@@ -2747,32 +2757,37 @@ export default function Dashboard() {
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
                         <Input
                           placeholder="Search stocks to trade..."
-                          value={stockSearchTerm}
-                          onChange={(e) => setStockSearchTerm(e.target.value)}
+                          value={tradingSearchQuery}
+                          onChange={(e) => handleTradingSearch(e.target.value)}
                           className="pl-10"
                         />
                       </div>
 
                       {/* Search Results */}
-                      {stockSearchTerm && (
+                      {showTradingSearchResults && (
                         <div className="max-h-64 overflow-y-auto border rounded-lg">
-                          {stockSearchResults.length > 0 ? (
+                          {isLoadingTradingStocks ? (
+                            <div className="p-4 text-center">
+                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
+                              <p className="text-sm text-muted-foreground mt-2">Searching...</p>
+                            </div>
+                          ) : tradingStockData.length > 0 ? (
                             <div className="divide-y">
-                              {stockSearchResults.slice(0, 8).map((stock) => (
+                              {tradingStockData.slice(0, 8).map((stock) => (
                                 <div 
                                   key={stock.symbol} 
                                   className="p-3 hover:bg-muted cursor-pointer flex items-center justify-between"
-                                  onClick={() => handleTournamentStockPurchase(stock)}
+                                  onClick={() => handleBuyStock(stock)}
                                 >
                                   <div className="flex-1">
                                     <div className="font-semibold text-sm">{stock.symbol}</div>
                                     <div className="text-xs text-muted-foreground line-clamp-1">
-                                      {stock.companyName}
+                                      {stock.name}
                                     </div>
                                   </div>
                                   <div className="text-right">
                                     <div className="font-semibold text-sm">
-                                      {formatCurrency(stock.price || 0)}
+                                      Click to see price
                                     </div>
                                     <Button size="sm" variant="outline" className="mt-1">
                                       <Plus className="w-3 h-3 mr-1" />
@@ -2782,22 +2797,17 @@ export default function Dashboard() {
                                 </div>
                               ))}
                             </div>
-                          ) : stockSearchLoading ? (
-                            <div className="p-4 text-center">
-                              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto"></div>
-                              <p className="text-sm text-muted-foreground mt-2">Searching...</p>
-                            </div>
-                          ) : stockSearchTerm.length >= 2 ? (
+                          ) : tradingSearchQuery.length >= 2 ? (
                             <div className="p-4 text-center text-muted-foreground">
                               <Package className="w-8 h-8 mx-auto mb-2" />
-                              <p className="text-sm">No stocks found for "{stockSearchTerm}"</p>
+                              <p className="text-sm">No stocks found for "{tradingSearchQuery}"</p>
                             </div>
                           ) : null}
                         </div>
                       )}
 
                       {/* Popular Stocks Quick Trade */}
-                      {!stockSearchTerm && (
+                      {!tradingSearchQuery && (
                         <div>
                           <h4 className="text-sm font-semibold mb-3">Popular Stocks</h4>
                           <div className="grid grid-cols-2 gap-2">
@@ -2805,7 +2815,7 @@ export default function Dashboard() {
                               <div
                                 key={stock.symbol}
                                 className="p-2 border rounded-lg hover:bg-muted cursor-pointer transition-colors"
-                                onClick={() => handleTournamentStockPurchase(stock)}
+                                onClick={() => handleBuyStock(stock)}
                               >
                                 <div className="flex items-center justify-between">
                                   <div>
@@ -2896,7 +2906,6 @@ export default function Dashboard() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      {console.log("Participants debug:", participants, "Loading:", participantsLoading)}
                       {participantsLoading ? (
                         <div className="space-y-3">
                           {[1, 2, 3].map((i) => (
