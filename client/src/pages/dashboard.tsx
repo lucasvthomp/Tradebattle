@@ -1454,7 +1454,18 @@ export default function Dashboard() {
       const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/purchase`, dataWithoutTournamentId);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      const tournamentId = variables.tournamentId;
+      
+      // Invalidate all related queries immediately
+      queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
+      
+      // Force refetch of the specific queries
+      refetchBalance();
+      refetchPurchases();
+      
       // Force immediate UI update after purchase
       setForceRefreshKey(prev => prev + 1);
       
@@ -1494,7 +1505,18 @@ export default function Dashboard() {
       const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/sell`, dataWithoutTournamentId);
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      const tournamentId = variables.tournamentId;
+      
+      // Invalidate all related queries immediately
+      queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
+      
+      // Force refetch of the specific queries
+      refetchBalance();
+      refetchPurchases();
+      
       // Force immediate UI update after sale
       setForceRefreshKey(prev => prev + 1);
       
