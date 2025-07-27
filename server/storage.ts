@@ -314,6 +314,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async joinTournament(tournamentId: number, userId: number): Promise<TournamentParticipant> {
+    // Check if user is already in this tournament
+    const existingParticipant = await db
+      .select()
+      .from(tournamentParticipants)
+      .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)))
+      .limit(1);
+    
+    if (existingParticipant.length > 0) {
+      throw new Error('User is already participating in this tournament');
+    }
+    
     // Get tournament data to set starting balance
     const tournament = await db.select().from(tournaments).where(eq(tournaments.id, tournamentId));
     

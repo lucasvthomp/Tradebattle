@@ -152,7 +152,10 @@ export const tournamentParticipants = pgTable("tournament_participants", {
   userId: integer("user_id").references(() => users.id).notNull(),
   balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(),
   joinedAt: timestamp("joined_at").defaultNow(),
-});
+}, (table) => ({
+  // Unique constraint: user can only participate in each tournament once
+  uniqueUserTournament: unique("unique_user_tournament").on(table.tournamentId, table.userId),
+}));
 
 // Tournament-specific stock purchases
 export const tournamentStockPurchases = pgTable("tournament_stock_purchases", {

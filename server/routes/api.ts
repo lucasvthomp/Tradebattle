@@ -342,23 +342,30 @@ router.post('/tournaments/:code/join', requireAuth, asyncHandler(async (req, res
     throw new ValidationError('Tournament is full');
   }
 
-  const participant = await storage.joinTournament(tournament.id, userId);
+  try {
+    const participant = await storage.joinTournament(tournament.id, userId);
 
-  // Award Tournament Participant achievement
-  await storage.awardAchievement({
-    userId: userId,
-    achievementType: 'tournament_participant',
-    achievementTier: 'common',
-    achievementName: 'Tournament Participant',
-    achievementDescription: 'Joined a tournament',
-    earnedAt: new Date(),
-    createdAt: new Date()
-  });
+    // Award Tournament Participant achievement
+    await storage.awardAchievement({
+      userId: userId,
+      achievementType: 'tournament_participant',
+      achievementTier: 'common',
+      achievementName: 'Tournament Participant',
+      achievementDescription: 'Joined a tournament',
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
 
-  res.json({
-    success: true,
-    data: participant,
-  });
+    res.json({
+      success: true,
+      data: participant,
+    });
+  } catch (error: any) {
+    if (error.message === 'User is already participating in this tournament') {
+      throw new ValidationError('You are already participating in this tournament');
+    }
+    throw error;
+  }
 }));
 
 /**

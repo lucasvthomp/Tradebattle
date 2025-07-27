@@ -642,7 +642,11 @@ export default function Dashboard() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {publicTournaments.data.data.map((tournament: any) => (
+        {publicTournaments.data.data
+          .filter((tournament: any, index: number, self: any[]) => 
+            index === self.findIndex(t => t.id === tournament.id)
+          )
+          .map((tournament: any) => (
           <Card key={tournament.id} className="hover:shadow-lg transition-shadow cursor-pointer">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -2250,7 +2254,11 @@ export default function Dashboard() {
                 </div>
               ) : userTournaments && userTournaments.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {userTournaments.map((tournament: any) => {
+                  {userTournaments
+                    .filter((tournament: any, index: number, self: any[]) => 
+                      index === self.findIndex(t => t.id === tournament.id)
+                    )
+                    .map((tournament: any) => {
                     const tournamentData = tournament;
                     const balance = parseFloat(tournament.userBalance || '0');
                     

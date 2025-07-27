@@ -1,0 +1,25 @@
+chunk-276SZO74.js?v=cece715e:521 Warning: Encountered two children with the same key, `13`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version.
+    at div
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…nner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at MotionComponent (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…nner/workspace/node_modules/.vite/deps/framer-motion.js?v=cece715e:6536:40)
+    at div
+    at div
+    at Dashboard (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/pages/dashboard.tsx:684:44)
+    at Route (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:323:16)
+    at Switch (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=cece715e:379:17)
+    at main
+    at div
+    at div
+    at Layout (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/components/layout/layout.tsx:23:34)
+    at Router (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/App.tsx?v=wRN1TkE2vzZ7NBNa-qugw:46:31)
+    at Provider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…unner/workspace/node_modules/.vite/deps/chunk-W25XJCJA.js?v=cece715e:38:15)
+    at TooltipProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…rkspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=cece715e:63:5)
+    at ThemeProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-theme.tsx:25:3)
+    at UserPreferencesProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/contexts/UserPreferencesContext.tsx:352:43)
+    at AuthProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.dev/src/hooks/use-auth.tsx:28:32)
+    at QueryClientProvider (https://a327ce4e-8720-47a5-a95a-9e8439bb6117-00-jivk339xyqnw.riker.replit.d…rkspace/node_modules/.vite/deps/@tanstack_react-query.js?v=cece715e:2805:3)
+    at App
+
+﻿
