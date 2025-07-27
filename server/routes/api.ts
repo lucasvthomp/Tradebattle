@@ -109,7 +109,7 @@ async function checkPersonalPortfolioGrowthAchievements(userId: number) {
  * GET /api/quote/:symbol
  * Fetch current stock quote data
  */
-router.get('/quote/:symbol', asyncHandler(async (req, res) => {
+router.get('/quote/:symbol', asyncHandler(async (req: any, res: any) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
   
   if (!validateSymbol(symbol)) {
@@ -131,7 +131,7 @@ router.get('/quote/:symbol', asyncHandler(async (req, res) => {
  * GET /api/search/:query
  * Search for stock symbols by company name
  */
-router.get('/search/:query', asyncHandler(async (req, res) => {
+router.get('/search/:query', asyncHandler(async (req: any, res: any) => {
   const query = sanitizeInput(req.params.query);
   
   if (!query || query.length < 2) {
@@ -150,7 +150,7 @@ router.get('/search/:query', asyncHandler(async (req, res) => {
  * GET /api/historical/:symbol
  * Get historical price data
  */
-router.get('/historical/:symbol', asyncHandler(async (req, res) => {
+router.get('/historical/:symbol', asyncHandler(async (req: any, res: any) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
   const timeFrame = sanitizeInput(req.query.timeframe as string || '1M') as TimeFrame;
   
@@ -365,7 +365,7 @@ router.post('/tournaments/:code/join', requireAuth, asyncHandler(async (req, res
  * GET /api/tournaments
  * Get user's tournaments
  */
-router.get('/tournaments', requireAuth, asyncHandler(async (req, res) => {
+router.get('/tournaments', requireAuth, asyncHandler(async (req: any, res: any) => {
   const userId = req.user.id;
 
   const tournaments = await storage.getUserTournaments(userId);
