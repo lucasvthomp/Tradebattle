@@ -771,7 +771,7 @@ export default function Dashboard() {
   
   // Tournament timer effect
   useEffect(() => {
-    if (currentView === 'tournament-detail' && selectedTournament?.tournaments) {
+    if (currentView === 'tournament-detail' && selectedTournament) {
       try {
         const parseTimeframe = (timeframe: string) => {
           const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks)/i;
@@ -792,11 +792,12 @@ export default function Dashboard() {
 
         const calculateTimeRemaining = () => {
           try {
-            const tournamentData = selectedTournament.tournaments;
+            // Use selectedTournament directly, not selectedTournament.tournaments
+            const tournamentData = selectedTournament;
             if (!tournamentData) return "Invalid tournament";
             
-            // Use startedAt if available, otherwise use createdAt for active tournaments
-            const startDateStr = tournamentData.startedAt || (tournamentData.status === 'active' ? tournamentData.createdAt : null);
+            // Use createdAt as the start time since tournaments start immediately after creation
+            const startDateStr = tournamentData.createdAt;
             
             if (!startDateStr) return "Not started";
             
@@ -1483,20 +1484,23 @@ export default function Dashboard() {
   // Sell stock mutation
   const sellStockMutation = useMutation({
     mutationFn: async (saleData: any) => {
-      const tournamentId = selectedTournament?.tournaments?.id;
+      const tournamentId = saleData.tournamentId;
       if (!tournamentId) {
         throw new Error("No tournament selected");
       }
-      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/sell`, saleData);
+      
+      // Remove tournamentId from saleData as it's used in URL path
+      const { tournamentId: _, ...dataWithoutTournamentId } = saleData;
+      
+      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/sell`, dataWithoutTournamentId);
       return res.json();
     },
     onSuccess: () => {
-      const tournamentId = selectedTournament?.tournaments?.id;
+      const tournamentId = selectedTournament?.id;
       if (tournamentId) {
         queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
-        // Also refetch immediately
         refetchBalance();
         refetchPurchases();
       }
@@ -2771,9 +2775,22 @@ export default function Dashboard() {
                                 <div className="font-semibold">{purchase.symbol}</div>
                                 <div className="text-sm text-muted-foreground">{purchase.companyName}</div>
                               </div>
-                              <div className="text-right">
-                                <div className="font-semibold">{purchase.shares} shares</div>
-                                <div className="text-sm text-muted-foreground">${parseFloat(purchase.purchasePrice).toFixed(2)}/share</div>
+                              <div className="flex items-center space-x-3">
+                                <div className="text-right">
+                                  <div className="font-semibold">{purchase.shares} shares</div>
+                                  <div className="text-sm text-muted-foreground">${parseFloat(purchase.purchasePrice).toFixed(2)}/share</div>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-red-600 border-red-600 hover:bg-red-600 hover:text-white"
+                                  onClick={() => {
+                                    setSelectedSellStock(purchase);
+                                    setIsSellDialogOpen(true);
+                                  }}
+                                >
+                                  Sell
+                                </Button>
                               </div>
                             </div>
                           ))}
@@ -3096,6 +3113,133 @@ export default function Dashboard() {
                   disabled={!shareAmount || parseInt(shareAmount) <= 0 || !selectedTradingStock?.price}
                 >
                   Buy Stock
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Sell Stock Dialog */}
+        <Dialog open={isSellDialogOpen} onOpenChange={setIsSellDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Sell Stock</DialogTitle>
+              <DialogDescription>
+                Sell shares of {selectedSellStock?.symbol} - {selectedSellStock?.companyName}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Stock Symbol</Label>
+                  <div className="font-semibold text-lg">{selectedSellStock?.symbol}</div>
+                </div>
+                <div>
+                  <Label>Shares Owned</Label>
+                  <div className="font-semibold text-lg text-blue-600">
+                    {selectedSellStock?.shares || 0} shares
+                  </div>
+                </div>
+              </div>
+              
+              <div>
+                <Label htmlFor="sell-amount">Number of Shares to Sell</Label>
+                <Input
+                  id="sell-amount"
+                  type="number"
+                  value={sellAmount}
+                  onChange={(e) => setSellAmount(e.target.value)}
+                  min="1"
+                  max={selectedSellStock?.shares || 0}
+                  placeholder="Enter number of shares to sell"
+                  className="mt-2"
+                />
+                <div className="text-sm text-muted-foreground mt-1">
+                  Maximum: {selectedSellStock?.shares || 0} shares
+                </div>
+              </div>
+
+              {sellAmount && selectedSellStock && (
+                <div className="p-4 bg-muted/50 rounded-lg">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span>Shares to sell:</span>
+                      <span>{sellAmount}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Purchase price per share:</span>
+                      <span>{formatCurrency(parseFloat(selectedSellStock.purchasePrice))}</span>
+                    </div>
+                    <div className="flex justify-between font-semibold text-lg border-t pt-2 text-green-600">
+                      <span>Sale Value (at purchase price):</span>
+                      <span>{formatCurrency(parseFloat(selectedSellStock.purchasePrice) * parseInt(sellAmount || "0"))}</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      *Final sale value will use current market price
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => {
+                  setIsSellDialogOpen(false);
+                  setSelectedSellStock(null);
+                  setSellAmount("");
+                }}>
+                  Cancel
+                </Button>
+                <Button 
+                  variant="destructive"
+                  onClick={() => {
+                    if (!selectedSellStock || !sellAmount) return;
+                    
+                    const shares = parseInt(sellAmount);
+                    if (shares <= 0 || shares > selectedSellStock.shares) {
+                      toast({
+                        title: "Invalid amount",
+                        description: "Please enter a valid number of shares to sell",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+
+                    const currentTournamentId = selectedTournament?.id;
+                    if (!currentTournamentId) {
+                      toast({
+                        title: "Error",
+                        description: "No tournament selected",
+                        variant: "destructive",
+                      });
+                      return;
+                    }
+
+                    // Get current price first
+                    const getCurrentPrice = async () => {
+                      try {
+                        const response = await fetch(`/api/quote/${selectedSellStock.symbol}`);
+                        if (response.ok) {
+                          const data = await response.json();
+                          return data.success ? data.data.price : parseFloat(selectedSellStock.purchasePrice);
+                        }
+                        return parseFloat(selectedSellStock.purchasePrice);
+                      } catch {
+                        return parseFloat(selectedSellStock.purchasePrice);
+                      }
+                    };
+
+                    getCurrentPrice().then(currentPrice => {
+                      sellStockMutation.mutate({
+                        purchaseId: selectedSellStock.id,
+                        sharesToSell: shares,
+                        currentPrice: currentPrice,
+                        tournamentId: currentTournamentId,
+                      });
+                    });
+                  }}
+                  disabled={!sellAmount || parseInt(sellAmount) <= 0 || parseInt(sellAmount) > (selectedSellStock?.shares || 0)}
+                >
+                  Sell Stock
                 </Button>
               </div>
             </div>
