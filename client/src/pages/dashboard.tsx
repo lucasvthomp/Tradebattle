@@ -2628,14 +2628,9 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto py-6 px-4">
-          <motion.div
-            className="max-w-7xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={staggerChildren}
-          >
+          <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <motion.div className="mb-8" variants={fadeInUp}>
+            <div className="mb-8">
               <div className="flex items-center space-x-4">
                 <Button variant="outline" onClick={() => setCurrentView('tournaments')}>
                   ← Back to Tournaments
@@ -2643,13 +2638,13 @@ export default function Dashboard() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h1 className="text-3xl font-bold text-foreground mb-2">{tournamentData.name}</h1>
+                      <h1 className="text-3xl font-bold text-foreground mb-2">{tournamentData?.name || "Tournament"}</h1>
                       <div className="flex items-center space-x-4 text-muted-foreground">
-                        <span>Code: {tournamentData.code}</span>
-                        <Badge variant={tournamentData.status === 'active' ? 'default' : tournamentData.status === 'waiting' ? 'secondary' : 'outline'}>
-                          {tournamentData.status}
+                        <span>Code: {tournamentData?.code || "N/A"}</span>
+                        <Badge variant={tournamentData?.status === 'active' ? 'default' : tournamentData?.status === 'waiting' ? 'secondary' : 'outline'}>
+                          {tournamentData?.status || "unknown"}
                         </Badge>
-                        <span>Time Remaining: <span className="text-red-500 font-semibold">{timeRemaining}</span></span>
+                        <span>Time Remaining: <span className="text-red-500 font-semibold">{timeRemaining || "Loading..."}</span></span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -2659,14 +2654,14 @@ export default function Dashboard() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
             {/* Main Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Left Column - Portfolio & Trading */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Portfolio Graph */}
-                <motion.div variants={fadeInUp}>
+                <div>
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-2">
@@ -2683,10 +2678,10 @@ export default function Dashboard() {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
 
                 {/* Current Holdings */}
-                <motion.div variants={fadeInUp}>
+                <div>
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-2">
@@ -2729,10 +2724,10 @@ export default function Dashboard() {
                       )}
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
 
                 {/* Stock Search and Trading */}
-                <motion.div variants={fadeInUp}>
+                <div>
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-2">
@@ -2824,13 +2819,13 @@ export default function Dashboard() {
                       )}
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               </div>
 
               {/* Right Column - Tournament Info & Leaderboard */}
               <div className="space-y-6">
                 {/* Tournament Info */}
-                <motion.div variants={fadeInUp}>
+                <div>
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-2">
@@ -2883,10 +2878,10 @@ export default function Dashboard() {
                       </div>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
 
                 {/* Participants/Leaderboard */}
-                <motion.div variants={fadeInUp}>
+                <div>
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center space-x-2">
@@ -2941,10 +2936,10 @@ export default function Dashboard() {
                       )}
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
 
                 {/* Quick Actions */}
-                <motion.div variants={fadeInUp}>
+                <div>
                   <Card>
                     <CardHeader>
                       <CardTitle>Quick Actions</CardTitle>
@@ -2965,10 +2960,10 @@ export default function Dashboard() {
                       </Button>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
     );
