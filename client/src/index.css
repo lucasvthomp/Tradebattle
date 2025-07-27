@@ -219,12 +219,11 @@
   
   /* Interactive hover effects */
   .hover-lift {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 0.2s ease;
   }
   
   .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px hsl(0, 0%, 0% / 0.3);
+    transform: translateY(-1px);
   }
   
   .hover-glow:hover {
@@ -282,27 +281,25 @@
   
   /* Button enhancements */
   .btn-primary {
-    background: var(--gradient-primary);
+    background: hsl(var(--primary));
     border: none;
-    color: hsl(0, 0%, 0%);
+    color: hsl(var(--primary-foreground));
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.2s ease;
   }
   
   .btn-primary:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-neon);
+    opacity: 0.9;
   }
   
   .btn-secondary {
-    background: var(--gradient-secondary);
-    border: 1px solid var(--border);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: hsl(var(--secondary));
+    border: 1px solid hsl(var(--border));
+    transition: border-color 0.2s ease;
   }
   
   .btn-secondary:hover {
-    border-color: var(--neon-green);
-    box-shadow: var(--shadow-neon);
+    border-color: hsl(var(--primary));
   }
   
   .btn-accent {
@@ -319,22 +316,18 @@
   
   /* Interactive card effects */
   .interactive-card {
-    @apply transition-all duration-300 hover-lift;
-    background: var(--gradient-card);
+    @apply transition-colors duration-200;
+    background: var(--card);
     border: 1px solid var(--border);
   }
   
   .interactive-card:hover {
-    border-color: var(--neon-green);
-    box-shadow: var(--shadow-neon);
+    border-color: hsl(var(--border));
   }
   
   /* Gradient text effects */
   .gradient-text {
-    background: linear-gradient(135deg, var(--neon-green), var(--gold));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: hsl(var(--foreground));
   }
   
   .gradient-text-profit {

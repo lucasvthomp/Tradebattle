@@ -60,14 +60,14 @@ export default function Landing() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="h-full interactive-card hover-lift particle-effect animate-slide-up">
-                    <CardContent className="p-6 relative z-10">
+                  <Card className="h-full border-border/50 hover:border-border transition-colors">
+                    <CardContent className="p-6">
                       <div className="flex items-center mb-4">
-                        <div className="gradient-primary p-2 rounded-lg mr-3 neon-glow">
-                          <feature.icon className="w-6 h-6 text-primary-foreground" />
+                        <div className="bg-primary/10 p-2 rounded-lg mr-3">
+                          <feature.icon className={`w-6 h-6 ${feature.color}`} />
                         </div>
                       </div>
-                      <h3 className="text-xl font-bold gradient-text mb-3">{feature.title}</h3>
+                      <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
                       <p className="text-muted-foreground mb-4">{feature.description}</p>
                     </CardContent>
                   </Card>
@@ -124,7 +124,7 @@ export default function Landing() {
                   transition={{ duration: 0.6, delay: index * 0.1 }}
                   viewport={{ once: true }}
                 >
-                  <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-center">
+                  <Card className="h-full border-border/50 hover:border-border transition-colors text-center">
                     <CardContent className="p-6">
                       <div className="flex justify-center mb-4">
                         <div className="w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xl font-bold">
@@ -144,7 +144,7 @@ export default function Landing() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-black text-white">
+      <section className="py-20 bg-muted/30 border-t border-border/50">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <motion.div
@@ -153,12 +153,12 @@ export default function Landing() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl font-bold mb-6">Ready to Start Trading?</h2>
-              <p className="text-xl text-gray-300 mb-8">
+              <h2 className="text-4xl font-bold text-foreground mb-6">Ready to Start Trading?</h2>
+              <p className="text-xl text-muted-foreground mb-8">
                 Join thousands of traders competing in paper trading competitions
               </p>
               <Link href="/signup">
-                <Button size="lg" className="bg-white text-black hover:bg-gray-100">
+                <Button size="lg" className="text-lg px-8 py-3">
                   Get Started Today
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>

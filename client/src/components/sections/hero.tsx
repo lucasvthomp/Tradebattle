@@ -46,7 +46,7 @@ export default function Hero() {
   const { path: chartPath, candlesticks } = generateStockChart();
 
   return (
-    <section className="relative py-20 gradient-card overflow-hidden particle-effect animate-fade-in">
+    <section className="relative py-20 bg-background overflow-hidden">
       {/* Large Background Stock Chart */}
       <div className="absolute inset-0 opacity-40">
         <svg
@@ -162,14 +162,14 @@ export default function Hero() {
             transition={{ duration: 0.6 }}
           >
             <div className="mb-6">
-              <h1 className="text-5xl md:text-6xl font-bold gradient-text mb-4 animate-glow">
+              <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-4">
                 Compete. Trade. Win.
               </h1>
-              <p className="text-2xl md:text-3xl text-muted-foreground animate-fade-in">
+              <p className="text-2xl md:text-3xl text-muted-foreground">
                 No risk, all reward.
               </p>
             </div>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto animate-slide-up">
+            <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
               Compete with traders worldwide using virtual portfolios and real market data.
               Test your skills, climb the leaderboards, and win prizes.
             </p>
