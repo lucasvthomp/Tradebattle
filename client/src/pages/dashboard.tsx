@@ -1817,25 +1817,20 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen bg-background">
         <div className="container mx-auto py-8 px-4">
-          <motion.div
-            className="max-w-6xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={staggerChildren}
-          >
+          <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <motion.div className="text-center mb-12" variants={fadeInUp}>
+            <div className="text-center mb-12">
               <h1 className="text-4xl font-bold text-foreground mb-4">
                 Welcome back, {user?.displayName || user?.username || user?.email || "User"}
               </h1>
               <p className="text-xl text-muted-foreground">
                 Ready to track and trade? Here's your dashboard.
               </p>
-            </motion.div>
+            </div>
 
             {/* Main Action Buttons */}
-            <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-8" variants={staggerChildren}>
-              <motion.div variants={fadeInUp}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div>
                 <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('watchlist')}>
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1849,9 +1844,9 @@ export default function Dashboard() {
                     </p>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
 
-              <motion.div variants={fadeInUp}>
+              <div>
                 <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('tournaments')}>
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1865,9 +1860,9 @@ export default function Dashboard() {
                     </p>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
 
-              <motion.div variants={fadeInUp}>
+              <div>
                 <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('tournament-browser')}>
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1881,9 +1876,9 @@ export default function Dashboard() {
                     </p>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
 
-              <motion.div variants={fadeInUp}>
+              <div>
                 <Card className="h-full hover:shadow-lg transition-all duration-300 cursor-pointer border-2 hover:border-primary" onClick={() => setCurrentView('logs')}>
                   <CardHeader className="text-center pb-4">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1897,11 +1892,9 @@ export default function Dashboard() {
                     </p>
                   </CardContent>
                 </Card>
-              </motion.div>
-            </motion.div>
-
-
-          </motion.div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
