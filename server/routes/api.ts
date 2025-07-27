@@ -803,12 +803,8 @@ async function awardStreakAchievements(userId: number, streak: number) {
  * GET /api/personal-portfolio
  * Get personal portfolio data
  */
-router.get('/personal-portfolio', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/personal-portfolio', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
   const user = await storage.getUser(userId);
 
@@ -832,12 +828,8 @@ router.get('/personal-portfolio', asyncHandler(async (req, res) => {
  * GET /api/personal-purchases
  * Get personal stock purchases
  */
-router.get('/personal-purchases', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/personal-purchases', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
   const user = await storage.getUser(userId);
 
@@ -853,12 +845,8 @@ router.get('/personal-purchases', asyncHandler(async (req, res) => {
  * POST /api/personal-portfolio/purchase
  * Purchase stock in personal portfolio
  */
-router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.post('/personal-portfolio/purchase', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
   const user = await storage.getUser(userId);
 
@@ -930,12 +918,8 @@ router.post('/personal-portfolio/purchase', asyncHandler(async (req, res) => {
  * POST /api/personal-portfolio/sell
  * Sell stock in personal portfolio
  */
-router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.post('/personal-portfolio/sell', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
   const user = await storage.getUser(userId);
 
@@ -1017,12 +1001,8 @@ router.post('/personal-portfolio/sell', asyncHandler(async (req, res) => {
  * GET /api/tournaments/leaderboard
  * Get tournaments leaderboard data
  */
-router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/tournaments/leaderboard', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
   
   // Get all tournaments with participants and their portfolio values
   const tournaments = await storage.getAllTournaments();
@@ -1111,12 +1091,8 @@ router.get('/tournaments/leaderboard', asyncHandler(async (req, res) => {
  * GET /api/personal/leaderboard
  * Get personal portfolio leaderboard data
  */
-router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/personal/leaderboard', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
   
   // Get all users with personal portfolios
   const users = await storage.getAllUsers();
@@ -1188,12 +1164,8 @@ router.get('/personal/leaderboard', asyncHandler(async (req, res) => {
  * GET /api/streak/leaderboard
  * Get trading streak leaderboard data
  */
-router.get('/streak/leaderboard', asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+router.get('/streak/leaderboard', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
   
   // Get all users with personal portfolios
   const users = await storage.getAllUsers();
@@ -1247,11 +1219,7 @@ router.get('/streak/leaderboard', asyncHandler(async (req, res) => {
  * Get all tournaments for admin management
  */
 router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
+  const userId = req.user.id;
 
   // Check if user is admin (using user ID)
   const user = await storage.getUser(userId);
@@ -1321,12 +1289,8 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
  * Delete a tournament completely (admin only)
  */
 router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
+  const userId = req.user.id;
   const tournamentId = parseInt(req.params.id);
-  
-  if (!userId) {
-    throw new ValidationError('User not authenticated');
-  }
 
   if (isNaN(tournamentId)) {
     throw new ValidationError('Invalid tournament ID');
