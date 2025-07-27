@@ -970,7 +970,7 @@ export default function Dashboard() {
     refetchOnWindowFocus: true,
     staleTime: 0,
     gcTime: 0,
-    refetchInterval: 3000
+    refetchInterval: 10000
   });
 
   const { data: tournamentPurchases, refetch: refetchPurchases, isLoading: isLoadingPurchases } = useQuery({
@@ -994,7 +994,7 @@ export default function Dashboard() {
     refetchOnWindowFocus: true,
     staleTime: 0,
     gcTime: 0,
-    refetchInterval: 3000
+    refetchInterval: 10000
   });
 
   // Tournament participants query with real-time updates
@@ -1457,14 +1457,20 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Immediately invalidate and refetch all related data
+        // Clear all tournament data from cache for instant updates
+        queryClient.setQueryData(['tournament-purchases', tournamentId, user?.id], undefined);
+        queryClient.setQueryData(['tournament-balance', tournamentId, user?.id], undefined);
+        
+        // Invalidate and refetch immediately
         queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
         
         // Force immediate data refresh
-        refetchBalance();
-        refetchPurchases();
+        setTimeout(() => {
+          refetchBalance();
+          refetchPurchases();
+        }, 10);
       }
       toast({
         title: "Purchase Successful",
@@ -1504,14 +1510,20 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Immediately invalidate and refetch all related data
+        // Clear all tournament data from cache for instant updates
+        queryClient.setQueryData(['tournament-purchases', tournamentId, user?.id], undefined);
+        queryClient.setQueryData(['tournament-balance', tournamentId, user?.id], undefined);
+        
+        // Invalidate and refetch immediately
         queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
         
         // Force immediate data refresh
-        refetchBalance();
-        refetchPurchases();
+        setTimeout(() => {
+          refetchBalance();
+          refetchPurchases();
+        }, 10);
       }
       toast({
         title: "Sale Successful",
