@@ -1646,8 +1646,9 @@ export default function Dashboard() {
     const shares = parseInt(shareAmount);
     const totalCost = shares * selectedTradingStock.price;
 
-    // Check if user has enough tournament balance
+    // Check if user has enough tournament balance  
     const tournamentBalanceAmount = parseFloat(tournamentBalance?.data?.balance?.toString() || '0');
+    
     if (totalCost > tournamentBalanceAmount) {
       toast({
         title: "Insufficient tournament funds",
