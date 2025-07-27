@@ -766,58 +766,69 @@ export default function Dashboard() {
   
   // Tournament timer effect
   useEffect(() => {
-    if (currentView === 'tournament-detail' && selectedTournament) {
-      const parseTimeframe = (timeframe: string) => {
-        const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks)/i;
-        const match = timeframe.match(regex);
-        if (!match) return 0;
-        
-        const value = parseInt(match[1]);
-        const unit = match[2].toLowerCase();
-        
-        let multiplier = 1;
-        if (unit.includes('minute')) multiplier = 60 * 1000;
-        else if (unit.includes('hour')) multiplier = 60 * 60 * 1000;
-        else if (unit.includes('day')) multiplier = 24 * 60 * 60 * 1000;
-        else if (unit.includes('week')) multiplier = 7 * 24 * 60 * 60 * 1000;
-        
-        return value * multiplier;
-      };
+    if (currentView === 'tournament-detail' && selectedTournament?.tournaments) {
+      try {
+        const parseTimeframe = (timeframe: string) => {
+          const regex = /(\d+)\s*(minute|minutes|hour|hours|day|days|week|weeks)/i;
+          const match = timeframe.match(regex);
+          if (!match) return 0;
+          
+          const value = parseInt(match[1]);
+          const unit = match[2].toLowerCase();
+          
+          let multiplier = 1;
+          if (unit.includes('minute')) multiplier = 60 * 1000;
+          else if (unit.includes('hour')) multiplier = 60 * 60 * 1000;
+          else if (unit.includes('day')) multiplier = 24 * 60 * 60 * 1000;
+          else if (unit.includes('week')) multiplier = 7 * 24 * 60 * 60 * 1000;
+          
+          return value * multiplier;
+        };
 
-      const calculateTimeRemaining = () => {
-        const tournamentData = selectedTournament.tournaments;
-        // Use startedAt if available, otherwise use createdAt for active tournaments
-        const startDateStr = tournamentData.startedAt || (tournamentData.status === 'active' ? tournamentData.createdAt : null);
-        
-        if (!startDateStr) return "Not started";
-        
-        const startTime = new Date(startDateStr).getTime();
-        const duration = parseTimeframe(tournamentData.timeframe);
-        const endTime = startTime + duration;
-        const now = Date.now();
-        const remaining = endTime - now;
-        
-        if (remaining <= 0) return "Tournament ended";
-        
-        const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
-        const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-        const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
-        const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
-        
-        if (days > 0) return `${days}d ${hours}h ${minutes}m`;
-        if (hours > 0) return `${hours}h ${minutes}m`;
-        if (minutes > 0) return `${minutes}m ${seconds}s`;
-        return `${seconds}s`;
-      };
+        const calculateTimeRemaining = () => {
+          try {
+            const tournamentData = selectedTournament.tournaments;
+            if (!tournamentData) return "Invalid tournament";
+            
+            // Use startedAt if available, otherwise use createdAt for active tournaments
+            const startDateStr = tournamentData.startedAt || (tournamentData.status === 'active' ? tournamentData.createdAt : null);
+            
+            if (!startDateStr) return "Not started";
+            
+            const startTime = new Date(startDateStr).getTime();
+            const duration = parseTimeframe(tournamentData.timeframe);
+            const endTime = startTime + duration;
+            const now = Date.now();
+            const remaining = endTime - now;
+            
+            if (remaining <= 0) return "Tournament ended";
+            
+            const days = Math.floor(remaining / (24 * 60 * 60 * 1000));
+            const hours = Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+            const minutes = Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000));
+            const seconds = Math.floor((remaining % (60 * 1000)) / 1000);
+            
+            if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+            if (hours > 0) return `${hours}h ${minutes}m`;
+            if (minutes > 0) return `${minutes}m ${seconds}s`;
+            return `${seconds}s`;
+          } catch (error) {
+            console.error('Error calculating time remaining:', error);
+            return "Error";
+          }
+        };
 
-      const updateTimer = () => {
-        setTimeRemaining(calculateTimeRemaining());
-      };
+        const updateTimer = () => {
+          setTimeRemaining(calculateTimeRemaining());
+        };
 
-      updateTimer(); // Initial update
-      const interval = setInterval(updateTimer, 1000);
+        updateTimer(); // Initial update
+        const interval = setInterval(updateTimer, 1000);
 
-      return () => clearInterval(interval);
+        return () => clearInterval(interval);
+      } catch (error) {
+        console.error('Error setting up tournament timer:', error);
+      }
     }
   }, [currentView, selectedTournament]);
   
@@ -1375,22 +1386,32 @@ export default function Dashboard() {
 
   // Auto-select first tournament if none selected
   useEffect(() => {
-    if (userTournaments.length > 0 && !selectedTournamentId) {
-      const firstTournament = userTournaments[0];
-      setSelectedTournamentId(firstTournament.tournaments.id.toString());
-      setSelectedTournament(firstTournament);
+    try {
+      if (userTournaments.length > 0 && !selectedTournamentId) {
+        const firstTournament = userTournaments[0];
+        if (firstTournament?.tournaments?.id) {
+          setSelectedTournamentId(firstTournament.tournaments.id.toString());
+          setSelectedTournament(firstTournament);
+        }
+      }
+    } catch (error) {
+      console.error('Error auto-selecting tournament:', error);
     }
   }, [userTournaments, selectedTournamentId]);
 
   // Update selectedTournament when selectedTournamentId changes
   useEffect(() => {
-    if (selectedTournamentId && userTournaments.length > 0) {
-      const tournament = userTournaments.find((t: any) => 
-        t.tournaments.id.toString() === selectedTournamentId
-      );
-      if (tournament) {
-        setSelectedTournament(tournament);
+    try {
+      if (selectedTournamentId && userTournaments.length > 0) {
+        const tournament = userTournaments.find((t: any) => 
+          t?.tournaments?.id?.toString() === selectedTournamentId
+        );
+        if (tournament) {
+          setSelectedTournament(tournament);
+        }
       }
+    } catch (error) {
+      console.error('Error updating selected tournament:', error);
     }
   }, [selectedTournamentId, userTournaments]);
 
