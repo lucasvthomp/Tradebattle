@@ -60,13 +60,9 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
   useEffect(() => {
     if (!isOpen || !user) return;
 
-    // Construct WebSocket URL with fallback for development
+    // Construct WebSocket URL using the same host as the current page
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const host = window.location.hostname;
-    const port = window.location.port;
-    
-    // For Replit development, use the full host with port
-    const wsUrl = `${protocol}//${host}${port ? `:${port}` : ''}/ws`;
+    const wsUrl = `${protocol}//${window.location.host}/ws`;
     
     console.log('Attempting WebSocket connection to:', wsUrl);
     console.log('Window location details:', {

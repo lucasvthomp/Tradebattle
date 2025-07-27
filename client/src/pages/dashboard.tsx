@@ -1437,15 +1437,20 @@ export default function Dashboard() {
   // Tournament trading mutations
   const purchaseStockMutation = useMutation({
     mutationFn: async (purchaseData: any) => {
-      const tournamentId = selectedTournament?.tournaments?.id;
+      // Get tournament ID from the purchase data that was passed in
+      const tournamentId = purchaseData.tournamentId;
       if (!tournamentId) {
         throw new Error("No tournament selected");
       }
-      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/purchase`, purchaseData);
+      
+      // Remove tournamentId from purchaseData as it's used in URL path
+      const { tournamentId: _, ...dataWithoutTournamentId } = purchaseData;
+      
+      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/purchase`, dataWithoutTournamentId);
       return res.json();
     },
     onSuccess: () => {
-      const tournamentId = selectedTournament?.tournaments?.id;
+      const tournamentId = selectedTournament?.id;
       if (tournamentId) {
         queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
         queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
