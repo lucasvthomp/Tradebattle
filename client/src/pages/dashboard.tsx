@@ -69,7 +69,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RegionalChat } from "@/components/ui/regional-chat";
+
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
@@ -626,7 +626,7 @@ export default function Dashboard() {
       );
     }
 
-    if (!publicTournaments?.data?.data || publicTournaments.data.data.length === 0) {
+    if (!publicTournaments?.data?.success || !publicTournaments.data.data || publicTournaments.data.data.length === 0) {
       return (
         <div className="text-center py-12 text-muted-foreground">
           <Trophy className="w-16 h-16 mx-auto mb-4" />
@@ -642,7 +642,7 @@ export default function Dashboard() {
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {publicTournaments.data.data
+        {publicTournaments.data?.data
           .filter((tournament: any, index: number, self: any[]) => 
             index === self.findIndex(t => t.id === tournament.id)
           )
@@ -844,8 +844,7 @@ export default function Dashboard() {
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
   const [sellAmount, setSellAmount] = useState("");
   
-  // Chat state
-  const [isChatOpen, setIsChatOpen] = useState(false);
+
   const [joinCode, setJoinCode] = useState("");
   
   // Performance period state
@@ -1711,7 +1710,7 @@ export default function Dashboard() {
 
   // Use popular stocks data
   useEffect(() => {
-    if (popularStocksData?.success && popularStocksData.data) {
+    if (popularStocksData?.success && popularStocksData?.data) {
       setPopularStocks(popularStocksData.data);
       setIsLoadingPopular(false);
     }
@@ -1797,10 +1796,10 @@ export default function Dashboard() {
     const individualData = individualStockData.find((company: any) => company.symbol === stock.symbol);
     
     // Use current price from popular or individual data
-    const currentPrice = popularData?.price || individualData?.price || (stock as any).price || 0;
-    const volume = popularData?.volume || individualData?.volume || (stock as any).volume || 0;
-    const marketCap = popularData?.marketCap || individualData?.marketCap || (stock as any).marketCap || 0;
-    const sector = popularData?.sector || individualData?.sector || (stock as any).sector || "N/A";
+    const currentPrice = popularData?.price || individualData?.price || (stock as any)?.price || 0;
+    const volume = popularData?.volume || individualData?.volume || (stock as any)?.volume || 0;
+    const marketCap = popularData?.marketCap || individualData?.marketCap || (stock as any)?.marketCap || 0;
+    const sector = popularData?.sector || individualData?.sector || (stock as any)?.sector || "N/A";
     
     // Get the correct historical close price based on timeframe
     let historicalClose = 0;
@@ -2153,7 +2152,7 @@ export default function Dashboard() {
                           <td className="py-3 px-4 font-medium text-foreground">{stock.symbol}</td>
                           <td className="py-3 px-4 text-sm text-foreground">{stock.companyName}</td>
                           <td className="py-3 px-4 font-medium text-foreground">
-                            {formatCurrency(stock.currentPrice || stock.price || 0)}
+                            {formatCurrency(stock.currentPrice || (stock as any)?.price || 0)}
                           </td>
                           <td className="py-3 px-4 font-medium text-muted-foreground">
                             {stock.previousClose ? formatCurrency(stock.previousClose) : 'N/A'}
@@ -2640,8 +2639,8 @@ export default function Dashboard() {
                   
                   createTournamentMutation.mutate({
                     name: tournamentName,
-                    maxPlayers: parseInt(maxPlayers as string),
-                    startingBalance: parseFloat(startingBalance as string),
+                    maxPlayers: parseInt(maxPlayers as string).toString(),
+                    startingBalance: parseFloat(startingBalance as string).toString(),
                     timeframe: durationString,
                     buyInAmount: parseFloat(buyInAmount),
                     tradingRestriction: tradingRestriction,
@@ -2763,9 +2762,9 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : purchases?.data && (purchases as any)?.data?.length > 0 ? (
+                      ) : purchases && Array.isArray(purchases) && purchases?.length > 0 ? (
                         <div className="space-y-3">
-                          {(purchases as any).data.map((purchase: any) => (
+                          {purchases.map((purchase: any) => (
                             <div key={purchase.id} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg">
                               <div>
                                 <div className="font-semibold">{purchase.symbol}</div>
@@ -2870,7 +2869,7 @@ export default function Dashboard() {
                         <div>
                           <h4 className="text-sm font-semibold mb-3">Popular Stocks</h4>
                           <div className="grid grid-cols-2 gap-2">
-                            {popularStocksData?.data?.slice(0, 4).map((stock) => (
+                            {popularStocksData?.data?.slice(0, 4).map((stock: any) => (
                               <div
                                 key={stock.symbol}
                                 className="p-2 border rounded-lg hover:bg-muted cursor-pointer transition-colors"
@@ -2977,9 +2976,9 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : participants?.data && Array.isArray(participants.data) && participants.data.length > 0 ? (
+                      ) : participants && Array.isArray(participants) && participants.length > 0 ? (
                         <div className="space-y-3">
-                          {participants.data
+                          {participants
                             .sort((a: any, b: any) => parseFloat(b.balance) - parseFloat(a.balance))
                             .map((participant: any, index: any) => (
                               <div key={participant.userId} className="flex items-center space-x-3">
@@ -3469,8 +3468,8 @@ export default function Dashboard() {
                     if (tournamentName.trim()) {
                       createTournamentMutation.mutate({
                         name: tournamentName.trim(),
-                        maxPlayers: parseInt(maxPlayers),
-                        startingBalance: parseFloat(startingBalance),
+                        maxPlayers: parseInt(maxPlayers).toString(),
+                        startingBalance: parseFloat(startingBalance).toString(),
                         timeframe,
                         buyInAmount: parseFloat(buyInAmount) || 0,
                         tradingRestriction,
@@ -3783,8 +3782,8 @@ export default function Dashboard() {
                   if (tournamentName.trim()) {
                     createTournamentMutation.mutate({
                       name: tournamentName.trim(),
-                      maxPlayers: parseInt(maxPlayers as string),
-                      startingBalance: parseFloat(startingBalance as string),
+                      maxPlayers: parseInt(maxPlayers as string).toString(),
+                      startingBalance: parseFloat(startingBalance as string).toString(),
                       timeframe,
                       buyInAmount: parseFloat(buyInAmount) || 0,
                       tradingRestriction,
@@ -3801,11 +3800,7 @@ export default function Dashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Regional Chat */}
-      <RegionalChat
-        isOpen={isChatOpen}
-        onToggle={() => setIsChatOpen(!isChatOpen)}
-      />
+
     </div>
   );
 }
