@@ -2216,6 +2216,8 @@ export default function Dashboard() {
                         key={tournamentData.id} 
                         className="interactive-card hover-lift cursor-pointer border-2 hover:border-neon group animate-fade-in particle-effect"
                         onClick={() => {
+                          console.log("Clicking My Tournament:", tournament);
+                          console.log("tournamentData:", tournamentData);
                           setSelectedTournament(tournament);
                           setSelectedTournamentId(tournamentData.id.toString());
                           setCurrentView('tournament-detail');
