@@ -875,10 +875,16 @@ export default function Dashboard() {
   });
 
   // Fetch user tournaments
-  const { data: userTournaments = [], isLoading: tournamentsLoading, error: tournamentsError } = useQuery<any[]>({
+  const { data: tournamentsResponse, isLoading: tournamentsLoading, error: tournamentsError } = useQuery({
     queryKey: ["/api/tournaments"],
     enabled: !!user,
   });
+
+  const userTournaments = tournamentsResponse?.data || [];
+  
+  // Debug tournaments data
+  console.log('Tournaments Response:', tournamentsResponse);
+  console.log('User Tournaments:', userTournaments);
 
   // Tournament participants query
   const { data: participants = [], isLoading: participantsLoading } = useQuery<any[]>({
