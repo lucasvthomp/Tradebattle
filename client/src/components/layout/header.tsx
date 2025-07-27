@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield } from "lucide-react";
 import { ChatTrigger } from "./chat-panel";
 
 interface HeaderProps {
@@ -66,6 +66,17 @@ export default function Header({ onChatOpen }: HeaderProps) {
                       <DollarSign className="w-4 h-4 mr-2" />
                       My Balance
                     </DropdownMenuItem>
+                    {(user?.userId === 0 || user?.userId === 1 || user?.userId === 2) && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <Link href="/admin">
+                          <DropdownMenuItem>
+                            <Shield className="w-4 h-4 mr-2" />
+                            Admin Panel
+                          </DropdownMenuItem>
+                        </Link>
+                      </>
+                    )}
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => {
                       logoutMutation.mutate();
