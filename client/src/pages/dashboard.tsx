@@ -894,10 +894,10 @@ export default function Dashboard() {
 
   const userTournaments = (tournamentsResponse as any)?.data || [];
 
-  // Tournament participants query
+  // Tournament participants query for detail view
   const { data: participants = [], isLoading: participantsLoading } = useQuery({
-    queryKey: ['tournament-participants', selectedTournament?.tournaments?.id],
-    enabled: !!selectedTournament?.tournaments?.id,
+    queryKey: [`/api/tournaments/${selectedTournament?.tournaments?.id || selectedTournament?.id}/participants`],
+    enabled: !!(selectedTournament?.tournaments?.id || selectedTournament?.id),
   });
 
   // Fetch user's watchlist
@@ -2896,6 +2896,7 @@ export default function Dashboard() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
+                      {console.log("Participants debug:", participants, "Loading:", participantsLoading)}
                       {participantsLoading ? (
                         <div className="space-y-3">
                           {[1, 2, 3].map((i) => (
@@ -2908,9 +2909,9 @@ export default function Dashboard() {
                             </div>
                           ))}
                         </div>
-                      ) : participants?.data && (participants as any)?.data?.length > 0 ? (
+                      ) : participants?.data && Array.isArray(participants.data) && participants.data.length > 0 ? (
                         <div className="space-y-3">
-                          {(participants as any).data
+                          {participants.data
                             .sort((a: any, b: any) => parseFloat(b.balance) - parseFloat(a.balance))
                             .map((participant: any, index: any) => (
                               <div key={participant.userId} className="flex items-center space-x-3">
@@ -2923,7 +2924,7 @@ export default function Dashboard() {
                                   {index + 1}
                                 </div>
                                 <div className="flex-1">
-                                  <div className="font-semibold">{participant.displayName || participant.username || `User ${participant.userId}`}</div>
+                                  <div className="font-semibold">{participant.displayName || participant.firstName || participant.username || `User ${participant.userId}`}</div>
                                   <div className="text-sm text-muted-foreground">
                                     ${parseFloat(participant.balance).toLocaleString()}
                                   </div>
