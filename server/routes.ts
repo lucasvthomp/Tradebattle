@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { WebSocketServer, WebSocket } from "ws";
+
 import { storage } from "./storage";
 import { setupAuth, requireAuth } from "./auth";
 import { insertContactSchema, insertWatchlistSchema, insertStockPurchaseSchema, registerSchema, loginSchema } from "@shared/schema";
@@ -543,51 +543,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use(errorHandler);
 
   const httpServer = createServer(app);
-  
-  // Add WebSocket server for real-time global chat
-  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
-  
-  // Store all connected global chat clients
-  const globalChatClients = new Set<WebSocket>();
-  
-  wss.on('connection', (ws: WebSocket) => {
-    console.log('WebSocket client connected');
-    
-    ws.on('message', (data: Buffer) => {
-      try {
-        const message = JSON.parse(data.toString());
-        
-        if (message.type === 'join' && message.room === 'global') {
-          // Add client to global chat
-          globalChatClients.add(ws);
-          console.log('Client joined global chat room');
-        }
-        
-        if (message.type === 'newMessage') {
-          // Broadcast new message to all global chat clients
-          globalChatClients.forEach(client => {
-            if (client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify({
-                type: 'newMessage'
-              }));
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error processing WebSocket message:', error);
-      }
-    });
-    
-    ws.on('close', () => {
-      console.log('WebSocket client disconnected');
-      globalChatClients.delete(ws);
-    });
-    
-    ws.on('error', (error) => {
-      console.error('WebSocket error:', error);
-      globalChatClients.delete(ws);
-    });
-  });
   
   return httpServer;
 }
