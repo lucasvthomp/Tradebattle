@@ -969,7 +969,8 @@ export default function Dashboard() {
     enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: true,
     staleTime: 0,
-    gcTime: 0
+    gcTime: 0,
+    refetchInterval: 3000
   });
 
   const { data: tournamentPurchases, refetch: refetchPurchases, isLoading: isLoadingPurchases } = useQuery({
@@ -992,7 +993,8 @@ export default function Dashboard() {
     enabled: !!user && !!tournamentId,
     refetchOnWindowFocus: true,
     staleTime: 0,
-    gcTime: 0
+    gcTime: 0,
+    refetchInterval: 3000
   });
 
   // Tournament participants query with real-time updates
@@ -1455,18 +1457,14 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Remove from cache and force immediate refetch
-        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.removeQueries({ queryKey: ['tournament-participants', tournamentId] });
+        // Immediately invalidate and refetch all related data
+        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
         
-        // Force immediate refetch with no cache
-        setTimeout(async () => {
-          await Promise.all([
-            refetchBalance(),
-            refetchPurchases()
-          ]);
-        }, 50);
+        // Force immediate data refresh
+        refetchBalance();
+        refetchPurchases();
       }
       toast({
         title: "Purchase Successful",
@@ -1506,18 +1504,14 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Remove from cache and force immediate refetch
-        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.removeQueries({ queryKey: ['tournament-participants', tournamentId] });
+        // Immediately invalidate and refetch all related data
+        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
         
-        // Force immediate refetch with no cache
-        setTimeout(async () => {
-          await Promise.all([
-            refetchBalance(),
-            refetchPurchases()
-          ]);
-        }, 50);
+        // Force immediate data refresh
+        refetchBalance();
+        refetchPurchases();
       }
       toast({
         title: "Sale Successful",
@@ -3039,19 +3033,9 @@ export default function Dashboard() {
                       <CardTitle>Quick Actions</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                      <Button 
-                        variant="outline" 
-                        className="w-full"
-                        onClick={() => {
-                          // Refresh tournament data
-                          queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
-                          queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentData.id}/participants`] });
-                          queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournamentData.id}/purchases`] });
-                        }}
-                      >
-                        <RefreshCw className="w-4 h-4 mr-2" />
-                        Refresh Data
-                      </Button>
+                      <div className="text-xs text-muted-foreground text-center">
+                        Data refreshes automatically after trades
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -3125,9 +3109,9 @@ export default function Dashboard() {
                 </Button>
                 <Button 
                   onClick={handlePurchaseSubmit}
-                  disabled={!shareAmount || parseInt(shareAmount) <= 0 || !selectedTradingStock?.price}
+                  disabled={!shareAmount || parseInt(shareAmount) <= 0 || !selectedTradingStock?.price || purchaseStockMutation.isPending}
                 >
-                  Buy Stock
+                  {purchaseStockMutation.isPending ? "Processing..." : "Buy Stock"}
                 </Button>
               </div>
             </div>
@@ -3252,9 +3236,9 @@ export default function Dashboard() {
                       });
                     });
                   }}
-                  disabled={!sellAmount || parseInt(sellAmount) <= 0 || parseInt(sellAmount) > (selectedSellStock?.shares || 0)}
+                  disabled={!sellAmount || parseInt(sellAmount) <= 0 || parseInt(sellAmount) > (selectedSellStock?.shares || 0) || sellStockMutation.isPending}
                 >
-                  Sell Stock
+                  {sellStockMutation.isPending ? "Processing..." : "Sell Stock"}
                 </Button>
               </div>
             </div>
