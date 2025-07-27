@@ -1457,25 +1457,15 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Clear all tournament data from cache for instant updates
-        queryClient.setQueryData(['tournament-purchases', tournamentId, user?.id], undefined);
-        queryClient.setQueryData(['tournament-balance', tournamentId, user?.id], undefined);
-        
-        // Invalidate and refetch immediately
-        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
-        
-        // Force immediate data refresh
-        setTimeout(() => {
-          refetchBalance();
-          refetchPurchases();
-        }, 10);
+        // Clear entire query cache and reload
+        queryClient.clear();
+        setTimeout(() => window.location.reload(), 100);
       }
       toast({
         title: "Purchase Successful",
         description: "Stock has been added to your tournament portfolio",
       });
+
       setIsBuyDialogOpen(false);
       setSelectedTradingStock(null);
       setShareAmount("");
@@ -1510,25 +1500,15 @@ export default function Dashboard() {
     onSuccess: () => {
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Clear all tournament data from cache for instant updates
-        queryClient.setQueryData(['tournament-purchases', tournamentId, user?.id], undefined);
-        queryClient.setQueryData(['tournament-balance', tournamentId, user?.id], undefined);
-        
-        // Invalidate and refetch immediately
-        queryClient.invalidateQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
-        queryClient.invalidateQueries({ queryKey: ['tournament-participants', tournamentId] });
-        
-        // Force immediate data refresh
-        setTimeout(() => {
-          refetchBalance();
-          refetchPurchases();
-        }, 10);
+        // Clear entire query cache and reload
+        queryClient.clear();
+        setTimeout(() => window.location.reload(), 100);
       }
       toast({
         title: "Sale Successful",
         description: "Stock has been sold and funds added to your tournament balance",
       });
+
       setIsSellDialogOpen(false);
       setSelectedSellStock(null);
       setSellAmount("");
