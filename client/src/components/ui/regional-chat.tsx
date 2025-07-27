@@ -35,7 +35,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
     refetchInterval: 5000, // Fallback polling every 5 seconds
   });
 
-  const messages = messagesData?.data || [];
+  const messages = (messagesData as { data: ChatMessage[] } | undefined)?.data || [];
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -107,7 +107,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
     } catch (error) {
       console.error('Failed to create WebSocket connection:', error);
       console.error('WebSocket URL that failed:', wsUrl);
-    }</old_str>
+    }
 
     return () => {
       if (wsRef.current) {
