@@ -548,8 +548,8 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
     symbol: sanitizeInput(symbol),
     companyName: sanitizeInput(companyName),
     shares: parseInt(shares),
-    purchasePrice: parseFloat(purchasePrice),
-    totalCost: totalCost
+    purchasePrice: parseFloat(purchasePrice).toString(),
+    totalCost: totalCost.toString()
   });
 
   // Record the trade in trade history
@@ -560,8 +560,8 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
     companyName: sanitizeInput(companyName),
     tradeType: 'buy',
     shares: parseInt(shares),
-    price: parseFloat(purchasePrice),
-    totalValue: totalCost
+    price: parseFloat(purchasePrice).toString(),
+    totalValue: totalCost.toString()
   });
 
   // Update user balance
@@ -573,9 +573,7 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
     achievementType: 'first_trade',
     achievementTier: 'common',
     achievementName: 'First Trade',
-    achievementDescription: 'Made your first trade',
-    earnedAt: new Date(),
-    createdAt: new Date()
+    achievementDescription: 'Made your first trade'
   });
 
   res.status(201).json({
