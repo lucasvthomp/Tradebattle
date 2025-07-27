@@ -62,7 +62,8 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
 
     // Construct WebSocket URL using the same host as the current page
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-    const wsUrl = `${protocol}//${window.location.host}/ws`;
+    const host = window.location.host;
+    const wsUrl = `${protocol}//${host}/ws`;
     
     console.log('Attempting WebSocket connection to:', wsUrl);
     console.log('Window location details:', {
@@ -106,7 +107,7 @@ export function RegionalChat({ isOpen, onToggle }: RegionalChatProps) {
     } catch (error) {
       console.error('Failed to create WebSocket connection:', error);
       console.error('WebSocket URL that failed:', wsUrl);
-    }
+    }</old_str>
 
     return () => {
       if (wsRef.current) {
