@@ -1646,12 +1646,12 @@ export default function Dashboard() {
     const shares = parseInt(shareAmount);
     const totalCost = shares * selectedTradingStock.price;
 
-    // Check if user has enough balance
-    const currentBalanceAmount = parseFloat(currentBalance?.toString() || '0');
-    if (totalCost > currentBalanceAmount) {
+    // Check if user has enough tournament balance
+    const tournamentBalanceAmount = parseFloat(tournamentBalance?.data?.balance?.toString() || '0');
+    if (totalCost > tournamentBalanceAmount) {
       toast({
-        title: "Insufficient funds",
-        description: `You need $${totalCost.toFixed(2)} but only have $${currentBalanceAmount.toFixed(2)}`,
+        title: "Insufficient tournament funds",
+        description: `You need $${totalCost.toFixed(2)} but only have $${tournamentBalanceAmount.toFixed(2)} in this tournament`,
         variant: "destructive",
       });
       return;
