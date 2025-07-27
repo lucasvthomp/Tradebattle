@@ -1454,23 +1454,18 @@ export default function Dashboard() {
       const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/purchase`, dataWithoutTournamentId);
       return res.json();
     },
-    onSuccess: async () => {
+    onSuccess: () => {
+      // Force immediate UI update after purchase
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Force immediate refetch of tournament data
-        await queryClient.refetchQueries({ 
-          queryKey: ['tournament-purchases', tournamentId, user?.id],
-          type: 'active'
-        });
-        await queryClient.refetchQueries({ 
-          queryKey: ['tournament-balance', tournamentId, user?.id],
-          type: 'active'
-        });
-        await queryClient.refetchQueries({ 
-          queryKey: ['tournament-participants', tournamentId],
-          type: 'active'
-        });
+        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        setTimeout(() => {
+          refetchPurchases();
+          refetchBalance();
+        }, 100);
       }
+      
       toast({
         title: "Purchase Successful",
         description: "Stock has been added to your tournament portfolio",
@@ -1507,23 +1502,18 @@ export default function Dashboard() {
       const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/sell`, dataWithoutTournamentId);
       return res.json();
     },
-    onSuccess: async () => {
+    onSuccess: () => {
+      // Force immediate UI update after sale
       const tournamentId = selectedTournament?.id;
       if (tournamentId) {
-        // Force immediate refetch of tournament data
-        await queryClient.refetchQueries({ 
-          queryKey: ['tournament-purchases', tournamentId, user?.id],
-          type: 'active'
-        });
-        await queryClient.refetchQueries({ 
-          queryKey: ['tournament-balance', tournamentId, user?.id],
-          type: 'active'
-        });
-        await queryClient.refetchQueries({ 
-          queryKey: ['tournament-participants', tournamentId],
-          type: 'active'
-        });
+        queryClient.removeQueries({ queryKey: ['tournament-purchases', tournamentId, user?.id] });
+        queryClient.removeQueries({ queryKey: ['tournament-balance', tournamentId, user?.id] });
+        setTimeout(() => {
+          refetchPurchases();
+          refetchBalance();
+        }, 100);
       }
+      
       toast({
         title: "Sale Successful",
         description: "Stock has been sold and funds added to your tournament balance",

@@ -1,0 +1,108 @@
+client:536 Uncaught (in promise) SyntaxError: Failed to construct 'WebSocket': The URL 'wss://localhost:undefined/?token=QxkQaz53qpLG' is invalid.
+    at setupWebSocket (client:536:19)
+    at fallback (client:509:16)
+    at WebSocket.<anonymous> (client:555:7)Understand this error
+chunk-276SZO74.js?v=cece715e:21551 Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: undefined selectedTournament: null
+dashboard.tsx:2300 Clicking My Tournament: Object
+dashboard.tsx:2301 tournamentData: Object
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: Object
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: Object
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: Object
+dashboard.tsx:1696 Tournament balance data: {
+  "success": true,
+  "data": {
+    "balance": 11000
+  }
+}
+dashboard.tsx:1697 Tournament ID: 13
+dashboard.tsx:1700 Parsed balance amount: 11000
+dashboard.tsx:1701 Total cost needed: 948.1800000000001
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: Object
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: Object
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: Object
+dashboard.tsx:2708 Tournament Detail View - tournamentData: Object balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2708 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+dashboard.tsx:940 Tournament query conditions - user: true tournamentId: 13 selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2704 Tournament Detail View - selectedTournament: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …}
+dashboard.tsx:2708 Tournament Detail View - tournamentData: {id: 13, name: 'test', code: 'BO2T9CA5', creatorId: 5, maxPlayers: 10, …} balance: 11000
+dashboard.tsx:950 Fetching balance for tournament 13
+dashboard.tsx:958 Balance API response status: 200
+dashboard.tsx:966 Balance API response data: {success: true, data: {…}}
