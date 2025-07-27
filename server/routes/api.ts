@@ -672,6 +672,46 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
 
 
 /**
+ * GET /api/tournaments/:id/balance
+ * Get user's balance in a specific tournament
+ */
+router.get('/tournaments/:id/balance', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  const balance = await storage.getTournamentBalance(tournamentId, userId);
+
+  res.json({
+    success: true,
+    data: { balance },
+  });
+}));
+
+/**
+ * GET /api/tournaments/:id/purchases
+ * Get user's stock purchases in a specific tournament
+ */
+router.get('/tournaments/:id/purchases', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
+
+  res.json({
+    success: true,
+    data: purchases,
+  });
+}));
+
+/**
  * Helper function to calculate trading streak
  */
 async function calculateTradingStreak(userId: number): Promise<number> {
