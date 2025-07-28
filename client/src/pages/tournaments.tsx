@@ -35,7 +35,8 @@ import {
   Shield,
   Lock,
   Globe,
-  Crown
+  Crown,
+  MessageSquare
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -124,6 +125,7 @@ export default function TournamentsPage() {
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
+  const [tournamentChatOpen, setTournamentChatOpen] = useState<number | null>(null);
 
   // Tournament creation form state - exactly 7 options as specified
   const [tournamentForm, setTournamentForm] = useState({
@@ -530,6 +532,7 @@ export default function TournamentsPage() {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
+                  onOpenChat={(tournamentId) => setTournamentChatOpen(tournamentId)}
                 />
               </TabsContent>
 
@@ -541,6 +544,7 @@ export default function TournamentsPage() {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
+                  onOpenChat={(tournamentId) => setTournamentChatOpen(tournamentId)}
                 />
               </TabsContent>
             </Tabs>
@@ -565,6 +569,15 @@ export default function TournamentsPage() {
         isOpen={chatOpen}
         onToggle={() => setChatOpen(!chatOpen)}
       />
+
+      {/* Tournament-specific Chat System */}
+      {tournamentChatOpen && (
+        <ChatSystem
+          tournamentId={tournamentChatOpen}
+          isOpen={true}
+          onToggle={() => setTournamentChatOpen(null)}
+        />
+      )}
     </div>
   );
 }
@@ -573,11 +586,13 @@ export default function TournamentsPage() {
 function TournamentGrid({ 
   tournaments, 
   type, 
-  onManage 
+  onManage,
+  onOpenChat
 }: { 
   tournaments: any[], 
   type: "upcoming" | "ongoing",
-  onManage: (tournament: any) => void 
+  onManage: (tournament: any) => void,
+  onOpenChat: (tournamentId: number) => void
 }) {
   const { formatCurrency } = useUserPreferences();
   const { toast } = useToast();
@@ -629,6 +644,7 @@ function TournamentGrid({
             onJoin={() => joinTournamentMutation.mutate(tournament.id)}
             isJoining={joinTournamentMutation.isPending}
             onManage={() => onManage(tournament)}
+            onOpenChat={() => onOpenChat(tournament.id)}
           />
         ))}
       </AnimatePresence>
@@ -642,13 +658,15 @@ function TournamentCard({
   type, 
   onJoin, 
   isJoining,
-  onManage
+  onManage,
+  onOpenChat
 }: { 
   tournament: any, 
   type: "upcoming" | "ongoing", 
   onJoin: () => void,
   isJoining: boolean,
-  onManage: () => void
+  onManage: () => void,
+  onOpenChat: () => void
 }) {
   const { formatCurrency } = useUserPreferences();
   const { user } = useAuth();
@@ -768,6 +786,16 @@ function TournamentCard({
 
           {/* Action Buttons */}
           <div className="space-y-2">
+            {/* Chat Button (for all participants) */}
+            <Button
+              onClick={onOpenChat}
+              className="w-full"
+              variant="secondary"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Tournament Chat
+            </Button>
+            
             {/* Manage Button (Creator Only) */}
             {isCreator && (
               <Button

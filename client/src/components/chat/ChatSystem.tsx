@@ -32,21 +32,25 @@ export function ChatSystem({ tournamentId, isOpen, onToggle }: ChatSystemProps) 
   const queryClient = useQueryClient();
 
   // Fetch chat messages
-  const { data: messages = [], isLoading } = useQuery({
+  const { data: chatResponse, isLoading } = useQuery({
     queryKey: ['/api/chat', tournamentId],
     queryFn: async () => {
       const endpoint = tournamentId ? `/api/chat/tournament/${tournamentId}` : '/api/chat/global';
-      return await apiRequest("GET", endpoint);
+      const response = await apiRequest("GET", endpoint);
+      return response.json();
     },
     refetchInterval: 5000, // Refresh every 5 seconds
     enabled: isOpen
   });
 
+  const messages = chatResponse?.data || [];
+
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: { message: string; tournamentId?: number }) => {
       const endpoint = tournamentId ? `/api/chat/tournament/${tournamentId}` : '/api/chat/global';
-      return await apiRequest("POST", endpoint, messageData);
+      const response = await apiRequest("POST", endpoint, messageData);
+      return response.json();
     },
     onSuccess: () => {
       setNewMessage("");

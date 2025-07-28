@@ -16,10 +16,12 @@ import {
   X,
   UserX,
   AlertTriangle,
-  Crown
+  Crown,
+  MessageSquare
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { ChatSystem } from "@/components/chat/ChatSystem";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -49,6 +51,7 @@ export function TournamentManagementDialog({
   const [kickDialogOpen, setKickDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const isCreator = user?.id === tournament?.creatorId;
   const isPrivate = !tournament?.isPublic;
@@ -203,6 +206,21 @@ export function TournamentManagementDialog({
             <div className="space-y-4">
               <h3 className="font-semibold">Creator Actions</h3>
               
+              {/* Tournament Chat */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">Tournament Chat</p>
+                  <p className="text-sm text-muted-foreground">Chat with tournament participants</p>
+                </div>
+                <Button
+                  onClick={() => setChatOpen(true)}
+                  variant="outline"
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Open Chat
+                </Button>
+              </div>
+              
               {/* Private Tournament Powers */}
               {isPrivate && isWaiting && (
                 <div className="space-y-3">
@@ -336,6 +354,13 @@ export function TournamentManagementDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Tournament-specific Chat System */}
+      <ChatSystem
+        tournamentId={tournament.id}
+        isOpen={chatOpen}
+        onToggle={() => setChatOpen(!chatOpen)}
+      />
     </>
   );
 }
