@@ -65,7 +65,7 @@ const achievements = [
   // Legendary (Bright Orange)
   { id: 10, name: "Tournament Champion", description: "Won a tournament", icon: Trophy, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
   { id: 11, name: "100 Day Streak", description: "Traded for 100 consecutive days", icon: Activity, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
-  { id: 12, name: "Premium Trader", description: "Premium user", icon: Star, rarity: "legendary", color: "bg-orange-200 text-orange-900 dark:bg-orange-600 dark:text-orange-100" },
+
   // Mythic (Red)
   { id: 13, name: "365 Day Streak", description: "Traded every day for a full year", icon: Activity, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
   { id: 14, name: "100% Portfolio Growth", description: "Doubled your portfolio value", icon: TrendingUp, rarity: "mythic", color: "bg-red-200 text-red-900 dark:bg-red-700 dark:text-red-100" },
@@ -114,7 +114,7 @@ export default function People() {
       );
     }
     
-    // Apply subscription filter
+    // Apply role filter
     if (filterBy !== "all") {
       users = users.filter((u: any) => u.subscriptionTier === filterBy);
     }
@@ -235,8 +235,7 @@ export default function People() {
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
                           <Crown className="w-3 h-3 mr-1" />
-                          {(profileUser as any)?.data?.subscriptionTier === 'premium' ? 'Premium Trader' : 
-                           (profileUser as any)?.data?.subscriptionTier === 'administrator' ? 'Administrator' : 'Free Trader'}
+                          {(profileUser as any)?.data?.subscriptionTier === 'administrator' ? 'Administrator' : 'Trader'}
                         </Badge>
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                           <Calendar className="w-3 h-3 mr-1" />
@@ -370,9 +369,9 @@ export default function People() {
                 className="px-3 py-2 border border-input rounded-md bg-background text-foreground"
               >
                 <option value="all">All Members</option>
-                <option value="premium">Premium Traders</option>
+
                 <option value="administrator">Administrators</option>
-                <option value="free">Free Traders</option>
+                <option value="free">Traders</option>
               </select>
               
               {/* Achievements Button */}
@@ -467,8 +466,7 @@ export default function People() {
                               {person.username}
                             </h3>
                             <p className="text-sm text-muted-foreground">
-                              {person.subscriptionTier === 'premium' ? 'Premium Trader' : 
-                               person.subscriptionTier === 'administrator' ? 'Administrator' : 'Free Trader'}
+                              {person.subscriptionTier === 'administrator' ? 'Administrator' : 'Trader'}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               Member since {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}

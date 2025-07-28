@@ -882,7 +882,6 @@ export default function Dashboard() {
       return 10 * 60 * 1000; // 10 minutes
     }
     
-    // Premium/Admin tiers get 30-second intervals for better real-time experience
     return 30 * 1000; // 30 seconds
   };
 
@@ -1061,7 +1060,7 @@ export default function Dashboard() {
       return prices;
     },
     enabled: purchasedSymbols.length > 0,
-    refetchInterval: user?.subscriptionTier === 'free' ? 10 * 60 * 1000 : 30000, // Free: 10 minutes, Premium/Admin: 30 seconds
+    refetchInterval: 30000, // 30 seconds for all users
   });
 
   // Update stock prices when new data comes in
@@ -1301,10 +1300,9 @@ export default function Dashboard() {
       return res.json();
     },
     onSuccess: (response) => {
-      // Check if this is a premium restriction response
       if (response.message && !response.data) {
         toast({
-          title: "Premium Required",
+          title: "Feature Not Available",
           description: response.message,
           variant: "destructive",
         });

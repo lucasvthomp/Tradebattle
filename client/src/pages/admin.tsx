@@ -350,27 +350,27 @@ export default function Admin() {
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Premium Users</CardTitle>
+                    <CardTitle className="text-sm font-medium">Active Users</CardTitle>
                     <Activity className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allUsers.filter((u: any) => u.subscriptionTier === 'premium').length || 0}
+                      {allUsers.length || 0}
                     </div>
-                    <p className="text-xs text-gray-500">Premium subscribers</p>
+                    <p className="text-xs text-gray-500">Platform users</p>
                   </CardContent>
                 </Card>
 
                 <Card>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Free Users</CardTitle>
-                    <Users className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium">Administrators</CardTitle>
+                    <Crown className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allUsers.filter((u: any) => u.subscriptionTier !== 'premium').length || 0}
+                      {allUsers.filter((u: any) => u.subscriptionTier === 'administrator').length || 0}
                     </div>
-                    <p className="text-xs text-gray-500">Free plan users</p>
+                    <p className="text-xs text-gray-500">Admin accounts</p>
                   </CardContent>
                 </Card>
               </div>
@@ -395,7 +395,7 @@ export default function Admin() {
                         <TableHead className="w-64">Email</TableHead>
                         <TableHead className="w-24">Balance</TableHead>
                         <TableHead className="w-28">Created</TableHead>
-                        <TableHead className="w-20">Status</TableHead>
+                        <TableHead className="w-20">Role</TableHead>
                         <TableHead className="w-20">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -439,8 +439,8 @@ export default function Admin() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className="text-green-600">
-                              Active
+                            <Badge variant={user.subscriptionTier === 'administrator' ? 'default' : 'secondary'}>
+                              {user.subscriptionTier === 'administrator' ? 'Admin' : 'User'}
                             </Badge>
                           </TableCell>
                           <TableCell>
