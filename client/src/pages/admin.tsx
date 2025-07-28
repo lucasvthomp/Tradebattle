@@ -31,7 +31,8 @@ import {
   AlertTriangle,
   Trophy,
   GamepadIcon,
-  DollarSign
+  DollarSign,
+  RefreshCw
 } from "lucide-react";
 import {
   AlertDialog,
