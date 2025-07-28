@@ -1,11 +1,13 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useLeaderboard } from "@/hooks/use-optimized-query";
+import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import { SmoothTransition } from "@/components/ui/smooth-transition";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -16,32 +18,10 @@ export default function Leaderboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("tournaments");
 
-  // Fetch tournaments leaderboard data with 5-minute refresh
-  const { data: tournamentLeaderboard, isLoading: tournamentsLoading } = useQuery({
-    queryKey: ['/api/tournaments/leaderboard'],
-    enabled: activeTab === "tournaments",
-    refetchInterval: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
-  });
-
-  // Fetch personal leaderboard data with 5-minute refresh
-  const { data: personalLeaderboard, isLoading: personalLoading } = useQuery({
-    queryKey: ['/api/personal/leaderboard'],
-    enabled: activeTab === "personal",
-    refetchInterval: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
-  });
-
-  // Fetch streak leaderboard data with 5-minute refresh
-  const { data: streakLeaderboard, isLoading: streakLoading } = useQuery({
-    queryKey: ['/api/streak/leaderboard'],
-    enabled: activeTab === "streak",
-    refetchInterval: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
-  });
+  // Optimized leaderboard queries
+  const { data: tournamentLeaderboard, isLoading: tournamentsLoading } = useLeaderboard('tournaments');
+  const { data: personalLeaderboard, isLoading: personalLoading } = useLeaderboard('personal');
+  const { data: streakLeaderboard, isLoading: streakLoading } = useLeaderboard('streaks');
 
   const getRankIcon = (rank: number) => {
     switch (rank) {

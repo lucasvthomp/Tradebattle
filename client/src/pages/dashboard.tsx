@@ -885,10 +885,14 @@ export default function Dashboard() {
     return 30 * 1000; // 30 seconds
   };
 
-  // Fetch popular stocks
+  // Fetch popular stocks with optimized caching
   const { data: popularStocksData, isLoading: popularStocksLoading } = useQuery({
     queryKey: ["/api/popular"],
     enabled: !!user,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 30000, // 30 seconds
+    refetchOnWindowFocus: false,
   });
 
   // Fetch user tournaments
