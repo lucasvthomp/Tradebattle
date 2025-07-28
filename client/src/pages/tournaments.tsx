@@ -124,7 +124,6 @@ export default function TournamentsPage() {
   const [sortBy, setSortBy] = useState("starting-soon");
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [chatOpen, setChatOpen] = useState(false);
   const [tournamentChatOpen, setTournamentChatOpen] = useState<number | null>(null);
 
   // Tournament creation form state - exactly 7 options as specified
@@ -563,12 +562,6 @@ export default function TournamentsPage() {
           }}
         />
       )}
-
-      {/* Global Chat System */}
-      <ChatSystem
-        isOpen={chatOpen}
-        onToggle={() => setChatOpen(!chatOpen)}
-      />
 
       {/* Tournament-specific Chat System */}
       {tournamentChatOpen && (

@@ -4,6 +4,7 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BalanceDialog } from "@/components/balance-dialog";
+import { ChatSystem } from "@/components/chat/ChatSystem";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +12,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare } from "lucide-react";
 export default function Header() {
   const { user, logoutMutation } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
@@ -35,6 +37,17 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {user ? (
               <>
+                {/* Chat Button */}
+                <Button
+                  onClick={() => setChatOpen(true)}
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span className="text-sm font-medium">Chat</span>
+                </Button>
+
                 {/* User Menu with integrated balance */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -101,6 +114,12 @@ export default function Header() {
         open={balanceDialogOpen}
         onOpenChange={setBalanceDialogOpen}
         currentBalance={Number(user?.balance) || 0}
+      />
+
+      {/* Global Chat System */}
+      <ChatSystem
+        isOpen={chatOpen}
+        onToggle={() => setChatOpen(!chatOpen)}
       />
     </header>
   );
