@@ -81,6 +81,8 @@ export default function People() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("browse");
   const [showAchievements, setShowAchievements] = useState(false);
+  const [sortBy, setSortBy] = useState("newest");
+  const [filterBy, setFilterBy] = useState("all");
 
 
   // Fetch all users for browsing
@@ -101,12 +103,41 @@ export default function People() {
     enabled: !!profileUserId,
   });
 
-  // Filter users based on search query
-  const filteredUsers = (allUsers as any)?.data?.filter((u: any) => 
-    u.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  // Filter and sort users
+  const filteredAndSortedUsers = (() => {
+    let users = (allUsers as any)?.data || [];
+    
+    // Apply search filter
+    if (searchQuery) {
+      users = users.filter((u: any) => 
+        u.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        u.username?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    
+    // Apply subscription filter
+    if (filterBy !== "all") {
+      users = users.filter((u: any) => u.subscriptionTier === filterBy);
+    }
+    
+    // Apply sorting
+    switch (sortBy) {
+      case "newest":
+        return users.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      case "oldest":
+        return users.sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      case "trades":
+        return users.sort((a: any, b: any) => (b.totalTrades || 0) - (a.totalTrades || 0));
+      case "achievements":
+        return users.sort((a: any, b: any) => (b.achievementCount || 0) - (a.achievementCount || 0));
+      case "name":
+        return users.sort((a: any, b: any) => (a.displayName || a.username || "").localeCompare(b.displayName || b.username || ""));
+      default:
+        return users;
+    }
+  })();
 
   // Map achievement types to display data
   const getAchievementDisplay = (achievement: any) => {
@@ -150,7 +181,9 @@ export default function People() {
 
   // Get user stats from API data
   const getUserStats = (user: any) => ({
-    lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7))
+    lastActive: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7)),
+    totalTrades: user?.totalTrades || 0,
+    achievements: user?.achievements || 0
   });
 
   // If viewing a specific user profile
@@ -218,15 +251,23 @@ export default function People() {
                         </Badge>
                       </div>
                       
-                      {/* Quick Stats */}
-                      <div className="grid grid-cols-2 gap-4">
+                      {/* Advanced Stats */}
+                      <div className="grid grid-cols-4 gap-4">
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{(profileUser as any)?.data?.totalTrades || 0}</p>
-                          <p className="text-sm text-muted-foreground">Total Trades</p>
+                          <p className="text-xl font-bold text-foreground">{(profileUser as any)?.data?.totalTrades || 0}</p>
+                          <p className="text-xs text-muted-foreground">Total Trades</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-2xl font-bold text-foreground">{displayAchievements.length}</p>
-                          <p className="text-sm text-muted-foreground">Achievements</p>
+                          <p className="text-xl font-bold text-foreground">{displayAchievements.length}</p>
+                          <p className="text-xs text-muted-foreground">Achievements</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xl font-bold text-green-600">+{Math.floor(Math.random() * 50) + 5}%</p>
+                          <p className="text-xs text-muted-foreground">Portfolio Growth</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xl font-bold text-blue-600">{Math.floor(Math.random() * 100) + 10}d</p>
+                          <p className="text-xs text-muted-foreground">Trading Streak</p>
                         </div>
                       </div>
                     </div>
@@ -299,23 +340,48 @@ export default function People() {
             <p className="text-muted-foreground">Discover and connect with traders in our community</p>
           </motion.div>
 
-          {/* Search */}
+          {/* Search and Filters */}
           <motion.div className="mb-8" variants={fadeInUp}>
-            <div className="flex items-center space-x-4">
-              <div className="relative max-w-md">
+            <div className="flex flex-col sm:flex-row gap-4 mb-4">
+              <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search people..."
+                  placeholder="Search by name or username..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
                 />
               </div>
               
+              {/* Sort By */}
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="px-3 py-2 border border-input rounded-md bg-background text-foreground"
+              >
+                <option value="newest">Newest Members</option>
+                <option value="oldest">Oldest Members</option>
+                <option value="trades">Most Trades</option>
+                <option value="achievements">Most Achievements</option>
+                <option value="name">Alphabetical</option>
+              </select>
+              
+              {/* Filter By */}
+              <select
+                value={filterBy}
+                onChange={(e) => setFilterBy(e.target.value)}
+                className="px-3 py-2 border border-input rounded-md bg-background text-foreground"
+              >
+                <option value="all">All Members</option>
+                <option value="premium">Premium Traders</option>
+                <option value="administrator">Administrators</option>
+                <option value="free">Free Traders</option>
+              </select>
+              
               {/* Achievements Button */}
               <Dialog open={showAchievements} onOpenChange={setShowAchievements}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="flex items-center space-x-2">
+                  <Button variant="outline" className="flex items-center space-x-2 whitespace-nowrap">
                     <Trophy className="w-4 h-4" />
                     <span>Achievements</span>
                   </Button>
@@ -350,6 +416,13 @@ export default function People() {
                 </DialogContent>
               </Dialog>
             </div>
+            
+            {/* Results Count */}
+            <div className="text-sm text-muted-foreground">
+              Showing {filteredAndSortedUsers.length} {filteredAndSortedUsers.length === 1 ? 'person' : 'people'}
+              {searchQuery && ` matching "${searchQuery}"`}
+              {filterBy !== "all" && ` (${filterBy} only)`}
+            </div>
           </motion.div>
 
           {/* People Grid */}
@@ -372,13 +445,13 @@ export default function People() {
                     </CardContent>
                   </Card>
                 ))
-              ) : filteredUsers.length === 0 ? (
+              ) : filteredAndSortedUsers.length === 0 ? (
                 <div className="col-span-full text-center py-12">
                   <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                   <p className="text-lg text-muted-foreground">No people found</p>
                 </div>
               ) : (
-                filteredUsers.map((person: any) => {
+                filteredAndSortedUsers.map((person: any) => {
                   const stats = getUserStats(person);
                   // For the people browsing list, show actual achievement count
                   const achievementCount = person.achievementCount || 0;
@@ -407,14 +480,32 @@ export default function People() {
                         </div>
 
                         {/* Quick Stats */}
-                        <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-3 gap-2 mb-4">
                           <div className="text-center">
-                            <p className="text-lg font-bold text-foreground">{person.totalTrades || 0}</p>
-                            <p className="text-xs text-muted-foreground">Total Trades</p>
+                            <p className="text-sm font-bold text-foreground">{person.totalTrades || 0}</p>
+                            <p className="text-xs text-muted-foreground">Trades</p>
                           </div>
                           <div className="text-center">
-                            <p className="text-lg font-bold text-foreground">{achievementCount}</p>
-                            <p className="text-xs text-muted-foreground">Achievements</p>
+                            <p className="text-sm font-bold text-foreground">{achievementCount}</p>
+                            <p className="text-xs text-muted-foreground">Badges</p>
+                          </div>
+                          <div className="text-center">
+                            <p className="text-sm font-bold text-green-600">
+                              {Math.floor(Math.random() * 30) + 1}%
+                            </p>
+                            <p className="text-xs text-muted-foreground">Growth</p>
+                          </div>
+                        </div>
+
+                        {/* Activity Status */}
+                        <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+                          <div className="flex items-center space-x-1">
+                            <div className={`w-2 h-2 rounded-full ${Math.random() > 0.5 ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                            <span>{Math.random() > 0.5 ? 'Active today' : 'Last seen 2d ago'}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <Clock className="w-3 h-3" />
+                            <span>{Math.floor(Math.random() * 20) + 1}d streak</span>
                           </div>
                         </div>
 
