@@ -16,7 +16,7 @@ export default function Portfolio() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] p-6">
+    <div className="h-[calc(100vh-4rem)] overflow-hidden">
       <PortfolioGrid />
     </div>
   );
