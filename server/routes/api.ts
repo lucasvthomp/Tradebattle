@@ -1849,4 +1849,126 @@ router.post('/portfolio-history', requireAuth, asyncHandler(async (req, res) => 
 
 
 
+/**
+ * PATCH /api/profile/picture
+ * Update user profile picture
+ */
+router.patch('/profile/picture', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { profilePicture } = req.body;
+
+  if (!profilePicture) {
+    throw new ValidationError('Profile picture data is required');
+  }
+
+  // Validate base64 image
+  if (!profilePicture.startsWith('data:image/')) {
+    throw new ValidationError('Invalid image format');
+  }
+
+  await storage.updateProfilePicture(userId, profilePicture);
+
+  res.json({
+    success: true,
+    message: 'Profile picture updated successfully'
+  });
+}));
+
+/**
+ * GET /api/chat/global
+ * Get global chat messages
+ */
+router.get('/chat/global', requireAuth, asyncHandler(async (req, res) => {
+  const messages = await storage.getChatMessages();
+  res.json({
+    success: true,
+    data: messages
+  });
+}));
+
+/**
+ * POST /api/chat/global
+ * Send message to global chat
+ */
+router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { message } = req.body;
+
+  if (!message || !message.trim()) {
+    throw new ValidationError('Message is required');
+  }
+
+  const user = await storage.getUser(userId);
+  if (!user) {
+    throw new ValidationError('User not found');
+  }
+
+  const chatMessage = await storage.createChatMessage({
+    userId,
+    username: user.username,
+    profilePicture: user.profilePicture || null,
+    message: message.trim(),
+    tournamentId: null
+  });
+
+  res.json({
+    success: true,
+    data: chatMessage
+  });
+}));
+
+/**
+ * GET /api/chat/tournament/:tournamentId
+ * Get tournament-specific chat messages
+ */
+router.get('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.tournamentId);
+  
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  const messages = await storage.getChatMessages(tournamentId);
+  res.json({
+    success: true,
+    data: messages
+  });
+}));
+
+/**
+ * POST /api/chat/tournament/:tournamentId
+ * Send message to tournament chat
+ */
+router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const tournamentId = parseInt(req.params.tournamentId);
+  const { message } = req.body;
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  if (!message || !message.trim()) {
+    throw new ValidationError('Message is required');
+  }
+
+  const user = await storage.getUser(userId);
+  if (!user) {
+    throw new ValidationError('User not found');
+  }
+
+  const chatMessage = await storage.createChatMessage({
+    userId,
+    username: user.username,
+    profilePicture: user.profilePicture || null,
+    message: message.trim(),
+    tournamentId
+  });
+
+  res.json({
+    success: true,
+    data: chatMessage
+  });
+}));
+
 export default router;

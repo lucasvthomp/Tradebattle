@@ -31,7 +31,9 @@ import {
   DollarSign,
   Plus,
   Globe,
-  Languages
+  Languages,
+  Upload,
+  Camera
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -43,6 +45,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PortfolioGraph } from "@/components/ui/portfolio-graph";
+import { ProfilePictureUpload } from "@/components/profile/ProfilePictureUpload";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -72,6 +75,8 @@ export default function Profile() {
   const { theme, setTheme } = useTheme();
   const { t, language, currency, updatePreferences } = useUserPreferences();
   const queryClient = useQueryClient();
+  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
 
   
   // Fetch user achievements for profile display
@@ -211,6 +216,60 @@ export default function Profile() {
     updateProfileMutation.mutate(data);
   };
 
+  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({
+          title: "File too large",
+          description: "Please select an image smaller than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Invalid file type",
+          description: "Please select a valid image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setProfilePictureFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        setProfilePicturePreview(result);
+        uploadProfilePicture(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadProfilePicture = async (base64Image: string) => {
+    try {
+      const result = await apiRequest("PATCH", "/api/profile/picture", { profilePicture: base64Image });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/users/public"] });
+      toast({
+        title: "Profile picture updated",
+        description: "Your profile picture has been successfully updated.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Upload failed",
+        description: error.message || "Failed to update profile picture",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Format join date
   const joinDate = user?.createdAt 
     ? new Date(user.createdAt).toLocaleDateString('en-US', { 
@@ -251,8 +310,16 @@ export default function Profile() {
             <Card className="mb-8 border-0 shadow-lg">
               <CardContent className="p-6">
                 <div className="flex items-center space-x-4">
-                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center">
-                    <User className="w-8 h-8 text-muted-foreground" />
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center overflow-hidden">
+                    {user.profilePicture ? (
+                      <img 
+                        src={user.profilePicture} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-8 h-8 text-muted-foreground" />
+                    )}
                   </div>
                   <div className="flex-1">
                     <h2 className="text-xl font-bold text-foreground">{user.username}</h2>
@@ -264,9 +331,17 @@ export default function Profile() {
                       </Badge>
                     </div>
                   </div>
-                  <Button variant="outline">
+                  <Button variant="outline" onClick={() => document.getElementById('profile-picture-input')?.click()}>
+                    <Camera className="w-4 h-4 mr-2" />
                     Change Photo
                   </Button>
+                  <input
+                    id="profile-picture-input"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleProfilePictureChange}
+                    className="hidden"
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -381,7 +456,10 @@ export default function Profile() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="account">
+              <TabsContent value="account" className="space-y-6">
+                {/* Profile Picture Upload */}
+                <ProfilePictureUpload />
+                
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
                     <CardTitle>Account Settings</CardTitle>

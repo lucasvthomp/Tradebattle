@@ -43,6 +43,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { TournamentManagementDialog } from "@/components/tournaments/TournamentManagementDialog";
 import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
+import { ChatSystem } from "@/components/chat/ChatSystem";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -122,6 +123,7 @@ export default function TournamentsPage() {
   const [sortBy, setSortBy] = useState("starting-soon");
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [chatOpen, setChatOpen] = useState(false);
 
   // Tournament creation form state - exactly 7 options as specified
   const [tournamentForm, setTournamentForm] = useState({
@@ -553,6 +555,12 @@ export default function TournamentsPage() {
           }}
         />
       )}
+
+      {/* Global Chat System */}
+      <ChatSystem
+        isOpen={chatOpen}
+        onToggle={() => setChatOpen(!chatOpen)}
+      />
     </div>
   );
 }
@@ -788,3 +796,6 @@ function TournamentCard({
     </motion.div>
   );
 }
+
+// Add ChatSystem to the main TournamentsPage
+export { ChatSystem } from "@/components/chat/ChatSystem";

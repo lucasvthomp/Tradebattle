@@ -11,6 +11,7 @@ import {
   tradeHistory,
   userAchievements,
   portfolioHistory,
+  chatMessages,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -35,6 +36,8 @@ import {
   type InsertUserAchievement,
   type PortfolioHistory,
   type InsertPortfolioHistory,
+  type ChatMessage,
+  type InsertChatMessage,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -45,7 +48,8 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange' | 'profilePicture'>>): Promise<User>;
+  updateProfilePicture(userId: number, profilePicture: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   
@@ -116,6 +120,9 @@ export interface IStorage {
   recordPortfolioValue(record: InsertPortfolioHistory): Promise<PortfolioHistory>;
   getUserPortfolioHistory(userId: number, portfolioType: 'personal' | 'tournament', tournamentId?: number): Promise<PortfolioHistory[]>;
   
+  // Chat operations
+  getChatMessages(tournamentId?: number): Promise<ChatMessage[]>;
+  createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 
 }
 
@@ -174,7 +181,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange' | 'profilePicture'>>): Promise<User> {
     // If username is being updated, check the two-week restriction
     if (updates.username) {
       const currentUser = await this.getUser(id);
@@ -205,6 +212,13 @@ export class DatabaseStorage implements IStorage {
 
   async deleteUser(id: number): Promise<void> {
     await db.delete(users).where(eq(users.id, id));
+  }
+
+  async updateProfilePicture(userId: number, profilePicture: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ profilePicture, updatedAt: new Date() })
+      .where(eq(users.id, userId));
   }
 
   // Watchlist operations
@@ -833,7 +847,20 @@ export class DatabaseStorage implements IStorage {
       .where(eq(users.id, userId));
   }
 
+  // Chat operations
+  async getChatMessages(tournamentId?: number): Promise<ChatMessage[]> {
+    return await db
+      .select()
+      .from(chatMessages)
+      .where(tournamentId ? eq(chatMessages.tournamentId, tournamentId) : isNull(chatMessages.tournamentId))
+      .orderBy(asc(chatMessages.createdAt))
+      .limit(100); // Limit to last 100 messages
+  }
 
+  async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
+    const result = await db.insert(chatMessages).values(message).returning();
+    return result[0];
+  }
 }
 
 export const storage = new DatabaseStorage();

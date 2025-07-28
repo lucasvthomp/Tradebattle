@@ -33,7 +33,7 @@ export const users = pgTable("users", {
   userId: integer("user_id").unique(), // New field for admin identification (Lucas=0, Murilo=1)
   email: varchar("email", { length: 255 }).unique().notNull(),
   username: varchar("username", { length: 15 }).unique().notNull(), // 3-15 characters, letters/numbers/underscores only
-
+  profilePicture: text("profile_picture"), // Base64 encoded profile picture or URL
   lastUsernameChange: timestamp("last_username_change"), // Track when username was last changed (for 2-week restriction)
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   country: varchar("country", { length: 100 }), // User's country
@@ -388,3 +388,6 @@ export type UserAchievement = typeof userAchievements.$inferSelect;
 export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
 export type PortfolioHistory = typeof portfolioHistory.$inferSelect;
 export type InsertPortfolioHistory = z.infer<typeof insertPortfolioHistorySchema>;
+
+// Export chat schema
+export * from "./chatSchema";
