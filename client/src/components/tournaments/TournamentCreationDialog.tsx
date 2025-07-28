@@ -165,20 +165,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         </DialogHeader>
 
         <div className="space-y-6">
-          {/* Premium Notice */}
-          {user?.subscriptionTier === 'free' && (
-            <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950/20">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center space-x-2 text-yellow-800 dark:text-yellow-200">
-                  <Crown className="w-5 h-5" />
-                  <span>Premium Feature</span>
-                </CardTitle>
-                <CardDescription className="text-yellow-700 dark:text-yellow-300">
-                  Tournament creation requires a premium subscription. Joining tournaments is always free!
-                </CardDescription>
-              </CardHeader>
-            </Card>
-          )}
+
 
           {/* 1. Tournament Title */}
           <div className="space-y-2">
@@ -363,7 +350,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={createTournamentMutation.isPending || user?.subscriptionTier === 'free'}
+              disabled={createTournamentMutation.isPending}
               className="bg-blue-600 hover:bg-blue-700"
             >
               {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}

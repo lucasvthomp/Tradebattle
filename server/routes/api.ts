@@ -289,11 +289,6 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   const user = await storage.getUser(userId);
 
-  // Check if user has premium access for tournament creation
-  if (user.subscriptionTier === 'free') {
-    throw new ValidationError('Tournament creation requires premium subscription. Joining tournaments is always free!');
-  }
-
   if (!name || !startingBalance) {
     throw new ValidationError('Tournament name and starting balance are required');
   }
