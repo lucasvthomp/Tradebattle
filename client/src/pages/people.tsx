@@ -233,10 +233,12 @@ export default function People() {
                         {(profileUser as any)?.data?.username}
                       </h1>
                       <div className="flex items-center space-x-4 mb-4">
-                        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
-                          <Crown className="w-3 h-3 mr-1" />
-                          {(profileUser as any)?.data?.subscriptionTier === 'administrator' ? 'Administrator' : 'Trader'}
-                        </Badge>
+                        {(profileUser as any)?.data?.subscriptionTier === 'administrator' && (
+                          <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
+                            <Crown className="w-3 h-3 mr-1" />
+                            Administrator
+                          </Badge>
+                        )}
                         <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
                           <Calendar className="w-3 h-3 mr-1" />
                           Since {(profileUser as any)?.data?.createdAt ? new Date((profileUser as any).data.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
@@ -369,9 +371,7 @@ export default function People() {
                 className="px-3 py-2 border border-input rounded-md bg-background text-foreground"
               >
                 <option value="all">All Members</option>
-
                 <option value="administrator">Administrators</option>
-                <option value="free">Traders</option>
               </select>
               
               {/* Achievements Button */}
@@ -465,9 +465,7 @@ export default function People() {
                             <h3 className="text-lg font-semibold text-foreground">
                               {person.username}
                             </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {person.subscriptionTier === 'administrator' ? 'Administrator' : 'Trader'}
-                            </p>
+
                             <p className="text-xs text-muted-foreground">
                               Member since {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
                             </p>
