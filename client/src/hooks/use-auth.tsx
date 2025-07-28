@@ -33,9 +33,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   } = useQuery<User | undefined, Error>({
     queryKey: ["/api/user"],
     queryFn: async () => {
-      const res = await fetch("/api/user", {
-        credentials: "include",
-      });
+      const res = await fetch("/api/user");
       if (res.status === 401) {
         return null;
       }
@@ -44,11 +42,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       return res.json();
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-    retry: false,
   });
 
   const loginMutation = useMutation({
@@ -58,17 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (user: User) => {
       queryClient.setQueryData(["/api/user"], user);
-      
-      // Preload critical data after login
-      queryClient.prefetchQuery({
-        queryKey: ["/api/popular"],
-        staleTime: 2 * 60 * 1000,
-      });
-      queryClient.prefetchQuery({
-        queryKey: ["/api/portfolio/personal"],
-        staleTime: 30 * 1000,
-      });
-      
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome back!",
         description: `Good to see you again, ${user.username || user.email}`,

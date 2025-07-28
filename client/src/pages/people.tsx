@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,9 +31,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { PortfolioGraph } from "@/components/ui/portfolio-graph";
-import { useOptimizedQuery } from "@/hooks/use-optimized-query";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { SmoothTransition, StaggeredChildren } from "@/components/ui/smooth-transition";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },

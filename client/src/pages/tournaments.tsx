@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -14,9 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
-import { useTournaments } from "@/hooks/use-optimized-query";
-import { LoadingSpinner } from "@/components/ui/loading-spinner";
-import { SmoothTransition, StaggeredChildren } from "@/components/ui/smooth-transition";
 import { 
   Trophy, 
   Users, 
@@ -137,8 +134,11 @@ export default function TournamentsPage() {
     isPublic: true // Private or Public
   });
 
-  // Fetch public tournaments with optimized caching
-  const { data: publicTournaments, isLoading: tournamentsLoading } = useTournaments();
+  // Fetch public tournaments
+  const { data: publicTournaments, isLoading: tournamentsLoading } = useQuery({
+    queryKey: ['/api/tournaments/public'],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
 
   // Join tournament by code mutation
   const joinByCodeMutation = useMutation({

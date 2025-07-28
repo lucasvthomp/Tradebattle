@@ -1,123 +1,693 @@
+@import "react-grid-layout/css/styles.css";
+@import "react-resizable/css/styles.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --background: 220 25% 14%;
-    --foreground: 210 40% 98%;
-    --card: 220 25% 16%;
-    --card-foreground: 210 40% 98%;
-    --popover: 220 25% 16%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 220 25% 14%;
-    --secondary: 220 20% 22%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 220 20% 22%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 220 20% 22%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 220 20% 22%;
-    --input: 220 20% 22%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  }
+:root {
+  --background: hsl(240, 10%, 8%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 12%, 12%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(240, 12%, 12%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --primary: hsl(142, 76%, 36%);
+  --primary-foreground: hsl(0, 0%, 0%);
+  --secondary: hsl(240, 6%, 20%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 6%, 16%);
+  --muted-foreground: hsl(0, 0%, 65%);
+  --accent: hsl(51, 100%, 50%);
+  --accent-foreground: hsl(0, 0%, 0%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 6%, 24%);
+  --input: hsl(240, 6%, 16%);
+  --ring: hsl(142, 76%, 36%);
+  --radius: 0.75rem;
+  
+  /* Gaming-themed colors */
+  --neon-green: hsl(142, 76%, 36%);
+  --neon-blue: hsl(200, 100%, 50%);
+  --neon-purple: hsl(280, 100%, 60%);
+  --neon-orange: hsl(30, 100%, 50%);
+  --gold: hsl(51, 100%, 50%);
+  --red-loss: hsl(0, 84%, 60%);
+  --green-profit: hsl(142, 76%, 36%);
+  
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, hsl(142, 76%, 36%), hsl(142, 76%, 46%));
+  --gradient-secondary: linear-gradient(135deg, hsl(240, 12%, 12%), hsl(240, 12%, 18%));
+  --gradient-accent: linear-gradient(135deg, hsl(51, 100%, 50%), hsl(30, 100%, 50%));
+  --gradient-card: linear-gradient(135deg, hsl(240, 12%, 12%) 0%, hsl(240, 12%, 15%) 100%);
+  
+  /* Shadows and glows */
+  --shadow-neon: 0 0 20px hsl(142, 76%, 36% / 0.3);
+  --shadow-gold: 0 0 20px hsl(51, 100%, 50% / 0.3);
+  --shadow-card: 0 4px 32px hsl(0, 0%, 0% / 0.3);
+}
+
+/* React Grid Layout Styles */
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top, width, height;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform, width, height;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 0;
+  right: 0;
+  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjODg4IiBkPSJtIDQsNCAwLDIgMiwwIDAsLTIgeiIvPgo8L3N2Zz4K');
+  background-position: bottom right;
+  padding: 0 3px 3px 0;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  box-sizing: border-box;
+  cursor: se-resize;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.react-grid-item:hover > .react-resizable-handle {
+  opacity: 1;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: hsl(var(--primary) / 0.2);
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  border: 2px dashed hsl(var(--primary));
+  border-radius: 8px;
+}
+
+.dark {
+  --background: hsl(240, 10%, 8%);
+  --foreground: hsl(0, 0%, 98%);
+  --card: hsl(240, 12%, 12%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --popover: hsl(240, 12%, 12%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --primary: hsl(142, 76%, 36%);
+  --primary-foreground: hsl(0, 0%, 0%);
+  --secondary: hsl(240, 6%, 20%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --muted: hsl(240, 6%, 16%);
+  --muted-foreground: hsl(0, 0%, 65%);
+  --accent: hsl(51, 100%, 50%);
+  --accent-foreground: hsl(0, 0%, 0%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(240, 6%, 24%);
+  --input: hsl(240, 6%, 16%);
+  --ring: hsl(142, 76%, 36%);
+}
+
+/* React Grid Layout Styles */
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 0;
+  right: 0;
+  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZG90cyBmaWxsPSIjOTk5IiBvcGFjaXR5PSIwLjMiIGN4PSIxIiBjeT0iMSIgcj0iMSIvPgo8ZG90cyBmaWxsPSIjOTk5IiBvcGFjaXR5PSIwLjMiIGN4PSI1IiBjeT0iMSIgcj0iMSIvPgo8ZG90cyBmaWxsPSIjOTk5IiBvcGFjaXR5PSIwLjMiIGN4PSIxIiBjeT0iNSIgcj0iMSIvPgo8ZG90cyBmaWxsPSIjOTk5IiBvcGFjaXR5PSIwLjMiIGN4PSI1IiBjeT0iNSIgcj0iMSIvPgo8L3N2Zz4=');
+  background-position: bottom right;
+  padding: 0 3px 3px 0;
+  background-repeat: no-repeat;
+  background-origin: content-box;
+  box-sizing: border-box;
+  cursor: se-resize;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: hsl(var(--primary)) !important;
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 5px;
+  height: 5px;
+  border-right: 2px solid rgba(0, 0, 0, 0.4);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.4);
+}
+
+.widget-container {
+  height: 100%;
+}
+
+.widget-container .card {
+  height: 100%;
+  overflow: hidden;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: 'opsz' 32;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: radial-gradient(ellipse at top, hsl(240, 10%, 10%) 0%, hsl(240, 10%, 8%) 100%);
+    min-height: 100vh;
+  }
+  
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: hsl(240, 6%, 16%);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: hsl(240, 6%, 24%);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(142, 76%, 36%);
   }
 }
 
-/* Performance optimizations */
-* {
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* Gaming-inspired utilities */
+  .neon-glow {
+    box-shadow: var(--shadow-neon);
+  }
+  
+  .gold-glow {
+    box-shadow: var(--shadow-gold);
+  }
+  
+  .card-glow {
+    box-shadow: var(--shadow-card);
+  }
+  
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  /* Enhanced animations */
+  .animate-pulse-slow {
+    /* Removed pulse animation to prevent moving gradients */
+  }
+  
+  .animate-glow {
+    /* Removed glow animation to prevent moving gradients */
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .animate-float {
+    /* Removed float animation to prevent moving gradients */
+  }
+  
+  /* Interactive hover effects */
+  .hover-lift {
+    transition: transform 0.2s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-1px);
+  }
+  
+  .hover-glow:hover {
+    box-shadow: var(--shadow-neon);
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Navigation styling */
+  .nav-link {
+    @apply transition-all duration-300 ease-in-out relative;
+    position: relative;
+  }
+  
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--gradient-primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+  }
+  
+  .nav-link:hover::after {
+    width: 100%;
+  }
+  
+  /* Gaming-themed borders */
+  .border-neon {
+    border-color: var(--neon-green);
+  }
+  
+  .border-gold {
+    border-color: var(--gold);
+  }
+  
+  /* Status indicators */
+  .status-active {
+    background: var(--gradient-primary);
+    color: hsl(0, 0%, 0%);
+  }
+  
+  .status-profit {
+    color: var(--green-profit);
+  }
+  
+  .status-loss {
+    color: var(--red-loss);
+  }
+  
+  /* Button enhancements */
+  .btn-primary {
+    background: hsl(var(--primary));
+    border: none;
+    color: hsl(var(--primary-foreground));
+    font-weight: 600;
+    transition: opacity 0.2s ease;
+  }
+  
+  .btn-primary:hover {
+    opacity: 0.9;
+  }
+  
+  .btn-secondary {
+    background: hsl(var(--secondary));
+    border: 1px solid hsl(var(--border));
+    transition: border-color 0.2s ease;
+  }
+  
+  .btn-secondary:hover {
+    border-color: hsl(var(--primary));
+  }
+  
+  .btn-accent {
+    background: var(--gradient-accent);
+    color: hsl(0, 0%, 0%);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .btn-accent:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-gold);
+  }
+  
+  /* Interactive card effects */
+  .interactive-card {
+    @apply transition-colors duration-200;
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+  
+  .interactive-card:hover {
+    border-color: hsl(var(--border));
+  }
+  
+  /* Gradient text effects */
+  .gradient-text {
+    color: hsl(var(--foreground));
+  }
+  
+  .gradient-text-profit {
+    background: linear-gradient(135deg, var(--green-profit), hsl(142, 76%, 46%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .gradient-text-loss {
+    background: linear-gradient(135deg, var(--red-loss), hsl(0, 84%, 70%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  @keyframes scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Ensure proper transitions for all elements */
+  * {
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
+  }
+  
+  /* Dark mode specific overrides for footer and other components */
+  .dark .bg-gray-900 {
+    background-color: hsl(0, 0%, 98%);
+  }
+  
+  .dark .text-gray-400 {
+    color: hsl(0, 0%, 40%);
+  }
+  
+  .dark .border-gray-800 {
+    border-color: hsl(0, 0%, 20%);
+  }
+}
+
+/* Keyframe animations */
+@keyframes glow {
+  from {
+    text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green);
+  }
+  to {
+    text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green), 0 0 40px var(--neon-green);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 0.3s ease;
+}
+
+/* Hover effects */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Loading animations */
+.loading-bar {
+  height: 2px;
+  background: linear-gradient(90deg, #000 0%, #666 50%, #000 100%);
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+/* Typography improvements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.6;
+}
+
+/* Focus styles */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
+/* Enhanced scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--border));
+}
+
+/* React Grid Layout Styles */
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform;
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  bottom: 0;
+  right: 0;
+  background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNiIgaGVpZ2h0PSI2IiB2aWV3Qm94PSIwIDAgNiA2IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGZpbGw9IiM0NEE2OEYiIGZpbGwtcnVsZT0iZXZlbm9kZCI+PHBhdGggZD0ibTUgNWgtNHYtNGg0em0tNCAzaDN2LTNoLTN6Ii8+PC9nPjwvc3ZnPg==') no-repeat;
+  background-position: bottom right;
+  padding: 0 3px 3px 0;
+  background-repeat: no-repeat;
+  background-origin: content-box;
   box-sizing: border-box;
+  cursor: se-resize;
+  opacity: 0.4;
 }
 
-body {
-  margin: 0;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
+.react-grid-item > .react-resizable-handle:hover {
+  opacity: 0.8;
 }
 
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
+.react-grid-item.react-grid-placeholder {
+  background: hsl(var(--primary) / 0.2);
+  opacity: 0.8;
+  transition-duration: 100ms;
+  z-index: 2;
+  user-select: none;
+  border-radius: 8px;
 }
 
-input, button, textarea, select {
-  font: inherit;
+.widget-container {
+  height: 100%;
+  position: relative;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
+/* Gaming-themed special effects */
+.particle-effect {
+  position: relative;
+  overflow: hidden;
 }
 
-/* Smooth transitions for better UX */
-.transition-smooth {
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+.particle-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 20% 50%,
+    var(--neon-green) 0%,
+    transparent 50%
+  ),
+  radial-gradient(
+    circle at 80% 20%,
+    var(--gold) 0%,
+    transparent 50%
+  ),
+  radial-gradient(
+    circle at 40% 80%,
+    var(--neon-blue) 0%,
+    transparent 50%
+  );
+  opacity: 0.1;
+  /* Removed float animation to prevent moving gradients */
+  pointer-events: none;
 }
 
-/* Enhanced loading animations */
-@keyframes shimmer {
-  0% {
-    background-position: -200px 0;
-  }
-  100% {
-    background-position: calc(200px + 100%) 0;
-  }
+/* Status badge styles */
+.status-active {
+  background: linear-gradient(135deg, var(--neon-green), hsl(142, 76%, 46%));
+  color: hsl(0, 0%, 100%);
+  @apply text-white font-semibold;
+  box-shadow: 0 0 20px var(--neon-green);
+  /* Removed pulse-glow animation to prevent moving gradients */
 }
 
-.shimmer {
+.status-inactive {
+  background: linear-gradient(135deg, var(--red-loss), hsl(0, 84%, 70%));
+  @apply text-white font-semibold;
+}
+
+.status-waiting {
+  background: linear-gradient(135deg, var(--gold), hsl(51, 100%, 60%));
+  @apply text-black font-semibold;
+}
+
+/* Sidebar and Chat Panel Enhancements */
+.sidebar-nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar-nav-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-  background-size: 200px 100%;
-  animation: shimmer 1.5s infinite linear;
+  transition: left 0.5s;
 }
 
-/* Optimized scroll behavior */
-html {
-  scroll-behavior: smooth;
+.sidebar-nav-item:hover::before {
+  left: 100%;
 }
 
-/* Reduce motion for users who prefer it */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+.chat-message-animation {
+  animation: slideUp 0.3s ease-out;
 }
 
-/* Performance optimizations for transforms */
-.will-change-transform {
-  will-change: transform;
-}
-
-.will-change-opacity {
-  will-change: opacity;
-}
-
-/* GPU acceleration for smooth animations */
-.gpu-accelerated {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  perspective: 1000px;
+/* Enhanced overlay */
+.overlay-blur {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
