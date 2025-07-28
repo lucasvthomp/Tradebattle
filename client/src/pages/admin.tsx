@@ -120,56 +120,26 @@ export default function Admin() {
   }, [user, isAdmin, authLoading, toast, setLocation]);
 
   // Fetch all users (only if admin)
-  const { data: allUsers, isLoading: usersLoading } = useQuery({
+  const { data: allUsers = [], isLoading: usersLoading } = useQuery({
     queryKey: ["/api/admin/users"],
     enabled: isAdmin,
-    onError: (error: Error) => {
-      if (error.message.includes("401")) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
-  });
-
-  // Fetch admin logs for selected user
-  const { data: adminLogs, isLoading: logsLoading } = useQuery({
-    queryKey: ["/api/admin/logs", selectedUser?.id],
-    enabled: isAdmin && !!selectedUser?.id,
   });
 
   // Fetch system status
-  const { data: systemStatus, isLoading: systemLoading } = useQuery({
+  const { data: systemStatus = {}, isLoading: systemLoading } = useQuery({
     queryKey: ["/api/system/status"],
     enabled: isAdmin,
     refetchInterval: 15000, // Refresh every 15 seconds to show Yahoo Finance updates
   });
 
   // Fetch all tournaments
-  const { data: tournamentData, isLoading: tournamentsLoading } = useQuery({
+  const { data: tournamentData = {}, isLoading: tournamentsLoading } = useQuery({
     queryKey: ["/api/admin/tournaments"],
     enabled: isAdmin,
-    onError: (error: Error) => {
-      if (error.message.includes("401")) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-      }
-    },
   });
 
   // Extract tournaments from the response data
-  const allTournaments = tournamentData?.data || [];
+  const allTournaments = Array.isArray(tournamentData) ? tournamentData : tournamentData?.data || [];
 
   // Delete user mutation
   const deleteMutation = useMutation({
@@ -344,10 +314,9 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="users">User Management</TabsTrigger>
               <TabsTrigger value="tournaments">Tournament Management</TabsTrigger>
-              <TabsTrigger value="system">System Status</TabsTrigger>
             </TabsList>
 
             <TabsContent value="users" className="space-y-6">
@@ -359,7 +328,7 @@ export default function Admin() {
                     <Users className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{allUsers?.length || 0}</div>
+                    <div className="text-2xl font-bold">{allUsers.length || 0}</div>
                     <p className="text-xs text-gray-500">Registered accounts</p>
                   </CardContent>
                 </Card>
@@ -384,7 +353,7 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allUsers?.filter(u => u.subscriptionTier === 'premium').length || 0}
+                      {allUsers.filter((u: any) => u.subscriptionTier === 'premium').length || 0}
                     </div>
                     <p className="text-xs text-gray-500">Premium subscribers</p>
                   </CardContent>
@@ -397,7 +366,7 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allUsers?.filter(u => u.subscriptionTier !== 'premium').length || 0}
+                      {allUsers.filter((u: any) => u.subscriptionTier !== 'premium').length || 0}
                     </div>
                     <p className="text-xs text-gray-500">Free plan users</p>
                   </CardContent>
@@ -436,7 +405,7 @@ export default function Admin() {
                             <p className="mt-2 text-sm text-muted-foreground">Loading users...</p>
                           </TableCell>
                         </TableRow>
-                      ) : allUsers?.map((user) => (
+                      ) : allUsers.map((user: any) => (
                         <TableRow key={user.id}>
                           <TableCell>
                             <div className="flex items-center gap-2">
@@ -498,7 +467,7 @@ export default function Admin() {
                     <Trophy className="h-4 w-4 text-gray-500" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{allTournaments?.length || 0}</div>
+                    <div className="text-2xl font-bold">{allTournaments.length || 0}</div>
                     <p className="text-xs text-gray-500">Active competitions</p>
                   </CardContent>
                 </Card>
@@ -510,7 +479,7 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allTournaments?.reduce((total, tournament) => total + tournament.memberCount, 0) || 0}
+                      {allTournaments.reduce((total: number, tournament: any) => total + (tournament.memberCount || 0), 0) || 0}
                     </div>
                     <p className="text-xs text-gray-500">Tournament participants</p>
                   </CardContent>
@@ -523,7 +492,7 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allTournaments?.length ? Math.round((allTournaments?.reduce((total, tournament) => total + tournament.memberCount, 0) || 0) / allTournaments.length) : 0}
+                      {allTournaments.length ? Math.round((allTournaments.reduce((total: number, tournament: any) => total + (tournament.memberCount || 0), 0) || 0) / allTournaments.length) : 0}
                     </div>
                     <p className="text-xs text-gray-500">Players per tournament</p>
                   </CardContent>
@@ -536,7 +505,7 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allTournaments?.filter(t => new Date(t.endsAt) > new Date()).length || 0}
+                      {allTournaments.filter((t: any) => new Date(t.endsAt) > new Date()).length || 0}
                     </div>
                     <p className="text-xs text-gray-500">Still running</p>
                   </CardContent>
@@ -843,89 +812,7 @@ export default function Admin() {
           </Tabs>
         </motion.div>
 
-        {/* Edit User Dialog */}
-        <Dialog open={editUserOpen} onOpenChange={setEditUserOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Edit User</DialogTitle>
-              <DialogDescription>
-                Update user premium status and permissions
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">User</label>
-                <p className="text-sm text-gray-600">
-                  {selectedUser?.firstName} {selectedUser?.lastName} ({selectedUser?.email})
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Premium Status</label>
-                <Select
-                  defaultValue={selectedUser?.subscriptionTier}
-                  onValueChange={(value) => {
-                    if (selectedUser) {
-                      editUserMutation.mutate({
-                        userId: selectedUser.id,
-                        subscriptionTier: value,
-                      });
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="free">Free Account</SelectItem>
-                    <SelectItem value="premium">Premium Account</SelectItem>
-                    <SelectItem value="administrator">Administrator Account</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
 
-        {/* Admin Logs Dialog */}
-        <Dialog open={adminLogsOpen} onOpenChange={setAdminLogsOpen}>
-          <DialogContent className="max-w-4xl">
-            <DialogHeader>
-              <DialogTitle>Admin Logs</DialogTitle>
-              <DialogDescription>
-                Administrative actions for {selectedUser?.firstName} {selectedUser?.lastName}
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              {logsLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                </div>
-              ) : adminLogs?.length ? (
-                <div className="space-y-2">
-                  {adminLogs.map((log) => (
-                    <div key={log.id} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline">{log.action}</Badge>
-                          <span className="text-sm text-gray-600">
-                            {new Date(log.createdAt).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                      {log.notes && (
-                        <p className="text-sm text-gray-600 mt-2">{log.notes}</p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-gray-500">
-                  No admin logs found for this user
-                </div>
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
 
         {/* Delete Tournament Confirmation Dialog */}
         <AlertDialog open={endTournamentOpen} onOpenChange={setEndTournamentOpen}>
