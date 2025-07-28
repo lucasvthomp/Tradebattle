@@ -11,6 +11,7 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Portfolio from "@/pages/portfolio";
+import Tournaments from "@/pages/tournaments";
 import Leaderboard from "@/pages/leaderboard";
 import People from "@/pages/people";
 import Events from "@/pages/events";
@@ -58,6 +59,7 @@ function Router() {
           <>
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/portfolio" component={Portfolio} />
+            <Route path="/tournaments" component={Tournaments} />
             <Route path="/leaderboard" component={Leaderboard} />
             <Route path="/people" component={People} />
             <Route path="/people/:userId" component={People} />

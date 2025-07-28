@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   ShoppingBag,
-  Gift
+  Gift,
+  Target
 } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
@@ -35,6 +36,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     ...(user ? [
       { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
       { href: "/portfolio", label: t('portfolio'), icon: Briefcase },
+      { href: "/tournaments", label: t('tournaments'), icon: Target },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
       { href: "/shop", label: "Shop", icon: ShoppingBag },
