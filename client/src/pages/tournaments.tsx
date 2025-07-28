@@ -42,6 +42,7 @@ import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { TournamentManagementDialog } from "@/components/tournaments/TournamentManagementDialog";
 import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
+import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -257,6 +258,9 @@ export default function TournamentsPage() {
           variants={staggerChildren}
           className="space-y-6"
         >
+          {/* Market Status Disclaimer */}
+          <MarketStatusDisclaimer />
+
           {/* Header */}
           <motion.div variants={fadeInUp} className="flex items-center justify-between">
             <div>

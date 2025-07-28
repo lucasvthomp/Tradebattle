@@ -73,6 +73,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
+import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { Checkbox } from "@/components/ui/checkbox";
 
 // Duration Wheel Component
