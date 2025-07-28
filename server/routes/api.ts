@@ -270,7 +270,17 @@ router.get('/health', (req, res) => {
  * Create a new tournament
  */
 router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
-  const { name, maxPlayers, startingBalance, timeframe, buyInAmount, tradingRestriction, isPublic } = req.body;
+  const { 
+    name, 
+    maxPlayers, 
+    tournamentType, 
+    startingBalance, 
+    duration, 
+    scheduledStartTime,
+    buyInAmount, 
+    tradingRestriction, 
+    isPublic 
+  } = req.body;
   const userId = req.user.id;
   
   if (!userId) {
@@ -279,6 +289,11 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   const user = await storage.getUser(userId);
 
+  // Check if user has premium access for tournament creation
+  if (user.subscriptionTier === 'free') {
+    throw new ValidationError('Tournament creation requires premium subscription. Joining tournaments is always free!');
+  }
+
   if (!name || !startingBalance) {
     throw new ValidationError('Tournament name and starting balance are required');
   }
@@ -286,8 +301,10 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
   const tournament = await storage.createTournament({
     name: sanitizeInput(name),
     maxPlayers: maxPlayers || 10,
+    tournamentType: tournamentType || 'stocks',
     startingBalance: parseFloat(startingBalance),
-    timeframe: timeframe || '4 weeks',
+    timeframe: duration || '1 week',
+    scheduledStartTime: scheduledStartTime ? new Date(scheduledStartTime) : null,
     buyInAmount: parseFloat(buyInAmount) || 0,
     tradingRestriction: tradingRestriction || 'none',
     isPublic: isPublic !== undefined ? isPublic : true
@@ -318,6 +335,143 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: tournament,
+  });
+}));
+
+/**
+ * POST /api/tournaments/:id/start-early
+ * Start a private tournament early (creator only)
+ */
+router.post('/tournaments/:id/start-early', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+  
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  // Check if user is the creator
+  if (tournament.creatorId !== userId) {
+    throw new ValidationError('Only tournament creators can start tournaments early');
+  }
+
+  // Check if tournament is private
+  if (tournament.isPublic) {
+    throw new ValidationError('Only private tournaments can be started early');
+  }
+
+  // Check if tournament hasn't started yet
+  if (tournament.status !== 'waiting') {
+    throw new ValidationError('Tournament has already started or ended');
+  }
+
+  // Check minimum participants
+  if (tournament.currentPlayers < 2) {
+    throw new ValidationError('Need at least 2 participants to start tournament');
+  }
+
+  // Start the tournament
+  await storage.updateTournament(tournamentId, {
+    status: 'active',
+    startedAt: new Date()
+  });
+
+  res.json({
+    success: true,
+    message: 'Tournament started successfully'
+  });
+}));
+
+/**
+ * DELETE /api/tournaments/:id/cancel
+ * Cancel a private tournament (creator only, before it starts)
+ */
+router.delete('/tournaments/:id/cancel', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+  
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  // Check if user is the creator
+  if (tournament.creatorId !== userId) {
+    throw new ValidationError('Only tournament creators can cancel tournaments');
+  }
+
+  // Check if tournament is private
+  if (tournament.isPublic) {
+    throw new ValidationError('Only private tournaments can be cancelled');
+  }
+
+  // Check if tournament hasn't started yet
+  if (tournament.status !== 'waiting') {
+    throw new ValidationError('Cannot cancel tournaments that have already started');
+  }
+
+  // Delete the tournament and all related data
+  await storage.deleteTournament(tournamentId);
+
+  res.json({
+    success: true,
+    message: 'Tournament cancelled successfully'
+  });
+}));
+
+/**
+ * DELETE /api/tournaments/:id/participants/:participantId
+ * Kick a participant from a private tournament (creator only, before it starts)
+ */
+router.delete('/tournaments/:id/participants/:participantId', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const participantId = parseInt(req.params.participantId);
+  const userId = req.user.id;
+  
+  if (isNaN(tournamentId) || isNaN(participantId)) {
+    throw new ValidationError('Invalid tournament or participant ID');
+  }
+
+  const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  // Check if user is the creator
+  if (tournament.creatorId !== userId) {
+    throw new ValidationError('Only tournament creators can kick participants');
+  }
+
+  // Check if tournament is private
+  if (tournament.isPublic) {
+    throw new ValidationError('Cannot kick participants from public tournaments');
+  }
+
+  // Check if tournament hasn't started yet
+  if (tournament.status !== 'waiting') {
+    throw new ValidationError('Cannot kick participants from tournaments that have already started');
+  }
+
+  // Cannot kick the creator
+  if (participantId === userId) {
+    throw new ValidationError('Tournament creators cannot kick themselves');
+  }
+
+  // Remove participant
+  await storage.removeTournamentParticipant(tournamentId, participantId);
+
+  res.json({
+    success: true,
+    message: 'Participant removed successfully'
   });
 }));
 

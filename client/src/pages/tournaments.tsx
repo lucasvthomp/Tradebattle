@@ -34,11 +34,14 @@ import {
   Target,
   Shield,
   Lock,
-  Globe
+  Globe,
+  Crown
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
+import { TournamentManagementDialog } from "@/components/tournaments/TournamentManagementDialog";
+import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -112,22 +115,22 @@ export default function TournamentsPage() {
   const [activeTab, setActiveTab] = useState("upcoming");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [joinCodeDialogOpen, setJoinCodeDialogOpen] = useState(false);
+  const [managementDialogOpen, setManagementDialogOpen] = useState(false);
+  const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [joinCode, setJoinCode] = useState("");
   const [sortBy, setSortBy] = useState("starting-soon");
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Tournament creation form state
+  // Tournament creation form state - exactly 7 options as specified
   const [tournamentForm, setTournamentForm] = useState({
-    name: "",
-    maxPlayers: 10,
-    tournamentType: "stocks",
-    startingBalance: 10000,
-    duration: "1 week",
-    startDelay: "immediate",
-    buyInAmount: 0,
-    tradingRestriction: "none",
-    isPublic: true
+    name: "", // Tournament title
+    maxPlayers: 10, // Max amount of players
+    tournamentType: "stocks", // Stock or Crypto tournament
+    startingBalance: 10000, // Starting Fake Cash amount
+    duration: "1 week", // Duration of the tournament
+    startDelay: "immediate", // In how many minutes, hours, or days the tournament will start (max one week)
+    isPublic: true // Private or Public
   });
 
   // Fetch public tournaments
@@ -182,8 +185,6 @@ export default function TournamentsPage() {
         startingBalance: 10000,
         duration: "1 week",
         startDelay: "immediate",
-        buyInAmount: 0,
-        tradingRestriction: "none",
         isPublic: true
       });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
@@ -512,22 +513,56 @@ export default function TournamentsPage() {
               </TabsList>
 
               <TabsContent value="upcoming" className="mt-6">
-                <TournamentGrid tournaments={sortedUpcoming} type="upcoming" />
+                <TournamentGrid 
+                  tournaments={sortedUpcoming} 
+                  type="upcoming" 
+                  onManage={(tournament) => {
+                    setSelectedTournament(tournament);
+                    setManagementDialogOpen(true);
+                  }}
+                />
               </TabsContent>
 
               <TabsContent value="ongoing" className="mt-6">
-                <TournamentGrid tournaments={sortedOngoing} type="ongoing" />
+                <TournamentGrid 
+                  tournaments={sortedOngoing} 
+                  type="ongoing" 
+                  onManage={(tournament) => {
+                    setSelectedTournament(tournament);
+                    setManagementDialogOpen(true);
+                  }}
+                />
               </TabsContent>
             </Tabs>
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Tournament Management Dialog */}
+      {selectedTournament && (
+        <TournamentManagementDialog
+          tournament={selectedTournament}
+          isOpen={managementDialogOpen}
+          onClose={() => {
+            setManagementDialogOpen(false);
+            setSelectedTournament(null);
+          }}
+        />
+      )}
     </div>
   );
 }
 
 // Tournament Grid Component
-function TournamentGrid({ tournaments, type }: { tournaments: any[], type: "upcoming" | "ongoing" }) {
+function TournamentGrid({ 
+  tournaments, 
+  type, 
+  onManage 
+}: { 
+  tournaments: any[], 
+  type: "upcoming" | "ongoing",
+  onManage: (tournament: any) => void 
+}) {
   const { formatCurrency } = useUserPreferences();
   const { toast } = useToast();
 
@@ -577,6 +612,7 @@ function TournamentGrid({ tournaments, type }: { tournaments: any[], type: "upco
             type={type}
             onJoin={() => joinTournamentMutation.mutate(tournament.id)}
             isJoining={joinTournamentMutation.isPending}
+            onManage={() => onManage(tournament)}
           />
         ))}
       </AnimatePresence>
@@ -589,17 +625,20 @@ function TournamentCard({
   tournament, 
   type, 
   onJoin, 
-  isJoining 
+  isJoining,
+  onManage
 }: { 
   tournament: any, 
   type: "upcoming" | "ongoing", 
   onJoin: () => void,
-  isJoining: boolean 
+  isJoining: boolean,
+  onManage: () => void
 }) {
   const { formatCurrency } = useUserPreferences();
+  const { user } = useAuth();
   
   const currentPot = tournament.currentPlayers * tournament.buyInAmount;
-  const isCreator = tournament.creatorId === tournament.currentUserId; // You'd need to pass current user ID
+  const isCreator = tournament.creatorId === user?.id;
   
   const getTournamentTypeIcon = (tournamentType: string) => {
     return tournamentType === "crypto" ? Bitcoin : TrendingUp;
@@ -683,18 +722,35 @@ function TournamentCard({
             </div>
           )}
 
-          {/* Join Button */}
-          <Button
-            onClick={onJoin}
-            disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
-            className="w-full"
-            variant={tournament.buyInAmount > 0 ? "default" : "outline"}
-          >
-            {isJoining ? "Joining..." : 
-             tournament.currentPlayers >= tournament.maxPlayers ? "Tournament Full" :
-             tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
-            }
-          </Button>
+          {/* Action Buttons */}
+          <div className="space-y-2">
+            {/* Manage Button (Creator Only) */}
+            {isCreator && (
+              <Button
+                onClick={onManage}
+                className="w-full"
+                variant="outline"
+              >
+                <Crown className="w-4 h-4 mr-2" />
+                Manage Tournament
+              </Button>
+            )}
+            
+            {/* Join Button (Non-creators) */}
+            {!isCreator && (
+              <Button
+                onClick={onJoin}
+                disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
+                className="w-full"
+                variant={tournament.buyInAmount > 0 ? "default" : "outline"}
+              >
+                {isJoining ? "Joining..." : 
+                 tournament.currentPlayers >= tournament.maxPlayers ? "Tournament Full" :
+                 tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
+                }
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </motion.div>

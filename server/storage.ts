@@ -604,6 +604,39 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
+  // Tournament management methods
+  async getTournamentById(id: number): Promise<Tournament | null> {
+    const result = await db.select().from(tournaments).where(eq(tournaments.id, id)).limit(1);
+    return result[0] || null;
+  }
+
+  async updateTournament(id: number, updates: Partial<Tournament>): Promise<Tournament> {
+    const result = await db
+      .update(tournaments)
+      .set(updates)
+      .where(eq(tournaments.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deleteTournament(id: number): Promise<void> {
+    // Delete in order to respect foreign key constraints
+    await db.delete(tournamentStockPurchases).where(eq(tournamentStockPurchases.tournamentId, id));
+    await db.delete(tournamentParticipants).where(eq(tournamentParticipants.tournamentId, id));
+    await db.delete(tournaments).where(eq(tournaments.id, id));
+  }
+
+  async removeTournamentParticipant(tournamentId: number, participantId: number): Promise<void> {
+    await db
+      .delete(tournamentParticipants)
+      .where(
+        and(
+          eq(tournamentParticipants.tournamentId, tournamentId),
+          eq(tournamentParticipants.userId, participantId)
+        )
+      );
+  }
+
   async getWaitingTournaments(): Promise<Tournament[]> {
     return await db
       .select()
