@@ -76,28 +76,19 @@ export const AVAILABLE_WIDGETS = [
   }
 ];
 
-// Clean default layout
+// Simple 2-widget default layout - Performance Chart and Portfolio Summary (Current Holdings)
 const DEFAULT_LAYOUTS = {
   lg: [
-    { i: "portfolio-summary", x: 0, y: 0, w: 4, h: 3 },
-    { i: "performance-chart", x: 4, y: 0, w: 8, h: 4 },
-    { i: "market-overview", x: 0, y: 3, w: 4, h: 4 },
-    { i: "watchlist", x: 4, y: 4, w: 4, h: 4 },
-    { i: "recent-trades", x: 8, y: 4, w: 4, h: 4 }
+    { i: "performance-chart", x: 0, y: 0, w: 7, h: 5 },
+    { i: "portfolio-summary", x: 7, y: 0, w: 5, h: 5 }
   ],
   md: [
-    { i: "portfolio-summary", x: 0, y: 0, w: 4, h: 3 },
-    { i: "performance-chart", x: 4, y: 0, w: 6, h: 4 },
-    { i: "market-overview", x: 0, y: 3, w: 5, h: 4 },
-    { i: "watchlist", x: 5, y: 3, w: 5, h: 4 },
-    { i: "recent-trades", x: 0, y: 7, w: 5, h: 4 }
+    { i: "performance-chart", x: 0, y: 0, w: 5, h: 4 },
+    { i: "portfolio-summary", x: 5, y: 0, w: 5, h: 4 }
   ],
   sm: [
-    { i: "portfolio-summary", x: 0, y: 0, w: 6, h: 3 },
-    { i: "performance-chart", x: 0, y: 3, w: 6, h: 4 },
-    { i: "market-overview", x: 0, y: 7, w: 6, h: 4 },
-    { i: "watchlist", x: 0, y: 11, w: 6, h: 4 },
-    { i: "recent-trades", x: 0, y: 15, w: 6, h: 4 }
+    { i: "performance-chart", x: 0, y: 0, w: 6, h: 4 },
+    { i: "portfolio-summary", x: 0, y: 4, w: 6, h: 3 }
   ]
 };
 
@@ -105,9 +96,8 @@ export function PortfolioGrid() {
   const { user } = useAuth();
   const [isEditMode, setIsEditMode] = useState(false);
   const [activeWidgets, setActiveWidgets] = useState<string[]>([
-    "portfolio-summary",
     "performance-chart",
-    "market-overview"
+    "portfolio-summary"
   ]);
   const [layouts, setLayouts] = useState(DEFAULT_LAYOUTS);
   const [addWidgetOpen, setAddWidgetOpen] = useState(false);
@@ -142,7 +132,7 @@ export function PortfolioGrid() {
 
   const resetLayout = useCallback(() => {
     setLayouts(DEFAULT_LAYOUTS);
-    setActiveWidgets(["portfolio-summary", "performance-chart", "market-overview"]);
+    setActiveWidgets(["performance-chart", "portfolio-summary"]);
   }, []);
 
   const availableWidgets = AVAILABLE_WIDGETS.filter(widget => !activeWidgets.includes(widget.id));
@@ -280,7 +270,8 @@ export function PortfolioGrid() {
             draggableHandle=".drag-handle"
             useCSSTransforms={true}
             compactType="vertical"
-            preventCollision={false}
+            preventCollision={true}
+            allowOverlap={false}
           >
             {activeWidgets.map((widgetId) => {
               const widget = AVAILABLE_WIDGETS.find(w => w.id === widgetId);
