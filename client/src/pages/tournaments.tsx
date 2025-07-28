@@ -133,11 +133,13 @@ export default function TournamentsPage() {
     startingBalance: 10000, // Starting Fake Cash amount
     duration: "1 week", // Duration of the tournament
     startDelay: "immediate", // In how many minutes, hours, or days the tournament will start (max one week)
-    isPublic: true // Private or Public
+    isPublic: true, // Private or Public
+    buyInAmount: 0, // Buy-in amount
+    tradingRestriction: "none" // Trading restrictions
   });
 
   // Fetch public tournaments
-  const { data: publicTournaments, isLoading: tournamentsLoading } = useQuery({
+  const { data: publicTournaments, isLoading: tournamentsLoading } = useQuery<{data: any[]}>({
     queryKey: ['/api/tournaments/public'],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
@@ -188,7 +190,9 @@ export default function TournamentsPage() {
         startingBalance: 10000,
         duration: "1 week",
         startDelay: "immediate",
-        isPublic: true
+        isPublic: true,
+        buyInAmount: 0,
+        tradingRestriction: "none"
       });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       toast({
