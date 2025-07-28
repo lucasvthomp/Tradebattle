@@ -33,7 +33,7 @@ export const users = pgTable("users", {
   userId: integer("user_id").unique(), // New field for admin identification (Lucas=0, Murilo=1)
   email: varchar("email", { length: 255 }).unique().notNull(),
   username: varchar("username", { length: 15 }).unique().notNull(), // 3-15 characters, letters/numbers/underscores only
-  displayName: varchar("display_name", { length: 255 }), // Optional public display name
+
   lastUsernameChange: timestamp("last_username_change"), // Track when username was last changed (for 2-week restriction)
   password: varchar("password", { length: 255 }).notNull(), // hashed password
   country: varchar("country", { length: 100 }), // User's country
@@ -326,7 +326,6 @@ export const usernameSchema = z.string()
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   username: true,
-  displayName: true,
   password: true,
   userId: true,
   country: true,

@@ -157,7 +157,7 @@ export default function Leaderboard() {
                             <div className="flex items-center gap-4">
                               {getRankIcon(rank)}
                               <div>
-                                <div className="font-semibold">{participant.displayName || participant.firstName || `${participant.firstName} ${participant.lastName}`}</div>
+                                <div className="font-semibold">{participant.username}</div>
                                 <div className="text-sm text-muted-foreground">
                                   {participant.tournamentName} (ID: {participant.tournamentId}) • Starting: {formatCurrency(participant.startingBalance)}
                                 </div>
@@ -247,7 +247,7 @@ export default function Leaderboard() {
                               {getRankIcon(rank)}
                               <div>
                                 <div className="font-semibold flex items-center gap-2">
-                                  {trader.displayName || trader.firstName || `${trader.firstName} ${trader.lastName}`}
+                                  {trader.username}
                                   {trader.subscriptionTier === 'premium' && (
                                     <Badge variant="outline" className="text-xs">Premium</Badge>
                                   )}
@@ -344,7 +344,7 @@ export default function Leaderboard() {
                               {getRankIcon(rank)}
                               <div>
                                 <div className="font-semibold flex items-center gap-2">
-                                  {trader.displayName || trader.firstName || `${trader.firstName} ${trader.lastName}`}
+                                  {trader.username}
                                   {trader.subscriptionTier === 'premium' && (
                                     <Badge variant="outline" className="text-xs">Premium</Badge>
                                   )}

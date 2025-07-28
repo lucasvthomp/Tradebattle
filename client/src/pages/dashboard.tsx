@@ -1913,7 +1913,7 @@ export default function Dashboard() {
             {/* Header */}
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold text-foreground mb-4">
-                Welcome back, {user?.displayName || user?.username || user?.email || "User"}
+                Welcome back, {user?.username || user?.email || "User"}
               </h1>
               <p className="text-xl text-muted-foreground">
                 Ready to track and trade? Here's your dashboard.
@@ -3011,7 +3011,7 @@ export default function Dashboard() {
                                   {index + 1}
                                 </div>
                                 <div className="flex-1">
-                                  <div className="font-semibold">{participant.displayName || participant.firstName || participant.username || `User ${participant.userId}`}</div>
+                                  <div className="font-semibold">{participant.username || `User ${participant.userId}`}</div>
                                   <div className="text-sm text-muted-foreground">
                                     ${parseFloat(participant.balance).toLocaleString()}
                                   </div>

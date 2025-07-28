@@ -110,9 +110,6 @@ export default function People() {
     // Apply search filter
     if (searchQuery) {
       users = users.filter((u: any) => 
-        u.firstName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.lastName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        u.displayName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         u.username?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
@@ -133,7 +130,7 @@ export default function People() {
       case "achievements":
         return users.sort((a: any, b: any) => (b.achievementCount || 0) - (a.achievementCount || 0));
       case "name":
-        return users.sort((a: any, b: any) => (a.displayName || a.username || "").localeCompare(b.displayName || b.username || ""));
+        return users.sort((a: any, b: any) => (a.username || "").localeCompare(b.username || ""));
       default:
         return users;
     }
@@ -233,7 +230,7 @@ export default function People() {
                     </Avatar>
                     <div className="flex-1">
                       <h1 className="text-3xl font-bold text-foreground mb-2">
-                        {(profileUser as any)?.data?.displayName || (profileUser as any)?.data?.username}
+                        {(profileUser as any)?.data?.username}
                       </h1>
                       <div className="flex items-center space-x-4 mb-4">
                         <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100">
@@ -467,7 +464,7 @@ export default function People() {
                           </Avatar>
                           <div className="flex-1">
                             <h3 className="text-lg font-semibold text-foreground">
-                              {person.displayName || person.username}
+                              {person.username}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               {person.subscriptionTier === 'premium' ? 'Premium Trader' : 

@@ -45,7 +45,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
   
@@ -160,9 +160,7 @@ export class DatabaseStorage implements IStorage {
         achievementType: 'welcome',
         achievementTier: 'common',
         achievementName: 'Welcome',
-        achievementDescription: 'Joined the platform',
-        earnedAt: new Date(),
-        createdAt: new Date()
+        achievementDescription: 'Joined the platform'
       });
     } catch (achievementError) {
       console.error('Error awarding welcome achievement:', achievementError);
@@ -176,7 +174,7 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'displayName' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange'>>): Promise<User> {
     // If username is being updated, check the two-week restriction
     if (updates.username) {
       const currentUser = await this.getUser(id);
@@ -302,7 +300,7 @@ export class DatabaseStorage implements IStorage {
     await db.insert(tournamentParticipants).values({
       tournamentId: result[0].id,
       userId: creatorId,
-      balance: tournament.startingBalance.toString()
+      balance: (tournament.startingBalance || "10000.00").toString()
     });
     
     return result[0];
@@ -326,7 +324,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db.insert(tournamentParticipants).values({
       tournamentId,
       userId,
-      balance: tournament[0].startingBalance.toString()
+      balance: (tournament[0]?.startingBalance || "10000.00").toString()
     }).returning();
     
     // Update tournament current players count
@@ -397,7 +395,7 @@ export class DatabaseStorage implements IStorage {
           return {
             ...participant,
             username: user[0]?.username || '',
-            displayName: user[0]?.displayName || user[0]?.username || `User ${participant.userId}`,
+            displayName: user[0]?.username || `User ${participant.userId}`,
             email: user[0]?.email || '',
             stockPurchases: stockPurchases || []
           };
@@ -553,9 +551,7 @@ export class DatabaseStorage implements IStorage {
       achievementType,
       achievementTier: tier,
       achievementName: name,
-      achievementDescription: description,
-      earnedAt: new Date(),
-      createdAt: new Date()
+      achievementDescription: description
     });
   }
 
@@ -709,12 +705,12 @@ export class DatabaseStorage implements IStorage {
             // Calculate stock value for each purchase using purchase price (since tournament is completed)
             for (const purchase of userPurchases) {
               const stockValue = Number(purchase.shares) * Number(purchase.purchasePrice);
-              portfolioValue = Number(portfolioValue) + stockValue;
+              portfolioValue = Number(portfolioValue) + Number(stockValue);
             }
 
             return {
               userId: p.users.id,
-              name: p.users.displayName || p.users.firstName || `${p.users.firstName} ${p.users.lastName}`.trim(),
+              name: p.users.username,
               finalBalance: p.tournament_participants.balance,
               portfolioValue: portfolioValue,
               position: 0 // Will be set after sorting
@@ -723,7 +719,7 @@ export class DatabaseStorage implements IStorage {
         );
 
         // Sort by portfolio value and assign positions
-        participants.sort((a, b) => b.portfolioValue - a.portfolioValue);
+        participants.sort((a, b) => Number(b.portfolioValue) - Number(a.portfolioValue));
         participants.forEach((p, index) => {
           p.position = index + 1;
         });
@@ -747,9 +743,7 @@ export class DatabaseStorage implements IStorage {
         achievementType: 'welcome',
         achievementTier: 'common',
         achievementName: 'Welcome',
-        achievementDescription: 'Joined the platform',
-        earnedAt: new Date(),
-        createdAt: new Date()
+        achievementDescription: 'Joined the platform'
       });
     }
   }

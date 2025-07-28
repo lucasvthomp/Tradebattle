@@ -41,7 +41,7 @@ export default function Header() {
                     <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md">
                       <User className="w-4 h-4" />
                       <span className="text-sm font-medium">
-                        {user?.displayName || user?.username || "User"}
+                        {user?.username || "User"}
                       </span>
                       <span className="text-muted-foreground mx-1">|</span>
                       <span className="text-sm font-medium text-green-600">
@@ -55,7 +55,7 @@ export default function Header() {
                       <DollarSign className="w-4 h-4 mr-2" />
                       My Balance
                     </DropdownMenuItem>
-                    {(user?.userId === 0 || user?.userId === 1 || user?.userId === 2) && (
+                    {(user?.subscriptionTier === 'administrator') && (
                       <>
                         <DropdownMenuSeparator />
                         <Link href="/admin">

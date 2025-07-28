@@ -60,7 +60,7 @@ const staggerChildren = {
 
 const profileSchema = z.object({
   email: z.string().email("Invalid email address"),
-  displayName: z.string().optional(),
+
   username: z.string().min(3, "Username must be at least 3 characters").max(15, "Username must be at most 15 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores").optional(),
 });
 
@@ -152,7 +152,7 @@ export default function Profile() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       email: user?.email || "",
-      displayName: user?.displayName || "",
+
       username: user?.username || "",
     },
   });
@@ -162,7 +162,7 @@ export default function Profile() {
     if (user) {
       form.reset({
         email: user.email || "",
-        displayName: user.displayName || "",
+
         username: user.username || "",
       });
     }
@@ -255,7 +255,7 @@ export default function Profile() {
                     <User className="w-8 h-8 text-muted-foreground" />
                   </div>
                   <div className="flex-1">
-                    <h2 className="text-xl font-bold text-foreground">{user.displayName || user.username}</h2>
+                    <h2 className="text-xl font-bold text-foreground">{user.username}</h2>
                     <p className="text-muted-foreground">{user.email}</p>
                     <div className="flex items-center space-x-4 mt-2">
                       <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100">
@@ -303,18 +303,7 @@ export default function Profile() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="displayName">Display Name</Label>
-                        <Input 
-                          id="displayName"
-                          {...form.register("displayName")}
-                          placeholder="Your display name"
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Your display name as it appears to other users. Leave empty to use username.
-                        </p>
-                      </div>
+                    <div className="grid grid-cols-1 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="username">Username</Label>
                         <Input 
