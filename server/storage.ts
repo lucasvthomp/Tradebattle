@@ -796,6 +796,43 @@ export class DatabaseStorage implements IStorage {
     return await query.orderBy(asc(portfolioHistory.recordedAt));
   }
 
+  // Admin user management operations
+  async updateUserUsername(userId: number, username: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ username })
+      .where(eq(users.id, userId));
+  }
+
+  async adminUpdateUserBalance(userId: number, amount: number, operation: 'add' | 'remove'): Promise<void> {
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+    
+    const currentBalance = parseFloat(user.personalBalance) || 0;
+    const newBalance = operation === 'add' 
+      ? currentBalance + amount 
+      : Math.max(0, currentBalance - amount);
+    
+    await db
+      .update(users)
+      .set({ personalBalance: newBalance.toString() })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserAdminNote(userId: number, note: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ adminNote: note })
+      .where(eq(users.id, userId));
+  }
+
+  async banUser(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ banned: true })
+      .where(eq(users.id, userId));
+  }
+
 
 }
 

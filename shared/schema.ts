@@ -46,6 +46,8 @@ export const users = pgTable("users", {
   totalDeposited: numeric("total_deposited", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Total amount deposited into personal account
   personalPortfolioStartDate: timestamp("personal_portfolio_start_date"), // When user started personal portfolio
   tournamentWins: integer("tournament_wins").default(0).notNull(), // Private counter for tournament wins
+  adminNote: text("admin_note").default(""), // Admin notes for user management
+  banned: boolean("banned").default(false), // User banned status
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

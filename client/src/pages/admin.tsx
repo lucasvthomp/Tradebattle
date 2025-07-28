@@ -3,11 +3,13 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { UserManagementDialog } from "@/components/admin/UserManagementDialog";
 import { 
   Shield, 
   Users, 
@@ -28,7 +30,8 @@ import {
   Clock,
   AlertTriangle,
   Trophy,
-  GamepadIcon
+  GamepadIcon,
+  DollarSign
 } from "lucide-react";
 import {
   AlertDialog,
@@ -96,14 +99,13 @@ export default function Admin() {
   });
 
   const [selectedUser, setSelectedUser] = useState<any>(null);
-  const [adminLogsOpen, setAdminLogsOpen] = useState(false);
-  const [editUserOpen, setEditUserOpen] = useState(false);
+  const [userManagementOpen, setUserManagementOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("users");
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [endTournamentOpen, setEndTournamentOpen] = useState(false);
 
   // Check if user is admin (based on subscription tier)
-  const isAdmin = user?.userId === 0 || user?.userId === 1 || user?.userId === 2;
+  const isAdmin = user?.subscriptionTier === 'administrator';
 
   // Redirect if not admin
   useEffect(() => {
@@ -203,30 +205,7 @@ export default function Admin() {
     },
   });
 
-  // Edit user mutation
-  const editUserMutation = useMutation({
-    mutationFn: async ({ userId, subscriptionTier }: { userId: number; subscriptionTier: string }) => {
-      await apiRequest("PUT", `/api/admin/users/${userId}/subscription`, {
-        subscriptionTier,
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
-      setEditUserOpen(false);
-      toast({
-        title: "User updated",
-        description: "User premium status has been updated successfully.",
-        variant: "default",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+
 
   // Handle delete confirmation
   const handleDeleteConfirm = () => {
@@ -240,16 +219,10 @@ export default function Admin() {
     setDeleteState({ userEmail: email, step: 'first' });
   };
 
-  // Handle edit user
-  const handleEditUser = (user: any) => {
+  // Handle manage user
+  const handleManageUser = (user: any) => {
     setSelectedUser(user);
-    setEditUserOpen(true);
-  };
-
-  // Handle view logs
-  const handleViewLogs = (user: any) => {
-    setSelectedUser(user);
-    setAdminLogsOpen(true);
+    setUserManagementOpen(true);
   };
 
   // Handle tournament actions
@@ -443,88 +416,75 @@ export default function Admin() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="rounded-lg border">
-                      <div className="grid grid-cols-7 gap-4 p-4 border-b bg-gray-50 dark:bg-gray-800 font-semibold">
-                        <div>User ID</div>
-                        <div>Username</div>
-                        <div>Email</div>
-                        <div>Premium</div>
-                        <div>Created</div>
-                        <div>Status</div>
-                        <div>Actions</div>
-                      </div>
-                      <div className="divide-y">
-                        {allUsers?.map((user) => (
-                          <div key={user.id} className="grid grid-cols-7 gap-4 p-4 items-center">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-24">User ID</TableHead>
+                        <TableHead className="w-32">Username</TableHead>
+                        <TableHead className="w-64">Email</TableHead>
+                        <TableHead className="w-24">Balance</TableHead>
+                        <TableHead className="w-28">Created</TableHead>
+                        <TableHead className="w-20">Status</TableHead>
+                        <TableHead className="w-20">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {usersLoading ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                            <p className="mt-2 text-sm text-muted-foreground">Loading users...</p>
+                          </TableCell>
+                        </TableRow>
+                      ) : allUsers?.map((user) => (
+                        <TableRow key={user.id}>
+                          <TableCell>
                             <div className="flex items-center gap-2">
-                              <Badge variant={user.subscriptionTier === 'administrator' ? "default" : "secondary"}>
-                                {user.subscriptionTier === 'administrator' ? (
-                                  <Crown className="h-3 w-3 mr-1" />
-                                ) : (
-                                  <Users className="h-3 w-3 mr-1" />
-                                )}
-                                {user.userId}
-                              </Badge>
+                              {user.subscriptionTier === 'administrator' && (
+                                <Crown className="h-4 w-4 text-yellow-500" />
+                              )}
+                              <span className="font-mono text-sm">{user.id}</span>
                             </div>
-                            <div>
-                              <div className="font-medium">{user.username}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-medium">{user.username}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm" title={user.email}>
+                              {user.email}
                             </div>
-                            <div className="text-sm text-gray-500" title={user.email}>
-                              {user.email.length > 8 ? `${user.email.substring(0, 8)}...` : user.email}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1">
+                              <DollarSign className="h-3 w-3 text-green-600" />
+                              <span className="font-mono text-sm">
+                                {parseFloat(user.balance || "0").toLocaleString()}
+                              </span>
                             </div>
-                            <div>
-                              <Badge variant="outline" className={
-                                user.subscriptionTier === 'premium' ? "text-yellow-600" : 
-                                user.subscriptionTier === 'administrator' ? "text-blue-600" : 
-                                "text-gray-600"
-                              }>
-                                {user.subscriptionTier === 'premium' ? 'Premium' : 
-                                 user.subscriptionTier === 'administrator' ? 'Administrator' : 
-                                 'Free'}
-                              </Badge>
-                            </div>
-                            <div className="text-sm text-gray-500">
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm text-muted-foreground">
                               {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
                             </div>
-                            <div>
-                              <Badge variant="outline" className="text-green-600">
-                                Active
-                              </Badge>
-                            </div>
-                            <div>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="sm">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => handleViewLogs(user)}>
-                                    <Eye className="h-4 w-4 mr-2" />
-                                    View Logs
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleEditUser(user)}>
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    Edit User
-                                  </DropdownMenuItem>
-                                  <DropdownMenuSeparator />
-                                  <DropdownMenuItem
-                                    onClick={() => handleDeleteUser(user.email)}
-                                    disabled={user.subscriptionTier === 'administrator'}
-                                    className="text-red-600 hover:text-red-700"
-                                  >
-                                    <Trash2 className="h-4 w-4 mr-2" />
-                                    Delete User
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="text-green-600">
+                              Active
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleManageUser(user)}
+                            >
+                              <Settings className="h-4 w-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -1044,6 +1004,13 @@ export default function Admin() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        {/* User Management Dialog */}
+        <UserManagementDialog
+          user={selectedUser}
+          open={userManagementOpen}
+          onOpenChange={setUserManagementOpen}
+        />
       </motion.div>
     </div>
   );

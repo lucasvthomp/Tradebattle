@@ -1409,6 +1409,113 @@ router.get('/streak/leaderboard', requireAuth, asyncHandler(async (req, res) => 
 }));
 
 /**
+ * GET /api/admin/users
+ * Get all users for admin management
+ */
+router.get('/admin/users', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  
+  // Check if user is admin
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
+    return res.status(403).json({ 
+      success: false, 
+      error: 'Admin access required'
+    });
+  }
+
+  const users = await storage.getAllUsers();
+  res.json(users);
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/username
+ * Update user username (admin only)
+ */
+router.patch('/admin/users/:userId/username', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+  const { username } = req.body;
+  
+  // Check if user is admin
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  
+  if (!username || username.trim().length < 3) {
+    return res.status(400).json({ error: 'Username must be at least 3 characters' });
+  }
+  
+  await storage.updateUserUsername(targetUserId, username.trim());
+  res.json({ success: true, message: 'Username updated successfully' });
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/balance
+ * Update user balance (admin only)
+ */
+router.patch('/admin/users/:userId/balance', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+  const { amount, operation } = req.body;
+  
+  // Check if user is admin
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  
+  if (!amount || amount <= 0) {
+    return res.status(400).json({ error: 'Amount must be greater than 0' });
+  }
+  
+  if (!['add', 'remove'].includes(operation)) {
+    return res.status(400).json({ error: 'Operation must be add or remove' });
+  }
+  
+  await storage.adminUpdateUserBalance(targetUserId, amount, operation);
+  res.json({ success: true, message: 'Balance updated successfully' });
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/note
+ * Update user admin note (admin only)
+ */
+router.patch('/admin/users/:userId/note', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+  const { note } = req.body;
+  
+  // Check if user is admin
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  
+  await storage.updateUserAdminNote(targetUserId, note || '');
+  res.json({ success: true, message: 'Admin note updated successfully' });
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/ban
+ * Ban user (admin only)
+ */
+router.patch('/admin/users/:userId/ban', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+  
+  // Check if user is admin
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  
+  await storage.banUser(targetUserId);
+  res.json({ success: true, message: 'User banned successfully' });
+}));
+
+/**
  * GET /api/admin/tournaments
  * Get all tournaments for admin management
  */
