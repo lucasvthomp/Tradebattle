@@ -58,6 +58,16 @@ export function TournamentManagementDialog({
   const hasStarted = tournament?.status === 'active';
   const isWaiting = tournament?.status === 'waiting';
 
+  // Debug logging
+  console.log('Tournament Management Dialog - Tournament data:', {
+    id: tournament?.id,
+    name: tournament?.name,
+    code: tournament?.code,
+    isPublic: tournament?.isPublic,
+    isPrivate,
+    isCreator
+  });
+
   // Kick participant mutation
   const kickParticipantMutation = useMutation({
     mutationFn: async (participantId: number) => {
@@ -206,19 +216,32 @@ export function TournamentManagementDialog({
                     <div className="flex-1">
                       <span className="font-medium text-blue-800 dark:text-blue-200">Join Code: </span>
                       <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-900 dark:text-blue-100 font-mono text-sm">
-                        {tournament.code}
+                        {tournament.code || 'CODE_NOT_FOUND'}
                       </code>
+                      {!tournament.code && (
+                        <div className="text-xs text-red-600 mt-1">
+                          Debug: Tournament data missing code field
+                        </div>
+                      )}
                     </div>
                     <Button
                       variant="outline"
                       size="sm"
                       className="text-blue-600 border-blue-300 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-700 dark:hover:bg-blue-900"
                       onClick={() => {
-                        navigator.clipboard.writeText(tournament.code);
-                        toast({
-                          title: "Copied!",
-                          description: "Tournament code copied to clipboard",
-                        });
+                        if (tournament.code) {
+                          navigator.clipboard.writeText(tournament.code);
+                          toast({
+                            title: "Copied!",
+                            description: "Tournament code copied to clipboard",
+                          });
+                        } else {
+                          toast({
+                            title: "Error",
+                            description: "No tournament code available to copy",
+                            variant: "destructive",
+                          });
+                        }
                       }}
                     >
                       Copy
