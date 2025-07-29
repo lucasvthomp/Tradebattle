@@ -97,7 +97,7 @@ export function ChatSystem({ tournamentId, isOpen, onToggle }: ChatSystemProps) 
       exit={{ opacity: 0, y: 20, scale: 0.95 }}
       className="fixed bottom-4 right-4 w-80 h-96 z-50"
     >
-      <Card className="h-full border-0 shadow-2xl bg-background/95 backdrop-blur-sm">
+      <Card className="h-full border-0 shadow-2xl bg-background">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-sm font-medium">

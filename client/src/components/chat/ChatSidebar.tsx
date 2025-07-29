@@ -166,7 +166,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-background/90 backdrop-blur-md border-l border-border/50 shadow-lg z-50 flex flex-col"
+            className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-background border-l border-border shadow-lg z-50 flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border/50">
