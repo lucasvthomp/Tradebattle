@@ -402,6 +402,7 @@ export default function Dashboard() {
             if (selectedTimeframe === '1D') {
               const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
               const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+              const previousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
               
               stockData[stock.symbol] = {
                 ...quoteData.data,
@@ -410,7 +411,7 @@ export default function Dashboard() {
                 changePercent: changePercent,
                 marketCap: marketCap,
                 volume: volume,
-                previousClose: currentPrice - changeAmount // For 1D, calculate from current price and change
+                previousClose: previousClose // Use actual previous close from Yahoo Finance
               };
             } else {
               // For other timeframes, fetch historical data with proper error handling
@@ -680,6 +681,7 @@ export default function Dashboard() {
                                     if (selectedTimeframe === '1D') {
                                       const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                                       const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                      const previousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
                                       
                                       stockData[stock.symbol] = {
                                         ...quoteData.data,
@@ -688,7 +690,7 @@ export default function Dashboard() {
                                         changePercent: changePercent,
                                         marketCap: marketCap,
                                         volume: volume,
-                                        previousClose: currentPrice - changeAmount // For 1D, calculate from current price and change
+                                        previousClose: previousClose // Use actual previous close from Yahoo Finance
                                       };
                                     } else {
                                       // For other timeframes, fetch historical data with proper error handling
@@ -875,7 +877,7 @@ export default function Dashboard() {
                           const changePercent = stockData.changePercent || 0;
                           const marketCap = stockData.marketCap || 0;
                           const volume = stockData.volume || 0;
-                          const previousClose = stockData.previousClose || (currentPrice - changeAmount) || 0;
+                          const previousClose = stockData.previousClose || 0;
 
                           const isPositive = changeAmount >= 0;
                           
