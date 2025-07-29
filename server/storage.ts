@@ -49,6 +49,9 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange' | 'profilePicture'>>): Promise<User>;
+  getUserById(id: number): Promise<User | undefined>;
+  addUserBalance(userId: number, amount: number): Promise<User>;
+  subtractUserBalance(userId: number, amount: number): Promise<User>;
   updateProfilePicture(userId: number, profilePicture: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
   deleteUser(id: number): Promise<void>;
@@ -203,6 +206,35 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ ...updates, updatedAt: new Date() })
       .where(eq(users.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async getUserById(id: number): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.id, id));
+    return result[0];
+  }
+
+  async addUserBalance(userId: number, amount: number): Promise<User> {
+    const result = await db
+      .update(users)
+      .set({ 
+        balance: sql`${users.balance} + ${amount.toString()}`,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return result[0];
+  }
+
+  async subtractUserBalance(userId: number, amount: number): Promise<User> {
+    const result = await db
+      .update(users)
+      .set({ 
+        balance: sql`${users.balance} - ${amount.toString()}`,
+        updatedAt: new Date()
+      })
+      .where(eq(users.id, userId))
       .returning();
     return result[0];
   }
@@ -608,7 +640,7 @@ export class DatabaseStorage implements IStorage {
     
     // Filter expired tournaments in JavaScript since SQL interval parsing can be complex
     return results.filter(tournament => {
-      const createdAt = new Date(tournament.createdAt);
+      const createdAt = tournament.createdAt ? new Date(tournament.createdAt) : new Date();
       const timeframeMs = this.parseTimeframe(tournament.timeframe);
       const expirationDate = new Date(createdAt.getTime() + timeframeMs);
       return now > expirationDate;
@@ -715,7 +747,7 @@ export class DatabaseStorage implements IStorage {
         const participants = await Promise.all(
           participantData.map(async (p) => {
             const userPurchases = stockPurchases.filter(sp => sp.userId === p.users.id);
-            let portfolioValue = p.tournament_participants.balance;
+            let portfolioValue = Number(p.tournament_participants.balance);
             
             // Calculate stock value for each purchase using purchase price (since tournament is completed)
             for (const purchase of userPurchases) {

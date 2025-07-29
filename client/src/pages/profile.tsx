@@ -73,6 +73,10 @@ export default function Profile() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+  
+  // Balance management state
+  const [addAmount, setAddAmount] = useState("");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
   const { t, language, currency, updatePreferences } = useUserPreferences();
   const queryClient = useQueryClient();
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
@@ -267,6 +271,64 @@ export default function Profile() {
         description: error.message || "Failed to update profile picture",
         variant: "destructive",
       });
+    }
+  };
+
+  // Balance management mutations
+  const addMoneyMutation = useMutation({
+    mutationFn: async (amount: number) => {
+      return await apiRequest('POST', '/api/balance/add', { amount });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setAddAmount("");
+      toast({
+        title: "Money Added",
+        description: "The amount has been added to your account balance.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Add Money",
+        description: error.message || "An error occurred while adding money to your account.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const withdrawMoneyMutation = useMutation({
+    mutationFn: async (amount: number) => {
+      return await apiRequest('POST', '/api/balance/withdraw', { amount });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setWithdrawAmount("");
+      toast({
+        title: "Money Withdrawn",
+        description: "The amount has been withdrawn from your account balance.",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Failed to Withdraw Money",
+        description: error.message || "An error occurred while withdrawing money from your account.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Balance management handlers
+  const handleAddMoney = () => {
+    const amount = parseFloat(addAmount);
+    if (amount > 0) {
+      addMoneyMutation.mutate(amount);
+    }
+  };
+
+  const handleWithdrawMoney = () => {
+    const amount = parseFloat(withdrawAmount);
+    if (amount > 0) {
+      withdrawMoneyMutation.mutate(amount);
     }
   };
 
@@ -521,6 +583,111 @@ export default function Profile() {
                         {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
                       </Button>
                     </form>
+                  </CardContent>
+                </Card>
+
+                {/* Balance Management for Testing */}
+                <Card className="border-0 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <DollarSign className="w-5 h-5" />
+                      <span>Balance Management (Testing)</span>
+                    </CardTitle>
+                    <CardDescription>
+                      Add or withdraw money from your account balance for testing purposes. This represents real money that can be cashed out.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Current Balance Display */}
+                    <div className="bg-muted/50 p-4 rounded-lg">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Current Account Balance</p>
+                          <p className="text-2xl font-bold text-foreground">{formatCurrency(Number(user?.balance || 0))}</p>
+                        </div>
+                        <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                          <DollarSign className="w-6 h-6 text-primary" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Balance Actions */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Add Money */}
+                      <Card className="border">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg flex items-center space-x-2">
+                            <Plus className="w-4 h-4 text-green-600" />
+                            <span>Add Money</span>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="addAmount">Amount to Add</Label>
+                            <Input
+                              id="addAmount"
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                              placeholder="Enter amount..."
+                              value={addAmount}
+                              onChange={(e) => setAddAmount(e.target.value)}
+                            />
+                          </div>
+                          <Button 
+                            className="w-full bg-green-600 hover:bg-green-700"
+                            onClick={handleAddMoney}
+                            disabled={!addAmount || parseFloat(addAmount) <= 0 || addMoneyMutation.isPending}
+                          >
+                            {addMoneyMutation.isPending ? "Adding..." : "Add Money"}
+                          </Button>
+                        </CardContent>
+                      </Card>
+
+                      {/* Withdraw Money */}
+                      <Card className="border">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-lg flex items-center space-x-2">
+                            <DollarSign className="w-4 h-4 text-red-600" />
+                            <span>Withdraw Money</span>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="withdrawAmount">Amount to Withdraw</Label>
+                            <Input
+                              id="withdrawAmount"
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                              placeholder="Enter amount..."
+                              value={withdrawAmount}
+                              onChange={(e) => setWithdrawAmount(e.target.value)}
+                            />
+                          </div>
+                          <Button 
+                            className="w-full bg-red-600 hover:bg-red-700"
+                            onClick={handleWithdrawMoney}
+                            disabled={!withdrawAmount || parseFloat(withdrawAmount) <= 0 || withdrawMoneyMutation.isPending}
+                          >
+                            {withdrawMoneyMutation.isPending ? "Withdrawing..." : "Withdraw Money"}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* Important Notice */}
+                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+                      <div className="flex items-start space-x-3">
+                        <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-amber-800 dark:text-amber-200">Testing Environment Notice</h4>
+                          <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                            This balance management system is for testing purposes only. In production, money would be processed through secure payment gateways and banking systems.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

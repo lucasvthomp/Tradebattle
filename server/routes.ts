@@ -70,6 +70,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Balance management routes (protected)
+  app.post('/api/user/balance/add', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = z.object({
+        amount: z.number().positive("Amount must be positive")
+      }).parse(req.body);
+      
+      const updatedUser = await storage.addUserBalance(userId, validatedData.amount);
+      res.json({ 
+        success: true, 
+        message: `Added $${validatedData.amount} to your balance`,
+        newBalance: Number(updatedUser.balance)
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid amount", errors: error.errors });
+      }
+      console.error("Error adding balance:", error);
+      res.status(500).json({ message: "Failed to add balance" });
+    }
+  });
+
+  app.post('/api/user/balance/withdraw', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const validatedData = z.object({
+        amount: z.number().positive("Amount must be positive")
+      }).parse(req.body);
+      
+      // Check if user has sufficient balance
+      const user = await storage.getUserById(userId);
+      const currentBalance = Number(user?.balance || 0);
+      
+      if (currentBalance < validatedData.amount) {
+        return res.status(400).json({ 
+          message: "Insufficient balance",
+          currentBalance: currentBalance,
+          requestedAmount: validatedData.amount
+        });
+      }
+      
+      const updatedUser = await storage.subtractUserBalance(userId, validatedData.amount);
+      res.json({ 
+        success: true, 
+        message: `Withdrew $${validatedData.amount} from your balance`,
+        newBalance: Number(updatedUser.balance)
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid amount", errors: error.errors });
+      }
+      console.error("Error withdrawing balance:", error);
+      res.status(500).json({ message: "Failed to withdraw balance" });
+    }
+  });
+
 
 
   // Watchlist routes (protected)
@@ -96,7 +153,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Import the Yahoo Finance service to get company profile
           const { getCompanyProfile } = await import('./services/yahooFinance.js');
           const profile = await getCompanyProfile(validatedData.symbol);
-          companyName = profile.longName || profile.shortName || validatedData.symbol;
+          companyName = (profile as any).longName || (profile as any).shortName || validatedData.symbol;
           console.log(`Fetched company name for ${validatedData.symbol}: ${companyName}`);
         } catch (error) {
           console.log(`Could not fetch company name for ${validatedData.symbol}, using symbol`);
