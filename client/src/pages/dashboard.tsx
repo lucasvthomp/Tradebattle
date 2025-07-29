@@ -873,7 +873,7 @@ export default function Dashboard() {
                                     <div>
                                       <div>{isPositive ? '+' : ''}{formatCurrency(changeAmount)}</div>
                                       <div className="text-xs">
-                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%)
+                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%) {selectedTimeframe.toUpperCase()}
                                       </div>
                                     </div>
                                   </div>
