@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Trophy, Medal, Award, Crown, TrendingUp, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useUserPreferences } from "@/lib/userPreferences";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { motion } from "framer-motion";
 
 interface TournamentLeaderboardDialogProps {

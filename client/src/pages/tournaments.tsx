@@ -202,43 +202,7 @@ export default function TournamentsPage() {
     }
   };
 
-  // Create tournament mutation
-  const createTournamentMutation = useMutation({
-    mutationFn: async (formData: typeof tournamentForm) => {
-      const scheduledStartTime = new Date(Date.now() + START_DELAY_OPTIONS.find(opt => opt.value === formData.startDelay)!.ms);
-
-      const res = await apiRequest("POST", "/api/tournaments", {
-        ...formData,
-        scheduledStartTime: scheduledStartTime.toISOString()
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      setCreateDialogOpen(false);
-      setTournamentForm({
-        name: "",
-        maxPlayers: 10,
-        startingBalance: 10000,
-        duration: "1 week",
-        startDelay: "5 minutes",
-        isPublic: true,
-        buyInAmount: 0
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
-      toast({
-        title: "Success",
-        description: "Tournament created successfully!",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
+  // Tournament creation is now handled by TournamentCreationDialog component
 
   // Combine public tournaments and user's tournaments, removing duplicates
   const allTournaments = React.useMemo(() => {
@@ -611,7 +575,7 @@ export default function TournamentsPage() {
                 <Checkbox 
                   id="tournament-agreement" 
                   checked={agreementChecked}
-                  onCheckedChange={setAgreementChecked}
+                  onCheckedChange={(checked) => setAgreementChecked(checked === true)}
                 />
                 <div>
                   <label htmlFor="tournament-agreement" className="text-sm font-medium cursor-pointer">
