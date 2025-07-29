@@ -144,7 +144,7 @@ export default function Dashboard() {
   const [watchlistSearchQuery, setWatchlistSearchQuery] = useState("");
   const [watchlistSearchResults, setWatchlistSearchResults] = useState<any[]>([]);
   const [isWatchlistSearching, setIsWatchlistSearching] = useState(false);
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1d");
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1D");
   const [watchlistStockData, setWatchlistStockData] = useState<{[key: string]: any}>({});
 
   // Portfolio queries
@@ -399,7 +399,7 @@ export default function Dashboard() {
             const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
             
             // For 1D timeframe, use the daily change from quote data
-            if (selectedTimeframe === '1d') {
+            if (selectedTimeframe === '1D') {
               const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
               const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
               
@@ -409,7 +409,8 @@ export default function Dashboard() {
                 change: changeAmount,
                 changePercent: changePercent,
                 marketCap: marketCap,
-                volume: volume
+                volume: volume,
+                previousClose: currentPrice - changeAmount // For 1D, calculate from current price and change
               };
             } else {
               // For other timeframes, fetch historical data with proper error handling
@@ -436,20 +437,31 @@ export default function Dashboard() {
                   const historicalPrice = historicalData.data[historicalData.data.length - 1].close;
                   changeAmount = currentPrice - historicalPrice;
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                  
+                  stockData[stock.symbol] = {
+                    ...quoteData.data,
+                    price: currentPrice,
+                    change: changeAmount,
+                    changePercent: changePercent,
+                    marketCap: marketCap,
+                    volume: volume,
+                    previousClose: historicalPrice // This is the price at the timeframe start
+                  };
                 } else {
                   // Fallback to daily change
                   changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                   changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                  
+                  stockData[stock.symbol] = {
+                    ...quoteData.data,
+                    price: currentPrice,
+                    change: changeAmount,
+                    changePercent: changePercent,
+                    marketCap: marketCap,
+                    volume: volume,
+                    previousClose: currentPrice - changeAmount // Calculate from current price and change
+                  };
                 }
-                
-                stockData[stock.symbol] = {
-                  ...quoteData.data,
-                  price: currentPrice,
-                  change: changeAmount,
-                  changePercent: changePercent,
-                  marketCap: marketCap,
-                  volume: volume
-                };
               } catch (histError) {
                 console.error(`Historical data error for ${stock.symbol}:`, histError);
                 // If historical data fails, use daily change as fallback
@@ -462,7 +474,8 @@ export default function Dashboard() {
                   change: changeAmount,
                   changePercent: changePercent,
                   marketCap: marketCap,
-                  volume: volume
+                  volume: volume,
+                  previousClose: currentPrice - changeAmount // Calculate from current price and change
                 };
               }
             }
@@ -635,13 +648,13 @@ export default function Dashboard() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="1d">1D</SelectItem>
-                            <SelectItem value="5d">5D</SelectItem>
-                            <SelectItem value="1mo">1M</SelectItem>
-                            <SelectItem value="3mo">3M</SelectItem>
-                            <SelectItem value="6mo">6M</SelectItem>
-                            <SelectItem value="1y">1Y</SelectItem>
-                            <SelectItem value="ytd">YTD</SelectItem>
+                            <SelectItem value="1D">1D</SelectItem>
+                            <SelectItem value="5D">5D</SelectItem>
+                            <SelectItem value="1M">1M</SelectItem>
+                            <SelectItem value="3M">3M</SelectItem>
+                            <SelectItem value="6M">6M</SelectItem>
+                            <SelectItem value="1Y">1Y</SelectItem>
+                            <SelectItem value="YTD">YTD</SelectItem>
                           </SelectContent>
                         </Select>
                         <Button
@@ -664,7 +677,7 @@ export default function Dashboard() {
                                     const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
                                     
                                     // For 1D timeframe, use the daily change from quote data
-                                    if (selectedTimeframe === '1d') {
+                                    if (selectedTimeframe === '1D') {
                                       const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                                       const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
                                       
@@ -674,7 +687,8 @@ export default function Dashboard() {
                                         change: changeAmount,
                                         changePercent: changePercent,
                                         marketCap: marketCap,
-                                        volume: volume
+                                        volume: volume,
+                                        previousClose: currentPrice - changeAmount // For 1D, calculate from current price and change
                                       };
                                     } else {
                                       // For other timeframes, fetch historical data with proper error handling
@@ -701,19 +715,30 @@ export default function Dashboard() {
                                           const historicalPrice = historicalData.data[historicalData.data.length - 1].close;
                                           changeAmount = currentPrice - historicalPrice;
                                           changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                                          
+                                          stockData[stock.symbol] = {
+                                            ...quoteData.data,
+                                            price: currentPrice,
+                                            change: changeAmount,
+                                            changePercent: changePercent,
+                                            marketCap: marketCap,
+                                            volume: volume,
+                                            previousClose: historicalPrice // This is the price at the timeframe start
+                                          };
                                         } else {
                                           changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                                           changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                          
+                                          stockData[stock.symbol] = {
+                                            ...quoteData.data,
+                                            price: currentPrice,
+                                            change: changeAmount,
+                                            changePercent: changePercent,
+                                            marketCap: marketCap,
+                                            volume: volume,
+                                            previousClose: currentPrice - changeAmount // Calculate from current price and change
+                                          };
                                         }
-                                        
-                                        stockData[stock.symbol] = {
-                                          ...quoteData.data,
-                                          price: currentPrice,
-                                          change: changeAmount,
-                                          changePercent: changePercent,
-                                          marketCap: marketCap,
-                                          volume: volume
-                                        };
                                       } catch (histError) {
                                         console.error(`Manual refresh historical data error for ${stock.symbol}:`, histError);
                                         // Fallback to daily change
@@ -726,7 +751,8 @@ export default function Dashboard() {
                                           change: changeAmount,
                                           changePercent: changePercent,
                                           marketCap: marketCap,
-                                          volume: volume
+                                          volume: volume,
+                                          previousClose: currentPrice - changeAmount // Calculate from current price and change
                                         };
                                       }
                                     }
@@ -801,9 +827,10 @@ export default function Dashboard() {
                     ) : (
                       <div className="space-y-3">
                         {/* Header Row */}
-                        <div className="grid grid-cols-7 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
+                        <div className="grid grid-cols-8 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
                           <div className="col-span-2">Stock</div>
                           <div className="text-right">Current Price</div>
+                          <div className="text-right">Previous Close</div>
                           <div className="text-right">Change</div>
                           <div className="text-right">Market Cap</div>
                           <div className="text-right">Volume</div>
@@ -817,7 +844,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={stock.id}
-                                className="grid grid-cols-7 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
+                                className="grid grid-cols-8 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
                               >
                                 <div className="col-span-2">
                                   <div className="font-semibold text-base">{stock.symbol}</div>
@@ -825,7 +852,7 @@ export default function Dashboard() {
                                     {stock.companyName}
                                   </div>
                                 </div>
-                                <div className="col-span-4 text-center text-muted-foreground">
+                                <div className="col-span-5 text-center text-muted-foreground">
                                   <RefreshCw className="w-4 h-4 animate-spin inline mr-2" />
                                   Loading...
                                 </div>
@@ -848,6 +875,7 @@ export default function Dashboard() {
                           const changePercent = stockData.changePercent || 0;
                           const marketCap = stockData.marketCap || 0;
                           const volume = stockData.volume || 0;
+                          const previousClose = stockData.previousClose || (currentPrice - changeAmount) || 0;
 
                           const isPositive = changeAmount >= 0;
                           
@@ -863,7 +891,7 @@ export default function Dashboard() {
                           return (
                             <div
                               key={stock.id}
-                              className="grid grid-cols-7 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
+                              className="grid grid-cols-8 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
                             >
                               {/* Stock Info */}
                               <div className="col-span-2">
@@ -877,6 +905,13 @@ export default function Dashboard() {
                               <div className="text-right">
                                 <div className="font-semibold">
                                   {formatCurrency(currentPrice)}
+                                </div>
+                              </div>
+                              
+                              {/* Previous Close */}
+                              <div className="text-right">
+                                <div className="text-sm text-muted-foreground">
+                                  {formatCurrency(previousClose)}
                                 </div>
                               </div>
                               
