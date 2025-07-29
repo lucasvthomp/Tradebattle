@@ -62,6 +62,65 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 
+const SearchResultItem = ({ stock, isInWatchlist, onAdd }: { 
+  stock: any; 
+  isInWatchlist: boolean; 
+  onAdd: () => void; 
+}) => {
+  const [stockQuote, setStockQuote] = useState<any>(null);
+  const { formatCurrency } = useUserPreferences();
+
+  useEffect(() => {
+    const fetchQuote = async () => {
+      try {
+        const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
+        const data = await response.json();
+        setStockQuote(data.data);
+      } catch (error) {
+        console.error(`Error fetching quote for ${stock.symbol}:`, error);
+      }
+    };
+    fetchQuote();
+  }, [stock.symbol]);
+
+  return (
+    <div className="flex items-center justify-between p-3 hover:bg-background rounded transition-colors">
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <div className="font-semibold text-sm">{stock.symbol}</div>
+            <div className="text-xs text-muted-foreground truncate max-w-64">
+              {stock.shortName || stock.longName || 'N/A'}
+            </div>
+          </div>
+          <div className="text-right ml-2">
+            {stockQuote ? (
+              <div className="text-sm font-medium">
+                {formatCurrency(stockQuote.price || stockQuote.regularMarketPrice || 0)}
+              </div>
+            ) : (
+              <div className="text-xs text-muted-foreground">Loading...</div>
+            )}
+          </div>
+        </div>
+      </div>
+      <Button
+        size="sm"
+        variant="ghost"
+        className="ml-2 flex-shrink-0"
+        onClick={onAdd}
+        disabled={isInWatchlist}
+      >
+        {isInWatchlist ? (
+          <CheckCircle className="w-4 h-4 text-green-600" />
+        ) : (
+          <Plus className="w-4 h-4" />
+        )}
+      </Button>
+    </div>
+  );
+};
+
 export default function Dashboard() {
   const { user } = useAuth();
   const { formatCurrency, t } = useUserPreferences();
@@ -331,41 +390,72 @@ export default function Dashboard() {
         
         for (const stock of watchlist) {
           try {
-            // Fetch current quote data
+            // Fetch current quote data first
             const quoteResponse = await apiRequest("GET", `/api/quote/${stock.symbol}`);
             const quoteData = await quoteResponse.json();
             
-            // Fetch historical data for timeframe-based change calculation
-            const historicalResponse = await apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`);
-            const historicalData = await historicalResponse.json();
-            
-            // Combine current quote with historical data for timeframe-specific changes
             const currentPrice = quoteData.data?.price || quoteData.data?.regularMarketPrice || 0;
             const marketCap = quoteData.data?.marketCap || 0;
             const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
             
-            // Calculate timeframe-specific change
-            let changeAmount = 0;
-            let changePercent = 0;
-            
-            if (historicalData.data && historicalData.data.length > 0) {
-              const historicalPrice = historicalData.data[0].close;
-              changeAmount = currentPrice - historicalPrice;
-              changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+            // For 1D timeframe, use the daily change from quote data
+            if (selectedTimeframe === '1d') {
+              const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+              const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+              
+              stockData[stock.symbol] = {
+                ...quoteData.data,
+                price: currentPrice,
+                change: changeAmount,
+                changePercent: changePercent,
+                marketCap: marketCap,
+                volume: volume
+              };
             } else {
-              // Fallback to daily change if historical data unavailable
-              changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
-              changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+              // For other timeframes, try to fetch historical data but don't block on it
+              try {
+                const historicalResponse = await Promise.race([
+                  apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`),
+                  new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+                ]);
+                const historicalData = await (historicalResponse as Response).json();
+                
+                let changeAmount = 0;
+                let changePercent = 0;
+                
+                if (historicalData.data && historicalData.data.length > 0) {
+                  const historicalPrice = historicalData.data[0].close;
+                  changeAmount = currentPrice - historicalPrice;
+                  changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                } else {
+                  // Fallback to daily change
+                  changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                  changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                }
+                
+                stockData[stock.symbol] = {
+                  ...quoteData.data,
+                  price: currentPrice,
+                  change: changeAmount,
+                  changePercent: changePercent,
+                  marketCap: marketCap,
+                  volume: volume
+                };
+              } catch (histError) {
+                // If historical data fails, use daily change as fallback
+                const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                
+                stockData[stock.symbol] = {
+                  ...quoteData.data,
+                  price: currentPrice,
+                  change: changeAmount,
+                  changePercent: changePercent,
+                  marketCap: marketCap,
+                  volume: volume
+                };
+              }
             }
-            
-            stockData[stock.symbol] = {
-              ...quoteData.data,
-              price: currentPrice,
-              change: changeAmount,
-              changePercent: changePercent,
-              marketCap: marketCap,
-              volume: volume
-            };
           } catch (error) {
             console.error(`Error fetching data for ${stock.symbol}:`, error);
             stockData[stock.symbol] = null;
@@ -548,47 +638,78 @@ export default function Dashboard() {
                           size="sm"
                           variant="outline"
                           onClick={() => {
+                            // Manual refresh function
                             if (watchlist.length > 0) {
                               const fetchWatchlistData = async () => {
                                 const stockData: {[key: string]: any} = {};
                                 
                                 for (const stock of watchlist) {
                                   try {
-                                    // Fetch current quote data
+                                    // Fetch current quote data first
                                     const quoteResponse = await apiRequest("GET", `/api/quote/${stock.symbol}`);
                                     const quoteData = await quoteResponse.json();
                                     
-                                    // Fetch historical data for timeframe-based change calculation
-                                    const historicalResponse = await apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`);
-                                    const historicalData = await historicalResponse.json();
-                                    
-                                    // Combine current quote with historical data for timeframe-specific changes
                                     const currentPrice = quoteData.data?.price || quoteData.data?.regularMarketPrice || 0;
                                     const marketCap = quoteData.data?.marketCap || 0;
                                     const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
                                     
-                                    // Calculate timeframe-specific change
-                                    let changeAmount = 0;
-                                    let changePercent = 0;
-                                    
-                                    if (historicalData.data && historicalData.data.length > 0) {
-                                      const historicalPrice = historicalData.data[0].close;
-                                      changeAmount = currentPrice - historicalPrice;
-                                      changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                                    // For 1D timeframe, use the daily change from quote data
+                                    if (selectedTimeframe === '1d') {
+                                      const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                                      const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                      
+                                      stockData[stock.symbol] = {
+                                        ...quoteData.data,
+                                        price: currentPrice,
+                                        change: changeAmount,
+                                        changePercent: changePercent,
+                                        marketCap: marketCap,
+                                        volume: volume
+                                      };
                                     } else {
-                                      // Fallback to daily change if historical data unavailable
-                                      changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
-                                      changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                      // For other timeframes, try historical data with timeout
+                                      try {
+                                        const historicalResponse = await Promise.race([
+                                          apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`),
+                                          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
+                                        ]);
+                                        const historicalData = await (historicalResponse as Response).json();
+                                        
+                                        let changeAmount = 0;
+                                        let changePercent = 0;
+                                        
+                                        if (historicalData.data && historicalData.data.length > 0) {
+                                          const historicalPrice = historicalData.data[0].close;
+                                          changeAmount = currentPrice - historicalPrice;
+                                          changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                                        } else {
+                                          changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                                          changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                        }
+                                        
+                                        stockData[stock.symbol] = {
+                                          ...quoteData.data,
+                                          price: currentPrice,
+                                          change: changeAmount,
+                                          changePercent: changePercent,
+                                          marketCap: marketCap,
+                                          volume: volume
+                                        };
+                                      } catch (histError) {
+                                        // Fallback to daily change
+                                        const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                                        const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                        
+                                        stockData[stock.symbol] = {
+                                          ...quoteData.data,
+                                          price: currentPrice,
+                                          change: changeAmount,
+                                          changePercent: changePercent,
+                                          marketCap: marketCap,
+                                          volume: volume
+                                        };
+                                      }
                                     }
-                                    
-                                    stockData[stock.symbol] = {
-                                      ...quoteData.data,
-                                      price: currentPrice,
-                                      change: changeAmount,
-                                      changePercent: changePercent,
-                                      marketCap: marketCap,
-                                      volume: volume
-                                    };
                                   } catch (error) {
                                     console.error(`Error fetching data for ${stock.symbol}:`, error);
                                     stockData[stock.symbol] = null;
@@ -624,39 +745,19 @@ export default function Dashboard() {
                       )}
 
                       {watchlistSearchResults.length > 0 && (
-                        <div className="border rounded-lg p-2 bg-muted/30 max-h-40 overflow-y-auto">
+                        <div className="border rounded-lg p-2 bg-muted/30 max-h-48 overflow-y-auto">
                           <div className="space-y-1">
                             {watchlistSearchResults.slice(0, 8).map((stock, index) => (
-                              <div
+                              <SearchResultItem
                                 key={index}
-                                className="flex items-center justify-between p-2 hover:bg-background rounded transition-colors"
-                              >
-                                <div>
-                                  <div className="font-medium text-sm">{stock.symbol}</div>
-                                  <div className="text-xs text-muted-foreground truncate">
-                                    {stock.shortName || stock.longName}
-                                  </div>
-                                </div>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    const isInWatchlist = watchlist.some(w => w.symbol === stock.symbol);
-                                    if (!isInWatchlist) {
-                                      addToWatchlistMutation.mutate(stock);
-                                      setWatchlistSearchQuery("");
-                                      setWatchlistSearchResults([]);
-                                    }
-                                  }}
-                                  disabled={watchlist.some(w => w.symbol === stock.symbol)}
-                                >
-                                  {watchlist.some(w => w.symbol === stock.symbol) ? (
-                                    <CheckCircle className="w-4 h-4 text-green-600" />
-                                  ) : (
-                                    <Plus className="w-4 h-4" />
-                                  )}
-                                </Button>
-                              </div>
+                                stock={stock}
+                                isInWatchlist={watchlist.some(w => w.symbol === stock.symbol)}
+                                onAdd={() => {
+                                  addToWatchlistMutation.mutate(stock);
+                                  setWatchlistSearchQuery("");
+                                  setWatchlistSearchResults([]);
+                                }}
+                              />
                             ))}
                           </div>
                         </div>
