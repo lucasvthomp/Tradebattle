@@ -35,7 +35,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const navItems = [
     { href: "/", label: "Home", icon: Home },
     ...(user ? [
-      { href: "/dashboard", label: "Trading Dashboard", icon: BarChart3 },
+      { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
       { href: "/tournaments", label: t('tournaments'), icon: Swords },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
