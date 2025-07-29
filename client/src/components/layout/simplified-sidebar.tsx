@@ -59,7 +59,7 @@ export function SimplifiedSidebar() {
     <>
       {/* Simplified Always-Visible Sidebar */}
       <div 
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-background/80 backdrop-blur-lg border-r border-border/30 z-30 transition-all duration-300 ease-in-out ${
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-background/90 backdrop-blur-md border-r border-border/50 z-30 transition-all duration-300 ease-in-out ${
           expanded ? 'w-64' : 'w-16'
         }`}
         onMouseEnter={() => setExpanded(true)}
