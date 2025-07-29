@@ -80,6 +80,13 @@ export default function Dashboard() {
   const [buyAmount, setBuyAmount] = useState("");
   const [sellAmount, setSellAmount] = useState("");
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
+  
+  // Watchlist specific state
+  const [watchlistSearchQuery, setWatchlistSearchQuery] = useState("");
+  const [watchlistSearchResults, setWatchlistSearchResults] = useState<any[]>([]);
+  const [isWatchlistSearching, setIsWatchlistSearching] = useState(false);
+  const [selectedTimeframe, setSelectedTimeframe] = useState("1d");
+  const [watchlistStockData, setWatchlistStockData] = useState<{[key: string]: any}>({});
 
   // Portfolio queries
   const { data: personalPortfolio = [], isLoading: personalLoading, refetch: refetchPersonal } = useQuery({
@@ -270,6 +277,80 @@ export default function Dashboard() {
     return activeTab === "personal" ? personalLoading : tournamentLoading;
   };
 
+  // Stock search functionality
+  useEffect(() => {
+    if (searchQuery.trim().length >= 2) {
+      const timeoutId = setTimeout(async () => {
+        setIsSearching(true);
+        try {
+          const response = await apiRequest("GET", `/api/search/${encodeURIComponent(searchQuery)}`);
+          const data = await response.json();
+          setSearchResults(data.results || []);
+        } catch (error) {
+          console.error("Search error:", error);
+          setSearchResults([]);
+        } finally {
+          setIsSearching(false);
+        }
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSearchResults([]);
+    }
+  }, [searchQuery]);
+
+  // Watchlist search functionality
+  useEffect(() => {
+    if (watchlistSearchQuery.trim().length >= 2) {
+      const timeoutId = setTimeout(async () => {
+        setIsWatchlistSearching(true);
+        try {
+          const response = await apiRequest("GET", `/api/search/${encodeURIComponent(watchlistSearchQuery)}`);
+          const data = await response.json();
+          setWatchlistSearchResults(data.results || []);
+        } catch (error) {
+          console.error("Watchlist search error:", error);
+          setWatchlistSearchResults([]);
+        } finally {
+          setIsWatchlistSearching(false);
+        }
+      }, 300);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setWatchlistSearchResults([]);
+    }
+  }, [watchlistSearchQuery]);
+
+  // Fetch real-time data for watchlist stocks
+  useEffect(() => {
+    if (watchlist.length > 0) {
+      const fetchWatchlistData = async () => {
+        const stockData: {[key: string]: any} = {};
+        
+        for (const stock of watchlist) {
+          try {
+            const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
+            const data = await response.json();
+            stockData[stock.symbol] = data;
+          } catch (error) {
+            console.error(`Error fetching data for ${stock.symbol}:`, error);
+            stockData[stock.symbol] = { price: 0, changePercent: 0, regularMarketVolume: 0 };
+          }
+        }
+        
+        setWatchlistStockData(stockData);
+      };
+
+      fetchWatchlistData();
+      
+      // Refresh data every 30 seconds
+      const interval = setInterval(fetchWatchlistData, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [watchlist]);
+
   if (!user) {
     return (
       <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
@@ -411,55 +492,207 @@ export default function Dashboard() {
                 {/* Watchlist - Full Width Bottom Section */}
                 <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Star className="w-5 h-5" />
-                      <span>Watchlist</span>
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="flex items-center space-x-2">
+                        <Star className="w-5 h-5" />
+                        <span>Watchlist</span>
+                      </CardTitle>
+                      <div className="flex items-center space-x-2">
+                        <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+                          <SelectTrigger className="w-24">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1d">1D</SelectItem>
+                            <SelectItem value="5d">5D</SelectItem>
+                            <SelectItem value="1mo">1M</SelectItem>
+                            <SelectItem value="3mo">3M</SelectItem>
+                            <SelectItem value="6mo">6M</SelectItem>
+                            <SelectItem value="1y">1Y</SelectItem>
+                            <SelectItem value="ytd">YTD</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            if (watchlist.length > 0) {
+                              const fetchWatchlistData = async () => {
+                                const stockData: {[key: string]: any} = {};
+                                
+                                for (const stock of watchlist) {
+                                  try {
+                                    const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
+                                    const data = await response.json();
+                                    stockData[stock.symbol] = data;
+                                  } catch (error) {
+                                    console.error(`Error fetching data for ${stock.symbol}:`, error);
+                                    stockData[stock.symbol] = { price: 0, changePercent: 0, regularMarketVolume: 0 };
+                                  }
+                                }
+                                
+                                setWatchlistStockData(stockData);
+                              };
+                              fetchWatchlistData();
+                            }
+                          }}
+                        >
+                          <RefreshCw className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="space-y-4">
+                    {/* Search Bar for Adding Stocks */}
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Search stocks to add to watchlist..."
+                        value={watchlistSearchQuery}
+                        onChange={(e) => setWatchlistSearchQuery(e.target.value)}
+                        className="w-full"
+                      />
+                      
+                      {isWatchlistSearching && (
+                        <div className="flex items-center justify-center py-2">
+                          <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                          <span className="text-sm text-muted-foreground">Searching...</span>
+                        </div>
+                      )}
+
+                      {watchlistSearchResults.length > 0 && (
+                        <div className="border rounded-lg p-2 bg-muted/30 max-h-40 overflow-y-auto">
+                          <div className="space-y-1">
+                            {watchlistSearchResults.slice(0, 8).map((stock, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-2 hover:bg-background rounded transition-colors"
+                              >
+                                <div>
+                                  <div className="font-medium text-sm">{stock.symbol}</div>
+                                  <div className="text-xs text-muted-foreground truncate">
+                                    {stock.shortName || stock.longName}
+                                  </div>
+                                </div>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => {
+                                    const isInWatchlist = watchlist.some(w => w.symbol === stock.symbol);
+                                    if (!isInWatchlist) {
+                                      addToWatchlistMutation.mutate(stock);
+                                      setWatchlistSearchQuery("");
+                                      setWatchlistSearchResults([]);
+                                    }
+                                  }}
+                                  disabled={watchlist.some(w => w.symbol === stock.symbol)}
+                                >
+                                  {watchlist.some(w => w.symbol === stock.symbol) ? (
+                                    <CheckCircle className="w-4 h-4 text-green-600" />
+                                  ) : (
+                                    <Plus className="w-4 h-4" />
+                                  )}
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Watchlist Content */}
                     {watchlistLoading ? (
-                      <div className="flex items-center justify-center py-4">
+                      <div className="flex items-center justify-center py-8">
                         <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                        <span className="text-sm text-muted-foreground">Loading...</span>
+                        <span className="text-sm text-muted-foreground">Loading watchlist...</span>
                       </div>
                     ) : watchlist.length === 0 ? (
-                      <p className="text-sm text-muted-foreground text-center py-4">
-                        No stocks in watchlist
-                      </p>
+                      <div className="text-center py-8">
+                        <Star className="w-12 h-12 mx-auto text-muted-foreground mb-4 opacity-50" />
+                        <h3 className="text-lg font-semibold mb-2">No stocks in watchlist</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Use the search bar above to add stocks to your watchlist
+                        </p>
+                      </div>
                     ) : (
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                        {watchlist.map((stock) => (
-                          <div
-                            key={stock.id}
-                            className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium">{stock.symbol}</div>
-                              <div className="text-sm text-muted-foreground truncate">
-                                {stock.companyName}
+                      <div className="space-y-3">
+                        {watchlist.map((stock) => {
+                          const stockData = watchlistStockData[stock.symbol];
+                          const price = stockData?.price || 0;
+                          const changePercent = stockData?.changePercent || 0;
+                          const volume = stockData?.regularMarketVolume || 0;
+                          const isPositive = changePercent >= 0;
+                          
+                          return (
+                            <div
+                              key={stock.id}
+                              className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors"
+                            >
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-3">
+                                  <div>
+                                    <div className="font-semibold text-base">{stock.symbol}</div>
+                                    <div className="text-sm text-muted-foreground truncate max-w-48">
+                                      {stock.companyName}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center space-x-6">
+                                {/* Price */}
+                                <div className="text-right">
+                                  <div className="font-semibold text-base">
+                                    {formatCurrency(price)}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    Vol: {volume.toLocaleString()}
+                                  </div>
+                                </div>
+                                
+                                {/* Change */}
+                                <div className="text-right min-w-20">
+                                  <div className={`flex items-center space-x-1 ${
+                                    isPositive ? 'text-green-600' : 'text-red-600'
+                                  }`}>
+                                    {isPositive ? (
+                                      <TrendingUp className="w-4 h-4" />
+                                    ) : (
+                                      <TrendingDown className="w-4 h-4" />
+                                    )}
+                                    <span className="font-medium">
+                                      {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+                                    </span>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {selectedTimeframe.toUpperCase()}
+                                  </div>
+                                </div>
+                                
+                                {/* Actions */}
+                                <div className="flex items-center space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
+                                      setBuyDialogOpen(true);
+                                    }}
+                                  >
+                                    <ShoppingCart className="w-4 h-4 mr-1" />
+                                    Buy
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-2 ml-2">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
-                              >
-                                <X className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
-                                  setBuyDialogOpen(true);
-                                }}
-                              >
-                                <ShoppingCart className="w-4 h-4 mr-1" />
-                                Buy
-                              </Button>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </CardContent>
