@@ -308,7 +308,7 @@ export default function Dashboard() {
         try {
           const response = await apiRequest("GET", `/api/search/${encodeURIComponent(watchlistSearchQuery)}`);
           const data = await response.json();
-          setWatchlistSearchResults(data.results || []);
+          setWatchlistSearchResults(data.data || data.results || []);
         } catch (error) {
           console.error("Watchlist search error:", error);
           setWatchlistSearchResults([]);
@@ -615,80 +615,107 @@ export default function Dashboard() {
                       </div>
                     ) : (
                       <div className="space-y-3">
+                        {/* Header Row */}
+                        <div className="grid grid-cols-8 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
+                          <div className="col-span-2">Stock</div>
+                          <div className="text-right">Current Price</div>
+                          <div className="text-right">Purchase Price</div>
+                          <div className="text-right">Change</div>
+                          <div className="text-right">Change %</div>
+                          <div className="text-right">Volume</div>
+                          <div className="text-center">Actions</div>
+                        </div>
+
                         {watchlist.map((stock) => {
                           const stockData = watchlistStockData[stock.symbol];
-                          const price = stockData?.price || 0;
+                          const currentPrice = stockData?.price || 0;
                           const changePercent = stockData?.changePercent || 0;
+                          const change = stockData?.change || 0;
                           const volume = stockData?.regularMarketVolume || 0;
                           const isPositive = changePercent >= 0;
+                          
+                          // For purchase price, we'll use a placeholder since watchlist doesn't track purchases
+                          // In a real scenario, this would come from user's purchase history
+                          const purchasePrice = currentPrice * (1 - (changePercent / 100));
                           
                           return (
                             <div
                               key={stock.id}
-                              className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/30 transition-colors"
+                              className="grid grid-cols-8 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
                             >
-                              <div className="flex-1">
-                                <div className="flex items-center space-x-3">
-                                  <div>
-                                    <div className="font-semibold text-base">{stock.symbol}</div>
-                                    <div className="text-sm text-muted-foreground truncate max-w-48">
-                                      {stock.companyName}
-                                    </div>
-                                  </div>
+                              {/* Stock Info */}
+                              <div className="col-span-2">
+                                <div className="font-semibold text-base">{stock.symbol}</div>
+                                <div className="text-sm text-muted-foreground truncate">
+                                  {stock.companyName}
                                 </div>
                               </div>
                               
-                              <div className="flex items-center space-x-6">
-                                {/* Price */}
-                                <div className="text-right">
-                                  <div className="font-semibold text-base">
-                                    {formatCurrency(price)}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    Vol: {volume.toLocaleString()}
-                                  </div>
+                              {/* Current Price */}
+                              <div className="text-right">
+                                <div className="font-semibold">
+                                  {formatCurrency(currentPrice)}
                                 </div>
-                                
-                                {/* Change */}
-                                <div className="text-right min-w-20">
-                                  <div className={`flex items-center space-x-1 ${
-                                    isPositive ? 'text-green-600' : 'text-red-600'
-                                  }`}>
-                                    {isPositive ? (
-                                      <TrendingUp className="w-4 h-4" />
-                                    ) : (
-                                      <TrendingDown className="w-4 h-4" />
-                                    )}
-                                    <span className="font-medium">
-                                      {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
-                                    </span>
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    {selectedTimeframe.toUpperCase()}
-                                  </div>
+                              </div>
+                              
+                              {/* Purchase Price */}
+                              <div className="text-right">
+                                <div className="text-muted-foreground">
+                                  {formatCurrency(purchasePrice)}
                                 </div>
-                                
-                                {/* Actions */}
-                                <div className="flex items-center space-x-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
-                                      setBuyDialogOpen(true);
-                                    }}
-                                  >
-                                    <ShoppingCart className="w-4 h-4 mr-1" />
-                                    Buy
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
-                                  >
-                                    <X className="w-4 h-4" />
-                                  </Button>
+                              </div>
+                              
+                              {/* Change Amount */}
+                              <div className="text-right">
+                                <div className={`font-medium ${
+                                  change >= 0 ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  {change >= 0 ? '+' : ''}{formatCurrency(change)}
                                 </div>
+                              </div>
+                              
+                              {/* Change Percentage */}
+                              <div className="text-right">
+                                <div className={`flex items-center justify-end space-x-1 ${
+                                  isPositive ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  {isPositive ? (
+                                    <TrendingUp className="w-4 h-4" />
+                                  ) : (
+                                    <TrendingDown className="w-4 h-4" />
+                                  )}
+                                  <span className="font-medium">
+                                    {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
+                                  </span>
+                                </div>
+                              </div>
+                              
+                              {/* Volume */}
+                              <div className="text-right">
+                                <div className="text-sm text-muted-foreground">
+                                  {volume.toLocaleString()}
+                                </div>
+                              </div>
+                              
+                              {/* Actions */}
+                              <div className="flex items-center justify-center space-x-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
+                                    setBuyDialogOpen(true);
+                                  }}
+                                >
+                                  <ShoppingCart className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
                               </div>
                             </div>
                           );
