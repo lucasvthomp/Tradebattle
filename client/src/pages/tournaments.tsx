@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -122,10 +122,18 @@ export default function TournamentsPage() {
   });
 
   // Fetch public tournaments
-  const { data: publicTournaments, isLoading: tournamentsLoading } = useQuery<{data: any[]}>({
+  const { data: publicTournaments, isLoading: publicLoading } = useQuery<{data: any[]}>({
     queryKey: ['/api/tournaments/public'],
     refetchInterval: 30000, // Refresh every 30 seconds
   });
+
+  // Fetch user's tournaments (includes private tournaments they created/joined)
+  const { data: userTournaments, isLoading: userLoading } = useQuery<{data: any[]}>({
+    queryKey: ['/api/tournaments'],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  const tournamentsLoading = publicLoading || userLoading;
 
   // Join tournament by code mutation
   const joinByCodeMutation = useMutation({
@@ -137,6 +145,7 @@ export default function TournamentsPage() {
       setJoinCodeDialogOpen(false);
       setJoinCode("");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       toast({
         title: "Success",
         description: "Successfully joined tournament!",
@@ -174,6 +183,7 @@ export default function TournamentsPage() {
         buyInAmount: 0
       });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       toast({
         title: "Success",
         description: "Tournament created successfully!",
@@ -188,29 +198,60 @@ export default function TournamentsPage() {
     },
   });
 
+  // Combine public tournaments and user's tournaments, removing duplicates
+  const allTournaments = React.useMemo(() => {
+    const publicList = publicTournaments?.data || [];
+    const userList = userTournaments?.data || [];
+    
+    // Create a Map to avoid duplicates (user tournaments take priority)
+    const tournamentMap = new Map();
+    
+    // Add public tournaments first
+    publicList.forEach(tournament => {
+      tournamentMap.set(tournament.id, tournament);
+    });
+    
+    // Add user tournaments (overwrites public if same ID, adds private ones)
+    userList.forEach(tournament => {
+      tournamentMap.set(tournament.id, tournament);
+    });
+    
+    return Array.from(tournamentMap.values());
+  }, [publicTournaments, userTournaments]);
+
   // Filter and sort tournaments
   const processedTournaments = {
-    upcoming: publicTournaments?.data?.filter((t: any) => 
+    upcoming: allTournaments.filter((t: any) => 
       t.status === "waiting" && 
       (filterType === "all" || t.tournamentType === filterType) &&
       (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    ) || [],
-    ongoing: publicTournaments?.data?.filter((t: any) => 
+    ),
+    ongoing: allTournaments.filter((t: any) => 
       t.status === "active" && 
       (filterType === "all" || t.tournamentType === filterType) &&
       (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    ) || []
+    )
   };
 
-  // Sort tournaments (owner's tournaments first)
+  // Sort tournaments (prioritize participated tournaments first)
   const sortTournaments = (tournaments: any[]) => {
     return [...tournaments].sort((a, b) => {
-      // Prioritize user's own tournaments first
-      const aIsOwner = a.creatorId === user?.id;
-      const bIsOwner = b.creatorId === user?.id;
+      // Check if user is participating in each tournament
+      const aIsParticipating = a.creatorId === user?.id || a.isParticipating;
+      const bIsParticipating = b.creatorId === user?.id || b.isParticipating;
       
-      if (aIsOwner && !bIsOwner) return -1;
-      if (!aIsOwner && bIsOwner) return 1;
+      // Prioritize tournaments user is participating in
+      if (aIsParticipating && !bIsParticipating) return -1;
+      if (!aIsParticipating && bIsParticipating) return 1;
+      
+      // Within participated tournaments, prioritize owned tournaments
+      if (aIsParticipating && bIsParticipating) {
+        const aIsOwner = a.creatorId === user?.id;
+        const bIsOwner = b.creatorId === user?.id;
+        
+        if (aIsOwner && !bIsOwner) return -1;
+        if (!aIsOwner && bIsOwner) return 1;
+      }
       
       // Then sort by the selected criteria
       switch (sortBy) {
@@ -548,6 +589,7 @@ function TournamentGrid({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       toast({
         title: "Success",
         description: "Successfully joined tournament!",
