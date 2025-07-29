@@ -257,13 +257,19 @@ export default function TournamentsPage() {
       tournamentMap.set(tournament.id, tournament);
     });
     
-    // Add user tournaments (overwrites public if same ID, adds private ones)
+    // Add user tournaments ONLY if they are:
+    // 1. Public tournaments (to update with participation info), OR
+    // 2. Private tournaments where user is participating (creator or participant)
     userList.forEach(tournament => {
-      tournamentMap.set(tournament.id, tournament);
+      const isUserParticipating = tournament.creatorId === user?.id || tournament.isParticipating;
+      
+      if (tournament.isPublic || isUserParticipating) {
+        tournamentMap.set(tournament.id, tournament);
+      }
     });
     
     return Array.from(tournamentMap.values());
-  }, [publicTournaments, userTournaments]);
+  }, [publicTournaments, userTournaments, user?.id]);
 
   // Filter and sort tournaments
   const processedTournaments = {

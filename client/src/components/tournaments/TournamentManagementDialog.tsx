@@ -198,6 +198,34 @@ export function TournamentManagementDialog({
                 <Target className="w-4 h-4 text-muted-foreground" />
                 <span>{formatCurrency(tournament.currentPlayers * tournament.buyInAmount)} pot</span>
               </div>
+              {/* Show tournament code for private tournaments */}
+              {isPrivate && (
+                <>
+                  <div className="flex items-center space-x-2 col-span-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <Shield className="w-4 h-4 text-blue-600" />
+                    <div className="flex-1">
+                      <span className="font-medium text-blue-800 dark:text-blue-200">Join Code: </span>
+                      <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-900 dark:text-blue-100 font-mono text-sm">
+                        {tournament.code}
+                      </code>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 border-blue-300 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-700 dark:hover:bg-blue-900"
+                      onClick={() => {
+                        navigator.clipboard.writeText(tournament.code);
+                        toast({
+                          title: "Copied!",
+                          description: "Tournament code copied to clipboard",
+                        });
+                      }}
+                    >
+                      Copy
+                    </Button>
+                  </div>
+                </>
+              )}
             </div>
 
             <Separator />
