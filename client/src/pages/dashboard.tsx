@@ -11,7 +11,6 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { WatchlistItem, StockPurchase, Tournament } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  Search, 
   TrendingUp, 
   TrendingDown,
   Plus, 
@@ -62,64 +61,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 
-const SearchResultItem = ({ stock, isInWatchlist, onAdd }: { 
-  stock: any; 
-  isInWatchlist: boolean; 
-  onAdd: () => void; 
-}) => {
-  const [stockQuote, setStockQuote] = useState<any>(null);
-  const { formatCurrency } = useUserPreferences();
 
-  useEffect(() => {
-    const fetchQuote = async () => {
-      try {
-        const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
-        const data = await response.json();
-        setStockQuote(data.data);
-      } catch (error) {
-        console.error(`Error fetching quote for ${stock.symbol}:`, error);
-      }
-    };
-    fetchQuote();
-  }, [stock.symbol]);
-
-  return (
-    <div className="flex items-center justify-between p-3 hover:bg-background rounded transition-colors">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between">
-          <div className="flex-1">
-            <div className="font-semibold text-sm">{stock.symbol}</div>
-            <div className="text-xs text-muted-foreground truncate max-w-64">
-              {stock.shortName || stock.longName || 'N/A'}
-            </div>
-          </div>
-          <div className="text-right ml-2">
-            {stockQuote ? (
-              <div className="text-sm font-medium">
-                {formatCurrency(stockQuote.price || stockQuote.regularMarketPrice || 0)}
-              </div>
-            ) : (
-              <div className="text-xs text-muted-foreground">Loading...</div>
-            )}
-          </div>
-        </div>
-      </div>
-      <Button
-        size="sm"
-        variant="ghost"
-        className="ml-2 flex-shrink-0"
-        onClick={onAdd}
-        disabled={isInWatchlist}
-      >
-        {isInWatchlist ? (
-          <CheckCircle className="w-4 h-4 text-green-600" />
-        ) : (
-          <Plus className="w-4 h-4" />
-        )}
-      </Button>
-    </div>
-  );
-};
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -130,9 +72,6 @@ export default function Dashboard() {
   // State management
   const [activeTab, setActiveTab] = useState("personal"); // personal or tournament
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
   const [buyDialogOpen, setBuyDialogOpen] = useState(false);
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
@@ -141,9 +80,6 @@ export default function Dashboard() {
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
   
   // Watchlist specific state
-  const [watchlistSearchQuery, setWatchlistSearchQuery] = useState("");
-  const [watchlistSearchResults, setWatchlistSearchResults] = useState<any[]>([]);
-  const [isWatchlistSearching, setIsWatchlistSearching] = useState(false);
   const [selectedTimeframe, setSelectedTimeframe] = useState("1D");
   const [watchlistStockData, setWatchlistStockData] = useState<{[key: string]: any}>({});
 
@@ -193,35 +129,7 @@ export default function Dashboard() {
     }
   }, [activeTab, activeTournaments, selectedTournament]);
 
-  // Stock search function
-  const searchStocks = async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
 
-    setIsSearching(true);
-    try {
-      const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
-      if (response.ok) {
-        const result = await response.json();
-        setSearchResults(result.success ? result.data : []);
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-      setSearchResults([]);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  // Debounced search
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      searchStocks(searchQuery);
-    }, 300);
-    return () => clearTimeout(timeoutId);
-  }, [searchQuery]);
 
   // Buy stock mutation
   const buyStockMutation = useMutation({
@@ -336,51 +244,7 @@ export default function Dashboard() {
     return activeTab === "personal" ? personalLoading : tournamentLoading;
   };
 
-  // Stock search functionality
-  useEffect(() => {
-    if (searchQuery.trim().length >= 2) {
-      const timeoutId = setTimeout(async () => {
-        setIsSearching(true);
-        try {
-          const response = await apiRequest("GET", `/api/search/${encodeURIComponent(searchQuery)}`);
-          const data = await response.json();
-          setSearchResults(data.results || []);
-        } catch (error) {
-          console.error("Search error:", error);
-          setSearchResults([]);
-        } finally {
-          setIsSearching(false);
-        }
-      }, 300);
 
-      return () => clearTimeout(timeoutId);
-    } else {
-      setSearchResults([]);
-    }
-  }, [searchQuery]);
-
-  // Watchlist search functionality
-  useEffect(() => {
-    if (watchlistSearchQuery.trim().length >= 2) {
-      const timeoutId = setTimeout(async () => {
-        setIsWatchlistSearching(true);
-        try {
-          const response = await apiRequest("GET", `/api/search/${encodeURIComponent(watchlistSearchQuery)}`);
-          const data = await response.json();
-          setWatchlistSearchResults(data.data || data.results || []);
-        } catch (error) {
-          console.error("Watchlist search error:", error);
-          setWatchlistSearchResults([]);
-        } finally {
-          setIsWatchlistSearching(false);
-        }
-      }, 300);
-
-      return () => clearTimeout(timeoutId);
-    } else {
-      setWatchlistSearchResults([]);
-    }
-  }, [watchlistSearchQuery]);
 
   // Fetch real-time data for watchlist stocks with timeframe support
   useEffect(() => {
@@ -562,89 +426,9 @@ export default function Dashboard() {
             {/* Personal Portfolio Tab */}
             <TabsContent value="personal" className="space-y-6">
               <div className="space-y-6">
-                {/* Portfolio Grid - Top Section */}
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  {/* Portfolio */}
-                  <div className="lg:col-span-3">
-                    <PortfolioGrid />
-                  </div>
-
-                  {/* Stock Search Sidebar */}
-                  <div className="space-y-6">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="flex items-center space-x-2">
-                          <Search className="w-5 h-5" />
-                          <span>Search Stocks</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <Input
-                          placeholder="Search by symbol or company name..."
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                        
-                        {isSearching && (
-                          <div className="flex items-center justify-center py-4">
-                            <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                            <span className="text-sm text-muted-foreground">Searching...</span>
-                          </div>
-                        )}
-
-                        {searchResults.length > 0 && (
-                          <div className="space-y-2 max-h-60 overflow-y-auto">
-                            {searchResults.slice(0, 10).map((stock, index) => (
-                              <div
-                                key={index}
-                                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                              >
-                                <div>
-                                  <div className="font-medium">{stock.symbol}</div>
-                                  <div className="text-sm text-muted-foreground truncate">
-                                    {stock.shortName || stock.longName}
-                                  </div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={() => {
-                                      const isInWatchlist = watchlist.some(w => w.symbol === stock.symbol);
-                                      if (isInWatchlist) {
-                                        const watchlistItem = watchlist.find(w => w.symbol === stock.symbol);
-                                        if (watchlistItem) {
-                                          removeFromWatchlistMutation.mutate(watchlistItem.id);
-                                        }
-                                      } else {
-                                        addToWatchlistMutation.mutate(stock);
-                                      }
-                                    }}
-                                  >
-                                    {watchlist.some(w => w.symbol === stock.symbol) ? (
-                                      <Star className="w-4 h-4 fill-current text-yellow-500" />
-                                    ) : (
-                                      <StarOff className="w-4 h-4" />
-                                    )}
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    onClick={() => {
-                                      setSelectedStock(stock);
-                                      setBuyDialogOpen(true);
-                                    }}
-                                  >
-                                    <ShoppingCart className="w-4 h-4 mr-1" />
-                                    Buy
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
+                {/* Portfolio Grid - Full Width */}
+                <div className="w-full">
+                  <PortfolioGrid />
                 </div>
 
                 {/* Watchlist - Full Width Bottom Section */}
@@ -795,41 +579,6 @@ export default function Dashboard() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Search Bar for Adding Stocks */}
-                    <div className="space-y-2">
-                      <Input
-                        placeholder="Search stocks to add to watchlist..."
-                        value={watchlistSearchQuery}
-                        onChange={(e) => setWatchlistSearchQuery(e.target.value)}
-                        className="w-full"
-                      />
-                      
-                      {isWatchlistSearching && (
-                        <div className="flex items-center justify-center py-2">
-                          <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                          <span className="text-sm text-muted-foreground">Searching...</span>
-                        </div>
-                      )}
-
-                      {watchlistSearchResults.length > 0 && (
-                        <div className="border rounded-lg p-2 bg-muted/30 max-h-48 overflow-y-auto">
-                          <div className="space-y-1">
-                            {watchlistSearchResults.slice(0, 8).map((stock, index) => (
-                              <SearchResultItem
-                                key={index}
-                                stock={stock}
-                                isInWatchlist={watchlist.some(w => w.symbol === stock.symbol)}
-                                onAdd={() => {
-                                  addToWatchlistMutation.mutate(stock);
-                                  setWatchlistSearchQuery("");
-                                  setWatchlistSearchResults([]);
-                                }}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
 
                     {/* Watchlist Content */}
                     {watchlistLoading ? (
@@ -1128,60 +877,7 @@ export default function Dashboard() {
                         </Card>
                       </div>
 
-                      {/* Tournament Search & Actions */}
-                      <div className="space-y-6">
-                        {/* Same search interface as personal */}
-                        <Card>
-                          <CardHeader>
-                            <CardTitle className="flex items-center space-x-2">
-                              <Search className="w-5 h-5" />
-                              <span>Search Stocks</span>
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <Input
-                              placeholder="Search by symbol or company name..."
-                              value={searchQuery}
-                              onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                            
-                            {isSearching && (
-                              <div className="flex items-center justify-center py-4">
-                                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                                <span className="text-sm text-muted-foreground">Searching...</span>
-                              </div>
-                            )}
 
-                            {searchResults.length > 0 && (
-                              <div className="space-y-2 max-h-60 overflow-y-auto">
-                                {searchResults.slice(0, 10).map((stock, index) => (
-                                  <div
-                                    key={index}
-                                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                                  >
-                                    <div>
-                                      <div className="font-medium">{stock.symbol}</div>
-                                      <div className="text-sm text-muted-foreground truncate">
-                                        {stock.shortName || stock.longName}
-                                      </div>
-                                    </div>
-                                    <Button
-                                      size="sm"
-                                      onClick={() => {
-                                        setSelectedStock(stock);
-                                        setBuyDialogOpen(true);
-                                      }}
-                                    >
-                                      <ShoppingCart className="w-4 h-4 mr-1" />
-                                      Buy
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      </div>
                     </div>
                   )}
                 </div>
