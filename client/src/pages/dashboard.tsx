@@ -435,12 +435,17 @@ export default function Dashboard() {
                 
                 if (historicalData.success && historicalData.data && historicalData.data.length > 0) {
                   // Get the earliest price in the historical data (starting point for the timeframe)
-                  const historicalPrice = historicalData.data[historicalData.data.length - 1].close;
+                  // Use the FIRST data point (oldest) instead of last (newest) for proper timeframe comparison
+                  const historicalPrice = historicalData.data[0].close;
                   changeAmount = currentPrice - historicalPrice;
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                   
                   console.log(`${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
-                console.log(`${stock.symbol} historical data:`, historicalData.data.slice(-3)); // Show last 3 data points
+                console.log(`${stock.symbol} historical data (first/last):`, {
+                  first: historicalData.data[0],
+                  last: historicalData.data[historicalData.data.length - 1],
+                  length: historicalData.data.length
+                });
                   
                   stockData[stock.symbol] = {
                     ...quoteData.data,
@@ -720,12 +725,17 @@ export default function Dashboard() {
                                         
                                         if (historicalData.success && historicalData.data && historicalData.data.length > 0) {
                                           // Get the earliest price in the historical data (starting point for the timeframe)
-                                          const historicalPrice = historicalData.data[historicalData.data.length - 1].close;
+                                          // Use the FIRST data point (oldest) instead of last (newest) for proper timeframe comparison
+                                          const historicalPrice = historicalData.data[0].close;
                                           changeAmount = currentPrice - historicalPrice;
                                           changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                                           
                                           console.log(`MANUAL REFRESH ${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
-                          console.log(`MANUAL REFRESH ${stock.symbol} historical data:`, historicalData.data.slice(-3)); // Show last 3 data points
+                          console.log(`MANUAL REFRESH ${stock.symbol} historical data (first/last):`, {
+                            first: historicalData.data[0],
+                            last: historicalData.data[historicalData.data.length - 1],
+                            length: historicalData.data.length
+                          });
                                           
                                           stockData[stock.symbol] = {
                                             ...quoteData.data,
