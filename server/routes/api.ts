@@ -471,10 +471,10 @@ router.delete('/tournaments/:id/participants/:participantId', requireAuth, async
 }));
 
 /**
- * POST /api/tournaments/:code/join
+ * POST /api/tournaments/code/:code/join
  * Join a tournament by code
  */
-router.post('/tournaments/:code/join', requireAuth, asyncHandler(async (req, res) => {
+router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req, res) => {
   const code = sanitizeInput(req.params.code.toUpperCase());
   const userId = req.user.id;
   
@@ -483,6 +483,53 @@ router.post('/tournaments/:code/join', requireAuth, asyncHandler(async (req, res
   }
 
   const tournament = await storage.getTournamentByCode(code);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  if (tournament.currentPlayers >= tournament.maxPlayers) {
+    throw new ValidationError('Tournament is full');
+  }
+
+  try {
+    const participant = await storage.joinTournament(tournament.id, userId);
+
+    // Award Tournament Participant achievement
+    await storage.awardAchievement({
+      userId: userId,
+      achievementType: 'tournament_participant',
+      achievementTier: 'common',
+      achievementName: 'Tournament Participant',
+      achievementDescription: 'Joined a tournament',
+      earnedAt: new Date(),
+      createdAt: new Date()
+    });
+
+    res.json({
+      success: true,
+      data: participant,
+    });
+  } catch (error: any) {
+    if (error.message === 'User is already participating in this tournament') {
+      throw new ValidationError('You are already participating in this tournament');
+    }
+    throw error;
+  }
+}));
+
+/**
+ * POST /api/tournaments/:id/join
+ * Join a tournament by ID
+ */
+router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+  
+  if (!userId) {
+    throw new ValidationError('User not authenticated');
+  }
+
+  const tournament = await storage.getTournamentById(tournamentId);
   if (!tournament) {
     throw new NotFoundError('Tournament not found');
   }

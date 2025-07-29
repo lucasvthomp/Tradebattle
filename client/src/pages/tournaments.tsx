@@ -138,7 +138,7 @@ export default function TournamentsPage() {
   // Join tournament by code mutation
   const joinByCodeMutation = useMutation({
     mutationFn: async (code: string) => {
-      const res = await apiRequest("POST", `/api/tournaments/${code}/join`, {});
+      const res = await apiRequest("POST", `/api/tournaments/code/${code}/join`, {});
       return res.json();
     },
     onSuccess: () => {

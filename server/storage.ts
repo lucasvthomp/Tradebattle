@@ -76,6 +76,7 @@ export interface IStorage {
   createTournament(tournament: InsertTournament, creatorId: number): Promise<Tournament>;
   joinTournament(tournamentId: number, userId: number): Promise<TournamentParticipant>;
   getTournamentByCode(code: string): Promise<Tournament | undefined>;
+  getTournamentById(id: number): Promise<Tournament | null>;
   getUserTournaments(userId: number): Promise<any[]>;
   getTournamentParticipants(tournamentId: number): Promise<TournamentParticipant[]>;
   
