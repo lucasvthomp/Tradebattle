@@ -309,11 +309,7 @@ export default function Dashboard() {
 
           {/* Tab Navigation */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="personal" className="flex items-center space-x-2">
-                <Target className="w-4 h-4" />
-                <span>Personal Portfolio</span>
-              </TabsTrigger>
+            <TabsList className="grid w-full grid-cols-1">
               <TabsTrigger value="tournament" className="flex items-center space-x-2">
                 <Trophy className="w-4 h-4" />
                 <span>Tournament Trading</span>

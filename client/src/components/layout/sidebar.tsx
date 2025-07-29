@@ -15,7 +15,8 @@ import {
   X,
   ShoppingBag,
   Gift,
-  Target
+  Target,
+  Swords
 } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
@@ -35,7 +36,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { href: "/", label: "Home", icon: Home },
     ...(user ? [
       { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
-      { href: "/tournaments", label: t('tournaments'), icon: Target },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
       { href: "/shop", label: "Shop", icon: ShoppingBag },
