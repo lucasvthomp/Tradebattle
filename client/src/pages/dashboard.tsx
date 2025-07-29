@@ -439,6 +439,8 @@ export default function Dashboard() {
                   changeAmount = currentPrice - historicalPrice;
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                   
+                  console.log(`${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
+                  
                   stockData[stock.symbol] = {
                     ...quoteData.data,
                     price: currentPrice,
@@ -452,6 +454,9 @@ export default function Dashboard() {
                   // Fallback to daily change
                   changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                   changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                  const fallbackPreviousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
+                  
+                  console.log(`${stock.symbol} ${selectedTimeframe} fallback: current=${currentPrice}, previousClose=${fallbackPreviousClose}, change=${changeAmount}`);
                   
                   stockData[stock.symbol] = {
                     ...quoteData.data,
@@ -460,7 +465,7 @@ export default function Dashboard() {
                     changePercent: changePercent,
                     marketCap: marketCap,
                     volume: volume,
-                    previousClose: currentPrice - changeAmount // Calculate from current price and change
+                    previousClose: fallbackPreviousClose // Use actual previous close or calculate
                   };
                 }
               } catch (histError) {
@@ -717,6 +722,8 @@ export default function Dashboard() {
                                           const historicalPrice = historicalData.data[historicalData.data.length - 1].close;
                                           changeAmount = currentPrice - historicalPrice;
                                           changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                                          
+                                          console.log(`MANUAL REFRESH ${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
                                           
                                           stockData[stock.symbol] = {
                                             ...quoteData.data,
