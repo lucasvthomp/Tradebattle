@@ -1,0 +1,122 @@
+Download the React DevTools for a better development experience: https://reactjs.org/link/react-devtools
+dashboard.tsx:454 Historical data error for GS: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)
+fetchWatchlistData @ dashboard.tsx:454
+await in fetchWatchlistData
+(anonymous) @ dashboard.tsx:478
+commitHookEffectListMount @ chunk-276SZO74.js?v=cbdd6d85:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cbdd6d85:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cbdd6d85:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cbdd6d85:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cbdd6d85:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cbdd6d85:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cbdd6d85:19447
+commitRootImpl @ chunk-276SZO74.js?v=cbdd6d85:19416
+commitRoot @ chunk-276SZO74.js?v=cbdd6d85:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cbdd6d85:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cbdd6d85:9119
+(anonymous) @ chunk-276SZO74.js?v=cbdd6d85:18627Understand this error
+dashboard.tsx:454 Historical data error for AAPL: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)
+fetchWatchlistData @ dashboard.tsx:454
+await in fetchWatchlistData
+(anonymous) @ dashboard.tsx:478
+commitHookEffectListMount @ chunk-276SZO74.js?v=cbdd6d85:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cbdd6d85:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cbdd6d85:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cbdd6d85:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cbdd6d85:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cbdd6d85:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cbdd6d85:19447
+commitRootImpl @ chunk-276SZO74.js?v=cbdd6d85:19416
+commitRoot @ chunk-276SZO74.js?v=cbdd6d85:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cbdd6d85:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cbdd6d85:9119
+(anonymous) @ chunk-276SZO74.js?v=cbdd6d85:18627Understand this error
+dashboard.tsx:454 Historical data error for GS: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)
+fetchWatchlistData @ dashboard.tsx:454
+await in fetchWatchlistData
+(anonymous) @ dashboard.tsx:478
+commitHookEffectListMount @ chunk-276SZO74.js?v=cbdd6d85:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cbdd6d85:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cbdd6d85:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cbdd6d85:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cbdd6d85:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cbdd6d85:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cbdd6d85:19447
+commitRootImpl @ chunk-276SZO74.js?v=cbdd6d85:19416
+commitRoot @ chunk-276SZO74.js?v=cbdd6d85:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cbdd6d85:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cbdd6d85:9119
+(anonymous) @ chunk-276SZO74.js?v=cbdd6d85:18627Understand this error
+dashboard.tsx:454 Historical data error for AAPL: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)
+fetchWatchlistData @ dashboard.tsx:454
+await in fetchWatchlistData
+(anonymous) @ dashboard.tsx:478
+commitHookEffectListMount @ chunk-276SZO74.js?v=cbdd6d85:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cbdd6d85:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cbdd6d85:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cbdd6d85:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cbdd6d85:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cbdd6d85:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cbdd6d85:19447
+commitRootImpl @ chunk-276SZO74.js?v=cbdd6d85:19416
+commitRoot @ chunk-276SZO74.js?v=cbdd6d85:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cbdd6d85:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cbdd6d85:9119
+(anonymous) @ chunk-276SZO74.js?v=cbdd6d85:18627Understand this error
+dashboard.tsx:454 Historical data error for GS: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)
+fetchWatchlistData @ dashboard.tsx:454
+await in fetchWatchlistData
+(anonymous) @ dashboard.tsx:478
+commitHookEffectListMount @ chunk-276SZO74.js?v=cbdd6d85:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cbdd6d85:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cbdd6d85:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cbdd6d85:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cbdd6d85:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cbdd6d85:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cbdd6d85:19447
+commitRootImpl @ chunk-276SZO74.js?v=cbdd6d85:19416
+commitRoot @ chunk-276SZO74.js?v=cbdd6d85:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cbdd6d85:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cbdd6d85:9119
+(anonymous) @ chunk-276SZO74.js?v=cbdd6d85:18627Understand this error
+dashboard.tsx:454 Historical data error for AAPL: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)
+fetchWatchlistData @ dashboard.tsx:454
+await in fetchWatchlistData
+(anonymous) @ dashboard.tsx:478
+commitHookEffectListMount @ chunk-276SZO74.js?v=cbdd6d85:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cbdd6d85:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cbdd6d85:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cbdd6d85:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cbdd6d85:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cbdd6d85:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cbdd6d85:19447
+commitRootImpl @ chunk-276SZO74.js?v=cbdd6d85:19416
+commitRoot @ chunk-276SZO74.js?v=cbdd6d85:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cbdd6d85:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cbdd6d85:9119
+(anonymous) @ chunk-276SZO74.js?v=cbdd6d85:18627Understand this error
+dashboard.tsx:454 Historical data error for GS: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)
+fetchWatchlistData @ dashboard.tsx:454
+await in fetchWatchlistData
+(anonymous) @ dashboard.tsx:478
+commitHookEffectListMount @ chunk-276SZO74.js?v=cbdd6d85:16915
+commitPassiveMountOnFiber @ chunk-276SZO74.js?v=cbdd6d85:18156
+commitPassiveMountEffects_complete @ chunk-276SZO74.js?v=cbdd6d85:18129
+commitPassiveMountEffects_begin @ chunk-276SZO74.js?v=cbdd6d85:18119
+commitPassiveMountEffects @ chunk-276SZO74.js?v=cbdd6d85:18109
+flushPassiveEffectsImpl @ chunk-276SZO74.js?v=cbdd6d85:19490
+flushPassiveEffects @ chunk-276SZO74.js?v=cbdd6d85:19447
+commitRootImpl @ chunk-276SZO74.js?v=cbdd6d85:19416
+commitRoot @ chunk-276SZO74.js?v=cbdd6d85:19277
+performSyncWorkOnRoot @ chunk-276SZO74.js?v=cbdd6d85:18895
+flushSyncCallbacks @ chunk-276SZO74.js?v=cbdd6d85:9119
+(anonymous) @ chunk-276SZO74.js?v=cbdd6d85:18627Understand this error
+dashboard.tsx:454 Historical data error for AAPL: Error: Response is not JSON
+    at fetchWatchlistData (dashboard.tsx:426:25)

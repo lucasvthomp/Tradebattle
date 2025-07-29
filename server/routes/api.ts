@@ -148,11 +148,41 @@ router.get('/search/:query', asyncHandler(async (req: any, res: any) => {
 
 /**
  * GET /api/historical/:symbol
- * Get historical price data
+ * Get historical price data with query parameter timeframe
  */
 router.get('/historical/:symbol', asyncHandler(async (req: any, res: any) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
   const timeFrame = sanitizeInput(req.query.timeframe as string || '1M') as TimeFrame;
+  
+  if (!validateSymbol(symbol)) {
+    throw new ValidationError('Invalid symbol format');
+  }
+
+  // Validate timeframe
+  const validTimeframes: TimeFrame[] = ['1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
+  if (!validTimeframes.includes(timeFrame)) {
+    throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
+  }
+
+  try {
+    const historicalData = await getHistoricalData(symbol, timeFrame);
+    res.json({
+      success: true,
+      data: historicalData,
+      timeFrame,
+    });
+  } catch (error) {
+    throw new NotFoundError(`Historical data not found for symbol: ${symbol}`);
+  }
+}));
+
+/**
+ * GET /api/historical/:symbol/:timeframe
+ * Get historical price data with path parameter timeframe
+ */
+router.get('/historical/:symbol/:timeframe', asyncHandler(async (req: any, res: any) => {
+  const symbol = sanitizeInput(req.params.symbol.toUpperCase());
+  const timeFrame = sanitizeInput(req.params.timeframe.toUpperCase()) as TimeFrame;
   
   if (!validateSymbol(symbol)) {
     throw new ValidationError('Invalid symbol format');
