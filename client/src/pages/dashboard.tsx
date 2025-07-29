@@ -333,10 +333,11 @@ export default function Dashboard() {
           try {
             const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
             const data = await response.json();
-            stockData[stock.symbol] = data;
+            // Use the actual Yahoo Finance data structure
+            stockData[stock.symbol] = data.data || data;
           } catch (error) {
             console.error(`Error fetching data for ${stock.symbol}:`, error);
-            stockData[stock.symbol] = { price: 0, changePercent: 0, regularMarketVolume: 0 };
+            stockData[stock.symbol] = null;
           }
         }
         
@@ -524,10 +525,10 @@ export default function Dashboard() {
                                   try {
                                     const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
                                     const data = await response.json();
-                                    stockData[stock.symbol] = data;
+                                    stockData[stock.symbol] = data.data || data;
                                   } catch (error) {
                                     console.error(`Error fetching data for ${stock.symbol}:`, error);
-                                    stockData[stock.symbol] = { price: 0, changePercent: 0, regularMarketVolume: 0 };
+                                    stockData[stock.symbol] = null;
                                   }
                                 }
                                 
@@ -616,32 +617,57 @@ export default function Dashboard() {
                     ) : (
                       <div className="space-y-3">
                         {/* Header Row */}
-                        <div className="grid grid-cols-8 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
+                        <div className="grid grid-cols-6 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
                           <div className="col-span-2">Stock</div>
                           <div className="text-right">Current Price</div>
-                          <div className="text-right">Purchase Price</div>
                           <div className="text-right">Change</div>
-                          <div className="text-right">Change %</div>
                           <div className="text-right">Volume</div>
                           <div className="text-center">Actions</div>
                         </div>
 
                         {watchlist.map((stock) => {
                           const stockData = watchlistStockData[stock.symbol];
-                          const currentPrice = stockData?.price || 0;
-                          const changePercent = stockData?.changePercent || 0;
-                          const change = stockData?.change || 0;
-                          const volume = stockData?.regularMarketVolume || 0;
-                          const isPositive = changePercent >= 0;
                           
-                          // For purchase price, we'll use a placeholder since watchlist doesn't track purchases
-                          // In a real scenario, this would come from user's purchase history
-                          const purchasePrice = currentPrice * (1 - (changePercent / 100));
+                          if (!stockData) {
+                            return (
+                              <div
+                                key={stock.id}
+                                className="grid grid-cols-6 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
+                              >
+                                <div className="col-span-2">
+                                  <div className="font-semibold text-base">{stock.symbol}</div>
+                                  <div className="text-sm text-muted-foreground truncate">
+                                    {stock.companyName}
+                                  </div>
+                                </div>
+                                <div className="col-span-3 text-center text-muted-foreground">
+                                  <RefreshCw className="w-4 h-4 animate-spin inline mr-2" />
+                                  Loading...
+                                </div>
+                                <div className="flex items-center justify-center space-x-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Use real Yahoo Finance data
+                          const currentPrice = stockData.price || stockData.regularMarketPrice || 0;
+                          const changeAmount = stockData.change || stockData.regularMarketChange || 0;
+                          const changePercent = stockData.changePercent || stockData.regularMarketChangePercent || 0;
+                          const volume = stockData.volume || stockData.regularMarketVolume || 0;
+                          const isPositive = changeAmount >= 0;
                           
                           return (
                             <div
                               key={stock.id}
-                              className="grid grid-cols-8 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
+                              className="grid grid-cols-6 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
                             >
                               {/* Stock Info */}
                               <div className="col-span-2">
@@ -658,35 +684,24 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               
-                              {/* Purchase Price */}
-                              <div className="text-right">
-                                <div className="text-muted-foreground">
-                                  {formatCurrency(purchasePrice)}
-                                </div>
-                              </div>
-                              
-                              {/* Change Amount */}
+                              {/* Change Amount & Percentage */}
                               <div className="text-right">
                                 <div className={`font-medium ${
-                                  change >= 0 ? 'text-green-600' : 'text-red-600'
-                                }`}>
-                                  {change >= 0 ? '+' : ''}{formatCurrency(change)}
-                                </div>
-                              </div>
-                              
-                              {/* Change Percentage */}
-                              <div className="text-right">
-                                <div className={`flex items-center justify-end space-x-1 ${
                                   isPositive ? 'text-green-600' : 'text-red-600'
                                 }`}>
-                                  {isPositive ? (
-                                    <TrendingUp className="w-4 h-4" />
-                                  ) : (
-                                    <TrendingDown className="w-4 h-4" />
-                                  )}
-                                  <span className="font-medium">
-                                    {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
-                                  </span>
+                                  <div className="flex items-center justify-end space-x-1">
+                                    {isPositive ? (
+                                      <TrendingUp className="w-4 h-4" />
+                                    ) : (
+                                      <TrendingDown className="w-4 h-4" />
+                                    )}
+                                    <div>
+                                      <div>{isPositive ? '+' : ''}{formatCurrency(changeAmount)}</div>
+                                      <div className="text-xs">
+                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%)
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               </div>
                               
