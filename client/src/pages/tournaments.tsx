@@ -684,122 +684,95 @@ function TournamentCard({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.01 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="h-full hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/50 bg-gradient-to-br from-background to-muted/30 hover:from-primary/5 hover:to-primary/10 group">
-        <CardHeader className="pb-3 relative overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 opacity-5 group-hover:opacity-10 transition-opacity">
-            <div className="w-full h-full bg-gradient-to-r from-primary/20 via-transparent to-secondary/20"></div>
-          </div>
-          
-          <div className="flex items-start justify-between relative z-10">
+      <Card className="h-full hover:shadow-lg transition-all duration-300 border border-border/50 hover:border-border bg-background">
+        <CardHeader className="pb-4">
+          <div className="flex items-start justify-between">
             <div className="flex-1">
-              <CardTitle className="text-lg flex items-center space-x-2 group-hover:text-primary transition-colors">
-                <TournamentTypeIcon className="w-5 h-5" />
-                <span className="truncate font-bold">{tournament.name}</span>
+              <CardTitle className="text-xl font-bold text-foreground mb-2 truncate">
+                {tournament.name}
               </CardTitle>
-              <div className="flex items-center space-x-2 mt-1">
-                <Badge variant={tournament.tournamentType === "crypto" ? "secondary" : "default"} 
-                       className="shadow-sm font-semibold">
-                  {tournament.tournamentType === "crypto" ? "🪙 Crypto" : "📈 Stocks"}
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-muted-foreground">
+                  {tournament.tournamentType === "crypto" ? "Crypto" : "Stocks"}
+                </span>
+                <span className="text-sm text-muted-foreground">•</span>
+                <Badge variant={type === "upcoming" ? "secondary" : "default"} className="text-xs">
+                  {type === "upcoming" ? "Upcoming" : "Live"}
                 </Badge>
-
               </div>
             </div>
-            <Badge variant={type === "upcoming" ? "secondary" : "default"} 
-                   className={`shadow-sm font-bold ${type === "upcoming" ? "bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-100" : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"}`}>
-              {type === "upcoming" ? "⏰ Upcoming" : "🔴 Live"}
-            </Badge>
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-4 relative">
-          {/* Prominent Pot Display */}
-          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl p-4 border-2 border-dashed border-primary/20 group-hover:border-primary/40 transition-all">
-            <div className="text-center">
-              <div className="text-xs font-medium text-muted-foreground mb-1 uppercase tracking-wide">Current Pot</div>
-              <div className="text-2xl font-black text-primary group-hover:scale-105 transition-transform flex items-center justify-center space-x-1">
-                <Trophy className="w-6 h-6 text-yellow-500" />
-                <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                  {formatCurrency(currentPot)}
-                </span>
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                {tournament.currentPlayers} player{tournament.currentPlayers !== 1 ? 's' : ''} joined
-              </div>
+        <CardContent className="space-y-4">
+          {/* Current Pot - Clean */}
+          <div className="text-center py-3 bg-muted/30 rounded-lg">
+            <div className="text-sm text-muted-foreground">Current Pot</div>
+            <div className="text-2xl font-bold text-foreground">
+              {formatCurrency(currentPot)}
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {tournament.currentPlayers} player{tournament.currentPlayers !== 1 ? 's' : ''} joined
             </div>
           </div>
 
-          {/* Tournament Stats */}
-          <div className="grid grid-cols-2 gap-3 text-sm">
-            <div className="flex items-center space-x-2 bg-muted/50 rounded-lg p-3 hover:bg-muted/70 transition-colors">
-              <Users className="w-4 h-4 text-blue-500" />
-              <div>
-                <div className="font-medium">{tournament.currentPlayers}/{tournament.maxPlayers}</div>
-                <div className="text-xs text-muted-foreground">Players</div>
-              </div>
+          {/* Tournament Stats - Simplified */}
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Players</span>
+              <span className="font-medium">{tournament.currentPlayers}/{tournament.maxPlayers}</span>
             </div>
-            <div className="flex items-center space-x-2 bg-muted/50 rounded-lg p-3 hover:bg-muted/70 transition-colors">
-              <Clock className="w-4 h-4 text-orange-500" />
-              <div>
-                <div className="font-medium">{tournament.timeframe}</div>
-                <div className="text-xs text-muted-foreground">Duration</div>
-              </div>
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Duration</span>
+              <span className="font-medium">{tournament.timeframe}</span>
             </div>
-            <div className="flex items-center space-x-2 bg-muted/50 rounded-lg p-3 hover:bg-muted/70 transition-colors col-span-2">
-              <DollarSign className="w-4 h-4 text-green-500" />
-              <div>
-                <div className="font-medium">{formatCurrency(tournament.startingBalance)}</div>
-                <div className="text-xs text-muted-foreground">Starting Balance</div>
-              </div>
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Starting Balance</span>
+              <span className="font-medium">{formatCurrency(tournament.startingBalance)}</span>
             </div>
           </div>
 
           {/* Time Information */}
           {type === "upcoming" && (
-            <div className="text-center p-2 bg-muted/50 rounded-lg">
-              <p className="text-sm font-medium text-orange-600">
+            <div className="text-center p-2 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
+              <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
                 {getTimeRemaining()}
               </p>
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Action Buttons - Simplified */}
           <div className="space-y-2">
-            {/* Chat Button (for all participants) */}
             <Button
               onClick={onOpenChat}
               className="w-full"
-              variant="secondary"
+              variant="outline"
+              size="sm"
             >
-              <MessageSquare className="w-4 h-4 mr-2" />
-              Tournament Chat
+              Chat
             </Button>
             
-            {/* Manage Button (Creator Only) */}
-            {isCreator && (
+            {isCreator ? (
               <Button
                 onClick={onManage}
                 className="w-full"
                 variant="outline"
+                size="sm"
               >
-                <Crown className="w-4 h-4 mr-2" />
-                Manage Tournament
+                Manage
               </Button>
-            )}
-            
-            {/* Join Button (Non-creators) */}
-            {!isCreator && (
+            ) : (
               <Button
                 onClick={onJoin}
                 disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
                 className="w-full"
-                variant={tournament.buyInAmount > 0 ? "default" : "outline"}
+                size="sm"
               >
                 {isJoining ? "Joining..." : 
-                 tournament.currentPlayers >= tournament.maxPlayers ? "Tournament Full" :
+                 tournament.currentPlayers >= tournament.maxPlayers ? "Full" :
                  tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
                 }
               </Button>
