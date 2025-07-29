@@ -116,16 +116,7 @@ export default function TournamentsPage() {
   const [tournamentToJoin, setTournamentToJoin] = useState<any>(null);
   const [agreementChecked, setAgreementChecked] = useState(false);
 
-  // Tournament creation form state
-  const [tournamentForm, setTournamentForm] = useState({
-    name: "", // Tournament title
-    maxPlayers: 10, // Max amount of players
-    startingBalance: 10000, // Starting Fake Cash amount
-    duration: "1 week", // Duration of the tournament
-    startDelay: "5 minutes", // In how many minutes, hours, or days the tournament will start (minimum 5 minutes)
-    isPublic: true, // Private or Public
-    buyInAmount: 0 // Buy-in amount
-  });
+  // Tournament creation is now handled by TournamentCreationDialog component
 
   // Fetch public tournaments
   const { data: publicTournaments, isLoading: publicLoading } = useQuery<{data: any[]}>({
@@ -387,133 +378,14 @@ export default function TournamentsPage() {
                 </DialogContent>
               </Dialog>
 
-              <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create Tournament
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
-                  <DialogHeader>
-                    <DialogTitle>Create New Tournament</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-6">
-                    {/* Tournament Name */}
-                    <div>
-                      <Label htmlFor="tournament-name">Tournament Name</Label>
-                      <Input
-                        id="tournament-name"
-                        value={tournamentForm.name}
-                        onChange={(e) => setTournamentForm(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Enter tournament name"
-                      />
-                    </div>
-
-                    {/* Max Players */}
-                    <div>
-                      <Label>Max Players</Label>
-                      <Input
-                        type="number"
-                        min="2"
-                        max="100"
-                        value={tournamentForm.maxPlayers}
-                        onChange={(e) => setTournamentForm(prev => ({ ...prev, maxPlayers: parseInt(e.target.value) }))}
-                      />
-                    </div>
-
-                    {/* Starting Balance and Buy-in */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label>Starting Fake Cash</Label>
-                        <Input
-                          type="number"
-                          min="1000"
-                          max="1000000"
-                          step="1000"
-                          value={tournamentForm.startingBalance}
-                          onChange={(e) => setTournamentForm(prev => ({ ...prev, startingBalance: parseInt(e.target.value) }))}
-                        />
-                      </div>
-                      <div>
-                        <Label>Buy-in Amount ({formatCurrency(0)})</Label>
-                        <Input
-                          type="number"
-                          min="0"
-                          max="1000"
-                          step="5"
-                          value={tournamentForm.buyInAmount}
-                          onChange={(e) => setTournamentForm(prev => ({ ...prev, buyInAmount: parseInt(e.target.value) }))}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Duration and Start Time */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label>Duration</Label>
-                        <Select 
-                          value={tournamentForm.duration} 
-                          onValueChange={(value) => setTournamentForm(prev => ({ ...prev, duration: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {DURATION_OPTIONS.map(option => (
-                              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label>Start Time</Label>
-                        <Select 
-                          value={tournamentForm.startDelay} 
-                          onValueChange={(value) => setTournamentForm(prev => ({ ...prev, startDelay: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {START_DELAY_OPTIONS.map(option => (
-                              <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-
-
-
-                    {/* Public/Private Toggle */}
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        {tournamentForm.isPublic ? <Globe className="w-5 h-5" /> : <Lock className="w-5 h-5" />}
-                        <div>
-                          <Label>Tournament Visibility</Label>
-                          <p className="text-sm text-muted-foreground">
-                            {tournamentForm.isPublic ? "Public tournaments appear in the tournament browser" : "Private tournaments require a code to join"}
-                          </p>
-                        </div>
-                      </div>
-                      <Switch
-                        checked={tournamentForm.isPublic}
-                        onCheckedChange={(checked) => setTournamentForm(prev => ({ ...prev, isPublic: checked }))}
-                      />
-                    </div>
-
-                    {/* Create Button */}
-                    <Button 
-                      onClick={() => createTournamentMutation.mutate(tournamentForm)}
-                      disabled={createTournamentMutation.isPending || !tournamentForm.name}
-                      className="w-full"
-                    >
-                      {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
+              <TournamentCreationDialog 
+                isOpen={createDialogOpen} 
+                onClose={() => setCreateDialogOpen(false)} 
+              />
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="w-4 h-4 mr-2" />
+                Create Tournament
+              </Button>
             </div>
           </motion.div>
 
