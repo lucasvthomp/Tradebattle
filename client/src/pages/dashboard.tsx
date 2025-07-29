@@ -412,7 +412,7 @@ export default function Dashboard() {
                 volume: volume
               };
             } else {
-              // For other timeframes, try to fetch historical data but don't block on it
+              // For other timeframes, fetch historical data with proper error handling
               try {
                 const historicalResponse = await Promise.race([
                   apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`),
@@ -423,8 +423,9 @@ export default function Dashboard() {
                 let changeAmount = 0;
                 let changePercent = 0;
                 
-                if (historicalData.data && historicalData.data.length > 0) {
-                  const historicalPrice = historicalData.data[0].close;
+                if (historicalData.success && historicalData.data && historicalData.data.length > 0) {
+                  // Get the earliest price in the historical data (starting point for the timeframe)
+                  const historicalPrice = historicalData.data[historicalData.data.length - 1].close;
                   changeAmount = currentPrice - historicalPrice;
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                 } else {
@@ -439,9 +440,11 @@ export default function Dashboard() {
                   change: changeAmount,
                   changePercent: changePercent,
                   marketCap: marketCap,
-                  volume: volume
+                  volume: volume,
+                  timeframe: selectedTimeframe
                 };
               } catch (histError) {
+                console.error(`Historical data error for ${stock.symbol}:`, histError);
                 // If historical data fails, use daily change as fallback
                 const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                 const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
@@ -452,7 +455,8 @@ export default function Dashboard() {
                   change: changeAmount,
                   changePercent: changePercent,
                   marketCap: marketCap,
-                  volume: volume
+                  volume: volume,
+                  timeframe: '1d'
                 };
               }
             }
@@ -667,7 +671,7 @@ export default function Dashboard() {
                                         volume: volume
                                       };
                                     } else {
-                                      // For other timeframes, try historical data with timeout
+                                      // For other timeframes, fetch historical data with proper error handling
                                       try {
                                         const historicalResponse = await Promise.race([
                                           apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`),
@@ -678,8 +682,9 @@ export default function Dashboard() {
                                         let changeAmount = 0;
                                         let changePercent = 0;
                                         
-                                        if (historicalData.data && historicalData.data.length > 0) {
-                                          const historicalPrice = historicalData.data[0].close;
+                                        if (historicalData.success && historicalData.data && historicalData.data.length > 0) {
+                                          // Get the earliest price in the historical data (starting point for the timeframe)
+                                          const historicalPrice = historicalData.data[historicalData.data.length - 1].close;
                                           changeAmount = currentPrice - historicalPrice;
                                           changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                                         } else {
@@ -693,9 +698,11 @@ export default function Dashboard() {
                                           change: changeAmount,
                                           changePercent: changePercent,
                                           marketCap: marketCap,
-                                          volume: volume
+                                          volume: volume,
+                                          timeframe: selectedTimeframe
                                         };
                                       } catch (histError) {
+                                        console.error(`Manual refresh historical data error for ${stock.symbol}:`, histError);
                                         // Fallback to daily change
                                         const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                                         const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
@@ -706,7 +713,8 @@ export default function Dashboard() {
                                           change: changeAmount,
                                           changePercent: changePercent,
                                           marketCap: marketCap,
-                                          volume: volume
+                                          volume: volume,
+                                          timeframe: '1d'
                                         };
                                       }
                                     }
@@ -828,6 +836,7 @@ export default function Dashboard() {
                           const changePercent = stockData.changePercent || 0;
                           const marketCap = stockData.marketCap || 0;
                           const volume = stockData.volume || 0;
+                          const displayTimeframe = stockData.timeframe || selectedTimeframe;
                           const isPositive = changeAmount >= 0;
                           
                           // Format market cap in billions/millions
@@ -873,7 +882,7 @@ export default function Dashboard() {
                                     <div>
                                       <div>{isPositive ? '+' : ''}{formatCurrency(changeAmount)}</div>
                                       <div className="text-xs">
-                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%) {selectedTimeframe.toUpperCase()}
+                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%) {displayTimeframe.toUpperCase()}
                                       </div>
                                     </div>
                                   </div>
