@@ -29,7 +29,6 @@ export function SimplifiedSidebar() {
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
 
   const navItems = [
-    { href: "/", label: "Home", icon: Home },
     ...(user ? [
       { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
       { href: "/tournaments", label: t('tournaments'), icon: Swords },
@@ -37,8 +36,10 @@ export function SimplifiedSidebar() {
       { href: "/people", label: t('people'), icon: Users },
       { href: "/events", label: "Events", icon: Calendar },
       { href: "/shop", label: "Shop", icon: ShoppingBag },
-    ] : []),
-    { href: "/contact", label: "Support", icon: Phone },
+      { href: "/contact", label: "Support", icon: Phone },
+    ] : [
+      { href: "/contact", label: "Support", icon: Phone },
+    ]),
   ];
 
   const userItems = user ? [

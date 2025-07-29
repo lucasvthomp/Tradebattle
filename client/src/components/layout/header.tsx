@@ -23,9 +23,9 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
-          {/* Left side - Logo only */}
+          {/* Left side - Logo - clicks to hub if authenticated, home if not */}
           <div className="flex items-center space-x-4">
-            <Link href="/" className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
+            <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">O</span>
               </div>
@@ -37,7 +37,7 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {user ? (
               <>
-                {/* Chat Button */}
+                {/* Chat Button - only show for authenticated users */}
                 <Button
                   onClick={() => setChatOpen(!chatOpen)}
                   variant="ghost"

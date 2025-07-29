@@ -8,7 +8,8 @@ import { ThemeProvider } from "@/hooks/use-theme";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
-import Home from "@/pages/home";
+import UnauthenticatedHome from "@/pages/unauthenticated-home";
+import Hub from "@/pages/hub";
 import Dashboard from "@/pages/dashboard";
 import Portfolio from "@/pages/portfolio";
 import Tournaments from "@/pages/tournaments";
@@ -43,11 +44,10 @@ function Router() {
   return (
     <Layout>
       <Switch>
-        {/* Home route always shows landing page */}
-        <Route path="/" component={Landing} />
-        
         {!user ? (
           <>
+            {/* Unauthenticated users see the conversion-focused home page */}
+            <Route path="/" component={UnauthenticatedHome} />
             <Route path="/contact" component={Contact} />
             <Route path="/about" component={About} />
             <Route path="/privacy" component={Privacy} />
@@ -57,6 +57,9 @@ function Router() {
           </>
         ) : (
           <>
+            {/* Authenticated users: root redirects to dashboard, hub accessible via logo */}
+            <Route path="/" component={Dashboard} />
+            <Route path="/hub" component={Hub} />
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/portfolio" component={Dashboard} />
             <Route path="/tournaments" component={Tournaments} />
@@ -77,7 +80,7 @@ function Router() {
         )}
         <Route component={NotFound} />
       </Switch>
-      <Footer />
+      {user && <Footer />}
     </Layout>
   );
 }
