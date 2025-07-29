@@ -414,11 +414,19 @@ export default function Dashboard() {
             } else {
               // For other timeframes, fetch historical data with proper error handling
               try {
-                const historicalResponse = await Promise.race([
-                  apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`),
-                  new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
-                ]);
-                const historicalData = await (historicalResponse as Response).json();
+                const historicalResponse = await fetch(`/api/historical/${stock.symbol}/${selectedTimeframe}`);
+                
+                // Check if response is ok and content type is JSON
+                if (!historicalResponse.ok) {
+                  throw new Error(`HTTP ${historicalResponse.status}`);
+                }
+                
+                const contentType = historicalResponse.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                  throw new Error('Response is not JSON');
+                }
+                
+                const historicalData = await historicalResponse.json();
                 
                 let changeAmount = 0;
                 let changePercent = 0;
@@ -440,8 +448,7 @@ export default function Dashboard() {
                   change: changeAmount,
                   changePercent: changePercent,
                   marketCap: marketCap,
-                  volume: volume,
-                  timeframe: selectedTimeframe
+                  volume: volume
                 };
               } catch (histError) {
                 console.error(`Historical data error for ${stock.symbol}:`, histError);
@@ -455,8 +462,7 @@ export default function Dashboard() {
                   change: changeAmount,
                   changePercent: changePercent,
                   marketCap: marketCap,
-                  volume: volume,
-                  timeframe: '1d'
+                  volume: volume
                 };
               }
             }
@@ -673,11 +679,19 @@ export default function Dashboard() {
                                     } else {
                                       // For other timeframes, fetch historical data with proper error handling
                                       try {
-                                        const historicalResponse = await Promise.race([
-                                          apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`),
-                                          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 3000))
-                                        ]);
-                                        const historicalData = await (historicalResponse as Response).json();
+                                        const historicalResponse = await fetch(`/api/historical/${stock.symbol}/${selectedTimeframe}`);
+                                        
+                                        // Check if response is ok and content type is JSON
+                                        if (!historicalResponse.ok) {
+                                          throw new Error(`HTTP ${historicalResponse.status}`);
+                                        }
+                                        
+                                        const contentType = historicalResponse.headers.get('content-type');
+                                        if (!contentType || !contentType.includes('application/json')) {
+                                          throw new Error('Response is not JSON');
+                                        }
+                                        
+                                        const historicalData = await historicalResponse.json();
                                         
                                         let changeAmount = 0;
                                         let changePercent = 0;
@@ -698,8 +712,7 @@ export default function Dashboard() {
                                           change: changeAmount,
                                           changePercent: changePercent,
                                           marketCap: marketCap,
-                                          volume: volume,
-                                          timeframe: selectedTimeframe
+                                          volume: volume
                                         };
                                       } catch (histError) {
                                         console.error(`Manual refresh historical data error for ${stock.symbol}:`, histError);
@@ -713,8 +726,7 @@ export default function Dashboard() {
                                           change: changeAmount,
                                           changePercent: changePercent,
                                           marketCap: marketCap,
-                                          volume: volume,
-                                          timeframe: '1d'
+                                          volume: volume
                                         };
                                       }
                                     }
@@ -836,7 +848,7 @@ export default function Dashboard() {
                           const changePercent = stockData.changePercent || 0;
                           const marketCap = stockData.marketCap || 0;
                           const volume = stockData.volume || 0;
-                          const displayTimeframe = stockData.timeframe || selectedTimeframe;
+
                           const isPositive = changeAmount >= 0;
                           
                           // Format market cap in billions/millions
@@ -882,7 +894,7 @@ export default function Dashboard() {
                                     <div>
                                       <div>{isPositive ? '+' : ''}{formatCurrency(changeAmount)}</div>
                                       <div className="text-xs">
-                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%) {displayTimeframe.toUpperCase()}
+                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%) {selectedTimeframe.toUpperCase()}
                                       </div>
                                     </div>
                                   </div>
