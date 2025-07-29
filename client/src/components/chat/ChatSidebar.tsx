@@ -157,7 +157,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onToggle}
-            className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed top-16 left-0 right-0 bottom-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
           />
 
           {/* Chat Sidebar */}
@@ -166,7 +166,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-full w-80 bg-background/95 backdrop-blur-md border-l border-border/50 z-50 flex flex-col"
+            className="fixed top-16 right-0 bottom-0 w-80 bg-background/80 backdrop-blur-lg border-l border-border/30 z-50 flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-border/50">
