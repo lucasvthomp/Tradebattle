@@ -33,8 +33,12 @@ import {
   TrendingUp,
   Bitcoin,
   Timer,
-  Crown
+  Crown,
+  Info,
+  Gift
 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 
@@ -63,6 +67,20 @@ const START_DELAY_OPTIONS = [
   { value: "1 week", label: "1 Week" },
 ];
 
+// Info tooltip component
+const InfoTooltip = ({ content }: { content: string }) => (
+  <TooltipProvider>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Info className="w-4 h-4 text-muted-foreground hover:text-foreground cursor-help" />
+      </TooltipTrigger>
+      <TooltipContent side="top" className="max-w-xs">
+        <p className="text-sm">{content}</p>
+      </TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
+);
+
 export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreationDialogProps) {
   const { user } = useAuth();
   const { formatCurrency, t } = useUserPreferences();
@@ -76,7 +94,9 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     startingBalance: 10000, // 4. Starting Fake Cash amount
     duration: "1 week", // 5. Duration of the tournament
     startDelay: "immediate", // 6. In how many minutes, hours, or days the tournament will start (max one week)
-    isPublic: true // 7. Private or Public
+    isPublic: true, // 7. Private or Public
+    buyInAmount: 0, // Buy-in amount
+    agreeToTerms: false // Terms of service agreement
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
@@ -84,7 +104,16 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
   // Create tournament mutation
   const createTournamentMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
-      const res = await apiRequest("POST", "/api/tournaments", data);
+      const res = await apiRequest("POST", "/api/tournaments", {
+        name: data.name,
+        maxPlayers: data.maxPlayers,
+        tournamentType: data.tournamentType,
+        startingBalance: data.startingBalance,
+        duration: data.duration,
+        scheduledStartTime: data.startDelay === 'immediate' ? null : new Date(Date.now() + (data.startDelay === '30 minutes' ? 30 * 60 * 1000 : data.startDelay === '1 hour' ? 60 * 60 * 1000 : 0)).toISOString(),
+        buyInAmount: data.buyInAmount,
+        isPublic: data.isPublic
+      });
       return res.json();
     },
     onSuccess: () => {
@@ -96,7 +125,9 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         startingBalance: 10000,
         duration: "1 week",
         startDelay: "immediate",
-        isPublic: true
+        isPublic: true,
+        buyInAmount: 0,
+        agreeToTerms: false
       });
       setErrors({});
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
@@ -137,6 +168,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       newErrors.startingBalance = "Maximum starting balance is $1,000,000";
     }
 
+    if (!formData.agreeToTerms) {
+      newErrors.agreeToTerms = "You must agree to the terms of service";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -169,9 +204,12 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* 1. Tournament Title */}
           <div className="space-y-2">
-            <Label htmlFor="tournament-name" className="text-sm font-medium">
-              Tournament Title
-            </Label>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="tournament-name" className="text-sm font-medium">
+                Tournament Title
+              </Label>
+              <InfoTooltip content="Choose a unique and descriptive name for your tournament that participants will see when browsing." />
+            </div>
             <Input
               id="tournament-name"
               placeholder="Enter tournament name..."
@@ -184,9 +222,12 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* 2. Max Players */}
           <div className="space-y-2">
-            <Label htmlFor="max-players" className="text-sm font-medium">
-              Maximum Players
-            </Label>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="max-players" className="text-sm font-medium">
+                Maximum Players
+              </Label>
+              <InfoTooltip content="Set the maximum number of participants (2-50). Tournament starts when this limit is reached or manually started." />
+            </div>
             <Input
               id="max-players"
               type="number"
@@ -201,7 +242,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* 3. Tournament Type */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Tournament Type</Label>
+            <div className="flex items-center space-x-2">
+              <Label className="text-sm font-medium">Tournament Type</Label>
+              <InfoTooltip content="Stocks: Trade traditional stock markets during market hours. Crypto: Trade cryptocurrencies 24/7." />
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <Card 
                 className={`cursor-pointer transition-all ${
@@ -241,9 +285,12 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* 4. Starting Cash */}
           <div className="space-y-2">
-            <Label htmlFor="starting-balance" className="text-sm font-medium">
-              Starting Fake Cash Amount
-            </Label>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="starting-balance" className="text-sm font-medium">
+                Starting Fake Money
+              </Label>
+              <InfoTooltip content="Virtual currency amount each participant starts with. This is paper money for practice trading - no real money involved." />
+            </div>
             <Input
               id="starting-balance"
               type="number"
@@ -262,7 +309,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* 5. Duration */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Tournament Duration</Label>
+            <div className="flex items-center space-x-2">
+              <Label className="text-sm font-medium">Tournament Duration</Label>
+              <InfoTooltip content="How long the tournament will run. Participants can trade within this timeframe to compete." />
+            </div>
             <Select value={formData.duration} onValueChange={(value) => updateField("duration", value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -279,7 +329,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* 6. Start Delay */}
           <div className="space-y-2">
-            <Label className="text-sm font-medium">Tournament Start Time</Label>
+            <div className="flex items-center space-x-2">
+              <Label className="text-sm font-medium">Tournament Start Time</Label>
+              <InfoTooltip content="When the tournament will begin. 'Immediate' starts as soon as enough players join." />
+            </div>
             <Select value={formData.startDelay} onValueChange={(value) => updateField("startDelay", value)}>
               <SelectTrigger>
                 <SelectValue />
@@ -296,7 +349,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* 7. Privacy Setting */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium">Tournament Visibility</Label>
+            <div className="flex items-center space-x-2">
+              <Label className="text-sm font-medium">Tournament Visibility</Label>
+              <InfoTooltip content="Public: Anyone can find and join. Private: Only people with the join code can participate. Private tournaments give you more control." />
+            </div>
             <div className="flex items-center justify-between p-4 border rounded-lg">
               <div className="flex items-center space-x-3">
                 {formData.isPublic ? (
@@ -337,7 +393,75 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             )}
           </div>
 
+          {/* Buy-in Amount Section */}
+          <div className="space-y-3">
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="buy-in-amount" className="text-sm font-medium">
+                Buy-in Amount (Optional)
+              </Label>
+              <InfoTooltip content="Optional entry fee that creates a prize pool. Participants pay this amount to join, and the platform takes a 5% commission." />
+            </div>
+            <Input
+              id="buy-in-amount"
+              type="number"
+              min="0"
+              max="1000"
+              step="1"
+              value={formData.buyInAmount}
+              onChange={(e) => updateField("buyInAmount", parseInt(e.target.value) || 0)}
+              placeholder="0"
+            />
+            <p className="text-sm text-muted-foreground">
+              Entry Fee: {formatCurrency(formData.buyInAmount)} {formData.buyInAmount > 0 && `(Prize Pool: ${formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.95)})`}
+            </p>
+
+            {/* Buy-in Incentive Box */}
+            {formData.buyInAmount > 0 && (
+              <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Gift className="w-5 h-5 text-green-600" />
+                  <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                    Buy-in Tournament Benefits
+                  </p>
+                </div>
+                <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
+                  <li>• Creates competitive prize pool for winners</li>
+                  <li>• Attracts more serious traders</li>
+                  <li>• Platform takes only 5% commission</li>
+                  <li>• Winner takes 95% of total prize pool</li>
+                </ul>
+                <div className="mt-3 p-2 bg-green-100 dark:bg-green-900/30 rounded text-xs text-green-800 dark:text-green-200">
+                  <strong>Prize Breakdown:</strong> Total pot: {formatCurrency(formData.buyInAmount * formData.maxPlayers)} → Winner gets: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.95)} (Platform fee: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.05)})
+                </div>
+              </div>
+            )}
+          </div>
+
           <Separator />
+
+          {/* Terms of Service Agreement */}
+          <div className="space-y-3">
+            <div className="flex items-start space-x-3 p-4 border rounded-lg">
+              <Checkbox
+                id="agree-terms"
+                checked={formData.agreeToTerms}
+                onCheckedChange={(checked) => updateField("agreeToTerms", checked)}
+                className="mt-0.5"
+              />
+              <div className="flex-1">
+                <Label 
+                  htmlFor="agree-terms" 
+                  className="text-sm font-medium cursor-pointer"
+                >
+                  I agree to the Terms of Service
+                </Label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  By creating this tournament, you agree to our platform rules, fair play policies, and understand that this is virtual trading with no real money risk.
+                </p>
+              </div>
+            </div>
+            {errors.agreeToTerms && <p className="text-sm text-red-500">{errors.agreeToTerms}</p>}
+          </div>
 
           {/* Submit Button */}
           <div className="flex justify-end space-x-3">
@@ -350,8 +474,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             </Button>
             <Button
               onClick={handleSubmit}
-              disabled={createTournamentMutation.isPending}
-              className="bg-blue-600 hover:bg-blue-700"
+              disabled={createTournamentMutation.isPending || !formData.agreeToTerms}
+              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50"
             >
               {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
             </Button>
