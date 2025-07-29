@@ -1,8 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Trophy, Users, TrendingUp, Archive, Crown, Medal, Award } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, Trophy, Users, TrendingUp, Archive, Crown, Medal, Award, FileText, ArrowUpDown, DollarSign } from "lucide-react";
 import { format } from "date-fns";
+import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 interface Participant {
   userId: number;
@@ -28,6 +31,9 @@ interface ArchivedTournament {
 
 
 export default function ArchivePage() {
+  const { user } = useAuth();
+  const { formatCurrency } = useUserPreferences();
+
   const { data: archivedTournaments, isLoading: tournamentsLoading } = useQuery({
     queryKey: ['/api/tournaments/archived'],
     queryFn: async () => {
@@ -40,6 +46,20 @@ export default function ArchivePage() {
     }
   });
 
+  // Fetch transaction history for personal portfolio
+  const { data: transactionHistory, isLoading: transactionsLoading } = useQuery({
+    queryKey: ['/api/portfolio/personal/transactions'],
+    queryFn: async () => {
+      const res = await fetch('/api/portfolio/personal/transactions');
+      if (!res.ok) {
+        throw new Error('Failed to fetch transaction history');
+      }
+      const data = await res.json();
+      return data.data || [];
+    },
+    enabled: !!user
+  });
+
 
 
   return (
@@ -50,11 +70,24 @@ export default function ArchivePage() {
           Archive
         </h1>
         <p className="text-muted-foreground">
-          View your completed tournaments
+          View your completed tournaments and transaction history
         </p>
       </div>
 
-      <div className="grid gap-4">
+      <Tabs defaultValue="tournaments" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="tournaments" className="flex items-center space-x-2">
+            <Trophy className="w-4 h-4" />
+            <span>Completed Tournaments</span>
+          </TabsTrigger>
+          <TabsTrigger value="transactions" className="flex items-center space-x-2">
+            <FileText className="w-4 h-4" />
+            <span>Transaction History</span>
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="tournaments" className="mt-6">
+          <div className="grid gap-4">
         {tournamentsLoading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
@@ -153,7 +186,68 @@ export default function ArchivePage() {
             </Card>
           ))
         )}
-      </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="transactions" className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <ArrowUpDown className="w-5 h-5" />
+                <span>Personal Portfolio Transaction History</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {transactionsLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                  <p className="mt-2 text-muted-foreground">Loading transaction history...</p>
+                </div>
+              ) : transactionHistory?.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold mb-2">No Transaction History</h3>
+                  <p className="text-muted-foreground">
+                    You haven't made any trades in your personal portfolio yet.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {transactionHistory?.map((transaction: any, index: number) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex items-center space-x-4">
+                        <Badge
+                          variant={transaction.type === 'buy' ? 'default' : 'secondary'}
+                          className={transaction.type === 'buy' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}
+                        >
+                          {transaction.type === 'buy' ? 'BUY' : 'SELL'}
+                        </Badge>
+                        <div>
+                          <div className="font-semibold">{transaction.symbol}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {format(new Date(transaction.createdAt), 'MMM d, yyyy h:mm a')}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">
+                          {formatCurrency(transaction.amount)}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          @ {formatCurrency(transaction.pricePerShare || 0)}/share
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
