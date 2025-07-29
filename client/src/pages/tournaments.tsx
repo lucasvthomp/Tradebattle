@@ -60,22 +60,7 @@ const staggerChildren = {
   }
 };
 
-// Tournament trading restriction options
-const TRADING_RESTRICTIONS = [
-  { value: "none", label: "No Restrictions", icon: Globe },
-  { value: "blue-chip", label: "Blue Chip Stocks", icon: Shield },
-  { value: "tech", label: "Technology", icon: Building },
-  { value: "finance", label: "Financial", icon: DollarSign },
-  { value: "healthcare", label: "Healthcare", icon: Target },
-  { value: "energy", label: "Energy", icon: TrendingUp },
-  { value: "consumer", label: "Consumer Goods", icon: Users },
-  { value: "industrial", label: "Industrial", icon: Building },
-  { value: "automotive", label: "Automotive", icon: Building },
-  { value: "real-estate", label: "Real Estate", icon: Building },
-  { value: "crypto", label: "Cryptocurrency", icon: Bitcoin },
-  { value: "small-cap", label: "Small Cap", icon: Target },
-  { value: "dividend", label: "Dividend Stocks", icon: DollarSign }
-];
+
 
 // Duration options for tournament creation
 const DURATION_OPTIONS = [
@@ -94,9 +79,8 @@ const DURATION_OPTIONS = [
   { value: "4 weeks", label: "4 Weeks", ms: 28 * 24 * 60 * 60 * 1000 }
 ];
 
-// Start delay options
+// Start delay options (minimum 5 minutes)
 const START_DELAY_OPTIONS = [
-  { value: "immediate", label: "Start Immediately", ms: 0 },
   { value: "5 minutes", label: "5 Minutes", ms: 5 * 60 * 1000 },
   { value: "15 minutes", label: "15 Minutes", ms: 15 * 60 * 1000 },
   { value: "30 minutes", label: "30 Minutes", ms: 30 * 60 * 1000 },
@@ -126,17 +110,15 @@ export default function TournamentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [tournamentChatOpen, setTournamentChatOpen] = useState<number | null>(null);
 
-  // Tournament creation form state - exactly 7 options as specified
+  // Tournament creation form state
   const [tournamentForm, setTournamentForm] = useState({
     name: "", // Tournament title
     maxPlayers: 10, // Max amount of players
-    tournamentType: "stocks", // Stock or Crypto tournament
     startingBalance: 10000, // Starting Fake Cash amount
     duration: "1 week", // Duration of the tournament
-    startDelay: "immediate", // In how many minutes, hours, or days the tournament will start (max one week)
+    startDelay: "5 minutes", // In how many minutes, hours, or days the tournament will start (minimum 5 minutes)
     isPublic: true, // Private or Public
-    buyInAmount: 0, // Buy-in amount
-    tradingRestriction: "none" // Trading restrictions
+    buyInAmount: 0 // Buy-in amount
   });
 
   // Fetch public tournaments
@@ -172,13 +154,11 @@ export default function TournamentsPage() {
   // Create tournament mutation
   const createTournamentMutation = useMutation({
     mutationFn: async (formData: typeof tournamentForm) => {
-      const scheduledStartTime = formData.startDelay === "immediate" 
-        ? null 
-        : new Date(Date.now() + START_DELAY_OPTIONS.find(opt => opt.value === formData.startDelay)!.ms);
+      const scheduledStartTime = new Date(Date.now() + START_DELAY_OPTIONS.find(opt => opt.value === formData.startDelay)!.ms);
 
       const res = await apiRequest("POST", "/api/tournaments", {
         ...formData,
-        scheduledStartTime: scheduledStartTime?.toISOString()
+        scheduledStartTime: scheduledStartTime.toISOString()
       });
       return res.json();
     },
@@ -187,13 +167,11 @@ export default function TournamentsPage() {
       setTournamentForm({
         name: "",
         maxPlayers: 10,
-        tournamentType: "stocks",
         startingBalance: 10000,
         duration: "1 week",
-        startDelay: "immediate",
+        startDelay: "5 minutes",
         isPublic: true,
-        buyInAmount: 0,
-        tradingRestriction: "none"
+        buyInAmount: 0
       });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       toast({
@@ -224,9 +202,17 @@ export default function TournamentsPage() {
     ) || []
   };
 
-  // Sort tournaments
+  // Sort tournaments (owner's tournaments first)
   const sortTournaments = (tournaments: any[]) => {
     return [...tournaments].sort((a, b) => {
+      // Prioritize user's own tournaments first
+      const aIsOwner = a.creatorId === user?.id;
+      const bIsOwner = b.creatorId === user?.id;
+      
+      if (aIsOwner && !bIsOwner) return -1;
+      if (!aIsOwner && bIsOwner) return 1;
+      
+      // Then sort by the selected criteria
       switch (sortBy) {
         case "starting-soon":
           return new Date(a.scheduledStartTime || a.createdAt).getTime() - new Date(b.scheduledStartTime || b.createdAt).getTime();
@@ -331,33 +317,16 @@ export default function TournamentsPage() {
                       />
                     </div>
 
-                    {/* Tournament Type and Max Players */}
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <Label>Tournament Type</Label>
-                        <Select 
-                          value={tournamentForm.tournamentType} 
-                          onValueChange={(value) => setTournamentForm(prev => ({ ...prev, tournamentType: value }))}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="stocks">Stocks</SelectItem>
-                            <SelectItem value="crypto">Crypto</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <Label>Max Players</Label>
-                        <Input
-                          type="number"
-                          min="2"
-                          max="100"
-                          value={tournamentForm.maxPlayers}
-                          onChange={(e) => setTournamentForm(prev => ({ ...prev, maxPlayers: parseInt(e.target.value) }))}
-                        />
-                      </div>
+                    {/* Max Players */}
+                    <div>
+                      <Label>Max Players</Label>
+                      <Input
+                        type="number"
+                        min="2"
+                        max="100"
+                        value={tournamentForm.maxPlayers}
+                        onChange={(e) => setTournamentForm(prev => ({ ...prev, maxPlayers: parseInt(e.target.value) }))}
+                      />
                     </div>
 
                     {/* Starting Balance and Buy-in */}
@@ -422,25 +391,7 @@ export default function TournamentsPage() {
                       </div>
                     </div>
 
-                    {/* Trading Restriction */}
-                    <div>
-                      <Label>Trading Restriction</Label>
-                      <Select 
-                        value={tournamentForm.tradingRestriction} 
-                        onValueChange={(value) => setTournamentForm(prev => ({ ...prev, tradingRestriction: value }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {TRADING_RESTRICTIONS.map(restriction => (
-                            <SelectItem key={restriction.value} value={restriction.value}>
-                              {restriction.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+
 
                     {/* Public/Private Toggle */}
                     <div className="flex items-center justify-between p-4 border rounded-lg">
@@ -712,11 +663,7 @@ function TournamentCard({
                        className="shadow-sm font-semibold">
                   {tournament.tournamentType === "crypto" ? "🪙 Crypto" : "📈 Stocks"}
                 </Badge>
-                {tournament.tradingRestriction !== "none" && (
-                  <Badge variant="outline" className="text-xs bg-muted/50">
-                    {TRADING_RESTRICTIONS.find(r => r.value === tournament.tradingRestriction)?.label}
-                  </Badge>
-                )}
+
               </div>
             </div>
             <Badge variant={type === "upcoming" ? "secondary" : "default"} 
