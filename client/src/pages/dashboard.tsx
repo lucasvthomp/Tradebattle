@@ -401,8 +401,14 @@ export default function Dashboard() {
             // For 1D timeframe, use the daily change from quote data
             if (selectedTimeframe === '1D') {
               const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
-              const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
               const previousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
+              // Calculate percentage change manually if not provided
+              let changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+              if (changePercent === 0 && previousClose > 0) {
+                changePercent = (changeAmount / previousClose) * 100;
+              }
+              
+
               
               stockData[stock.symbol] = {
                 ...quoteData.data,
@@ -440,12 +446,7 @@ export default function Dashboard() {
                   changeAmount = currentPrice - historicalPrice;
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                   
-                  console.log(`${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
-                console.log(`${stock.symbol} historical data (first/last):`, {
-                  first: historicalData.data[0],
-                  last: historicalData.data[historicalData.data.length - 1],
-                  length: historicalData.data.length
-                });
+
                   
                   stockData[stock.symbol] = {
                     ...quoteData.data,
@@ -462,7 +463,7 @@ export default function Dashboard() {
                   changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
                   const fallbackPreviousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
                   
-                  console.log(`${stock.symbol} ${selectedTimeframe} fallback: current=${currentPrice}, previousClose=${fallbackPreviousClose}, change=${changeAmount}`);
+
                   
                   stockData[stock.symbol] = {
                     ...quoteData.data,
@@ -691,8 +692,12 @@ export default function Dashboard() {
                                     // For 1D timeframe, use the daily change from quote data
                                     if (selectedTimeframe === '1D') {
                                       const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
-                                      const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
                                       const previousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
+                                      // Calculate percentage change manually if not provided
+                                      let changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                      if (changePercent === 0 && previousClose > 0) {
+                                        changePercent = (changeAmount / previousClose) * 100;
+                                      }
                                       
                                       stockData[stock.symbol] = {
                                         ...quoteData.data,
@@ -730,12 +735,7 @@ export default function Dashboard() {
                                           changeAmount = currentPrice - historicalPrice;
                                           changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                                           
-                                          console.log(`MANUAL REFRESH ${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
-                          console.log(`MANUAL REFRESH ${stock.symbol} historical data (first/last):`, {
-                            first: historicalData.data[0],
-                            last: historicalData.data[historicalData.data.length - 1],
-                            length: historicalData.data.length
-                          });
+
                                           
                                           stockData[stock.symbol] = {
                                             ...quoteData.data,
