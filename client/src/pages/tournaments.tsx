@@ -44,6 +44,7 @@ import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { TournamentManagementDialog } from "@/components/tournaments/TournamentManagementDialog";
 import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
+import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { ChatSystem } from "@/components/chat/ChatSystem";
 
@@ -115,6 +116,10 @@ export default function TournamentsPage() {
   const [joinConfirmationOpen, setJoinConfirmationOpen] = useState(false);
   const [tournamentToJoin, setTournamentToJoin] = useState<any>(null);
   const [agreementChecked, setAgreementChecked] = useState(false);
+
+  // State for leaderboard dialog
+  const [leaderboardDialogOpen, setLeaderboardDialogOpen] = useState(false);
+  const [selectedLeaderboardTournament, setSelectedLeaderboardTournament] = useState<any>(null);
 
   // Tournament creation is now handled by TournamentCreationDialog component
 
@@ -463,6 +468,10 @@ export default function TournamentsPage() {
                   }}
                   onOpenChat={(tournamentId) => setTournamentChatOpen(tournamentId)}
                   onJoinTournament={handleJoinTournament}
+                  onViewLeaderboard={(tournament) => {
+                    setSelectedLeaderboardTournament(tournament);
+                    setLeaderboardDialogOpen(true);
+                  }}
                   isJoining={joinTournamentMutation.isPending}
                 />
               </TabsContent>
@@ -489,6 +498,18 @@ export default function TournamentsPage() {
           tournamentId={tournamentChatOpen}
           isOpen={true}
           onToggle={() => setTournamentChatOpen(null)}
+        />
+      )}
+
+      {/* Tournament Leaderboard Dialog */}
+      {selectedLeaderboardTournament && (
+        <TournamentLeaderboardDialog
+          tournament={selectedLeaderboardTournament}
+          isOpen={leaderboardDialogOpen}
+          onClose={() => {
+            setLeaderboardDialogOpen(false);
+            setSelectedLeaderboardTournament(null);
+          }}
         />
       )}
 
@@ -641,6 +662,7 @@ function TournamentGrid({
   onManage,
   onOpenChat,
   onJoinTournament,
+  onViewLeaderboard,
   isJoining
 }: { 
   tournaments: any[], 
@@ -648,6 +670,7 @@ function TournamentGrid({
   onManage: (tournament: any) => void,
   onOpenChat: (tournamentId: number) => void,
   onJoinTournament: (tournament: any) => void,
+  onViewLeaderboard?: (tournament: any) => void,
   isJoining: boolean
 }) {
 
@@ -678,6 +701,7 @@ function TournamentGrid({
             isJoining={isJoining}
             onManage={() => onManage(tournament)}
             onOpenChat={() => onOpenChat(tournament.id)}
+            onViewLeaderboard={onViewLeaderboard ? () => onViewLeaderboard(tournament) : undefined}
           />
         ))}
       </AnimatePresence>
@@ -692,20 +716,23 @@ function TournamentCard({
   onJoin, 
   isJoining,
   onManage,
-  onOpenChat
+  onOpenChat,
+  onViewLeaderboard
 }: { 
   tournament: any, 
   type: "upcoming" | "ongoing", 
   onJoin: () => void,
   isJoining: boolean,
   onManage: () => void,
-  onOpenChat: () => void
+  onOpenChat: () => void,
+  onViewLeaderboard?: () => void
 }) {
   const { formatCurrency } = useUserPreferences();
   const { user } = useAuth();
   
   const currentPot = tournament.currentPlayers * tournament.buyInAmount;
   const isCreator = tournament.creatorId === user?.id;
+  const isParticipant = tournament.participants?.some((p: any) => p.userId === user?.id) || isCreator;
   
   const getTournamentTypeIcon = (tournamentType: string) => {
     return tournamentType === "crypto" ? Bitcoin : TrendingUp;
@@ -791,7 +818,7 @@ function TournamentCard({
             </div>
           )}
 
-          {/* Action Buttons - Simplified */}
+          {/* Action Buttons */}
           <div className="space-y-2">
             <Button
               onClick={onOpenChat}
@@ -802,7 +829,18 @@ function TournamentCard({
               Chat
             </Button>
             
-            {isCreator ? (
+            {type === "ongoing" && tournament.isPublic && !isParticipant ? (
+              // Show "View" button for ongoing public tournaments where user is not a participant
+              <Button
+                onClick={onViewLeaderboard}
+                className="w-full"
+                variant="outline"
+                size="sm"
+              >
+                <Trophy className="w-4 h-4 mr-2" />
+                View Leaderboard
+              </Button>
+            ) : isCreator ? (
               <Button
                 onClick={onManage}
                 className="w-full"
@@ -811,7 +849,7 @@ function TournamentCard({
               >
                 Manage
               </Button>
-            ) : (
+            ) : type === "upcoming" ? (
               <Button
                 onClick={onJoin}
                 disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
@@ -823,7 +861,7 @@ function TournamentCard({
                  tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
                 }
               </Button>
-            )}
+            ) : null}
           </div>
         </CardContent>
       </Card>

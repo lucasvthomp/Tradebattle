@@ -595,6 +595,85 @@ router.get('/tournaments/public', requireAuth, asyncHandler(async (req, res) => 
 }));
 
 /**
+ * GET /api/tournaments/:id/leaderboard
+ * Get tournament leaderboard with rankings and portfolio values
+ */
+router.get('/tournaments/:id/leaderboard', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  
+  const participants = await storage.getTournamentParticipants(tournamentId);
+
+  // Calculate portfolio values with current stock prices
+  const participantsWithValues = await Promise.all(
+    participants.map(async (participant) => {
+      let stockValue = 0;
+      const stockSymbols = [...new Set(participant.stockPurchases.map((p: any) => p.symbol))];
+      
+      // Get current prices for all symbols
+      const stockPrices: { [symbol: string]: number } = {};
+      for (const symbol of stockSymbols) {
+        try {
+          const { getStockQuote } = await import('../services/yahooFinance');
+          const quote = await getStockQuote(symbol);
+          stockPrices[symbol] = quote.price;
+        } catch (error) {
+          console.error(`Error fetching price for ${symbol}:`, error);
+          stockPrices[symbol] = 0;
+        }
+      }
+
+      // Calculate total stock value
+      const stockHoldings: { [symbol: string]: { quantity: number; averagePrice: number } } = {};
+      
+      participant.stockPurchases.forEach((purchase: any) => {
+        const symbol = purchase.symbol;
+        const quantity = parseInt(purchase.shares);
+        const price = parseFloat(purchase.purchasePrice);
+        
+        if (!stockHoldings[symbol]) {
+          stockHoldings[symbol] = { quantity: 0, averagePrice: 0 };
+        }
+        
+        const currentHolding = stockHoldings[symbol];
+        const totalQuantity = currentHolding.quantity + quantity;
+        const totalCost = (currentHolding.quantity * currentHolding.averagePrice) + (quantity * price);
+        
+        stockHoldings[symbol] = {
+          quantity: totalQuantity,
+          averagePrice: totalCost / totalQuantity
+        };
+      });
+
+      // Calculate current value of all holdings
+      Object.entries(stockHoldings).forEach(([symbol, holding]) => {
+        const currentPrice = stockPrices[symbol] || 0;
+        stockValue += holding.quantity * currentPrice;
+      });
+
+      const balance = parseFloat(participant.balance);
+      const portfolioValue = balance + stockValue;
+
+      return {
+        userId: participant.userId,
+        firstName: participant.firstName,
+        displayName: participant.displayName,
+        portfolioValue,
+        balance,
+        stockValue
+      };
+    })
+  );
+
+  // Sort by portfolio value (highest first)
+  participantsWithValues.sort((a, b) => b.portfolioValue - a.portfolioValue);
+
+  res.json({
+    success: true,
+    participants: participantsWithValues,
+  });
+}));
+
+/**
  * GET /api/tournaments/:id/participants
  * Get tournament participants with user names and portfolio values
  */
