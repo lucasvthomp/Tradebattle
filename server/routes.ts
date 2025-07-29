@@ -89,7 +89,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const validatedData = insertWatchlistSchema.parse(req.body);
       
-      const watchlistItem = await storage.addToWatchlist(userId, validatedData);
+      // If companyName is same as symbol, fetch the real company name from Yahoo Finance API
+      let companyName = validatedData.companyName;
+      if (companyName === validatedData.symbol || !companyName) {
+        try {
+          // Import the Yahoo Finance service to get company profile
+          const { getCompanyProfile } = await import('./services/yahooFinance.js');
+          const profile = await getCompanyProfile(validatedData.symbol);
+          companyName = profile.longName || profile.shortName || validatedData.symbol;
+          console.log(`Fetched company name for ${validatedData.symbol}: ${companyName}`);
+        } catch (error) {
+          console.log(`Could not fetch company name for ${validatedData.symbol}, using symbol`);
+          companyName = validatedData.symbol;
+        }
+      }
+      
+      // Create watchlist item with proper company name
+      const watchlistData = {
+        ...validatedData,
+        companyName
+      };
+      
+      const watchlistItem = await storage.addToWatchlist(userId, watchlistData);
       res.status(201).json(watchlistItem);
     } catch (error) {
       if (error instanceof z.ZodError) {
