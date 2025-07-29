@@ -15,7 +15,8 @@ import {
   Archive,
   Shield,
   Calendar,
-  Target
+  Target,
+  Swords
 } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
@@ -30,9 +31,7 @@ export function SimplifiedSidebar() {
   const navItems = [
     { href: "/", label: "Home", icon: Home },
     ...(user ? [
-      { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
-      { href: "/portfolio", label: t('portfolio'), icon: Briefcase },
-      { href: "/tournaments", label: t('tournaments'), icon: Target },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
       { href: "/events", label: "Events", icon: Calendar },
