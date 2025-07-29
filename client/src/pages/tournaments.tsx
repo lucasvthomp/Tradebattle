@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
+import { Checkbox } from "@/components/ui/checkbox";
 import { 
   Trophy, 
   Users, 
@@ -110,6 +111,11 @@ export default function TournamentsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [tournamentChatOpen, setTournamentChatOpen] = useState<number | null>(null);
 
+  // State for join confirmation dialog
+  const [joinConfirmationOpen, setJoinConfirmationOpen] = useState(false);
+  const [tournamentToJoin, setTournamentToJoin] = useState<any>(null);
+  const [agreementChecked, setAgreementChecked] = useState(false);
+
   // Tournament creation form state
   const [tournamentForm, setTournamentForm] = useState({
     name: "", // Tournament title
@@ -159,6 +165,46 @@ export default function TournamentsPage() {
       });
     },
   });
+
+  // Join tournament by ID mutation
+  const joinTournamentMutation = useMutation({
+    mutationFn: async (tournamentId: number) => {
+      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/join`, {});
+      return res.json();
+    },
+    onSuccess: () => {
+      setJoinConfirmationOpen(false);
+      setTournamentToJoin(null);
+      setAgreementChecked(false);
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
+      toast({
+        title: "Success",
+        description: "Successfully joined tournament!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Function to handle join tournament button click
+  const handleJoinTournament = (tournament: any) => {
+    setTournamentToJoin(tournament);
+    setJoinConfirmationOpen(true);
+    setAgreementChecked(false);
+  };
+
+  // Function to confirm join tournament
+  const confirmJoinTournament = () => {
+    if (tournamentToJoin && agreementChecked) {
+      joinTournamentMutation.mutate(tournamentToJoin.id);
+    }
+  };
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
@@ -524,6 +570,8 @@ export default function TournamentsPage() {
                     setManagementDialogOpen(true);
                   }}
                   onOpenChat={(tournamentId) => setTournamentChatOpen(tournamentId)}
+                  onJoinTournament={handleJoinTournament}
+                  isJoining={joinTournamentMutation.isPending}
                 />
               </TabsContent>
 
@@ -536,6 +584,8 @@ export default function TournamentsPage() {
                     setManagementDialogOpen(true);
                   }}
                   onOpenChat={(tournamentId) => setTournamentChatOpen(tournamentId)}
+                  onJoinTournament={handleJoinTournament}
+                  isJoining={joinTournamentMutation.isPending}
                 />
               </TabsContent>
             </Tabs>
@@ -563,6 +613,145 @@ export default function TournamentsPage() {
           onToggle={() => setTournamentChatOpen(null)}
         />
       )}
+
+      {/* Join Tournament Confirmation Dialog */}
+      <Dialog open={joinConfirmationOpen} onOpenChange={setJoinConfirmationOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <Trophy className="w-5 h-5" />
+              <span>Join Tournament</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          {tournamentToJoin && (
+            <div className="space-y-6">
+              {/* Tournament Basic Info */}
+              <div className="space-y-4">
+                <div className="text-center p-4 bg-muted/30 rounded-lg">
+                  <h3 className="text-lg font-bold">{tournamentToJoin.name}</h3>
+                  <p className="text-muted-foreground text-sm">
+                    {tournamentToJoin.tournamentType === "crypto" ? "Cryptocurrency" : "Stock Market"} Tournament
+                  </p>
+                </div>
+
+                {/* Tournament Details */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Players:</span>
+                      <span>{tournamentToJoin.currentPlayers}/{tournamentToJoin.maxPlayers}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Duration:</span>
+                      <span>{tournamentToJoin.timeframe}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Starting Balance:</span>
+                      <span>{formatCurrency(tournamentToJoin.startingBalance)}</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Status:</span>
+                      <Badge variant={tournamentToJoin.isPublic ? "secondary" : "outline"}>
+                        {tournamentToJoin.isPublic ? "Public" : "Private"}
+                      </Badge>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Buy-in:</span>
+                      <span className="font-medium">
+                        {tournamentToJoin.buyInAmount > 0 ? formatCurrency(tournamentToJoin.buyInAmount) : "Free"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Prize Pool:</span>
+                      <span className="font-bold text-green-600">
+                        {formatCurrency(tournamentToJoin.currentPot || (tournamentToJoin.buyInAmount * tournamentToJoin.currentPlayers))}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tournament Type Specific Information */}
+              <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                <h4 className="font-medium mb-2 text-blue-800 dark:text-blue-200">Tournament Rules</h4>
+                <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                  {tournamentToJoin.isPublic ? (
+                    <>
+                      <li>• Public tournaments cannot be cancelled early</li>
+                      <li>• Tournament will run for the full duration</li>
+                      <li>• All participants compete fairly until the end</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>• Private tournaments can be cancelled by the creator</li>
+                      <li>• Creator has full control over tournament settings</li>
+                      <li>• Participants may be removed at creator's discretion</li>
+                    </>
+                  )}
+                  <li>• Virtual trading only - no real money at risk</li>
+                  <li>• Rankings based on portfolio performance</li>
+                </ul>
+              </div>
+
+              {/* Buy-in Confirmation */}
+              {tournamentToJoin.buyInAmount > 0 && (
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-950/30 rounded-lg">
+                  <h4 className="font-medium mb-2 text-yellow-800 dark:text-yellow-200">Entry Fee Required</h4>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                    This tournament requires a buy-in of <strong>{formatCurrency(tournamentToJoin.buyInAmount)}</strong>.
+                    This fee contributes to the tournament prize pool.
+                  </p>
+                </div>
+              )}
+
+              {/* Agreement Checkbox */}
+              <div className="flex items-start space-x-3 p-4 border rounded-lg">
+                <Checkbox 
+                  id="tournament-agreement" 
+                  checked={agreementChecked}
+                  onCheckedChange={setAgreementChecked}
+                />
+                <div>
+                  <label htmlFor="tournament-agreement" className="text-sm font-medium cursor-pointer">
+                    I agree to the tournament terms and conditions
+                  </label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    By joining, you agree to participate fairly and follow tournament rules.
+                    {tournamentToJoin.buyInAmount > 0 && " Entry fee will be charged upon confirmation."}
+                  </p>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setJoinConfirmationOpen(false);
+                    setTournamentToJoin(null);
+                    setAgreementChecked(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={confirmJoinTournament}
+                  disabled={!agreementChecked || joinTournamentMutation.isPending}
+                >
+                  {joinTournamentMutation.isPending ? "Joining..." : 
+                   tournamentToJoin.buyInAmount > 0 ? `Join - ${formatCurrency(tournamentToJoin.buyInAmount)}` : "Join Free"
+                  }
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -572,37 +761,17 @@ function TournamentGrid({
   tournaments, 
   type, 
   onManage,
-  onOpenChat
+  onOpenChat,
+  onJoinTournament,
+  isJoining
 }: { 
   tournaments: any[], 
   type: "upcoming" | "ongoing",
   onManage: (tournament: any) => void,
-  onOpenChat: (tournamentId: number) => void
+  onOpenChat: (tournamentId: number) => void,
+  onJoinTournament: (tournament: any) => void,
+  isJoining: boolean
 }) {
-  const { formatCurrency } = useUserPreferences();
-  const { toast } = useToast();
-
-  const joinTournamentMutation = useMutation({
-    mutationFn: async (tournamentId: number) => {
-      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/join`, {});
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
-      toast({
-        title: "Success",
-        description: "Successfully joined tournament!",
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    },
-  });
 
   if (tournaments.length === 0) {
     return (
@@ -627,8 +796,8 @@ function TournamentGrid({
             key={tournament.id} 
             tournament={tournament} 
             type={type}
-            onJoin={() => joinTournamentMutation.mutate(tournament.id)}
-            isJoining={joinTournamentMutation.isPending}
+            onJoin={() => onJoinTournament(tournament)}
+            isJoining={isJoining}
             onManage={() => onManage(tournament)}
             onOpenChat={() => onOpenChat(tournament.id)}
           />
