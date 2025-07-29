@@ -323,7 +323,7 @@ export default function Dashboard() {
     }
   }, [watchlistSearchQuery]);
 
-  // Fetch real-time data for watchlist stocks
+  // Fetch real-time data for watchlist stocks with timeframe support
   useEffect(() => {
     if (watchlist.length > 0) {
       const fetchWatchlistData = async () => {
@@ -331,10 +331,41 @@ export default function Dashboard() {
         
         for (const stock of watchlist) {
           try {
-            const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
-            const data = await response.json();
-            // Use the actual Yahoo Finance data structure
-            stockData[stock.symbol] = data.data || data;
+            // Fetch current quote data
+            const quoteResponse = await apiRequest("GET", `/api/quote/${stock.symbol}`);
+            const quoteData = await quoteResponse.json();
+            
+            // Fetch historical data for timeframe-based change calculation
+            const historicalResponse = await apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`);
+            const historicalData = await historicalResponse.json();
+            
+            // Combine current quote with historical data for timeframe-specific changes
+            const currentPrice = quoteData.data?.price || quoteData.data?.regularMarketPrice || 0;
+            const marketCap = quoteData.data?.marketCap || 0;
+            const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
+            
+            // Calculate timeframe-specific change
+            let changeAmount = 0;
+            let changePercent = 0;
+            
+            if (historicalData.data && historicalData.data.length > 0) {
+              const historicalPrice = historicalData.data[0].close;
+              changeAmount = currentPrice - historicalPrice;
+              changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+            } else {
+              // Fallback to daily change if historical data unavailable
+              changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+              changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+            }
+            
+            stockData[stock.symbol] = {
+              ...quoteData.data,
+              price: currentPrice,
+              change: changeAmount,
+              changePercent: changePercent,
+              marketCap: marketCap,
+              volume: volume
+            };
           } catch (error) {
             console.error(`Error fetching data for ${stock.symbol}:`, error);
             stockData[stock.symbol] = null;
@@ -350,7 +381,7 @@ export default function Dashboard() {
       const interval = setInterval(fetchWatchlistData, 30000);
       return () => clearInterval(interval);
     }
-  }, [watchlist]);
+  }, [watchlist, selectedTimeframe]);
 
   if (!user) {
     return (
@@ -523,9 +554,41 @@ export default function Dashboard() {
                                 
                                 for (const stock of watchlist) {
                                   try {
-                                    const response = await apiRequest("GET", `/api/quote/${stock.symbol}`);
-                                    const data = await response.json();
-                                    stockData[stock.symbol] = data.data || data;
+                                    // Fetch current quote data
+                                    const quoteResponse = await apiRequest("GET", `/api/quote/${stock.symbol}`);
+                                    const quoteData = await quoteResponse.json();
+                                    
+                                    // Fetch historical data for timeframe-based change calculation
+                                    const historicalResponse = await apiRequest("GET", `/api/historical/${stock.symbol}/${selectedTimeframe}`);
+                                    const historicalData = await historicalResponse.json();
+                                    
+                                    // Combine current quote with historical data for timeframe-specific changes
+                                    const currentPrice = quoteData.data?.price || quoteData.data?.regularMarketPrice || 0;
+                                    const marketCap = quoteData.data?.marketCap || 0;
+                                    const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
+                                    
+                                    // Calculate timeframe-specific change
+                                    let changeAmount = 0;
+                                    let changePercent = 0;
+                                    
+                                    if (historicalData.data && historicalData.data.length > 0) {
+                                      const historicalPrice = historicalData.data[0].close;
+                                      changeAmount = currentPrice - historicalPrice;
+                                      changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                                    } else {
+                                      // Fallback to daily change if historical data unavailable
+                                      changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                                      changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                    }
+                                    
+                                    stockData[stock.symbol] = {
+                                      ...quoteData.data,
+                                      price: currentPrice,
+                                      change: changeAmount,
+                                      changePercent: changePercent,
+                                      marketCap: marketCap,
+                                      volume: volume
+                                    };
                                   } catch (error) {
                                     console.error(`Error fetching data for ${stock.symbol}:`, error);
                                     stockData[stock.symbol] = null;
@@ -617,10 +680,11 @@ export default function Dashboard() {
                     ) : (
                       <div className="space-y-3">
                         {/* Header Row */}
-                        <div className="grid grid-cols-6 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
+                        <div className="grid grid-cols-7 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
                           <div className="col-span-2">Stock</div>
                           <div className="text-right">Current Price</div>
                           <div className="text-right">Change</div>
+                          <div className="text-right">Market Cap</div>
                           <div className="text-right">Volume</div>
                           <div className="text-center">Actions</div>
                         </div>
@@ -632,7 +696,7 @@ export default function Dashboard() {
                             return (
                               <div
                                 key={stock.id}
-                                className="grid grid-cols-6 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
+                                className="grid grid-cols-7 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
                               >
                                 <div className="col-span-2">
                                   <div className="font-semibold text-base">{stock.symbol}</div>
@@ -640,7 +704,7 @@ export default function Dashboard() {
                                     {stock.companyName}
                                   </div>
                                 </div>
-                                <div className="col-span-3 text-center text-muted-foreground">
+                                <div className="col-span-4 text-center text-muted-foreground">
                                   <RefreshCw className="w-4 h-4 animate-spin inline mr-2" />
                                   Loading...
                                 </div>
@@ -657,17 +721,27 @@ export default function Dashboard() {
                             );
                           }
 
-                          // Use real Yahoo Finance data
-                          const currentPrice = stockData.price || stockData.regularMarketPrice || 0;
-                          const changeAmount = stockData.change || stockData.regularMarketChange || 0;
-                          const changePercent = stockData.changePercent || stockData.regularMarketChangePercent || 0;
-                          const volume = stockData.volume || stockData.regularMarketVolume || 0;
+                          // Use real Yahoo Finance data with timeframe-aware changes
+                          const currentPrice = stockData.price || 0;
+                          const changeAmount = stockData.change || 0;
+                          const changePercent = stockData.changePercent || 0;
+                          const marketCap = stockData.marketCap || 0;
+                          const volume = stockData.volume || 0;
                           const isPositive = changeAmount >= 0;
+                          
+                          // Format market cap in billions/millions
+                          const formatMarketCap = (cap: number) => {
+                            if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`;
+                            if (cap >= 1e9) return `$${(cap / 1e9).toFixed(2)}B`;
+                            if (cap >= 1e6) return `$${(cap / 1e6).toFixed(2)}M`;
+                            if (cap >= 1e3) return `$${(cap / 1e3).toFixed(2)}K`;
+                            return cap > 0 ? `$${cap.toFixed(0)}` : 'N/A';
+                          };
                           
                           return (
                             <div
                               key={stock.id}
-                              className="grid grid-cols-6 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
+                              className="grid grid-cols-7 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
                             >
                               {/* Stock Info */}
                               <div className="col-span-2">
@@ -702,6 +776,13 @@ export default function Dashboard() {
                                       </div>
                                     </div>
                                   </div>
+                                </div>
+                              </div>
+                              
+                              {/* Market Cap */}
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  {formatMarketCap(marketCap)}
                                 </div>
                               </div>
                               
