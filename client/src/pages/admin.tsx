@@ -121,26 +121,26 @@ export default function Admin() {
   }, [user, isAdmin, authLoading, toast, setLocation]);
 
   // Fetch all users (only if admin)
-  const { data: allUsers = [], isLoading: usersLoading } = useQuery({
+  const { data: allUsers = [], isLoading: usersLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/users"],
     enabled: isAdmin,
   });
 
   // Fetch system status
-  const { data: systemStatus = {}, isLoading: systemLoading } = useQuery({
+  const { data: systemStatus = {}, isLoading: systemLoading } = useQuery<any>({
     queryKey: ["/api/system/status"],
     enabled: isAdmin,
     refetchInterval: 15000, // Refresh every 15 seconds to show Yahoo Finance updates
   });
 
   // Fetch all tournaments
-  const { data: tournamentData = {}, isLoading: tournamentsLoading } = useQuery({
+  const { data: tournamentData = {}, isLoading: tournamentsLoading } = useQuery<any>({
     queryKey: ["/api/admin/tournaments"],
     enabled: isAdmin,
   });
 
   // Extract tournaments from the response data
-  const allTournaments = Array.isArray(tournamentData) ? tournamentData : tournamentData?.data || [];
+  const allTournaments = Array.isArray(tournamentData) ? tournamentData : (tournamentData as any)?.data || [];
 
   // Delete user mutation
   const deleteMutation = useMutation({
@@ -342,7 +342,7 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {allUsers?.filter(u => u.subscriptionTier === 'administrator').length || 0}
+                      {allUsers?.filter((u: any) => u.subscriptionTier === 'administrator').length || 0}
                     </div>
                     <p className="text-xs text-gray-500">System administrators</p>
                   </CardContent>
@@ -654,22 +654,22 @@ export default function Admin() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Status</span>
-                            <Badge variant="outline" className={systemStatus?.database?.connected ? "text-green-600" : "text-red-600"}>
+                            <Badge variant="outline" className={(systemStatus as any)?.database?.connected ? "text-green-600" : "text-red-600"}>
                               <Database className="h-3 w-3 mr-1" />
-                              {systemStatus?.database?.connected ? "Connected" : "Disconnected"}
+                              {(systemStatus as any)?.database?.connected ? "Connected" : "Disconnected"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Type</span>
-                            <Badge variant="outline">{systemStatus?.database?.type || "PostgreSQL"}</Badge>
+                            <Badge variant="outline">{(systemStatus as any)?.database?.type || "PostgreSQL"}</Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Tables</span>
-                            <Badge variant="outline">{systemStatus?.database?.tableCount || "0"}</Badge>
+                            <Badge variant="outline">{(systemStatus as any)?.database?.tableCount || "0"}</Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Connections</span>
-                            <Badge variant="outline">{systemStatus?.database?.activeConnections || "0"}</Badge>
+                            <Badge variant="outline">{(systemStatus as any)?.database?.activeConnections || "0"}</Badge>
                           </div>
                         </div>
                       </div>
@@ -678,44 +678,44 @@ export default function Admin() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Yahoo Finance</span>
-                            <Badge variant="outline" className={systemStatus?.apis?.yahooFinance?.status ? "text-green-600" : "text-red-600"}>
+                            <Badge variant="outline" className={(systemStatus as any)?.apis?.yahooFinance?.status ? "text-green-600" : "text-red-600"}>
                               <Globe className="h-3 w-3 mr-1" />
-                              {systemStatus?.apis?.yahooFinance?.status ? "Active" : "Inactive"}
+                              {(systemStatus as any)?.apis?.yahooFinance?.status ? "Active" : "Inactive"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Finnhub</span>
-                            <Badge variant="outline" className={systemStatus?.apis?.finnhub?.status ? "text-green-600" : systemStatus?.apis?.finnhub?.keyExists ? "text-yellow-600" : "text-gray-600"}>
+                            <Badge variant="outline" className={(systemStatus as any)?.apis?.finnhub?.status ? "text-green-600" : (systemStatus as any)?.apis?.finnhub?.keyExists ? "text-yellow-600" : "text-gray-600"}>
                               <Globe className="h-3 w-3 mr-1" />
-                              {systemStatus?.apis?.finnhub?.status ? "Active" : systemStatus?.apis?.finnhub?.keyExists ? "Key Found" : "No Key"}
+                              {(systemStatus as any)?.apis?.finnhub?.status ? "Active" : (systemStatus as any)?.apis?.finnhub?.keyExists ? "Key Found" : "No Key"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Twelve Data</span>
-                            <Badge variant="outline" className={systemStatus?.apis?.twelveData?.status ? "text-green-600" : systemStatus?.apis?.twelveData?.keyExists ? "text-yellow-600" : "text-gray-600"}>
+                            <Badge variant="outline" className={(systemStatus as any)?.apis?.twelveData?.status ? "text-green-600" : (systemStatus as any)?.apis?.twelveData?.keyExists ? "text-yellow-600" : "text-gray-600"}>
                               <Globe className="h-3 w-3 mr-1" />
-                              {systemStatus?.apis?.twelveData?.status ? "Active" : systemStatus?.apis?.twelveData?.keyExists ? "Key Found" : "No Key"}
+                              {(systemStatus as any)?.apis?.twelveData?.status ? "Active" : (systemStatus as any)?.apis?.twelveData?.keyExists ? "Key Found" : "No Key"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Polygon</span>
-                            <Badge variant="outline" className={systemStatus?.apis?.polygon?.status ? "text-green-600" : systemStatus?.apis?.polygon?.keyExists ? "text-yellow-600" : "text-gray-600"}>
+                            <Badge variant="outline" className={(systemStatus as any)?.apis?.polygon?.status ? "text-green-600" : (systemStatus as any)?.apis?.polygon?.keyExists ? "text-yellow-600" : "text-gray-600"}>
                               <Globe className="h-3 w-3 mr-1" />
-                              {systemStatus?.apis?.polygon?.status ? "Active" : systemStatus?.apis?.polygon?.keyExists ? "Key Found" : "No Key"}
+                              {(systemStatus as any)?.apis?.polygon?.status ? "Active" : (systemStatus as any)?.apis?.polygon?.keyExists ? "Key Found" : "No Key"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Cache</span>
-                            <Badge variant="outline" className={systemStatus?.apis?.cache?.enabled ? "text-green-600" : "text-red-600"}>
+                            <Badge variant="outline" className={(systemStatus as any)?.apis?.cache?.enabled ? "text-green-600" : "text-red-600"}>
                               <Settings className="h-3 w-3 mr-1" />
-                              {systemStatus?.apis?.cache?.enabled ? "Enabled" : "Disabled"}
+                              {(systemStatus as any)?.apis?.cache?.enabled ? "Enabled" : "Disabled"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Active Users</span>
                             <Badge variant="outline" className="text-blue-600">
                               <Users className="h-3 w-3 mr-1" />
-                              {systemStatus?.system?.activeUsers || "0"}
+                              {(systemStatus as any)?.system?.activeUsers || "0"}
                             </Badge>
                           </div>
                         </div>
@@ -727,21 +727,21 @@ export default function Admin() {
                             <span className="text-sm">Uptime</span>
                             <Badge variant="outline" className="text-green-600">
                               <Clock className="h-3 w-3 mr-1" />
-                              {systemStatus?.system?.uptime || "0m"}
+                              {(systemStatus as any)?.system?.uptime || "0m"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Error Rate</span>
-                            <Badge variant="outline" className={systemStatus?.system?.errorRate > 5 ? "text-red-600" : "text-green-600"}>
+                            <Badge variant="outline" className={((systemStatus as any)?.system?.errorRate || 0) > 5 ? "text-red-600" : "text-green-600"}>
                               <AlertTriangle className="h-3 w-3 mr-1" />
-                              {systemStatus?.system?.errorRate || "0"}%
+                              {(systemStatus as any)?.system?.errorRate || "0"}%
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm">Response Time</span>
-                            <Badge variant="outline" className={systemStatus?.system?.avgResponseTime > 1000 ? "text-red-600" : "text-green-600"}>
+                            <Badge variant="outline" className={((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? "text-red-600" : "text-green-600"}>
                               <Activity className="h-3 w-3 mr-1" />
-                              {systemStatus?.system?.avgResponseTime || "0"}ms
+                              {(systemStatus as any)?.system?.avgResponseTime || "0"}ms
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">

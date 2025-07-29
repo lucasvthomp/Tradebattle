@@ -522,10 +522,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // System monitoring endpoint
   app.get("/api/system/status", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.userId;
+      const userId = req.user.id;
       
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+      // Check if user is admin (using subscription tier)
+      const user = await storage.getUser(userId);
+      if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
       

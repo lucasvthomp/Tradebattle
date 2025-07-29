@@ -1569,9 +1569,9 @@ router.patch('/admin/users/:userId/ban', requireAuth, asyncHandler(async (req, r
 router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
-  // Check if user is admin (using user ID)
+  // Check if user is admin (using subscription tier)
   const user = await storage.getUser(userId);
-  if (!user || (user.userId !== 0 && user.userId !== 1 && user.userId !== 2)) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 
