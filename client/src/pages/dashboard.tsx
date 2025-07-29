@@ -440,6 +440,7 @@ export default function Dashboard() {
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                   
                   console.log(`${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
+                console.log(`${stock.symbol} historical data:`, historicalData.data.slice(-3)); // Show last 3 data points
                   
                   stockData[stock.symbol] = {
                     ...quoteData.data,
@@ -724,6 +725,7 @@ export default function Dashboard() {
                                           changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                                           
                                           console.log(`MANUAL REFRESH ${stock.symbol} ${selectedTimeframe}: current=${currentPrice}, historical=${historicalPrice}, change=${changeAmount}`);
+                          console.log(`MANUAL REFRESH ${stock.symbol} historical data:`, historicalData.data.slice(-3)); // Show last 3 data points
                                           
                                           stockData[stock.symbol] = {
                                             ...quoteData.data,
