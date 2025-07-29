@@ -322,146 +322,148 @@ export default function Dashboard() {
 
             {/* Personal Portfolio Tab */}
             <TabsContent value="personal" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Portfolio */}
-                <div className="lg:col-span-2">
-                  <PortfolioGrid />
-                </div>
+              <div className="space-y-6">
+                {/* Portfolio Grid - Top Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                  {/* Portfolio */}
+                  <div className="lg:col-span-3">
+                    <PortfolioGrid />
+                  </div>
 
-                {/* Sidebar */}
-                <div className="space-y-6">
-                  {/* Stock Search */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Search className="w-5 h-5" />
-                        <span>Search Stocks</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <Input
-                        placeholder="Search by symbol or company name..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                      />
-                      
-                      {isSearching && (
-                        <div className="flex items-center justify-center py-4">
-                          <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                          <span className="text-sm text-muted-foreground">Searching...</span>
-                        </div>
-                      )}
+                  {/* Stock Search Sidebar */}
+                  <div className="space-y-6">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="flex items-center space-x-2">
+                          <Search className="w-5 h-5" />
+                          <span>Search Stocks</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <Input
+                          placeholder="Search by symbol or company name..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        
+                        {isSearching && (
+                          <div className="flex items-center justify-center py-4">
+                            <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                            <span className="text-sm text-muted-foreground">Searching...</span>
+                          </div>
+                        )}
 
-                      {searchResults.length > 0 && (
-                        <div className="space-y-2 max-h-60 overflow-y-auto">
-                          {searchResults.slice(0, 10).map((stock, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                            >
-                              <div>
-                                <div className="font-medium">{stock.symbol}</div>
-                                <div className="text-sm text-muted-foreground truncate">
-                                  {stock.shortName || stock.longName}
+                        {searchResults.length > 0 && (
+                          <div className="space-y-2 max-h-60 overflow-y-auto">
+                            {searchResults.slice(0, 10).map((stock, index) => (
+                              <div
+                                key={index}
+                                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                              >
+                                <div>
+                                  <div className="font-medium">{stock.symbol}</div>
+                                  <div className="text-sm text-muted-foreground truncate">
+                                    {stock.shortName || stock.longName}
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => {
-                                    const isInWatchlist = watchlist.some(w => w.symbol === stock.symbol);
-                                    if (isInWatchlist) {
-                                      const watchlistItem = watchlist.find(w => w.symbol === stock.symbol);
-                                      if (watchlistItem) {
-                                        removeFromWatchlistMutation.mutate(watchlistItem.id);
+                                <div className="flex items-center space-x-2">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      const isInWatchlist = watchlist.some(w => w.symbol === stock.symbol);
+                                      if (isInWatchlist) {
+                                        const watchlistItem = watchlist.find(w => w.symbol === stock.symbol);
+                                        if (watchlistItem) {
+                                          removeFromWatchlistMutation.mutate(watchlistItem.id);
+                                        }
+                                      } else {
+                                        addToWatchlistMutation.mutate(stock);
                                       }
-                                    } else {
-                                      addToWatchlistMutation.mutate(stock);
-                                    }
-                                  }}
-                                >
-                                  {watchlist.some(w => w.symbol === stock.symbol) ? (
-                                    <Star className="w-4 h-4 fill-current text-yellow-500" />
-                                  ) : (
-                                    <StarOff className="w-4 h-4" />
-                                  )}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedStock(stock);
-                                    setBuyDialogOpen(true);
-                                  }}
-                                >
-                                  <ShoppingCart className="w-4 h-4 mr-1" />
-                                  Buy
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  {/* Watchlist */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2">
-                        <Star className="w-5 h-5" />
-                        <span>Watchlist</span>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {watchlistLoading ? (
-                        <div className="flex items-center justify-center py-4">
-                          <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                          <span className="text-sm text-muted-foreground">Loading...</span>
-                        </div>
-                      ) : watchlist.length === 0 ? (
-                        <p className="text-sm text-muted-foreground text-center py-4">
-                          No stocks in watchlist
-                        </p>
-                      ) : (
-                        <div className="space-y-2 max-h-60 overflow-y-auto">
-                          {watchlist.map((stock) => (
-                            <div
-                              key={stock.id}
-                              className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
-                            >
-                              <div>
-                                <div className="font-medium">{stock.symbol}</div>
-                                <div className="text-sm text-muted-foreground truncate">
-                                  {stock.companyName}
+                                    }}
+                                  >
+                                    {watchlist.some(w => w.symbol === stock.symbol) ? (
+                                      <Star className="w-4 h-4 fill-current text-yellow-500" />
+                                    ) : (
+                                      <StarOff className="w-4 h-4" />
+                                    )}
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => {
+                                      setSelectedStock(stock);
+                                      setBuyDialogOpen(true);
+                                    }}
+                                  >
+                                    <ShoppingCart className="w-4 h-4 mr-1" />
+                                    Buy
+                                  </Button>
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-2">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
-                                >
-                                  <X className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  onClick={() => {
-                                    setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
-                                    setBuyDialogOpen(true);
-                                  }}
-                                >
-                                  <ShoppingCart className="w-4 h-4 mr-1" />
-                                  Buy
-                                </Button>
+                            ))}
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+
+                {/* Watchlist - Full Width Bottom Section */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Star className="w-5 h-5" />
+                      <span>Watchlist</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {watchlistLoading ? (
+                      <div className="flex items-center justify-center py-4">
+                        <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                        <span className="text-sm text-muted-foreground">Loading...</span>
+                      </div>
+                    ) : watchlist.length === 0 ? (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        No stocks in watchlist
+                      </p>
+                    ) : (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                        {watchlist.map((stock) => (
+                          <div
+                            key={stock.id}
+                            className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="font-medium">{stock.symbol}</div>
+                              <div className="text-sm text-muted-foreground truncate">
+                                {stock.companyName}
                               </div>
                             </div>
-                          ))}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                </div>
+                            <div className="flex items-center space-x-2 ml-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                onClick={() => {
+                                  setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
+                                  setBuyDialogOpen(true);
+                                }}
+                              >
+                                <ShoppingCart className="w-4 h-4 mr-1" />
+                                Buy
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
