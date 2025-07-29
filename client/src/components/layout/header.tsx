@@ -4,7 +4,7 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BalanceDialog } from "@/components/balance-dialog";
-import { ChatSystem } from "@/components/chat/ChatSystem";
+import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +39,7 @@ export default function Header() {
               <>
                 {/* Chat Button */}
                 <Button
-                  onClick={() => setChatOpen(true)}
+                  onClick={() => setChatOpen(!chatOpen)}
                   variant="ghost"
                   size="sm"
                   className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md"
@@ -116,8 +116,8 @@ export default function Header() {
         currentBalance={Number(user?.balance) || 0}
       />
 
-      {/* Global Chat System */}
-      <ChatSystem
+      {/* Global Chat Sidebar */}
+      <ChatSidebar
         isOpen={chatOpen}
         onToggle={() => setChatOpen(!chatOpen)}
       />

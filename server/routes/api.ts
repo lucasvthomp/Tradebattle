@@ -1918,6 +1918,49 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
 }));
 
 /**
+ * GET /api/chat/global
+ * Get global chat messages
+ */
+router.get('/chat/global', requireAuth, asyncHandler(async (req, res) => {
+  const messages = await storage.getChatMessages(null); // null for global chat
+  res.json({
+    success: true,
+    data: messages
+  });
+}));
+
+/**
+ * POST /api/chat/global
+ * Send message to global chat
+ */
+router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { message } = req.body;
+
+  if (!message || !message.trim()) {
+    throw new ValidationError('Message is required');
+  }
+
+  const user = await storage.getUser(userId);
+  if (!user) {
+    throw new ValidationError('User not found');
+  }
+
+  const chatMessage = await storage.createChatMessage({
+    userId,
+    username: user.username,
+    profilePicture: user.profilePicture || null,
+    message: message.trim(),
+    tournamentId: null // null for global chat
+  });
+
+  res.json({
+    success: true,
+    data: chatMessage
+  });
+}));
+
+/**
  * GET /api/chat/tournament/:tournamentId
  * Get tournament-specific chat messages
  */
