@@ -68,12 +68,12 @@ export class TournamentExpirationService {
       for (const purchase of purchases) {
         try {
           const currentQuote = await getStockQuote(purchase.symbol);
-          const currentValue = purchase.shares * currentQuote.price;
+          const currentValue = purchase.shares * Number(currentQuote.price);
           totalValue += currentValue;
         } catch (error) {
           console.error(`Error fetching quote for ${purchase.symbol}:`, error);
           // Use purchase price as fallback
-          totalValue += purchase.shares * purchase.purchasePrice;
+          totalValue += purchase.shares * Number(purchase.purchasePrice);
         }
       }
 
@@ -206,7 +206,7 @@ export class TournamentExpirationService {
     const tournament = await storage.getTournamentByCode(''); // We need to get by ID, not code
     if (!tournament) return false;
     
-    const createdAt = new Date(tournament.createdAt);
+    const createdAt = new Date(tournament.createdAt!);
     const timeframeDays = this.parseTimeframe(tournament.timeframe);
     const expirationDate = new Date(createdAt.getTime() + timeframeDays * 24 * 60 * 60 * 1000);
     

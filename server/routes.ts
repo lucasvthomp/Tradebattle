@@ -156,9 +156,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           achievementType: 'first_trade',
           achievementTier: 'common',
           achievementName: 'First Trade',
-          achievementDescription: 'Made your first trade',
-          earnedAt: new Date(),
-          createdAt: new Date()
+          achievementDescription: 'Made your first trade'
         });
       }
       
@@ -517,7 +515,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "User deleted successfully." });
     } catch (error) {
       console.error("Error deleting user:", error);
-      res.status(500).json({ message: "Failed to delete user", error: error.message });
+      res.status(500).json({ message: "Failed to delete user", error: error instanceof Error ? error.message : "Unknown error" });
     }
   });
 
