@@ -1,408 +1,268 @@
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { 
+  Trophy, 
+  TrendingUp, 
+  Users, 
+  Award,
+  Calendar,
+  BarChart3,
+  ChevronRight,
+  Zap,
+  Star,
+  Target,
+  DollarSign,
+  ArrowRight,
+  Activity,
+  Globe,
+  Sparkles,
+  Timer,
+  PlayCircle
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
-import { 
-  TrendingUp, 
-  Trophy, 
-  Users, 
-  Target, 
-  BarChart3,
-  Calendar,
-  ShoppingBag,
-  MessageCircle,
-  Award,
-  Clock,
-  ArrowRight,
-  Star,
-  Zap,
-  Globe,
-  PlayCircle,
-  Activity,
-  Settings,
-  ChevronRight,
-  Flame,
-  Sparkles
-} from "lucide-react";
-import { motion } from "framer-motion";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.4 }
+  transition: { duration: 0.5 }
 };
 
 const staggerChildren = {
   animate: {
     transition: {
-      staggerChildren: 0.05
+      staggerChildren: 0.1
     }
   }
 };
 
 export default function Hub() {
   const { user } = useAuth();
+  const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Main feature cards (like the games in Stake)
-  const mainFeatures = [
+  // Update time every minute for greeting
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Dynamic greeting based on time
+  const getGreeting = () => {
+    const hour = currentTime.getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon"; 
+    return "Good Evening";
+  };
+
+  // Primary actions - streamlined and focused
+  const primaryActions = [
     {
-      title: "DASHBOARD",
-      subtitle: "Trading Hub",
-      description: "Your personal trading command center",
+      title: "Start Trading",
+      description: "Jump into your personal trading dashboard",
       href: "/dashboard",
-      gradient: "from-blue-500 to-purple-600",
       icon: BarChart3,
-      players: "Active Now"
+      accent: "from-blue-500 to-purple-600",
+      feature: "trending"
     },
     {
-      title: "TOURNAMENTS",
-      subtitle: "Compete & Win", 
-      description: "Join competitive trading battles",
-      href: "/tournaments",
-      gradient: "from-yellow-500 to-orange-600",
+      title: "Join Tournament",
+      description: "Compete against traders worldwide",
+      href: "/tournaments", 
       icon: Trophy,
-      players: "12 Active"
+      accent: "from-orange-500 to-red-600",
+      feature: "hot"
     },
     {
-      title: "LEADERBOARD",
-      subtitle: "Global Rankings",
-      description: "See where you rank worldwide",
-      href: "/leaderboard", 
-      gradient: "from-green-500 to-teal-600",
+      title: "View Rankings",
+      description: "See where you stand globally",
+      href: "/leaderboard",
       icon: Award,
-      players: "Updated Live"
-    },
-    {
-      title: "PEOPLE",
-      subtitle: "Community Hub",
-      description: "Connect with fellow traders",
-      href: "/people",
-      gradient: "from-pink-500 to-rose-600", 
-      icon: Users,
-      players: "10K+ Traders"
-    },
-    {
-      title: "EVENTS",
-      subtitle: "Special Events",
-      description: "Exclusive trading competitions",
-      href: "/events",
-      gradient: "from-indigo-500 to-blue-600",
-      icon: Calendar,
-      players: "Coming Soon"
-    },
-    {
-      title: "SHOP",
-      subtitle: "Power-ups & More",
-      description: "Enhance your trading experience", 
-      href: "/shop",
-      gradient: "from-purple-500 to-pink-600",
-      icon: ShoppingBag,
-      players: "New Items"
+      accent: "from-green-500 to-emerald-600",
+      feature: "live"
     }
   ];
 
-  // Promotions section (like Stake's promotions)
-  const promotions = [
-    {
-      title: "Weekly Tournament",
-      description: "Join this week's mega tournament with $1,000 prize pool",
-      badge: "HOT",
-      badgeColor: "bg-red-500",
-      action: "Join Now",
-      href: "/tournaments",
-      gradient: "from-red-500/20 to-orange-500/20"
-    },
-    {
-      title: "Trading Streak Bonus",
-      description: "Trade for 7 days straight and unlock exclusive badges",
-      badge: "NEW",
-      badgeColor: "bg-green-500", 
-      action: "Start Streak",
-      href: "/dashboard",
-      gradient: "from-green-500/20 to-emerald-500/20"
-    },
-    {
-      title: "Refer Friends",
-      description: "Invite friends and both get bonus starting capital",
-      badge: "REWARD",
-      badgeColor: "bg-blue-500",
-      action: "Invite",
-      href: "/people",
-      gradient: "from-blue-500/20 to-cyan-500/20"
-    }
+  // Secondary features - clean and minimal
+  const secondaryFeatures = [
+    { title: "Community", href: "/people", icon: Users },
+    { title: "Events", href: "/events", icon: Calendar },
+    { title: "Analytics", href: "/analytics", icon: Activity }
   ];
 
-  // Quick stats
-  const stats = [
-    { label: "Your Rank", value: "#247", change: "+12" },
-    { label: "Win Rate", value: "73%", change: "+5%" },
-    { label: "Active Tournaments", value: "3", change: "" },
-    { label: "Total Trades", value: "156", change: "+8" }
+  // Live stats - minimal and informative
+  const liveStats = [
+    { label: "Active Traders", value: "2,847", trend: "+12%" },
+    { label: "Live Tournaments", value: "16", trend: "now" },
+    { label: "Daily Volume", value: "$1.2M", trend: "+8%" }
   ];
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      {/* Welcome Header */}
-      <motion.div 
-        className="mb-8"
-        {...fadeInUp}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Welcome back, {user?.firstName || user?.displayName || "Trader"}! 
-            </h1>
-            <p className="text-muted-foreground">
-              Ready to dominate the markets today?
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Badge variant="secondary" className="px-3 py-1">
-              <Activity className="w-4 h-4 mr-1" />
-              Online
-            </Badge>
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {stats.map((stat, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              initial="initial"
-              animate="animate"
-              transition={{ delay: index * 0.1 }}
-            >
-              <Card className="p-4">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  {stat.change && (
-                    <div className="text-xs text-green-500 mt-1">{stat.change}</div>
-                  )}
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Active Promotion Banner */}
-      <motion.div 
-        className="mb-8"
-        {...fadeInUp}
-      >
-        <Card className="relative overflow-hidden bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 border-primary/20">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 rounded-full bg-primary/20">
-                  <Zap className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                  <div className="flex items-center space-x-2 mb-1">
-                    <Badge className="bg-red-500 hover:bg-red-600">
-                      <Sparkles className="w-3 h-3 mr-1" />
-                      LIVE EVENT
-                    </Badge>
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Mega Trading Championship - $5,000 Prize Pool
-                  </h3>
-                  <p className="text-sm text-muted-foreground">
-                    Limited time event ending in 2 days. 500+ participants competing!
-                  </p>
-                </div>
-              </div>
-              <Link href="/tournaments">
-                <Button size="lg" className="bg-gradient-to-r from-primary to-secondary">
-                  Join Battle
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
+      <div className="container mx-auto px-6 py-8">
+        
+        {/* Personal Greeting Header */}
+        <motion.div 
+          className="mb-12"
+          {...fadeInUp}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+                {getGreeting()}, {user?.firstName || user?.displayName || "Trader"}
+              </h1>
+              <p className="text-lg text-muted-foreground mt-2 flex items-center">
+                <Sparkles className="w-5 h-5 mr-2 text-primary/60" />
+                Ready to make your mark on the markets?
+              </p>
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+            
+            {/* Live indicator */}
+            <div className="hidden md:flex items-center space-x-2 text-sm">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-muted-foreground">Markets Live</span>
+            </div>
+          </div>
+        </motion.div>
 
-      {/* Main Features Grid */}
-      <motion.div 
-        className="mb-8"
-        variants={staggerChildren}
-        initial="initial"
-        animate="animate"
-      >
-        <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center">
-          <PlayCircle className="w-5 h-5 mr-2" />
-          Trading Hub
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
-          {mainFeatures.map((feature, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              whileHover={{ scale: 1.02, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Link href={feature.href}>
-                <Card className="relative overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-lg">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-20 group-hover:opacity-30 transition-opacity`} />
-                  <CardContent className="relative p-6 text-center">
-                    <div className="flex justify-center mb-3">
-                      <div className={`p-3 rounded-full bg-gradient-to-br ${feature.gradient}`}>
-                        <feature.icon className="w-6 h-6 text-white" />
+        {/* Primary Action Cards - Hero Section */}
+        <motion.div 
+          className="mb-12"
+          variants={staggerChildren}
+          initial="initial"
+          animate="animate"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {primaryActions.map((action, index) => (
+              <motion.div key={index} variants={fadeInUp}>
+                <Link href={action.href}>
+                  <Card className="group relative overflow-hidden cursor-pointer border-0 bg-card/60 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
+                    <div className={`absolute inset-0 bg-gradient-to-br ${action.accent} opacity-5 group-hover:opacity-10 transition-opacity`} />
+                    
+                    {/* Feature badge */}
+                    <div className="absolute top-4 right-4">
+                      {action.feature === "trending" && (
+                        <Badge variant="secondary" className="text-xs bg-blue-500/20 text-blue-600 border-blue-500/30">
+                          <TrendingUp className="w-3 h-3 mr-1" />
+                          Trending
+                        </Badge>
+                      )}
+                      {action.feature === "hot" && (
+                        <Badge variant="secondary" className="text-xs bg-red-500/20 text-red-600 border-red-500/30">
+                          <Zap className="w-3 h-3 mr-1" />
+                          Hot
+                        </Badge>
+                      )}
+                      {action.feature === "live" && (
+                        <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-600 border-green-500/30">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1" />
+                          Live
+                        </Badge>
+                      )}
+                    </div>
+
+                    <CardContent className="p-8">
+                      <div className="flex items-start justify-between mb-6">
+                        <div className={`p-4 rounded-2xl bg-gradient-to-br ${action.accent} shadow-lg`}>
+                          <action.icon className="w-8 h-8 text-white" />
+                        </div>
                       </div>
-                    </div>
-                    <h3 className="text-lg font-bold text-foreground mb-1">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm font-medium text-primary mb-2">
-                      {feature.subtitle}
-                    </p>
-                    <p className="text-xs text-muted-foreground mb-3">
-                      {feature.description}
-                    </p>
-                    <div className="flex items-center justify-center text-xs text-muted-foreground">
-                      <Users className="w-3 h-3 mr-1" />
-                      {feature.players}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+                      
+                      <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                        {action.title}
+                      </h3>
+                      <p className="text-muted-foreground mb-6 leading-relaxed">
+                        {action.description}
+                      </p>
+                      
+                      <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform">
+                        <span>Get Started</span>
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
-      {/* Promotions Section */}
-      <motion.div 
-        className="mb-8"
-        {...fadeInUp}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-foreground flex items-center">
-            <Zap className="w-5 h-5 mr-2" />
-            Promotions
-          </h2>
-          <Button variant="ghost" size="sm">
-            View All
-            <ChevronRight className="ml-1 w-4 h-4" />
-          </Button>
-        </div>
-        <div className="grid md:grid-cols-3 gap-4">
-          {promotions.map((promo, index) => (
-            <motion.div
-              key={index}
-              variants={fadeInUp}
-              initial="initial"
-              animate="animate"
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-            >
-              <Card className="relative overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-lg">
-                <div className={`absolute inset-0 bg-gradient-to-br ${promo.gradient}`} />
-                <CardContent className="relative p-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <Badge className={`${promo.badgeColor} hover:${promo.badgeColor}`}>
-                      {promo.badge}
-                    </Badge>
+        {/* Stats Bar - Minimal and Clean */}
+        <motion.div 
+          className="mb-12"
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+        >
+          <Card className="border-0 bg-card/40 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="grid grid-cols-3 divide-x divide-border/50">
+                {liveStats.map((stat, index) => (
+                  <div key={index} className="text-center px-4">
+                    <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
+                    <div className="text-sm text-muted-foreground mb-1">{stat.label}</div>
+                    <div className="text-xs text-primary font-medium">{stat.trend}</div>
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">
-                    {promo.title}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {promo.description}
-                  </p>
-                  <Link href={promo.href}>
-                    <Button variant="secondary" size="sm" className="w-full">
-                      {promo.action}
-                      <ArrowRight className="ml-2 w-3 h-3" />
-                    </Button>
-                  </Link>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
 
-      {/* Quick Actions */}
-      <motion.div 
-        className="grid md:grid-cols-2 gap-6"
-        {...fadeInUp}
-      >
-        <Card>
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
-              <Target className="w-5 h-5 mr-2" />
-              Quick Actions
-            </h3>
-            <div className="space-y-3">
-              <Link href="/dashboard">
-                <Button variant="outline" className="w-full justify-start">
-                  <BarChart3 className="w-4 h-4 mr-3" />
-                  View Trading Dashboard
-                  <ChevronRight className="ml-auto w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/tournaments">
-                <Button variant="outline" className="w-full justify-start">
-                  <Trophy className="w-4 h-4 mr-3" />
-                  Join Tournament
-                  <ChevronRight className="ml-auto w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/people">
-                <Button variant="outline" className="w-full justify-start">
-                  <Users className="w-4 h-4 mr-3" />
-                  Browse Community
-                  <ChevronRight className="ml-auto w-4 h-4" />
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Secondary Features - Horizontal Strip */}
+        <motion.div 
+          className="mb-8"
+          variants={staggerChildren}
+          initial="initial"
+          animate="animate"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-semibold text-foreground">Quick Access</h2>
+            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+              View All
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+            {secondaryFeatures.map((feature, index) => (
+              <motion.div key={index} variants={fadeInUp}>
+                <Link href={feature.href}>
+                  <Card className="group cursor-pointer border-0 bg-card/30 backdrop-blur-sm hover:bg-card/60 transition-all duration-200 hover:scale-105">
+                    <CardContent className="p-6 text-center">
+                      <div className="flex justify-center mb-3">
+                        <div className="p-3 rounded-xl bg-muted/50 group-hover:bg-primary/10 transition-colors">
+                          <feature.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                        </div>
+                      </div>
+                      <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                        {feature.title}
+                      </h3>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
 
-        <Card>
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center">
-              <Clock className="w-5 h-5 mr-2" />
-              Recent Activity
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">Joined "Tech Stocks Battle"</p>
-                    <p className="text-xs text-muted-foreground">2 minutes ago</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">Bought 50 shares of AAPL</p>
-                    <p className="text-xs text-muted-foreground">1 hour ago</p>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">Ranked up to #247</p>
-                    <p className="text-xs text-muted-foreground">3 hours ago</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+        {/* Market Status Footer */}
+        <motion.div 
+          className="mt-12 text-center"
+          variants={fadeInUp}
+          initial="initial"
+          animate="animate"
+        >
+          <div className="inline-flex items-center space-x-2 text-sm text-muted-foreground bg-card/30 backdrop-blur-sm rounded-full px-4 py-2">
+            <Globe className="w-4 h-4" />
+            <span>Markets are currently open</span>
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          </div>
+        </motion.div>
+
+      </div>
     </div>
   );
 }
