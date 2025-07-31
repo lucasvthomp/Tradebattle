@@ -68,7 +68,11 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
     
-    // Start tournament expiration scheduler
-    tournamentScheduler.start();
+    // Start tournament expiration scheduler (disabled during database issues)
+    try {
+      tournamentScheduler.start();
+    } catch (error) {
+      log('Tournament scheduler disabled due to database connectivity issues');
+    }
   });
 })();
