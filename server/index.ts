@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { tournamentScheduler } from "./services/tournamentScheduler";
+// import { tournamentScheduler } from "./services/tournamentScheduler";
 
 const app = express();
 app.use(express.json({ limit: '50mb' })); // Increase limit for profile pictures
@@ -68,7 +68,7 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
     
-    // Start tournament expiration scheduler
-    tournamentScheduler.start();
+    // Tournament scheduler temporarily disabled due to database issues
+    // tournamentScheduler.start();
   });
 })();
