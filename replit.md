@@ -1,288 +1,54 @@
 # Paper Trading Competition Platform
 
 ## Overview
-
-A comprehensive paper trading competition platform that connects participants with trading competitions worldwide. The system provides virtual portfolio management, real-time market data, and competitive leaderboards. Built for aspiring traders who want to test their skills in a risk-free environment with authentic market conditions.
+A comprehensive paper trading competition platform enabling users to participate in global trading competitions. It offers virtual portfolio management, real-time market data, and competitive leaderboards, allowing aspiring traders to test skills in a risk-free environment with authentic market conditions. The platform fosters competition through features like tournament-specific trading, achievement systems, and real-time leaderboards, aiming to be a central hub for virtual trading challenges.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
-
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite for fast development and optimized builds
-- **Routing**: Wouter for lightweight client-side routing
-- **State Management**: TanStack Query (React Query) for server state management
-- **UI Framework**: Radix UI components with shadcn/ui styling system
-- **Styling**: Tailwind CSS with CSS variables for theming
-- **Animations**: Framer Motion for smooth transitions and animations
+- **Build Tool**: Vite
+- **Routing**: Wouter
+- **State Management**: TanStack Query (React Query)
+- **UI Framework**: Radix UI components with shadcn/ui styling
+- **Styling**: Tailwind CSS with CSS variables
+- **Animations**: Framer Motion
+- **Internationalization**: Comprehensive multi-language support (English, Portuguese, Spanish)
+- **Currency System**: Supports 10 currencies with proper formatting
+- **Signup Flow**: Multi-step signup experience with preferences selection
+- **Theming**: Dark mode implementation with consistent color schemes
 
 ### Backend Architecture
-- **Runtime**: Node.js with Express.js framework
+- **Runtime**: Node.js with Express.js
 - **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
-- **Database Provider**: Neon Database (@neondatabase/serverless)
-- **Authentication**: Replit Auth with OpenID Connect
-- **Session Management**: PostgreSQL-backed sessions using connect-pg-simple
+- **Database**: PostgreSQL with Drizzle ORM (Neon Database provider)
+- **Authentication**: Replit Auth with OpenID Connect (username-based)
+- **Session Management**: PostgreSQL-backed sessions
+- **Monorepo Structure**: Client, server, and shared code separation
+- **API Design**: RESTful with middleware-based protection, centralized error handling, and request logging
+- **Financial Data Integration**: Real-time and historical stock data from Yahoo Finance API (previously Finnhub, Twelve Data, Polygon.io)
+- **Tournament Management**: Isolated tournament balances, unique codes, buy-ins, and customizable trading restrictions
+- **Achievement System**: Tiered badge system based on trading accomplishments and milestones
+- **Chat System**: Real-time global and tournament-specific chat functionality
+- **Market Status**: Real-time market open/close detection with disclaimers and trade scheduling
 
 ### Key Design Decisions
-- **Monorepo Structure**: Client, server, and shared code organized in separate directories
-- **Shared Schema**: Common TypeScript types and Zod schemas in `/shared` directory
-- **TypeScript-First**: Full TypeScript implementation across frontend and backend
-- **Component-Driven UI**: Reusable UI components with consistent design system
-
-## Key Components
-
-### Database Schema
-- **Users**: Stores user profiles with trading account balances
-- **Watchlist**: User-specific stock/company tracking for competition preparation
-- **Stock Purchases**: Paper trading transaction records
-- **Contact Submissions**: Customer inquiries and feedback
-- **Admin Logs**: Administrative action tracking
-- **Sessions**: Authentication session storage
-
-### Authentication System
-- **Provider**: Replit Auth with OpenID Connect
-- **Session Storage**: PostgreSQL-backed sessions with 7-day TTL
-- **Authorization**: Route-level protection for authenticated endpoints
-- **User Management**: Automatic user creation/updates on login
-
-### API Structure
-- **RESTful Design**: Standard HTTP methods for CRUD operations
-- **Route Protection**: Middleware-based authentication checking
-- **Error Handling**: Centralized error handling with proper HTTP status codes
-- **Request Logging**: Comprehensive logging for API requests with response times
-
-## Data Flow
-
-1. **User Authentication**: Users authenticate via email/password, creating trading accounts
-2. **Paper Trading**: Authenticated users can buy/sell stocks with virtual money
-3. **Competition Participation**: Users join trading competitions through the platform
-4. **Portfolio Management**: Real-time tracking of virtual portfolios and performance
-5. **Real-time Updates**: Live market data and portfolio updates via React Query
+- **TypeScript-First**: End-to-end TypeScript implementation.
+- **Component-Driven UI**: Reusable components for consistent design.
+- **Data Flow**: User authentication, paper trading, competition participation, portfolio management, and real-time updates.
+- **Scalability**: Designed to handle real-time market data and a growing user base.
+- **User Experience**: Focus on intuitive interfaces, clear navigation, and engaging competitive features.
+- **Unified Dashboard**: Consolidation of personal portfolio and tournament trading into a single interface.
+- **Dynamic Home Page**: Dual home page system for unauthenticated (marketing-focused) and authenticated (gaming-style hub) users.
 
 ## External Dependencies
-
-### Core Dependencies
-- **Database**: Neon PostgreSQL for serverless database hosting
-- **Authentication**: Replit Auth service for user management
-- **Financial Data**: Finnhub API for real-time stock market data
-- **UI Components**: Radix UI primitives for accessible components
-- **Styling**: Tailwind CSS for utility-first styling
-- **Forms**: React Hook Form with Zod validation
-- **Date Handling**: date-fns for date manipulation
-
-### Development Tools
-- **Build**: Vite for frontend, esbuild for backend bundling
-- **Database**: Drizzle Kit for migrations and schema management
-- **Type Safety**: TypeScript with strict mode enabled
-- **Code Quality**: ESLint configuration for consistent code style
-
-## Deployment Strategy
-
-### Build Process
-- **Frontend**: Vite builds optimized static assets to `/dist/public`
-- **Backend**: esbuild bundles server code to `/dist/index.js`
-- **Database**: Drizzle migrations handle schema changes
-
-### Environment Configuration
-- **Database**: `DATABASE_URL` for PostgreSQL connection
-- **Authentication**: `REPL_ID`, `ISSUER_URL`, `SESSION_SECRET` for auth setup
-- **Domains**: `REPLIT_DOMAINS` for CORS configuration
-- **Financial Data**: `FINNHUB_API_KEY` for stock market data access, `TWELVE_DATA_API_KEY` for historical data, `POLYGON_API_KEY` for premium historical data
-
-### Production Considerations
-- **Static Assets**: Frontend served from `/dist/public`
-- **API Routes**: Backend handles all `/api/*` routes
-- **Database**: Serverless PostgreSQL with connection pooling
-- **Sessions**: Persistent session storage in PostgreSQL
-- **Security**: HTTPS-only cookies, CORS protection, input validation
-
-### Development vs Production
-- **Development**: Vite dev server with HMR, middleware mode
-- **Production**: Express serves static files, bundled backend code
-- **Database**: Same PostgreSQL setup for both environments
-- **Authentication**: Environment-specific Replit Auth configuration
-- **Financial Data**: Real-time stock data via Finnhub API (60 requests/minute free tier)
-
-## Recent Changes (January 2025)
-
-- **Balance Management System Implementation** (January 2025): Successfully implemented complete balance management system with backend API endpoints (/api/balance/add, /api/balance/withdraw), database storage methods, and frontend interface in profile account settings tab
-- **Database Connectivity Issue** (January 2025): Neon database endpoint disabled ("The endpoint has been disabled. Enable it using Neon API and retry") preventing normal operation - requires database restoration or migration
-- **Testing System Architecture** (January 2025): Created balance management interface designed for testing purposes with real-time updates, currency formatting, and clear development notices
-
-## Recent Changes (January 2025)
-- **Real Financial Data Integration**: Replaced all mock stock data with authentic market data from Finnhub API
-- **Backend Financial Services**: Added `server/finnhub.ts` with stock quote, company profile, and market data endpoints
-- **API Routes**: Created comprehensive stock data API endpoints (`/api/stocks/popular`, `/api/stocks/search`, `/api/stocks/batch`)
-- **Dashboard Enhancement**: Updated watchlist and search functionality to use real stock prices, market caps, and percentage changes
-- **Data Accuracy**: Resolved critical issue with inaccurate stock information by integrating live financial data
-- **Historical Data Integration**: Added Twelve Data API (`server/twelvedata.ts`) for authentic historical stock performance data
-- **Multi-Source Data**: Implemented fallback system using Twelve Data for historical data and Finnhub for current quotes
-- **Rate Limit Handling**: Properly handles API rate limits (Twelve Data: 8 calls/minute, Finnhub: 60 calls/minute)
-- **Polygon.io Integration**: Added Polygon.io API (`server/polygon.ts`) as primary source for historical data with rate limiting and fallback logic
-- **Triple API Fallback**: Implemented robust data pipeline: Polygon.io → Twelve Data → Finnhub for maximum accuracy and reliability
-- **Security Enhancement**: Moved all API keys to environment variables (FINNHUB_API_KEY, TWELVE_DATA_API_KEY, POLYGON_API_KEY)
-- **Rate Limiting Implementation**: Added comprehensive rate limiting for all APIs (Polygon: 2s, Twelve Data: 7.5s, Finnhub: 1s)
-- **Error Handling Standardization**: Improved error messages and consistent exception handling across all financial data providers
-- **Market Date Logic**: Implemented weekend-aware date calculations to ensure accurate trading day references
-- **YTD Calculation Fix**: Resolved critical YTD data inconsistency by using correct opening prices from first trading day (Jan 2, 2025)
-- **Advanced Caching System**: Implemented intelligent caching with extended TTL (quotes: 2min, historical: 15min, profiles: 4hr) achieving 90% API quota reduction
-- **Batch Processing**: Added intelligent batch processing and preloading for popular stocks during market hours
-- **Search Results Caching**: 30-minute cache for stock search queries prevents redundant API calls
-- **Retry Logic**: Added exponential backoff retry mechanisms for temporary API failures and rate limits
-- **Data Validation**: Enhanced input validation and error handling with custom error types for better debugging
-- **Yahoo Finance Migration**: Completely migrated from Finnhub/TwelveData/Polygon APIs to yahoo-finance2 NPM package for comprehensive server-side data fetching
-- **Unified Data Source**: Single reliable source for quotes, company profiles, historical data, and market information through Yahoo Finance
-- **No Rate Limits**: Eliminated API rate limit issues by using Yahoo Finance's scraping-based approach instead of rate-limited APIs
-- **Enhanced Data Coverage**: Access to comprehensive financial data including earnings, financials, news headlines, and detailed company information
-- **Simplified Architecture**: Reduced complexity by removing multiple API providers and fallback logic in favor of single Yahoo Finance integration
-- **Company Name Correction**: Fixed all instances of "Santhos" to "Santos" throughout the codebase - correct company name is "Orellana, Santos & Thompson, LLC"
-- **Complete Yahoo Finance API Rebuild** (January 2025): Completely rebuilt Yahoo Finance API implementation with new organized structure
-- **User Profile System Enhancement** (January 2025): Updated user profile system to use separate firstName/lastName fields instead of single name field
-- **Profile Data Migration**: Successfully migrated existing user data to new firstName/lastName structure with proper database schema changes
-- **Authentication System Update**: Updated all authentication endpoints to return complete user data including firstName, lastName, and createdAt
-- **Header Display Fix**: Changed header to display full name instead of email address in top-right corner
-- **Navigation Update**: Changed "Pricing" menu item to "Plans" in main navigation
-- **New API Structure**: Created proper TypeScript interfaces in `server/types/finance.ts` with StockQuote, HistoricalDataPoint, CompanyProfile, and SearchResult types
-- **Enhanced Services Layer**: Rebuilt `server/services/yahooFinance.ts` with comprehensive caching (5min quotes, 30min historical, 1hr profiles)
-- **Improved Error Handling**: Added robust error handling in `server/utils/errorHandler.ts` with custom error types and async wrappers
-- **RESTful API Routes**: Created organized API routes in `server/routes/api.ts` following REST conventions (/api/quote/:symbol, /api/search/:query, etc.)
-- **Dashboard Data Integration**: Updated dashboard to fetch real-time data for all watchlist stocks, including individual stock quotes for non-popular stocks
-- **P/E to Volume Display**: Changed dashboard table from P/E ratio back to Volume display as requested by user
-- **Real-time Watchlist Updates**: Fixed watchlist to show actual stock changes and percentages instead of "Loading..." placeholder
-- **Platform Transformation** (January 2025): Complete transformation from investment research platform to paper trading competition platform - removed all studies, news, research insights, partner panels, and subscription tiers while preserving core trading functionality
-- **Simplified Navigation** (January 2025): Streamlined navigation by removing Studies, News, and Pricing routes, focusing on core competition features
-- **Landing Page Redesign** (January 2025): Updated hero and about sections to focus on paper trading competitions, leaderboards, and virtual portfolio management
-- **Database Schema Cleanup** (January 2025): Removed partner-related tables (partners, research_requests, partner_conversations, chat_messages, research_insights, research_publications) and subscription tier system
-- **API Route Simplification** (January 2025): Cleaned up backend routes by removing subscription management, research features, and partner system endpoints while maintaining trading and watchlist functionality
-- **User Profile Simplification** (January 2025): Removed subscription tier field from user profiles - all users now have equal access to platform features
-- **Trading System Preservation** (January 2025): Maintained complete trading functionality including virtual balance management, stock purchases, portfolio tracking, and real-time market data integration
-- **Competition-Focused Architecture** (January 2025): Restructured the platform to serve as a middleman between trading competitions and participants rather than a research platform
-- **Dashboard Cleanup** (January 2025): Removed all remaining research-related components, state variables, and functions from dashboard - now purely focused on trading and watchlist management
-- **Complete Dark Mode Implementation** (January 2025): Implemented comprehensive dark mode theme with dark gray-blue background (HSL 220, 25%, 14%) and light text throughout entire application
-- **Admin Panel Simplification** (January 2025): Removed partner panel from admin interface, simplified subscription tiers to only free/premium, and added proper subscription tier update API endpoint
-- **CSS Variable System**: Updated all CSS variables to use dark gray-blue color scheme with proper contrast ratios for accessibility
-- **Component Styling Update**: Updated all components (header, footer, hero, about, landing page) to use CSS variables for consistent dark mode appearance
-- **Theme Provider Override**: Modified theme provider to always use dark mode, removing light mode options to maintain consistent visual experience
-- **Footer Content Update**: Updated footer to reflect paper trading competition platform focus instead of investment research platform
-- **Tournament Balance System Implementation** (January 2025): Successfully implemented unique tournament balance system where each tournament maintains its own separate balance, buy-in amount, name, code, and member count tied to tournament ID
-- **Tournament-Specific Trading**: Each tournament now has completely isolated balance tracking, purchase history, and portfolio management
-- **Automatic Tournament Selection**: System automatically selects first available tournament and properly manages tournament switching with real-time balance updates
-- **Fixed Tournament Balance Queries**: Resolved React Query caching issues that were causing all tournaments to show the same balance - each tournament now displays its correct unique balance
-- **Tournament Purchase System**: Fixed stock purchasing system to work with tournament-specific balances and validation
-- **Authentication Pages Dark Mode** (January 2025): Updated login and signup pages to use consistent dark mode styling with proper CSS variables and color schemes
-- **Portfolio Enhancement** (January 2025): Added comprehensive portfolio table with purchase price, current price, dollar/percentage change calculations, and real-time price updates
-- **Buy-in System Removal** (January 2025): Completely removed buy-in functionality from the entire platform - tournaments now provide standard $10,000 starting balance without buy-in requirements, simplifying tournament creation and participation
-- **Personal Portfolio Trading System** (January 2025): Implemented complete personal portfolio trading system with stock purchase/sell functionality, real-time price lookup, balance validation, and transaction processing
-- **Personal Trading UI** (January 2025): Added "Buy Stock" and "Sell" buttons with modal dialogs for stock trading, real-time price fetching, and comprehensive transaction validation
-- **Personal Portfolio API** (January 2025): Created complete API endpoints for personal portfolio trading including purchase, sell, and portfolio management with database integration
-- **Leaderboard System** (January 2025): Added comprehensive leaderboard page with tournaments and personal portfolio sub-tabs, real-time portfolio value calculations, ranking system with trophy icons, and user performance metrics with full dark mode support
-- **Tournament Countdown Timer** (January 2025): Added real-time countdown timer to tournament info sections showing remaining time based on selected timeframe, updates every second with different display formats (days/hours/minutes for longer durations, seconds for shorter)
-- **Account Page Dark Mode Fix** (January 2025): Fixed account/profile page dark mode styling by replacing all hardcoded colors with CSS variables (bg-background, text-foreground, text-muted-foreground, etc.) for proper theme consistency
-- **People Browser System** (January 2025): Implemented comprehensive people browsing system with public profile viewing, user achievement displays, and social discovery features
-- **Profile System Restructure** (January 2025): Split profile page into Public Profile and Account Settings sections - public profile shows achievements, trading stats, and visibility settings while account settings manages private information
-- **User Public API Endpoints** (January 2025): Added API endpoints for fetching all users (/api/users/public) and individual user profiles (/api/users/public/:userId) with only public information exposed
-- **Navigation Enhancement** (January 2025): Added People tab to main navigation allowing authenticated users to browse all platform users and view public profiles with achievements and trading statistics
-- **Real Member Since Dates** (January 2025): Updated People page to display actual user creation dates instead of hardcoded mock values, showing authentic "Member Since" information from database
-- **5-Tier Badge System** (January 2025): Implemented comprehensive achievement badge system with Gray (Common), Green (Uncommon), Blue (Rare), Purple (Epic), and Orange (Legendary) tiers based on specific trading accomplishments and milestones
-- **6-Tier Achievement System** (January 2025): Enhanced achievement system with new Mythic tier (red) for ultimate competitive achievements like "Tournament Legend" (10 tournament wins)
-- **Tournament Management Panel** (January 2025): Added comprehensive tournament management tab to admin panel with tournament statistics, participant counts, time remaining calculations, and action buttons for viewing details and participants
-- **Tournament Deletion System** (January 2025): Implemented complete tournament deletion functionality allowing admins to permanently remove tournaments and all associated data (participants, purchases, history) from the database through admin panel
-- **Trade Count Preservation** (January 2025): Modified tournament deletion to preserve user trade history records by nullifying tournament_id instead of deleting records, ensuring user total trade counts remain accurate regardless of tournament deletions
-- **Tournament Expiration System** (January 2025): Implemented comprehensive tournament expiration system with automatic achievement awards, trading locks for completed tournaments, and archive page accessible from profile dropdown - tournaments naturally expire based on timeframe and award achievements to participants based on performance rankings and portfolio values
-- **Achievement System Database** (January 2025): Added user_achievements table with full CRUD operations, storing achievement type, tier, name, description, and tournament association for persistent achievement tracking
-- **Automated Tournament Processing** (January 2025): Created background scheduler service that runs every 5 minutes to check for expired tournaments, calculate final standings, award achievements, and mark tournaments as completed
-- **Archive Page Implementation** (January 2025): Built comprehensive archive page with tabs for completed tournaments and earned achievements, accessible from profile dropdown menu with proper authentication and responsive design
-- **Archive Page Simplification** (January 2025): Removed achievements tab from archive page, simplified to only show completed tournaments as requested by user
-- **1 Minute Tournament Option** (January 2025): Added 1 minute tournament option to dropdown for rapid testing of tournament expiration system, updated backend parseTimeframe function to handle minutes in milliseconds, and updated countdown timer to support minute-based tournaments
-- **Tournament Badge Display Fix** (January 2025): Fixed People page achievement display to use real API data instead of placeholder achievements, connected to actual tournament results database, properly displays Tournament Champion and other earned badges with correct tier colors
-- **Display Name System** (January 2025): Added mutable display name field to user profiles with editing interface in account settings, users can now set custom display names that appear in public profiles and people browsing instead of first/last name combination
-- **Total Trades Visibility** (January 2025): Restored total trades count to public profiles and people browsing page while maintaining privacy by excluding detailed trading performance metrics
-- **Account-Based Display Name Editing** (January 2025): Moved display name editing to account settings tab in profile page instead of inline editing on public profiles, maintaining clear separation between public viewing and private account management
-- **Automatic Welcome Achievement** (January 2025): Implemented automatic Welcome achievement system that ensures all users (new and existing) receive a Welcome badge when their achievements are checked, no longer tied to specific user IDs
-- **Achievement Trigger System** (January 2025): Added automatic achievement triggers for "First Trade" (when users make their first stock purchase) and "Tournament Participant" (when users join or create a tournament) achievements, ensuring users receive achievements immediately upon performing these actions
-- **Universal Tournament Creation** (January 2025): Removed premium subscription requirements - all users can now create and join tournaments freely as subscription tiers have been eliminated
-- **Enhanced Premium Error Messages** (January 2025): Improved tournament creation error messages with user-friendly messaging, clear upgrade guidance, and removed error status codes in favor of informative responses that emphasize joining tournaments is always free
-- **Archive Tournament Results** (January 2025): Added comprehensive participant lists to archived tournaments showing final positions, portfolio values, and rankings with visual distinction for top performers including crown, medal, and award icons
-- **Tournament Expiration System Fix** (January 2025): Fixed issue where 1-minute tournaments remained in "waiting" status and weren't properly processed - tournaments now correctly transition from waiting → active → completed with automated expiration processing
-- **Admin Panel Tournament Filtering** (January 2025): Updated admin panel to only show active tournaments, hiding completed tournaments from the management interface for cleaner organization
-- **Archive Tournament ID Display** (January 2025): Changed archive page to display tournament ID instead of join code for better identification and tracking of completed tournaments
-- **Real-time Tournament Leaderboard** (January 2025): Added real-time updates to tournament leaderboards with 5-second refresh intervals and immediate cache invalidation on trade actions for instant ranking updates
-- **Global Leaderboard Auto-refresh** (January 2025): Implemented 5-minute auto-refresh for global leaderboard on both tournament and personal portfolio sections with window focus refetch and proper stale time management
-- **Initial Deposit Tracking** (January 2025): Added new info bubble in personal portfolio showing initial deposit amount given to users, updated gain/loss calculation to compare current total portfolio value against initial deposit instead of individual stock investments
-- **Achievement Uniqueness System** (January 2025): Implemented database-level unique constraint on user_achievements table preventing duplicate achievements, added PostgreSQL ON CONFLICT DO NOTHING handling, cleaned up 15 duplicate achievement records, and simplified API routes by removing redundant hasAchievement checks
-- **Display Name Update Fix** (January 2025): Fixed display name save functionality by correcting API request format from fetch options to apiRequest method signature (method, url, data)
-- **Tournament Participant Achievement Deduplication** (January 2025): Removed tournament-specific participant achievements to prevent duplicates, ensuring only one global tournament participant achievement per user regardless of number of tournaments joined
-- **Tournament Champion Global Achievement** (January 2025): Fixed Tournament Champion achievement to be a global achievement that can only be earned once per user, not once per tournament, preventing duplicate legendary achievements
-- **Display Name Default to First Name** (January 2025): Updated display name system to default to first name instead of empty string, applied consistently across profile forms, public profiles, people browsing, and header display
-- **Profile Achievement Display Fix** (January 2025): Fixed account section in profile page to show actual earned achievements from database instead of mock placeholder data, matching the real achievement system used in people profiles
-- **Achievement Colors and Icons Consistency** (January 2025): Fixed profile page achievements to use identical colors, icons, and styling as the people tab - Welcome (gray User icon), First Trade (gray Target icon), Tournament Participant (gray Users icon), Tournament Champion (orange Trophy icon)
-- **Profile Visibility Settings Removal** (January 2025): Removed all profile visibility settings (Show achievements, Show join date, Show trading stats) from the Public Profile tab as requested by user
-- **Leaderboard Display Name Update** (January 2025): Updated both tournament and personal portfolio leaderboards to display user's display name instead of full name, with fallback to first name then full name if display name is not set
-- **Tournament Creator Achievement** (January 2025): Added rare "Tournament Creator" achievement that is automatically awarded when users create a tournament, displayed with blue color and Plus icon
-- **Global Achievement System** (January 2025): Completely transformed achievement system to global achievements with maximum 1 per person - removed all tournament-specific achievement logic, updated database schema to eliminate tournament_id column, and changed unique constraint to enforce global uniqueness based on user_id and achievement_type only
-- **Database ID Synchronization** (January 2025): Updated all user database IDs to match their user_id values for consistency - Lucas (id=1, user_id=1), Murilo (id=2, user_id=2), Edward (id=3, user_id=3). Migration required recreating user records and deleting tournaments created by migrated users
-- **Database Reset** (January 2025): Deleted all user accounts from database to start fresh - platform is now clean and ready for new user registrations with proper username-based authentication system
-- **Tournament Restoration** (January 2025): Restored "The White Goons" tournament (ID: 15, Code: WG0015) as requested by user, recreated with Edward as creator and Lucas as participant with 4-week duration
-- **Personal Portfolio Growth Achievements** (January 2025): Extended portfolio growth achievements (10% and 25% growth) to work with both tournament and personal portfolios - achievements are now automatically triggered when users' personal portfolio values increase by the required percentages, calculated against their initial deposit amount
-- **Premium Trader Achievement Fix** (January 2025): Fixed missing Premium Trader achievement by adding it to the premium upgrade endpoint and awarding it retroactively to all existing premium users (Lucas, Murilo, and Cake) - achievement displays as legendary tier with orange color and Star icon
-- **Achievement System Enhancement** (January 2025): Added comprehensive portfolio growth tracking function that calculates real-time portfolio values using current stock prices and awards achievements automatically on both stock purchases and sales in personal portfolios
-- **100% Portfolio Growth Achievement** (January 2025): Added mythic tier 100% Portfolio Growth achievement for users who double their portfolio value - displayed with red color and TrendingUp icon, can be earned on any portfolio type (personal or tournament)
-- **Administrator Subscription Tier** (January 2025): Added administrator subscription tier with same features as premium but different name, updated all premium checks to include administrator tier, created separate upgrade endpoint, and updated Edward's subscription from admin to administrator
-- **Portfolio Performance Graphs Implementation** (January 2025): Created comprehensive portfolio visualization system with PortfolioGraph component using Recharts library, added portfolio_history database table for tracking portfolio values over time, implemented API endpoints for portfolio history data, and integrated graphs into public profiles (People page), account profiles, and detailed portfolio page with mock data fallback for users without historical data
-- **Hero Section Enhancement** (January 2025): Added stylish blurred stock graph background to home page hero section using SVG-generated chart patterns with blue color scheme, grid lines, gradient fills, and glow effects for visual appeal while maintaining text readability
-- **Header Menu Simplification** (January 2025): Combined "My ORSATH" and "Settings" dropdown menu items into a single "Settings" option for cleaner navigation
-- **Portfolio Table Enhancement** (January 2025): Updated both tournament and personal portfolio tables with new column structure: Stock → Shares → Total Purchase Value → Current Value → Change → Purchase Price → Current Price → Per Share Change → Actions, providing better investment tracking and performance analysis
-- **Free User Rate Limiting** (January 2025): Implemented tiered refresh rates - free users get 10-minute stock price updates while premium/administrator users maintain 30-second real-time updates, optimizing system performance and encouraging premium upgrades
-- **Trading Streak Counter Implementation** (January 2025): Added fully functional trading streak counter that tracks consecutive days of trading activity in personal portfolios, calculates real-time streaks based on trade history, and includes help dialog with detailed explanations of how streaks work
-- **Streak Achievement System** (January 2025): Implemented comprehensive streak-based achievements: 5 Day Streak (uncommon), 15 Day Streak (rare), 50 Day Streak (epic), 100 Day Streak (legendary), and 365 Day Streak (mythic) - automatically awarded when users reach consecutive trading day milestones
-- **Streak Leaderboard Tab** (January 2025): Added third tab to leaderboard page showing users ranked by trading streaks with real-time streak calculations, premium user statistics, and responsive design matching existing leaderboard styling
-- **Special #1 Leaderboard Achievements** (January 2025): Added 3 unique special achievements with custom gradient designs: Tournament Overlord (yellow-orange-red), Portfolio Emperor (purple-pink-red), and Streak Master (emerald-teal-cyan) - automatically awarded to users who rank #1 on their respective leaderboards
-- **Hero Headline Update** (January 2025): Changed main landing page headline from "Paper Trading Competitions" to "Compete. Trade Win. No risk, all reward." - more dynamic and action-oriented messaging emphasizing competitive nature and value proposition
-- **Comprehensive Multi-Language System** (January 2025): Implemented complete internationalization system with English, Portuguese, and Spanish support throughout entire platform including navigation, forms, settings, and all user interfaces
-- **Advanced Currency System** (January 2025): Added sophisticated currency formatting system supporting 10 currencies (USD, BRL, ARS, MXN, CAD, COP, CLP, PEN, UYU, EUR) with proper symbol positioning and decimal handling
-- **Enhanced Signup Multi-Step Flow** (January 2025): Created premium 5-step signup experience with welcome screen, location/language/currency selection, personal details, account creation, and premium upgrade option
-- **User Preferences Management** (January 2025): Added comprehensive preferences system allowing users to change language and currency settings through profile page with real-time updates across entire platform
-- **Database Schema Enhancement** (January 2025): Extended user schema with country, language, and currency fields; updated registration and preferences API endpoints with proper validation
-- **UserPreferences Context System** (January 2025): Created React context provider managing translations, currency formatting, and preference updates with automatic API synchronization
-- **Enhanced Tournament Creation System** (January 2025): Completely redesigned tournament creation with comprehensive features including buy-in amounts ($0-$1,000), customizable fake money allocation ($1,000-$1,000,000), 13 trading restriction categories (blue chip, tech, finance, healthcare, energy, consumer, industrial, automotive, real estate, crypto, small cap, dividend), interactive duration wheel with clock-style interface supporting minutes to weeks, and public/private tournament visibility settings
-- **Tournament Leaderboard Viewing System** (January 2025): Implemented comprehensive tournament leaderboard viewing system allowing non-participants to view real-time rankings and portfolio values for ongoing public tournaments through "View Leaderboard" button with 5-second refresh intervals
-- **Personal Portfolio Layout Restructure** (January 2025): Redesigned personal portfolio page layout to move watchlist under the portfolio graph as full-width section, changed grid layout from 3-column to 4-column with portfolio taking 3 columns and search sidebar taking 1 column, watchlist now displays in responsive grid format stretching full screen width
-- **Tournament Card Interface** (January 2025): Implemented comprehensive tournament card display system showing tournament details, balance, player count, duration, buy-in amounts, trading restrictions, and privacy settings with clickable cards that open tournament trading interface
-- **Tournament Detail Page** (January 2025): Created comprehensive tournament detail view displaying user balance, real-time countdown timer, participant leaderboard with rankings, current holdings portfolio, tournament information panel, and quick action buttons - accessed by clicking tournament cards from the tournaments list
-- **Complete Watchlist Display** (January 2025): Updated watchlist page to display all watchlist items instead of limiting to 3 items with expand/collapse functionality
-- **Username-Based Authentication System** (January 2025): Completely migrated login system from email-based to username-based authentication - updated login forms, authentication strategies, password hashing, and admin access controls to use subscription tier instead of hardcoded user IDs
-- **Admin Access Fix** (January 2025): Fixed admin panel access by changing admin checks from hardcoded userId values to subscription tier verification - users with "administrator" subscription tier now have proper access to admin panel and related functionality
-- **Critical Authentication System Overhaul** (January 2025): Successfully resolved major authentication middleware issues that were blocking People page and Tournament system functionality by properly implementing `requireAuth` middleware across all API routes
-- **Profile System Fully Restored** (January 2025): Fixed People page functionality - users can now browse all community members, view individual profiles with achievements, trading statistics, and portfolio performance graphs
-- **Tournament System Completely Fixed** (January 2025): Resolved critical tournament disappearing issue - tournaments now persist correctly in both user tournament lists and public join pages, creation and participation working properly with proper balance tracking
-- **API Route Authentication Standardization** (January 2025): Unified all protected API endpoints to use proper `requireAuth` middleware instead of manual `req.user?.id` checks, eliminating authentication failures across `/api/users/public`, `/api/tournaments`, portfolio trading, and leaderboard endpoints
-- **Tournament Trading Real-time Updates** (January 2025): Implemented instant holdings updates for tournament trading system with 10-second background refresh and immediate cache invalidation on trades - holdings appear/disappear instantly when buying/selling stocks without page reloads or navigation away from tournament view
-- **Real-time Balance Display Fix** (January 2025): Fixed tournament balance display to use live API data instead of static values, ensuring balance updates immediately after trading transactions
-- **Events Section Addition** (January 2025): Added new Events section to navigation menu with comprehensive "coming soon" page featuring previews of live trading competitions, community workshops, weekly challenges, and virtual meetups
-- **Shop Coming Soon Implementation** (January 2025): Updated Shop page to display "coming soon" status with preview cards for balance boosts, premium tournaments, advanced analytics, and exclusive badges
-- **Integrated Balance Display** (January 2025): Moved balance display from separate button into username dropdown box, separated by "|" character as requested by user for cleaner header layout
-- **Market Status Disclaimer System** (January 2025): Implemented comprehensive market status disclaimer that appears at top of trading pages when stock market is closed, shows market reopen time, restricts new stock tournaments to crypto only, and allows scheduling stock trades for market open - uses real-time market hours calculation (Monday-Friday 9:30 AM - 4:00 PM ET) with automatic updates every minute
-- **Enhanced People Discovery System** (January 2025): Upgraded People page with comprehensive user browsing featuring brief information cards showing trade counts, achievement badges, portfolio growth, activity status, and trading streaks; added advanced search, sorting (newest/oldest/trades/achievements/alphabetical), and filtering (subscription tiers); enhanced individual profiles with detailed statistics and improved user discovery experience
-- **Complete Premium System Removal** (January 2025): Completely eliminated all premium/subscription tier references throughout the entire platform - updated admin panel to show "Role" instead of "Status" with Admin/User badges, removed Premium Trader achievement, simplified People page filtering to show only Administrators vs Traders, updated leaderboard to remove premium user counts and badges, and modified dashboard refresh rates to be equal for all users - platform now treats all users equally with no premium differentiation
-- **Enhanced UI Design** (January 2025): Implemented glass-like sidebar with backdrop-blur effects, transparency, and enhanced visual appeal; created comprehensive landing page with stock graph background, animated sections, feature highlights, stats display, "How It Works" guide, and call-to-action sections; improved tournament cards with prominent pot displays, gradient backgrounds, enhanced visual hierarchy, and interactive hover effects
-- **Enhanced Tournament Card Design** (January 2025): Completely redesigned tournament cards with modern gradient backgrounds, prominent pot display with trophy icons and green gradient text, interactive hover effects, and organized stats sections with colored icons - pot amounts now stand out prominently in dashed border containers with scaling animations
-- **Portfolio Page Layout Fix** (January 2025): Fixed portfolio page to prevent widget overlaps by implementing collision prevention and creating simple 2-widget default layout with performance chart and current holdings positioned side-by-side without overlapping
-- **People Page Classification Removal** (January 2025): Removed all trader classifications from People page - users no longer see "Trader" labels, only administrators display badges on their full profiles, simplified filtering to remove trader option while maintaining administrator filtering for relevant cases
-- **Comprehensive Chat System Implementation** (January 2025): Built complete real-time chat system with both global and tournament-specific chat functionality, including chat message database table, API endpoints for sending/receiving messages, React components with auto-refresh, tournament management integration, and prominent chat buttons on all tournament cards for easy access to tournament discussions
-- **Dashboard and Portfolio Consolidation** (January 2025): Eliminated separate dashboard and portfolio pages, converting portfolio into comprehensive trading dashboard with tabs for personal portfolio and tournament trading - users can now switch between personal and tournament trading modes within single unified interface, portfolio route redirects to dashboard, removed portfolio from navigation menu
-- **Transaction History Migration to Archive** (January 2025): Moved all transaction logs from dashboard to Archive page with dedicated "Transaction History" tab alongside completed tournaments, providing comprehensive historical view of personal portfolio trading activity with detailed buy/sell records, timestamps, and amounts
-- **Navigation Menu Cleanup** (January 2025): Removed separate Portfolio navigation item from sidebar menu while preserving full portfolio functionality within unified Dashboard interface, changed tournaments icon to crossed swords (Swords) for better visual distinction
-- **Tournament Creation System Update** (January 2025): Removed immediate start option (5-minute minimum enforced), eliminated stock type restrictions from tournament creation form, updated tournament sorting to prioritize user's participated tournaments first, then owned tournaments, then public tournaments - private tournaments and tournaments user participates in now appear at top of lists
-- **Previous Close Column Implementation** (January 2025): Added "Previous Close" column to watchlist displaying historical price at selected timeframe start, fixed timeframe validation by mapping client lowercase values to uppercase API format, updated table layout from 7 to 8 columns with proper historical data integration using Yahoo Finance previousClose field
-- **Complete Home Page System Redesign** (January 2025): Implemented dual home page system - unauthenticated users see conversion-focused landing page with animations, features, stats, and call-to-action sections designed for signups; authenticated users get redirected to dashboard on root path and access gaming-style hub via logo click featuring promotions, feature navigation cards, quick stats, and recent activity inspired by Stake.us interface
-- **Navigation System Overhaul** (January 2025): Removed home tab from sidebar for authenticated users, made logo clickable to access hub page for logged-in users and home page for visitors, updated routing to show unauthenticated home only to visitors and prevent authenticated users from accessing it
-- **Layout System Enhancement** (January 2025): Updated layout to hide sidebar and chat functionality for unauthenticated users, displays clean header with only login/signup buttons for visitors, maintains full functionality (sidebar, chat, user menu) for authenticated users
-- **Enhanced Tournament Visibility System** (January 2025): Implemented dual-source tournament fetching combining public tournaments with user's private/participated tournaments, ensuring all tournaments user is involved in appear prominently in their tournament lists regardless of public/private status
-- **Tournament Card Redesign** (January 2025): Completely redesigned tournament cards to be cleaner and more readable by removing excessive visual clutter, gradients, and colorful icons while maintaining all functionality - simplified layout with clear typography and streamlined design
-- **Tournament Joining System Fix** (January 2025): Fixed critical tournament joining issue where users couldn't join tournaments created by other accounts - resolved route conflicts between code-based and ID-based joining by restructuring API routes to `/tournaments/code/:code/join` and `/tournaments/:id/join`
-- **Tournament Join Confirmation System** (January 2025): Implemented comprehensive tournament join confirmation popup with different information for public vs private tournaments, agreement checkbox, buy-in confirmation, and detailed tournament rules display - provides clear terms and entry fee confirmation before joining
-- **Enhanced Tournament Creation UX** (January 2025): Added comprehensive info tooltips for all tournament creation fields explaining functionality, restored buy-in incentive green box with 5% commission details and prize pool calculations, and implemented mandatory terms of service agreement checkbox before tournament creation - provides clear guidance and transparency for tournament creators
+- **Database**: Neon PostgreSQL
+- **Authentication**: Replit Auth
+- **Financial Data**: Yahoo Finance API (via `yahoo-finance2` NPM package)
+- **UI Components**: Radix UI, shadcn/ui
+- **Styling**: Tailwind CSS
+- **Forms**: React Hook Form, Zod
+- **Date Handling**: date-fns
+- **Charting**: Recharts (for portfolio graphs)

@@ -61,6 +61,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 
+
+
 export default function Dashboard() {
   const { user } = useAuth();
   const { formatCurrency, t } = useUserPreferences();
@@ -126,6 +128,8 @@ export default function Dashboard() {
       setSelectedTournament(activeTournaments[0]);
     }
   }, [activeTab, activeTournaments, selectedTournament]);
+
+
 
   // Buy stock mutation
   const buyStockMutation = useMutation({
@@ -240,6 +244,8 @@ export default function Dashboard() {
     return activeTab === "personal" ? personalLoading : tournamentLoading;
   };
 
+
+
   // Fetch real-time data for watchlist stocks with timeframe support
   useEffect(() => {
     if (watchlist.length > 0) {
@@ -265,6 +271,8 @@ export default function Dashboard() {
               if (changePercent === 0 && previousClose > 0) {
                 changePercent = (changeAmount / previousClose) * 100;
               }
+              
+
               
               stockData[stock.symbol] = {
                 ...quoteData.data,
@@ -302,6 +310,8 @@ export default function Dashboard() {
                   changeAmount = currentPrice - historicalPrice;
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
                   
+
+                  
                   stockData[stock.symbol] = {
                     ...quoteData.data,
                     price: currentPrice,
@@ -316,6 +326,8 @@ export default function Dashboard() {
                   changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                   changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
                   const fallbackPreviousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
+                  
+
                   
                   stockData[stock.symbol] = {
                     ...quoteData.data,
@@ -452,35 +464,122 @@ export default function Dashboard() {
                           variant="outline"
                           className="h-8 px-2"
                           onClick={() => {
-                            // Manual refresh watchlist data
+                            // Manual refresh function
                             if (watchlist.length > 0) {
                               const fetchWatchlistData = async () => {
                                 const stockData: {[key: string]: any} = {};
+                                
                                 for (const stock of watchlist) {
                                   try {
+                                    // Fetch current quote data first
                                     const quoteResponse = await apiRequest("GET", `/api/quote/${stock.symbol}`);
                                     const quoteData = await quoteResponse.json();
+                                    
                                     const currentPrice = quoteData.data?.price || quoteData.data?.regularMarketPrice || 0;
-                                    const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
-                                    const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
-                                    stockData[stock.symbol] = {
-                                      ...quoteData.data,
-                                      price: currentPrice,
-                                      change: changeAmount,
-                                      changePercent: changePercent,
-                                    };
+                                    const marketCap = quoteData.data?.marketCap || 0;
+                                    const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
+                                    
+                                    // For 1D timeframe, use the daily change from quote data
+                                    if (selectedTimeframe === '1D') {
+                                      const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                                      const previousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
+                                      // Calculate percentage change manually if not provided
+                                      let changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                      if (changePercent === 0 && previousClose > 0) {
+                                        changePercent = (changeAmount / previousClose) * 100;
+                                      }
+                                      
+                                      stockData[stock.symbol] = {
+                                        ...quoteData.data,
+                                        price: currentPrice,
+                                        change: changeAmount,
+                                        changePercent: changePercent,
+                                        marketCap: marketCap,
+                                        volume: volume,
+                                        previousClose: previousClose // Use actual previous close from Yahoo Finance
+                                      };
+                                    } else {
+                                      // For other timeframes, fetch historical data with proper error handling
+                                      try {
+                                        const historicalResponse = await fetch(`/api/historical/${stock.symbol}/${selectedTimeframe}`);
+                                        
+                                        // Check if response is ok and content type is JSON
+                                        if (!historicalResponse.ok) {
+                                          throw new Error(`HTTP ${historicalResponse.status}`);
+                                        }
+                                        
+                                        const contentType = historicalResponse.headers.get('content-type');
+                                        if (!contentType || !contentType.includes('application/json')) {
+                                          throw new Error('Response is not JSON');
+                                        }
+                                        
+                                        const historicalData = await historicalResponse.json();
+                                        
+                                        let changeAmount = 0;
+                                        let changePercent = 0;
+                                        
+                                        if (historicalData.success && historicalData.data && historicalData.data.length > 0) {
+                                          // Get the earliest price in the historical data (starting point for the timeframe)
+                                          // Use the FIRST data point (oldest) instead of last (newest) for proper timeframe comparison
+                                          const historicalPrice = historicalData.data[0].close;
+                                          changeAmount = currentPrice - historicalPrice;
+                                          changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
+                                          
+
+                                          
+                                          stockData[stock.symbol] = {
+                                            ...quoteData.data,
+                                            price: currentPrice,
+                                            change: changeAmount,
+                                            changePercent: changePercent,
+                                            marketCap: marketCap,
+                                            volume: volume,
+                                            previousClose: historicalPrice // This is the price at the timeframe start
+                                          };
+                                        } else {
+                                          changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                                          changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                          
+                                          stockData[stock.symbol] = {
+                                            ...quoteData.data,
+                                            price: currentPrice,
+                                            change: changeAmount,
+                                            changePercent: changePercent,
+                                            marketCap: marketCap,
+                                            volume: volume,
+                                            previousClose: currentPrice - changeAmount // Calculate from current price and change
+                                          };
+                                        }
+                                      } catch (histError) {
+                                        console.error(`Manual refresh historical data error for ${stock.symbol}:`, histError);
+                                        // Fallback to daily change
+                                        const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
+                                        const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
+                                        
+                                        stockData[stock.symbol] = {
+                                          ...quoteData.data,
+                                          price: currentPrice,
+                                          change: changeAmount,
+                                          changePercent: changePercent,
+                                          marketCap: marketCap,
+                                          volume: volume,
+                                          previousClose: currentPrice - changeAmount // Calculate from current price and change
+                                        };
+                                      }
+                                    }
                                   } catch (error) {
-                                    console.error(`Error refreshing ${stock.symbol}:`, error);
+                                    console.error(`Error fetching data for ${stock.symbol}:`, error);
                                     stockData[stock.symbol] = null;
                                   }
                                 }
+                                
                                 setWatchlistStockData(stockData);
                               };
                               fetchWatchlistData();
                             }
                           }}
                         >
-                          <RefreshCw className="w-3 h-3" />
+                          <RefreshCw className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>
@@ -527,6 +626,7 @@ export default function Dashboard() {
                             );
                           }
 
+                          // Use real Yahoo Finance data with timeframe-aware changes
                           const currentPrice = stockData.price || 0;
                           const changeAmount = stockData.change || 0;
                           const changePercent = stockData.changePercent || 0;
@@ -576,6 +676,125 @@ export default function Dashboard() {
                                 </Button>
                               </div>
                             </div>
+                          );>
+                                  <RefreshCw className="w-4 h-4 animate-spin inline mr-2" />
+                                  Loading...
+                                </div>
+                                <div className="flex items-center justify-center space-x-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
+                                  >
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          // Use real Yahoo Finance data with timeframe-aware changes
+                          const currentPrice = stockData.price || 0;
+                          const changeAmount = stockData.change || 0;
+                          const changePercent = stockData.changePercent || 0;
+                          const marketCap = stockData.marketCap || 0;
+                          const volume = stockData.volume || 0;
+                          const previousClose = stockData.previousClose || 0;
+
+                          const isPositive = changeAmount >= 0;
+                          
+                          // Format market cap in billions/millions
+                          const formatMarketCap = (cap: number) => {
+                            if (cap >= 1e12) return `$${(cap / 1e12).toFixed(2)}T`;
+                            if (cap >= 1e9) return `$${(cap / 1e9).toFixed(2)}B`;
+                            if (cap >= 1e6) return `$${(cap / 1e6).toFixed(2)}M`;
+                            if (cap >= 1e3) return `$${(cap / 1e3).toFixed(2)}K`;
+                            return cap > 0 ? `$${cap.toFixed(0)}` : 'N/A';
+                          };
+                          
+                          return (
+                            <div
+                              key={stock.id}
+                              className="grid grid-cols-8 gap-4 p-3 border rounded-lg hover:bg-muted/30 transition-colors items-center"
+                            >
+                              {/* Stock Info */}
+                              <div className="col-span-2">
+                                <div className="font-semibold text-base">{stock.symbol}</div>
+                                <div className="text-sm text-muted-foreground truncate">
+                                  {stock.companyName}
+                                </div>
+                              </div>
+                              
+                              {/* Current Price */}
+                              <div className="text-right">
+                                <div className="font-semibold">
+                                  {formatCurrency(currentPrice)}
+                                </div>
+                              </div>
+                              
+                              {/* Previous Close */}
+                              <div className="text-right">
+                                <div className="text-sm text-muted-foreground">
+                                  {formatCurrency(previousClose)}
+                                </div>
+                              </div>
+                              
+                              {/* Change Amount & Percentage */}
+                              <div className="text-right">
+                                <div className={`font-medium ${
+                                  isPositive ? 'text-green-600' : 'text-red-600'
+                                }`}>
+                                  <div className="flex items-center justify-end space-x-1">
+                                    {isPositive ? (
+                                      <TrendingUp className="w-4 h-4" />
+                                    ) : (
+                                      <TrendingDown className="w-4 h-4" />
+                                    )}
+                                    <div>
+                                      <div>{isPositive ? '+' : ''}{formatCurrency(changeAmount)}</div>
+                                      <div className="text-xs">
+                                        ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%) {selectedTimeframe.toUpperCase()}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {/* Market Cap */}
+                              <div className="text-right">
+                                <div className="text-sm font-medium">
+                                  {formatMarketCap(marketCap)}
+                                </div>
+                              </div>
+                              
+                              {/* Volume */}
+                              <div className="text-right">
+                                <div className="text-sm text-muted-foreground">
+                                  {volume.toLocaleString()}
+                                </div>
+                              </div>
+                              
+                              {/* Actions */}
+                              <div className="flex items-center justify-center space-x-1">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
+                                    setBuyDialogOpen(true);
+                                  }}
+                                >
+                                  <ShoppingCart className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
+                                >
+                                  <X className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
                           );
                         })}
                       </div>
@@ -586,9 +805,9 @@ export default function Dashboard() {
             </TabsContent>
 
             {/* Tournament Trading Tab */}
-            <TabsContent value="tournament" className="flex-1 overflow-hidden">
+            <TabsContent value="tournament" className="space-y-6">
               {activeTournaments.length === 0 ? (
-                <Card className="flex items-center justify-center h-full">
+                <Card>
                   <CardContent className="py-8">
                     <div className="text-center">
                       <Trophy className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
@@ -606,60 +825,58 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               ) : (
-                <div className="h-full flex flex-col">
-                  {/* Compact Tournament Selector Bar */}
-                  <div className="flex items-center space-x-4 mb-4 p-3 bg-muted/30 rounded-lg">
-                    <div className="flex items-center space-x-2">
-                      <Trophy className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-medium">Tournament:</span>
-                    </div>
-                    <Select
-                      value={selectedTournament?.id?.toString() || ""}
-                      onValueChange={(value) => {
-                        const tournament = activeTournaments.find((t: any) => t.id.toString() === value);
-                        setSelectedTournament(tournament);
-                      }}
-                    >
-                      <SelectTrigger className="w-[300px]">
-                        <SelectValue placeholder="Select tournament" />
-                      </SelectTrigger>
-                      <SelectContent>
+                <div className="space-y-6">
+                  {/* Tournament Selector */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Select Tournament</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {activeTournaments.map((tournament: any) => (
-                          <SelectItem key={tournament.id} value={tournament.id.toString()}>
-                            <div className="flex items-center space-x-2">
-                              <span>{tournament.name}</span>
-                              <Badge variant={tournament.tournamentType === "crypto" ? "secondary" : "default"} className="text-xs">
-                                {tournament.tournamentType === "crypto" ? "🪙" : "📈"}
+                          <div
+                            key={tournament.id}
+                            className={`p-4 border rounded-lg cursor-pointer transition-all ${
+                              selectedTournament?.id === tournament.id
+                                ? 'border-primary bg-primary/10'
+                                : 'border-border hover:bg-muted/50'
+                            }`}
+                            onClick={() => setSelectedTournament(tournament)}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <h4 className="font-semibold">{tournament.name}</h4>
+                              <Badge variant={tournament.tournamentType === "crypto" ? "secondary" : "default"}>
+                                {tournament.tournamentType === "crypto" ? "🪙 Crypto" : "📈 Stocks"}
                               </Badge>
                             </div>
-                          </SelectItem>
+                            <div className="text-sm text-muted-foreground">
+                              <div className="flex items-center space-x-2">
+                                <Users className="w-4 h-4" />
+                                <span>{tournament.currentPlayers} players</span>
+                              </div>
+                            </div>
+                          </div>
                         ))}
-                      </SelectContent>
-                    </Select>
-                    {selectedTournament && (
-                      <Badge variant="outline">
-                        <Users className="w-3 h-3 mr-1" />
-                        {selectedTournament.currentPlayers} players
-                      </Badge>
-                    )}
-                  </div>
+                      </div>
+                    </CardContent>
+                  </Card>
 
                   {/* Tournament Trading Interface */}
-                  {selectedTournament ? (
-                    <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden">
-                      {/* Portfolio Section - 2/3 width */}
+                  {selectedTournament && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                      {/* Portfolio */}
                       <div className="lg:col-span-2">
-                        <Card className="h-full flex flex-col">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="flex items-center justify-between text-lg">
-                              <span>Tournament Portfolio</span>
+                        <Card>
+                          <CardHeader>
+                            <CardTitle className="flex items-center justify-between">
+                              <span>Tournament Portfolio - {selectedTournament.name}</span>
                               <Badge variant="outline">
-                                <DollarSign className="w-3 h-3 mr-1" />
+                                <DollarSign className="w-4 h-4 mr-1" />
                                 {formatCurrency((tournamentBalance as any)?.balance || 0)}
                               </Badge>
                             </CardTitle>
                           </CardHeader>
-                          <CardContent className="flex-1 overflow-auto">
+                          <CardContent>
                             {isPortfolioLoading() ? (
                               <div className="flex items-center justify-center py-8">
                                 <RefreshCw className="w-4 h-4 animate-spin mr-2" />
@@ -674,9 +891,9 @@ export default function Dashboard() {
                                 </p>
                               </div>
                             ) : (
-                              <div className="space-y-3">
+                              <div className="space-y-4">
                                 {(getCurrentPortfolio() as any[]).map((holding: any, index: number) => (
-                                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
                                     <div>
                                       <div className="font-semibold">{holding.symbol}</div>
                                       <div className="text-sm text-muted-foreground">
@@ -714,24 +931,7 @@ export default function Dashboard() {
                         </Card>
                       </div>
 
-                      {/* Tournament Watchlist - 1/3 width */}
-                      <Card className="flex flex-col overflow-hidden">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-lg">Market Watch</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-1 overflow-auto">
-                          <div className="text-center py-8">
-                            <Eye className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
-                            <p className="text-sm text-muted-foreground">
-                              Tournament-specific watchlist coming soon
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  ) : (
-                    <div className="flex-1 flex items-center justify-center">
-                      <p className="text-muted-foreground">Select a tournament to start trading</p>
+
                     </div>
                   )}
                 </div>
