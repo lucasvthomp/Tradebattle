@@ -31,7 +31,7 @@ Preferred communication style: Simple, everyday language.
 - **Financial Data Integration**: Real-time and historical stock data from Yahoo Finance API (previously Finnhub, Twelve Data, Polygon.io)
 - **Tournament Management**: Isolated tournament balances, unique codes, buy-ins, and customizable trading restrictions
 - **Achievement System**: Tiered badge system based on trading accomplishments and milestones
-- **Chat System**: Real-time global and tournament-specific chat functionality
+- **Chat System**: Optimized real-time global and tournament-specific chat functionality (1.5s refresh rate, semi-transparent UI)
 - **Market Status**: Real-time market open/close detection with disclaimers and trade scheduling
 
 ### Key Design Decisions
@@ -40,8 +40,9 @@ Preferred communication style: Simple, everyday language.
 - **Data Flow**: User authentication, paper trading, competition participation, portfolio management, and real-time updates.
 - **Scalability**: Designed to handle real-time market data and a growing user base.
 - **User Experience**: Focus on intuitive interfaces, clear navigation, and engaging competitive features.
-- **Unified Dashboard**: Consolidation of personal portfolio and tournament trading into a single interface.
+- **Unified Dashboard**: Consolidation of personal portfolio and tournament trading into a single interface with proportional 2/3 + 1/3 layout.
 - **Dynamic Home Page**: Dual home page system for unauthenticated (marketing-focused) and authenticated (gaming-style hub) users.
+- **Optimized Chat System**: Fast 1.5s refresh intervals, semi-transparent UI design, compact chat selectors.
 
 ## External Dependencies
 - **Database**: Neon PostgreSQL

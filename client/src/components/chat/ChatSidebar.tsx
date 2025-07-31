@@ -54,7 +54,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const isGlobalChat = selectedChat === "global";
   const tournamentId = isGlobalChat ? undefined : parseInt(selectedChat);
 
-  // Fetch chat messages
+  // Fetch chat messages with optimized polling
   const { data: chatResponse, isLoading } = useQuery({
     queryKey: ['/api/chat', selectedChat],
     queryFn: async () => {
@@ -64,8 +64,10 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       const response = await apiRequest("GET", endpoint);
       return response.json();
     },
-    refetchInterval: 3000, // Refresh every 3 seconds
-    enabled: isOpen && !!user
+    refetchInterval: 1500, // Faster refresh - every 1.5 seconds
+    enabled: isOpen && !!user,
+    staleTime: 500, // Consider data stale after 0.5 seconds
+    gcTime: 2000, // Garbage collect after 2 seconds
   });
 
   const messages: ChatMessage[] = chatResponse?.data || [];
@@ -160,81 +162,74 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             className="fixed top-16 left-0 right-0 bottom-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
           />
 
-          {/* Chat Sidebar */}
+          {/* Chat Sidebar - Semi-transparent */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-background border-l border-border shadow-lg z-50 flex flex-col"
+            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-background/80 backdrop-blur-md border-l border-border/50 shadow-xl z-50 flex flex-col"
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-border/50">
-              <div className="flex items-center space-x-2">
-                <div className={`w-8 h-8 ${chatInfo.color} rounded-lg flex items-center justify-center`}>
+            {/* Compact Header with Chat Selector */}
+            <div className="flex items-center justify-between p-3 border-b border-border/30 bg-background/40">
+              <div className="flex items-center space-x-3 flex-1">
+                <div className={`w-6 h-6 ${chatInfo.color} rounded flex items-center justify-center`}>
                   {chatInfo.icon}
                 </div>
-                <div>
-                  <h2 className="font-semibold text-sm">{chatInfo.name}</h2>
-                  <p className="text-xs text-muted-foreground">{chatInfo.description}</p>
-                </div>
+                {/* Compact Chat Selector */}
+                <Select value={selectedChat} onValueChange={setSelectedChat}>
+                  <SelectTrigger className="w-full h-8 text-sm bg-background/60 border-border/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background/95 backdrop-blur-md border-border/50">
+                    <SelectItem value="global">
+                      <div className="flex items-center space-x-2">
+                        <Globe className="w-3 h-3" />
+                        <span>Global Chat</span>
+                      </div>
+                    </SelectItem>
+                    {userTournaments.map((tournament) => (
+                      <SelectItem key={tournament.id} value={tournament.id.toString()}>
+                        <div className="flex items-center space-x-2">
+                          <Trophy className="w-3 h-3" />
+                          <span className="truncate max-w-[180px]">{tournament.name}</span>
+                          <Badge variant="secondary" className="text-xs shrink-0">
+                            {tournament.status}
+                          </Badge>
+                        </div>
+                      </SelectItem>
+                    ))}
+                    {userTournaments.length === 0 && (
+                      <SelectItem value="no-tournaments" disabled>
+                        <div className="flex items-center space-x-2">
+                          <Trophy className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-muted-foreground">No tournaments</span>
+                        </div>
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
               <Button
                 onClick={onToggle}
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0"
+                className="h-8 w-8 p-0 ml-2 hover:bg-background/60"
               >
                 <X className="w-4 h-4" />
               </Button>
             </div>
 
-            {/* Chat Selector */}
-            <div className="p-4 border-b border-border/50">
-              <Select value={selectedChat} onValueChange={setSelectedChat}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="global">
-                    <div className="flex items-center space-x-2">
-                      <Globe className="w-4 h-4" />
-                      <span>Global Chat</span>
-                    </div>
-                  </SelectItem>
-                  {userTournaments.map((tournament) => (
-                    <SelectItem key={tournament.id} value={tournament.id.toString()}>
-                      <div className="flex items-center space-x-2">
-                        <Trophy className="w-4 h-4" />
-                        <span>{tournament.name}</span>
-                        <Badge variant="secondary" className="text-xs">
-                          {tournament.status}
-                        </Badge>
-                      </div>
-                    </SelectItem>
-                  ))}
-                  {userTournaments.length === 0 && (
-                    <SelectItem value="no-tournaments" disabled>
-                      <div className="flex items-center space-x-2">
-                        <Trophy className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-muted-foreground">No active tournaments</span>
-                      </div>
-                    </SelectItem>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Messages Area */}
-            <ScrollArea ref={scrollAreaRef} className="flex-1 p-4">
-              <div className="space-y-4">
+            {/* Messages Area - Semi-transparent */}
+            <ScrollArea ref={scrollAreaRef} className="flex-1 p-3 bg-background/20">
+              <div className="space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
-                    <div className="inline-block w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <div className="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="text-center py-8">
-                    <MessageSquare className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
+                    <MessageSquare className="w-10 h-10 mx-auto mb-3 text-muted-foreground/50" />
                     <p className="text-sm text-muted-foreground">
                       {isGlobalChat ? "No messages yet. Start the conversation!" : "No tournament messages yet."}
                     </p>
@@ -242,8 +237,8 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 ) : (
                   messages.map((message) => (
                     <div key={message.id} className="flex space-x-2">
-                      <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-4 h-4" />
+                      <div className="w-7 h-7 bg-muted/60 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
+                        <User className="w-3 h-3" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-1">
@@ -253,11 +248,13 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                           {message.userId === user?.id && (
                             <Badge variant="secondary" className="text-xs">You</Badge>
                           )}
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground/70">
                             {formatTimestamp(message.createdAt)}
                           </span>
                         </div>
-                        <p className="text-sm break-words">{message.message}</p>
+                        <div className="bg-muted/40 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/30">
+                          <p className="text-sm break-words leading-tight">{message.message}</p>
+                        </div>
                       </div>
                     </div>
                   ))
@@ -265,26 +262,26 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
               </div>
             </ScrollArea>
 
-            {/* Message Input */}
-            <div className="p-4 border-t border-border/50">
+            {/* Message Input - Semi-transparent */}
+            <div className="p-3 border-t border-border/30 bg-background/40">
               <form onSubmit={handleSendMessage} className="flex space-x-2">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder={`Message ${isGlobalChat ? 'everyone' : 'tournament'}...`}
-                  className="flex-1"
+                  className="flex-1 bg-background/60 border-border/50 text-sm h-9"
                   maxLength={500}
                 />
                 <Button
                   type="submit"
                   size="sm"
                   disabled={!newMessage.trim() || sendMessageMutation.isPending}
-                  className="px-3"
+                  className="px-3 h-9"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
               </form>
-              <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground">
+              <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground/70">
                 <span>{messages.length} messages</span>
                 <span>{newMessage.length}/500</span>
               </div>

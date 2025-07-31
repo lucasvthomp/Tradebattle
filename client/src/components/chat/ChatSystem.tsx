@@ -31,7 +31,7 @@ export function ChatSystem({ tournamentId, isOpen, onToggle }: ChatSystemProps) 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
 
-  // Fetch chat messages
+  // Fetch chat messages with optimized polling
   const { data: chatResponse, isLoading } = useQuery({
     queryKey: ['/api/chat', tournamentId],
     queryFn: async () => {
@@ -39,8 +39,10 @@ export function ChatSystem({ tournamentId, isOpen, onToggle }: ChatSystemProps) 
       const response = await apiRequest("GET", endpoint);
       return response.json();
     },
-    refetchInterval: 5000, // Refresh every 5 seconds
-    enabled: isOpen
+    refetchInterval: 1500, // Faster refresh - every 1.5 seconds
+    enabled: isOpen,
+    staleTime: 500, // Consider data stale after 0.5 seconds
+    gcTime: 2000, // Garbage collect after 2 seconds
   });
 
   const messages = chatResponse?.data || [];
