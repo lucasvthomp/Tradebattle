@@ -1,0 +1,56 @@
+PAPER TO DO
+Make the chat system work
+Make the translation system work
+Make profile picture system worku
+Remove the start immediately option for creating tournaments (earliest a tournament can start is 10 minutes)
+Remove the restrictions option for creating tournaments (e.g. blue chip stocks only, none of that)
+Add buy-in incentive box like the one existent on the dashboard page
+Convert leaderboard page to most wagered, best portfolio performance
+Size everything proportionally on hub page
+Update the footer to match updated site
+Turn hub header into “Good Afternoon/Morning/Evening, USERNAME
+Make currency system work
+Reflect balance on top right corners at all times
+Spend balance on entry fees
+Make shop and events a basic work in progress page
+Fix page scroll on the entire website
+Make chat semi transparent like other menus
+Make chat system work faster
+Make chat system display time stamps next to messages
+Allow users to click on a username on messages, which shall redirect to such user’s profile
+Make night time/off-market mode
+Theme is blue or light purple
+Only crypto tournaments can start
+All stock orders and tournaments can be scheduled and will be executed at time of open
+Make tournaments summary page
+Update the people page to show actual real data and statistics
+Allow users to Tip others on their profiles, meaning they can send balance.
+Make the archive page show a log of all transactions and stock trades. Allow filters
+Make portfolio and tournament trading dashboard visually pleasing
+Add more order features other than buy and sell, e.g. short
+Add timer count down for tournament on the tournament dashboard page
+Add ability to report user or message, or something else
+Update support page to show accurate information, remove phone number and add way more FAQs
+Add 2 or 3 market news recaps on “hub”
+Add the rotating major stock changes bar to the “hub”
+Make 2FA work
+Migrate user ID system to a 6 digit Letter-Number system
+Make IT administrator actions work
+Add sound effects to the following:
+Cashing out a stock
+Buying a stock
+Notification sound of funds clearing from transfer into site
+Chat
+Competition Complete
+Notification system where users can be sent a text or email for specific notifications
+Redesign home page
+Terms of Service
+Privacy policy
+Custom 404 Page
+Ability to sign up with google
+MOST IMPORTANT:
+Create preliminary balance system (meaning adding balance and withdrawing balance, testing purposes)
+Create API system through NOWPayments to allow the purchasing and sale of credits
+Make it mobile compatible
+Add advanced graph will speedy updates, sort of like chartchamps. Essential for day trading
+

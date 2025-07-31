@@ -365,8 +365,34 @@ export class DatabaseStorage implements IStorage {
       throw new Error('User is already participating in this tournament');
     }
     
-    // Get tournament data to set starting balance
+    // Get tournament data to check buy-in amount and set starting balance
     const tournament = await db.select().from(tournaments).where(eq(tournaments.id, tournamentId));
+    if (!tournament[0]) {
+      throw new Error('Tournament not found');
+    }
+    
+    const buyInAmount = Number(tournament[0].buyInAmount || 0);
+    
+    // If tournament has buy-in, check user balance and deduct
+    if (buyInAmount > 0) {
+      // Get user's current balance
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (!user[0]) {
+        throw new Error('User not found');
+      }
+      
+      const currentBalance = Number(user[0].balance || 0);
+      
+      // Check if user has sufficient balance
+      if (currentBalance < buyInAmount) {
+        throw new Error(`Insufficient balance. You need ${buyInAmount.toFixed(2)} but only have ${currentBalance.toFixed(2)}`);
+      }
+      
+      // Deduct buy-in amount from user balance
+      await db.update(users)
+        .set({ balance: (currentBalance - buyInAmount).toString() })
+        .where(eq(users.id, userId));
+    }
     
     const result = await db.insert(tournamentParticipants).values({
       tournamentId,

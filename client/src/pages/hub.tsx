@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
+import { MarketStatus } from "@/components/market-status";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -111,7 +112,7 @@ export default function Hub() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
-                {getGreeting()}, {user?.firstName || user?.displayName || "Trader"}
+                {getGreeting()}, {user?.username || "Trader"}
               </h1>
               <p className="text-lg text-muted-foreground mt-2 flex items-center">
                 <Sparkles className="w-5 h-5 mr-2 text-primary/60" />
@@ -134,7 +135,7 @@ export default function Hub() {
           initial="initial"
           animate="animate"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
             {primaryActions.map((action, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Link href={action.href}>
@@ -163,21 +164,21 @@ export default function Hub() {
                       )}
                     </div>
 
-                    <CardContent className="p-8">
-                      <div className="flex items-start justify-between mb-6">
-                        <div className={`p-4 rounded-2xl bg-gradient-to-br ${action.accent} shadow-lg`}>
-                          <action.icon className="w-8 h-8 text-white" />
+                    <CardContent className="p-6 lg:p-8">
+                      <div className="flex items-start justify-between mb-4 lg:mb-6">
+                        <div className={`p-3 lg:p-4 rounded-2xl bg-gradient-to-br ${action.accent} shadow-lg`}>
+                          <action.icon className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
                         </div>
                       </div>
                       
-                      <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                      <h3 className="text-xl lg:text-2xl font-bold text-foreground mb-2 lg:mb-3 group-hover:text-primary transition-colors">
                         {action.title}
                       </h3>
-                      <p className="text-muted-foreground mb-6 leading-relaxed">
+                      <p className="text-muted-foreground mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base">
                         {action.description}
                       </p>
                       
-                      <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform">
+                      <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform text-sm lg:text-base">
                         <span>Get Started</span>
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </div>
@@ -226,18 +227,18 @@ export default function Hub() {
             </Button>
           </div>
           
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
+          <div className="grid grid-cols-3 gap-3 lg:gap-4">
             {secondaryFeatures.map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Link href={feature.href}>
                   <Card className="group cursor-pointer border-0 bg-card/30 backdrop-blur-sm hover:bg-card/60 transition-all duration-200 hover:scale-105">
-                    <CardContent className="p-6 text-center">
-                      <div className="flex justify-center mb-3">
-                        <div className="p-3 rounded-xl bg-muted/50 group-hover:bg-primary/10 transition-colors">
-                          <feature.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    <CardContent className="p-4 lg:p-6 text-center">
+                      <div className="flex justify-center mb-2 lg:mb-3">
+                        <div className="p-2 lg:p-3 rounded-xl bg-muted/50 group-hover:bg-primary/10 transition-colors">
+                          <feature.icon className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground group-hover:text-primary transition-colors" />
                         </div>
                       </div>
-                      <h3 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
+                      <h3 className="text-xs lg:text-sm font-medium text-foreground group-hover:text-primary transition-colors">
                         {feature.title}
                       </h3>
                     </CardContent>
@@ -255,11 +256,7 @@ export default function Hub() {
           initial="initial"
           animate="animate"
         >
-          <div className="inline-flex items-center space-x-2 text-sm text-muted-foreground bg-card/30 backdrop-blur-sm rounded-full px-4 py-2">
-            <Globe className="w-4 h-4" />
-            <span>Markets are currently open</span>
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          </div>
+          <MarketStatus variant="inline" />
         </motion.div>
 
       </div>

@@ -61,7 +61,7 @@ const DURATION_OPTIONS = [
 ];
 
 const START_DELAY_OPTIONS = [
-  { value: "immediate", label: "Start Immediately" },
+  { value: "10 minutes", label: "10 Minutes" },
   { value: "30 minutes", label: "30 Minutes" },
   { value: "1 hour", label: "1 Hour" },
   { value: "2 hours", label: "2 Hours" },
@@ -98,7 +98,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     tournamentType: "stocks", // 3. Stock or Crypto tournament
     startingBalance: 10000, // 4. Starting Fake Cash amount
     duration: "1 week", // 5. Duration of the tournament
-    startDelay: "immediate", // 6. In how many minutes, hours, or days the tournament will start (max one week)
+    startDelay: "10 minutes", // 6. In how many minutes, hours, or days the tournament will start (min 10 minutes)
     isPublic: true, // 7. Private or Public
     buyInAmount: 0, // Buy-in amount
     agreeToTerms: false // Terms of service agreement
@@ -115,7 +115,17 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         tournamentType: data.tournamentType,
         startingBalance: data.startingBalance,
         duration: data.duration,
-        scheduledStartTime: data.startDelay === 'immediate' ? null : new Date(Date.now() + (data.startDelay === '30 minutes' ? 30 * 60 * 1000 : data.startDelay === '1 hour' ? 60 * 60 * 1000 : 0)).toISOString(),
+        scheduledStartTime: new Date(Date.now() + (
+          data.startDelay === '10 minutes' ? 10 * 60 * 1000 :
+          data.startDelay === '30 minutes' ? 30 * 60 * 1000 : 
+          data.startDelay === '1 hour' ? 60 * 60 * 1000 :
+          data.startDelay === '2 hours' ? 2 * 60 * 60 * 1000 :
+          data.startDelay === '6 hours' ? 6 * 60 * 60 * 1000 :
+          data.startDelay === '12 hours' ? 12 * 60 * 60 * 1000 :
+          data.startDelay === '1 day' ? 24 * 60 * 60 * 1000 :
+          data.startDelay === '3 days' ? 3 * 24 * 60 * 60 * 1000 :
+          7 * 24 * 60 * 60 * 1000 // 1 week default
+        )).toISOString(),
         buyInAmount: data.buyInAmount,
         isPublic: data.isPublic
       });
@@ -129,7 +139,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         tournamentType: "stocks",
         startingBalance: 10000,
         duration: "1 week",
-        startDelay: "immediate",
+        startDelay: "10 minutes",
         isPublic: true,
         buyInAmount: 0,
         agreeToTerms: false
@@ -336,7 +346,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Label className="text-sm font-medium">Tournament Start Time</Label>
-              <InfoTooltip content="When the tournament will begin. 'Immediate' starts as soon as enough players join." />
+              <InfoTooltip content="When the tournament will begin. Minimum delay is 10 minutes to allow for proper setup and participant registration." />
             </div>
             <Select value={formData.startDelay} onValueChange={(value) => updateField("startDelay", value)}>
               <SelectTrigger>

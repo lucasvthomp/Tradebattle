@@ -43,6 +43,8 @@ import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { TournamentManagementDialog } from "@/components/tournaments/TournamentManagementDialog";
+import { BuyInIncentiveBox } from "@/components/ui/buy-in-incentive-box";
+import { MarketStatus } from "@/components/market-status";
 import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
 import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";

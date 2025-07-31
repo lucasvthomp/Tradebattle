@@ -20,58 +20,68 @@ export default function Footer() {
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-foreground">Trading</h4>
+              <h4 className="text-lg font-semibold mb-4 text-foreground">Platform</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    Paper Trading
+                  <Link href="/hub" className="hover:text-foreground transition-colors">
+                    Hub
                   </Link>
                 </li>
                 <li>
                   <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    Competitions
+                    Trading Dashboard
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    Leaderboards
+                  <Link href="/tournaments" className="hover:text-foreground transition-colors">
+                    Tournaments
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/leaderboard" className="hover:text-foreground transition-colors">
+                    Leaderboard
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-foreground">Tools</h4>
+              <h4 className="text-lg font-semibold mb-4 text-foreground">Community</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    Dashboard
+                  <Link href="/people" className="hover:text-foreground transition-colors">
+                    People
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    Portfolio
+                  <Link href="/events" className="hover:text-foreground transition-colors">
+                    Events
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    Watchlist
+                  <Link href="/shop" className="hover:text-foreground transition-colors">
+                    Shop
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/analytics" className="hover:text-foreground transition-colors">
+                    Analytics
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-foreground">Company</h4>
+              <h4 className="text-lg font-semibold mb-4 text-foreground">Support</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/about" className="hover:text-foreground transition-colors">
-                    About
+                  <Link href="/support" className="hover:text-foreground transition-colors">
+                    Help Center
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="hover:text-foreground transition-colors">
-                    Contact
+                  <Link href="/archive" className="hover:text-foreground transition-colors">
+                    Transaction Archive
                   </Link>
                 </li>
                 <li>
