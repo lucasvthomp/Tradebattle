@@ -57,8 +57,8 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
 
   // Add to watchlist mutation
   const addToWatchlistMutation = useMutation({
-    mutationFn: async (symbol: string) => {
-      return apiRequest("POST", `/api/watchlist`, { symbol });
+    mutationFn: async (watchlistData: any) => {
+      return apiRequest("POST", `/api/watchlist`, watchlistData);
     },
     onSuccess: () => {
       toast({ title: "Stock added to watchlist!" });
@@ -84,6 +84,16 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
         setSelectedStock({ ...stock, price: data.data.price });
         setShowDropdown(false);
         setSearchQuery(stock.symbol);
+        
+        // For watchlist type, automatically add to watchlist when stock is selected
+        if (type === "watchlist") {
+          const watchlistData = {
+            symbol: stock.symbol,
+            companyName: stock.name || stock.shortName || stock.companyName || stock.symbol,
+            notes: ""
+          };
+          addToWatchlistMutation.mutate(watchlistData);
+        }
       } else {
         toast({
           title: "Stock not found",
@@ -102,7 +112,12 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
 
   const handleAddToWatchlist = () => {
     if (selectedStock) {
-      addToWatchlistMutation.mutate(selectedStock.symbol);
+      const watchlistData = {
+        symbol: selectedStock.symbol,
+        companyName: selectedStock.name || selectedStock.shortName || selectedStock.companyName || selectedStock.symbol,
+        notes: ""
+      };
+      addToWatchlistMutation.mutate(watchlistData);
       setSearchQuery("");
       setSelectedStock(null);
     }
