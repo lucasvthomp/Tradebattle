@@ -373,14 +373,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-background overflow-hidden">
+    <div className="min-h-[calc(100vh-4rem)] bg-background">
       <MarketStatusDisclaimer />
       
-      <div className="container mx-auto px-4 py-4 h-full">
+      <div className="container mx-auto px-4 py-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="h-full flex flex-col"
+          className="flex flex-col"
         >
           {/* Compact Header */}
           <div className="flex items-center justify-between mb-4">
@@ -396,7 +396,7 @@ export default function Dashboard() {
           </div>
 
           {/* Tab Navigation */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col">
             <TabsList className="grid w-full grid-cols-2 mb-4">
               <TabsTrigger value="personal" className="flex items-center space-x-2">
                 <Target className="w-4 h-4" />
@@ -409,16 +409,16 @@ export default function Dashboard() {
             </TabsList>
 
             {/* Personal Portfolio Tab */}
-            <TabsContent value="personal" className="flex-1 overflow-hidden">
-              <div className="h-full grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <TabsContent value="personal">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                 {/* Main Trading Area - 2/3 width */}
-                <div className="lg:col-span-2 flex flex-col space-y-4 overflow-hidden">
+                <div className="lg:col-span-2 space-y-4">
                   {/* Portfolio Summary */}
-                  <Card className="flex-1">
+                  <Card>
                     <CardHeader className="pb-3">
                       <CardTitle className="text-lg">Portfolio Overview</CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1 overflow-auto">
+                    <CardContent>
                       <PortfolioGrid />
                     </CardContent>
                   </Card>
