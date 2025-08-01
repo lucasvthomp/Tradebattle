@@ -14,19 +14,20 @@ export function PortfolioHoldingsWidget() {
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
 
-  const { data: purchasesData } = useQuery({
-    queryKey: ["/api/personal-purchases"],
+  const { data: portfolioData } = useQuery({
+    queryKey: ["/api/personal-portfolio"],
     enabled: !!user
   });
 
-  const purchases = (purchasesData as any)?.data || [];
+  const portfolio = portfolioData?.data;
+  const holdings = portfolio?.holdings || [];
 
   const handleSell = (stock: any) => {
     setSelectedStock(stock);
     setSellDialogOpen(true);
   };
 
-  if (!Array.isArray(purchases) || !purchases.length) {
+  if (!Array.isArray(holdings) || !holdings.length) {
     return (
       <>
         <CardHeader className="pb-2">
@@ -60,35 +61,35 @@ export function PortfolioHoldingsWidget() {
             <span>Current Holdings</span>
           </div>
           <Badge variant="secondary" className="text-xs">
-            {purchases.length} positions
+            {holdings.length} positions
           </Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-y-auto">
         <div className="space-y-2">
-          {purchases.map((purchase: any) => {
-            const totalCost = purchase.shares * purchase.purchasePrice;
-            const currentValue = purchase.shares * purchase.currentPrice;
+          {holdings.map((holding: any) => {
+            const totalCost = holding.shares * holding.averagePrice;
+            const currentValue = holding.shares * holding.currentPrice;
             const gainLoss = currentValue - totalCost;
             const gainLossPercent = (gainLoss / totalCost) * 100;
             const isPositive = gainLoss >= 0;
 
             return (
               <div
-                key={purchase.id}
+                key={holding.symbol}
                 className="flex items-center justify-between p-3 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-medium text-sm text-foreground">
-                      {purchase.symbol}
+                      {holding.symbol}
                     </span>
                     <span className="text-xs text-muted-foreground">
-                      {purchase.shares} shares
+                      {holding.shares} shares
                     </span>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    Avg cost: {formatCurrency(purchase.purchasePrice)}
+                    Avg cost: {formatCurrency(holding.averagePrice)}
                   </div>
                 </div>
 
@@ -112,7 +113,7 @@ export function PortfolioHoldingsWidget() {
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => handleSell(purchase)}
+                    onClick={() => handleSell(holding)}
                     className="text-xs px-2 py-1 h-7"
                   >
                     Sell

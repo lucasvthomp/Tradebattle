@@ -61,6 +61,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioSummaryWidget } from "@/components/portfolio/widgets/PortfolioSummaryWidget";
+import { StockSearchBar } from "@/components/trading/StockSearchBar";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -431,13 +432,25 @@ export default function Dashboard() {
                 </div>
                 
                 {/* Watchlist Sidebar - 1/3 width */}
-                <Card className="flex flex-col overflow-hidden">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center space-x-2 text-lg">
-                        <Star className="w-4 h-4" />
-                        <span>Watchlist</span>
-                      </CardTitle>
+                <div className="space-y-4">
+                  {/* Watchlist Search */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm">Add to Watchlist</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <StockSearchBar type="watchlist" placeholder="Search stocks to watch..." />
+                    </CardContent>
+                  </Card>
+
+                  {/* Watchlist */}
+                  <Card className="flex flex-col overflow-hidden">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center space-x-2 text-lg">
+                          <Star className="w-4 h-4" />
+                          <span>Watchlist</span>
+                        </CardTitle>
                       <div className="flex items-center space-x-1">
                         <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
                           <SelectTrigger className="w-20 h-8">
@@ -587,7 +600,8 @@ export default function Dashboard() {
                       </div>
                     )}
                   </CardContent>
-                </Card>
+                  </Card>
+                </div>
               </div>
             </TabsContent>
 
