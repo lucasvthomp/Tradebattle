@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts";
 import { TrendingUp } from "lucide-react";
+import { PortfolioSummaryWidget } from "./PortfolioSummaryWidget";
 
 // Mock data for portfolio performance
 const mockData = [
@@ -20,10 +21,15 @@ export function PerformanceChart() {
   return (
     <Card className="h-full">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center space-x-2">
-          <TrendingUp className="w-5 h-5" />
-          <span>Performance Chart</span>
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center space-x-2">
+            <TrendingUp className="w-5 h-5" />
+            <span>Performance Chart</span>
+          </CardTitle>
+          <div className="flex-1 max-w-md ml-8">
+            <PortfolioSummaryWidget />
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <div className="h-[400px] w-full">
