@@ -2,8 +2,8 @@ import { Card } from "@/components/ui/card";
 
 // Import widget components
 import { PortfolioSummary } from "./widgets/PortfolioSummary";
-import { WatchlistWidget } from "./widgets/WatchlistWidget";
 import { PerformanceChart } from "./widgets/PerformanceChart";
+import { PortfolioHoldingsWidget } from "./widgets/PortfolioHoldingsWidget";
 
 export function PortfolioGrid() {
   return (
@@ -13,19 +13,15 @@ export function PortfolioGrid() {
         <PerformanceChart />
       </Card>
 
-      {/* Portfolio Summary and Watchlist - Stretched Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card className="min-h-[400px]">
-            <PortfolioSummary />
-          </Card>
-        </div>
-        <div>
-          <Card className="min-h-[400px]">
-            <WatchlistWidget />
-          </Card>
-        </div>
-      </div>
+      {/* Portfolio Summary - Full Width */}
+      <Card className="w-full min-h-[300px]">
+        <PortfolioSummary />
+      </Card>
+
+      {/* Current Holdings */}
+      <Card className="w-full min-h-[400px]">
+        <PortfolioHoldingsWidget />
+      </Card>
     </div>
   );
 }

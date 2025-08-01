@@ -26,19 +26,19 @@ export function PerformanceChart() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[200px] w-full">
+        <div className="h-[400px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={mockData}>
               <XAxis 
                 dataKey="date" 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fontSize: 12, fill: 'white' }}
               />
               <YAxis 
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fontSize: 12, fill: 'white' }}
                 domain={['dataMin - 100', 'dataMax + 100']}
               />
               <Tooltip 
