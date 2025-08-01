@@ -19,7 +19,7 @@ export function PortfolioHoldingsWidget() {
     enabled: !!user
   });
 
-  const portfolio = portfolioData?.data;
+  const portfolio = (portfolioData as any)?.data;
   const holdings = portfolio?.holdings || [];
 
   const handleSell = (stock: any) => {
