@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { BuyStockDialog } from "./BuyStockDialog";
 
 interface StockSearchBarProps {
   type: "purchase" | "watchlist";
@@ -22,6 +23,7 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
   const [selectedStock, setSelectedStock] = useState<any>(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const [showBuyDialog, setShowBuyDialog] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -93,6 +95,9 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
             notes: ""
           };
           addToWatchlistMutation.mutate(watchlistData);
+        } else if (type === "purchase") {
+          // For purchase type, open the buy dialog
+          setShowBuyDialog(true);
         }
       } else {
         toast({
@@ -242,9 +247,7 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
               {type === "purchase" && (
                 <Button
                   size="sm"
-                  onClick={() => {
-                    toast({ title: "Buy dialog would open here" });
-                  }}
+                  onClick={() => setShowBuyDialog(true)}
                 >
                   <ShoppingCart className="h-4 w-4 mr-1" />
                   Buy Stock
@@ -254,6 +257,13 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
           </div>
         </div>
       )}
+
+      {/* Buy Stock Dialog */}
+      <BuyStockDialog
+        open={showBuyDialog}
+        onOpenChange={setShowBuyDialog}
+        stock={selectedStock}
+      />
     </div>
   );
 }
