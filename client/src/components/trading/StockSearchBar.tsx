@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, ShoppingCart } from "lucide-react";
+import { Search, Plus, ShoppingCart, TrendingUp, TrendingDown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 interface StockSearchBarProps {
   type: "purchase" | "watchlist";
@@ -15,15 +16,44 @@ interface StockSearchBarProps {
 export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { formatCurrency } = useUserPreferences();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStock, setSelectedStock] = useState<any>(null);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // Search for stocks
+  // Search for stocks with debouncing
   const { data: searchResults, isLoading: searchLoading } = useQuery({
     queryKey: ["/api/search", searchQuery],
     enabled: searchQuery.length > 1,
+    staleTime: 5000, // Cache for 5 seconds
   });
+
+  const suggestions = (searchResults as any)?.data || [];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+        setHighlightedIndex(-1);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Show dropdown when we have results
+  useEffect(() => {
+    if (suggestions.length > 0 && searchQuery.length > 1) {
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  }, [suggestions, searchQuery]);
 
   // Add to watchlist mutation
   const addToWatchlistMutation = useMutation({
@@ -45,15 +75,15 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
     }
   });
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) return;
-    
+  const handleSelectStock = async (stock: any) => {
     try {
-      const response = await fetch(`/api/quote/${searchQuery.toUpperCase()}`);
+      const response = await fetch(`/api/quote/${stock.symbol}`);
       const data = await response.json();
       
       if (data.success) {
-        setSelectedStock(data.data);
+        setSelectedStock({ ...stock, price: data.data.price });
+        setShowDropdown(false);
+        setSearchQuery(stock.symbol);
       } else {
         toast({
           title: "Stock not found",
@@ -64,7 +94,7 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to search for stock",
+        description: "Failed to get stock price",
         variant: "destructive"
       });
     }
@@ -73,44 +103,115 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
   const handleAddToWatchlist = () => {
     if (selectedStock) {
       addToWatchlistMutation.mutate(selectedStock.symbol);
+      setSearchQuery("");
+      setSelectedStock(null);
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleSearch();
+    if (!showDropdown || suggestions.length === 0) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setHighlightedIndex(prev => 
+          prev < suggestions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setHighlightedIndex(prev => prev > 0 ? prev - 1 : prev);
+        break;
+      case 'Enter':
+        e.preventDefault();
+        if (highlightedIndex >= 0 && highlightedIndex < suggestions.length) {
+          handleSelectStock(suggestions[highlightedIndex]);
+        }
+        break;
+      case 'Escape':
+        setShowDropdown(false);
+        setHighlightedIndex(-1);
+        break;
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+    setHighlightedIndex(-1);
+    if (value.length === 0) {
+      setSelectedStock(null);
     }
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center space-x-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder={placeholder || `Search stocks to ${type === 'purchase' ? 'buy' : 'watch'}...`}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={handleKeyPress}
-            className="pl-10"
-          />
-        </div>
-        <Button
-          size="sm"
-          onClick={handleSearch}
-          disabled={!searchQuery.trim() || searchLoading}
-        >
-          <Search className="h-4 w-4" />
-        </Button>
+    <div className="relative" ref={dropdownRef}>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          ref={inputRef}
+          placeholder={placeholder || `Search stocks to ${type === 'purchase' ? 'buy' : 'watch'}...`}
+          value={searchQuery}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyPress}
+          onFocus={() => {
+            if (suggestions.length > 0 && searchQuery.length > 1) {
+              setShowDropdown(true);
+            }
+          }}
+          className="pl-10"
+        />
+        {searchLoading && (
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+            <div className="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full"></div>
+          </div>
+        )}
       </div>
 
+      {/* Dropdown with suggestions */}
+      {showDropdown && suggestions.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-background border border-border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+          {suggestions.slice(0, 8).map((stock: any, index: number) => (
+            <div
+              key={stock.symbol || index}
+              className={`px-4 py-3 cursor-pointer border-b border-border/50 last:border-b-0 hover:bg-muted/50 transition-colors ${
+                index === highlightedIndex ? 'bg-muted' : ''
+              }`}
+              onClick={() => handleSelectStock(stock)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-medium text-sm">{stock.symbol}</span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {stock.name || stock.shortName || stock.companyName}
+                    </span>
+                  </div>
+                  {stock.exchange && (
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {stock.exchange}
+                    </div>
+                  )}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {type === 'purchase' ? 'Buy' : 'Watch'}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Selected stock actions */}
       {selectedStock && (
-        <div className="p-3 border rounded-lg bg-muted/30">
+        <div className="mt-3 p-3 border rounded-lg bg-muted/30">
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-medium">{selectedStock.symbol}</h4>
-              <p className="text-sm text-muted-foreground">{selectedStock.companyName || selectedStock.shortName}</p>
-              <p className="text-sm font-medium">${selectedStock.price?.toFixed(2)}</p>
+              <p className="text-sm text-muted-foreground">{selectedStock.name || selectedStock.shortName || selectedStock.companyName}</p>
+              {selectedStock.price && (
+                <p className="text-sm font-medium">{formatCurrency(selectedStock.price)}</p>
+              )}
             </div>
             <div className="flex space-x-2">
               {type === "watchlist" && (
@@ -127,7 +228,6 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
                 <Button
                   size="sm"
                   onClick={() => {
-                    // This would open a buy dialog - we'll implement this next
                     toast({ title: "Buy dialog would open here" });
                   }}
                 >
