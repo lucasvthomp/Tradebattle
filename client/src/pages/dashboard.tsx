@@ -60,6 +60,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
+import { PortfolioSummaryWidget } from "@/components/portfolio/widgets/PortfolioSummaryWidget";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -416,7 +417,12 @@ export default function Dashboard() {
                   {/* Portfolio Summary */}
                   <Card>
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-lg">Portfolio Overview</CardTitle>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Portfolio Overview</CardTitle>
+                        <div className="flex items-center space-x-4">
+                          <PortfolioSummaryWidget />
+                        </div>
+                      </div>
                     </CardHeader>
                     <CardContent>
                       <PortfolioGrid />
