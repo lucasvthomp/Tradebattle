@@ -456,12 +456,9 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
         throw new Error(`No chart data found for symbol: ${symbol}`);
       }
       historicalData = quotes.map((item: any) => ({
-        date: timeFrame === '1D' ? 
-          // For 1D minute data, use timestamp format for TradingView
+        date: timeFrame === '1D' || timeFrame === '5D' ? 
+          // For granular data (1D minute, 5D hourly), use timestamp format for TradingView
           Math.floor(item.date.getTime() / 1000) :
-          timeFrame === '5D' ?
-          // For 5D hourly data, use ISO datetime string
-          item.date.toISOString() :
           // For other timeframes, use date format
           item.date.toISOString().split('T')[0],
         open: item.open || 0,

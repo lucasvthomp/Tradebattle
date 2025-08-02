@@ -83,11 +83,15 @@ export function PerformanceChart() {
       
       if (data.success && data.data && Array.isArray(data.data)) {
         const chartData = data.data.map((item: any) => ({
-          time: item.date,
+          time: typeof item.date === 'number' ? item.date : item.date,
           value: parseFloat(item.close) || 0
         }));
-        // Sort by date to ensure proper left-to-right display
-        chartData.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+        // Sort by time to ensure proper left-to-right display
+        chartData.sort((a, b) => {
+          const timeA = typeof a.time === 'number' ? a.time : new Date(a.time).getTime() / 1000;
+          const timeB = typeof b.time === 'number' ? b.time : new Date(b.time).getTime() / 1000;
+          return timeA - timeB;
+        });
         return chartData;
       }
       return [];
