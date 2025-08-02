@@ -400,7 +400,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const currentBalance = parseFloat(user.balance.toString());
+      const currentBalance = parseFloat(user.siteCash?.toString() || '0');
 
       // Check if user has sufficient funds
       if (amount > currentBalance) {
@@ -412,7 +412,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update user balance
       await storage.updateUser(userId, { 
-        balance: newBalance.toString() 
+        siteCash: newBalance.toString() 
       });
 
       // Log the transaction
