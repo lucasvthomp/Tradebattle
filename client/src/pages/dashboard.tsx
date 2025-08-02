@@ -76,7 +76,7 @@ export default function Dashboard() {
   const [selectedStock, setSelectedStock] = useState<any>(null);
   const [buyDialogOpen, setBuyDialogOpen] = useState(false);
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
-  const [buyAmount, setBuyAmount] = useState("");
+  const [buyShares, setBuyShares] = useState("");
   const [sellAmount, setSellAmount] = useState("");
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
   
@@ -154,7 +154,7 @@ export default function Dashboard() {
     onSuccess: () => {
       toast({ title: "Stock purchased successfully!" });
       setBuyDialogOpen(false);
-      setBuyAmount("");
+      setBuyShares("");
       setSelectedStock(null);
       if (activeTab === "personal") {
         refetchPersonal();
@@ -898,21 +898,26 @@ export default function Dashboard() {
           <DialogHeader>
             <DialogTitle>Buy Stock - {selectedStock?.symbol}</DialogTitle>
             <DialogDescription>
-              Enter the amount you want to invest in {selectedStock?.shortName || selectedStock?.longName}
+              Enter the number of shares you want to buy of {selectedStock?.shortName || selectedStock?.longName} at {selectedStock?.price ? formatCurrency(selectedStock.price) : ''} per share
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="buyAmount">Investment Amount ($)</Label>
+              <Label htmlFor="buyShares">Number of Shares</Label>
               <Input
-                id="buyAmount"
+                id="buyShares"
                 type="number"
-                min="0.01"
-                step="0.01"
-                value={buyAmount}
-                onChange={(e) => setBuyAmount(e.target.value)}
-                placeholder="Enter amount to invest..."
+                min="1"
+                step="1"
+                value={buyShares}
+                onChange={(e) => setBuyShares(e.target.value)}
+                placeholder="Enter number of shares..."
               />
+              {selectedStock?.price && buyShares && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  Total cost: {formatCurrency(parseInt(buyShares) * selectedStock.price)}
+                </p>
+              )}
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setBuyDialogOpen(false)}>
@@ -920,21 +925,18 @@ export default function Dashboard() {
               </Button>
               <Button
                 onClick={() => {
-                  const amount = parseFloat(buyAmount);
-                  if (amount && selectedStock && selectedStock.price) {
-                    const shares = Math.floor(amount / selectedStock.price);
-                    if (shares > 0) {
-                      buyStockMutation.mutate({
-                        symbol: selectedStock.symbol,
-                        companyName: selectedStock.shortName || selectedStock.longName || selectedStock.companyName || selectedStock.symbol,
-                        shares,
-                        purchasePrice: selectedStock.price,
-                        tournamentId: activeTab === "tournament" ? selectedTournament?.id : undefined,
-                      });
-                    }
+                  const shares = parseInt(buyShares);
+                  if (shares && shares > 0 && selectedStock && selectedStock.price) {
+                    buyStockMutation.mutate({
+                      symbol: selectedStock.symbol,
+                      companyName: selectedStock.shortName || selectedStock.longName || selectedStock.companyName || selectedStock.symbol,
+                      shares,
+                      purchasePrice: selectedStock.price,
+                      tournamentId: activeTab === "tournament" ? selectedTournament?.id : undefined,
+                    });
                   }
                 }}
-                disabled={!buyAmount || parseFloat(buyAmount) <= 0 || buyStockMutation.isPending}
+                disabled={!buyShares || parseInt(buyShares) <= 0 || buyStockMutation.isPending}
               >
                 {buyStockMutation.isPending ? "Purchasing..." : "Buy Stock"}
               </Button>
