@@ -78,14 +78,16 @@ export function PerformanceChart() {
 
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/historical/${symbol}/${timeframe}`);
+      const response = await fetch(`/api/historical/${symbol}?timeframe=${timeframe}`);
       const data = await response.json();
       
-      if (data.success && data.data) {
+      if (data.success && data.data && Array.isArray(data.data)) {
         const chartData = data.data.map((item: any) => ({
           time: item.date,
-          value: item.close
+          value: parseFloat(item.close) || 0
         }));
+        // Sort by date to ensure proper left-to-right display
+        chartData.sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
         return chartData;
       }
       return [];
@@ -125,6 +127,10 @@ export function PerformanceChart() {
         borderColor: 'rgba(255, 255, 255, 0.3)',
         timeVisible: true,
         secondsVisible: false,
+        rightOffset: 5,
+        barSpacing: 6,
+        fixLeftEdge: true,
+        fixRightEdge: true,
       },
       width: chartContainerRef.current.clientWidth,
       height: 400,
@@ -154,18 +160,32 @@ export function PerformanceChart() {
 
   // Update chart data
   const updateChart = async (symbol: string, timeframe: string) => {
-    if (!seriesRef.current) return;
+    if (!seriesRef.current || !chartRef.current) return;
 
     const data = await fetchChartData(symbol, timeframe);
     
     if (data.length > 0) {
       seriesRef.current.setData(data);
+      
+      // Add a small delay to ensure data is loaded before fitting
+      setTimeout(() => {
+        if (chartRef.current) {
+          // Fit the chart content to show all data from left to right
+          chartRef.current.timeScale().fitContent();
+        }
+      }, 100);
     }
   };
 
   // Initialize chart on mount
   useEffect(() => {
     const cleanup = initializeChart();
+    // Load initial data after chart is initialized
+    setTimeout(() => {
+      if (selectedSymbol && selectedTimeframe) {
+        updateChart(selectedSymbol, selectedTimeframe);
+      }
+    }, 200);
     return cleanup;
   }, []);
 
