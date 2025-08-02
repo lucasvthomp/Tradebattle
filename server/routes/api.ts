@@ -820,6 +820,87 @@ router.get('/tournaments/:id/purchases', requireAuth, asyncHandler(async (req, r
 }));
 
 /**
+ * GET /api/portfolio/tournament/:id
+ * Get tournament portfolio for user
+ */
+router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  // Get tournament stock purchases
+  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
+  
+  // Group purchases by symbol and calculate holdings
+  const stockHoldings: { [symbol: string]: { 
+    symbol: string;
+    companyName: string;
+    shares: number; 
+    averagePurchasePrice: number;
+    totalCost: number;
+    currentPrice?: number;
+    currentValue?: number;
+    profitLoss?: number;
+    profitLossPercent?: number;
+  } } = {};
+  
+  // Process all purchases to calculate holdings
+  for (const purchase of purchases) {
+    const symbol = purchase.symbol;
+    const shares = purchase.shares;
+    const purchasePrice = parseFloat(purchase.purchasePrice);
+    const totalCost = parseFloat(purchase.totalCost);
+    
+    if (!stockHoldings[symbol]) {
+      stockHoldings[symbol] = {
+        symbol,
+        companyName: purchase.companyName,
+        shares: 0,
+        averagePurchasePrice: 0,
+        totalCost: 0
+      };
+    }
+    
+    const holding = stockHoldings[symbol];
+    const newTotalShares = holding.shares + shares;
+    const newTotalCost = holding.totalCost + totalCost;
+    
+    stockHoldings[symbol] = {
+      ...holding,
+      shares: newTotalShares,
+      totalCost: newTotalCost,
+      averagePurchasePrice: newTotalCost / newTotalShares
+    };
+  }
+  
+  // Get current prices and calculate profit/loss
+  for (const holding of Object.values(stockHoldings)) {
+    try {
+      const quote = await getStockQuote(holding.symbol);
+      holding.currentPrice = quote.price;
+      holding.currentValue = holding.shares * quote.price;
+      holding.profitLoss = holding.currentValue - holding.totalCost;
+      holding.profitLossPercent = (holding.profitLoss / holding.totalCost) * 100;
+    } catch (error) {
+      console.error(`Error fetching quote for ${holding.symbol}:`, error);
+      // Fallback to purchase price
+      holding.currentPrice = holding.averagePurchasePrice;
+      holding.currentValue = holding.shares * holding.averagePurchasePrice;
+      holding.profitLoss = 0;
+      holding.profitLossPercent = 0;
+    }
+  }
+
+  res.json({
+    success: true,
+    data: Object.values(stockHoldings)
+  });
+}));
+
+/**
  * POST /api/tournaments/:id/purchase
  * Purchase stock in a tournament
  */
