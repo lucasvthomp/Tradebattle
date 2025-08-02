@@ -40,7 +40,7 @@ export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: 
       return {
         period1: getDaysAgo(7), // Get 7 days ago to ensure we have 5 trading days
         period2: today,
-        interval: '1h' // Use hourly intervals for 5D timeframe
+        interval: '30m' // Use 30-minute intervals for 5D timeframe
       };
     
     case '1W':
@@ -104,7 +104,7 @@ const CACHE_TTL = {
   QUOTE: 5 * 60 * 1000, // 5 minutes
   HISTORICAL: 30 * 60 * 1000, // 30 minutes - for daily data
   HISTORICAL_MINUTE: 2 * 60 * 1000, // 2 minutes - for minute data (1D)
-  HISTORICAL_HOURLY: 10 * 60 * 1000, // 10 minutes - for hourly data (5D)
+  HISTORICAL_30MIN: 5 * 60 * 1000, // 5 minutes - for 30-minute data (5D)
   PROFILE: 60 * 60 * 1000, // 1 hour
   SEARCH: 30 * 60 * 1000, // 30 minutes
 };
@@ -485,7 +485,7 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
 
     // Use different cache TTL based on data granularity
     const cacheTTL = timeFrame === '1D' ? CACHE_TTL.HISTORICAL_MINUTE :
-                     timeFrame === '5D' ? CACHE_TTL.HISTORICAL_HOURLY :
+                     timeFrame === '5D' ? CACHE_TTL.HISTORICAL_30MIN :
                      CACHE_TTL.HISTORICAL;
     setCachedData(cacheKey, historicalData, cacheTTL);
     return historicalData;
