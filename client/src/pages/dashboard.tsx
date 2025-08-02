@@ -248,7 +248,9 @@ export default function Dashboard() {
 
   const getCurrentPortfolio = (): any[] => {
     const personal = Array.isArray(personalPortfolio) ? personalPortfolio : [];
-    const tournament = Array.isArray(tournamentPortfolio) ? tournamentPortfolio : [];
+    // Handle API response structure for tournament portfolio
+    const tournamentData = (tournamentPortfolio as any)?.data || tournamentPortfolio;
+    const tournament = Array.isArray(tournamentData) ? tournamentData : [];
     return activeTab === "personal" ? personal : tournament;
   };
 

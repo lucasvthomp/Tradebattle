@@ -824,6 +824,7 @@ router.get('/tournaments/:id/purchases', requireAuth, asyncHandler(async (req, r
  * Get tournament portfolio for user
  */
 router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, res) => {
+  console.log('Tournament portfolio route hit, user:', req.user);
   const tournamentId = parseInt(req.params.id);
   const userId = req.user.id;
 
