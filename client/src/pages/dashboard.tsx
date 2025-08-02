@@ -453,23 +453,6 @@ export default function Dashboard() {
                 
                   {/* Sidebar - 1/3 width */}
                   <div className="space-y-4">
-                  {/* Buy Stocks Search */}
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <CardTitle className="text-sm">Buy Stocks</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <StockSearchBar 
-                        type="purchase" 
-                        placeholder="Search stocks to buy..." 
-                        onStockSelect={(stock) => {
-                          setSelectedStock(stock);
-                          setBuyDialogOpen(true);
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
-                  
                   {/* Watchlist Search */}
                   <Card>
                     <CardHeader className="pb-3">
