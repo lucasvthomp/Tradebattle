@@ -12,9 +12,11 @@ import { BuyStockDialog } from "./BuyStockDialog";
 interface StockSearchBarProps {
   type: "purchase" | "watchlist";
   placeholder?: string;
+  tournamentId?: number;
+  onStockSelect?: (stock: any) => void;
 }
 
-export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
+export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect }: StockSearchBarProps) {
   const { user } = useAuth();
   const { toast } = useToast();
   const { formatCurrency } = useUserPreferences();
@@ -96,8 +98,15 @@ export function StockSearchBar({ type, placeholder }: StockSearchBarProps) {
           };
           addToWatchlistMutation.mutate(watchlistData);
         } else if (type === "purchase") {
-          // For purchase type, open the buy dialog
-          setShowBuyDialog(true);
+          if (onStockSelect) {
+            // Use parent callback for purchase (dashboard handles this)
+            onStockSelect({ ...stock, price: data.data.price });
+            setSearchQuery("");
+            setSelectedStock(null);
+          } else {
+            // Fallback to internal dialog
+            setShowBuyDialog(true);
+          }
         }
       } else {
         toast({

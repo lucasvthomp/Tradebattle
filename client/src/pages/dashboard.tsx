@@ -431,8 +431,25 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 
-                  {/* Watchlist Sidebar - 1/3 width */}
+                  {/* Sidebar - 1/3 width */}
                   <div className="space-y-4">
+                  {/* Buy Stocks Search */}
+                  <Card>
+                    <CardHeader className="pb-3">
+                      <CardTitle className="text-sm">Buy Stocks</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <StockSearchBar 
+                        type="purchase" 
+                        placeholder="Search stocks to buy..." 
+                        onStockSelect={(stock) => {
+                          setSelectedStock(stock);
+                          setBuyDialogOpen(true);
+                        }}
+                      />
+                    </CardContent>
+                  </Card>
+                  
                   {/* Watchlist Search */}
                   <Card>
                     <CardHeader className="pb-3">
@@ -755,7 +772,15 @@ export default function Dashboard() {
                               <CardTitle className="text-lg">Buy Stocks</CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <StockSearchBar type="purchase" placeholder="Search stocks to buy..." />
+                              <StockSearchBar 
+                              type="purchase" 
+                              placeholder="Search stocks to buy..." 
+                              tournamentId={selectedTournament?.id}
+                              onStockSelect={(stock) => {
+                                setSelectedStock(stock);
+                                setBuyDialogOpen(true);
+                              }}
+                            />
                             </CardContent>
                           </Card>
                           
