@@ -48,7 +48,7 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange' | 'profilePicture'>>): Promise<User>;
+  updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'siteCash' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange' | 'profilePicture'>>): Promise<User>;
   getUserById(id: number): Promise<User | undefined>;
   addUserBalance(userId: number, amount: number): Promise<User>;
   subtractUserBalance(userId: number, amount: number): Promise<User>;
@@ -219,7 +219,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .update(users)
       .set({ 
-        balance: sql`${users.balance} + ${amount.toString()}`,
+        siteCash: sql`${users.siteCash} + ${amount.toString()}`,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))
@@ -231,7 +231,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db
       .update(users)
       .set({ 
-        balance: sql`${users.balance} - ${amount.toString()}`,
+        siteCash: sql`${users.siteCash} - ${amount.toString()}`,
         updatedAt: new Date()
       })
       .where(eq(users.id, userId))
@@ -277,14 +277,14 @@ export class DatabaseStorage implements IStorage {
 
   // Trading operations
   async getUserBalance(userId: number): Promise<number> {
-    const result = await db.select({ balance: users.balance }).from(users).where(eq(users.id, userId));
-    return result[0] ? parseFloat(result[0].balance) : 0;
+    const result = await db.select({ siteCash: users.siteCash }).from(users).where(eq(users.id, userId));
+    return result[0] ? parseFloat(result[0].siteCash) : 0;
   }
 
   async updateUserBalance(userId: number, newBalance: number): Promise<User> {
     const result = await db
       .update(users)
-      .set({ balance: newBalance.toString() })
+      .set({ siteCash: newBalance.toString() })
       .where(eq(users.id, userId))
       .returning();
     return result[0];
@@ -375,22 +375,22 @@ export class DatabaseStorage implements IStorage {
     
     // If tournament has buy-in, check user balance and deduct
     if (buyInAmount > 0) {
-      // Get user's current balance
+      // Get user's current site cash
       const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
       if (!user[0]) {
         throw new Error('User not found');
       }
       
-      const currentBalance = Number(user[0].balance || 0);
+      const currentSiteCash = Number(user[0].siteCash || 0);
       
-      // Check if user has sufficient balance
-      if (currentBalance < buyInAmount) {
-        throw new Error(`Insufficient balance. You need ${buyInAmount.toFixed(2)} but only have ${currentBalance.toFixed(2)}`);
+      // Check if user has sufficient site cash
+      if (currentSiteCash < buyInAmount) {
+        throw new Error(`Insufficient site cash. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`);
       }
       
-      // Deduct buy-in amount from user balance
+      // Deduct buy-in amount from user site cash
       await db.update(users)
-        .set({ balance: (currentBalance - buyInAmount).toString() })
+        .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
         .where(eq(users.id, userId));
     }
     

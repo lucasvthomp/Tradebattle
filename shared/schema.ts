@@ -39,7 +39,8 @@ export const users = pgTable("users", {
   country: varchar("country", { length: 100 }), // User's country
   language: varchar("language", { length: 50 }).default("English"), // User's preferred language
   currency: varchar("currency", { length: 10 }).default("USD"), // User's preferred currency
-  balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000
+  balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000 - DEPRECATED, use siteCash instead
+  siteCash: numeric("site_cash", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Main site balance for tournaments and header display
   subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, administrator
   premiumUpgradeDate: timestamp("premium_upgrade_date"), // Deprecated - kept for data compatibility
   personalBalance: numeric("personal_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Personal portfolio balance

@@ -188,8 +188,8 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <div>{user.email}</div>
               </div>
               <div>
-                <span className="text-muted-foreground">Current Balance:</span>
-                <div className="font-mono">${parseFloat(user.balance || "0").toLocaleString()}</div>
+                <span className="text-muted-foreground">Site Cash:</span>
+                <div className="font-mono">${parseFloat(user.siteCash || "0").toLocaleString()}</div>
               </div>
               <div>
                 <span className="text-muted-foreground">Member Since:</span>
@@ -201,7 +201,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
           <Tabs defaultValue="username" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="username">Username</TabsTrigger>
-              <TabsTrigger value="balance">Balance</TabsTrigger>
+              <TabsTrigger value="balance">Site Cash</TabsTrigger>
               <TabsTrigger value="notes">Notes</TabsTrigger>
               <TabsTrigger value="actions">Actions</TabsTrigger>
             </TabsList>
@@ -232,7 +232,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
 
             <TabsContent value="balance" className="space-y-4">
               <div className="space-y-3">
-                <Label htmlFor="balance-amount">Adjust Balance</Label>
+                <Label htmlFor="balance-amount">Adjust Site Cash</Label>
                 <div className="flex gap-2">
                   <Input
                     id="balance-amount"
@@ -261,7 +261,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Current balance: ${parseFloat(user.balance || "0").toLocaleString()}
+                  Current site cash: ${parseFloat(user.siteCash || "0").toLocaleString()}
                 </p>
               </div>
             </TabsContent>
