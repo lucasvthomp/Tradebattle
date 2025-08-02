@@ -140,18 +140,24 @@ export function TournamentPerformanceChart({ tournamentId }: TournamentPerforman
     }
   };
 
-  // Update chart with new data
+  // Update chart data
   const updateChart = async (symbol: string, timeframe: string) => {
-    if (!chartRef.current || !seriesRef.current) return;
-    
+    if (!seriesRef.current || !chartRef.current) return;
+
     setIsLoading(true);
     try {
       const data = await fetchChartData(symbol, timeframe);
+      
       if (data.length > 0) {
         seriesRef.current.setData(data);
         
-        // Auto-fit the chart to show all data
-        chartRef.current.timeScale().fitContent();
+        // Add a small delay to ensure data is loaded before fitting
+        setTimeout(() => {
+          if (chartRef.current) {
+            // Fit the chart content to show all data from left to right
+            chartRef.current.timeScale().fitContent();
+          }
+        }, 100);
       }
     } catch (error) {
       console.error('Error updating chart:', error);
@@ -161,77 +167,73 @@ export function TournamentPerformanceChart({ tournamentId }: TournamentPerforman
   };
 
   // Initialize chart
-  useEffect(() => {
+  const initializeChart = () => {
     if (!chartContainerRef.current) return;
+
+    // Remove existing chart
+    if (chartRef.current) {
+      chartRef.current.remove();
+    }
 
     const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: '#d1d5db',
+        textColor: '#ffffff',
       },
       grid: {
-        vertLines: { color: '#374151' },
-        horzLines: { color: '#374151' },
-      },
-      rightPriceScale: {
-        borderColor: '#4b5563',
-      },
-      timeScale: {
-        borderColor: '#4b5563',
-        timeVisible: true,
-        secondsVisible: false,
+        vertLines: { color: 'rgba(255, 255, 255, 0.1)' },
+        horzLines: { color: 'rgba(255, 255, 255, 0.1)' },
       },
       crosshair: {
         mode: 1,
       },
-      handleScroll: {
-        mouseWheel: true,
-        pressedMouseMove: true,
+      rightPriceScale: {
+        borderColor: 'rgba(255, 255, 255, 0.3)',
       },
-      handleScale: {
-        axisPressedMouseMove: true,
-        mouseWheel: true,
-        pinch: true,
+      timeScale: {
+        borderColor: 'rgba(255, 255, 255, 0.3)',
+        timeVisible: true,
+        secondsVisible: false,
+        rightOffset: 5,
+        barSpacing: 6,
+        fixLeftEdge: true,
+        fixRightEdge: true,
       },
+      width: chartContainerRef.current.clientWidth,
+      height: 400,
     });
 
-    const lineSeries = chart.addLineSeries({
-      color: '#60a5fa',
+    // Add line series using correct API
+    const lineSeries = chart.addSeries(LineSeries, {
+      color: '#26a69a',
       lineWidth: 2,
-      crosshairMarkerVisible: true,
-      crosshairMarkerRadius: 6,
-      crosshairMarkerBorderColor: '#60a5fa',
-      crosshairMarkerBackgroundColor: '#60a5fa',
-      lastValueVisible: true,
-      priceLineVisible: true,
     });
 
     chartRef.current = chart;
     seriesRef.current = lineSeries;
 
-    // Load initial data
-    updateChart(selectedSymbol, selectedTimeframe);
-
     // Handle resize
     const handleResize = () => {
-      if (chartContainerRef.current && chart) {
-        chart.applyOptions({
+      if (chartRef.current && chartContainerRef.current) {
+        chartRef.current.applyOptions({
           width: chartContainerRef.current.clientWidth,
-          height: chartContainerRef.current.clientHeight,
         });
       }
     };
 
     window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  };
 
-    // Cleanup function
-    const cleanup = () => {
-      window.removeEventListener('resize', handleResize);
-      if (chart) {
-        chart.remove();
+  // Initialize chart on mount
+  useEffect(() => {
+    const cleanup = initializeChart();
+    // Load initial data after chart is initialized
+    setTimeout(() => {
+      if (selectedSymbol && selectedTimeframe) {
+        updateChart(selectedSymbol, selectedTimeframe);
       }
-    };
-
+    }, 200);
     return cleanup;
   }, []);
 
