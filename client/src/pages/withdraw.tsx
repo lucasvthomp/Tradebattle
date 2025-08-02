@@ -35,18 +35,18 @@ export default function Withdraw() {
   const presetAmounts = [10, 25, 50, 100].filter(amt => amt <= currentBalance);
 
   // Fee calculation
-  const SERVICE_FEE_PERCENTAGE = 25; // 25% service fee
+  const SITE_FEE_PERCENTAGE = 25; // 25% site fee
   const TRANSACTION_FEE_PERCENTAGE = 3; // 3% transaction fee
 
   const getWithdrawalBreakdown = (withdrawAmount: number) => {
-    const serviceFee = withdrawAmount * (SERVICE_FEE_PERCENTAGE / 100);
+    const siteFee = withdrawAmount * (SITE_FEE_PERCENTAGE / 100);
     const transactionFee = withdrawAmount * (TRANSACTION_FEE_PERCENTAGE / 100);
-    const totalFees = serviceFee + transactionFee;
+    const totalFees = siteFee + transactionFee;
     const subtotal = withdrawAmount - totalFees;
 
     return {
       originalAmount: withdrawAmount,
-      serviceFee,
+      siteFee,
       transactionFee,
       totalFees,
       subtotal: Math.max(0, subtotal) // Ensure subtotal is never negative
@@ -85,8 +85,8 @@ export default function Withdraw() {
     const breakdown = getWithdrawalBreakdown(withdrawAmount);
     
     if (withdrawAmount && withdrawAmount > 0 && withdrawAmount <= currentBalance && breakdown.subtotal >= 1) {
-      // In a real app, you'd send the actual payout amount (subtotal) to the backend
-      withdrawMutation.mutate(breakdown.subtotal);
+      // Deduct the full withdrawal amount from balance (not just the subtotal)
+      withdrawMutation.mutate(withdrawAmount);
     }
   };
 
@@ -217,8 +217,8 @@ export default function Withdraw() {
                       <span className="font-medium">{formatCurrency(breakdown.originalAmount)}</span>
                     </div>
                     <div className="flex justify-between text-red-600 dark:text-red-400">
-                      <span>Service Fee (-{SERVICE_FEE_PERCENTAGE}%):</span>
-                      <span>-{formatCurrency(breakdown.serviceFee)}</span>
+                      <span>Site Fee (-{SITE_FEE_PERCENTAGE}%):</span>
+                      <span>-{formatCurrency(breakdown.siteFee)}</span>
                     </div>
                     <div className="flex justify-between text-red-600 dark:text-red-400">
                       <span>Transaction Fee (-{TRANSACTION_FEE_PERCENTAGE}%):</span>
