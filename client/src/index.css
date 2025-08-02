@@ -322,6 +322,12 @@
     color: hsl(0, 0%, 0%);
   }
   
+  /* More opaque navigation bars and sidebars */
+  .card {
+    background-color: hsl(var(--card) / 0.8) !important;
+    backdrop-filter: blur(12px);
+  }
+  
   .status-profit {
     color: var(--green-profit);
   }

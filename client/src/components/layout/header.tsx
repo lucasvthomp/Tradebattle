@@ -20,7 +20,7 @@ export default function Header() {
   const [chatOpen, setChatOpen] = useState(false);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/50">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-md border-b border-border/50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           {/* Left side - Logo - clicks to hub if authenticated, home if not */}
@@ -37,13 +37,7 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {user ? (
               <>
-                {/* Balance Display - Always visible */}
-                <div className="flex items-center space-x-2 px-3 py-2 bg-muted/30 backdrop-blur-sm border border-border/50 rounded-md">
-                  <DollarSign className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-semibold">
-                    {formatCurrency(Number(user.balance) || 0)}
-                  </span>
-                </div>
+
 
                 {/* Chat Button - only show for authenticated users */}
                 <Button
@@ -63,10 +57,6 @@ export default function Header() {
                       <User className="w-4 h-4" />
                       <span className="text-sm font-medium">
                         {user?.username || "User"}
-                      </span>
-                      <span className="text-muted-foreground mx-1">|</span>
-                      <span className="text-sm font-medium text-green-600">
-                        {formatCurrency(Number(user?.balance) || 0)}
                       </span>
                       <ChevronDown className="w-4 h-4" />
                     </Button>

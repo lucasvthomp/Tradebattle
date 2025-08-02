@@ -650,7 +650,7 @@ export default function Dashboard() {
               ) : (
                 <div className="h-full flex flex-col">
                   {/* Tournament Selector */}
-                  <div className="flex items-center space-x-4 mb-4 p-3 bg-muted/30 rounded-lg">
+                  <div className="flex items-center space-x-4 mb-4 p-3 bg-muted/60 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <Trophy className="w-4 h-4 text-primary" />
                       <span className="text-sm font-medium">Tournament:</span>
