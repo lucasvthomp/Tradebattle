@@ -37,13 +37,62 @@ export function PerformanceChart() {
   const [searchQuery, setSearchQuery] = useState<string>("NVDA");
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>("1M");
   const [isLoading, setIsLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
-  // Handle search submission
+  // Search for companies/stocks as user types
+  const searchCompanies = async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        setSearchResults(data.data.slice(0, 8)); // Limit to 8 results
+        setShowDropdown(true);
+      }
+    } catch (error) {
+      console.error('Error searching companies:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle search input changes
+  const handleSearchInput = (value: string) => {
+    setSearchQuery(value);
+    if (value.trim()) {
+      searchCompanies(value.trim());
+    } else {
+      setSearchResults([]);
+      setShowDropdown(false);
+    }
+  };
+
+  // Handle selecting a search result
+  const selectSearchResult = (result: any) => {
+    const symbol = result.symbol;
+    setSearchQuery(symbol);
+    setSelectedSymbol(symbol);
+    setShowDropdown(false);
+    updateChart(symbol, selectedTimeframe);
+  };
+
+  // Handle manual search submission
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       setSelectedSymbol(searchQuery.trim().toUpperCase());
       updateChart(searchQuery.trim().toUpperCase(), selectedTimeframe);
+      setShowDropdown(false);
     }
   };
 
@@ -198,17 +247,51 @@ export function PerformanceChart() {
             <span>Price Chart - {selectedSymbol}</span>
           </CardTitle>
           <div className="flex items-center space-x-2">
-            {/* Symbol Search Bar */}
+            {/* Symbol Search Bar with Autocomplete */}
             <form onSubmit={handleSearch} className="flex items-center space-x-1">
               <div className="relative">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type="text"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleSearchInput(e.target.value)}
+                  onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                   placeholder="Search stocks, crypto..."
                   className="pl-8 w-48 h-8"
                 />
+                
+                {/* Search Results Dropdown */}
+                {showDropdown && (searchResults.length > 0 || isSearching) && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
+                    {isSearching ? (
+                      <div className="p-3 text-center text-muted-foreground">
+                        <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-1" />
+                        Searching...
+                      </div>
+                    ) : (
+                      searchResults.map((result, index) => (
+                        <div
+                          key={index}
+                          onClick={() => selectSearchResult(result)}
+                          className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="font-medium text-sm">{result.symbol}</div>
+                              <div className="text-xs text-muted-foreground truncate max-w-[180px]">
+                                {result.name}
+                              </div>
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {result.type}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
               <Button type="submit" size="sm" className="h-8 px-2">
                 Go
