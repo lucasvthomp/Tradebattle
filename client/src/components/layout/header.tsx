@@ -1,4 +1,4 @@
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus } from "lucide-react";
 export default function Header() {
   const { user, logoutMutation } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
+  const [, navigate] = useLocation();
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-md border-b border-border/50">
@@ -37,13 +38,27 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {user ? (
               <>
-                {/* Balance Display - Always visible */}
-                <div className="flex items-center space-x-2 px-3 py-2 bg-muted/30 backdrop-blur-sm border border-border/50 rounded-md">
-                  <DollarSign className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-semibold">
-                    {formatCurrency(Number(user.siteCash) || 0)}
-                  </span>
-                </div>
+                {/* Balance Display - Clickable for balance management */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 bg-muted/30 backdrop-blur-sm border border-border/50 rounded-md hover:bg-muted/50">
+                      <DollarSign className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-semibold">
+                        {formatCurrency(Number(user.siteCash) || 0)}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => navigate("/shop")}>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Deposit Funds
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate("/withdraw")}>
+                      <Minus className="w-4 h-4 mr-2" />
+                      Withdraw Funds
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* Chat Button - only show for authenticated users */}
                 <Button
@@ -68,10 +83,6 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => setBalanceDialogOpen(true)}>
-                      <DollarSign className="w-4 h-4 mr-2" />
-                      My Balance
-                    </DropdownMenuItem>
                     {(user?.subscriptionTier === 'administrator') && (
                       <>
                         <DropdownMenuSeparator />
@@ -81,9 +92,9 @@ export default function Header() {
                             Admin Panel
                           </DropdownMenuItem>
                         </Link>
+                        <DropdownMenuSeparator />
                       </>
                     )}
-                    <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => {
                       logoutMutation.mutate();
                     }}>

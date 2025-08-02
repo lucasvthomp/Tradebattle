@@ -89,6 +89,11 @@ export default function Footer() {
                     Pricing
                   </Link>
                 </li>
+                <li>
+                  <Link href="/withdraw" className="hover:text-foreground transition-colors">
+                    Withdraw Funds
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>

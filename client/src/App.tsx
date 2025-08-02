@@ -17,6 +17,7 @@ import Leaderboard from "@/pages/leaderboard";
 import People from "@/pages/people";
 import Events from "@/pages/events";
 import Shop from "@/pages/shop";
+import Withdraw from "@/pages/withdraw";
 
 import Contact from "@/pages/contact";
 import About from "@/pages/about";
@@ -68,6 +69,7 @@ function Router() {
             <Route path="/people/:userId" component={People} />
             <Route path="/events" component={Events} />
             <Route path="/shop" component={Shop} />
+            <Route path="/withdraw" component={Withdraw} />
 
             <Route path="/contact" component={Contact} />
             <Route path="/about" component={About} />
