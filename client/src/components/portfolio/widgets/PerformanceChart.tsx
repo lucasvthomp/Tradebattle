@@ -3,11 +3,10 @@
  * =======================================
  * 
  * Features:
- * - Professional candlestick charts using TradingView's Lightweight Charts
+ * - Professional price charts using TradingView's Lightweight Charts
  * - Integrates with portfolio holdings and Yahoo Finance API
  * - Dark theme optimized styling
  * - Manual data mode for custom testing/development
- * - Volume subplot for comprehensive market analysis
  * - Responsive design with timeframe dropdown
  * - Multiple timeframe support (1D, 5D, 1M, 3M, 6M, 1Y)
  * 
@@ -25,14 +24,13 @@ import { TrendingUp, RefreshCw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createChart, ColorType, IChartApi, ISeriesApi } from 'lightweight-charts';
+import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 
 export function PerformanceChart() {
   const { user } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-  const candlestickSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
-  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null);
+  const chartRef = useRef<any>(null);
+  const seriesRef = useRef<any>(null);
   
   const [selectedSymbol, setSelectedSymbol] = useState<string>("NVDA");
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>("1M");
@@ -41,40 +39,26 @@ export function PerformanceChart() {
 
   /* 
    * MANUAL DATA UPDATE INSTRUCTIONS:
-   * To update the candlestick data manually:
-   * 1. Modify the data array below with your desired OHLCV values
+   * To update the chart data manually:
+   * 1. Modify the data array below with your desired price values
    * 2. Toggle to "Manual" mode using the button in the chart header
    * 3. The chart will automatically refresh with your custom data
    * 
    * Data format for TradingView Lightweight Charts:
    * - time: Unix timestamp or 'YYYY-MM-DD' format
-   * - open, high, low, close: Price values
-   * - volume: Trading volume for volume histogram
+   * - value: Price value for line chart
    */
-  const manualCandlestickData = [
-    { time: '2025-07-01', open: 150.00, high: 155.50, low: 148.75, close: 153.25 },
-    { time: '2025-07-02', open: 153.25, high: 158.00, low: 152.00, close: 156.75 },
-    { time: '2025-07-03', open: 156.75, high: 162.00, low: 155.50, close: 160.00 },
-    { time: '2025-07-04', open: 160.00, high: 165.25, low: 158.75, close: 163.50 },
-    { time: '2025-07-05', open: 163.50, high: 167.00, low: 161.25, close: 165.75 },
-    { time: '2025-07-08', open: 165.75, high: 170.50, low: 164.00, close: 168.25 },
-    { time: '2025-07-09', open: 168.25, high: 172.75, low: 166.50, close: 171.00 },
-    { time: '2025-07-10', open: 171.00, high: 175.25, low: 169.75, close: 173.50 },
-    { time: '2025-07-11', open: 173.50, high: 177.00, low: 172.25, close: 175.75 },
-    { time: '2025-07-12', open: 175.75, high: 179.50, low: 174.00, close: 177.25 },
-  ];
-
-  const manualVolumeData = [
-    { time: '2025-07-01', value: 1000000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-02', value: 1200000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-03', value: 1500000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-04', value: 1800000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-05', value: 2000000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-08', value: 2200000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-09', value: 2500000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-10', value: 2800000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-11', value: 3000000, color: 'rgba(76, 175, 80, 0.5)' },
-    { time: '2025-07-12', value: 3200000, color: 'rgba(76, 175, 80, 0.5)' },
+  const manualData = [
+    { time: '2025-07-01', value: 153.25 },
+    { time: '2025-07-02', value: 156.75 },
+    { time: '2025-07-03', value: 160.00 },
+    { time: '2025-07-04', value: 163.50 },
+    { time: '2025-07-05', value: 165.75 },
+    { time: '2025-07-08', value: 168.25 },
+    { time: '2025-07-09', value: 171.00 },
+    { time: '2025-07-10', value: 173.50 },
+    { time: '2025-07-11', value: 175.75 },
+    { time: '2025-07-12', value: 177.25 },
   ];
 
   // Get portfolio data to show available holdings
@@ -86,13 +70,10 @@ export function PerformanceChart() {
   const portfolio = (portfolioData as any)?.data;
   const holdings = portfolio?.holdings || [];
 
-  // Fetch historical candlestick data
-  const fetchCandlestickData = async (symbol: string, timeframe: string) => {
+  // Fetch historical price data
+  const fetchChartData = async (symbol: string, timeframe: string) => {
     if (useManualData) {
-      return {
-        candlestick: manualCandlestickData,
-        volume: manualVolumeData
-      };
+      return manualData;
     }
 
     setIsLoading(true);
@@ -101,26 +82,16 @@ export function PerformanceChart() {
       const data = await response.json();
       
       if (data.success && data.data) {
-        const candlestickData = data.data.map((item: any) => ({
+        const chartData = data.data.map((item: any) => ({
           time: item.date,
-          open: item.open,
-          high: item.high,
-          low: item.low,
-          close: item.close
+          value: item.close
         }));
-
-        const volumeData = data.data.map((item: any) => ({
-          time: item.date,
-          value: item.volume || 0,
-          color: item.close >= item.open ? 'rgba(76, 175, 80, 0.5)' : 'rgba(255, 82, 82, 0.5)'
-        }));
-
-        return { candlestick: candlestickData, volume: volumeData };
+        return chartData;
       }
-      return { candlestick: [], volume: [] };
+      return [];
     } catch (error) {
-      console.error('Error fetching candlestick data:', error);
-      return { candlestick: [], volume: [] };
+      console.error('Error fetching chart data:', error);
+      return [];
     } finally {
       setIsLoading(false);
     }
@@ -159,35 +130,14 @@ export function PerformanceChart() {
       height: 400,
     });
 
-    // Add candlestick series
-    const candlestickSeries = chart.addCandlestickSeries({
-      upColor: '#26a69a',
-      downColor: '#ef5350',
-      borderVisible: false,
-      wickUpColor: '#26a69a',
-      wickDownColor: '#ef5350',
-    });
-
-    // Add volume series
-    const volumeSeries = chart.addHistogramSeries({
+    // Add line series using correct API
+    const lineSeries = chart.addSeries(LineSeries, {
       color: '#26a69a',
-      priceFormat: {
-        type: 'volume',
-      },
-      priceScaleId: '',
-    });
-
-    // Position volume series at the bottom
-    volumeSeries.priceScale().applyOptions({
-      scaleMargins: {
-        top: 0.7,
-        bottom: 0,
-      },
+      lineWidth: 2,
     });
 
     chartRef.current = chart;
-    candlestickSeriesRef.current = candlestickSeries;
-    volumeSeriesRef.current = volumeSeries;
+    seriesRef.current = lineSeries;
 
     // Handle resize
     const handleResize = () => {
@@ -204,13 +154,12 @@ export function PerformanceChart() {
 
   // Update chart data
   const updateChart = async (symbol: string, timeframe: string) => {
-    if (!candlestickSeriesRef.current || !volumeSeriesRef.current) return;
+    if (!seriesRef.current) return;
 
-    const data = await fetchCandlestickData(symbol, timeframe);
+    const data = await fetchChartData(symbol, timeframe);
     
-    if (data.candlestick.length > 0) {
-      candlestickSeriesRef.current.setData(data.candlestick);
-      volumeSeriesRef.current.setData(data.volume);
+    if (data.length > 0) {
+      seriesRef.current.setData(data);
     }
   };
 
@@ -240,7 +189,7 @@ export function PerformanceChart() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center space-x-2">
             <TrendingUp className="w-5 h-5" />
-            <span>Trading Chart - {selectedSymbol}</span>
+            <span>Price Chart - {selectedSymbol}</span>
             {useManualData && <span className="text-xs text-muted-foreground">(Manual Data)</span>}
           </CardTitle>
           <div className="flex items-center space-x-2">
@@ -307,7 +256,7 @@ export function PerformanceChart() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="h-[430px] w-full">
+        <div className="h-[430px] w-full relative">
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
               <RefreshCw className="w-6 h-6 animate-spin mr-2" />
