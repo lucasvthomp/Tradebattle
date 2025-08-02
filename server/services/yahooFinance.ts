@@ -31,16 +31,16 @@ export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: 
   switch (timeFrame) {
     case '1D':
       return {
-        period1: getDaysAgo(2), // Get 2 days ago to ensure we have comparison data
+        period1: getDaysAgo(1), // Get 1 day ago for minute-by-minute data
         period2: today,
-        interval: '1d' // Use daily intervals for 1D to avoid weekend data issues
+        interval: '1m' // Use minute intervals for 1D timeframe
       };
     
     case '5D':
       return {
         period1: getDaysAgo(7), // Get 7 days ago to ensure we have 5 trading days
         period2: today,
-        interval: '1d' // Daily intervals
+        interval: '1h' // Use hourly intervals for 5D timeframe
       };
     
     case '1W':
@@ -102,7 +102,9 @@ const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
 
 const CACHE_TTL = {
   QUOTE: 5 * 60 * 1000, // 5 minutes
-  HISTORICAL: 30 * 60 * 1000, // 30 minutes
+  HISTORICAL: 30 * 60 * 1000, // 30 minutes - for daily data
+  HISTORICAL_MINUTE: 2 * 60 * 1000, // 2 minutes - for minute data (1D)
+  HISTORICAL_HOURLY: 10 * 60 * 1000, // 10 minutes - for hourly data (5D)
   PROFILE: 60 * 60 * 1000, // 1 hour
   SEARCH: 30 * 60 * 1000, // 30 minutes
 };
@@ -454,7 +456,14 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
         throw new Error(`No chart data found for symbol: ${symbol}`);
       }
       historicalData = quotes.map((item: any) => ({
-        date: item.date.toISOString().split('T')[0],
+        date: timeFrame === '1D' ? 
+          // For 1D minute data, use timestamp format for TradingView
+          Math.floor(item.date.getTime() / 1000) :
+          timeFrame === '5D' ?
+          // For 5D hourly data, use ISO datetime string
+          item.date.toISOString() :
+          // For other timeframes, use date format
+          item.date.toISOString().split('T')[0],
         open: item.open || 0,
         high: item.high || 0,
         low: item.low || 0,
@@ -477,7 +486,11 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
       }));
     }
 
-    setCachedData(cacheKey, historicalData, CACHE_TTL.HISTORICAL);
+    // Use different cache TTL based on data granularity
+    const cacheTTL = timeFrame === '1D' ? CACHE_TTL.HISTORICAL_MINUTE :
+                     timeFrame === '5D' ? CACHE_TTL.HISTORICAL_HOURLY :
+                     CACHE_TTL.HISTORICAL;
+    setCachedData(cacheKey, historicalData, cacheTTL);
     return historicalData;
   } catch (error) {
     console.error(`Error fetching historical data for ${symbol}:`, error);
