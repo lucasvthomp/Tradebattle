@@ -876,12 +876,103 @@ export default function Dashboard() {
                               <CardTitle className="text-lg">Market Watch</CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <div className="text-center py-8">
-                                <Eye className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
-                                <p className="text-sm text-muted-foreground">
-                                  Tournament watchlist coming soon
-                                </p>
-                              </div>
+                              {watchlistLoading ? (
+                                <div className="flex items-center justify-center py-8">
+                                  <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                                  <span className="text-sm text-muted-foreground">Loading watchlist...</span>
+                                </div>
+                              ) : watchlist.length === 0 ? (
+                                <div className="text-center py-8">
+                                  <Star className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
+                                  <h3 className="font-semibold mb-2">No watchlist items</h3>
+                                  <p className="text-xs text-muted-foreground">
+                                    Add stocks to monitor
+                                  </p>
+                                </div>
+                              ) : (
+                                <div className="space-y-2">
+                                  {watchlist.map((stock) => {
+                                    const stockData = watchlistStockData[stock.symbol];
+                                    
+                                    if (!stockData) {
+                                      return (
+                                        <div
+                                          key={stock.id}
+                                          className="p-3 border rounded hover:bg-muted/30 transition-colors"
+                                        >
+                                          <div className="flex justify-between items-center">
+                                            <div>
+                                              <div className="font-semibold text-sm">{stock.symbol}</div>
+                                              <div className="text-xs text-muted-foreground truncate">
+                                                {stock.companyName}
+                                              </div>
+                                            </div>
+                                            <div className="text-xs text-muted-foreground">
+                                              <RefreshCw className="w-3 h-3 animate-spin inline mr-1" />
+                                              Loading...
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    }
+
+                                    const currentPrice = stockData.price || 0;
+                                    const changeAmount = stockData.change || 0;
+                                    const changePercent = stockData.changePercent || 0;
+                                    const isPositive = changeAmount >= 0;
+                                    
+                                    return (
+                                      <div
+                                        key={stock.id}
+                                        className="p-3 border rounded hover:bg-muted/30 transition-colors"
+                                      >
+                                        <div className="flex justify-between items-center">
+                                          <div>
+                                            <div className="font-semibold text-sm">{stock.symbol}</div>
+                                            <div className="text-xs text-muted-foreground truncate">
+                                              {stock.companyName}
+                                            </div>
+                                          </div>
+                                          <div className="text-right">
+                                            <div className="font-semibold text-sm">
+                                              {formatCurrency(currentPrice)}
+                                            </div>
+                                            <div className={`text-xs ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                                              {isPositive ? '+' : ''}{formatCurrency(changeAmount)} ({changePercent.toFixed(2)}%)
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="flex justify-between items-center mt-2">
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            className="h-6 px-2 text-xs"
+                                            onClick={() => {
+                                              setSelectedStock({ 
+                                                symbol: stock.symbol, 
+                                                shortName: stock.companyName,
+                                                price: currentPrice
+                                              });
+                                              setBuyDialogOpen(true);
+                                            }}
+                                          >
+                                            <ShoppingCart className="w-3 h-3 mr-1" />
+                                            Buy
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            className="h-6 px-2"
+                                            onClick={() => removeFromWatchlistMutation.mutate(stock.id)}
+                                          >
+                                            <X className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
                             </CardContent>
                           </Card>
                         </div>
