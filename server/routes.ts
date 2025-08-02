@@ -597,6 +597,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Add site cash to current user (for refill balance functionality)
+  app.post("/api/admin/add-site-cash", requireAuth, async (req: any, res) => {
+    try {
+      const { amount } = req.body;
+      
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ error: "Invalid amount" });
+      }
+
+      const currentUser = await storage.getUser(req.user.id);
+      if (!currentUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const currentSiteCash = Number(currentUser.siteCash) || 0;
+      const newBalance = currentSiteCash + Number(amount);
+      
+      const updatedUser = await storage.updateUserSiteCash(req.user.id, newBalance);
+      
+      res.json({ 
+        success: true, 
+        amount: Number(amount),
+        newBalance: newBalance,
+        user: updatedUser 
+      });
+    } catch (error) {
+      console.error("Error adding site cash:", error);
+      res.status(500).json({ error: "Failed to add site cash" });
+    }
+  });
+
   // System monitoring endpoint
   app.get("/api/system/status", requireAuth, async (req: any, res) => {
     try {

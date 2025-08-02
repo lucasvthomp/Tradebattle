@@ -1,16 +1,35 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   ShoppingBag,
   Zap,
   Star,
   Clock,
   Wrench,
-  ArrowLeft
+  ArrowLeft,
+  DollarSign,
+  Plus
 } from "lucide-react";
 import { Link } from "wouter";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -19,6 +38,46 @@ const fadeInUp = {
 };
 
 export default function Shop() {
+  const { user } = useAuth();
+  const { formatCurrency } = useUserPreferences();
+  const { toast } = useToast();
+  const [refillDialogOpen, setRefillDialogOpen] = useState(false);
+  const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
+  const [customAmount, setCustomAmount] = useState("");
+
+  // Mutation for adding site cash
+  const addSiteCashMutation = useMutation({
+    mutationFn: async (amount: number) => {
+      const response = await apiRequest("POST", "/api/admin/add-site-cash", { amount });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      setRefillDialogOpen(false);
+      setSelectedAmount(null);
+      setCustomAmount("");
+      toast({
+        title: "Balance Added",
+        description: `Successfully added ${formatCurrency(data.amount)} to your account.`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to add balance",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleRefill = () => {
+    const amount = selectedAmount || parseFloat(customAmount);
+    if (amount && amount > 0) {
+      addSiteCashMutation.mutate(amount);
+    }
+  };
+
+  const presetAmounts = [10, 50, 100];
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-6 py-8">
@@ -51,6 +110,113 @@ export default function Shop() {
               Work in Progress
             </Badge>
           </div>
+        </motion.div>
+
+        {/* Refill Balance Section */}
+        <motion.div 
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-accent/5">
+            <CardHeader>
+              <CardTitle className="flex items-center text-xl">
+                <DollarSign className="w-6 h-6 mr-2 text-primary" />
+                Account Balance
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-2xl font-bold text-foreground">
+                    {formatCurrency(Number(user?.siteCash) || 0)}
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    Current balance available for tournaments and features
+                  </p>
+                </div>
+                <Dialog open={refillDialogOpen} onOpenChange={setRefillDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="flex items-center space-x-2">
+                      <Plus className="w-4 h-4" />
+                      <span>Refill Balance</span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Refill Your Balance</DialogTitle>
+                      <DialogDescription>
+                        Add funds to your account to participate in tournaments and purchase features.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      {/* Preset Amount Options */}
+                      <div>
+                        <Label className="text-sm font-medium">Quick Select</Label>
+                        <div className="grid grid-cols-3 gap-2 mt-2">
+                          {presetAmounts.map((amount) => (
+                            <Button
+                              key={amount}
+                              variant={selectedAmount === amount ? "default" : "outline"}
+                              onClick={() => {
+                                setSelectedAmount(amount);
+                                setCustomAmount("");
+                              }}
+                              className="h-12"
+                            >
+                              {formatCurrency(amount)}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Custom Amount */}
+                      <div>
+                        <Label htmlFor="custom-amount" className="text-sm font-medium">
+                          Custom Amount
+                        </Label>
+                        <div className="relative mt-2">
+                          <DollarSign className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
+                          <Input
+                            id="custom-amount"
+                            type="number"
+                            placeholder="0.00"
+                            value={customAmount}
+                            onChange={(e) => {
+                              setCustomAmount(e.target.value);
+                              setSelectedAmount(null);
+                            }}
+                            className="pl-10"
+                            min="0"
+                            step="0.01"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setRefillDialogOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        onClick={handleRefill}
+                        disabled={
+                          addSiteCashMutation.isPending || 
+                          (!selectedAmount && !customAmount) ||
+                          (customAmount && parseFloat(customAmount) <= 0)
+                        }
+                      >
+                        {addSiteCashMutation.isPending ? "Processing..." : "Add Funds"}
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Coming Soon Section */}
