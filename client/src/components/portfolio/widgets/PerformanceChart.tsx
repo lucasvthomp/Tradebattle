@@ -246,10 +246,10 @@ export function PerformanceChart() {
             <TrendingUp className="w-5 h-5" />
             <span>Price Chart - {selectedSymbol}</span>
           </CardTitle>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 flex-1">
             {/* Symbol Search Bar with Autocomplete */}
-            <form onSubmit={handleSearch} className="flex items-center space-x-1">
-              <div className="relative">
+            <form onSubmit={handleSearch} className="flex items-center space-x-1 flex-1">
+              <div className="relative flex-1 max-w-xs">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type="text"
@@ -258,12 +258,12 @@ export function PerformanceChart() {
                   onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
                   onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                   placeholder="Search stocks, crypto..."
-                  className="pl-8 w-48 h-8"
+                  className="pl-8 w-full h-8"
                 />
                 
                 {/* Search Results Dropdown */}
                 {showDropdown && (searchResults.length > 0 || isSearching) && (
-                  <div className="absolute top-full left-0 right-0 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
+                  <div className="absolute top-full left-0 w-full mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto min-w-[300px]">
                     {isSearching ? (
                       <div className="p-3 text-center text-muted-foreground">
                         <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-1" />
@@ -277,9 +277,9 @@ export function PerformanceChart() {
                           className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0"
                         >
                           <div className="flex items-center justify-between">
-                            <div>
+                            <div className="flex-1 min-w-0">
                               <div className="font-medium text-sm">{result.symbol}</div>
-                              <div className="text-xs text-muted-foreground truncate max-w-[180px]">
+                              <div className="text-xs text-muted-foreground truncate">
                                 {result.name}
                               </div>
                             </div>
