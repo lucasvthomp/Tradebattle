@@ -51,7 +51,7 @@ export function PerformanceChart() {
 
     setIsSearching(true);
     try {
-      const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
       const data = await response.json();
       
       if (data.success && data.data && Array.isArray(data.data)) {
@@ -73,7 +73,7 @@ export function PerformanceChart() {
   // Handle search input changes
   const handleSearchInput = (value: string) => {
     setSearchQuery(value);
-    if (value.trim()) {
+    if (value.trim().length >= 2) {
       searchCompanies(value.trim());
     } else {
       setSearchResults([]);
@@ -284,13 +284,20 @@ export function PerformanceChart() {
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex-1 min-w-0">
-                            <div className="font-medium text-sm">{result.symbol}</div>
-                            <div className="text-xs text-muted-foreground truncate">
-                              {result.name}
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium text-sm">{result.symbol}</span>
+                              <span className="text-xs text-muted-foreground truncate">
+                                {result.name || result.shortName || result.companyName}
+                              </span>
                             </div>
+                            {result.exchange && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {result.exchange}
+                              </div>
+                            )}
                           </div>
-                          <div className="text-xs text-muted-foreground bg-accent/50 px-2 py-1 rounded">
-                            {result.type}
+                          <div className="text-xs text-muted-foreground">
+                            Chart
                           </div>
                         </div>
                       </div>
