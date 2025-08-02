@@ -183,6 +183,14 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       newErrors.startingBalance = "Maximum starting balance is $1,000,000";
     }
 
+    // Buy-in validation
+    if (formData.buyInAmount > 0) {
+      const userBalance = parseFloat(user?.siteCash?.toString() || '0');
+      if (formData.buyInAmount > userBalance) {
+        newErrors.buyInAmount = `Insufficient funds. You need $${formData.buyInAmount.toFixed(2)} but only have $${userBalance.toFixed(2)} in your account.`;
+      }
+    }
+
     if (!formData.agreeToTerms) {
       newErrors.agreeToTerms = "You must agree to the terms of service";
     }
@@ -420,12 +428,15 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               id="buy-in-amount"
               type="number"
               min="0"
-              max="1000"
-              step="1"
+              step="0.01"
               value={formData.buyInAmount}
-              onChange={(e) => updateField("buyInAmount", parseInt(e.target.value) || 0)}
-              placeholder="0"
+              onChange={(e) => updateField("buyInAmount", parseFloat(e.target.value) || 0)}
+              placeholder="0.00"
+              className={errors.buyInAmount ? "border-red-500" : ""}
             />
+            {errors.buyInAmount && (
+              <p className="text-sm text-red-500">{errors.buyInAmount}</p>
+            )}
             <p className="text-sm text-muted-foreground">
               Entry Fee: {formatCurrency(formData.buyInAmount)} {formData.buyInAmount > 0 && `(Prize Pool: ${formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.95)})`}
             </p>

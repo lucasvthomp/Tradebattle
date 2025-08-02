@@ -330,7 +330,7 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     const currentSiteCash = parseFloat(user?.siteCash?.toString() || '0');
     
     if (buyIn > currentSiteCash) {
-      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
+      throw new ValidationError(`Insufficient funds. You need $${buyIn.toFixed(2)} but only have $${currentSiteCash.toFixed(2)} in your account.`);
     }
     
     // Deduct buy-in from creator's siteCash
