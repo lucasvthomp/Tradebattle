@@ -1,0 +1,358 @@
+/*
+ * TOURNAMENT PERFORMANCE CHART COMPONENT
+ * =====================================
+ * 
+ * Features:
+ * - Professional price charts using TradingView's Lightweight Charts
+ * - Tournament-specific data integration
+ * - Dark theme optimized styling
+ * - Responsive design with timeframe dropdown
+ * - Multiple timeframe support (1D, 5D, 1M, 3M, 6M, 1Y)
+ * - Search functionality for stocks and crypto
+ * 
+ * Usage:
+ * - Displays charts for tournament trading
+ * - Search and select symbols to view their charts
+ * - Chart updates automatically with real market data
+ */
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "@/hooks/use-auth";
+import { TrendingUp, RefreshCw, Search } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { createChart, ColorType, LineSeries } from 'lightweight-charts';
+
+interface TournamentPerformanceChartProps {
+  tournamentId: number;
+}
+
+export function TournamentPerformanceChart({ tournamentId }: TournamentPerformanceChartProps) {
+  const { user } = useAuth();
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const chartRef = useRef<any>(null);
+  const seriesRef = useRef<any>(null);
+  
+  const [selectedSymbol, setSelectedSymbol] = useState<string>("NVDA");
+  const [searchQuery, setSearchQuery] = useState<string>("NVDA");
+  const [selectedTimeframe, setSelectedTimeframe] = useState<string>("1M");
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+
+  // Search for companies/stocks as user types
+  const searchCompanies = async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(`/api/search/${encodeURIComponent(query)}`);
+      const data = await response.json();
+      
+      if (data.success && data.data && Array.isArray(data.data)) {
+        setSearchResults(data.data.slice(0, 8)); // Limit to 8 results
+        setShowDropdown(true);
+      } else {
+        setSearchResults([]);
+        setShowDropdown(false);
+      }
+    } catch (error) {
+      console.error('Error searching companies:', error);
+      setSearchResults([]);
+      setShowDropdown(false);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Handle search input changes
+  const handleSearchInput = (value: string) => {
+    setSearchQuery(value);
+    if (value.trim().length >= 2) {
+      searchCompanies(value.trim());
+    } else {
+      setSearchResults([]);
+      setShowDropdown(false);
+    }
+  };
+
+  // Handle selecting a search result
+  const selectSearchResult = (result: any) => {
+    const symbol = result.symbol;
+    setSearchQuery(symbol);
+    setSelectedSymbol(symbol);
+    setShowDropdown(false);
+    updateChart(symbol, selectedTimeframe);
+  };
+
+  // Handle Enter key for direct symbol search
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        setSelectedSymbol(searchQuery.trim().toUpperCase());
+        updateChart(searchQuery.trim().toUpperCase(), selectedTimeframe);
+        setShowDropdown(false);
+      }
+    }
+  };
+
+  // Get tournament portfolio data to show available holdings
+  const { data: portfolioData } = useQuery({
+    queryKey: ["/api/portfolio/tournament", tournamentId],
+    enabled: !!user && !!tournamentId
+  });
+
+  const portfolio = (portfolioData as any)?.data;
+  const holdings = portfolio?.holdings || [];
+
+  // Fetch historical price data
+  const fetchChartData = async (symbol: string, timeframe: string) => {
+    try {
+      const response = await fetch(`/api/historical/${symbol}?timeframe=${timeframe}`);
+      const data = await response.json();
+      
+      if (data.success && data.data) {
+        const chartData = data.data.map((item: any) => ({
+          time: typeof item.date === 'number' ? item.date : item.date,
+          value: parseFloat(item.close) || 0
+        }));
+        // Sort by time to ensure proper left-to-right display
+        chartData.sort((a: any, b: any) => {
+          const timeA = typeof a.time === 'number' ? a.time : new Date(a.time).getTime() / 1000;
+          const timeB = typeof b.time === 'number' ? b.time : new Date(b.time).getTime() / 1000;
+          return timeA - timeB;
+        });
+        return chartData;
+      }
+      return [];
+    } catch (error) {
+      console.error('Error fetching chart data:', error);
+      return [];
+    }
+  };
+
+  // Update chart with new data
+  const updateChart = async (symbol: string, timeframe: string) => {
+    if (!chartRef.current || !seriesRef.current) return;
+    
+    setIsLoading(true);
+    try {
+      const data = await fetchChartData(symbol, timeframe);
+      if (data.length > 0) {
+        seriesRef.current.setData(data);
+        
+        // Auto-fit the chart to show all data
+        chartRef.current.timeScale().fitContent();
+      }
+    } catch (error) {
+      console.error('Error updating chart:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Initialize chart
+  useEffect(() => {
+    if (!chartContainerRef.current) return;
+
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { type: ColorType.Solid, color: 'transparent' },
+        textColor: '#d1d5db',
+      },
+      grid: {
+        vertLines: { color: '#374151' },
+        horzLines: { color: '#374151' },
+      },
+      rightPriceScale: {
+        borderColor: '#4b5563',
+      },
+      timeScale: {
+        borderColor: '#4b5563',
+        timeVisible: true,
+        secondsVisible: false,
+      },
+      crosshair: {
+        mode: 1,
+      },
+      handleScroll: {
+        mouseWheel: true,
+        pressedMouseMove: true,
+      },
+      handleScale: {
+        axisPressedMouseMove: true,
+        mouseWheel: true,
+        pinch: true,
+      },
+    });
+
+    const lineSeries = chart.addLineSeries({
+      color: '#60a5fa',
+      lineWidth: 2,
+      crosshairMarkerVisible: true,
+      crosshairMarkerRadius: 6,
+      crosshairMarkerBorderColor: '#60a5fa',
+      crosshairMarkerBackgroundColor: '#60a5fa',
+      lastValueVisible: true,
+      priceLineVisible: true,
+    });
+
+    chartRef.current = chart;
+    seriesRef.current = lineSeries;
+
+    // Load initial data
+    updateChart(selectedSymbol, selectedTimeframe);
+
+    // Handle resize
+    const handleResize = () => {
+      if (chartContainerRef.current && chart) {
+        chart.applyOptions({
+          width: chartContainerRef.current.clientWidth,
+          height: chartContainerRef.current.clientHeight,
+        });
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    // Cleanup function
+    const cleanup = () => {
+      window.removeEventListener('resize', handleResize);
+      if (chart) {
+        chart.remove();
+      }
+    };
+
+    return cleanup;
+  }, []);
+
+  // Update chart when symbol or timeframe changes
+  useEffect(() => {
+    if (selectedSymbol && selectedTimeframe) {
+      updateChart(selectedSymbol, selectedTimeframe);
+    }
+  }, [selectedSymbol, selectedTimeframe]);
+
+  // Set default symbol to first holding if available
+  useEffect(() => {
+    if (holdings.length > 0 && selectedSymbol === "NVDA") {
+      setSelectedSymbol(holdings[0].symbol);
+    }
+  }, [holdings]);
+
+  return (
+    <Card className="h-full">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-lg flex items-center space-x-2">
+            <TrendingUp className="w-5 h-5" />
+            <span>Tournament Chart - {selectedSymbol}</span>
+          </CardTitle>
+          <div className="flex items-center space-x-2">
+            {/* Symbol Search Bar with Autocomplete */}
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                placeholder="Search stocks, crypto..."
+                className="pl-8 w-48 h-8"
+              />
+              
+              {/* Search Results Dropdown */}
+              {showDropdown && (searchResults.length > 0 || isSearching) && (
+                <div className="absolute top-full right-0 w-80 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
+                  {isSearching ? (
+                    <div className="p-3 text-center text-muted-foreground">
+                      <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-1" />
+                      Searching...
+                    </div>
+                  ) : (
+                    searchResults.map((result, index) => (
+                      <div
+                        key={index}
+                        onClick={() => selectSearchResult(result)}
+                        className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium text-sm">{result.symbol}</span>
+                              <span className="text-xs text-muted-foreground truncate">
+                                {result.name || result.shortName || result.companyName}
+                              </span>
+                            </div>
+                            {result.exchange && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {result.exchange}
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            Chart
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Timeframe Selector */}
+            <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+              <SelectTrigger className="w-24">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1D">1D</SelectItem>
+                <SelectItem value="5D">5D</SelectItem>
+                <SelectItem value="1M">1M</SelectItem>
+                <SelectItem value="3M">3M</SelectItem>
+                <SelectItem value="6M">6M</SelectItem>
+                <SelectItem value="1Y">1Y</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Refresh Button */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => updateChart(selectedSymbol, selectedTimeframe)}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[430px] w-full relative">
+          {isLoading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10">
+              <RefreshCw className="w-6 h-6 animate-spin mr-2" />
+              <span className="text-muted-foreground">Loading chart data...</span>
+            </div>
+          )}
+          <div 
+            ref={chartContainerRef} 
+            className="w-full h-full rounded-md"
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

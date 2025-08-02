@@ -62,6 +62,7 @@ import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioSummaryWidget } from "@/components/portfolio/widgets/PortfolioSummaryWidget";
 import { StockSearchBar } from "@/components/trading/StockSearchBar";
+import { TournamentPerformanceChart } from "@/components/portfolio/widgets/TournamentPerformanceChart";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -667,9 +668,15 @@ export default function Dashboard() {
                   {/* Tournament Trading Interface */}
                   {selectedTournament ? (
                     <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden">
-                      {/* Portfolio Section - 2/3 width */}
-                      <div className="lg:col-span-2">
-                        <Card className="h-full flex flex-col">
+                      {/* Left Column - Portfolio and Chart */}
+                      <div className="lg:col-span-2 space-y-4">
+                        {/* Tournament Performance Chart */}
+                        <div className="h-[500px]">
+                          <TournamentPerformanceChart tournamentId={selectedTournament.id} />
+                        </div>
+                        
+                        {/* Tournament Portfolio */}
+                        <Card className="flex flex-col">
                           <CardHeader className="pb-3">
                             <CardTitle className="flex items-center justify-between text-lg">
                               <span>Tournament Portfolio</span>
@@ -679,7 +686,7 @@ export default function Dashboard() {
                               </Badge>
                             </CardTitle>
                           </CardHeader>
-                          <CardContent className="flex-1 overflow-auto">
+                          <CardContent className="overflow-auto">
                             {isPortfolioLoading() ? (
                               <div className="flex items-center justify-center py-8">
                                 <RefreshCw className="w-4 h-4 animate-spin mr-2" />
@@ -734,20 +741,33 @@ export default function Dashboard() {
                         </Card>
                       </div>
 
-                      {/* Tournament Watchlist - 1/3 width */}
-                      <Card className="flex flex-col overflow-hidden">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="text-lg">Market Watch</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex-1 overflow-auto">
-                          <div className="text-center py-8">
-                            <Eye className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
-                            <p className="text-sm text-muted-foreground">
-                              Tournament-specific watchlist coming soon
-                            </p>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      {/* Right Column - Trading Panel */}
+                      <div className="space-y-4">
+                        {/* Stock Search and Buy */}
+                        <Card>
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-lg">Buy Stocks</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            <StockSearchBar type="purchase" placeholder="Search stocks to buy..." />
+                          </CardContent>
+                        </Card>
+
+                        {/* Tournament Watchlist */}
+                        <Card className="flex flex-col overflow-hidden">
+                          <CardHeader className="pb-3">
+                            <CardTitle className="text-lg">Market Watch</CardTitle>
+                          </CardHeader>
+                          <CardContent className="flex-1 overflow-auto">
+                            <div className="text-center py-8">
+                              <Eye className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
+                              <p className="text-sm text-muted-foreground">
+                                Tournament-specific watchlist coming soon
+                              </p>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex-1 flex items-center justify-center">
