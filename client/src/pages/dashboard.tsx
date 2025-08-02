@@ -737,6 +737,17 @@ export default function Dashboard() {
                           <div className="h-[500px]">
                             <TournamentPerformanceChart tournamentId={selectedTournament.id} />
                           </div>
+                          
+                          {/* Buy Stocks Search */}
+                          <Card>
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-lg">Buy Stocks</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <StockSearchBar type="purchase" placeholder="Search stocks to buy..." />
+                            </CardContent>
+                          </Card>
+                          
                           <Card>
                             <CardHeader className="pb-3">
                               <CardTitle className="text-lg">Tournament Portfolio</CardTitle>
@@ -794,14 +805,16 @@ export default function Dashboard() {
                           </Card>
                         </div>
                         <div className="space-y-4">
+                          {/* Watchlist Search */}
                           <Card>
                             <CardHeader className="pb-3">
-                              <CardTitle className="text-lg">Buy Stocks</CardTitle>
+                              <CardTitle className="text-lg">Add to Watchlist</CardTitle>
                             </CardHeader>
                             <CardContent>
-                              <StockSearchBar type="purchase" placeholder="Search stocks to buy..." />
+                              <StockSearchBar type="watchlist" placeholder="Search stocks to watch..." />
                             </CardContent>
                           </Card>
+                          
                           <Card>
                             <CardHeader className="pb-3">
                               <CardTitle className="text-lg">Market Watch</CardTitle>
