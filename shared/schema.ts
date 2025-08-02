@@ -140,6 +140,7 @@ export const tournaments = pgTable("tournaments", {
   timeframe: varchar("timeframe").default("4 weeks").notNull(), // Tournament duration
   status: varchar("status").default("waiting"), // waiting, active, completed
   buyInAmount: numeric("buy_in_amount", { precision: 15, scale: 2 }).default("0.00").notNull(), // Real money buy-in amount
+  currentPot: numeric("current_pot", { precision: 15, scale: 2 }).default("0.00").notNull(), // Total accumulated buy-ins
   tradingRestriction: varchar("trading_restriction", { length: 50 }).default("none").notNull(), // Trading category restrictions
   tournamentType: varchar("tournament_type", { length: 20 }).default("stocks").notNull(), // 'stocks' or 'crypto'
   isPublic: boolean("is_public").default(true).notNull(), // Public/private tournament setting

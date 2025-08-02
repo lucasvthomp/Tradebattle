@@ -323,6 +323,31 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError('Tournament name and starting balance are required');
   }
 
+  const buyIn = parseFloat(buyInAmount) || 0;
+  
+  // Check if creator has sufficient siteCash for buy-in
+  if (buyIn > 0) {
+    const currentSiteCash = parseFloat(user?.siteCash?.toString() || '0');
+    
+    if (buyIn > currentSiteCash) {
+      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
+    }
+    
+    // Deduct buy-in from creator's siteCash
+    const newSiteCash = currentSiteCash - buyIn;
+    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
+    
+    // Log the transaction
+    await storage.createAdminLog({
+      adminUserId: userId,
+      targetUserId: userId,
+      action: 'tournament_buyin_deduction',
+      oldValue: currentSiteCash.toString(),
+      newValue: newSiteCash.toString(),
+      notes: `Buy-in deducted for creating tournament: ${sanitizeInput(name)} ($${buyIn.toFixed(2)})`
+    });
+  }
+
   const tournament = await storage.createTournament({
     name: sanitizeInput(name),
     maxPlayers: maxPlayers || 10,
@@ -330,7 +355,8 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     startingBalance: parseFloat(startingBalance),
     timeframe: duration || '1 week',
     scheduledStartTime: scheduledStartTime ? new Date(scheduledStartTime) : null,
-    buyInAmount: parseFloat(buyInAmount) || 0,
+    buyInAmount: buyIn,
+    currentPot: buyIn, // Initialize pot with creator's buy-in
     tradingRestriction: tradingRestriction || 'none',
     isPublic: isPublic !== undefined ? isPublic : true
   }, userId);
@@ -521,6 +547,35 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
     throw new ValidationError('Tournament is full');
   }
 
+  // Check buy-in requirements
+  const buyIn = parseFloat(tournament.buyInAmount?.toString() || '0');
+  if (buyIn > 0) {
+    const user = await storage.getUser(userId);
+    const currentSiteCash = parseFloat(user?.siteCash?.toString() || '0');
+    
+    if (buyIn > currentSiteCash) {
+      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
+    }
+    
+    // Deduct buy-in from user's siteCash
+    const newSiteCash = currentSiteCash - buyIn;
+    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
+    
+    // Add buy-in to tournament pot
+    const newPot = parseFloat(tournament.currentPot?.toString() || '0') + buyIn;
+    await storage.updateTournament(tournament.id, { currentPot: newPot.toString() });
+    
+    // Log the transaction
+    await storage.createAdminLog({
+      adminUserId: userId,
+      targetUserId: userId,
+      action: 'tournament_buyin_deduction',
+      oldValue: currentSiteCash.toString(),
+      newValue: newSiteCash.toString(),
+      notes: `Buy-in deducted for joining tournament: ${tournament.name} ($${buyIn.toFixed(2)})`
+    });
+  }
+
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
 
@@ -566,6 +621,35 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
 
   if (tournament.currentPlayers >= tournament.maxPlayers) {
     throw new ValidationError('Tournament is full');
+  }
+
+  // Check buy-in requirements
+  const buyIn = parseFloat(tournament.buyInAmount?.toString() || '0');
+  if (buyIn > 0) {
+    const user = await storage.getUser(userId);
+    const currentSiteCash = parseFloat(user?.siteCash?.toString() || '0');
+    
+    if (buyIn > currentSiteCash) {
+      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
+    }
+    
+    // Deduct buy-in from user's siteCash
+    const newSiteCash = currentSiteCash - buyIn;
+    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
+    
+    // Add buy-in to tournament pot
+    const newPot = parseFloat(tournament.currentPot?.toString() || '0') + buyIn;
+    await storage.updateTournament(tournament.id, { currentPot: newPot.toString() });
+    
+    // Log the transaction
+    await storage.createAdminLog({
+      adminUserId: userId,
+      targetUserId: userId,
+      action: 'tournament_buyin_deduction',
+      oldValue: currentSiteCash.toString(),
+      newValue: newSiteCash.toString(),
+      notes: `Buy-in deducted for joining tournament: ${tournament.name} ($${buyIn.toFixed(2)})`
+    });
   }
 
   try {
