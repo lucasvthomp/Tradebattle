@@ -669,7 +669,7 @@ export default function Dashboard() {
                   {selectedTournament ? (
                     <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
                       {/* Overview Bar */}
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
                         <Card>
                           <CardContent className="p-4">
                             <div className="flex items-center space-x-2 mb-1">
@@ -726,6 +726,17 @@ export default function Dashboard() {
                             </div>
                             <div className="text-2xl font-bold">
                               {(getCurrentPortfolio() as any[]).length}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <Trophy className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm font-medium text-muted-foreground">Buy In</span>
+                            </div>
+                            <div className="text-2xl font-bold">
+                              {formatCurrency(selectedTournament.buyInAmount || 0)}
                             </div>
                           </CardContent>
                         </Card>
