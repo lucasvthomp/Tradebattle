@@ -1151,12 +1151,13 @@ async function awardStreakAchievements(userId: number, streak: number) {
 
 /**
  * GET /api/personal-portfolio
- * Get personal portfolio data
+ * Get personal portfolio data with holdings
  */
 router.get('/personal-portfolio', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
   const user = await storage.getUser(userId);
+  const purchases = await storage.getPersonalStockPurchases(userId);
 
   // Calculate trading streak
   const tradingStreak = await calculateTradingStreak(userId);
@@ -1164,12 +1165,64 @@ router.get('/personal-portfolio', requireAuth, asyncHandler(async (req, res) => 
   // Award streak achievements based on current streak
   await awardStreakAchievements(userId, tradingStreak);
 
+  // Group purchases by symbol to create holdings
+  const holdingsMap = new Map();
+  
+  for (const purchase of purchases) {
+    const symbol = purchase.symbol;
+    
+    if (holdingsMap.has(symbol)) {
+      const existing = holdingsMap.get(symbol);
+      const totalShares = existing.shares + purchase.shares;
+      const totalCost = (existing.shares * existing.averagePrice) + (purchase.shares * parseFloat(purchase.purchasePrice));
+      const averagePrice = totalCost / totalShares;
+      
+      holdingsMap.set(symbol, {
+        symbol,
+        companyName: purchase.companyName,
+        shares: totalShares,
+        averagePrice,
+        currentPrice: 0, // Will be updated below
+        change: 0,
+        changePercent: 0
+      });
+    } else {
+      holdingsMap.set(symbol, {
+        symbol,
+        companyName: purchase.companyName,
+        shares: purchase.shares,
+        averagePrice: parseFloat(purchase.purchasePrice),
+        currentPrice: 0, // Will be updated below
+        change: 0,
+        changePercent: 0
+      });
+    }
+  }
+
+  // Get current prices for all holdings
+  const holdings = [];
+  for (const holding of holdingsMap.values()) {
+    try {
+      const currentQuote = await getStockQuote(holding.symbol);
+      holding.currentPrice = currentQuote.price;
+      holding.change = currentQuote.change || 0;
+      holding.changePercent = currentQuote.changePercent || 0;
+    } catch (error) {
+      // If stock quote fails, use average price as fallback
+      holding.currentPrice = holding.averagePrice;
+      holding.change = 0;
+      holding.changePercent = 0;
+    }
+    holdings.push(holding);
+  }
+
   res.json({
     success: true,
     data: {
       balance: user.personalBalance || 10000,
       portfolioCreatedAt: user.portfolioCreatedAt,
-      tradingStreak: tradingStreak
+      tradingStreak: tradingStreak,
+      holdings: holdings
     },
   });
 }));
