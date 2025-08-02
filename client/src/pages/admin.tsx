@@ -124,6 +124,8 @@ export default function Admin() {
   const { data: allUsers = [], isLoading: usersLoading } = useQuery<any[]>({
     queryKey: ["/api/admin/users"],
     enabled: isAdmin,
+    staleTime: 0, // Always refetch for fresh balance data
+    cacheTime: 0, // Don't cache balance data
   });
 
   // Fetch system status
@@ -429,7 +431,7 @@ export default function Admin() {
                             <div className="flex items-center gap-1">
                               <DollarSign className="h-3 w-3 text-green-600" />
                               <span className="font-mono text-sm">
-                                {parseFloat(user.balance || "0").toLocaleString()}
+                                ${parseFloat(user.balance || "0").toLocaleString()}
                               </span>
                             </div>
                           </TableCell>
