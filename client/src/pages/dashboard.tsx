@@ -431,8 +431,8 @@ export default function Dashboard() {
                     </Card>
                   </div>
                 
-                {/* Watchlist Sidebar - 1/3 width */}
-                <div className="space-y-4">
+                  {/* Watchlist Sidebar - 1/3 width */}
+                  <div className="space-y-4">
                   {/* Watchlist Search */}
                   <Card>
                     <CardHeader className="pb-3">
@@ -600,8 +600,8 @@ export default function Dashboard() {
                       </div>
                     )}
                   </CardContent>
-                  </Card>
-                </div>
+                </Card>
+                  </div>
                 </div>
               </div>
             </TabsContent>
@@ -628,7 +628,7 @@ export default function Dashboard() {
                 </Card>
               ) : (
                 <div className="h-full flex flex-col">
-                  {/* Compact Tournament Selector Bar */}
+                  {/* Tournament Selector */}
                   <div className="flex items-center space-x-4 mb-4 p-3 bg-muted/30 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <Trophy className="w-4 h-4 text-primary" />
@@ -665,108 +665,157 @@ export default function Dashboard() {
                     )}
                   </div>
 
-                  {/* Tournament Trading Interface */}
+                  {/* Tournament Content */}
                   {selectedTournament ? (
-                    <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden">
-                      {/* Left Column - Portfolio and Chart */}
-                      <div className="lg:col-span-2 space-y-4">
-                        {/* Tournament Performance Chart */}
-                        <div className="h-[500px]">
-                          <TournamentPerformanceChart tournamentId={selectedTournament.id} />
-                        </div>
-                        
-                        {/* Tournament Portfolio */}
-                        <Card className="flex flex-col">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="flex items-center justify-between text-lg">
-                              <span>Tournament Portfolio</span>
-                              <Badge variant="outline">
-                                <DollarSign className="w-3 h-3 mr-1" />
-                                {formatCurrency((tournamentBalance as any)?.balance || 0)}
-                              </Badge>
-                            </CardTitle>
-                          </CardHeader>
-                          <CardContent className="overflow-auto">
-                            {isPortfolioLoading() ? (
-                              <div className="flex items-center justify-center py-8">
-                                <RefreshCw className="w-4 h-4 animate-spin mr-2" />
-                                <span className="text-sm text-muted-foreground">Loading portfolio...</span>
-                              </div>
-                            ) : (getCurrentPortfolio() as any[]).length === 0 ? (
-                              <div className="text-center py-8">
-                                <Coins className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-                                <h3 className="text-lg font-semibold mb-2">No Holdings</h3>
-                                <p className="text-muted-foreground">
-                                  Start trading to build your tournament portfolio
-                                </p>
-                              </div>
-                            ) : (
-                              <div className="space-y-3">
-                                {(getCurrentPortfolio() as any[]).map((holding: any, index: number) => (
-                                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                                    <div>
-                                      <div className="font-semibold">{holding.symbol}</div>
-                                      <div className="text-sm text-muted-foreground">
-                                        {holding.shares} shares × {formatCurrency(holding.currentPrice || 0)}
-                                      </div>
-                                    </div>
-                                    <div className="text-right">
-                                      <div className="font-medium">
-                                        {formatCurrency((holding.shares || 0) * (holding.currentPrice || 0))}
-                                      </div>
-                                      <div className={`text-sm ${
-                                        ((holding.currentPrice || 0) - (holding.purchasePrice || 0)) >= 0 
-                                          ? 'text-green-600' 
-                                          : 'text-red-600'
-                                      }`}>
-                                        {((holding.currentPrice || 0) - (holding.purchasePrice || 0)) >= 0 ? '+' : ''}
-                                        {formatCurrency((holding.currentPrice || 0) - (holding.purchasePrice || 0))}
-                                      </div>
-                                    </div>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => {
-                                        setSelectedSellStock(holding);
-                                        setSellDialogOpen(true);
-                                      }}
-                                    >
-                                      Sell
-                                    </Button>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
+                    <div className="flex-1 flex flex-col space-y-4 overflow-hidden">
+                      {/* Overview Bar */}
+                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <DollarSign className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm font-medium text-muted-foreground">Portfolio Value</span>
+                            </div>
+                            <div className="text-2xl font-bold">
+                              {formatCurrency(
+                                (getCurrentPortfolio() as any[]).reduce((total, holding) => 
+                                  total + (holding.shares || 0) * (holding.currentPrice || 0), 0
+                                ) + ((tournamentBalance as any)?.balance || 0)
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <Coins className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm font-medium text-muted-foreground">Cash Balance</span>
+                            </div>
+                            <div className="text-2xl font-bold">
+                              {formatCurrency((tournamentBalance as any)?.balance || 0)}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm font-medium text-muted-foreground">Profit/Loss</span>
+                            </div>
+                            <div className={`text-2xl font-bold ${
+                              (getCurrentPortfolio() as any[]).reduce((total, holding) => 
+                                total + (holding.shares || 0) * ((holding.currentPrice || 0) - (holding.purchasePrice || 0)), 0
+                              ) >= 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              {((getCurrentPortfolio() as any[]).reduce((total, holding) => 
+                                total + (holding.shares || 0) * ((holding.currentPrice || 0) - (holding.purchasePrice || 0)), 0
+                              ) >= 0 ? '+' : '')}
+                              {formatCurrency(
+                                (getCurrentPortfolio() as any[]).reduce((total, holding) => 
+                                  total + (holding.shares || 0) * ((holding.currentPrice || 0) - (holding.purchasePrice || 0)), 0
+                                )
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <Card>
+                          <CardContent className="p-4">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <BarChart3 className="w-4 h-4 text-muted-foreground" />
+                              <span className="text-sm font-medium text-muted-foreground">Holdings</span>
+                            </div>
+                            <div className="text-2xl font-bold">
+                              {(getCurrentPortfolio() as any[]).length}
+                            </div>
                           </CardContent>
                         </Card>
                       </div>
 
-                      {/* Right Column - Trading Panel */}
-                      <div className="space-y-4">
-                        {/* Stock Search and Buy */}
-                        <Card>
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-lg">Buy Stocks</CardTitle>
-                          </CardHeader>
-                          <CardContent>
-                            <StockSearchBar type="purchase" placeholder="Search stocks to buy..." />
-                          </CardContent>
-                        </Card>
-
-                        {/* Tournament Watchlist */}
-                        <Card className="flex flex-col overflow-hidden">
-                          <CardHeader className="pb-3">
-                            <CardTitle className="text-lg">Market Watch</CardTitle>
-                          </CardHeader>
-                          <CardContent className="flex-1 overflow-auto">
-                            <div className="text-center py-8">
-                              <Eye className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
-                              <p className="text-sm text-muted-foreground">
-                                Tournament-specific watchlist coming soon
-                              </p>
-                            </div>
-                          </CardContent>
-                        </Card>
+                      {/* Trading Interface */}
+                      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden">
+                        <div className="lg:col-span-2 space-y-4">
+                          <div className="h-[500px]">
+                            <TournamentPerformanceChart tournamentId={selectedTournament.id} />
+                          </div>
+                          <Card>
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-lg">Tournament Portfolio</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              {isPortfolioLoading() ? (
+                                <div className="flex items-center justify-center py-8">
+                                  <RefreshCw className="w-4 h-4 animate-spin mr-2" />
+                                  <span className="text-sm text-muted-foreground">Loading...</span>
+                                </div>
+                              ) : (getCurrentPortfolio() as any[]).length === 0 ? (
+                                <div className="text-center py-8">
+                                  <Coins className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                                  <h3 className="text-lg font-semibold mb-2">No Holdings</h3>
+                                  <p className="text-muted-foreground">Start trading to build your portfolio</p>
+                                </div>
+                              ) : (
+                                <div className="space-y-3">
+                                  {(getCurrentPortfolio() as any[]).map((holding: any, index: number) => (
+                                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                                      <div>
+                                        <div className="font-semibold">{holding.symbol}</div>
+                                        <div className="text-sm text-muted-foreground">
+                                          {holding.shares} shares × {formatCurrency(holding.currentPrice || 0)}
+                                        </div>
+                                      </div>
+                                      <div className="text-right">
+                                        <div className="font-medium">
+                                          {formatCurrency((holding.shares || 0) * (holding.currentPrice || 0))}
+                                        </div>
+                                        <div className={`text-sm ${
+                                          ((holding.currentPrice || 0) - (holding.purchasePrice || 0)) >= 0 
+                                            ? 'text-green-600' 
+                                            : 'text-red-600'
+                                        }`}>
+                                          {((holding.currentPrice || 0) - (holding.purchasePrice || 0)) >= 0 ? '+' : ''}
+                                          {formatCurrency((holding.currentPrice || 0) - (holding.purchasePrice || 0))}
+                                        </div>
+                                      </div>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => {
+                                          setSelectedSellStock(holding);
+                                          setSellDialogOpen(true);
+                                        }}
+                                      >
+                                        Sell
+                                      </Button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </div>
+                        <div className="space-y-4">
+                          <Card>
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-lg">Buy Stocks</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <StockSearchBar type="purchase" placeholder="Search stocks to buy..." />
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardHeader className="pb-3">
+                              <CardTitle className="text-lg">Market Watch</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                              <div className="text-center py-8">
+                                <Eye className="w-8 h-8 mx-auto text-muted-foreground mb-3 opacity-50" />
+                                <p className="text-sm text-muted-foreground">
+                                  Tournament watchlist coming soon
+                                </p>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
                       </div>
                     </div>
                   ) : (
