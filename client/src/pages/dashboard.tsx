@@ -680,7 +680,7 @@ export default function Dashboard() {
                               {formatCurrency(
                                 (getCurrentPortfolio() as any[]).reduce((total, holding) => 
                                   total + (holding.shares || 0) * (holding.currentPrice || 0), 0
-                                ) + ((tournamentBalance as any)?.balance || 0)
+                                ) + ((tournamentBalance as any)?.data?.balance || (tournamentBalance as any)?.balance || 0)
                               )}
                             </div>
                           </CardContent>
@@ -692,7 +692,7 @@ export default function Dashboard() {
                               <span className="text-sm font-medium text-muted-foreground">Cash Balance</span>
                             </div>
                             <div className="text-2xl font-bold">
-                              {formatCurrency((tournamentBalance as any)?.balance || 0)}
+                              {formatCurrency((tournamentBalance as any)?.data?.balance || (tournamentBalance as any)?.balance || 0)}
                             </div>
                           </CardContent>
                         </Card>
