@@ -174,11 +174,16 @@ export default function Dashboard() {
 
   // Sell stock mutation
   const sellStockMutation = useMutation({
-    mutationFn: async (data: { symbol: string; amount: number; tournamentId?: number }) => {
+    mutationFn: async (data: { symbol: string; sharesToSell: number; currentPrice: number; tournamentId?: number }) => {
       const endpoint = data.tournamentId 
-        ? "/api/portfolio/tournament/sell" 
-        : "/api/portfolio/personal/sell";
-      return apiRequest("POST", endpoint, data);
+        ? `/api/tournaments/${data.tournamentId}/sell` 
+        : "/api/personal-portfolio/sell";
+      
+      const payload = data.tournamentId 
+        ? { symbol: data.symbol, sharesToSell: data.sharesToSell, currentPrice: data.currentPrice }
+        : { symbol: data.symbol, sharesToSell: data.sharesToSell, currentPrice: data.currentPrice };
+        
+      return apiRequest("POST", endpoint, payload);
     },
     onSuccess: () => {
       toast({ title: "Stock sold successfully!" });
@@ -953,21 +958,24 @@ export default function Dashboard() {
           <DialogHeader>
             <DialogTitle>Sell Stock - {selectedSellStock?.symbol}</DialogTitle>
             <DialogDescription>
-              Enter the amount you want to sell
+              Enter the number of shares you want to sell
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="sellAmount">Sell Amount ($)</Label>
+              <Label htmlFor="sellAmount">Shares to Sell</Label>
               <Input
                 id="sellAmount"
                 type="number"
-                min="0.01"
-                step="0.01"
+                min="1"
+                max={selectedSellStock?.shares || 0}
                 value={sellAmount}
                 onChange={(e) => setSellAmount(e.target.value)}
-                placeholder="Enter amount to sell..."
+                placeholder="Enter number of shares to sell..."
               />
+              <p className="text-sm text-muted-foreground mt-1">
+                You own {selectedSellStock?.shares || 0} shares
+              </p>
             </div>
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setSellDialogOpen(false)}>
@@ -975,16 +983,17 @@ export default function Dashboard() {
               </Button>
               <Button
                 onClick={() => {
-                  const amount = parseFloat(sellAmount);
-                  if (amount && selectedSellStock) {
+                  const sharesToSell = parseInt(sellAmount);
+                  if (sharesToSell && selectedSellStock) {
                     sellStockMutation.mutate({
                       symbol: selectedSellStock.symbol,
-                      amount,
+                      sharesToSell,
+                      currentPrice: selectedSellStock.currentPrice || selectedSellStock.purchasePrice || 0,
                       tournamentId: activeTab === "tournament" ? selectedTournament?.id : undefined,
                     });
                   }
                 }}
-                disabled={!sellAmount || parseFloat(sellAmount) <= 0 || sellStockMutation.isPending}
+                disabled={!sellAmount || parseInt(sellAmount) <= 0 || sellStockMutation.isPending}
               >
                 {sellStockMutation.isPending ? "Selling..." : "Sell Stock"}
               </Button>

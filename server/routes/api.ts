@@ -902,6 +902,111 @@ router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, re
 }));
 
 /**
+ * POST /api/tournaments/:id/sell
+ * Sell stock in a tournament
+ */
+router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+  const { symbol, sharesToSell, currentPrice } = req.body;
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  if (!symbol || !sharesToSell || !currentPrice) {
+    throw new ValidationError('Symbol, shares to sell, and current price are required');
+  }
+
+  const sharesToSellNum = parseInt(sharesToSell);
+  if (isNaN(sharesToSellNum) || sharesToSellNum <= 0) {
+    throw new ValidationError('Invalid number of shares to sell');
+  }
+
+  // Check if tournament is completed (no trading allowed)
+  const tournaments = await storage.getAllTournaments();
+  const tournament = tournaments.find(t => t.id === tournamentId);
+  if (tournament && tournament.status === 'completed') {
+    throw new ValidationError('Cannot trade in completed tournaments');
+  }
+
+  // Get user's tournament stock purchases for this symbol
+  const allPurchases = await storage.getTournamentStockPurchases(tournamentId, userId);
+  const symbolPurchases = allPurchases.filter(p => p.symbol === symbol);
+  
+  if (symbolPurchases.length === 0) {
+    throw new ValidationError('No holdings found for this stock');
+  }
+
+  // Calculate total shares owned
+  const totalShares = symbolPurchases.reduce((sum, purchase) => sum + purchase.shares, 0);
+  
+  if (sharesToSellNum > totalShares) {
+    throw new ValidationError(`Cannot sell ${sharesToSellNum} shares. You only own ${totalShares} shares.`);
+  }
+
+  // Calculate sale value
+  const saleValue = sharesToSellNum * parseFloat(currentPrice);
+
+  // Get current balance
+  const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
+
+  // Process the sale by removing shares (FIFO - First In, First Out)
+  let remainingToSell = sharesToSellNum;
+  
+  for (const purchase of symbolPurchases) {
+    if (remainingToSell <= 0) break;
+    
+    if (purchase.shares <= remainingToSell) {
+      // Sell all shares from this purchase
+      remainingToSell -= purchase.shares;
+      await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
+    } else {
+      // Partially sell shares from this purchase
+      const newShares = purchase.shares - remainingToSell;
+      const purchasePrice = parseFloat(purchase.purchasePrice);
+      
+      // Delete the old record and create a new one with remaining shares
+      await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
+      await storage.purchaseTournamentStock(tournamentId, userId, {
+        symbol: purchase.symbol,
+        companyName: purchase.companyName,
+        shares: newShares,
+        purchasePrice: purchasePrice,
+        totalCost: newShares * purchasePrice
+      });
+      
+      remainingToSell = 0;
+    }
+  }
+
+  // Update tournament balance
+  await storage.updateTournamentBalance(tournamentId, userId, currentBalance + saleValue);
+
+  // Record the trade in trade history
+  const firstPurchase = symbolPurchases[0]; // Get company name from first purchase
+  await storage.recordTrade({
+    userId: userId,
+    tournamentId: tournamentId,
+    symbol: sanitizeInput(symbol),
+    companyName: sanitizeInput(firstPurchase.companyName),
+    tradeType: 'sell',
+    shares: sharesToSellNum,
+    price: parseFloat(currentPrice).toString(),
+    totalValue: saleValue.toString()
+  });
+
+  res.json({
+    success: true,
+    data: { 
+      saleValue,
+      newBalance: currentBalance + saleValue,
+      sharesSold: sharesToSellNum
+    },
+  });
+}));
+
+/**
  * POST /api/tournaments/:id/purchase
  * Purchase stock in a tournament
  */
