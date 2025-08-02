@@ -37,7 +37,13 @@ export default function Header() {
           <div className="flex items-center space-x-3">
             {user ? (
               <>
-
+                {/* Balance Display - Always visible */}
+                <div className="flex items-center space-x-2 px-3 py-2 bg-muted/30 backdrop-blur-sm border border-border/50 rounded-md">
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold">
+                    {formatCurrency(Number(user.balance) || 0)}
+                  </span>
+                </div>
 
                 {/* Chat Button - only show for authenticated users */}
                 <Button
