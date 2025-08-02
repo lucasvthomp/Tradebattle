@@ -132,11 +132,24 @@ export default function Dashboard() {
 
   // Buy stock mutation
   const buyStockMutation = useMutation({
-    mutationFn: async (data: { symbol: string; amount: number; tournamentId?: number }) => {
-      const endpoint = data.tournamentId 
-        ? "/api/portfolio/tournament/buy" 
-        : "/api/portfolio/personal/buy";
-      return apiRequest("POST", endpoint, data);
+    mutationFn: async (data: { symbol: string; companyName: string; shares: number; purchasePrice: number; tournamentId?: number }) => {
+      if (data.tournamentId) {
+        // Use the correct tournament endpoint
+        return apiRequest("POST", `/api/tournaments/${data.tournamentId}/purchase`, {
+          symbol: data.symbol,
+          companyName: data.companyName,
+          shares: data.shares,
+          purchasePrice: data.purchasePrice
+        });
+      } else {
+        // Personal portfolio endpoint
+        return apiRequest("POST", "/api/personal-portfolio/purchase", {
+          symbol: data.symbol,
+          companyName: data.companyName,
+          shares: data.shares,
+          purchasePrice: data.purchasePrice
+        });
+      }
     },
     onSuccess: () => {
       toast({ title: "Stock purchased successfully!" });
@@ -908,12 +921,17 @@ export default function Dashboard() {
               <Button
                 onClick={() => {
                   const amount = parseFloat(buyAmount);
-                  if (amount && selectedStock) {
-                    buyStockMutation.mutate({
-                      symbol: selectedStock.symbol,
-                      amount,
-                      tournamentId: activeTab === "tournament" ? selectedTournament?.id : undefined,
-                    });
+                  if (amount && selectedStock && selectedStock.price) {
+                    const shares = Math.floor(amount / selectedStock.price);
+                    if (shares > 0) {
+                      buyStockMutation.mutate({
+                        symbol: selectedStock.symbol,
+                        companyName: selectedStock.shortName || selectedStock.longName || selectedStock.companyName || selectedStock.symbol,
+                        shares,
+                        purchasePrice: selectedStock.price,
+                        tournamentId: activeTab === "tournament" ? selectedTournament?.id : undefined,
+                      });
+                    }
                   }
                 }}
                 disabled={!buyAmount || parseFloat(buyAmount) <= 0 || buyStockMutation.isPending}
