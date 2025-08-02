@@ -121,11 +121,11 @@ export default function Admin() {
   }, [user, isAdmin, authLoading, toast, setLocation]);
 
   // Fetch all users (only if admin)
-  const { data: allUsers = [], isLoading: usersLoading } = useQuery<any[]>({
+  const { data: allUsers = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery<any[]>({
     queryKey: ["/api/admin/users"],
     enabled: isAdmin,
     staleTime: 0, // Always refetch for fresh balance data
-    cacheTime: 0, // Don't cache balance data
+    gcTime: 0, // Don't cache balance data (renamed from cacheTime in v5)
   });
 
   // Fetch system status
