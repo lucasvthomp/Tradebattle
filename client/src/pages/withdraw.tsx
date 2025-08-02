@@ -34,6 +34,28 @@ export default function Withdraw() {
   const currentBalance = Number(user?.siteCash) || 0;
   const presetAmounts = [10, 25, 50, 100].filter(amt => amt <= currentBalance);
 
+  // Fee calculation
+  const SERVICE_FEE_PERCENTAGE = 25; // 25% service fee
+  const TRANSACTION_FEE_PERCENTAGE = 3; // 3% transaction fee
+
+  const getWithdrawalBreakdown = (withdrawAmount: number) => {
+    const serviceFee = withdrawAmount * (SERVICE_FEE_PERCENTAGE / 100);
+    const transactionFee = withdrawAmount * (TRANSACTION_FEE_PERCENTAGE / 100);
+    const totalFees = serviceFee + transactionFee;
+    const subtotal = withdrawAmount - totalFees;
+
+    return {
+      originalAmount: withdrawAmount,
+      serviceFee,
+      transactionFee,
+      totalFees,
+      subtotal: Math.max(0, subtotal) // Ensure subtotal is never negative
+    };
+  };
+
+  const currentWithdrawAmount = selectedAmount || parseFloat(amount) || 0;
+  const breakdown = getWithdrawalBreakdown(currentWithdrawAmount);
+
   // Mutation for withdrawing site cash
   const withdrawMutation = useMutation({
     mutationFn: async (withdrawAmount: number) => {
@@ -60,14 +82,18 @@ export default function Withdraw() {
 
   const handleWithdraw = () => {
     const withdrawAmount = selectedAmount || parseFloat(amount);
-    if (withdrawAmount && withdrawAmount > 0 && withdrawAmount <= currentBalance) {
-      withdrawMutation.mutate(withdrawAmount);
+    const breakdown = getWithdrawalBreakdown(withdrawAmount);
+    
+    if (withdrawAmount && withdrawAmount > 0 && withdrawAmount <= currentBalance && breakdown.subtotal >= 1) {
+      // In a real app, you'd send the actual payout amount (subtotal) to the backend
+      withdrawMutation.mutate(breakdown.subtotal);
     }
   };
 
   const isValidAmount = () => {
     const withdrawAmount = selectedAmount || parseFloat(amount);
-    return withdrawAmount > 0 && withdrawAmount <= currentBalance;
+    const breakdown = getWithdrawalBreakdown(withdrawAmount);
+    return withdrawAmount > 0 && withdrawAmount <= currentBalance && breakdown.subtotal >= 1;
   };
 
   return (
@@ -181,12 +207,51 @@ export default function Withdraw() {
                 </div>
               </div>
 
+              {/* Fee Breakdown - Show when amount is entered */}
+              {currentWithdrawAmount > 0 && (
+                <div className="bg-muted/30 p-4 rounded-lg space-y-2">
+                  <h4 className="font-medium text-sm text-foreground">Withdrawal Breakdown</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Withdrawal Amount:</span>
+                      <span className="font-medium">{formatCurrency(breakdown.originalAmount)}</span>
+                    </div>
+                    <div className="flex justify-between text-red-600 dark:text-red-400">
+                      <span>Service Fee (-{SERVICE_FEE_PERCENTAGE}%):</span>
+                      <span>-{formatCurrency(breakdown.serviceFee)}</span>
+                    </div>
+                    <div className="flex justify-between text-red-600 dark:text-red-400">
+                      <span>Transaction Fee (-{TRANSACTION_FEE_PERCENTAGE}%):</span>
+                      <span>-{formatCurrency(breakdown.transactionFee)}</span>
+                    </div>
+                    <div className="border-t border-border pt-1 mt-2">
+                      <div className="flex justify-between font-medium">
+                        <span>You will receive:</span>
+                        <span className="text-green-600 dark:text-green-400">
+                          {formatCurrency(breakdown.subtotal)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Warning for insufficient funds */}
               {(selectedAmount || parseFloat(amount)) > currentBalance && (
                 <Alert variant="destructive">
                   <AlertTriangle className="h-4 w-4" />
                   <AlertDescription>
                     Withdrawal amount cannot exceed your current balance of {formatCurrency(currentBalance)}.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Warning for low payout */}
+              {currentWithdrawAmount > 0 && breakdown.subtotal < 1 && (
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    After fees, you would receive less than $1.00. Consider withdrawing a larger amount.
                   </AlertDescription>
                 </Alert>
               )}
