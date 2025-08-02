@@ -822,10 +822,11 @@ export default function Dashboard() {
                                   
                                   {(getCurrentPortfolio() as any[]).map((holding: any, index: number) => {
                                     const currentValue = (holding.shares || 0) * (holding.currentPrice || 0);
-                                    const totalCost = (holding.shares || 0) * (holding.purchasePrice || 0);
+                                    const purchasePrice = holding.averagePurchasePrice || holding.purchasePrice || 0;
+                                    const totalCost = holding.totalCost || ((holding.shares || 0) * purchasePrice);
                                     const gainLoss = currentValue - totalCost;
-                                    const priceChange = (holding.currentPrice || 0) - (holding.purchasePrice || 0);
-                                    const priceChangePercent = totalCost > 0 ? (priceChange / (holding.purchasePrice || 1)) * 100 : 0;
+                                    const priceChange = (holding.currentPrice || 0) - purchasePrice;
+                                    const priceChangePercent = totalCost > 0 ? (priceChange / purchasePrice) * 100 : 0;
                                     const isPositive = gainLoss >= 0;
 
                                     return (
@@ -847,7 +848,7 @@ export default function Dashboard() {
                                         </div>
                                         
                                         <div className="text-sm">
-                                          {formatCurrency(holding.purchasePrice || 0)}
+                                          {formatCurrency(purchasePrice)}
                                         </div>
                                         
                                         <div className="text-sm font-medium">
