@@ -86,13 +86,15 @@ export function PerformanceChart() {
     updateChart(symbol, selectedTimeframe);
   };
 
-  // Handle manual search submission
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      setSelectedSymbol(searchQuery.trim().toUpperCase());
-      updateChart(searchQuery.trim().toUpperCase(), selectedTimeframe);
-      setShowDropdown(false);
+  // Handle Enter key for direct symbol search
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (searchQuery.trim()) {
+        setSelectedSymbol(searchQuery.trim().toUpperCase());
+        updateChart(searchQuery.trim().toUpperCase(), selectedTimeframe);
+        setShowDropdown(false);
+      }
     }
   };
 
@@ -248,13 +250,14 @@ export function PerformanceChart() {
           </CardTitle>
           <div className="flex items-center space-x-2 flex-1">
             {/* Symbol Search Bar with Autocomplete */}
-            <form onSubmit={handleSearch} className="flex items-center space-x-1 flex-1">
-              <div className="relative flex-1 max-w-xs">
+            <div className="flex items-center space-x-1 flex-1">
+              <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => handleSearchInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
                   onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
                   onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
                   placeholder="Search stocks, crypto..."
@@ -263,7 +266,7 @@ export function PerformanceChart() {
                 
                 {/* Search Results Dropdown */}
                 {showDropdown && (searchResults.length > 0 || isSearching) && (
-                  <div className="absolute top-full left-0 w-full mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto min-w-[300px]">
+                  <div className="absolute top-full left-0 w-full mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto min-w-[350px]">
                     {isSearching ? (
                       <div className="p-3 text-center text-muted-foreground">
                         <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-1" />
@@ -283,7 +286,7 @@ export function PerformanceChart() {
                                 {result.name}
                               </div>
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-xs text-muted-foreground bg-accent/50 px-2 py-1 rounded">
                               {result.type}
                             </div>
                           </div>
@@ -293,10 +296,7 @@ export function PerformanceChart() {
                   </div>
                 )}
               </div>
-              <Button type="submit" size="sm" className="h-8 px-2">
-                Go
-              </Button>
-            </form>
+            </div>
 
             {/* Timeframe Selector */}
             <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
