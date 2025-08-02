@@ -27,15 +27,30 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 
-export function PerformanceChart() {
+interface PerformanceChartProps {
+  selectedStock?: string | null;
+}
+
+export function PerformanceChart({ selectedStock }: PerformanceChartProps = {}) {
   const { user } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
   
-  const [selectedSymbol, setSelectedSymbol] = useState<string>("NVDA");
-  const [searchQuery, setSearchQuery] = useState<string>("NVDA");
+  const [selectedSymbol, setSelectedSymbol] = useState<string>(selectedStock || "NVDA");
+  const [searchQuery, setSearchQuery] = useState<string>(selectedStock || "NVDA");
+  
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>("1M");
+  
+  // Update chart when selectedStock prop changes
+  useEffect(() => {
+    if (selectedStock && selectedStock !== selectedSymbol) {
+      setSelectedSymbol(selectedStock);
+      setSearchQuery(selectedStock);
+      // Need to wait for updateChart to be defined
+      setTimeout(() => updateChart(selectedStock, selectedTimeframe), 100);
+    }
+  }, [selectedStock]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);

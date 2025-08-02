@@ -28,16 +28,26 @@ import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 
 interface TournamentPerformanceChartProps {
   tournamentId: number;
+  selectedStock?: string | null;
 }
 
-export function TournamentPerformanceChart({ tournamentId }: TournamentPerformanceChartProps) {
+export function TournamentPerformanceChart({ tournamentId, selectedStock }: TournamentPerformanceChartProps) {
   const { user } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<any>(null);
   const seriesRef = useRef<any>(null);
   
-  const [selectedSymbol, setSelectedSymbol] = useState<string>("NVDA");
-  const [searchQuery, setSearchQuery] = useState<string>("NVDA");
+  const [selectedSymbol, setSelectedSymbol] = useState<string>(selectedStock || "NVDA");
+  const [searchQuery, setSearchQuery] = useState<string>(selectedStock || "NVDA");
+  
+  // Update chart when selectedStock prop changes
+  useEffect(() => {
+    if (selectedStock && selectedStock !== selectedSymbol) {
+      setSelectedSymbol(selectedStock);
+      setSearchQuery(selectedStock);
+      setTimeout(() => updateChart(selectedStock, selectedTimeframe), 100);
+    }
+  }, [selectedStock]);
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>("1M");
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);

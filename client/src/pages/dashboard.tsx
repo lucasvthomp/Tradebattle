@@ -74,6 +74,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("personal"); // personal or tournament
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedStock, setSelectedStock] = useState<any>(null);
+  const [selectedChartStock, setSelectedChartStock] = useState<string | null>(null);
   const [buyDialogOpen, setBuyDialogOpen] = useState(false);
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [buyShares, setBuyShares] = useState("");
@@ -446,7 +447,7 @@ export default function Dashboard() {
                         <CardTitle className="text-lg">Your Holdings & Performance</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <PortfolioGrid />
+                        <PortfolioGrid selectedChartStock={selectedChartStock} onSelectStock={setSelectedChartStock} />
                       </CardContent>
                     </Card>
                   </div>
@@ -766,7 +767,10 @@ export default function Dashboard() {
                       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 overflow-hidden">
                         <div className="lg:col-span-2 space-y-4">
                           <div className="h-[500px]">
-                            <TournamentPerformanceChart tournamentId={selectedTournament.id} />
+                            <TournamentPerformanceChart 
+                              tournamentId={selectedTournament.id} 
+                              selectedStock={selectedChartStock} 
+                            />
                           </div>
                           
                           {/* Buy Stocks Search */}
@@ -804,40 +808,95 @@ export default function Dashboard() {
                                   <p className="text-muted-foreground">Start trading to build your portfolio</p>
                                 </div>
                               ) : (
-                                <div className="space-y-3">
-                                  {(getCurrentPortfolio() as any[]).map((holding: any, index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                                      <div>
-                                        <div className="font-semibold">{holding.symbol}</div>
-                                        <div className="text-sm text-muted-foreground">
-                                          {holding.shares} shares × {formatCurrency(holding.currentPrice || 0)}
-                                        </div>
-                                      </div>
-                                      <div className="text-right">
-                                        <div className="font-medium">
-                                          {formatCurrency((holding.shares || 0) * (holding.currentPrice || 0))}
-                                        </div>
-                                        <div className={`text-sm ${
-                                          ((holding.currentPrice || 0) - (holding.purchasePrice || 0)) >= 0 
-                                            ? 'text-green-600' 
-                                            : 'text-red-600'
-                                        }`}>
-                                          {((holding.currentPrice || 0) - (holding.purchasePrice || 0)) >= 0 ? '+' : ''}
-                                          {formatCurrency((holding.currentPrice || 0) - (holding.purchasePrice || 0))}
-                                        </div>
-                                      </div>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => {
-                                          setSelectedSellStock(holding);
-                                          setSellDialogOpen(true);
-                                        }}
+                                <div className="space-y-2">
+                                  {/* Table Header */}
+                                  <div className="grid grid-cols-7 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b">
+                                    <div>Symbol</div>
+                                    <div>Shares</div>
+                                    <div>Purchase Price</div>
+                                    <div>Current Price</div>
+                                    <div>Change</div>
+                                    <div>Value</div>
+                                    <div>Actions</div>
+                                  </div>
+                                  
+                                  {(getCurrentPortfolio() as any[]).map((holding: any, index: number) => {
+                                    const currentValue = (holding.shares || 0) * (holding.currentPrice || 0);
+                                    const totalCost = (holding.shares || 0) * (holding.purchasePrice || 0);
+                                    const gainLoss = currentValue - totalCost;
+                                    const priceChange = (holding.currentPrice || 0) - (holding.purchasePrice || 0);
+                                    const priceChangePercent = totalCost > 0 ? (priceChange / (holding.purchasePrice || 1)) * 100 : 0;
+                                    const isPositive = gainLoss >= 0;
+
+                                    return (
+                                      <div
+                                        key={index}
+                                        className="grid grid-cols-7 gap-2 px-3 py-2 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors items-center"
                                       >
-                                        Sell
-                                      </Button>
-                                    </div>
-                                  ))}
+                                        <div className="flex flex-col">
+                                          <span className="font-medium text-sm text-foreground">
+                                            {holding.symbol}
+                                          </span>
+                                          <span className="text-xs text-muted-foreground truncate">
+                                            {holding.companyName || holding.symbol}
+                                          </span>
+                                        </div>
+                                        
+                                        <div className="text-sm">
+                                          {holding.shares}
+                                        </div>
+                                        
+                                        <div className="text-sm">
+                                          {formatCurrency(holding.purchasePrice || 0)}
+                                        </div>
+                                        
+                                        <div className="text-sm font-medium">
+                                          {formatCurrency(holding.currentPrice || 0)}
+                                        </div>
+                                        
+                                        <div className={`text-sm flex items-center gap-1 ${
+                                          isPositive ? 'text-green-500' : 'text-red-500'
+                                        }`}>
+                                          {isPositive ? (
+                                            <TrendingUp className="h-3 w-3" />
+                                          ) : (
+                                            <TrendingDown className="h-3 w-3" />
+                                          )}
+                                          <div className="flex flex-col">
+                                            <span>{isPositive ? '+' : ''}{formatCurrency(priceChange)}</span>
+                                            <span className="text-xs">({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)</span>
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="text-sm font-medium">
+                                          {formatCurrency(currentValue)}
+                                        </div>
+                                        
+                                        <div className="flex gap-1">
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => setSelectedChartStock(holding.symbol)}
+                                            className="text-xs px-2 py-1 h-7"
+                                            title="View chart"
+                                          >
+                                            <BarChart3 className="h-3 w-3" />
+                                          </Button>
+                                          <Button
+                                            size="sm"
+                                            variant="outline"
+                                            onClick={() => {
+                                              setSelectedSellStock(holding);
+                                              setSellDialogOpen(true);
+                                            }}
+                                            className="text-xs px-2 py-1 h-7"
+                                          >
+                                            Sell
+                                          </Button>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               )}
                             </CardContent>

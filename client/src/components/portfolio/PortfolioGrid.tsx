@@ -6,12 +6,17 @@ import { PortfolioHoldingsWidget } from "./widgets/PortfolioHoldingsWidget";
 import { StockSearchBar } from "../trading/StockSearchBar";
 import { ShoppingCart } from "lucide-react";
 
-export function PortfolioGrid() {
+interface PortfolioGridProps {
+  selectedChartStock?: string | null;
+  onSelectStock?: (symbol: string) => void;
+}
+
+export function PortfolioGrid({ selectedChartStock, onSelectStock }: PortfolioGridProps = {}) {
   return (
     <div className="w-full space-y-6">
       {/* Portfolio Performance Chart with Summary in Header - Full Width */}
       <Card className="w-full min-h-[500px]">
-        <PerformanceChart />
+        <PerformanceChart selectedStock={selectedChartStock} />
       </Card>
 
       {/* Stock Purchase Search */}
@@ -29,7 +34,7 @@ export function PortfolioGrid() {
 
       {/* Current Holdings */}
       <Card className="w-full min-h-[400px]">
-        <PortfolioHoldingsWidget />
+        <PortfolioHoldingsWidget onSelectStock={onSelectStock} />
       </Card>
     </div>
   );
