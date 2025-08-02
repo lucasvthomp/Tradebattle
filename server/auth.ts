@@ -219,6 +219,8 @@ export function setupAuth(app: Express) {
         firstName: freshUser.firstName,
         lastName: freshUser.lastName,
         subscriptionTier: freshUser.subscriptionTier,
+        siteCash: freshUser.siteCash,
+        balance: freshUser.balance,
         createdAt: freshUser.createdAt,
         updatedAt: freshUser.updatedAt,
       });
