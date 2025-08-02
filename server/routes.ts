@@ -614,7 +614,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currentSiteCash = Number(currentUser.siteCash) || 0;
       const newBalance = currentSiteCash + Number(amount);
       
-      const updatedUser = await storage.updateUserSiteCash(req.user.id, newBalance);
+      const updatedUser = await storage.updateUser(req.user.id, { siteCash: newBalance.toString() });
       
       res.json({ 
         success: true, 
