@@ -22,10 +22,10 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
 
   const sellMutation = useMutation({
     mutationFn: async (data: { shares: number }) => {
-      return apiRequest("POST", "/api/sell-stock", {
+      return apiRequest("POST", "/api/personal-portfolio/sell", {
         symbol: stock.symbol,
-        shares: data.shares,
-        purchaseId: stock.id
+        sharesToSell: data.shares,
+        currentPrice: stock.currentPrice
       });
     },
     onSuccess: () => {

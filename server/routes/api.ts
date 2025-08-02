@@ -1326,23 +1326,28 @@ router.post('/personal-portfolio/sell', requireAuth, asyncHandler(async (req, re
 
   const user = await storage.getUser(userId);
 
-  const { purchaseId, sharesToSell, currentPrice } = req.body;
+  const { symbol, sharesToSell, currentPrice } = req.body;
   
-  if (!purchaseId || !sharesToSell || !currentPrice) {
-    throw new ValidationError('Purchase ID, shares to sell, and current price are required');
+  if (!symbol || !sharesToSell || !currentPrice) {
+    throw new ValidationError('Symbol, shares to sell, and current price are required');
   }
 
-  // Get the original purchase
+  // Get all purchases for this symbol (FIFO - First In, First Out)
   const purchases = await storage.getPersonalStockPurchases(userId);
-  const purchase = purchases.find(p => p.id === parseInt(purchaseId));
+  const symbolPurchases = purchases.filter(p => p.symbol === symbol).sort((a, b) => 
+    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
   
-  if (!purchase) {
-    throw new ValidationError('Purchase not found');
+  if (symbolPurchases.length === 0) {
+    throw new ValidationError('No holdings found for this symbol');
   }
 
+  // Calculate total shares owned for this symbol
+  const totalShares = symbolPurchases.reduce((sum, p) => sum + p.shares, 0);
   const sharesToSellNum = parseInt(sharesToSell);
-  if (sharesToSellNum <= 0 || sharesToSellNum > purchase.shares) {
-    throw new ValidationError('Invalid number of shares to sell');
+  
+  if (sharesToSellNum <= 0 || sharesToSellNum > totalShares) {
+    throw new ValidationError(`Invalid number of shares to sell. You own ${totalShares} shares of ${symbol}`);
   }
 
   const saleValue = sharesToSellNum * parseFloat(currentPrice);
@@ -1352,8 +1357,8 @@ router.post('/personal-portfolio/sell', requireAuth, asyncHandler(async (req, re
   await storage.recordTrade({
     userId: userId,
     tournamentId: null, // null for personal trades
-    symbol: purchase.symbol,
-    companyName: purchase.companyName,
+    symbol: symbol,
+    companyName: symbolPurchases[0].companyName,
     tradeType: 'sell',
     shares: sharesToSellNum,
     price: parseFloat(currentPrice),
@@ -1365,22 +1370,32 @@ router.post('/personal-portfolio/sell', requireAuth, asyncHandler(async (req, re
     personalBalance: currentBalance + saleValue
   });
 
-  // If selling all shares, delete the purchase record
-  if (sharesToSellNum === purchase.shares) {
-    await storage.deletePersonalPurchase(userId, purchase.id);
-  } else {
-    // Update the purchase record to reduce shares
-    await storage.deletePersonalPurchase(userId, purchase.id);
+  // Sell shares using FIFO method
+  let remainingToSell = sharesToSellNum;
+  
+  for (const purchase of symbolPurchases) {
+    if (remainingToSell <= 0) break;
     
-    if (purchase.shares - sharesToSellNum > 0) {
+    if (purchase.shares <= remainingToSell) {
+      // Sell all shares from this purchase
+      remainingToSell -= purchase.shares;
+      await storage.deletePersonalPurchase(userId, purchase.id);
+    } else {
+      // Partially sell shares from this purchase
+      const newShares = purchase.shares - remainingToSell;
       const purchasePrice = parseFloat(purchase.purchasePrice);
+      
+      // Delete the old record and create a new one with remaining shares
+      await storage.deletePersonalPurchase(userId, purchase.id);
       await storage.purchasePersonalStock(userId, {
         symbol: purchase.symbol,
         companyName: purchase.companyName,
-        shares: purchase.shares - sharesToSellNum,
+        shares: newShares,
         purchasePrice: purchasePrice,
-        totalCost: (purchase.shares - sharesToSellNum) * purchasePrice
+        totalCost: newShares * purchasePrice
       });
+      
+      remainingToSell = 0;
     }
   }
 
@@ -1395,7 +1410,8 @@ router.post('/personal-portfolio/sell', requireAuth, asyncHandler(async (req, re
     success: true,
     data: { 
       saleValue,
-      newBalance: currentBalance + saleValue 
+      newBalance: currentBalance + saleValue,
+      sharesSold: sharesToSellNum
     },
   });
 }));
