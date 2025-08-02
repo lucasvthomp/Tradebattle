@@ -412,24 +412,23 @@ export default function Dashboard() {
 
             {/* Personal Portfolio Tab */}
             <TabsContent value="personal">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* Main Trading Area - 2/3 width */}
-                <div className="lg:col-span-2 space-y-4">
-                  {/* Portfolio Summary */}
-                  <Card>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg">Portfolio Overview</CardTitle>
-                        <div className="flex items-center space-x-4">
-                          <PortfolioSummaryWidget />
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <PortfolioGrid />
-                    </CardContent>
-                  </Card>
-                </div>
+              <div className="space-y-4">
+                {/* Portfolio Overview Bar */}
+                <PortfolioSummaryWidget />
+                
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                  {/* Main Trading Area - 2/3 width */}
+                  <div className="lg:col-span-2 space-y-4">
+                    {/* Portfolio Grid */}
+                    <Card>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg">Your Holdings & Performance</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <PortfolioGrid />
+                      </CardContent>
+                    </Card>
+                  </div>
                 
                 {/* Watchlist Sidebar - 1/3 width */}
                 <div className="space-y-4">
@@ -601,6 +600,7 @@ export default function Dashboard() {
                     )}
                   </CardContent>
                   </Card>
+                </div>
                 </div>
               </div>
             </TabsContent>
