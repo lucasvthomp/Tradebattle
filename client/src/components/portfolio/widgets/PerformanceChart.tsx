@@ -20,9 +20,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
-import { TrendingUp, RefreshCw } from "lucide-react";
+import { TrendingUp, RefreshCw, Search } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createChart, ColorType, LineSeries } from 'lightweight-charts';
 
@@ -33,33 +34,18 @@ export function PerformanceChart() {
   const seriesRef = useRef<any>(null);
   
   const [selectedSymbol, setSelectedSymbol] = useState<string>("NVDA");
+  const [searchQuery, setSearchQuery] = useState<string>("NVDA");
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>("1M");
   const [isLoading, setIsLoading] = useState(false);
-  const [useManualData, setUseManualData] = useState(false);
 
-  /* 
-   * MANUAL DATA UPDATE INSTRUCTIONS:
-   * To update the chart data manually:
-   * 1. Modify the data array below with your desired price values
-   * 2. Toggle to "Manual" mode using the button in the chart header
-   * 3. The chart will automatically refresh with your custom data
-   * 
-   * Data format for TradingView Lightweight Charts:
-   * - time: Unix timestamp or 'YYYY-MM-DD' format
-   * - value: Price value for line chart
-   */
-  const manualData = [
-    { time: '2025-07-01', value: 153.25 },
-    { time: '2025-07-02', value: 156.75 },
-    { time: '2025-07-03', value: 160.00 },
-    { time: '2025-07-04', value: 163.50 },
-    { time: '2025-07-05', value: 165.75 },
-    { time: '2025-07-08', value: 168.25 },
-    { time: '2025-07-09', value: 171.00 },
-    { time: '2025-07-10', value: 173.50 },
-    { time: '2025-07-11', value: 175.75 },
-    { time: '2025-07-12', value: 177.25 },
-  ];
+  // Handle search submission
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      setSelectedSymbol(searchQuery.trim().toUpperCase());
+      updateChart(searchQuery.trim().toUpperCase(), selectedTimeframe);
+    }
+  };
 
   // Get portfolio data to show available holdings
   const { data: portfolioData } = useQuery({
@@ -72,10 +58,6 @@ export function PerformanceChart() {
 
   // Fetch historical price data
   const fetchChartData = async (symbol: string, timeframe: string) => {
-    if (useManualData) {
-      return manualData;
-    }
-
     setIsLoading(true);
     try {
       const response = await fetch(`/api/historical/${symbol}?timeframe=${timeframe}`);
@@ -87,7 +69,7 @@ export function PerformanceChart() {
           value: parseFloat(item.close) || 0
         }));
         // Sort by time to ensure proper left-to-right display
-        chartData.sort((a, b) => {
+        chartData.sort((a: any, b: any) => {
           const timeA = typeof a.time === 'number' ? a.time : new Date(a.time).getTime() / 1000;
           const timeB = typeof b.time === 'number' ? b.time : new Date(b.time).getTime() / 1000;
           return timeA - timeB;
@@ -198,7 +180,7 @@ export function PerformanceChart() {
     if (selectedSymbol && selectedTimeframe) {
       updateChart(selectedSymbol, selectedTimeframe);
     }
-  }, [selectedSymbol, selectedTimeframe, useManualData]);
+  }, [selectedSymbol, selectedTimeframe]);
 
   // Set default symbol to first holding if available
   useEffect(() => {
@@ -214,43 +196,24 @@ export function PerformanceChart() {
           <CardTitle className="text-lg flex items-center space-x-2">
             <TrendingUp className="w-5 h-5" />
             <span>Price Chart - {selectedSymbol}</span>
-            {useManualData && <span className="text-xs text-muted-foreground">(Manual Data)</span>}
           </CardTitle>
           <div className="flex items-center space-x-2">
-            {/* Manual Data Toggle */}
-            <Button
-              size="sm"
-              variant={useManualData ? "default" : "outline"}
-              onClick={() => {
-                setUseManualData(!useManualData);
-              }}
-              className="text-xs"
-            >
-              {useManualData ? "Manual" : "Live"}
-            </Button>
-
-            {/* Symbol Selector */}
-            <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
-              <SelectTrigger className="w-32">
-                <SelectValue placeholder="Symbol" />
-              </SelectTrigger>
-              <SelectContent>
-                {holdings.length > 0 ? (
-                  holdings.map((holding: any) => (
-                    <SelectItem key={holding.symbol} value={holding.symbol}>
-                      {holding.symbol}
-                    </SelectItem>
-                  ))
-                ) : (
-                  <>
-                    <SelectItem value="NVDA">NVDA</SelectItem>
-                    <SelectItem value="AAPL">AAPL</SelectItem>
-                    <SelectItem value="MSFT">MSFT</SelectItem>
-                    <SelectItem value="GOOGL">GOOGL</SelectItem>
-                  </>
-                )}
-              </SelectContent>
-            </Select>
+            {/* Symbol Search Bar */}
+            <form onSubmit={handleSearch} className="flex items-center space-x-1">
+              <div className="relative">
+                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search stocks, crypto..."
+                  className="pl-8 w-48 h-8"
+                />
+              </div>
+              <Button type="submit" size="sm" className="h-8 px-2">
+                Go
+              </Button>
+            </form>
 
             {/* Timeframe Selector */}
             <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
