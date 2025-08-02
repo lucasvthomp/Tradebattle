@@ -54,13 +54,17 @@ export function PerformanceChart() {
       const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       
-      if (data.success && data.data) {
+      if (data.success && data.data && Array.isArray(data.data)) {
         setSearchResults(data.data.slice(0, 8)); // Limit to 8 results
         setShowDropdown(true);
+      } else {
+        setSearchResults([]);
+        setShowDropdown(false);
       }
     } catch (error) {
       console.error('Error searching companies:', error);
       setSearchResults([]);
+      setShowDropdown(false);
     } finally {
       setIsSearching(false);
     }
@@ -248,54 +252,52 @@ export function PerformanceChart() {
             <TrendingUp className="w-5 h-5" />
             <span>Price Chart - {selectedSymbol}</span>
           </CardTitle>
-          <div className="flex items-center space-x-2 flex-1">
+          <div className="flex items-center space-x-2">
             {/* Symbol Search Bar with Autocomplete */}
-            <div className="flex items-center space-x-1 flex-1">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => handleSearchInput(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
-                  onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                  placeholder="Search stocks, crypto..."
-                  className="pl-8 w-full h-8"
-                />
-                
-                {/* Search Results Dropdown */}
-                {showDropdown && (searchResults.length > 0 || isSearching) && (
-                  <div className="absolute top-full left-0 w-full mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto min-w-[350px]">
-                    {isSearching ? (
-                      <div className="p-3 text-center text-muted-foreground">
-                        <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-1" />
-                        Searching...
-                      </div>
-                    ) : (
-                      searchResults.map((result, index) => (
-                        <div
-                          key={index}
-                          onClick={() => selectSearchResult(result)}
-                          className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0"
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm">{result.symbol}</div>
-                              <div className="text-xs text-muted-foreground truncate">
-                                {result.name}
-                              </div>
-                            </div>
-                            <div className="text-xs text-muted-foreground bg-accent/50 px-2 py-1 rounded">
-                              {result.type}
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
+                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+                placeholder="Search stocks, crypto..."
+                className="pl-8 w-48 h-8"
+              />
+              
+              {/* Search Results Dropdown */}
+              {showDropdown && (searchResults.length > 0 || isSearching) && (
+                <div className="absolute top-full right-0 w-80 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
+                  {isSearching ? (
+                    <div className="p-3 text-center text-muted-foreground">
+                      <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-1" />
+                      Searching...
+                    </div>
+                  ) : (
+                    searchResults.map((result, index) => (
+                      <div
+                        key={index}
+                        onClick={() => selectSearchResult(result)}
+                        className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm">{result.symbol}</div>
+                            <div className="text-xs text-muted-foreground truncate">
+                              {result.name}
                             </div>
                           </div>
+                          <div className="text-xs text-muted-foreground bg-accent/50 px-2 py-1 rounded">
+                            {result.type}
+                          </div>
                         </div>
-                      ))
-                    )}
-                  </div>
-                )}
-              </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Timeframe Selector */}
