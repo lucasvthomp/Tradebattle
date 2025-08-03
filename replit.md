@@ -46,7 +46,7 @@ Preferred communication style: Simple, everyday language.
 - **Optimized Chat System**: Fast 1.5s refresh intervals, semi-transparent UI design, compact chat selectors.
 - **Automated Tournament Management**: Scheduled tournaments automatically start when countdown reaches zero via background scheduler service.
 - **Complete Buy-in System**: Tournament creators and participants pay buy-ins from siteCash, with automatic pot accumulation and prize distribution (95% winner, 5% creator).
-- **Real-time Intraday Data**: 1D timeframe uses authentic 5-minute interval data from Yahoo Finance API covering the last 24 trading hours with robust fallback mechanisms.
+- **Smart Trading Day Detection**: 1D timeframe intelligently excludes weekends and shows the most recent trading day data (e.g., Friday's data on weekends) with 5-minute intervals for authentic intraday movements.
 
 ## External Dependencies
 - **Database**: Neon PostgreSQL

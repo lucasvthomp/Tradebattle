@@ -426,29 +426,72 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
   }
 
   try {
-    // For 1D timeframe, get data from last 24 trading hours
+    // For 1D timeframe, get data from last trading day (excluding weekends)
     if (timeFrame === '1D') {
       try {
-        // Use chart API to get intraday data from the last 2 days to ensure we get trading hours
-        const twoDaysAgo = new Date();
-        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+        // Function to get the most recent trading day
+        const getLastTradingDay = (): Date => {
+          const now = new Date();
+          const dayOfWeek = now.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
+          
+          if (dayOfWeek === 0) { // Sunday
+            const friday = new Date(now);
+            friday.setDate(now.getDate() - 2); // Go back to Friday
+            return friday;
+          } else if (dayOfWeek === 6) { // Saturday
+            const friday = new Date(now);
+            friday.setDate(now.getDate() - 1); // Go back to Friday
+            return friday;
+          } else if (dayOfWeek === 1) { // Monday
+            // If it's early Monday (before market open), might want Friday's data
+            const currentHour = now.getHours();
+            if (currentHour < 9 || (currentHour === 9 && now.getMinutes() < 30)) {
+              const friday = new Date(now);
+              friday.setDate(now.getDate() - 3); // Go back to Friday
+              return friday;
+            }
+          }
+          
+          // For Tuesday-Friday or Monday after market open, use current day
+          return now;
+        };
+
+        const lastTradingDay = getLastTradingDay();
+        
+        // Get data from 7 days ago to ensure we have enough trading days
+        const sevenDaysAgo = new Date(lastTradingDay);
+        sevenDaysAgo.setDate(lastTradingDay.getDate() - 7);
+        
+        // Use the next day as period2 to ensure we get the full trading day
+        const nextDay = new Date(lastTradingDay);
+        nextDay.setDate(lastTradingDay.getDate() + 1);
         
         const chartResult = await yahooFinance.chart(symbol, {
-          period1: twoDaysAgo.toISOString().split('T')[0],
-          period2: new Date().toISOString().split('T')[0],
+          period1: sevenDaysAgo.toISOString().split('T')[0],
+          period2: nextDay.toISOString().split('T')[0],
           interval: '5m' as any,
           includePrePost: false
         });
 
         if (chartResult && chartResult.quotes && chartResult.quotes.length > 0) {
-          // Filter to get only the last 24 trading hours
-          const now = new Date();
-          const twentyFourHoursAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+          // Get the target date in YYYY-MM-DD format for comparison
+          const targetDateStr = lastTradingDay.toISOString().split('T')[0];
           
           const intradayData: HistoricalDataPoint[] = chartResult.quotes
             .filter((quote: any) => {
               const quoteDate = new Date(quote.date);
-              return quoteDate >= twentyFourHoursAgo && quote.close !== null && quote.close !== undefined;
+              const quoteDateStr = quoteDate.toISOString().split('T')[0];
+              const quoteDayOfWeek = quoteDate.getDay();
+              
+              // Exclude weekends (Saturday = 6, Sunday = 0)
+              if (quoteDayOfWeek === 0 || quoteDayOfWeek === 6) {
+                return false;
+              }
+              
+              // Include data from the specific last trading day
+              return quoteDateStr === targetDateStr && 
+                     quote.close !== null && 
+                     quote.close !== undefined;
             })
             .map((quote: any) => ({
               date: Math.floor(quote.date.getTime() / 1000), // Convert to Unix timestamp
