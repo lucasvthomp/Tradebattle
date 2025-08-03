@@ -304,7 +304,7 @@ export const translations = {
     general: "General",
     security: "Security",
     privacy: "Privacy",
-    notifications: "Notifications",
+    notificationsSettings: "Notifications",
     appearance: "Appearance",
     theme: "Theme",
     darkMode: "Dark Mode",
@@ -314,7 +314,7 @@ export const translations = {
     subscription: "Subscription",
     billing: "Billing",
     plan: "Plan",
-    upgrade: "Upgrade",
+    upgradeAccount: "Upgrade",
     downgrade: "Downgrade",
     renew: "Renew",
     expire: "Expire",
@@ -349,6 +349,9 @@ export const translations = {
     summary: "Summary",
     advanced: "Advanced",
     basic: "Basic",
+    actions: "Actions",
+    processing: "Processing...",
+    totalValue: "Total Value",
     
     // Greetings
     goodMorning: "Good Morning",
@@ -367,13 +370,13 @@ export const translations = {
     addedToAccount: "has been added to your account",
     withdrawnFromAccount: "has been withdrawn from your account",
     enterUsername: "Enter your username",
-    holdings: "Current Holdings",
-    admin: "Admin",
-    support: "Support",
+    currentHoldings: "Current Holdings",
+    adminRole: "Admin",
+    supportTeam: "Support",
     invalidShares: "Please enter a valid number of shares",
-    buyStock: "Bought stock",
-    shares: "shares",
-    sellStock: "Sell stock",
+    stockPurchased: "Bought stock",
+    sharesUnit: "shares",
+    sellPosition: "Sell stock",
   },
   
   Portuguese: {
@@ -677,7 +680,7 @@ export const translations = {
     general: "Geral",
     security: "Segurança",
     privacy: "Privacidade",
-    notifications: "Notificações",
+    notificationsSettings: "Notificações",
     appearance: "Aparência",
     theme: "Tema",
     darkMode: "Modo Escuro",
@@ -687,7 +690,7 @@ export const translations = {
     subscription: "Assinatura",
     billing: "Cobrança",
     plan: "Plano",
-    upgrade: "Fazer Upgrade",
+    upgradeAccount: "Fazer Upgrade",
     downgrade: "Fazer Downgrade",
     renew: "Renovar",
     expire: "Expirar",
@@ -722,6 +725,9 @@ export const translations = {
     summary: "Resumo",
     advanced: "Avançado",
     basic: "Básico",
+    actions: "Ações",
+    processing: "Processando...",
+    totalValue: "Valor Total",
     
     // Greetings
     goodMorning: "Bom Dia",
@@ -740,13 +746,13 @@ export const translations = {
     addedToAccount: "foi adicionado à sua conta",
     withdrawnFromAccount: "foi retirado da sua conta",
     enterUsername: "Digite seu nome de usuário",
-    holdings: "Posições Atuais",
-    admin: "Administrador",
-    support: "Suporte",
+    currentHoldings: "Posições Atuais",
+    adminRole: "Administrador",
+    supportTeam: "Suporte",
     invalidShares: "Por favor, digite um número válido de ações",
-    buyStock: "Ação comprada",
-    shares: "ações",
-    sellStock: "Vender ação",
+    stockPurchased: "Ação comprada",
+    sharesUnit: "ações",
+    sellPosition: "Vender ação",
   },
   
   Spanish: {
@@ -1050,7 +1056,7 @@ export const translations = {
     general: "General",
     security: "Seguridad",
     privacy: "Privacidad",
-    notifications: "Notificaciones",
+    notificationsSettings: "Notificaciones",
     appearance: "Apariencia",
     theme: "Tema",
     darkMode: "Modo Oscuro",
@@ -1060,7 +1066,7 @@ export const translations = {
     subscription: "Suscripción",
     billing: "Facturación",
     plan: "Plan",
-    upgrade: "Mejorar",
+    upgradeAccount: "Mejorar",
     downgrade: "Degradar",
     renew: "Renovar",
     expire: "Expirar",
@@ -1095,6 +1101,9 @@ export const translations = {
     summary: "Resumen",
     advanced: "Avanzado",
     basic: "Básico",
+    actions: "Acciones",
+    processing: "Procesando...",
+    totalValue: "Valor Total",
     
     // Greetings
     goodMorning: "Buenos Días",
@@ -1113,13 +1122,13 @@ export const translations = {
     addedToAccount: "ha sido agregado a tu cuenta",
     withdrawnFromAccount: "ha sido retirado de tu cuenta",
     enterUsername: "Ingresa tu nombre de usuario",
-    holdings: "Posiciones Actuales",
-    admin: "Administrador",
-    support: "Soporte",
+    currentHoldings: "Posiciones Actuales",
+    adminRole: "Administrador",
+    supportTeam: "Soporte",
     invalidShares: "Por favor, ingresa un número válido de acciones",
-    buyStock: "Acción comprada",
-    shares: "acciones",
-    sellStock: "Vender acción",
+    stockPurchased: "Acción comprada",
+    sharesUnit: "acciones",
+    sellPosition: "Vender acción",
   },
 };
 
@@ -1228,11 +1237,9 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
     const updates: any = {};
     if (newLanguage && newLanguage !== language) {
       updates.language = newLanguage;
-      setLanguage(newLanguage);
     }
     if (newCurrency && newCurrency !== currency) {
       updates.currency = newCurrency;
-      setCurrency(newCurrency);
     }
 
     if (Object.keys(updates).length > 0) {
@@ -1248,11 +1255,18 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
         if (!response.ok) {
           throw new Error('Failed to update preferences');
         }
+
+        // Update state after successful API call
+        if (newLanguage) setLanguage(newLanguage);
+        if (newCurrency) setCurrency(newCurrency);
+        
+        // Force page reload to ensure all components re-render with new language
+        if (newLanguage && newLanguage !== language) {
+          window.location.reload();
+        }
       } catch (error) {
         console.error('Error updating preferences:', error);
-        // Revert changes on error
-        if (newLanguage) setLanguage(user.language || 'English');
-        if (newCurrency) setCurrency(user.currency || 'USD');
+        throw error; // Propagate error to caller
       }
     }
   };

@@ -53,7 +53,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -83,7 +82,7 @@ export default function Dashboard() {
   const [sellAmount, setSellAmount] = useState("");
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
   const [leaderboardDialogOpen, setLeaderboardDialogOpen] = useState(false);
-  
+
   // Watchlist specific state
   const [selectedTimeframe, setSelectedTimeframe] = useState("1D");
   const [watchlistStockData, setWatchlistStockData] = useState<{[key: string]: any}>({});
@@ -182,11 +181,11 @@ export default function Dashboard() {
       const endpoint = data.tournamentId 
         ? `/api/tournaments/${data.tournamentId}/sell` 
         : "/api/personal-portfolio/sell";
-      
+
       const payload = data.tournamentId 
         ? { symbol: data.symbol, sharesToSell: data.sharesToSell, currentPrice: data.currentPrice }
         : { symbol: data.symbol, sharesToSell: data.sharesToSell, currentPrice: data.currentPrice };
-        
+
       return apiRequest("POST", endpoint, payload);
     },
     onSuccess: () => {
@@ -272,17 +271,17 @@ export default function Dashboard() {
     if (watchlist.length > 0) {
       const fetchWatchlistData = async () => {
         const stockData: {[key: string]: any} = {};
-        
+
         for (const stock of watchlist) {
           try {
             // Fetch current quote data first
             const quoteResponse = await apiRequest("GET", `/api/quote/${stock.symbol}`);
             const quoteData = await quoteResponse.json();
-            
+
             const currentPrice = quoteData.data?.price || quoteData.data?.regularMarketPrice || 0;
             const marketCap = quoteData.data?.marketCap || 0;
             const volume = quoteData.data?.volume || quoteData.data?.regularMarketVolume || 0;
-            
+
             // For 1D timeframe, use the daily change from quote data
             if (selectedTimeframe === '1D') {
               const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
@@ -292,7 +291,7 @@ export default function Dashboard() {
               if (changePercent === 0 && previousClose > 0) {
                 changePercent = (changeAmount / previousClose) * 100;
               }
-              
+
               stockData[stock.symbol] = {
                 ...quoteData.data,
                 price: currentPrice,
@@ -306,29 +305,29 @@ export default function Dashboard() {
               // For other timeframes, fetch historical data with proper error handling
               try {
                 const historicalResponse = await fetch(`/api/historical/${stock.symbol}/${selectedTimeframe}`);
-                
+
                 // Check if response is ok and content type is JSON
                 if (!historicalResponse.ok) {
                   throw new Error(`HTTP ${historicalResponse.status}`);
                 }
-                
+
                 const contentType = historicalResponse.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
                   throw new Error('Response is not JSON');
                 }
-                
+
                 const historicalData = await historicalResponse.json();
-                
+
                 let changeAmount = 0;
                 let changePercent = 0;
-                
+
                 if (historicalData.success && historicalData.data && historicalData.data.length > 0) {
                   // Get the earliest price in the historical data (starting point for the timeframe)
                   // Use the FIRST data point (oldest) instead of last (newest) for proper timeframe comparison
                   const historicalPrice = historicalData.data[0].close;
                   changeAmount = currentPrice - historicalPrice;
                   changePercent = historicalPrice > 0 ? ((changeAmount / historicalPrice) * 100) : 0;
-                  
+
                   stockData[stock.symbol] = {
                     ...quoteData.data,
                     price: currentPrice,
@@ -343,7 +342,7 @@ export default function Dashboard() {
                   changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                   changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
                   const fallbackPreviousClose = quoteData.data?.previousClose || (currentPrice - changeAmount);
-                  
+
                   stockData[stock.symbol] = {
                     ...quoteData.data,
                     price: currentPrice,
@@ -359,7 +358,7 @@ export default function Dashboard() {
                 // If historical data fails, use daily change as fallback
                 const changeAmount = quoteData.data?.change || quoteData.data?.regularMarketChange || 0;
                 const changePercent = quoteData.data?.changePercent || quoteData.data?.regularMarketChangePercent || 0;
-                
+
                 stockData[stock.symbol] = {
                   ...quoteData.data,
                   price: currentPrice,
@@ -376,12 +375,12 @@ export default function Dashboard() {
             stockData[stock.symbol] = null;
           }
         }
-        
+
         setWatchlistStockData(stockData);
       };
 
       fetchWatchlistData();
-      
+
       // Refresh data every 30 seconds
       const interval = setInterval(fetchWatchlistData, 30000);
       return () => clearInterval(interval);
@@ -402,7 +401,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-background">
       <MarketStatusDisclaimer />
-      
+
       <div className="container mx-auto px-4 py-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -440,7 +439,7 @@ export default function Dashboard() {
               <div className="space-y-4">
                 {/* Portfolio Overview Bar */}
                 <PortfolioSummaryWidget />
-                
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
                   {/* Main Trading Area - 2/3 width */}
                   <div className="lg:col-span-2 space-y-4">
@@ -454,7 +453,7 @@ export default function Dashboard() {
                       </CardContent>
                     </Card>
                   </div>
-                
+
                   {/* Sidebar - 1/3 width */}
                   <div className="space-y-4">
                   {/* Watchlist Search */}
@@ -547,7 +546,7 @@ export default function Dashboard() {
                       <div className="space-y-2">
                         {watchlist.map((stock) => {
                           const stockData = watchlistStockData[stock.symbol];
-                          
+
                           if (!stockData) {
                             return (
                               <div
@@ -574,7 +573,7 @@ export default function Dashboard() {
                           const changeAmount = stockData.change || 0;
                           const changePercent = stockData.changePercent || 0;
                           const isPositive = changeAmount >= 0;
-                          
+
                           return (
                             <div
                               key={stock.id}
@@ -597,18 +596,18 @@ export default function Dashboard() {
                                 </div>
                               </div>
                               <div className="flex justify-between items-center mt-2">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="h-6 px-2 text-xs"
-                                  onClick={() => {
-                                    setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
-                                    setBuyDialogOpen(true);
-                                  }}
-                                >
-                                  <ShoppingCart className="w-3 h-3 mr-1" />
-                                  Buy
-                                </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-6 px-2 text-xs"
+                                    onClick={() => {
+                                      setSelectedStock({ symbol: stock.symbol, shortName: stock.companyName });
+                                      setBuyDialogOpen(true);
+                                    }}
+                                  >
+                                    <ShoppingCart className="w-3 h-3 mr-1" />
+                                    {t('buy')}
+                                  </Button>
                                 <Button
                                   size="sm"
                                   variant="ghost"
@@ -746,7 +745,7 @@ export default function Dashboard() {
                           <CardContent className="p-4">
                             <div className="flex items-center space-x-2 mb-1">
                               <BarChart3 className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-muted-foreground">Holdings</span>
+                              <span className="text-sm font-medium text-muted-foreground">{t('holdings')}</span>
                             </div>
                             <div className="text-2xl font-bold">
                               {(getCurrentPortfolio() as any[]).length}
@@ -757,7 +756,7 @@ export default function Dashboard() {
                           <CardContent className="p-4">
                             <div className="flex items-center space-x-2 mb-1">
                               <Trophy className="w-4 h-4 text-muted-foreground" />
-                              <span className="text-sm font-medium text-muted-foreground">Buy In</span>
+                              <span className="text-sm font-medium text-muted-foreground">{t('buyIn')}</span>
                             </div>
                             <div className="text-2xl font-bold">
                               {formatCurrency(selectedTournament.buyInAmount || 0)}
@@ -775,7 +774,7 @@ export default function Dashboard() {
                               selectedStock={selectedChartStock} 
                             />
                           </div>
-                          
+
                           {/* Buy Stocks Search */}
                           <Card>
                             <CardHeader className="pb-3">
@@ -793,7 +792,7 @@ export default function Dashboard() {
                             />
                             </CardContent>
                           </Card>
-                          
+
                           <Card>
                             <CardHeader className="pb-3">
                               <CardTitle className="text-lg">Tournament Portfolio</CardTitle>
@@ -822,7 +821,7 @@ export default function Dashboard() {
                                     <div>Value</div>
                                     <div>Actions</div>
                                   </div>
-                                  
+
                                   {(getCurrentPortfolio() as any[]).map((holding: any, index: number) => {
                                     const currentValue = (holding.shares || 0) * (holding.currentPrice || 0);
                                     const purchasePrice = holding.averagePurchasePrice || holding.purchasePrice || 0;
@@ -845,19 +844,19 @@ export default function Dashboard() {
                                             {holding.companyName || holding.symbol}
                                           </span>
                                         </div>
-                                        
+
                                         <div className="text-sm">
                                           {holding.shares}
                                         </div>
-                                        
+
                                         <div className="text-sm">
                                           {formatCurrency(purchasePrice)}
                                         </div>
-                                        
+
                                         <div className="text-sm font-medium">
                                           {formatCurrency(holding.currentPrice || 0)}
                                         </div>
-                                        
+
                                         <div className={`text-sm flex items-center gap-1 ${
                                           isPositive ? 'text-green-500' : 'text-red-500'
                                         }`}>
@@ -871,11 +870,11 @@ export default function Dashboard() {
                                             <span className="text-xs">({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)</span>
                                           </div>
                                         </div>
-                                        
+
                                         <div className="text-sm font-medium">
                                           {formatCurrency(currentValue)}
                                         </div>
-                                        
+
                                         <div className="flex gap-1">
                                           <Button
                                             size="sm"
@@ -916,7 +915,7 @@ export default function Dashboard() {
                               <StockSearchBar type="watchlist" placeholder="Search stocks to watch..." />
                             </CardContent>
                           </Card>
-                          
+
                           <Card>
                             <CardHeader className="pb-3">
                               <CardTitle className="text-lg">Market Watch</CardTitle>
@@ -939,7 +938,7 @@ export default function Dashboard() {
                                 <div className="space-y-2">
                                   {watchlist.map((stock) => {
                                     const stockData = watchlistStockData[stock.symbol];
-                                    
+
                                     if (!stockData) {
                                       return (
                                         <div
@@ -966,7 +965,7 @@ export default function Dashboard() {
                                     const changeAmount = stockData.change || 0;
                                     const changePercent = stockData.changePercent || 0;
                                     const isPositive = changeAmount >= 0;
-                                    
+
                                     return (
                                       <div
                                         key={stock.id}
@@ -1003,7 +1002,7 @@ export default function Dashboard() {
                                             }}
                                           >
                                             <ShoppingCart className="w-3 h-3 mr-1" />
-                                            Buy
+                                            {t('buy')}
                                           </Button>
                                           <Button
                                             size="sm"
@@ -1021,7 +1020,7 @@ export default function Dashboard() {
                               )}
                             </CardContent>
                           </Card>
-                          
+
                           {/* Tournament Leaderboard */}
                           <TournamentLeaderboard 
                             tournamentId={selectedTournament.id}
@@ -1041,7 +1040,7 @@ export default function Dashboard() {
           </Tabs>
         </motion.div>
       </div>
-      
+
       {/* Tournament Leaderboard Dialog */}
       <TournamentLeaderboardDialog
         tournament={selectedTournament}
