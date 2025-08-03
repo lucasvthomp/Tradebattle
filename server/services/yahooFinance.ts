@@ -488,10 +488,20 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
                 return false;
               }
               
-              // Include data from the specific last trading day
+              // Filter for market hours only (9:30 AM to 4:00 PM Eastern)
+              // Market hours in UTC: 13:30 to 20:00 (assuming EDT, UTC-4)
+              const quoteHour = quoteDate.getUTCHours();
+              const quoteMinute = quoteDate.getUTCMinutes();
+              const utcTime = quoteHour + (quoteMinute / 60);
+              
+              // Market hours in UTC: 13:30 (9:30 AM ET) to just before 20:00 (4:00 PM ET)
+              const isMarketHours = utcTime >= 13.5 && utcTime <= 20.0;
+              
+              // Include data from the specific last trading day during market hours
               return quoteDateStr === targetDateStr && 
                      quote.close !== null && 
-                     quote.close !== undefined;
+                     quote.close !== undefined &&
+                     isMarketHours;
             })
             .map((quote: any) => ({
               date: Math.floor(quote.date.getTime() / 1000), // Convert to Unix timestamp
