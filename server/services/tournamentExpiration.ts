@@ -27,6 +27,9 @@ export class TournamentExpirationService {
       // Calculate final standings
       const results = await this.calculateFinalStandings(tournament.id);
       
+      // Distribute prize money to the winner
+      await this.distributePrizeMoney(tournament, results);
+      
       // Award achievements based on results
       await this.awardTournamentAchievements(tournament.id, results);
       
@@ -101,6 +104,34 @@ export class TournamentExpirationService {
     });
 
     return results;
+  }
+
+  /**
+   * Distribute prize money to the tournament winner
+   */
+  private async distributePrizeMoney(tournament: any, results: TournamentResult[]): Promise<void> {
+    // Only distribute if there are participants and a pot to distribute
+    if (results.length === 0 || !tournament.currentPot || Number(tournament.currentPot) <= 0) {
+      console.log(`No prize money to distribute for tournament ${tournament.name} (pot: ${tournament.currentPot})`);
+      return;
+    }
+
+    const winner = results.find(result => result.rank === 1);
+    if (!winner) {
+      console.log(`No winner found for tournament ${tournament.name}`);
+      return;
+    }
+
+    const prizeAmount = Number(tournament.currentPot);
+    
+    try {
+      // Add the tournament pot to the winner's siteCash
+      await storage.addUserBalance(winner.userId, prizeAmount);
+      
+      console.log(`Distributed $${prizeAmount} prize money to user ${winner.userId} (${winner.firstName} ${winner.lastName}) for winning tournament ${tournament.name}`);
+    } catch (error) {
+      console.error(`Failed to distribute prize money for tournament ${tournament.name}:`, error);
+    }
   }
 
   /**
