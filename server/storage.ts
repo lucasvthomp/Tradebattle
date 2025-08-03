@@ -344,10 +344,44 @@ export class DatabaseStorage implements IStorage {
     // Generate unique 8-character code
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
     
+    const buyInAmount = Number(tournament.buyInAmount || 0);
+    
+    // If tournament has buy-in, check creator balance and deduct
+    if (buyInAmount > 0) {
+      // Get creator's current site cash
+      const user = await db.select().from(users).where(eq(users.id, creatorId)).limit(1);
+      if (!user[0]) {
+        throw new Error('Creator not found');
+      }
+      
+      const currentSiteCash = Number(user[0].siteCash || 0);
+      
+      // Check if creator has sufficient site cash
+      if (currentSiteCash < buyInAmount) {
+        throw new Error(`Insufficient site cash to create tournament. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`);
+      }
+      
+      // Deduct buy-in amount from creator's site cash
+      await db.update(users)
+        .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
+        .where(eq(users.id, creatorId));
+        
+      // Log the transaction
+      await db.insert(adminLogs).values({
+        adminUserId: creatorId,
+        targetUserId: creatorId,
+        action: 'tournament_creator_buyin',
+        oldValue: currentSiteCash.toString(),
+        newValue: (currentSiteCash - buyInAmount).toString(),
+        notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
+      });
+    }
+    
     const result = await db.insert(tournaments).values({
       ...tournament,
       code,
-      creatorId
+      creatorId,
+      currentPot: buyInAmount.toString() // Set initial pot to creator's buy-in
     }).returning();
     
     // Add creator as first participant with specified starting balance
@@ -399,6 +433,11 @@ export class DatabaseStorage implements IStorage {
       await db.update(users)
         .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
         .where(eq(users.id, userId));
+        
+      // Add buy-in to tournament pot
+      await db.update(tournaments)
+        .set({ currentPot: sql`${tournaments.currentPot} + ${buyInAmount.toString()}` })
+        .where(eq(tournaments.id, tournamentId));
     }
     
     const result = await db.insert(tournamentParticipants).values({

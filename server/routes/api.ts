@@ -325,28 +325,7 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   const buyIn = parseFloat(buyInAmount) || 0;
   
-  // Check if creator has sufficient siteCash for buy-in
-  if (buyIn > 0) {
-    const currentSiteCash = parseFloat(user?.siteCash?.toString() || '0');
-    
-    if (buyIn > currentSiteCash) {
-      throw new ValidationError(`Insufficient funds. You need $${buyIn.toFixed(2)} but only have $${currentSiteCash.toFixed(2)} in your account.`);
-    }
-    
-    // Deduct buy-in from creator's siteCash
-    const newSiteCash = currentSiteCash - buyIn;
-    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
-    
-    // Log the transaction
-    await storage.createAdminLog({
-      adminUserId: userId,
-      targetUserId: userId,
-      action: 'tournament_buyin_deduction',
-      oldValue: currentSiteCash.toString(),
-      newValue: newSiteCash.toString(),
-      notes: `Buy-in deducted for creating tournament: ${sanitizeInput(name)} ($${buyIn.toFixed(2)})`
-    });
-  }
+  // The buy-in deduction will be handled by the storage layer
 
   const tournament = await storage.createTournament({
     name: sanitizeInput(name),
@@ -356,7 +335,7 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     timeframe: duration || '1 week',
     scheduledStartTime: scheduledStartTime ? new Date(scheduledStartTime) : null,
     buyInAmount: buyIn,
-    currentPot: buyIn, // Initialize pot with creator's buy-in
+    currentPot: 0, // Will be set by storage layer after buy-in deduction
     tradingRestriction: tradingRestriction || 'none',
     isPublic: isPublic !== undefined ? isPublic : true
   }, userId);
