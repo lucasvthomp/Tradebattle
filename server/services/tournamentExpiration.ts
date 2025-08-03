@@ -107,7 +107,7 @@ export class TournamentExpirationService {
   }
 
   /**
-   * Distribute prize money to the tournament winner
+   * Distribute prize money to the tournament winner and creator
    */
   private async distributePrizeMoney(tournament: any, results: TournamentResult[]): Promise<void> {
     // Only distribute if there are participants and a pot to distribute
@@ -122,13 +122,18 @@ export class TournamentExpirationService {
       return;
     }
 
-    const prizeAmount = Number(tournament.currentPot);
+    const totalPot = Number(tournament.currentPot);
+    const winnerAmount = Math.round(totalPot * 0.95 * 100) / 100; // 95% to winner, rounded to nearest cent
+    const creatorAmount = Math.round(totalPot * 0.05 * 100) / 100; // 5% to creator, rounded to nearest cent
     
     try {
-      // Add the tournament pot to the winner's siteCash
-      await storage.addUserBalance(winner.userId, prizeAmount);
+      // Add 95% of the tournament pot to the winner's siteCash
+      await storage.addUserBalance(winner.userId, winnerAmount);
       
-      console.log(`Distributed $${prizeAmount} prize money to user ${winner.userId} (${winner.firstName} ${winner.lastName}) for winning tournament ${tournament.name}`);
+      // Add 5% of the tournament pot to the creator's siteCash
+      await storage.addUserBalance(tournament.creatorId, creatorAmount);
+      
+      console.log(`Distributed $${winnerAmount} (95%) to winner user ${winner.userId} (${winner.firstName} ${winner.lastName}) and $${creatorAmount} (5%) to creator user ${tournament.creatorId} for tournament ${tournament.name}`);
     } catch (error) {
       console.error(`Failed to distribute prize money for tournament ${tournament.name}:`, error);
     }
