@@ -426,55 +426,78 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
   }
 
   try {
-    // For 1D timeframe, use a simplified approach with recent quote data
+    // For 1D timeframe, get data from last 24 trading hours
     if (timeFrame === '1D') {
       try {
-        // Get recent historical data (last 5 days) and simulate intraday data
-        const fallbackDate = new Date();
-        fallbackDate.setDate(fallbackDate.getDate() - 5);
+        // Use chart API to get intraday data from the last 2 days to ensure we get trading hours
+        const twoDaysAgo = new Date();
+        twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+        
+        const chartResult = await yahooFinance.chart(symbol, {
+          period1: twoDaysAgo.toISOString().split('T')[0],
+          period2: new Date().toISOString().split('T')[0],
+          interval: '5m' as any,
+          includePrePost: false
+        });
+
+        if (chartResult && chartResult.quotes && chartResult.quotes.length > 0) {
+          // Filter to get only the last 24 trading hours
+          const now = new Date();
+          const twentyFourHoursAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+          
+          const intradayData: HistoricalDataPoint[] = chartResult.quotes
+            .filter((quote: any) => {
+              const quoteDate = new Date(quote.date);
+              return quoteDate >= twentyFourHoursAgo && quote.close !== null && quote.close !== undefined;
+            })
+            .map((quote: any) => ({
+              date: Math.floor(quote.date.getTime() / 1000), // Convert to Unix timestamp
+              open: quote.open || quote.close || 0,
+              high: quote.high || quote.close || 0,
+              low: quote.low || quote.close || 0,
+              close: quote.close || 0,
+              volume: quote.volume || 0,
+            }));
+
+          if (intradayData.length > 0) {
+            setCachedData(cacheKey, intradayData, CACHE_TTL.HISTORICAL_MINUTE);
+            return intradayData;
+          }
+        }
+      } catch (error) {
+        console.log(`1D chart data failed for ${symbol}, trying historical fallback`);
+      }
+      
+      // Fallback to recent daily data if chart API fails
+      try {
+        const fiveDaysAgo = new Date();
+        fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
         
         const historicalResult = await yahooFinance.historical(symbol, {
-          period1: fallbackDate.toISOString().split('T')[0],
+          period1: fiveDaysAgo.toISOString().split('T')[0],
           period2: new Date().toISOString().split('T')[0],
           interval: '1d' as any,
           events: 'history'
         });
 
         if (historicalResult && Array.isArray(historicalResult) && historicalResult.length > 0) {
-          // Use the most recent day's data and create intraday points
-          const recentDay = historicalResult[historicalResult.length - 1];
-          const baseTimestamp = Math.floor(new Date().setHours(9, 30, 0, 0) / 1000); // Market open time
-          
-          // Create simulated intraday data points (every 30 minutes during market hours)
-          const intradayData: HistoricalDataPoint[] = [];
-          const marketHours = 6.5 * 60; // 6.5 hours in minutes
-          const intervalMinutes = 30;
-          const numPoints = Math.floor(marketHours / intervalMinutes);
-          
-          for (let i = 0; i < numPoints; i++) {
-            const timestamp = baseTimestamp + (i * intervalMinutes * 60);
-            const progress = numPoints > 1 ? i / (numPoints - 1) : 0.5;
-            
-            // Interpolate between open and close with some randomness
-            const price = recentDay.open + (recentDay.close - recentDay.open) * progress;
-            const variation = (Math.random() - 0.5) * Math.abs(recentDay.high - recentDay.low) * 0.1;
-            const adjustedPrice = Math.max(recentDay.low, Math.min(recentDay.high, price + variation));
-            
-            intradayData.push({
-              date: timestamp,
-              open: adjustedPrice,
-              high: Math.max(adjustedPrice, adjustedPrice * 1.002),
-              low: Math.min(adjustedPrice, adjustedPrice * 0.998),
-              close: adjustedPrice,
-              volume: recentDay.volume ? Math.floor(recentDay.volume / numPoints) : 0,
-            });
-          }
-          
-          setCachedData(cacheKey, intradayData, CACHE_TTL.HISTORICAL_MINUTE);
-          return intradayData;
+          // Return the most recent trading days
+          const recentData: HistoricalDataPoint[] = historicalResult
+            .slice(-2) // Get last 2 days
+            .map((item: any) => ({
+              date: item.date.toISOString().split('T')[0],
+              open: item.open || item.close || 0,
+              high: item.high || item.close || 0,
+              low: item.low || item.close || 0,
+              close: item.close || 0,
+              volume: item.volume || 0,
+            }));
+
+          setCachedData(cacheKey, recentData, CACHE_TTL.HISTORICAL_MINUTE);
+          return recentData;
         }
       } catch (error) {
-        console.log(`1D data generation failed for ${symbol}, falling back to daily data`);
+        console.log(`Historical fallback also failed for ${symbol}`);
       }
     }
 
