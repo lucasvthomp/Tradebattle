@@ -43,6 +43,7 @@ Preferred communication style: Simple, everyday language.
 - **Unified Dashboard**: Consolidation of personal portfolio and tournament trading into a single interface with proportional 2/3 + 1/3 layout.
 - **Dynamic Home Page**: Dual home page system for unauthenticated (marketing-focused) and authenticated (gaming-style hub) users.
 - **Optimized Chat System**: Fast 1.5s refresh intervals, semi-transparent UI design, compact chat selectors.
+- **Automated Tournament Management**: Scheduled tournaments automatically start when countdown reaches zero via background scheduler service.
 
 ## External Dependencies
 - **Database**: Neon PostgreSQL

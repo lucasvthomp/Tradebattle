@@ -44,11 +44,18 @@ export class TournamentExpirationService {
     const waitingTournaments = await storage.getWaitingTournaments();
     console.log(`Found ${waitingTournaments.length} waiting tournaments`);
     
+    const now = new Date();
+    
     for (const tournament of waitingTournaments) {
-      // For now, start tournaments immediately when they're created
-      // You could add logic here to start based on time, player count, etc.
-      console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id})`);
-      await storage.updateTournamentStatus(tournament.id, 'active', new Date());
+      // Check if the tournament's scheduled start time has passed
+      if (tournament.scheduledStartTime && tournament.scheduledStartTime <= now) {
+        console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached`);
+        await storage.updateTournamentStatus(tournament.id, 'active', new Date());
+      } else if (tournament.scheduledStartTime) {
+        const timeUntilStart = tournament.scheduledStartTime.getTime() - now.getTime();
+        const minutesUntilStart = Math.ceil(timeUntilStart / (1000 * 60));
+        console.log(`Tournament ${tournament.name} (ID: ${tournament.id}) starts in ${minutesUntilStart} minutes`);
+      }
     }
   }
 

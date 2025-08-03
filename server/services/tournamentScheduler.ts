@@ -41,9 +41,8 @@ export class TournamentScheduler {
   private async checkExpiredTournaments(): Promise<void> {
     try {
       console.log('Checking for expired tournaments...');
-      // Temporarily disabled due to database connectivity issues
-      // await tournamentExpirationService.processExpiredTournaments();
-      console.log('Tournament scheduler temporarily disabled');
+      await tournamentExpirationService.processExpiredTournaments();
+      console.log('Tournament expiration check completed');
     } catch (error) {
       console.error('Error processing expired tournaments:', error);
     }
