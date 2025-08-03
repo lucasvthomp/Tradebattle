@@ -1259,11 +1259,6 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
         // Update state after successful API call
         if (newLanguage) setLanguage(newLanguage);
         if (newCurrency) setCurrency(newCurrency);
-        
-        // Force page reload to ensure all components re-render with new language
-        if (newLanguage && newLanguage !== language) {
-          window.location.reload();
-        }
       } catch (error) {
         console.error('Error updating preferences:', error);
         throw error; // Propagate error to caller
