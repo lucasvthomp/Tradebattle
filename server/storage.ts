@@ -290,6 +290,13 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async incrementTradeCount(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ totalTrades: sql`${users.totalTrades} + 1` })
+      .where(eq(users.id, userId));
+  }
+
   async purchaseStock(userId: number, purchase: InsertStockPurchase): Promise<StockPurchase> {
     const result = await db
       .insert(stockPurchases)
@@ -571,6 +578,10 @@ export class DatabaseStorage implements IStorage {
       .insert(tradeHistory)
       .values(trade)
       .returning();
+    
+    // Increment the user's total trade count
+    await this.incrementTradeCount(trade.userId);
+    
     return result[0];
   }
 

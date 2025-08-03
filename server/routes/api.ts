@@ -2140,9 +2140,6 @@ router.get('/users/public', asyncHandler(async (req, res) => {
   const users = await storage.getAllUsers();
   
   const publicUsers = await Promise.all(users.map(async (user) => {
-    // Get total trade count from trade history
-    const totalTrades = await storage.getUserTradeCount(user.id);
-    
     // Get achievement count (this will automatically ensure Welcome achievement exists)
     const achievements = await storage.getUserAchievements(user.id);
     const achievementCount = achievements.length;
@@ -2153,7 +2150,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
       displayName: user.displayName,
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
-      totalTrades: totalTrades,
+      totalTrades: user.totalTrades || 0,
       achievementCount: achievementCount,
       // Don't include sensitive information like email, password, balances, etc.
     };
