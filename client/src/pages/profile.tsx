@@ -77,7 +77,7 @@ export default function Profile() {
   // Balance management state
   const [addAmount, setAddAmount] = useState("");
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const { t, language, currency, updatePreferences } = useUserPreferences();
+  const { t, language, currency, updatePreferences, formatCurrency } = useUserPreferences();
   const queryClient = useQueryClient();
   const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
@@ -154,8 +154,8 @@ export default function Profile() {
     }
   };
 
-  const displayAchievements = (userAchievements?.data?.map(getAchievementDisplay) || [])
-    .sort((a, b) => getTierRanking(b.rarity) - getTierRanking(a.rarity));
+  const displayAchievements = ((userAchievements as any)?.data?.map(getAchievementDisplay) || [])
+    .sort((a: any, b: any) => getTierRanking(b.rarity) - getTierRanking(a.rarity));
   
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -472,7 +472,7 @@ export default function Profile() {
                             <p className="text-muted-foreground mt-2">Loading achievements...</p>
                           </div>
                         ) : displayAchievements.length > 0 ? (
-                          displayAchievements.map((achievement) => (
+                          displayAchievements.map((achievement: any) => (
                             <div key={achievement.id} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
                               <div className={`w-10 h-10 rounded-full ${achievement.color} flex items-center justify-center`}>
                                 <achievement.icon className="w-5 h-5" />

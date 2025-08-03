@@ -33,6 +33,7 @@ Preferred communication style: Simple, everyday language.
 - **Achievement System**: Tiered badge system based on trading accomplishments and milestones
 - **Chat System**: Optimized real-time global and tournament-specific chat functionality (1.5s refresh rate, semi-transparent UI)
 - **Market Status**: Real-time market open/close detection with disclaimers and trade scheduling
+- **Buy-in System**: Complete tournament buy-in processing with creator and participant fee deduction, pot accumulation, and automatic prize distribution on tournament expiration
 
 ### Key Design Decisions
 - **TypeScript-First**: End-to-end TypeScript implementation.
@@ -44,6 +45,7 @@ Preferred communication style: Simple, everyday language.
 - **Dynamic Home Page**: Dual home page system for unauthenticated (marketing-focused) and authenticated (gaming-style hub) users.
 - **Optimized Chat System**: Fast 1.5s refresh intervals, semi-transparent UI design, compact chat selectors.
 - **Automated Tournament Management**: Scheduled tournaments automatically start when countdown reaches zero via background scheduler service.
+- **Complete Buy-in System**: Tournament creators and participants pay buy-ins from siteCash, with automatic pot accumulation and prize distribution (95% winner, 5% creator).
 
 ## External Dependencies
 - **Database**: Neon PostgreSQL
