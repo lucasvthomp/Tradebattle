@@ -352,7 +352,9 @@ interface UserPreferencesContextType {
   language: string;
   currency: string;
   t: (key: string) => string;
-  formatCurrency: (amount: number) => string;
+  formatCurrency: (amount: number, sourceCurrency?: string) => string;
+  convertAndFormatCurrency: (amount: number, sourceCurrency: string) => string;
+  exchangeRates: Record<string, number>;
   updatePreferences: (language?: string, currency?: string) => Promise<void>;
 }
 
@@ -366,6 +368,7 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
   const { user } = useAuth();
   const [language, setLanguage] = useState<string>('English');
   const [currency, setCurrency] = useState<string>('USD');
+  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({});
 
   // Initialize preferences from user data
   useEffect(() => {
@@ -375,16 +378,44 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
     }
   }, [user]);
 
+  // Fetch exchange rates when currency changes
+  useEffect(() => {
+    const fetchExchangeRates = async () => {
+      if (currency !== 'USD') {
+        try {
+          const response = await fetch(`/api/exchange-rates/USD`);
+          if (response.ok) {
+            const data = await response.json();
+            setExchangeRates(data.data.rates || {});
+          }
+        } catch (error) {
+          console.error('Error fetching exchange rates:', error);
+          setExchangeRates({});
+        }
+      } else {
+        setExchangeRates({});
+      }
+    };
+
+    fetchExchangeRates();
+  }, [currency]);
+
   // Translation function
   const t = (key: string): string => {
     const langTranslations = translations[language as keyof typeof translations] || translations.English;
     return langTranslations[key as keyof typeof langTranslations] || key;
   };
 
-  // Currency formatting function
-  const formatCurrency = (amount: number): string => {
+  // Currency formatting function (backwards compatible)
+  const formatCurrency = (amount: number, sourceCurrency: string = 'USD'): string => {
+    // Convert amount if needed
+    let convertedAmount = amount;
+    if (sourceCurrency !== currency && exchangeRates[currency]) {
+      convertedAmount = amount * exchangeRates[currency];
+    }
+    
     const currencyConfig = currencies[currency as keyof typeof currencies] || currencies.USD;
-    const formatted = amount.toLocaleString('en-US', {
+    const formatted = convertedAmount.toLocaleString('en-US', {
       minimumFractionDigits: currencyConfig.decimals,
       maximumFractionDigits: currencyConfig.decimals,
     });
@@ -394,6 +425,11 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
     } else {
       return `${formatted}${currencyConfig.symbol}`;
     }
+  };
+
+  // Convert and format currency function
+  const convertAndFormatCurrency = (amount: number, sourceCurrency: string): string => {
+    return formatCurrency(amount, sourceCurrency);
   };
 
   // Update preferences function
@@ -437,6 +473,8 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
     currency,
     t,
     formatCurrency,
+    convertAndFormatCurrency,
+    exchangeRates,
     updatePreferences,
   };
 

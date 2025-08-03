@@ -9,6 +9,7 @@ import {
   getAllSectors,
   TimeFrame
 } from '../services/yahooFinance.js';
+import { getExchangeRate, convertCurrency, getAllExchangeRates } from '../services/exchangeRates.js';
 import { 
   asyncHandler, 
   validateSymbol, 
@@ -2483,6 +2484,85 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
   res.json({
     success: true,
     data: chatMessage
+  });
+}));
+
+/**
+ * GET /api/exchange-rates/:baseCurrency
+ * Get exchange rates for all supported currencies
+ */
+router.get('/exchange-rates/:baseCurrency', asyncHandler(async (req, res) => {
+  const { baseCurrency } = req.params;
+  
+  if (!baseCurrency) {
+    throw new ValidationError('Base currency is required');
+  }
+  
+  const rates = await getAllExchangeRates(baseCurrency.toUpperCase());
+  
+  res.json({
+    success: true,
+    data: {
+      baseCurrency: baseCurrency.toUpperCase(),
+      rates,
+      timestamp: new Date().toISOString()
+    }
+  });
+}));
+
+/**
+ * GET /api/exchange-rate/:from/:to
+ * Get specific exchange rate between two currencies
+ */
+router.get('/exchange-rate/:from/:to', asyncHandler(async (req, res) => {
+  const { from, to } = req.params;
+  
+  if (!from || !to) {
+    throw new ValidationError('Both from and to currencies are required');
+  }
+  
+  const rate = await getExchangeRate(from.toUpperCase(), to.toUpperCase());
+  
+  res.json({
+    success: true,
+    data: {
+      from: from.toUpperCase(),
+      to: to.toUpperCase(),
+      rate,
+      timestamp: new Date().toISOString()
+    }
+  });
+}));
+
+/**
+ * POST /api/convert-currency
+ * Convert amount from one currency to another
+ */
+router.post('/convert-currency', asyncHandler(async (req, res) => {
+  const { amount, from, to } = req.body;
+  
+  if (!amount || !from || !to) {
+    throw new ValidationError('Amount, from currency, and to currency are required');
+  }
+  
+  const amountNum = parseFloat(amount);
+  if (isNaN(amountNum)) {
+    throw new ValidationError('Invalid amount');
+  }
+  
+  const convertedAmount = await convertCurrency(amountNum, from.toUpperCase(), to.toUpperCase());
+  const rate = await getExchangeRate(from.toUpperCase(), to.toUpperCase());
+  
+  res.json({
+    success: true,
+    data: {
+      originalAmount: amountNum,
+      convertedAmount,
+      from: from.toUpperCase(),
+      to: to.toUpperCase(),
+      rate,
+      timestamp: new Date().toISOString()
+    }
   });
 }));
 
