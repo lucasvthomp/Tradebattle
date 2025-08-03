@@ -1,7 +1,9 @@
 import { Link } from "wouter";
 import { FaInstagram, FaFacebook, FaTwitter, FaTiktok } from "react-icons/fa";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 export default function Footer() {
+  const { t } = useUserPreferences();
   return (
     <footer className="bg-card border-t border-border py-12">
       <div className="container mx-auto px-4">
@@ -12,10 +14,10 @@ export default function Footer() {
                 <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
                   <span className="text-primary-foreground font-bold text-sm">O</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">ORSATH</span>
+                <span className="text-xl font-bold text-foreground">{t('brandName')}</span>
               </div>
               <p className="text-muted-foreground text-sm">
-                Paper trading competition platform for aspiring traders.
+                {t('tagline')}
               </p>
             </div>
 
@@ -24,33 +26,33 @@ export default function Footer() {
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="/hub" className="hover:text-foreground transition-colors">
-                    Hub
+                    {t('hub')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    Trading Dashboard
+                    {t('dashboard')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/tournaments" className="hover:text-foreground transition-colors">
-                    Tournaments
+                    {t('tournaments')}
                   </Link>
                 </li>
                 <li>
                   <Link href="/leaderboard" className="hover:text-foreground transition-colors">
-                    Leaderboard
+                    {t('leaderboard')}
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-foreground">Community</h4>
+              <h4 className="text-lg font-semibold mb-4 text-foreground">{t('community')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="/people" className="hover:text-foreground transition-colors">
-                    People
+                    {t('people')}
                   </Link>
                 </li>
                 <li>
@@ -65,14 +67,14 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/analytics" className="hover:text-foreground transition-colors">
-                    Analytics
+                    {t('analytics')}
                   </Link>
                 </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="text-lg font-semibold mb-4 text-foreground">Support</h4>
+              <h4 className="text-lg font-semibold mb-4 text-foreground">{t('support')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="/support" className="hover:text-foreground transition-colors">

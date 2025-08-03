@@ -19,7 +19,7 @@ interface StockSearchBarProps {
 export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect }: StockSearchBarProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { formatCurrency } = useUserPreferences();
+  const { formatCurrency, t } = useUserPreferences();
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStock, setSelectedStock] = useState<any>(null);
@@ -65,7 +65,7 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
       return apiRequest("POST", `/api/watchlist`, watchlistData);
     },
     onSuccess: () => {
-      toast({ title: "Stock added to watchlist!" });
+      toast({ title: t('addToWatchlist') });
       queryClient.invalidateQueries({ queryKey: ["/api/watchlist"] });
       setSearchQuery("");
       setSelectedStock(null);

@@ -26,7 +26,7 @@ interface BuyStockDialogProps {
 export function BuyStockDialog({ open, onOpenChange, stock }: BuyStockDialogProps) {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { formatCurrency } = useUserPreferences();
+  const { formatCurrency, t } = useUserPreferences();
   const queryClient = useQueryClient();
   const [shares, setShares] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,8 +40,8 @@ export function BuyStockDialog({ open, onOpenChange, stock }: BuyStockDialogProp
     },
     onSuccess: () => {
       toast({ 
-        title: "Stock purchased successfully!",
-        description: `Bought ${shares} shares of ${stock?.symbol}`
+        title: t('success'),
+        description: `${t('buyStock')}: ${shares} ${t('shares')} ${stock?.symbol}`
       });
       queryClient.invalidateQueries({ queryKey: ["/api/personal-portfolio"] });
       queryClient.invalidateQueries({ queryKey: ["/api/portfolio/personal"] });
@@ -50,8 +50,8 @@ export function BuyStockDialog({ open, onOpenChange, stock }: BuyStockDialogProp
     },
     onError: (error: any) => {
       toast({
-        title: "Purchase failed",
-        description: error.message || "Failed to purchase stock",
+        title: t('error'),
+        description: error.message || t('errorOccurred'),
         variant: "destructive"
       });
     }

@@ -5,7 +5,7 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 export function PortfolioSummaryWidget() {
   const { user } = useAuth();
-  const { formatCurrency } = useUserPreferences();
+  const { formatCurrency, t } = useUserPreferences();
 
   const { data: portfolioData } = useQuery({
     queryKey: ["/api/personal-portfolio"],
@@ -37,7 +37,7 @@ export function PortfolioSummaryWidget() {
       <div className="flex flex-col items-center text-center">
         <div className="flex items-center space-x-1 mb-1">
           <DollarSign className="h-4 w-4 text-primary" />
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Total Value</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('totalValue')}</span>
         </div>
         <span className="text-lg font-bold text-foreground">{formatCurrency(totalValue)}</span>
       </div>
@@ -46,7 +46,7 @@ export function PortfolioSummaryWidget() {
       <div className="flex flex-col items-center text-center">
         <div className="flex items-center space-x-1 mb-1">
           <Target className="h-4 w-4 text-blue-500" />
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Cash</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('availableCash')}</span>
         </div>
         <span className="text-lg font-bold text-foreground">{formatCurrency(balance)}</span>
       </div>
@@ -59,7 +59,7 @@ export function PortfolioSummaryWidget() {
           ) : (
             <TrendingDown className="h-4 w-4 text-red-500" />
           )}
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">P/L</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t('profitLoss')}</span>
         </div>
         <div className="flex flex-col items-center">
           <span className={`text-lg font-bold ${isPositive ? 'text-green-500' : 'text-red-500'}`}>

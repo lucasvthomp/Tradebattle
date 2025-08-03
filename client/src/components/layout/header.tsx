@@ -51,11 +51,11 @@ export default function Header() {
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem onClick={() => navigate("/shop")}>
                       <Plus className="w-4 h-4 mr-2" />
-                      Deposit Funds
+                      {t('deposit')}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate("/withdraw")}>
                       <Minus className="w-4 h-4 mr-2" />
-                      Withdraw Funds
+                      {t('withdraw')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -68,7 +68,7 @@ export default function Header() {
                   className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  <span className="text-sm font-medium">Chat</span>
+                  <span className="text-sm font-medium">{t('chat')}</span>
                 </Button>
 
                 {/* User Menu with integrated balance */}
