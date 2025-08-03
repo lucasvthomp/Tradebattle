@@ -18,7 +18,7 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
   const [shares, setShares] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { formatCurrency } = useUserPreferences();
+  const { formatCurrency, t } = useUserPreferences();
 
   const sellMutation = useMutation({
     mutationFn: async (data: { shares: number }) => {
@@ -30,8 +30,8 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
     },
     onSuccess: () => {
       toast({
-        title: "Stock Sold",
-        description: `Successfully sold ${shares} shares of ${stock?.symbol}`,
+        title: t('success'),
+        description: `${t('sellStock')}: ${shares} ${t('shares')} ${stock?.symbol}`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/personal-purchases"] });
       queryClient.invalidateQueries({ queryKey: ["/api/personal-portfolio"] });
@@ -40,8 +40,8 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
     },
     onError: (error: any) => {
       toast({
-        title: "Sale Failed",
-        description: error.message || "Failed to sell stock",
+        title: t('error'),
+        description: error.message || t('errorOccurred'),
         variant: "destructive",
       });
     },
@@ -63,13 +63,13 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Sell {stock.symbol}</DialogTitle>
+          <DialogTitle>{t('sellStock')} {stock.symbol}</DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Shares owned:</span>
+              <span className="text-muted-foreground">{t('shares')}:</span>
               <p className="font-medium">{maxShares}</p>
             </div>
             <div>

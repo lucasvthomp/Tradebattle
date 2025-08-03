@@ -13,7 +13,7 @@ interface TournamentLeaderboardProps {
 }
 
 export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: TournamentLeaderboardProps) {
-  const { formatCurrency } = useUserPreferences();
+  const { formatCurrency, t } = useUserPreferences();
 
   // Fetch tournament leaderboard data
   const { data: leaderboardData, isLoading } = useQuery<{success: boolean; participants: any[]}>({
@@ -44,7 +44,7 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-lg">
             <Trophy className="w-4 h-4" />
-            <span>Tournament Leaderboard</span>
+            <span>{t('leaderboard')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -64,13 +64,13 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-lg">
             <Trophy className="w-4 h-4" />
-            <span>Tournament Leaderboard</span>
+            <span>{t('leaderboard')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-6">
             <User className="w-8 h-8 mx-auto mb-2 text-muted-foreground/50" />
-            <p className="text-sm text-muted-foreground">No participants yet</p>
+            <p className="text-sm text-muted-foreground">{t('noData')}</p>
           </div>
         </CardContent>
       </Card>
@@ -83,7 +83,7 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2 text-lg">
             <Trophy className="w-4 h-4" />
-            <span>Leaderboard</span>
+            <span>{t('leaderboard')}</span>
           </CardTitle>
           {participants.length > 5 && (
             <Button
@@ -93,7 +93,7 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
               onClick={onViewFullLeaderboard}
             >
               <Eye className="w-3 h-3 mr-1" />
-              View All
+              {t('all')}
             </Button>
           )}
         </div>

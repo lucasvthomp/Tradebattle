@@ -62,8 +62,8 @@ export function BuyStockDialog({ open, onOpenChange, stock }: BuyStockDialogProp
     
     if (!stock || !shares || sharesNumber <= 0) {
       toast({
-        title: "Invalid input",
-        description: "Please enter a valid number of shares",
+        title: t('error'),
+        description: t('invalidShares'),
         variant: "destructive"
       });
       return;

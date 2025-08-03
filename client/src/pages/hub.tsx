@@ -23,6 +23,7 @@ import {
   PlayCircle
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Link } from "wouter";
 import { MarketStatus } from "@/components/market-status";
 
@@ -42,6 +43,7 @@ const staggerChildren = {
 
 export default function Hub() {
   const { user } = useAuth();
+  const { t } = useUserPreferences();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // Update time every minute for greeting
@@ -53,32 +55,32 @@ export default function Hub() {
   // Dynamic greeting based on time
   const getGreeting = () => {
     const hour = currentTime.getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 17) return "Good Afternoon"; 
-    return "Good Evening";
+    if (hour < 12) return t('goodMorning') || "Good Morning";
+    if (hour < 17) return t('goodAfternoon') || "Good Afternoon"; 
+    return t('goodEvening') || "Good Evening";
   };
 
   // Primary actions - streamlined and focused
   const primaryActions = [
     {
-      title: "Start Trading",
-      description: "Jump into your personal trading dashboard",
+      title: t('dashboard'),
+      description: t('dashboardDescription') || "Jump into your personal trading dashboard",
       href: "/dashboard",
       icon: BarChart3,
       accent: "from-blue-500 to-purple-600",
       feature: "trending"
     },
     {
-      title: "Join Tournament",
-      description: "Compete against traders worldwide",
+      title: t('joinTournament'),
+      description: t('joinTournamentDescription') || "Compete against traders worldwide",
       href: "/tournaments", 
       icon: Trophy,
       accent: "from-orange-500 to-red-600",
       feature: "hot"
     },
     {
-      title: "View Rankings",
-      description: "See where you stand globally",
+      title: t('leaderboard'),
+      description: t('leaderboardDescription') || "See where you stand globally",
       href: "/leaderboard",
       icon: Award,
       accent: "from-green-500 to-emerald-600",
@@ -88,9 +90,9 @@ export default function Hub() {
 
   // Secondary features - clean and minimal
   const secondaryFeatures = [
-    { title: "Community", href: "/people", icon: Users },
-    { title: "Events", href: "/events", icon: Calendar },
-    { title: "Analytics", href: "/analytics", icon: Activity }
+    { title: t('community'), href: "/people", icon: Users },
+    { title: t('events') || "Events", href: "/events", icon: Calendar },
+    { title: t('analytics'), href: "/analytics", icon: Activity }
   ];
 
   // Live stats - minimal and informative
@@ -116,7 +118,7 @@ export default function Hub() {
               </h1>
               <p className="text-lg text-muted-foreground mt-2 flex items-center">
                 <Sparkles className="w-5 h-5 mr-2 text-primary/60" />
-                Ready to make your mark on the markets?
+                {t('hubWelcomeMessage') || "Ready to make your mark on the markets?"}
               </p>
             </div>
             

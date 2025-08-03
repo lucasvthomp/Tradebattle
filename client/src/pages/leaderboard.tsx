@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Trophy, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -14,6 +15,7 @@ const fadeInUp = {
 
 export default function Leaderboard() {
   const { user } = useAuth();
+  const { t, formatCurrency } = useUserPreferences();
   const [activeTab, setActiveTab] = useState("tournaments");
 
   // Fetch tournaments leaderboard data with 5-minute refresh
@@ -56,14 +58,7 @@ export default function Leaderboard() {
     }
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(amount);
-  };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -74,9 +69,9 @@ export default function Leaderboard() {
           variants={fadeInUp}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold mb-4">Leaderboard</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('leaderboard')}</h1>
           <p className="text-muted-foreground text-lg">
-            See how you rank against other traders in tournaments and personal portfolios
+            {t('leaderboardDescription')}
           </p>
         </motion.div>
 
@@ -85,15 +80,15 @@ export default function Leaderboard() {
             <TabsList className="grid w-full grid-cols-3 mb-8">
               <TabsTrigger value="tournaments" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Tournaments
+{t('tournaments')}
               </TabsTrigger>
               <TabsTrigger value="personal" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
-                Personal
+{t('personal')}
               </TabsTrigger>
               <TabsTrigger value="streak" className="flex items-center gap-2">
                 <Activity className="h-4 w-4" />
-                Streak
+{t('streak')}
               </TabsTrigger>
             </TabsList>
 
@@ -105,7 +100,7 @@ export default function Leaderboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{tournamentLeaderboard?.data?.totalTournaments || 0}</div>
+                    <div className="text-2xl font-bold">{(tournamentLeaderboard as any)?.data?.totalTournaments || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -115,7 +110,7 @@ export default function Leaderboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{tournamentLeaderboard?.data?.totalParticipants || 0}</div>
+                    <div className="text-2xl font-bold">{(tournamentLeaderboard as any)?.data?.totalParticipants || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -126,7 +121,7 @@ export default function Leaderboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {tournamentLeaderboard?.data?.yourRank || "N/A"}
+                      {(tournamentLeaderboard as any)?.data?.yourRank || "N/A"}
                     </div>
                   </CardContent>
                 </Card>
@@ -143,7 +138,7 @@ export default function Leaderboard() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {tournamentLeaderboard?.data?.rankings?.map((participant: any, index: number) => {
+                      {(tournamentLeaderboard as any)?.data?.rankings?.map((participant: any, index: number) => {
                         const rank = index + 1;
                         const percentageChange = participant.percentageChange || 0;
                         
@@ -194,7 +189,7 @@ export default function Leaderboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{personalLeaderboard?.data?.totalTraders || 0}</div>
+                    <div className="text-2xl font-bold">{(personalLeaderboard as any)?.data?.totalTraders || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -205,7 +200,7 @@ export default function Leaderboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {personalLeaderboard?.data?.yourRank || "N/A"}
+                      {(personalLeaderboard as any)?.data?.yourRank || "N/A"}
                     </div>
                   </CardContent>
                 </Card>
@@ -216,7 +211,7 @@ export default function Leaderboard() {
                     <DollarSign className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{personalLeaderboard?.data?.totalUsers || 0}</div>
+                    <div className="text-2xl font-bold">{(personalLeaderboard as any)?.data?.totalUsers || 0}</div>
                   </CardContent>
                 </Card>
               </div>
@@ -232,7 +227,7 @@ export default function Leaderboard() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {personalLeaderboard?.data?.rankings?.map((trader: any, index: number) => {
+                      {(personalLeaderboard as any)?.data?.rankings?.map((trader: any, index: number) => {
                         const rank = index + 1;
                         const percentageChange = trader.percentageChange || 0;
                         
@@ -290,7 +285,7 @@ export default function Leaderboard() {
                     <Activity className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{streakLeaderboard?.data?.totalTraders || 0}</div>
+                    <div className="text-2xl font-bold">{(streakLeaderboard as any)?.data?.totalTraders || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -300,7 +295,7 @@ export default function Leaderboard() {
                     <Users className="h-4 w-4 text-muted-foreground" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{streakLeaderboard?.data?.totalUsers || 0}</div>
+                    <div className="text-2xl font-bold">{(streakLeaderboard as any)?.data?.totalUsers || 0}</div>
                   </CardContent>
                 </Card>
                 
@@ -311,7 +306,7 @@ export default function Leaderboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {streakLeaderboard?.data?.yourRank || "N/A"}
+                      {(streakLeaderboard as any)?.data?.yourRank || "N/A"}
                     </div>
                   </CardContent>
                 </Card>
@@ -328,7 +323,7 @@ export default function Leaderboard() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {streakLeaderboard?.data?.rankings?.map((trader: any, index: number) => {
+                      {(streakLeaderboard as any)?.data?.rankings?.map((trader: any, index: number) => {
                         const rank = index + 1;
                         const streak = trader.tradingStreak || 0;
                         

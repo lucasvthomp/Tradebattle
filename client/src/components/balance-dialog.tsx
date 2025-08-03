@@ -23,7 +23,7 @@ interface BalanceDialogProps {
 }
 
 export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDialogProps) {
-  const { formatCurrency } = useUserPreferences();
+  const { formatCurrency, t } = useUserPreferences();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [depositAmount, setDepositAmount] = useState("");
@@ -41,8 +41,8 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
     },
     onSuccess: (data) => {
       toast({
-        title: "Deposit Successful",
-        description: `${formatCurrency(parseFloat(depositAmount))} has been added to your account.`,
+        title: t('success'),
+        description: `${formatCurrency(parseFloat(depositAmount))} ${t('addedToAccount')}`,
       });
       setDepositAmount("");
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
@@ -50,8 +50,8 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
     },
     onError: (error: any) => {
       toast({
-        title: "Deposit Failed",
-        description: error.message || "There was an error processing your deposit.",
+        title: t('error'),
+        description: error.message || t('errorOccurred'),
         variant: "destructive",
       });
     },
@@ -69,8 +69,8 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
     },
     onSuccess: (data) => {
       toast({
-        title: "Withdrawal Successful",
-        description: `${formatCurrency(parseFloat(withdrawAmount))} has been withdrawn from your account.`,
+        title: t('success'),
+        description: `${formatCurrency(parseFloat(withdrawAmount))} ${t('withdrawnFromAccount')}`,
       });
       setWithdrawAmount("");
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });

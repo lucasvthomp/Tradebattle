@@ -34,11 +34,11 @@ export function SimplifiedSidebar() {
       { href: "/tournaments", label: t('tournaments'), icon: Swords },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
-      { href: "/events", label: "Events", icon: Calendar },
-      { href: "/shop", label: "Shop", icon: ShoppingBag },
-      { href: "/contact", label: "Support", icon: Phone },
+      { href: "/events", label: t('events'), icon: Calendar },
+      { href: "/shop", label: t('shop'), icon: ShoppingBag },
+      { href: "/contact", label: t('support'), icon: Phone },
     ] : [
-      { href: "/contact", label: "Support", icon: Phone },
+      { href: "/contact", label: t('support'), icon: Phone },
     ]),
   ];
 
@@ -46,7 +46,7 @@ export function SimplifiedSidebar() {
     { href: "/profile", label: t('settings'), icon: Settings },
     { href: "/archive", label: t('archive'), icon: Archive },
     ...(user.subscriptionTier === 'administrator' ? [
-      { href: "/admin", label: "Admin", icon: Shield }
+      { href: "/admin", label: t('admin'), icon: Shield }
     ] : [])
   ] : [];
 

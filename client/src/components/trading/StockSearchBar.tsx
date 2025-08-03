@@ -72,7 +72,7 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
     },
     onError: (error: any) => {
       toast({ 
-        title: "Error", 
+        title: t('error'), 
         description: error.message || "Failed to add to watchlist",
         variant: "destructive"
       });

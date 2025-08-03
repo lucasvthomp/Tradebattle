@@ -14,7 +14,7 @@ interface PortfolioHoldingsWidgetProps {
 
 export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidgetProps = {}) {
   const { user } = useAuth();
-  const { formatCurrency } = useUserPreferences();
+  const { formatCurrency, t } = useUserPreferences();
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
 
@@ -37,13 +37,13 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center space-x-2">
             <Building className="w-5 h-5" />
-            <span>Current Holdings</span>
+            <span>{t('holdings')}</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center h-full">
           <div className="text-center text-muted-foreground">
-            <p className="text-sm">No holdings yet</p>
-            <p className="text-xs mt-1">Start trading to see your positions here</p>
+            <p className="text-sm">{t('noData')}</p>
+            <p className="text-xs mt-1">{t('startTradingMessage')}</p>
           </div>
         </CardContent>
         
@@ -62,7 +62,7 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
         <CardTitle className="text-lg flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Building className="w-5 h-5" />
-            <span>Current Holdings</span>
+            <span>{t('holdings')}</span>
           </div>
           <Badge variant="secondary" className="text-xs">
             {holdings.length} positions

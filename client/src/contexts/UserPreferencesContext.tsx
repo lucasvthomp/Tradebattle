@@ -349,6 +349,31 @@ export const translations = {
     summary: "Summary",
     advanced: "Advanced",
     basic: "Basic",
+    
+    // Greetings
+    goodMorning: "Good Morning",
+    goodAfternoon: "Good Afternoon",
+    goodEvening: "Good Evening",
+    
+    // Hub specific
+    hubWelcomeMessage: "Ready to make your mark on the markets?",
+    dashboardDescription: "Jump into your personal trading dashboard",
+    joinTournamentDescription: "Compete against traders worldwide",
+    leaderboardDescription: "See where you stand globally",
+    events: "Events",
+    
+    // Additional UI messages
+    startTradingMessage: "Start trading to see your positions here",
+    addedToAccount: "has been added to your account",
+    withdrawnFromAccount: "has been withdrawn from your account",
+    enterUsername: "Enter your username",
+    holdings: "Current Holdings",
+    admin: "Admin",
+    support: "Support",
+    invalidShares: "Please enter a valid number of shares",
+    buyStock: "Bought stock",
+    shares: "shares",
+    sellStock: "Sell stock",
   },
   
   Portuguese: {
@@ -697,6 +722,31 @@ export const translations = {
     summary: "Resumo",
     advanced: "Avançado",
     basic: "Básico",
+    
+    // Greetings
+    goodMorning: "Bom Dia",
+    goodAfternoon: "Boa Tarde",
+    goodEvening: "Boa Noite",
+    
+    // Hub specific
+    hubWelcomeMessage: "Pronto para deixar sua marca nos mercados?",
+    dashboardDescription: "Entre no seu painel de negociação pessoal",
+    joinTournamentDescription: "Compita contra traders de todo o mundo",
+    leaderboardDescription: "Veja onde você está globalmente",
+    events: "Eventos",
+    
+    // Additional UI messages
+    startTradingMessage: "Comece a negociar para ver suas posições aqui",
+    addedToAccount: "foi adicionado à sua conta",
+    withdrawnFromAccount: "foi retirado da sua conta",
+    enterUsername: "Digite seu nome de usuário",
+    holdings: "Posições Atuais",
+    admin: "Administrador",
+    support: "Suporte",
+    invalidShares: "Por favor, digite um número válido de ações",
+    buyStock: "Ação comprada",
+    shares: "ações",
+    sellStock: "Vender ação",
   },
   
   Spanish: {
@@ -1045,6 +1095,31 @@ export const translations = {
     summary: "Resumen",
     advanced: "Avanzado",
     basic: "Básico",
+    
+    // Greetings
+    goodMorning: "Buenos Días",
+    goodAfternoon: "Buenas Tardes",
+    goodEvening: "Buenas Noches",
+    
+    // Hub specific
+    hubWelcomeMessage: "¿Listo para dejar tu marca en los mercados?",
+    dashboardDescription: "Accede a tu panel de trading personal",
+    joinTournamentDescription: "Compite contra traders de todo el mundo",
+    leaderboardDescription: "Ve dónde te encuentras globalmente",
+    events: "Eventos",
+    
+    // Additional UI messages
+    startTradingMessage: "Comienza a operar para ver tus posiciones aquí",
+    addedToAccount: "ha sido agregado a tu cuenta",
+    withdrawnFromAccount: "ha sido retirado de tu cuenta",
+    enterUsername: "Ingresa tu nombre de usuario",
+    holdings: "Posiciones Actuales",
+    admin: "Administrador",
+    support: "Soporte",
+    invalidShares: "Por favor, ingresa un número válido de acciones",
+    buyStock: "Acción comprada",
+    shares: "acciones",
+    sellStock: "Vender acción",
   },
 };
 
