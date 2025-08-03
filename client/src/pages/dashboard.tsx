@@ -63,6 +63,8 @@ import { PortfolioGrid } from "@/components/portfolio/PortfolioGrid";
 import { PortfolioSummaryWidget } from "@/components/portfolio/widgets/PortfolioSummaryWidget";
 import { StockSearchBar } from "@/components/trading/StockSearchBar";
 import { TournamentPerformanceChart } from "@/components/portfolio/widgets/TournamentPerformanceChart";
+import { TournamentLeaderboard } from "@/components/tournaments/TournamentLeaderboard";
+import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -80,6 +82,7 @@ export default function Dashboard() {
   const [buyShares, setBuyShares] = useState("");
   const [sellAmount, setSellAmount] = useState("");
   const [selectedSellStock, setSelectedSellStock] = useState<any>(null);
+  const [leaderboardDialogOpen, setLeaderboardDialogOpen] = useState(false);
   
   // Watchlist specific state
   const [selectedTimeframe, setSelectedTimeframe] = useState("1D");
@@ -1018,6 +1021,12 @@ export default function Dashboard() {
                               )}
                             </CardContent>
                           </Card>
+                          
+                          {/* Tournament Leaderboard */}
+                          <TournamentLeaderboard 
+                            tournamentId={selectedTournament.id}
+                            onViewFullLeaderboard={() => setLeaderboardDialogOpen(true)}
+                          />
                         </div>
                       </div>
                     </div>
@@ -1032,6 +1041,13 @@ export default function Dashboard() {
           </Tabs>
         </motion.div>
       </div>
+      
+      {/* Tournament Leaderboard Dialog */}
+      <TournamentLeaderboardDialog
+        tournament={selectedTournament}
+        isOpen={leaderboardDialogOpen}
+        onClose={() => setLeaderboardDialogOpen(false)}
+      />
 
       {/* Buy Stock Dialog */}
       <Dialog open={buyDialogOpen} onOpenChange={setBuyDialogOpen}>
