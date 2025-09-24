@@ -2,7 +2,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { tournamentScheduler } from "./services/tournamentScheduler";
-import { AUTH_DISABLED } from "./auth";
 
 const app = express();
 app.use(express.json({ limit: '50mb' })); // Increase limit for profile pictures
@@ -69,15 +68,11 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
     
-    // Start tournament expiration scheduler (disabled when auth is disabled)
-    if (AUTH_DISABLED) {
-      log('Tournament scheduler disabled (authentication disabled)');
-    } else {
-      try {
-        tournamentScheduler.start();
-      } catch (error) {
-        log('Tournament scheduler disabled due to database connectivity issues');
-      }
+    // Start tournament expiration scheduler (disabled during database issues)
+    try {
+      tournamentScheduler.start();
+    } catch (error) {
+      log('Tournament scheduler disabled due to database connectivity issues');
     }
   });
 })();

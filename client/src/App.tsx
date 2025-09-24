@@ -42,36 +42,47 @@ function Router() {
     );
   }
 
-  // AUTH DISABLED: Always show authenticated routes
-  const AUTH_DISABLED = true;
-
   return (
     <Layout>
       <Switch>
-        {/* Always show authenticated routes when auth is disabled */}
-        <Route path="/" component={Dashboard} />
-        <Route path="/hub" component={Hub} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/portfolio" component={Dashboard} />
-        <Route path="/tournaments" component={Tournaments} />
-        <Route path="/leaderboard" component={Leaderboard} />
-        <Route path="/people" component={People} />
-        <Route path="/people/:userId" component={People} />
-        <Route path="/events" component={Events} />
-        <Route path="/shop" component={Shop} />
-        <Route path="/withdraw" component={Withdraw} />
+        {!user ? (
+          <>
+            {/* Unauthenticated users see the conversion-focused home page */}
+            <Route path="/" component={UnauthenticatedHome} />
+            <Route path="/contact" component={Contact} />
+            <Route path="/about" component={About} />
+            <Route path="/privacy" component={Privacy} />
+            <Route path="/terms" component={Terms} />
+            <Route path="/login" component={Login} />
+            <Route path="/signup" component={Signup} />
+          </>
+        ) : (
+          <>
+            {/* Authenticated users: root redirects to dashboard, hub accessible via logo */}
+            <Route path="/" component={Dashboard} />
+            <Route path="/hub" component={Hub} />
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/portfolio" component={Dashboard} />
+            <Route path="/tournaments" component={Tournaments} />
+            <Route path="/leaderboard" component={Leaderboard} />
+            <Route path="/people" component={People} />
+            <Route path="/people/:userId" component={People} />
+            <Route path="/events" component={Events} />
+            <Route path="/shop" component={Shop} />
+            <Route path="/withdraw" component={Withdraw} />
 
-        <Route path="/contact" component={Contact} />
-        <Route path="/about" component={About} />
-        <Route path="/privacy" component={Privacy} />
-        <Route path="/terms" component={Terms} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/admin" component={Admin} />
-        <Route path="/archive" component={Archive} />
-
+            <Route path="/contact" component={Contact} />
+            <Route path="/about" component={About} />
+            <Route path="/privacy" component={Privacy} />
+            <Route path="/terms" component={Terms} />
+            <Route path="/profile" component={Profile} />
+            <Route path="/admin" component={Admin} />
+            <Route path="/archive" component={Archive} />
+          </>
+        )}
         <Route component={NotFound} />
       </Switch>
-      <Footer />
+      {user && <Footer />}
     </Layout>
   );
 }
