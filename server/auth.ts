@@ -9,6 +9,35 @@ import MemoryStore from "memorystore";
 import { storage } from "./storage";
 import { User, LoginUser, RegisterUser } from "@shared/schema";
 
+// Global flag to disable authentication entirely
+const AUTH_DISABLED = process.env.AUTH_DISABLED === 'true' || true; // Temporarily forcing true
+export { AUTH_DISABLED };
+
+// Development user when auth is disabled
+const DEV_USER: User = {
+  id: 1,
+  userId: null,
+  email: "admin@dev.local",
+  username: "admin",
+  profilePicture: null,
+  lastUsernameChange: null,
+  password: "admin",
+  country: "US",
+  language: "en",
+  currency: "USD",
+  balance: "100000",
+  siteCash: "10000",
+  subscriptionTier: "premium",
+  premiumUpgradeDate: new Date(),
+  personalBalance: "50000",
+  totalDeposited: "0",
+  tournamentWins: 0,
+  banned: false,
+  adminNote: null,
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
 declare global {
   namespace Express {
     interface User extends User {}
@@ -41,6 +70,17 @@ async function comparePasswords(supplied: string, stored: string): Promise<boole
 }
 
 export function setupAuth(app: Express) {
+  if (AUTH_DISABLED) {
+    console.warn("⚠️  AUTHENTICATION DISABLED - All users will be logged in as admin");
+    // Short-circuit authentication - all requests get admin user
+    app.use((req, res, next) => {
+      req.user = DEV_USER;
+      req.isAuthenticated = () => true;
+      next();
+    });
+    return;
+  }
+
   // Session configuration with database fallback
   let sessionStore: any;
   let isDatabaseAvailable = true;
@@ -268,6 +308,21 @@ export function setupAuth(app: Express) {
 
   // Get current user endpoint
   app.get("/api/user", async (req, res) => {
+    if (AUTH_DISABLED) {
+      // Return dev user without hitting database
+      return res.json({
+        id: DEV_USER.id,
+        userId: DEV_USER.userId,
+        email: DEV_USER.email,
+        username: DEV_USER.username,
+        subscriptionTier: DEV_USER.subscriptionTier,
+        siteCash: DEV_USER.siteCash,
+        balance: DEV_USER.balance,
+        createdAt: DEV_USER.createdAt,
+        updatedAt: DEV_USER.updatedAt,
+      });
+    }
+    
     if (!req.isAuthenticated() || !req.user) {
       return res.status(401).json({ message: "Not authenticated" });
     }
@@ -302,6 +357,9 @@ export function setupAuth(app: Express) {
 
 // Authentication middleware
 export function requireAuth(req: any, res: any, next: any) {
+  if (AUTH_DISABLED) {
+    return next(); // Skip authentication check
+  }
   if (!req.isAuthenticated()) {
     return res.status(401).json({ message: "Authentication required" });
   }
