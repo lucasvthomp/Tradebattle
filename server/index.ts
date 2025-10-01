@@ -68,11 +68,15 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
     
-    // Start tournament expiration scheduler (disabled during database issues)
+    // Start tournament expiration scheduler with database connectivity check
     try {
+      // Test database connection before starting scheduler
+      await storage.getAllUsers();
       tournamentScheduler.start();
+      log('Tournament scheduler started successfully');
     } catch (error) {
       log('Tournament scheduler disabled due to database connectivity issues');
+      log('Please enable your Neon database endpoint or set up Replit PostgreSQL');
     }
   });
 })();
