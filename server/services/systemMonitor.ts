@@ -14,16 +14,10 @@ let responseTimes: number[] = [];
 // Track API health with individual timestamps
 interface APIHealth {
   yahooFinance: { status: boolean; lastChecked: number };
-  finnhub: { status: boolean; lastChecked: number };
-  twelveData: { status: boolean; lastChecked: number };
-  polygon: { status: boolean; lastChecked: number };
 }
 
 const apiHealth: APIHealth = {
-  yahooFinance: { status: false, lastChecked: 0 },
-  finnhub: { status: false, lastChecked: 0 },
-  twelveData: { status: false, lastChecked: 0 },
-  polygon: { status: false, lastChecked: 0 }
+  yahooFinance: { status: false, lastChecked: 0 }
 };
 
 // Middleware to track requests
@@ -117,105 +111,6 @@ export async function checkYahooFinanceHealth(): Promise<boolean> {
   }
 }
 
-// Check Finnhub API health (every hour)
-export async function checkFinnhubHealth(): Promise<boolean> {
-  const now = Date.now();
-  const oneHour = 60 * 60 * 1000;
-  
-  // Check if we need to update (every hour)
-  if (now - apiHealth.finnhub.lastChecked < oneHour) {
-    return apiHealth.finnhub.status;
-  }
-  
-  try {
-    if (!process.env.FINNHUB_API_KEY) {
-      apiHealth.finnhub.status = false;
-      apiHealth.finnhub.lastChecked = now;
-      return false;
-    }
-    
-    const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=AAPL&token=${process.env.FINNHUB_API_KEY}`);
-    const data = await response.json();
-    
-    const isHealthy = response.ok && data.c !== undefined; // c = current price
-    apiHealth.finnhub.status = isHealthy;
-    apiHealth.finnhub.lastChecked = now;
-    
-    return isHealthy;
-  } catch (error) {
-    console.error('Finnhub health check failed:', error);
-    apiHealth.finnhub.status = false;
-    apiHealth.finnhub.lastChecked = now;
-    return false;
-  }
-}
-
-// Check Twelve Data API health (every hour)
-export async function checkTwelveDataHealth(): Promise<boolean> {
-  const now = Date.now();
-  const oneHour = 60 * 60 * 1000;
-  
-  // Check if we need to update (every hour)
-  if (now - apiHealth.twelveData.lastChecked < oneHour) {
-    return apiHealth.twelveData.status;
-  }
-  
-  try {
-    if (!process.env.TWELVE_DATA_API_KEY) {
-      apiHealth.twelveData.status = false;
-      apiHealth.twelveData.lastChecked = now;
-      return false;
-    }
-    
-    const response = await fetch(`https://api.twelvedata.com/price?symbol=AAPL&apikey=${process.env.TWELVE_DATA_API_KEY}`);
-    const data = await response.json();
-    
-    const isHealthy = response.ok && data.price !== undefined;
-    apiHealth.twelveData.status = isHealthy;
-    apiHealth.twelveData.lastChecked = now;
-    
-    return isHealthy;
-  } catch (error) {
-    console.error('Twelve Data health check failed:', error);
-    apiHealth.twelveData.status = false;
-    apiHealth.twelveData.lastChecked = now;
-    return false;
-  }
-}
-
-// Check Polygon API health (every hour)
-export async function checkPolygonHealth(): Promise<boolean> {
-  const now = Date.now();
-  const oneHour = 60 * 60 * 1000;
-  
-  // Check if we need to update (every hour)
-  if (now - apiHealth.polygon.lastChecked < oneHour) {
-    return apiHealth.polygon.status;
-  }
-  
-  try {
-    if (!process.env.POLYGON_API_KEY) {
-      apiHealth.polygon.status = false;
-      apiHealth.polygon.lastChecked = now;
-      return false;
-    }
-    
-    // Use the previous day's aggregates endpoint which works with basic access
-    const response = await fetch(`https://api.polygon.io/v2/aggs/ticker/AAPL/prev?adjusted=true&apikey=${process.env.POLYGON_API_KEY}`);
-    const data = await response.json();
-    
-    const isHealthy = response.ok && (data.status === 'OK' || data.results?.length > 0);
-    apiHealth.polygon.status = isHealthy;
-    apiHealth.polygon.lastChecked = now;
-    
-    return isHealthy;
-  } catch (error) {
-    console.error('Polygon health check failed:', error);
-    apiHealth.polygon.status = false;
-    apiHealth.polygon.lastChecked = now;
-    return false;
-  }
-}
 
 // Get system uptime
 export function getSystemUptime(): {
@@ -274,21 +169,16 @@ export function getTotalRequests(): number {
 // Get comprehensive system status
 export async function getSystemStatus() {
   const dbHealth = await checkDatabaseHealth();
-  
-  // Check all APIs in parallel
-  const [yahooHealth, finnhubHealth, twelveDataHealth, polygonHealth] = await Promise.all([
-    checkYahooFinanceHealth(),
-    checkFinnhubHealth(),
-    checkTwelveDataHealth(),
-    checkPolygonHealth()
-  ]);
-  
+
+  // Check Yahoo Finance API
+  const yahooHealth = await checkYahooFinanceHealth();
+
   const uptime = getSystemUptime();
   const errorRate = getErrorRate();
   const avgResponseTime = getAverageResponseTime();
   const activeUsers = getActiveConnections();
   const totalReqs = getTotalRequests();
-  
+
   return {
     database: {
       connected: dbHealth.connected,
@@ -301,24 +191,6 @@ export async function getSystemStatus() {
         status: yahooHealth,
         lastChecked: apiHealth.yahooFinance.lastChecked,
         checkInterval: '1 minute'
-      },
-      finnhub: {
-        status: finnhubHealth,
-        keyExists: !!process.env.FINNHUB_API_KEY,
-        lastChecked: apiHealth.finnhub.lastChecked,
-        checkInterval: '1 hour'
-      },
-      twelveData: {
-        status: twelveDataHealth,
-        keyExists: !!process.env.TWELVE_DATA_API_KEY,
-        lastChecked: apiHealth.twelveData.lastChecked,
-        checkInterval: '1 hour'
-      },
-      polygon: {
-        status: polygonHealth,
-        keyExists: !!process.env.POLYGON_API_KEY,
-        lastChecked: apiHealth.polygon.lastChecked,
-        checkInterval: '1 hour'
       },
       cache: {
         enabled: true,

@@ -686,27 +686,6 @@ export default function Admin() {
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Finnhub</span>
-                            <Badge variant="outline" className={(systemStatus as any)?.apis?.finnhub?.status ? "text-green-600" : (systemStatus as any)?.apis?.finnhub?.keyExists ? "text-yellow-600" : "text-gray-600"}>
-                              <Globe className="h-3 w-3 mr-1" />
-                              {(systemStatus as any)?.apis?.finnhub?.status ? "Active" : (systemStatus as any)?.apis?.finnhub?.keyExists ? "Key Found" : "No Key"}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm">Twelve Data</span>
-                            <Badge variant="outline" className={(systemStatus as any)?.apis?.twelveData?.status ? "text-green-600" : (systemStatus as any)?.apis?.twelveData?.keyExists ? "text-yellow-600" : "text-gray-600"}>
-                              <Globe className="h-3 w-3 mr-1" />
-                              {(systemStatus as any)?.apis?.twelveData?.status ? "Active" : (systemStatus as any)?.apis?.twelveData?.keyExists ? "Key Found" : "No Key"}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm">Polygon</span>
-                            <Badge variant="outline" className={(systemStatus as any)?.apis?.polygon?.status ? "text-green-600" : (systemStatus as any)?.apis?.polygon?.keyExists ? "text-yellow-600" : "text-gray-600"}>
-                              <Globe className="h-3 w-3 mr-1" />
-                              {(systemStatus as any)?.apis?.polygon?.status ? "Active" : (systemStatus as any)?.apis?.polygon?.keyExists ? "Key Found" : "No Key"}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center justify-between">
                             <span className="text-sm">Cache</span>
                             <Badge variant="outline" className={(systemStatus as any)?.apis?.cache?.enabled ? "text-green-600" : "text-red-600"}>
                               <Settings className="h-3 w-3 mr-1" />

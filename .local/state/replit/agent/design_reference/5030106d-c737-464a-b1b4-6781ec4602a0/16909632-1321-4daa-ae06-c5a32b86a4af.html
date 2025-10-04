@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORSATH - Qualitative Investment Research</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        gray: {
+                            50: '#F8F9FA',
+                            100: '#F1F3F4',
+                            200: '#E9ECEF',
+                            300: '#DEE2E6',
+                            400: '#CED4DA',
+                            500: '#ADB5BD',
+                            600: '#6C757D',
+                            700: '#495057',
+                            800: '#343A40',
+                            900: '#212529'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        .smooth-transition {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .typing-animation {
+            border-right: 2px solid #000;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { border-color: #000; }
+            51%, 100% { border-color: transparent; }
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .nav-link:hover {
+            color: #000;
+            border-bottom: 2px solid #000;
+        }
+        
+        .btn-primary:hover {
+            background-color: #000;
+            color: #fff;
+            transform: translateY(-1px);
+        }
+        
+        .loading-bar {
+            height: 2px;
+            background: linear-gradient(90deg, #000 0%, #666 50%, #000 100%);
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+    </style>
+</head>
+<body class="bg-white text-gray-900 font-inter">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <nav class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-black rounded-sm flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">O</span>
+                    </div>
+                    <span class="text-xl font-bold text-black">ORSATH</span>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link smooth-transition py-2 px-1 text-gray-700 hover:text-black border-b-2 border-transparent">Home</a>
+                    <a href="#studies" class="nav-link smooth-transition py-2 px-1 text-gray-700 hover:text-black border-b-2 border-transparent">Studies</a>
+                    <a href="#news" class="nav-link smooth-transition py-2 px-1 text-gray-700 hover:text-black border-b-2 border-transparent">News</a>
+                    <a href="#dashboard" class="nav-link smooth-transition py-2 px-1 text-gray-700 hover:text-black border-b-2 border-transparent">Dashboard</a>
+                    <a href="#contact" class="nav-link smooth-transition py-2 px-1 text-gray-700 hover:text-black border-b-2 border-transparent">Contact Us</a>
+                </div>
+                
+                <!-- Profile Section -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="flex items-center space-x-2 bg-gray-50 hover:bg-gray-100 px-3 py-2 rounded-lg smooth-transition">
+                            <i class="fas fa-user-circle text-gray-600"></i>
+                            <span class="text-sm font-medium">Profile</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 hidden">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-user-plus mr-2"></i>Sign Up
+                            </a>
+                            <div class="border-t border-gray-200"></div>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-list mr-2"></i>Watchlist
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-cog mr-2"></i>Settings
+                            </a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                <i class="fas fa-crown mr-2"></i>My Subscription
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu Button -->
+                <button class="md:hidden p-2">
+                    <i class="fas fa-bars text-gray-600"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto text-center fade-in">
+                <h1 class="text-5xl md:text-6xl font-bold text-black mb-6">
+                    Qualitative Investment <span class="typing-animation">Research</span>
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                    Beyond graphs and predictions. We dive deep into qualitative research to uncover investment opportunities that traditional firms miss.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                    <button class="btn-primary smooth-transition bg-white text-black px-8 py-3 rounded-lg border-2 border-black font-semibold hover:bg-black hover:text-white">
+                        Get Started
+                    </button>
+                    <button class="smooth-transition text-gray-600 hover:text-black flex items-center space-x-2">
+                        <i class="fas fa-play-circle"></i>
+                        <span>Watch Demo</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-12 items-center">
+                    <div class="fade-in">
+                        <h2 class="text-4xl font-bold text-black mb-6">Our Approach</h2>
+                        <p class="text-gray-600 mb-6">
+                            While most investment firms rely on numerical data and technical analysis, we focus on in-depth qualitative research. We analyze company fundamentals, market conditions, and real-world events that drive stock movements.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-black"></i>
+                                <span class="text-gray-700">Deep company research and analysis</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-black"></i>
+                                <span class="text-gray-700">Real-time news and market sentiment</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-check-circle text-black"></i>
+                                <span class="text-gray-700">Weekend research for Monday opportunities</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fade-in">
+                        <!-- Research visualization chart placeholder -->
+                        <div class="bg-gray-50 rounded-lg p-6 h-80">
+                            <h3 class="text-lg font-semibold mb-4">Research Impact Analysis</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Company Analysis</span>
+                                    <div class="w-32 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-black h-2 rounded-full" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Market Sentiment</span>
+                                    <div class="w-32 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-black h-2 rounded-full" style="width: 70%"></div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">News Impact</span>
+                                    <div class="w-32 bg-gray-200 rounded-full h-2">
+                                        <div class="bg-black h-2 rounded-full" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Studies Section -->
+    <section id="studies" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 fade-in">
+                    <h2 class="text-4xl font-bold text-black mb-6">Research Studies</h2>
+                    <p class="text-xl text-gray-600">In-depth analysis and case studies from our research team</p>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white rounded-lg shadow-lg hover-lift smooth-transition card-hover">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-chart-line text-black mr-3"></i>
+                                <span class="text-sm text-gray-500">Case Study</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-black mb-3">Bankruptcy to Recovery</h3>
+                            <p class="text-gray-600 mb-4">How we identified a 200% opportunity in a debt-cleared company over a weekend.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">March 2024</span>
+                                <button class="text-black hover:text-gray-700 smooth-transition">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-lg hover-lift smooth-transition card-hover">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-newspaper text-black mr-3"></i>
+                                <span class="text-sm text-gray-500">Analysis</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-black mb-3">Weekend News Impact</h3>
+                            <p class="text-gray-600 mb-4">Statistical analysis of how weekend news affects Monday market openings.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">February 2024</span>
+                                <button class="text-black hover:text-gray-700 smooth-transition">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-lg hover-lift smooth-transition card-hover">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <i class="fas fa-search text-black mr-3"></i>
+                                <span class="text-sm text-gray-500">Research</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-black mb-3">Qualitative vs Quantitative</h3>
+                            <p class="text-gray-600 mb-4">Comparing traditional analysis methods with our qualitative approach.</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">January 2024</span>
+                                <button class="text-black hover:text-gray-700 smooth-transition">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Section -->
+    <section id="news" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 fade-in">
+                    <h2 class="text-4xl font-bold text-black mb-6">Market News & Analysis</h2>
+                    <p class="text-xl text-gray-600">Stay informed with our curated news and expert analysis</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 rounded-lg p-6 hover-lift smooth-transition">
+                            <div class="flex items-center mb-3">
+                                <span class="bg-black text-white px-2 py-1 rounded text-xs font-semibold mr-3">BREAKING</span>
+                                <span class="text-sm text-gray-500">2 hours ago</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-black mb-2">Tech Company Announces Major Restructuring</h3>
+                            <p class="text-gray-600 mb-4">Analysis of potential market impact and investment opportunities...</p>
+                            <button class="text-black hover:text-gray-700 smooth-transition text-sm font-semibold">
+                                Read Analysis <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-6 hover-lift smooth-transition">
+                            <div class="flex items-center mb-3">
+                                <span class="bg-gray-600 text-white px-2 py-1 rounded text-xs font-semibold mr-3">RESEARCH</span>
+                                <span class="text-sm text-gray-500">6 hours ago</span>
+                            </div>
+                            <h3 class="text-lg font-bold text-black mb-2">Energy Sector Weekend Developments</h3>
+                            <p class="text-gray-600 mb-4">Our team analyzes key energy sector news from the weekend...</p>
+                            <button class="text-black hover:text-gray-700 smooth-transition text-sm font-semibold">
+                                Read Analysis <i class="fas fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-black mb-4">Market Sentiment Tracker</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Overall Sentiment</span>
+                                    <span class="text-sm font-semibold text-black">Positive</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Weekend News Impact</span>
+                                    <span class="text-sm font-semibold text-black">High</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm text-gray-600">Research Opportunities</span>
+                                    <span class="text-sm font-semibold text-black">12 Active</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <h3 class="text-lg font-bold text-black mb-4">Research Calendar</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-black rounded-full"></div>
+                                    <span class="text-sm text-gray-600">Earnings Analysis - Tech Sector</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                    <span class="text-sm text-gray-600">Weekend News Review</span>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                    <span class="text-sm text-gray-600">Market Sentiment Update</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboard" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-16 fade-in">
+                    <h2 class="text-4xl font-bold text-black mb-6">Research Dashboard</h2>
+                    <p class="text-xl text-gray-600">Professional tools for qualitative investment research</p>
+                </div>
+                
+                <!-- Dashboard Preview -->
+                <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-black">Research Tools</h3>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-500">Last updated: 2 min ago</span>
+                            <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="bg-gray-50 rounded-lg p-4 hover-lift smooth-transition">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-search text-black mr-2"></i>
+                                <h4 class="font-semibold text-black">Company Research</h4>
+                            </div>
+                            <p class="text-sm text-gray-600">Deep dive analysis tools</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 hover-lift smooth-transition">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-newspaper text-black mr-2"></i>
+                                <h4 class="font-semibold text-black">News Aggregator</h4>
+                            </div>
+                            <p class="text-sm text-gray-600">Real-time news analysis</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 hover-lift smooth-transition">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-chart-bar text-black mr-2"></i>
+                                <h4 class="font-semibold text-black">Sentiment Tracker</h4>
+                            </div>
+                            <p class="text-sm text-gray-600">Market sentiment analysis</p>
+                        </div>
+                        
+                        <div class="bg-gray-50 rounded-lg p-4 hover-lift smooth-transition">
+                            <div class="flex items-center mb-3">
+                                <i class="fas fa-list text-black mr-2"></i>
+                                <h4 class="font-semibold text-black">Watchlist</h4>
+                            </div>
+                            <p class="text-sm text-gray-600">Custom research lists</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sample Research Data -->
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-black mb-4">Active Research</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                <div>
+                                    <span class="font-semibold text-black">TECH Corp</span>
+                                    <p class="text-sm text-gray-600">Bankruptcy recovery analysis</p>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">+15%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                <div>
+                                    <span class="font-semibold text-black">ENERGY Inc</span>
+                                    <p class="text-sm text-gray-600">Weekend news impact study</p>
+                                </div>
+                                <span class="text-sm font-semibold text-red-600">-5%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                                <div>
+                                    <span class="font-semibold text-black">HEALTH Co</span>
+                                    <p class="text-sm text-gray-600">Regulatory approval tracking</p>
+                                </div>
+                                <span class="text-sm font-semibold text-green-600">+8%</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-lg shadow-lg p-6">
+                        <h3 class="text-lg font-bold text-black mb-4">Research Insights</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-lightbulb text-black mr-2"></i>
+                                    <span class="font-semibold text-black">Weekend Opportunity</span>
+                                </div>
+                                <p class="text-sm text-gray-600">3 companies showing positive sentiment shifts since Friday close</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-lg">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-exclamation-triangle text-black mr-2"></i>
+                                    <span class="font-semibold text-black">Risk Alert</span>
+                                </div>
+                                <p class="text-sm text-gray-600">2 companies in watchlist showing increased volatility</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-16 fade-in">
+                    <h2 class="text-4xl font-bold text-black mb-6">Get in Touch</h2>
+                    <p class="text-xl text-gray-600">Ready to explore qualitative investment research? Contact our team.</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-12">
+                    <div class="fade-in">
+                        <h3 class="text-2xl font-bold text-black mb-6">Contact Information</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-envelope text-black"></i>
+                                <span class="text-gray-600">research@orsath.com</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-phone text-black"></i>
+                                <span class="text-gray-600">+1 (555) 123-4567</span>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                <i class="fas fa-map-marker-alt text-black"></i>
+                                <span class="text-gray-600">Financial District, New York</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="text-lg font-semibold text-black mb-4">Business Hours</h4>
+                            <div class="space-y-2 text-gray-600">
+                                <div class="flex justify-between">
+                                    <span>Monday - Friday</span>
+                                    <span>9:00 AM - 6:00 PM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>Weekend Research</span>
+                                    <span>Available</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="fade-in">
+                        <form class="space-y-6">
+                            <div>
+                                <label class="block text-sm font-medium text-black mb-2">Name</label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Your name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-black mb-2">Email</label>
+                                <input type="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent" placeholder="your@email.com">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-black mb-2">Subject</label>
+                                <input type="text" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Research inquiry">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-black mb-2">Message</label>
+                                <textarea rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent" placeholder="Tell us about your research needs..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full btn-primary smooth-transition bg-black text-white py-3 px-6 rounded-lg font-semibold hover:bg-gray-800">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-4 gap-8">
+                    <div>
+                        <div class="flex items-center space-x-2 mb-4">
+                            <div class="w-8 h-8 bg-white rounded-sm flex items-center justify-center">
+                                <span class="text-black font-bold text-sm">O</span>
+                            </div>
+                            <span class="text-xl font-bold">ORSATH</span>
+                        </div>
+                        <p class="text-gray-400 text-sm">Qualitative investment research for the modern investor.</p>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Research</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" class="hover:text-white smooth-transition">Studies</a></li>
+                            <li><a href="#" class="hover:text-white smooth-transition">Analysis</a></li>
+                            <li><a href="#" class="hover:text-white smooth-transition">Reports</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Tools</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" class="hover:text-white smooth-transition">Dashboard</a></li>
+                            <li><a href="#" class="hover:text-white smooth-transition">News</a></li>
+                            <li><a href="#" class="hover:text-white smooth-transition">Watchlist</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Company</h4>
+                        <ul class="space-y-2 text-gray-400">
+                            <li><a href="#" class="hover:text-white smooth-transition">About</a></li>
+                            <li><a href="#" class="hover:text-white smooth-transition">Contact</a></li>
+                            <li><a href="#" class="hover:text-white smooth-transition">Careers</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-gray-800 mt-8 pt-8">
+                    <div class="flex flex-col md:flex-row items-center justify-between">
+                        <p class="text-gray-400 text-sm">© 2024 Orellana, Santhos & Thompson. All rights reserved.</p>
+                        <div class="flex items-center space-x-6 mt-4 md:mt-0">
+                            <a href="#" class="text-gray-400 hover:text-white smooth-transition">Privacy Policy</a>
+                            <a href="#" class="text-gray-400 hover:text-white smooth-transition">Terms of Service</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        (function() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Profile dropdown toggle
+            const profileButton = document.querySelector('.relative button');
+            const dropdown = document.querySelector('.absolute.right-0');
+            
+            if (profileButton && dropdown) {
+                profileButton.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', function() {
+                    dropdown.classList.add('hidden');
+                });
+            }
+
+            // Fade in animation on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Navigation active state
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section[id]');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (pageYOffset >= sectionTop - 200) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('border-black');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('border-black');
+                    }
+                });
+            });
+
+            // Loading animation for dynamic content
+            const loadingElements = document.querySelectorAll('[data-loading]');
+            loadingElements.forEach(el => {
+                // TODO: Implement actual loading states when connecting to backend
+                console.log('Loading state for:', el);
+            });
+        })();
+    </script>
+</body>
+</html>

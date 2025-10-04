@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { tournamentScheduler } from "./services/tournamentScheduler";
+import { db } from "./db";
 
 const app = express();
 app.use(express.json({ limit: '50mb' })); // Increase limit for profile pictures
@@ -57,10 +59,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // ALWAYS serve the app on port 5000
-  // this serves both the API and the client.
-  // It is the only port that is not firewalled.
-  const port = 5000;
+  // Serve the app on port 8080
+  const port = 8080;
   server.listen({
     port,
     host: "0.0.0.0",
@@ -71,12 +71,12 @@ app.use((req, res, next) => {
     // Start tournament expiration scheduler with database connectivity check
     try {
       // Test database connection before starting scheduler
-      await storage.getAllUsers();
+      await db.execute('SELECT 1');
       tournamentScheduler.start();
       log('Tournament scheduler started successfully');
     } catch (error) {
       log('Tournament scheduler disabled due to database connectivity issues');
-      log('Please enable your Neon database endpoint or set up Replit PostgreSQL');
+      log('Error: ' + (error as Error).message);
     }
   });
 })();

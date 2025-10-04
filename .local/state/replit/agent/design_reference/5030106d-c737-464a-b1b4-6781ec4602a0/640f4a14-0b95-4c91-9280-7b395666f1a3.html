@@ -1,0 +1,524 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QualTrade Research - Qualitative Investment Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#000000',
+                        secondary: '#525252',
+                        accent: '#262626',
+                        neutral: '#FAFAFA',
+                    }
+                }
+            }
+        };
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="font-inter bg-white text-gray-900">
+    <!-- @COMPONENT: Navigation -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <h1 class="text-2xl font-bold text-black">QualTrade</h1>
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-8">
+                            <a href="#" class="text-gray-900 hover:text-black px-3 py-2 text-sm font-medium border-b-2 border-black">Home</a>
+                            <a href="#" class="text-gray-600 hover:text-black px-3 py-2 text-sm font-medium">Studies</a>
+                            <a href="#" class="text-gray-600 hover:text-black px-3 py-2 text-sm font-medium">News</a>
+                            <a href="#" class="text-gray-600 hover:text-black px-3 py-2 text-sm font-medium">Dashboard</a>
+                            <a href="#" class="text-gray-600 hover:text-black px-3 py-2 text-sm font-medium">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-4 flex items-center space-x-4">
+                        <button class="text-gray-600 hover:text-black px-3 py-2 text-sm font-medium">Sign In</button>
+                        <button class="bg-black text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-800">Get Started</button>
+                        <div class="relative">
+                            <button class="flex items-center text-gray-600 hover:text-black">
+                                <i class="fas fa-user-circle text-2xl"></i>
+                            </button>
+                            <!-- Profile dropdown would be implemented here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button class="text-gray-600 hover:text-black">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- @END_COMPONENT: Navigation -->
+
+    <!-- @COMPONENT: Hero Section -->
+    <section class="bg-gray-50 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-black mb-6">
+                    Qualitative Investment Research
+                </h1>
+                <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    Beyond graphs and predictions. We provide in-depth qualitative analysis of market opportunities through comprehensive company research and real-time market sentiment analysis.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="bg-black text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-gray-800 transition">
+                        Start Free Trial
+                    </button>
+                    <button class="border-2 border-black text-black px-8 py-3 rounded-md text-lg font-medium hover:bg-gray-50 transition">
+                        View Research
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Hero Section -->
+
+    <!-- @COMPONENT: Features Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">Why Qualitative Analysis Matters</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    While others focus on numbers, we dive deep into the stories behind the stocks.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 p-8 rounded-lg">
+                    <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-search text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-black mb-4">In-Depth Research</h3>
+                    <p class="text-gray-600">
+                        Comprehensive analysis of company fundamentals, management changes, and market positioning beyond traditional metrics.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-lg">
+                    <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-clock text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-black mb-4">Weekend Advantage</h3>
+                    <p class="text-gray-600">
+                        Capitalize on news developments during market closures to position for Monday openings with strategic insights.
+                    </p>
+                </div>
+                <div class="bg-gray-50 p-8 rounded-lg">
+                    <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold text-black mb-4">Market Sentiment</h3>
+                    <p class="text-gray-600">
+                        Real-time analysis of news sentiment, social media trends, and market psychology to identify opportunities.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Features Section -->
+
+    <!-- @COMPONENT: Dashboard Preview -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">Professional Research Dashboard</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Access powerful tools designed for qualitative investment analysis
+                </p>
+            </div>
+            <div class="bg-white rounded-lg shadow-lg p-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Dashboard Tools -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-black mb-6">Research Tools</h3>
+                        <div class="space-y-4">
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-black">Company Analysis</h4>
+                                        <p class="text-sm text-gray-600">Comprehensive company research and financial health assessment</p>
+                                    </div>
+                                    <i class="fas fa-building text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-black">News Sentiment</h4>
+                                        <p class="text-sm text-gray-600">Real-time news analysis and market sentiment tracking</p>
+                                    </div>
+                                    <i class="fas fa-newspaper text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h4 class="font-semibold text-black">Market Alerts</h4>
+                                        <p class="text-sm text-gray-600">Custom alerts for bankruptcy, debt restructuring, and recovery</p>
+                                    </div>
+                                    <i class="fas fa-bell text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Watchlist Preview -->
+                    <div>
+                        <h3 class="text-2xl font-semibold text-black mb-6">Your Watchlist</h3>
+                        <div class="bg-gray-50 rounded-lg p-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between py-2 border-b border-gray-200">
+                                    <div>
+                                        <span class="font-medium text-black">ACME Corp</span>
+                                        <span class="text-sm text-gray-600 ml-2">Debt Restructuring</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-green-600">+12.5%</span>
+                                </div>
+                                <div class="flex items-center justify-between py-2 border-b border-gray-200">
+                                    <div>
+                                        <span class="font-medium text-black">TechStart Inc</span>
+                                        <span class="text-sm text-gray-600 ml-2">Recovery Watch</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-red-600">-5.2%</span>
+                                </div>
+                                <div class="flex items-center justify-between py-2">
+                                    <div>
+                                        <span class="font-medium text-black">Global Dynamics</span>
+                                        <span class="text-sm text-gray-600 ml-2">Bankruptcy Filing</span>
+                                    </div>
+                                    <span class="text-sm font-medium text-red-600">-23.1%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Dashboard Preview -->
+
+    <!-- @COMPONENT: Research Studies -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">Recent Research Studies</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    In-depth analysis and case studies from our research team
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-black text-white px-3 py-1 rounded-full text-sm">Case Study</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-black mb-3">Weekend Bankruptcy Recovery</h3>
+                    <p class="text-gray-600 mb-4">
+                        Analysis of a company that emerged from bankruptcy over the weekend, resulting in a 200% gain on Monday opening.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        <span>2 days ago</span>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-black text-white px-3 py-1 rounded-full text-sm">Research</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-black mb-3">Debt Restructuring Patterns</h3>
+                    <p class="text-gray-600 mb-4">
+                        Comprehensive study of debt restructuring patterns and their impact on stock performance.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        <span>1 week ago</span>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-6">
+                    <div class="flex items-center mb-4">
+                        <span class="bg-black text-white px-3 py-1 rounded-full text-sm">Analysis</span>
+                    </div>
+                    <h3 class="text-xl font-semibold text-black mb-3">Market Sentiment Indicators</h3>
+                    <p class="text-gray-600 mb-4">
+                        How news sentiment affects stock prices during market closures and opening gaps.
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        <span>2 weeks ago</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Research Studies -->
+
+    <!-- @COMPONENT: Testimonials -->
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">What Our Users Say</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg p-8 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold text-black">Sarah Johnson</h4>
+                            <p class="text-sm text-gray-600">Portfolio Manager</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "The qualitative approach has given me insights I never would have found through traditional analysis. The weekend research alerts are invaluable."
+                    </p>
+                </div>
+                <div class="bg-white rounded-lg p-8 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold text-black">Michael Chen</h4>
+                            <p class="text-sm text-gray-600">Individual Investor</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "QualTrade's research helped me identify recovery opportunities that others missed. The depth of analysis is impressive."
+                    </p>
+                </div>
+                <div class="bg-white rounded-lg p-8 shadow-sm">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-gray-600"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h4 class="font-semibold text-black">David Rodriguez</h4>
+                            <p class="text-sm text-gray-600">Financial Advisor</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 italic">
+                        "The combination of news sentiment analysis and company research provides a competitive edge in today's market."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Testimonials -->
+
+    <!-- @COMPONENT: Pricing -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl sm:text-4xl font-bold text-black mb-4">Choose Your Plan</h2>
+                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                    Professional research tools for every level of investor
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gray-50 rounded-lg p-8">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-black mb-2">Basic</h3>
+                        <div class="text-4xl font-bold text-black mb-2">$29</div>
+                        <p class="text-gray-600 mb-8">per month</p>
+                        <ul class="space-y-4 text-left mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-600 mr-3"></i>
+                                <span>Weekly research reports</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-600 mr-3"></i>
+                                <span>Basic watchlist (10 stocks)</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-600 mr-3"></i>
+                                <span>Email alerts</span>
+                            </li>
+                        </ul>
+                        <button class="w-full border-2 border-black text-black px-6 py-3 rounded-md font-medium hover:bg-gray-50">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-black text-white rounded-lg p-8 relative">
+                    <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <span class="bg-white text-black px-4 py-1 rounded-full text-sm font-medium">Popular</span>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold mb-2">Professional</h3>
+                        <div class="text-4xl font-bold mb-2">$79</div>
+                        <p class="text-gray-300 mb-8">per month</p>
+                        <ul class="space-y-4 text-left mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-400 mr-3"></i>
+                                <span>Daily research reports</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-400 mr-3"></i>
+                                <span>Advanced watchlist (50 stocks)</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-400 mr-3"></i>
+                                <span>Real-time alerts</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-400 mr-3"></i>
+                                <span>Dashboard access</span>
+                            </li>
+                        </ul>
+                        <button class="w-full bg-white text-black px-6 py-3 rounded-md font-medium hover:bg-gray-100">
+                            Get Started
+                        </button>
+                    </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-8">
+                    <div class="text-center">
+                        <h3 class="text-2xl font-bold text-black mb-2">Enterprise</h3>
+                        <div class="text-4xl font-bold text-black mb-2">$199</div>
+                        <p class="text-gray-600 mb-8">per month</p>
+                        <ul class="space-y-4 text-left mb-8">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-600 mr-3"></i>
+                                <span>All features included</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-600 mr-3"></i>
+                                <span>Unlimited watchlist</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-600 mr-3"></i>
+                                <span>Priority support</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-600 mr-3"></i>
+                                <span>Custom research requests</span>
+                            </li>
+                        </ul>
+                        <button class="w-full border-2 border-black text-black px-6 py-3 rounded-md font-medium hover:bg-gray-50">
+                            Contact Sales
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: Pricing -->
+
+    <!-- @COMPONENT: CTA Section -->
+    <section class="py-20 bg-black text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold mb-4">Ready to Start Your Research?</h2>
+            <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+                Join thousands of investors who trust QualTrade for qualitative market analysis
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="bg-white text-black px-8 py-3 rounded-md text-lg font-medium hover:bg-gray-100 transition">
+                    Start Free Trial
+                </button>
+                <button class="border-2 border-white text-white px-8 py-3 rounded-md text-lg font-medium hover:bg-white hover:text-black transition">
+                    Schedule Demo
+                </button>
+            </div>
+        </div>
+    </section>
+    <!-- @END_COMPONENT: CTA Section -->
+
+    <!-- @COMPONENT: Footer -->
+    <footer class="bg-gray-50 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-2xl font-bold text-black mb-4">QualTrade</h3>
+                    <p class="text-gray-600">
+                        Professional qualitative investment research platform for modern investors.
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-black mb-4">Platform</h4>
+                    <ul class="space-y-2 text-gray-600">
+                        <li><a href="#" class="hover:text-black">Dashboard</a></li>
+                        <li><a href="#" class="hover:text-black">Research Studies</a></li>
+                        <li><a href="#" class="hover:text-black">News Analysis</a></li>
+                        <li><a href="#" class="hover:text-black">Watchlist</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-black mb-4">Company</h4>
+                    <ul class="space-y-2 text-gray-600">
+                        <li><a href="#" class="hover:text-black">About Us</a></li>
+                        <li><a href="#" class="hover:text-black">Contact</a></li>
+                        <li><a href="#" class="hover:text-black">Careers</a></li>
+                        <li><a href="#" class="hover:text-black">Blog</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-black mb-4">Legal</h4>
+                    <ul class="space-y-2 text-gray-600">
+                        <li><a href="#" class="hover:text-black">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-black">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-black">Disclaimer</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-200 mt-8 pt-8 text-center text-gray-600">
+                <p>&copy; 2024 QualTrade Research. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <!-- @END_COMPONENT: Footer -->
+
+    <script>
+        // Mobile menu toggle functionality
+        (function() {
+            const mobileMenuButton = document.querySelector('.md\\:hidden button');
+            const mobileMenu = document.createElement('div');
+            mobileMenu.className = 'md:hidden hidden bg-white border-t border-gray-200';
+            mobileMenu.innerHTML = `
+                <div class="px-2 pt-2 pb-3 space-y-1">
+                    <a href="#" class="block px-3 py-2 text-base font-medium text-gray-900">Home</a>
+                    <a href="#" class="block px-3 py-2 text-base font-medium text-gray-600">Studies</a>
+                    <a href="#" class="block px-3 py-2 text-base font-medium text-gray-600">News</a>
+                    <a href="#" class="block px-3 py-2 text-base font-medium text-gray-600">Dashboard</a>
+                    <a href="#" class="block px-3 py-2 text-base font-medium text-gray-600">Contact Us</a>
+                </div>
+            `;
+            
+            document.querySelector('nav').appendChild(mobileMenu);
+            
+            mobileMenuButton.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+        })();
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // TODO: Implement profile dropdown functionality
+        // TODO: Implement subscription management system
+        // TODO: Add form validation for contact forms
+        // TODO: Implement dashboard routing and authentication
+        // TODO: Add watchlist management functionality
+    </script>
+</body>
+</html>
