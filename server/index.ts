@@ -59,8 +59,8 @@ app.use((req, res, next) => {
     serveStatic(app);
   }
 
-  // Serve the app on port 8080
-  const port = 8080;
+  // Use Railway's PORT or default to 8080
+  const port = process.env.PORT ? parseInt(process.env.PORT) : 8080;
   server.listen({
     port,
     host: "0.0.0.0",
