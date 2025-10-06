@@ -527,35 +527,6 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
     throw new ValidationError('Tournament is full');
   }
 
-  // Check buy-in requirements
-  const buyIn = parseFloat(tournament.buyInAmount?.toString() || '0');
-  if (buyIn > 0) {
-    const user = await storage.getUser(userId);
-    const currentSiteCash = parseFloat(user?.siteCash?.toString() || '0');
-    
-    if (buyIn > currentSiteCash) {
-      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
-    }
-    
-    // Deduct buy-in from user's siteCash
-    const newSiteCash = currentSiteCash - buyIn;
-    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
-    
-    // Add buy-in to tournament pot
-    const newPot = parseFloat(tournament.currentPot?.toString() || '0') + buyIn;
-    await storage.updateTournament(tournament.id, { currentPot: newPot.toString() });
-    
-    // Log the transaction
-    await storage.createAdminLog({
-      adminUserId: userId,
-      targetUserId: userId,
-      action: 'tournament_buyin_deduction',
-      oldValue: currentSiteCash.toString(),
-      newValue: newSiteCash.toString(),
-      notes: `Buy-in deducted for joining tournament: ${tournament.name} ($${buyIn.toFixed(2)})`
-    });
-  }
-
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
 
@@ -601,35 +572,6 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
 
   if (tournament.currentPlayers >= tournament.maxPlayers) {
     throw new ValidationError('Tournament is full');
-  }
-
-  // Check buy-in requirements
-  const buyIn = parseFloat(tournament.buyInAmount?.toString() || '0');
-  if (buyIn > 0) {
-    const user = await storage.getUser(userId);
-    const currentSiteCash = parseFloat(user?.siteCash?.toString() || '0');
-    
-    if (buyIn > currentSiteCash) {
-      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
-    }
-    
-    // Deduct buy-in from user's siteCash
-    const newSiteCash = currentSiteCash - buyIn;
-    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
-    
-    // Add buy-in to tournament pot
-    const newPot = parseFloat(tournament.currentPot?.toString() || '0') + buyIn;
-    await storage.updateTournament(tournament.id, { currentPot: newPot.toString() });
-    
-    // Log the transaction
-    await storage.createAdminLog({
-      adminUserId: userId,
-      targetUserId: userId,
-      action: 'tournament_buyin_deduction',
-      oldValue: currentSiteCash.toString(),
-      newValue: newSiteCash.toString(),
-      notes: `Buy-in deducted for joining tournament: ${tournament.name} ($${buyIn.toFixed(2)})`
-    });
   }
 
   try {
@@ -750,7 +692,7 @@ router.get('/tournaments/:id/leaderboard', requireAuth, asyncHandler(async (req,
       return {
         userId: participant.userId,
         firstName: participant.firstName,
-        displayName: participant.displayName,
+        username: participant.username,
         portfolioValue,
         balance,
         stockValue
@@ -1142,128 +1084,7 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
  * POST /api/tournaments/:id/sell
  * Sell stock in a tournament
  */
-router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) => {
-  const tournamentId = parseInt(req.params.id);
-  const userId = req.user.id;
 
-  const { purchaseId, sharesToSell, currentPrice } = req.body;
-  
-  if (!purchaseId || !sharesToSell || !currentPrice) {
-    throw new ValidationError('Purchase ID, shares to sell, and current price are required');
-  }
-
-  // Get the original purchase
-  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
-  const purchase = purchases.find(p => p.id === parseInt(purchaseId));
-  
-  if (!purchase) {
-    throw new ValidationError('Purchase not found');
-  }
-
-  const sharesToSellNum = parseInt(sharesToSell);
-  if (sharesToSellNum <= 0 || sharesToSellNum > purchase.shares) {
-    throw new ValidationError('Invalid number of shares to sell');
-  }
-
-  const saleValue = sharesToSellNum * parseFloat(currentPrice);
-  
-  // Check if tournament is completed (no trading allowed)
-  const tournaments = await storage.getAllTournaments();
-  const tournament = tournaments.find(t => t.id === tournamentId);
-  if (tournament && tournament.status === 'completed') {
-    throw new ValidationError('Cannot trade in completed tournaments');
-  }
-  
-  // Record the sell trade in trade history
-  await storage.recordTrade({
-    userId: userId,
-    tournamentId: tournamentId,
-    symbol: purchase.symbol,
-    companyName: purchase.companyName,
-    tradeType: 'sell',
-    shares: sharesToSellNum,
-    price: parseFloat(currentPrice),
-    totalValue: saleValue
-  });
-  
-  // Get current balance
-  const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
-  
-  // Update balance with sale proceeds
-  await storage.updateTournamentBalance(tournamentId, userId, currentBalance + saleValue);
-
-  // If selling all shares, delete the purchase record
-  if (sharesToSellNum === purchase.shares) {
-    await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
-  } else {
-    // Update the purchase record to reduce shares
-    // Note: This would need to be implemented in storage
-    // For now, we'll delete and recreate with remaining shares
-    await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
-    
-    if (purchase.shares - sharesToSellNum > 0) {
-      await storage.purchaseTournamentStock(tournamentId, userId, {
-        symbol: purchase.symbol,
-        companyName: purchase.companyName,
-        shares: purchase.shares - sharesToSellNum,
-        purchasePrice: purchase.purchasePrice,
-        totalCost: (purchase.shares - sharesToSellNum) * purchase.purchasePrice
-      });
-    }
-  }
-
-  res.json({
-    success: true,
-    data: { 
-      saleValue,
-      newBalance: currentBalance + saleValue 
-    },
-  });
-}));
-
-
-
-
-
-/**
- * GET /api/tournaments/:id/balance
- * Get user's balance in a specific tournament
- */
-router.get('/tournaments/:id/balance', requireAuth, asyncHandler(async (req, res) => {
-  const tournamentId = parseInt(req.params.id);
-  const userId = req.user.id;
-
-  if (isNaN(tournamentId)) {
-    throw new ValidationError('Invalid tournament ID');
-  }
-
-  const balance = await storage.getTournamentBalance(tournamentId, userId);
-
-  res.json({
-    success: true,
-    data: { balance },
-  });
-}));
-
-/**
- * GET /api/tournaments/:id/purchases
- * Get user's stock purchases in a specific tournament
- */
-router.get('/tournaments/:id/purchases', requireAuth, asyncHandler(async (req, res) => {
-  const tournamentId = parseInt(req.params.id);
-  const userId = req.user.id;
-
-  if (isNaN(tournamentId)) {
-    throw new ValidationError('Invalid tournament ID');
-  }
-
-  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
-
-  res.json({
-    success: true,
-    data: purchases,
-  });
-}));
 
 /**
  * Helper function to calculate trading streak
@@ -2127,7 +1948,6 @@ router.get('/users/public', asyncHandler(async (req, res) => {
     return {
       id: user.id,
       username: user.username,
-      displayName: user.displayName,
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
       totalTrades: user.totalTrades || 0,
@@ -2167,7 +1987,6 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   const publicUser = {
     id: targetUser.id,
     username: targetUser.username,
-    displayName: targetUser.displayName,
     subscriptionTier: targetUser.subscriptionTier,
     createdAt: targetUser.createdAt,
     totalTrades: totalTrades,
@@ -2229,38 +2048,6 @@ router.post('/tournaments/check-expiration', requireAuth, asyncHandler(async (re
   res.json({
     success: true,
     message: 'Expired tournaments processed successfully'
-  });
-}));
-
-/**
- * PUT /api/user/display-name
- * Update user's display name
- */
-router.put('/user/display-name', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { displayName } = req.body;
-  
-  // Validate display name
-  if (displayName && (typeof displayName !== 'string' || displayName.trim().length === 0 || displayName.trim().length > 255)) {
-    throw new ValidationError('Display name must be a non-empty string with maximum 255 characters');
-  }
-  
-  // Update user's display name
-  const updatedUser = await storage.updateUser(userId, { 
-    displayName: displayName ? displayName.trim() : null 
-  });
-  
-  res.json({
-    success: true,
-    data: {
-      id: updatedUser.id,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      displayName: updatedUser.displayName,
-      email: updatedUser.email,
-      subscriptionTier: updatedUser.subscriptionTier,
-      createdAt: updatedUser.createdAt
-    }
   });
 }));
 

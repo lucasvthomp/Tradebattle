@@ -30,7 +30,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validatedData = z.object({
         email: z.string().email(),
-        displayName: z.string().optional().nullable(),
         username: z.string().min(3, "Username must be at least 3 characters").max(15, "Username must be at most 15 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores").optional()
       }).parse(req.body);
       
@@ -579,8 +578,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Prevent deletion of admin accounts
-      if (targetUser.userId === 0 || targetUser.userId === 1) {
-        console.log(`Cannot delete admin account: User ${targetUserEmail} (userId: ${targetUser.userId})`);
+      if (targetUser.subscriptionTier === 'admin') {
+        console.log(`Cannot delete admin account: User ${targetUserEmail}`);
         return res.status(403).json({ message: "Cannot delete admin accounts." });
       }
 

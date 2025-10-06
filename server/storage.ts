@@ -1,3 +1,4 @@
+import { hashPassword } from "./auth";
 import {
   users,
   watchlist,
@@ -153,12 +154,15 @@ export class DatabaseStorage implements IStorage {
       const maxUserIdResult = await db.select({ maxUserId: sql`COALESCE(MAX(user_id), -1)` }).from(users);
       const maxUserId = (maxUserIdResult[0]?.maxUserId as number) || -1;
       const nextUserId = (maxUserId >= 0) ? maxUserId + 1 : 0;
-      
 
-    
-    // Insert user with automatically assigned userId
+      // Hash the password before storing
+      const hashedPassword = await hashPassword(userData.password);
+
+
+    // Insert user with automatically assigned userId and hashed password
     const result = await db.insert(users).values({
       ...userData,
+      password: hashedPassword,
       userId: nextUserId
     }).returning();
     
@@ -513,8 +517,7 @@ export class DatabaseStorage implements IStorage {
 
           return {
             ...participant,
-            username: user[0]?.username || '',
-            displayName: user[0]?.username || `User ${participant.userId}`,
+            username: user[0]?.username || `User ${participant.userId}`,
             email: user[0]?.email || '',
             stockPurchases: stockPurchases || []
           };

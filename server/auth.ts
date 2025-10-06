@@ -129,16 +129,7 @@ export function setupAuth(app: Express) {
 
       const user = await storage.createUser(userData);
 
-      // Award achievements for new user
-      try {
-        // Award Welcome achievement
-        await storage.awardAchievementByParams(user.id, "Welcome", "Common", "Welcome to ORSATH", "Welcome to the platform!");
-        
-
-      } catch (achievementError) {
-        console.error("Error awarding achievements:", achievementError);
-        // Don't fail registration if achievements fail
-      }
+      // Welcome achievement is automatically awarded in createUser()
 
       // Log the user in automatically
       req.login(user, (err) => {
@@ -148,7 +139,6 @@ export function setupAuth(app: Express) {
           userId: user.userId,
           email: user.email,
           username: user.username,
-          displayName: user.displayName,
           country: user.country,
           language: user.language,
           currency: user.currency,
@@ -178,7 +168,6 @@ export function setupAuth(app: Express) {
           userId: user.userId,
           email: user.email,
           username: user.username,
-          displayName: user.displayName,
           firstName: user.firstName,
           lastName: user.lastName,
           subscriptionTier: user.subscriptionTier,
@@ -215,7 +204,6 @@ export function setupAuth(app: Express) {
         userId: freshUser.userId,
         email: freshUser.email,
         username: freshUser.username,
-        displayName: freshUser.displayName,
         firstName: freshUser.firstName,
         lastName: freshUser.lastName,
         subscriptionTier: freshUser.subscriptionTier,
