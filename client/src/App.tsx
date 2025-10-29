@@ -1,4 +1,4 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -33,6 +33,7 @@ import Footer from "@/components/layout/footer";
 
 function Router() {
   const { user, isLoading } = useAuth();
+  const [location] = useLocation();
 
   if (isLoading) {
     return (
@@ -41,6 +42,9 @@ function Router() {
       </div>
     );
   }
+
+  // Hide footer on dashboard and portfolio pages (dashboard route)
+  const shouldShowFooter = !['/', '/dashboard', '/portfolio'].includes(location) || !user;
 
   return (
     <Layout>
@@ -82,7 +86,7 @@ function Router() {
         )}
         <Route component={NotFound} />
       </Switch>
-      {user && <Footer />}
+      {shouldShowFooter && <Footer />}
     </Layout>
   );
 }

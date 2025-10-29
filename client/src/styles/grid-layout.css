@@ -1,0 +1,149 @@
+/* React Grid Layout Custom Styles */
+
+.react-grid-layout {
+  position: relative;
+  transition: height 200ms ease;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+.react-grid-item {
+  transition: all 200ms ease;
+  transition-property: left, top, width, height;
+}
+
+.react-grid-item img {
+  pointer-events: none;
+  user-select: none;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform, width, height;
+}
+
+.react-grid-item.resizing {
+  transition: none;
+  z-index: 100;
+  will-change: width, height;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none;
+  z-index: 100;
+  will-change: transform;
+}
+
+.react-grid-item.dropping {
+  visibility: hidden;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(99, 102, 241, 0.2);
+  opacity: 0.2;
+  transition-duration: 100ms;
+  z-index: 2;
+  border-radius: 8px;
+  border: 2px dashed rgba(99, 102, 241, 0.5);
+}
+
+.react-grid-item > .react-resizable-handle {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+}
+
+.react-grid-item > .react-resizable-handle::after {
+  content: "";
+  position: absolute;
+  right: 3px;
+  bottom: 3px;
+  width: 8px;
+  height: 8px;
+  border-right: 3px solid rgba(99, 102, 241, 0.6);
+  border-bottom: 3px solid rgba(99, 102, 241, 0.6);
+  border-radius: 0 0 2px 0;
+}
+
+/* Resize handle positions */
+.react-resizable-handle-sw {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+  transform: rotate(90deg);
+}
+
+.react-resizable-handle-se {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+}
+
+.react-resizable-handle-nw {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+  transform: rotate(180deg);
+}
+
+.react-resizable-handle-ne {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+  transform: rotate(270deg);
+}
+
+.react-resizable-handle-w,
+.react-resizable-handle-e {
+  top: 50%;
+  margin-top: -10px;
+  cursor: ew-resize;
+}
+
+.react-resizable-handle-w {
+  left: 0;
+  transform: rotate(135deg);
+}
+
+.react-resizable-handle-e {
+  right: 0;
+  transform: rotate(-45deg);
+}
+
+.react-resizable-handle-n,
+.react-resizable-handle-s {
+  left: 50%;
+  margin-left: -10px;
+  cursor: ns-resize;
+}
+
+.react-resizable-handle-n {
+  top: 0;
+  transform: rotate(-135deg);
+}
+
+.react-resizable-handle-s {
+  bottom: 0;
+  transform: rotate(45deg);
+}
+
+/* Make resize handles more visible on hover */
+.react-grid-item:hover > .react-resizable-handle::after {
+  border-right-color: rgba(99, 102, 241, 1);
+  border-bottom-color: rgba(99, 102, 241, 1);
+  width: 10px;
+  height: 10px;
+}
+
+/* Widget card hover effect */
+.react-grid-item:hover .cursor-move {
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+  transition: box-shadow 200ms ease;
+}
+
+/* Prevent text selection while dragging */
+.react-grid-item.react-draggable-dragging * {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}

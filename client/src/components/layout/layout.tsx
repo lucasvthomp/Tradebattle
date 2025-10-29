@@ -22,8 +22,8 @@ export default function Layout({ children }: LayoutProps) {
       {/* Main Content */}
       <div className={`transition-all duration-300 ${
         user ? 'ml-16' : ''
-      }`}>        
-        <main className="relative pt-16">
+      }`}>
+        <main className="relative pt-16 min-h-screen">
           {children}
         </main>
       </div>

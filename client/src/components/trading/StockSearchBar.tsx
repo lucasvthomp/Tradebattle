@@ -83,12 +83,13 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
     try {
       const response = await fetch(`/api/quote/${stock.symbol}`);
       const data = await response.json();
-      
+
       if (data.success) {
-        setSelectedStock({ ...stock, price: data.data.price });
+        const stockWithPrice = { ...stock, price: data.data.price };
+        setSelectedStock(stockWithPrice);
         setShowDropdown(false);
-        setSearchQuery(stock.symbol);
-        
+        setSearchQuery("");
+
         // For watchlist type, automatically add to watchlist when stock is selected
         if (type === "watchlist") {
           const watchlistData = {
@@ -100,9 +101,8 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
         } else if (type === "purchase") {
           if (onStockSelect) {
             // Use parent callback for purchase (dashboard handles this)
-            onStockSelect({ ...stock, price: data.data.price });
-            setSearchQuery("");
-            setSelectedStock(null);
+            onStockSelect(stockWithPrice);
+            // Don't clear here - let parent component manage state
           } else {
             // Fallback to internal dialog
             setShowBuyDialog(true);

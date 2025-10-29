@@ -2,7 +2,7 @@ import yahooFinance from 'yahoo-finance2';
 import { StockQuote, HistoricalDataPoint, CompanyProfile, SearchResult } from '../types/finance.js';
 
 // Define timeframe options
-export type TimeFrame = '1D' | '5D' | '1W' | '1M' | '3M' | '6M' | 'YTD' | '1Y' | '5Y';
+export type TimeFrame = '1H' | '1D' | '5D' | '1W' | '1M' | '3M' | '6M' | 'YTD' | '1Y' | '5Y';
 
 // Helper function to calculate date ranges
 export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: string; interval: string } {
@@ -29,6 +29,13 @@ export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: 
   };
 
   switch (timeFrame) {
+    case '1H':
+      return {
+        period1: getDaysAgo(1), // Get 1 day ago for 1 hour of data
+        period2: today,
+        interval: '1m' // Use 1-minute intervals for 1H timeframe
+      };
+
     case '1D':
       return {
         period1: getDaysAgo(2), // Get 2 days ago to ensure we get at least 1 trading day

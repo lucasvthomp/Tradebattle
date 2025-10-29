@@ -461,49 +461,6 @@ export default function Profile() {
 
 
 
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-foreground">Trading Achievements</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {isLoadingAchievements ? (
-                          <div className="col-span-full text-center py-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                            <p className="text-muted-foreground mt-2">Loading achievements...</p>
-                          </div>
-                        ) : displayAchievements.length > 0 ? (
-                          displayAchievements.map((achievement: any) => (
-                            <div key={achievement.id} className="flex items-center space-x-3 p-3 rounded-lg bg-muted/50">
-                              <div className={`w-10 h-10 rounded-full ${achievement.color} flex items-center justify-center`}>
-                                <achievement.icon className="w-5 h-5" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-foreground">{achievement.name}</p>
-                                <p className="text-sm text-muted-foreground">{achievement.description}</p>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="col-span-full text-center p-4 border-2 border-dashed border-muted rounded-lg">
-                            <p className="text-sm text-muted-foreground">No achievements yet</p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <h4 className="font-medium text-foreground">Portfolio Performance</h4>
-                      <PortfolioGraph 
-                        userId={user.id}
-                        portfolioType="personal"
-                        title="Your Portfolio Since Account Creation"
-                        height={250}
-                        showStats={true}
-                      />
-                    </div>
-
                     <Button 
                       className="w-full" 
                       onClick={(e) => {

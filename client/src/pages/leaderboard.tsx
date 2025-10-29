@@ -3,8 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, TrendingUp, Users, DollarSign, Activity } from "lucide-react";
+import { Trophy, TrendingUp, DollarSign } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
@@ -16,33 +15,33 @@ const fadeInUp = {
 export default function Leaderboard() {
   const { user } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
-  const [activeTab, setActiveTab] = useState("tournaments");
+  const [activeTab, setActiveTab] = useState("wagered");
 
-  // Fetch tournaments leaderboard data with 5-minute refresh
-  const { data: tournamentLeaderboard, isLoading: tournamentsLoading } = useQuery({
-    queryKey: ['/api/tournaments/leaderboard'],
-    enabled: activeTab === "tournaments",
-    refetchInterval: 5 * 60 * 1000, // 5 minutes
+  // Fetch total wagered leaderboard
+  const { data: wageredLeaderboard, isLoading: wageredLoading } = useQuery({
+    queryKey: ['/api/leaderboard/total-wagered'],
+    enabled: activeTab === "wagered",
+    refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
+    staleTime: 4 * 60 * 1000,
   });
 
-  // Fetch personal leaderboard data with 5-minute refresh
-  const { data: personalLeaderboard, isLoading: personalLoading } = useQuery({
-    queryKey: ['/api/personal/leaderboard'],
-    enabled: activeTab === "personal",
-    refetchInterval: 5 * 60 * 1000, // 5 minutes
+  // Fetch highest wager tournaments
+  const { data: highWagerLeaderboard, isLoading: highWagerLoading } = useQuery({
+    queryKey: ['/api/leaderboard/highest-wager'],
+    enabled: activeTab === "highwager",
+    refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
+    staleTime: 4 * 60 * 1000,
   });
 
-  // Fetch streak leaderboard data with 5-minute refresh
-  const { data: streakLeaderboard, isLoading: streakLoading } = useQuery({
-    queryKey: ['/api/streak/leaderboard'],
-    enabled: activeTab === "streak",
-    refetchInterval: 5 * 60 * 1000, // 5 minutes
+  // Fetch most growth leaderboard
+  const { data: growthLeaderboard, isLoading: growthLoading } = useQuery({
+    queryKey: ['/api/leaderboard/most-growth'],
+    enabled: activeTab === "growth",
+    refetchInterval: 5 * 60 * 1000,
     refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000, // 4 minutes to allow fresh data
+    staleTime: 4 * 60 * 1000,
   });
 
   const getRankIcon = (rank: number) => {
@@ -78,70 +77,133 @@ export default function Leaderboard() {
         <motion.div variants={fadeInUp} className="max-w-6xl mx-auto">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-3 mb-8">
-              <TabsTrigger value="tournaments" className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-{t('tournaments')}
+              <TabsTrigger value="wagered" className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                Total Wagered
               </TabsTrigger>
-              <TabsTrigger value="personal" className="flex items-center gap-2">
+              <TabsTrigger value="highwager" className="flex items-center gap-2">
+                <Trophy className="h-4 w-4" />
+                Highest Wager
+              </TabsTrigger>
+              <TabsTrigger value="growth" className="flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
-{t('personal')}
-              </TabsTrigger>
-              <TabsTrigger value="streak" className="flex items-center gap-2">
-                <Activity className="h-4 w-4" />
-{t('streak')}
+                Most Growth
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="tournaments" className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-3 mb-8">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Tournaments</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{(tournamentLeaderboard as any)?.data?.totalTournaments || 0}</div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Participants</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{(tournamentLeaderboard as any)?.data?.totalParticipants || 0}</div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Your Rank</CardTitle>
-                    <Trophy className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {(tournamentLeaderboard as any)?.data?.yourRank || "N/A"}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
+            <TabsContent value="wagered" className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>Tournament Leaderboard</CardTitle>
+                  <CardTitle>Total Amount Wagered Leaderboard</CardTitle>
+                  <p className="text-sm text-muted-foreground">Top players by cumulative tournament buy-ins</p>
                 </CardHeader>
                 <CardContent>
-                  {tournamentsLoading ? (
+                  {wageredLoading ? (
                     <div className="flex justify-center py-8">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {(tournamentLeaderboard as any)?.data?.rankings?.map((participant: any, index: number) => {
+                      {(wageredLeaderboard as any)?.data?.rankings?.map((user: any, index: number) => {
                         const rank = index + 1;
-                        const percentageChange = participant.percentageChange || 0;
-                        
+
+                        return (
+                          <div
+                            key={user.id}
+                            className="flex items-center justify-between p-4 rounded-lg border border-border"
+                          >
+                            <div className="flex items-center gap-4">
+                              {getRankIcon(rank)}
+                              <div>
+                                <div className="font-semibold">{user.username}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {user.tournamentCount || 0} tournaments entered
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <div className="font-bold text-lg">{formatCurrency(user.totalWagered || 0)}</div>
+                              <div className="text-sm text-muted-foreground">Total wagered</div>
+                            </div>
+                          </div>
+                        );
+                      }) || (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No wagering data available
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="highwager" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Highest Wager Tournaments</CardTitle>
+                  <p className="text-sm text-muted-foreground">Tournaments with the highest buy-in amounts</p>
+                </CardHeader>
+                <CardContent>
+                  {highWagerLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {(highWagerLeaderboard as any)?.data?.rankings?.map((tournament: any, index: number) => {
+                        const rank = index + 1;
+
+                        return (
+                          <div
+                            key={tournament.id}
+                            className="flex items-center justify-between p-4 rounded-lg border border-border"
+                          >
+                            <div className="flex items-center gap-4">
+                              {getRankIcon(rank)}
+                              <div>
+                                <div className="font-semibold">{tournament.name}</div>
+                                <div className="text-sm text-muted-foreground">
+                                  {tournament.currentPlayers} / {tournament.maxPlayers} players
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="text-right">
+                              <div className="font-bold text-lg">{formatCurrency(tournament.buyInAmount || 0)}</div>
+                              <div className="text-sm text-muted-foreground">Buy-in amount</div>
+                            </div>
+                          </div>
+                        );
+                      }) || (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No high wager tournament data available
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="growth" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Most Growth in Tournament</CardTitle>
+                  <p className="text-sm text-muted-foreground">Players with the highest percentage returns in a single tournament</p>
+                </CardHeader>
+                <CardContent>
+                  {growthLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {(growthLeaderboard as any)?.data?.rankings?.map((participant: any, index: number) => {
+                        const rank = index + 1;
+                        const growth = participant.percentageChange || 0;
+
                         return (
                           <div
                             key={participant.id}
@@ -154,217 +216,25 @@ export default function Leaderboard() {
                               <div>
                                 <div className="font-semibold">{participant.username}</div>
                                 <div className="text-sm text-muted-foreground">
-                                  {participant.tournamentName} (ID: {participant.tournamentId}) • Starting: {formatCurrency(participant.startingBalance)}
+                                  {participant.tournamentName} • Starting: {formatCurrency(participant.startingBalance)}
                                 </div>
                               </div>
                             </div>
-                            
+
                             <div className="text-right">
                               <div className="font-bold text-lg">{formatCurrency(participant.portfolioValue)}</div>
-                              <div className={`text-sm flex items-center gap-1 ${
-                                percentageChange >= 0 ? 'text-green-500' : 'text-red-500'
+                              <div className={`text-sm flex items-center gap-1 font-semibold ${
+                                growth >= 0 ? 'text-green-500' : 'text-red-500'
                               }`}>
                                 <TrendingUp className="h-3 w-3" />
-                                {percentageChange >= 0 ? '+' : ''}{percentageChange.toFixed(2)}%
+                                {growth >= 0 ? '+' : ''}{growth.toFixed(2)}% Growth
                               </div>
                             </div>
                           </div>
                         );
                       }) || (
                         <div className="text-center py-8 text-muted-foreground">
-                          No tournament data available
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="personal" className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-3 mb-8">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Traders</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{(personalLeaderboard as any)?.data?.totalTraders || 0}</div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Your Rank</CardTitle>
-                    <Trophy className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {(personalLeaderboard as any)?.data?.yourRank || "N/A"}
-                    </div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                    <DollarSign className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{(personalLeaderboard as any)?.data?.totalUsers || 0}</div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Personal Portfolio Leaderboard</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {personalLoading ? (
-                    <div className="flex justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {(personalLeaderboard as any)?.data?.rankings?.map((trader: any, index: number) => {
-                        const rank = index + 1;
-                        const percentageChange = trader.percentageChange || 0;
-                        
-                        return (
-                          <div
-                            key={trader.id}
-                            className={`flex items-center justify-between p-4 rounded-lg border ${
-                              trader.id === user?.id ? 'border-primary bg-primary/10' : 'border-border'
-                            }`}
-                          >
-                            <div className="flex items-center gap-4">
-                              {getRankIcon(rank)}
-                              <div>
-                                <div className="font-semibold flex items-center gap-2">
-                                  {trader.username}
-                                  {trader.subscriptionTier === 'premium' && (
-                                    <Badge variant="outline" className="text-xs">Premium</Badge>
-                                  )}
-                                  {trader.subscriptionTier === 'administrator' && (
-                                    <Badge variant="outline" className="text-xs text-blue-600">Administrator</Badge>
-                                  )}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="text-right">
-                              <div className="font-bold text-lg">{formatCurrency(trader.portfolioValue)}</div>
-                              <div className={`text-sm flex items-center gap-1 ${
-                                percentageChange >= 0 ? 'text-green-500' : 'text-red-500'
-                              }`}>
-                                <TrendingUp className="h-3 w-3" />
-                                {percentageChange >= 0 ? '+' : ''}{percentageChange.toFixed(2)}%
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      }) || (
-                        <div className="text-center py-8 text-muted-foreground">
-                          No personal portfolio data available
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="streak" className="space-y-6">
-              <div className="grid gap-4 md:grid-cols-3 mb-8">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Streaks</CardTitle>
-                    <Activity className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{(streakLeaderboard as any)?.data?.totalTraders || 0}</div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{(streakLeaderboard as any)?.data?.totalUsers || 0}</div>
-                  </CardContent>
-                </Card>
-                
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Your Rank</CardTitle>
-                    <Trophy className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">
-                      {(streakLeaderboard as any)?.data?.yourRank || "N/A"}
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Trading Streak Leaderboard</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {streakLoading ? (
-                    <div className="flex justify-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      {(streakLeaderboard as any)?.data?.rankings?.map((trader: any, index: number) => {
-                        const rank = index + 1;
-                        const streak = trader.tradingStreak || 0;
-                        
-                        return (
-                          <div
-                            key={trader.id}
-                            className={`flex items-center justify-between p-4 rounded-lg border ${
-                              trader.id === user?.id ? 'border-primary bg-primary/10' : 'border-border'
-                            }`}
-                          >
-                            <div className="flex items-center gap-4">
-                              {getRankIcon(rank)}
-                              <div>
-                                <div className="font-semibold flex items-center gap-2">
-                                  {trader.username}
-                                  {trader.subscriptionTier === 'premium' && (
-                                    <Badge variant="outline" className="text-xs">Premium</Badge>
-                                  )}
-                                  {trader.subscriptionTier === 'administrator' && (
-                                    <Badge variant="outline" className="text-xs text-blue-600">Administrator</Badge>
-                                  )}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="text-right">
-                              <div className="font-bold text-lg flex items-center gap-2">
-                                <Activity className="h-4 w-4 text-primary" />
-                                {streak} {streak === 1 ? 'Day' : 'Days'}
-                              </div>
-                              <div className="text-sm text-muted-foreground">
-                                {streak === 0 ? 'No streak' : `${streak} consecutive trading days`}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      }) || (
-                        <div className="text-center py-8 text-muted-foreground">
-                          No trading streak data available
+                          No growth data available
                         </div>
                       )}
                     </div>

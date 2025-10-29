@@ -61,6 +61,9 @@ const DURATION_OPTIONS = [
 ];
 
 const START_DELAY_OPTIONS = [
+  { value: "immediately", label: "Start Immediately" },
+  { value: "1 minute", label: "1 Minute" },
+  { value: "5 minutes", label: "5 Minutes" },
   { value: "10 minutes", label: "10 Minutes" },
   { value: "30 minutes", label: "30 Minutes" },
   { value: "1 hour", label: "1 Hour" },
@@ -98,7 +101,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     tournamentType: "stocks", // 3. Stock or Crypto tournament
     startingBalance: 10000, // 4. Starting Fake Cash amount
     duration: "1 week", // 5. Duration of the tournament
-    startDelay: "10 minutes", // 6. In how many minutes, hours, or days the tournament will start (min 10 minutes)
+    startDelay: "immediately", // 6. In how many minutes, hours, or days the tournament will start
     isPublic: true, // 7. Private or Public
     buyInAmount: 0, // Buy-in amount
     agreeToTerms: false // Terms of service agreement
@@ -116,8 +119,11 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         startingBalance: data.startingBalance,
         duration: data.duration,
         scheduledStartTime: new Date(Date.now() + (
+          data.startDelay === 'immediately' ? 0 :
+          data.startDelay === '1 minute' ? 1 * 60 * 1000 :
+          data.startDelay === '5 minutes' ? 5 * 60 * 1000 :
           data.startDelay === '10 minutes' ? 10 * 60 * 1000 :
-          data.startDelay === '30 minutes' ? 30 * 60 * 1000 : 
+          data.startDelay === '30 minutes' ? 30 * 60 * 1000 :
           data.startDelay === '1 hour' ? 60 * 60 * 1000 :
           data.startDelay === '2 hours' ? 2 * 60 * 60 * 1000 :
           data.startDelay === '6 hours' ? 6 * 60 * 60 * 1000 :
@@ -139,7 +145,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         tournamentType: "stocks",
         startingBalance: 10000,
         duration: "1 week",
-        startDelay: "10 minutes",
+        startDelay: "immediately",
         isPublic: true,
         buyInAmount: 0,
         agreeToTerms: false
@@ -354,7 +360,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
               <Label className="text-sm font-medium">Tournament Start Time</Label>
-              <InfoTooltip content="When the tournament will begin. Minimum delay is 10 minutes to allow for proper setup and participant registration." />
+              <InfoTooltip content="When the tournament will begin. You can start immediately or schedule for later to allow time for participant registration." />
             </div>
             <Select value={formData.startDelay} onValueChange={(value) => updateField("startDelay", value)}>
               <SelectTrigger>

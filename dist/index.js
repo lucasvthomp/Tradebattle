@@ -451,13 +451,21 @@ var init_db = __esm({
 });
 
 // server/storage.ts
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
 import { eq, desc, asc, and, sql, ne, isNull } from "drizzle-orm";
-var DatabaseStorage, storage;
+async function hashPassword(password) {
+  const salt = randomBytes(16).toString("hex");
+  const buf = await scryptAsync(password, salt, 64);
+  return `${buf.toString("hex")}.${salt}`;
+}
+var scryptAsync, DatabaseStorage, storage;
 var init_storage = __esm({
   "server/storage.ts"() {
     "use strict";
     init_schema();
     init_db();
+    scryptAsync = promisify(scrypt);
     DatabaseStorage = class {
       // User operations
       async getUser(id) {
@@ -474,26 +482,51 @@ var init_storage = __esm({
       }
       async createUser(userData) {
         try {
-          const maxUserIdResult = await db.select({ maxUserId: sql`COALESCE(MAX(user_id), -1)` }).from(users);
-          const maxUserId = maxUserIdResult[0]?.maxUserId || -1;
-          const nextUserId = maxUserId >= 0 ? maxUserId + 1 : 0;
-          const result = await db.insert(users).values({
-            ...userData,
-            userId: nextUserId
-          }).returning();
-          const newUser = result[0];
-          try {
-            await this.awardAchievement({
-              userId: newUser.id,
-              achievementType: "welcome",
-              achievementTier: "common",
-              achievementName: "Welcome",
-              achievementDescription: "Joined the platform"
-            });
-          } catch (achievementError) {
-            console.error("Error awarding welcome achievement:", achievementError);
+          const hashedPassword = await hashPassword(userData.password);
+          let attempts = 0;
+          const maxAttempts = 5;
+          while (attempts < maxAttempts) {
+            try {
+              const result = await db.transaction(async (tx) => {
+                const maxUserIdResult = await tx.select({
+                  maxUserId: sql`COALESCE(MAX(user_id), -1)`
+                }).from(users);
+                const maxUserId = maxUserIdResult[0]?.maxUserId ?? -1;
+                const nextUserId = maxUserId + 1;
+                console.log(`Attempting to create user with userId: ${nextUserId} (max was: ${maxUserId})`);
+                return await tx.insert(users).values({
+                  ...userData,
+                  password: hashedPassword,
+                  userId: nextUserId
+                }).returning();
+              });
+              const newUser = result[0];
+              try {
+                await this.awardAchievement({
+                  userId: newUser.id,
+                  achievementType: "welcome",
+                  achievementTier: "common",
+                  achievementName: "Welcome",
+                  achievementDescription: "Joined the platform"
+                });
+              } catch (achievementError) {
+                console.error("Error awarding welcome achievement:", achievementError);
+              }
+              return newUser;
+            } catch (error) {
+              if (error?.code === "23505" && error?.constraint === "users_user_id_unique") {
+                attempts++;
+                console.log(`Duplicate userId detected, retrying... (attempt ${attempts}/${maxAttempts})`);
+                if (attempts >= maxAttempts) {
+                  throw new Error("Failed to create user after maximum retry attempts");
+                }
+                await new Promise((resolve) => setTimeout(resolve, 100 * attempts));
+                continue;
+              }
+              throw error;
+            }
           }
-          return newUser;
+          throw new Error("Failed to create user: maximum attempts reached");
         } catch (error) {
           console.error("Error in createUser:", error);
           throw error;
@@ -687,8 +720,7 @@ var init_storage = __esm({
               );
               return {
                 ...participant,
-                username: user[0]?.username || "",
-                displayName: user[0]?.username || `User ${participant.userId}`,
+                username: user[0]?.username || `User ${participant.userId}`,
                 email: user[0]?.email || "",
                 stockPurchases: stockPurchases2 || []
               };
@@ -1006,6 +1038,14 @@ function getDateRange(timeFrame) {
     return date.toISOString().split("T")[0];
   };
   switch (timeFrame) {
+    case "1H":
+      return {
+        period1: getDaysAgo(1),
+        // Get 1 day ago for 1 hour of data
+        period2: today,
+        interval: "1m"
+        // Use 1-minute intervals for 1H timeframe
+      };
     case "1D":
       return {
         period1: getDaysAgo(2),
@@ -1970,10 +2010,10 @@ init_storage();
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
-import { scrypt, randomBytes, timingSafeEqual } from "crypto";
-import { promisify } from "util";
+import { scrypt as scrypt2, randomBytes as randomBytes2, timingSafeEqual } from "crypto";
+import { promisify as promisify2 } from "util";
 import connectPg from "connect-pg-simple";
-var scryptAsync = promisify(scrypt);
+var scryptAsync2 = promisify2(scrypt2);
 async function comparePasswords(supplied, stored) {
   if (!stored.includes(".")) {
     return supplied === stored;
@@ -1983,7 +2023,7 @@ async function comparePasswords(supplied, stored) {
     return false;
   }
   const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = await scryptAsync(supplied, salt, 64);
+  const suppliedBuf = await scryptAsync2(supplied, salt, 64);
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 function setupAuth(app2) {
@@ -2037,16 +2077,27 @@ function setupAuth(app2) {
   });
   app2.post("/api/register", async (req, res, next) => {
     try {
+      console.log("=== Registration Request Started ===");
+      console.log("Request body:", JSON.stringify(req.body, null, 2));
       const { email, username, password, country, language, currency } = req.body;
+      if (!email || !username || !password) {
+        console.error("Missing required fields:", { email: !!email, username: !!username, password: !!password });
+        return res.status(400).json({ message: "Email, username, and password are required" });
+      }
+      console.log("Checking if user exists with email:", email);
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
+        console.log("User already exists with email:", email);
         return res.status(400).json({ message: "User already exists with this email" });
       }
       if (!username || username.length < 3 || username.length > 15 || !/^[a-zA-Z0-9_]+$/.test(username)) {
+        console.error("Invalid username:", username);
         return res.status(400).json({ message: "Username must be 3-15 characters and contain only letters, numbers, and underscores" });
       }
+      console.log("Checking if username is taken:", username);
       const existingUsername = await storage.getUserByUsername(username);
       if (existingUsername) {
+        console.log("Username already taken:", username);
         return res.status(400).json({ message: "Username is already taken" });
       }
       const userData = {
@@ -2059,20 +2110,21 @@ function setupAuth(app2) {
         subscriptionTier: "free",
         premiumUpgradeDate: null
       };
+      console.log("Creating user with data:", { ...userData, password: "[REDACTED]" });
       const user = await storage.createUser(userData);
-      try {
-        await storage.awardAchievementByParams(user.id, "Welcome", "Common", "Welcome to ORSATH", "Welcome to the platform!");
-      } catch (achievementError) {
-        console.error("Error awarding achievements:", achievementError);
-      }
+      console.log("User created successfully:", { id: user.id, userId: user.userId, username: user.username });
+      console.log("Logging user in automatically");
       req.login(user, (err) => {
-        if (err) return next(err);
+        if (err) {
+          console.error("Error during automatic login:", err);
+          return next(err);
+        }
+        console.log("User logged in successfully");
         res.status(201).json({
           id: user.id,
           userId: user.userId,
           email: user.email,
           username: user.username,
-          displayName: user.displayName,
           country: user.country,
           language: user.language,
           currency: user.currency,
@@ -2080,10 +2132,18 @@ function setupAuth(app2) {
           createdAt: user.createdAt,
           updatedAt: user.updatedAt
         });
+        console.log("=== Registration Request Completed Successfully ===");
       });
     } catch (error) {
-      console.error("Registration error:", error);
-      res.status(500).json({ message: "Registration failed" });
+      console.error("=== Registration Error ===");
+      console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
+      console.error("Error message:", error instanceof Error ? error.message : String(error));
+      console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
+      console.error("Full error object:", error);
+      res.status(500).json({
+        message: "Registration failed",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
   app2.post("/api/login", (req, res, next) => {
@@ -2099,7 +2159,6 @@ function setupAuth(app2) {
           userId: user.userId,
           email: user.email,
           username: user.username,
-          displayName: user.displayName,
           firstName: user.firstName,
           lastName: user.lastName,
           subscriptionTier: user.subscriptionTier,
@@ -2129,7 +2188,6 @@ function setupAuth(app2) {
         userId: freshUser.userId,
         email: freshUser.email,
         username: freshUser.username,
-        displayName: freshUser.displayName,
         firstName: freshUser.firstName,
         lastName: freshUser.lastName,
         subscriptionTier: freshUser.subscriptionTier,
@@ -2298,66 +2356,6 @@ init_storage();
 init_db();
 import { sql as sql2 } from "drizzle-orm";
 var router = Router();
-async function checkPersonalPortfolioGrowthAchievements(userId) {
-  try {
-    const user = await storage.getUser(userId);
-    if (!user) return;
-    const purchases = await storage.getPersonalStockPurchases(userId);
-    const currentBalance = parseFloat(user.personalBalance) || 1e4;
-    const initialDeposit = parseFloat(user.totalDeposited) || 1e4;
-    let currentPortfolioValue = currentBalance;
-    for (const purchase of purchases) {
-      try {
-        const quote = await getStockQuote(purchase.symbol);
-        const currentValue = purchase.shares * quote.price;
-        currentPortfolioValue += currentValue;
-      } catch (error) {
-        const purchaseValue = purchase.shares * purchase.purchasePrice;
-        currentPortfolioValue += purchaseValue;
-      }
-    }
-    const growthPercentage = (currentPortfolioValue - initialDeposit) / initialDeposit * 100;
-    console.log(`Portfolio growth check for user ${userId}: ${growthPercentage.toFixed(2)}% (${currentPortfolioValue} vs ${initialDeposit})`);
-    if (growthPercentage >= 5) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "5_percent_growth",
-        achievementTier: "uncommon",
-        achievementName: "5% Portfolio Growth",
-        achievementDescription: "Made over 5% on any portfolio"
-      });
-    }
-    if (growthPercentage >= 10) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "10_percent_growth",
-        achievementTier: "rare",
-        achievementName: "10% Portfolio Growth",
-        achievementDescription: "Made over 10% on any portfolio"
-      });
-    }
-    if (growthPercentage >= 25) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "25_percent_growth",
-        achievementTier: "legendary",
-        achievementName: "25% Portfolio Growth",
-        achievementDescription: "Made over 25% on any portfolio"
-      });
-    }
-    if (growthPercentage >= 100) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "100_percent_growth",
-        achievementTier: "mythic",
-        achievementName: "100% Portfolio Growth",
-        achievementDescription: "Made over 100% on any portfolio"
-      });
-    }
-  } catch (error) {
-    console.log("Error checking portfolio growth achievements:", error);
-  }
-}
 router.get("/quote/:symbol", asyncHandler(async (req, res) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
   if (!validateSymbol(symbol)) {
@@ -2390,7 +2388,7 @@ router.get("/historical/:symbol", asyncHandler(async (req, res) => {
   if (!validateSymbol(symbol)) {
     throw new ValidationError("Invalid symbol format");
   }
-  const validTimeframes = ["1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "5Y"];
+  const validTimeframes = ["1H", "1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "5Y"];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError("Invalid timeframe. Valid timeframes: " + validTimeframes.join(", "));
   }
@@ -2411,7 +2409,7 @@ router.get("/historical/:symbol/:timeframe", asyncHandler(async (req, res) => {
   if (!validateSymbol(symbol)) {
     throw new ValidationError("Invalid symbol format");
   }
-  const validTimeframes = ["1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "5Y"];
+  const validTimeframes = ["1H", "1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "5Y"];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError("Invalid timeframe. Valid timeframes: " + validTimeframes.join(", "));
   }
@@ -2432,7 +2430,7 @@ router.get("/performance/:symbol/:timeframe", asyncHandler(async (req, res) => {
   if (!validateSymbol(symbol)) {
     throw new ValidationError("Invalid symbol format");
   }
-  const validTimeframes = ["1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "5Y"];
+  const validTimeframes = ["1H", "1D", "5D", "1W", "1M", "3M", "6M", "YTD", "1Y", "5Y"];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError("Invalid timeframe. Valid timeframes: " + validTimeframes.join(", "));
   }
@@ -2503,19 +2501,24 @@ router.post("/tournaments", requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError("Tournament name and starting balance are required");
   }
   const buyIn = parseFloat(buyInAmount) || 0;
+  const startTime = scheduledStartTime ? new Date(scheduledStartTime) : /* @__PURE__ */ new Date();
   const tournament = await storage.createTournament({
     name: sanitizeInput(name),
     maxPlayers: maxPlayers || 10,
     tournamentType: tournamentType || "stocks",
     startingBalance: parseFloat(startingBalance),
     timeframe: duration || "1 week",
-    scheduledStartTime: scheduledStartTime ? new Date(scheduledStartTime) : null,
+    scheduledStartTime: startTime,
     buyInAmount: buyIn,
     currentPot: 0,
     // Will be set by storage layer after buy-in deduction
     tradingRestriction: tradingRestriction || "none",
     isPublic: isPublic !== void 0 ? isPublic : true
   }, userId);
+  const now = /* @__PURE__ */ new Date();
+  if (startTime <= now) {
+    await storage.updateTournamentStatus(tournament.id, "active", now);
+  }
   await storage.awardAchievement({
     userId,
     achievementType: "tournament_creator",
@@ -2637,26 +2640,6 @@ router.post("/tournaments/code/:code/join", requireAuth, asyncHandler(async (req
   if (tournament.currentPlayers >= tournament.maxPlayers) {
     throw new ValidationError("Tournament is full");
   }
-  const buyIn = parseFloat(tournament.buyInAmount?.toString() || "0");
-  if (buyIn > 0) {
-    const user = await storage.getUser(userId);
-    const currentSiteCash = parseFloat(user?.siteCash?.toString() || "0");
-    if (buyIn > currentSiteCash) {
-      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
-    }
-    const newSiteCash = currentSiteCash - buyIn;
-    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
-    const newPot = parseFloat(tournament.currentPot?.toString() || "0") + buyIn;
-    await storage.updateTournament(tournament.id, { currentPot: newPot.toString() });
-    await storage.createAdminLog({
-      adminUserId: userId,
-      targetUserId: userId,
-      action: "tournament_buyin_deduction",
-      oldValue: currentSiteCash.toString(),
-      newValue: newSiteCash.toString(),
-      notes: `Buy-in deducted for joining tournament: ${tournament.name} ($${buyIn.toFixed(2)})`
-    });
-  }
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
     await storage.awardAchievement({
@@ -2691,26 +2674,6 @@ router.post("/tournaments/:id/join", requireAuth, asyncHandler(async (req, res) 
   }
   if (tournament.currentPlayers >= tournament.maxPlayers) {
     throw new ValidationError("Tournament is full");
-  }
-  const buyIn = parseFloat(tournament.buyInAmount?.toString() || "0");
-  if (buyIn > 0) {
-    const user = await storage.getUser(userId);
-    const currentSiteCash = parseFloat(user?.siteCash?.toString() || "0");
-    if (buyIn > currentSiteCash) {
-      throw new ValidationError(`Insufficient funds. You need ${buyIn.toFixed(2)} but only have ${currentSiteCash.toFixed(2)} in your account.`);
-    }
-    const newSiteCash = currentSiteCash - buyIn;
-    await storage.updateUser(userId, { siteCash: newSiteCash.toString() });
-    const newPot = parseFloat(tournament.currentPot?.toString() || "0") + buyIn;
-    await storage.updateTournament(tournament.id, { currentPot: newPot.toString() });
-    await storage.createAdminLog({
-      adminUserId: userId,
-      targetUserId: userId,
-      action: "tournament_buyin_deduction",
-      oldValue: currentSiteCash.toString(),
-      newValue: newSiteCash.toString(),
-      notes: `Buy-in deducted for joining tournament: ${tournament.name} ($${buyIn.toFixed(2)})`
-    });
   }
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
@@ -2793,7 +2756,7 @@ router.get("/tournaments/:id/leaderboard", requireAuth, asyncHandler(async (req,
       return {
         userId: participant.userId,
         firstName: participant.firstName,
-        displayName: participant.displayName,
+        username: participant.username,
         portfolioValue,
         balance,
         stockValue
@@ -3056,374 +3019,6 @@ router.post("/tournaments/:id/purchase", requireAuth, asyncHandler(async (req, r
     data: { purchase }
   });
 }));
-router.post("/tournaments/:id/sell", requireAuth, asyncHandler(async (req, res) => {
-  const tournamentId = parseInt(req.params.id);
-  const userId = req.user.id;
-  const { purchaseId, sharesToSell, currentPrice } = req.body;
-  if (!purchaseId || !sharesToSell || !currentPrice) {
-    throw new ValidationError("Purchase ID, shares to sell, and current price are required");
-  }
-  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
-  const purchase = purchases.find((p) => p.id === parseInt(purchaseId));
-  if (!purchase) {
-    throw new ValidationError("Purchase not found");
-  }
-  const sharesToSellNum = parseInt(sharesToSell);
-  if (sharesToSellNum <= 0 || sharesToSellNum > purchase.shares) {
-    throw new ValidationError("Invalid number of shares to sell");
-  }
-  const saleValue = sharesToSellNum * parseFloat(currentPrice);
-  const tournaments2 = await storage.getAllTournaments();
-  const tournament = tournaments2.find((t) => t.id === tournamentId);
-  if (tournament && tournament.status === "completed") {
-    throw new ValidationError("Cannot trade in completed tournaments");
-  }
-  await storage.recordTrade({
-    userId,
-    tournamentId,
-    symbol: purchase.symbol,
-    companyName: purchase.companyName,
-    tradeType: "sell",
-    shares: sharesToSellNum,
-    price: parseFloat(currentPrice),
-    totalValue: saleValue
-  });
-  const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
-  await storage.updateTournamentBalance(tournamentId, userId, currentBalance + saleValue);
-  if (sharesToSellNum === purchase.shares) {
-    await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
-  } else {
-    await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
-    if (purchase.shares - sharesToSellNum > 0) {
-      await storage.purchaseTournamentStock(tournamentId, userId, {
-        symbol: purchase.symbol,
-        companyName: purchase.companyName,
-        shares: purchase.shares - sharesToSellNum,
-        purchasePrice: purchase.purchasePrice,
-        totalCost: (purchase.shares - sharesToSellNum) * purchase.purchasePrice
-      });
-    }
-  }
-  res.json({
-    success: true,
-    data: {
-      saleValue,
-      newBalance: currentBalance + saleValue
-    }
-  });
-}));
-router.get("/tournaments/:id/balance", requireAuth, asyncHandler(async (req, res) => {
-  const tournamentId = parseInt(req.params.id);
-  const userId = req.user.id;
-  if (isNaN(tournamentId)) {
-    throw new ValidationError("Invalid tournament ID");
-  }
-  const balance = await storage.getTournamentBalance(tournamentId, userId);
-  res.json({
-    success: true,
-    data: { balance }
-  });
-}));
-router.get("/tournaments/:id/purchases", requireAuth, asyncHandler(async (req, res) => {
-  const tournamentId = parseInt(req.params.id);
-  const userId = req.user.id;
-  if (isNaN(tournamentId)) {
-    throw new ValidationError("Invalid tournament ID");
-  }
-  const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
-  res.json({
-    success: true,
-    data: purchases
-  });
-}));
-async function calculateTradingStreak(userId) {
-  try {
-    const trades = await db.query.tradeHistory.findMany({
-      where: (tradeHistory2, { eq: eq3 }) => eq3(tradeHistory2.userId, userId),
-      orderBy: (tradeHistory2, { desc: desc2 }) => [desc2(tradeHistory2.createdAt)]
-    });
-    if (trades.length === 0) {
-      return 0;
-    }
-    const tradesByDate = /* @__PURE__ */ new Map();
-    trades.forEach((trade) => {
-      const dateStr = trade.createdAt.toISOString().split("T")[0];
-      if (!tradesByDate.has(dateStr)) {
-        tradesByDate.set(dateStr, []);
-      }
-      tradesByDate.get(dateStr).push(trade);
-    });
-    const tradingDates = Array.from(tradesByDate.keys()).sort().reverse();
-    if (tradingDates.length === 0) {
-      return 0;
-    }
-    let streak = 0;
-    const today = (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
-    const startDate = /* @__PURE__ */ new Date();
-    let currentStreakCount = 0;
-    for (let i = 0; i < 365; i++) {
-      const checkDate = new Date(startDate);
-      checkDate.setDate(startDate.getDate() - i);
-      const dateStr = checkDate.toISOString().split("T")[0];
-      if (tradesByDate.has(dateStr)) {
-        currentStreakCount++;
-      } else {
-        if (currentStreakCount > 0) {
-          break;
-        }
-      }
-    }
-    console.log(`Trading streak calculation for user ${userId}:`, {
-      totalTrades: trades.length,
-      uniqueTradingDays: tradingDates.length,
-      mostRecentTradingDay: tradingDates[0],
-      calculatedStreak: currentStreakCount,
-      today
-    });
-    return currentStreakCount;
-  } catch (error) {
-    console.error("Error calculating trading streak:", error);
-    return 0;
-  }
-}
-async function awardStreakAchievements(userId, streak) {
-  try {
-    if (streak >= 5) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "5_day_streak",
-        achievementTier: "uncommon",
-        achievementName: "5 Day Streak",
-        achievementDescription: "Traded for 5 consecutive days"
-      });
-    }
-    if (streak >= 15) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "15_day_streak",
-        achievementTier: "rare",
-        achievementName: "15 Day Streak",
-        achievementDescription: "Traded for 15 consecutive days"
-      });
-    }
-    if (streak >= 50) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "50_day_streak",
-        achievementTier: "epic",
-        achievementName: "50 Day Streak",
-        achievementDescription: "Traded for 50 consecutive days"
-      });
-    }
-    if (streak >= 100) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "100_day_streak",
-        achievementTier: "legendary",
-        achievementName: "100 Day Streak",
-        achievementDescription: "Traded for 100 consecutive days"
-      });
-    }
-    if (streak >= 365) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: "365_day_streak",
-        achievementTier: "mythic",
-        achievementName: "365 Day Streak",
-        achievementDescription: "Traded every day for a full year"
-      });
-    }
-  } catch (error) {
-    console.error("Error awarding streak achievements:", error);
-  }
-}
-router.get("/personal-portfolio", requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const user = await storage.getUser(userId);
-  const purchases = await storage.getPersonalStockPurchases(userId);
-  const tradingStreak = await calculateTradingStreak(userId);
-  await awardStreakAchievements(userId, tradingStreak);
-  const holdingsMap = /* @__PURE__ */ new Map();
-  for (const purchase of purchases) {
-    const symbol = purchase.symbol;
-    if (holdingsMap.has(symbol)) {
-      const existing = holdingsMap.get(symbol);
-      const totalShares = existing.shares + purchase.shares;
-      const totalCost = existing.shares * existing.averagePrice + purchase.shares * parseFloat(purchase.purchasePrice);
-      const averagePrice = totalCost / totalShares;
-      holdingsMap.set(symbol, {
-        symbol,
-        companyName: purchase.companyName,
-        shares: totalShares,
-        averagePrice,
-        currentPrice: 0,
-        // Will be updated below
-        change: 0,
-        changePercent: 0
-      });
-    } else {
-      holdingsMap.set(symbol, {
-        symbol,
-        companyName: purchase.companyName,
-        shares: purchase.shares,
-        averagePrice: parseFloat(purchase.purchasePrice),
-        currentPrice: 0,
-        // Will be updated below
-        change: 0,
-        changePercent: 0
-      });
-    }
-  }
-  const holdings = [];
-  for (const holding of holdingsMap.values()) {
-    try {
-      const currentQuote = await getStockQuote(holding.symbol);
-      holding.currentPrice = currentQuote.price;
-      holding.change = currentQuote.change || 0;
-      holding.changePercent = currentQuote.changePercent || 0;
-    } catch (error) {
-      holding.currentPrice = holding.averagePrice;
-      holding.change = 0;
-      holding.changePercent = 0;
-    }
-    holdings.push(holding);
-  }
-  res.json({
-    success: true,
-    data: {
-      balance: user.personalBalance || 1e4,
-      portfolioCreatedAt: user.portfolioCreatedAt,
-      tradingStreak,
-      holdings
-    }
-  });
-}));
-router.get("/personal-purchases", requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const user = await storage.getUser(userId);
-  const purchases = await storage.getPersonalStockPurchases(userId);
-  res.json({
-    success: true,
-    data: purchases
-  });
-}));
-router.post("/personal-portfolio/purchase", requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const user = await storage.getUser(userId);
-  const { symbol, companyName, shares, purchasePrice } = req.body;
-  if (!symbol || !companyName || !shares || !purchasePrice) {
-    throw new ValidationError("All purchase fields are required");
-  }
-  const totalCost = shares * purchasePrice;
-  const currentBalance = user.personalBalance || 1e4;
-  if (currentBalance < totalCost) {
-    throw new ValidationError("Insufficient balance for this purchase");
-  }
-  const purchase = await storage.purchasePersonalStock(userId, {
-    symbol: sanitizeInput(symbol),
-    companyName: sanitizeInput(companyName),
-    shares: parseInt(shares),
-    purchasePrice: parseFloat(purchasePrice),
-    totalCost
-  });
-  await storage.recordTrade({
-    userId,
-    tournamentId: null,
-    // null for personal trades
-    symbol: sanitizeInput(symbol),
-    companyName: sanitizeInput(companyName),
-    tradeType: "buy",
-    shares: parseInt(shares),
-    price: parseFloat(purchasePrice),
-    totalValue: totalCost
-  });
-  await storage.updateUser(userId, {
-    personalBalance: currentBalance - totalCost
-  });
-  await storage.awardAchievement({
-    userId,
-    achievementType: "first_trade",
-    achievementTier: "common",
-    achievementName: "First Trade",
-    achievementDescription: "Made your first trade",
-    earnedAt: /* @__PURE__ */ new Date(),
-    createdAt: /* @__PURE__ */ new Date()
-  });
-  await checkPersonalPortfolioGrowthAchievements(userId);
-  const tradingStreak = await calculateTradingStreak(userId);
-  await awardStreakAchievements(userId, tradingStreak);
-  res.status(201).json({
-    success: true,
-    data: { purchase }
-  });
-}));
-router.post("/personal-portfolio/sell", requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const user = await storage.getUser(userId);
-  const { symbol, sharesToSell, currentPrice } = req.body;
-  if (!symbol || !sharesToSell || !currentPrice) {
-    throw new ValidationError("Symbol, shares to sell, and current price are required");
-  }
-  const purchases = await storage.getPersonalStockPurchases(userId);
-  const symbolPurchases = purchases.filter((p) => p.symbol === symbol).sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
-  if (symbolPurchases.length === 0) {
-    throw new ValidationError("No holdings found for this symbol");
-  }
-  const totalShares = symbolPurchases.reduce((sum, p) => sum + p.shares, 0);
-  const sharesToSellNum = parseInt(sharesToSell);
-  if (sharesToSellNum <= 0 || sharesToSellNum > totalShares) {
-    throw new ValidationError(`Invalid number of shares to sell. You own ${totalShares} shares of ${symbol}`);
-  }
-  const saleValue = sharesToSellNum * parseFloat(currentPrice);
-  const currentBalance = parseFloat(user.personalBalance) || 1e4;
-  await storage.recordTrade({
-    userId,
-    tournamentId: null,
-    // null for personal trades
-    symbol,
-    companyName: symbolPurchases[0].companyName,
-    tradeType: "sell",
-    shares: sharesToSellNum,
-    price: parseFloat(currentPrice),
-    totalValue: saleValue
-  });
-  await storage.updateUser(userId, {
-    personalBalance: currentBalance + saleValue
-  });
-  let remainingToSell = sharesToSellNum;
-  for (const purchase of symbolPurchases) {
-    if (remainingToSell <= 0) break;
-    if (purchase.shares <= remainingToSell) {
-      remainingToSell -= purchase.shares;
-      await storage.deletePersonalPurchase(userId, purchase.id);
-    } else {
-      const newShares = purchase.shares - remainingToSell;
-      const purchasePrice = parseFloat(purchase.purchasePrice);
-      await storage.deletePersonalPurchase(userId, purchase.id);
-      await storage.purchasePersonalStock(userId, {
-        symbol: purchase.symbol,
-        companyName: purchase.companyName,
-        shares: newShares,
-        purchasePrice,
-        totalCost: newShares * purchasePrice
-      });
-      remainingToSell = 0;
-    }
-  }
-  await checkPersonalPortfolioGrowthAchievements(userId);
-  const tradingStreak = await calculateTradingStreak(userId);
-  await awardStreakAchievements(userId, tradingStreak);
-  res.json({
-    success: true,
-    data: {
-      saleValue,
-      newBalance: currentBalance + saleValue,
-      sharesSold: sharesToSellNum
-    }
-  });
-}));
 router.get("/tournaments/leaderboard", requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const tournaments2 = await storage.getAllTournaments();
@@ -3574,6 +3169,77 @@ router.get("/streak/leaderboard", requireAuth, asyncHandler(async (req, res) => 
       // Top 50
       totalTraders: userStreaks.length,
       premiumUsers: userStreaks.length,
+      yourRank: userRank || null
+    }
+  });
+}));
+router.get("/leaderboard/total-wagered", requireAuth, asyncHandler(async (req, res) => {
+  const participants = await storage.getAllTournamentParticipants();
+  const userWagers = /* @__PURE__ */ new Map();
+  for (const participant of participants) {
+    const current = userWagers.get(participant.userId) || {
+      userId: participant.userId,
+      username: participant.username || "Unknown User",
+      totalWagered: 0,
+      tournamentCount: 0
+    };
+    current.totalWagered += participant.buyInAmount || 0;
+    current.tournamentCount += 1;
+    userWagers.set(participant.userId, current);
+  }
+  const rankings = Array.from(userWagers.values()).sort((a, b) => b.totalWagered - a.totalWagered);
+  res.json({
+    success: true,
+    data: {
+      rankings: rankings.slice(0, 50)
+    }
+  });
+}));
+router.get("/leaderboard/highest-wager", requireAuth, asyncHandler(async (req, res) => {
+  const tournaments2 = await storage.getAllTournaments();
+  const rankings = tournaments2.filter((t) => t.buyInAmount && t.buyInAmount > 0).sort((a, b) => b.buyInAmount - a.buyInAmount).map((t) => ({
+    id: t.id,
+    name: t.name,
+    buyInAmount: t.buyInAmount,
+    currentPlayers: t.currentPlayers || 0,
+    maxPlayers: t.maxPlayers || 0,
+    status: t.status
+  }));
+  res.json({
+    success: true,
+    data: {
+      rankings: rankings.slice(0, 50)
+    }
+  });
+}));
+router.get("/leaderboard/most-growth", requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const participants = await storage.getAllTournamentParticipants();
+  const participantGrowth = await Promise.all(participants.map(async (participant) => {
+    const portfolioValue = await storage.calculatePortfolioValue(
+      participant.userId,
+      participant.tournamentId
+    );
+    const startingBalance = participant.startingBalance || 1e4;
+    const percentageChange = (portfolioValue - startingBalance) / startingBalance * 100;
+    const tournament = await storage.getTournamentById(participant.tournamentId);
+    return {
+      id: participant.id,
+      userId: participant.userId,
+      username: participant.username || "Unknown User",
+      tournamentId: participant.tournamentId,
+      tournamentName: tournament?.name || "Unknown Tournament",
+      startingBalance,
+      portfolioValue,
+      percentageChange
+    };
+  }));
+  const rankings = participantGrowth.sort((a, b) => b.percentageChange - a.percentageChange);
+  const userRank = rankings.findIndex((p) => p.userId === userId) + 1;
+  res.json({
+    success: true,
+    data: {
+      rankings: rankings.slice(0, 50),
       yourRank: userRank || null
     }
   });
@@ -3731,7 +3397,6 @@ router.get("/users/public", asyncHandler(async (req, res) => {
     return {
       id: user.id,
       username: user.username,
-      displayName: user.displayName,
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
       totalTrades: user.totalTrades || 0,
@@ -3757,7 +3422,6 @@ router.get("/users/public/:userId", asyncHandler(async (req, res) => {
   const publicUser = {
     id: targetUser.id,
     username: targetUser.username,
-    displayName: targetUser.displayName,
     subscriptionTier: targetUser.subscriptionTier,
     createdAt: targetUser.createdAt,
     totalTrades
@@ -3776,17 +3440,6 @@ router.get("/tournaments/archived", requireAuth, asyncHandler(async (req, res) =
     data: archivedTournaments
   });
 }));
-router.get("/achievements/:userId", asyncHandler(async (req, res) => {
-  const userId = parseInt(req.params.userId);
-  if (isNaN(userId)) {
-    throw new ValidationError("Invalid user ID");
-  }
-  const achievements = await storage.getUserAchievements(userId);
-  res.json({
-    success: true,
-    data: achievements
-  });
-}));
 router.post("/tournaments/check-expiration", requireAuth, asyncHandler(async (req, res) => {
   if (!req.user.email.includes("admin")) {
     throw new UnauthorizedError("Admin access required");
@@ -3796,36 +3449,6 @@ router.post("/tournaments/check-expiration", requireAuth, asyncHandler(async (re
   res.json({
     success: true,
     message: "Expired tournaments processed successfully"
-  });
-}));
-router.put("/user/display-name", requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { displayName } = req.body;
-  if (displayName && (typeof displayName !== "string" || displayName.trim().length === 0 || displayName.trim().length > 255)) {
-    throw new ValidationError("Display name must be a non-empty string with maximum 255 characters");
-  }
-  const updatedUser = await storage.updateUser(userId, {
-    displayName: displayName ? displayName.trim() : null
-  });
-  res.json({
-    success: true,
-    data: {
-      id: updatedUser.id,
-      firstName: updatedUser.firstName,
-      lastName: updatedUser.lastName,
-      displayName: updatedUser.displayName,
-      email: updatedUser.email,
-      subscriptionTier: updatedUser.subscriptionTier,
-      createdAt: updatedUser.createdAt
-    }
-  });
-}));
-router.post("/check-portfolio-growth", requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  await checkPersonalPortfolioGrowthAchievements(userId);
-  res.json({
-    success: true,
-    message: "Portfolio growth check completed"
   });
 }));
 router.get("/portfolio-history/:userId", asyncHandler(async (req, res) => {
@@ -4187,7 +3810,6 @@ async function registerRoutes(app2) {
       console.log("Request body:", req.body);
       const validatedData = z2.object({
         email: z2.string().email(),
-        displayName: z2.string().optional().nullable(),
         username: z2.string().min(3, "Username must be at least 3 characters").max(15, "Username must be at most 15 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores").optional()
       }).parse(req.body);
       console.log("Validated data:", validatedData);
@@ -4616,8 +4238,8 @@ async function registerRoutes(app2) {
         console.log(`User ${targetUserEmail} not found`);
         return res.status(404).json({ message: "User not found." });
       }
-      if (targetUser.userId === 0 || targetUser.userId === 1) {
-        console.log(`Cannot delete admin account: User ${targetUserEmail} (userId: ${targetUser.userId})`);
+      if (targetUser.subscriptionTier === "admin") {
+        console.log(`Cannot delete admin account: User ${targetUserEmail}`);
         return res.status(403).json({ message: "Cannot delete admin accounts." });
       }
       console.log(`Deleting user ${targetUserEmail}...`);

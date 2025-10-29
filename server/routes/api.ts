@@ -26,87 +26,6 @@ import { requireAuth } from '../auth.js';
 const router = Router();
 
 /**
- * Helper function to calculate portfolio growth and award achievements
- */
-async function checkPersonalPortfolioGrowthAchievements(userId: number) {
-  try {
-    const user = await storage.getUser(userId);
-    if (!user) return;
-
-    const purchases = await storage.getPersonalStockPurchases(userId);
-    const currentBalance = parseFloat(user.personalBalance) || 10000;
-    const initialDeposit = parseFloat(user.totalDeposited) || 10000;
-    
-    // Calculate current portfolio value
-    let currentPortfolioValue = currentBalance;
-    
-    for (const purchase of purchases) {
-      // Get current price for each stock
-      try {
-        const quote = await getStockQuote(purchase.symbol);
-        const currentValue = purchase.shares * quote.price;
-        currentPortfolioValue += currentValue;
-      } catch (error) {
-        // If unable to get current price, use purchase price as fallback
-        const purchaseValue = purchase.shares * purchase.purchasePrice;
-        currentPortfolioValue += purchaseValue;
-      }
-    }
-    
-    // Calculate growth percentage
-    const growthPercentage = ((currentPortfolioValue - initialDeposit) / initialDeposit) * 100;
-    
-    console.log(`Portfolio growth check for user ${userId}: ${growthPercentage.toFixed(2)}% (${currentPortfolioValue} vs ${initialDeposit})`);
-    
-    // Award 5% Portfolio Growth achievement
-    if (growthPercentage >= 5) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '5_percent_growth',
-        achievementTier: 'uncommon',
-        achievementName: '5% Portfolio Growth',
-        achievementDescription: 'Made over 5% on any portfolio'
-      });
-    }
-    
-    // Award 10% Portfolio Growth achievement
-    if (growthPercentage >= 10) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '10_percent_growth',
-        achievementTier: 'rare',
-        achievementName: '10% Portfolio Growth',
-        achievementDescription: 'Made over 10% on any portfolio'
-      });
-    }
-    
-    // Award 25% Portfolio Growth achievement
-    if (growthPercentage >= 25) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '25_percent_growth',
-        achievementTier: 'legendary',
-        achievementName: '25% Portfolio Growth',
-        achievementDescription: 'Made over 25% on any portfolio'
-      });
-    }
-    
-    // Award 100% Portfolio Growth achievement
-    if (growthPercentage >= 100) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '100_percent_growth',
-        achievementTier: 'mythic',
-        achievementName: '100% Portfolio Growth',
-        achievementDescription: 'Made over 100% on any portfolio'
-      });
-    }
-  } catch (error) {
-    console.log('Error checking portfolio growth achievements:', error);
-  }
-}
-
-/**
  * GET /api/quote/:symbol
  * Fetch current stock quote data
  */
@@ -160,7 +79,7 @@ router.get('/historical/:symbol', asyncHandler(async (req: any, res: any) => {
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1H', '1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
@@ -190,7 +109,7 @@ router.get('/historical/:symbol/:timeframe', asyncHandler(async (req: any, res: 
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1H', '1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
@@ -220,7 +139,7 @@ router.get('/performance/:symbol/:timeframe', asyncHandler(async (req, res) => {
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1H', '1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
@@ -328,18 +247,25 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
   
   // The buy-in deduction will be handled by the storage layer
 
+  const startTime = scheduledStartTime ? new Date(scheduledStartTime) : new Date();
   const tournament = await storage.createTournament({
     name: sanitizeInput(name),
     maxPlayers: maxPlayers || 10,
     tournamentType: tournamentType || 'stocks',
     startingBalance: parseFloat(startingBalance),
     timeframe: duration || '1 week',
-    scheduledStartTime: scheduledStartTime ? new Date(scheduledStartTime) : null,
+    scheduledStartTime: startTime,
     buyInAmount: buyIn,
     currentPot: 0, // Will be set by storage layer after buy-in deduction
     tradingRestriction: tradingRestriction || 'none',
     isPublic: isPublic !== undefined ? isPublic : true
   }, userId);
+
+  // If scheduled start time is now or in the past, activate the tournament immediately
+  const now = new Date();
+  if (startTime <= now) {
+    await storage.updateTournamentStatus(tournament.id, 'active', now);
+  }
 
   // Award Tournament Creator achievement (rare)
   await storage.awardAchievement({
@@ -1087,408 +1013,6 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
 
 
 /**
- * Helper function to calculate trading streak
- */
-async function calculateTradingStreak(userId: number): Promise<number> {
-  try {
-    // Get all trades for the user ordered by date (most recent first)
-    const trades = await db.query.tradeHistory.findMany({
-      where: (tradeHistory, { eq }) => eq(tradeHistory.userId, userId),
-      orderBy: (tradeHistory, { desc }) => [desc(tradeHistory.createdAt)]
-    });
-
-    if (trades.length === 0) {
-      return 0;
-    }
-
-    // Group trades by date
-    const tradesByDate = new Map<string, any[]>();
-    trades.forEach(trade => {
-      const dateStr = trade.createdAt.toISOString().split('T')[0];
-      if (!tradesByDate.has(dateStr)) {
-        tradesByDate.set(dateStr, []);
-      }
-      tradesByDate.get(dateStr)!.push(trade);
-    });
-
-    // Get all unique trading dates and sort them
-    const tradingDates = Array.from(tradesByDate.keys()).sort().reverse(); // Most recent first
-    
-    if (tradingDates.length === 0) {
-      return 0;
-    }
-
-    // Calculate streak: count consecutive days starting from the most recent trading day
-    let streak = 0;
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Start checking from today going backwards
-    const startDate = new Date();
-    let currentStreakCount = 0;
-    
-    for (let i = 0; i < 365; i++) { // Check up to 365 days
-      const checkDate = new Date(startDate);
-      checkDate.setDate(startDate.getDate() - i);
-      const dateStr = checkDate.toISOString().split('T')[0];
-      
-      if (tradesByDate.has(dateStr)) {
-        currentStreakCount++;
-      } else {
-        // If we've started counting and hit a gap, stop
-        if (currentStreakCount > 0) {
-          break;
-        }
-        // If we haven't started counting yet, continue looking backward
-      }
-    }
-
-    console.log(`Trading streak calculation for user ${userId}:`, {
-      totalTrades: trades.length,
-      uniqueTradingDays: tradingDates.length,
-      mostRecentTradingDay: tradingDates[0],
-      calculatedStreak: currentStreakCount,
-      today
-    });
-
-    return currentStreakCount;
-  } catch (error) {
-    console.error('Error calculating trading streak:', error);
-    return 0;
-  }
-}
-
-/**
- * Helper function to award streak achievements
- */
-async function awardStreakAchievements(userId: number, streak: number) {
-  try {
-    // 5 day streak - Uncommon
-    if (streak >= 5) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '5_day_streak',
-        achievementTier: 'uncommon',
-        achievementName: '5 Day Streak',
-        achievementDescription: 'Traded for 5 consecutive days'
-      });
-    }
-
-    // 15 day streak - Rare
-    if (streak >= 15) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '15_day_streak',
-        achievementTier: 'rare',
-        achievementName: '15 Day Streak',
-        achievementDescription: 'Traded for 15 consecutive days'
-      });
-    }
-
-    // 50 day streak - Epic
-    if (streak >= 50) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '50_day_streak',
-        achievementTier: 'epic',
-        achievementName: '50 Day Streak',
-        achievementDescription: 'Traded for 50 consecutive days'
-      });
-    }
-
-    // 100 day streak - Legendary
-    if (streak >= 100) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '100_day_streak',
-        achievementTier: 'legendary',
-        achievementName: '100 Day Streak',
-        achievementDescription: 'Traded for 100 consecutive days'
-      });
-    }
-
-    // 365 day streak - Mythic
-    if (streak >= 365) {
-      await storage.awardAchievement({
-        userId,
-        achievementType: '365_day_streak',
-        achievementTier: 'mythic',
-        achievementName: '365 Day Streak',
-        achievementDescription: 'Traded every day for a full year'
-      });
-    }
-  } catch (error) {
-    console.error('Error awarding streak achievements:', error);
-  }
-}
-
-/**
- * GET /api/personal-portfolio
- * Get personal portfolio data with holdings
- */
-router.get('/personal-portfolio', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-
-  const user = await storage.getUser(userId);
-  const purchases = await storage.getPersonalStockPurchases(userId);
-
-  // Calculate trading streak
-  const tradingStreak = await calculateTradingStreak(userId);
-
-  // Award streak achievements based on current streak
-  await awardStreakAchievements(userId, tradingStreak);
-
-  // Group purchases by symbol to create holdings
-  const holdingsMap = new Map();
-  
-  for (const purchase of purchases) {
-    const symbol = purchase.symbol;
-    
-    if (holdingsMap.has(symbol)) {
-      const existing = holdingsMap.get(symbol);
-      const totalShares = existing.shares + purchase.shares;
-      const totalCost = (existing.shares * existing.averagePrice) + (purchase.shares * parseFloat(purchase.purchasePrice));
-      const averagePrice = totalCost / totalShares;
-      
-      holdingsMap.set(symbol, {
-        symbol,
-        companyName: purchase.companyName,
-        shares: totalShares,
-        averagePrice,
-        currentPrice: 0, // Will be updated below
-        change: 0,
-        changePercent: 0
-      });
-    } else {
-      holdingsMap.set(symbol, {
-        symbol,
-        companyName: purchase.companyName,
-        shares: purchase.shares,
-        averagePrice: parseFloat(purchase.purchasePrice),
-        currentPrice: 0, // Will be updated below
-        change: 0,
-        changePercent: 0
-      });
-    }
-  }
-
-  // Get current prices for all holdings
-  const holdings = [];
-  for (const holding of holdingsMap.values()) {
-    try {
-      const currentQuote = await getStockQuote(holding.symbol);
-      holding.currentPrice = currentQuote.price;
-      holding.change = currentQuote.change || 0;
-      holding.changePercent = currentQuote.changePercent || 0;
-    } catch (error) {
-      // If stock quote fails, use average price as fallback
-      holding.currentPrice = holding.averagePrice;
-      holding.change = 0;
-      holding.changePercent = 0;
-    }
-    holdings.push(holding);
-  }
-
-  res.json({
-    success: true,
-    data: {
-      balance: user.personalBalance || 10000,
-      portfolioCreatedAt: user.portfolioCreatedAt,
-      tradingStreak: tradingStreak,
-      holdings: holdings
-    },
-  });
-}));
-
-/**
- * GET /api/personal-purchases
- * Get personal stock purchases
- */
-router.get('/personal-purchases', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-
-  const user = await storage.getUser(userId);
-
-  const purchases = await storage.getPersonalStockPurchases(userId);
-
-  res.json({
-    success: true,
-    data: purchases,
-  });
-}));
-
-/**
- * POST /api/personal-portfolio/purchase
- * Purchase stock in personal portfolio
- */
-router.post('/personal-portfolio/purchase', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-
-  const user = await storage.getUser(userId);
-
-  const { symbol, companyName, shares, purchasePrice } = req.body;
-  
-  if (!symbol || !companyName || !shares || !purchasePrice) {
-    throw new ValidationError('All purchase fields are required');
-  }
-
-  const totalCost = shares * purchasePrice;
-  const currentBalance = user.personalBalance || 10000;
-
-  // Check if user has enough balance
-  if (currentBalance < totalCost) {
-    throw new ValidationError('Insufficient balance for this purchase');
-  }
-
-  // Create purchase record
-  const purchase = await storage.purchasePersonalStock(userId, {
-    symbol: sanitizeInput(symbol),
-    companyName: sanitizeInput(companyName),
-    shares: parseInt(shares),
-    purchasePrice: parseFloat(purchasePrice),
-    totalCost: totalCost
-  });
-
-  // Record the trade in trade history
-  await storage.recordTrade({
-    userId: userId,
-    tournamentId: null, // null for personal trades
-    symbol: sanitizeInput(symbol),
-    companyName: sanitizeInput(companyName),
-    tradeType: 'buy',
-    shares: parseInt(shares),
-    price: parseFloat(purchasePrice),
-    totalValue: totalCost
-  });
-
-  // Update user balance
-  await storage.updateUser(userId, {
-    personalBalance: currentBalance - totalCost
-  });
-
-  // Award First Trade achievement
-  await storage.awardAchievement({
-    userId: userId,
-    achievementType: 'first_trade',
-    achievementTier: 'common',
-    achievementName: 'First Trade',
-    achievementDescription: 'Made your first trade',
-    earnedAt: new Date(),
-    createdAt: new Date()
-  });
-
-  // Check for portfolio growth achievements
-  await checkPersonalPortfolioGrowthAchievements(userId);
-
-  // Check for streak achievements after purchase
-  const tradingStreak = await calculateTradingStreak(userId);
-  await awardStreakAchievements(userId, tradingStreak);
-
-  res.status(201).json({
-    success: true,
-    data: { purchase },
-  });
-}));
-
-/**
- * POST /api/personal-portfolio/sell
- * Sell stock in personal portfolio
- */
-router.post('/personal-portfolio/sell', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-
-  const user = await storage.getUser(userId);
-
-  const { symbol, sharesToSell, currentPrice } = req.body;
-  
-  if (!symbol || !sharesToSell || !currentPrice) {
-    throw new ValidationError('Symbol, shares to sell, and current price are required');
-  }
-
-  // Get all purchases for this symbol (FIFO - First In, First Out)
-  const purchases = await storage.getPersonalStockPurchases(userId);
-  const symbolPurchases = purchases.filter(p => p.symbol === symbol).sort((a, b) => 
-    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
-  
-  if (symbolPurchases.length === 0) {
-    throw new ValidationError('No holdings found for this symbol');
-  }
-
-  // Calculate total shares owned for this symbol
-  const totalShares = symbolPurchases.reduce((sum, p) => sum + p.shares, 0);
-  const sharesToSellNum = parseInt(sharesToSell);
-  
-  if (sharesToSellNum <= 0 || sharesToSellNum > totalShares) {
-    throw new ValidationError(`Invalid number of shares to sell. You own ${totalShares} shares of ${symbol}`);
-  }
-
-  const saleValue = sharesToSellNum * parseFloat(currentPrice);
-  const currentBalance = parseFloat(user.personalBalance) || 10000;
-  
-  // Record the sell trade in trade history
-  await storage.recordTrade({
-    userId: userId,
-    tournamentId: null, // null for personal trades
-    symbol: symbol,
-    companyName: symbolPurchases[0].companyName,
-    tradeType: 'sell',
-    shares: sharesToSellNum,
-    price: parseFloat(currentPrice),
-    totalValue: saleValue
-  });
-  
-  // Update balance with sale proceeds
-  await storage.updateUser(userId, {
-    personalBalance: currentBalance + saleValue
-  });
-
-  // Sell shares using FIFO method
-  let remainingToSell = sharesToSellNum;
-  
-  for (const purchase of symbolPurchases) {
-    if (remainingToSell <= 0) break;
-    
-    if (purchase.shares <= remainingToSell) {
-      // Sell all shares from this purchase
-      remainingToSell -= purchase.shares;
-      await storage.deletePersonalPurchase(userId, purchase.id);
-    } else {
-      // Partially sell shares from this purchase
-      const newShares = purchase.shares - remainingToSell;
-      const purchasePrice = parseFloat(purchase.purchasePrice);
-      
-      // Delete the old record and create a new one with remaining shares
-      await storage.deletePersonalPurchase(userId, purchase.id);
-      await storage.purchasePersonalStock(userId, {
-        symbol: purchase.symbol,
-        companyName: purchase.companyName,
-        shares: newShares,
-        purchasePrice: purchasePrice,
-        totalCost: newShares * purchasePrice
-      });
-      
-      remainingToSell = 0;
-    }
-  }
-
-  // Check for portfolio growth achievements after selling
-  await checkPersonalPortfolioGrowthAchievements(userId);
-
-  // Check for streak achievements after selling
-  const tradingStreak = await calculateTradingStreak(userId);
-  await awardStreakAchievements(userId, tradingStreak);
-
-  res.json({
-    success: true,
-    data: { 
-      saleValue,
-      newBalance: currentBalance + saleValue,
-      sharesSold: sharesToSellNum
-    },
-  });
-}));
-
-/**
  * GET /api/tournaments/leaderboard
  * Get tournaments leaderboard data
  */
@@ -1693,13 +1217,128 @@ router.get('/streak/leaderboard', requireAuth, asyncHandler(async (req, res) => 
   
   // Find user's rank
   const userRank = userStreaks.findIndex(p => p.id === userId) + 1;
-  
+
   res.json({
     success: true,
     data: {
       rankings: userStreaks.slice(0, 50), // Top 50
       totalTraders: userStreaks.length,
       premiumUsers: userStreaks.length,
+      yourRank: userRank || null
+    }
+  });
+}));
+
+/**
+ * GET /api/leaderboard/total-wagered
+ * Get leaderboard by total amount wagered across all tournaments
+ */
+router.get('/leaderboard/total-wagered', requireAuth, asyncHandler(async (req, res) => {
+  // Get all tournament participants
+  const participants = await storage.getAllTournamentParticipants();
+
+  // Group by user and sum their total wagered amounts
+  const userWagers = new Map();
+
+  for (const participant of participants) {
+    const current = userWagers.get(participant.userId) || {
+      userId: participant.userId,
+      username: participant.username || 'Unknown User',
+      totalWagered: 0,
+      tournamentCount: 0
+    };
+
+    current.totalWagered += participant.buyInAmount || 0;
+    current.tournamentCount += 1;
+    userWagers.set(participant.userId, current);
+  }
+
+  // Convert to array and sort by total wagered
+  const rankings = Array.from(userWagers.values())
+    .sort((a, b) => b.totalWagered - a.totalWagered);
+
+  res.json({
+    success: true,
+    data: {
+      rankings: rankings.slice(0, 50)
+    }
+  });
+}));
+
+/**
+ * GET /api/leaderboard/highest-wager
+ * Get tournaments with the highest buy-in amounts
+ */
+router.get('/leaderboard/highest-wager', requireAuth, asyncHandler(async (req, res) => {
+  const tournaments = await storage.getAllTournaments();
+
+  // Filter tournaments with buy-ins and sort by buy-in amount
+  const rankings = tournaments
+    .filter(t => t.buyInAmount && t.buyInAmount > 0)
+    .sort((a, b) => b.buyInAmount - a.buyInAmount)
+    .map(t => ({
+      id: t.id,
+      name: t.name,
+      buyInAmount: t.buyInAmount,
+      currentPlayers: t.currentPlayers || 0,
+      maxPlayers: t.maxPlayers || 0,
+      status: t.status
+    }));
+
+  res.json({
+    success: true,
+    data: {
+      rankings: rankings.slice(0, 50)
+    }
+  });
+}));
+
+/**
+ * GET /api/leaderboard/most-growth
+ * Get participants with the most growth (percentage) in any tournament
+ */
+router.get('/leaderboard/most-growth', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  // Get all tournament participants
+  const participants = await storage.getAllTournamentParticipants();
+
+  // Calculate growth for each participant
+  const participantGrowth = await Promise.all(participants.map(async participant => {
+    const portfolioValue = await storage.calculatePortfolioValue(
+      participant.userId,
+      participant.tournamentId
+    );
+
+    const startingBalance = participant.startingBalance || 10000;
+    const percentageChange = ((portfolioValue - startingBalance) / startingBalance) * 100;
+
+    // Get tournament info
+    const tournament = await storage.getTournamentById(participant.tournamentId);
+
+    return {
+      id: participant.id,
+      userId: participant.userId,
+      username: participant.username || 'Unknown User',
+      tournamentId: participant.tournamentId,
+      tournamentName: tournament?.name || 'Unknown Tournament',
+      startingBalance,
+      portfolioValue,
+      percentageChange
+    };
+  }));
+
+  // Sort by percentage change (highest first)
+  const rankings = participantGrowth
+    .sort((a, b) => b.percentageChange - a.percentageChange);
+
+  // Find user's rank
+  const userRank = rankings.findIndex(p => p.userId === userId) + 1;
+
+  res.json({
+    success: true,
+    data: {
+      rankings: rankings.slice(0, 50),
       yourRank: userRank || null
     }
   });
@@ -2014,25 +1653,6 @@ router.get('/tournaments/archived', requireAuth, asyncHandler(async (req, res) =
 }));
 
 /**
- * GET /api/achievements/:userId
- * Get user achievements
- */
-router.get('/achievements/:userId', asyncHandler(async (req, res) => {
-  const userId = parseInt(req.params.userId);
-  
-  if (isNaN(userId)) {
-    throw new ValidationError('Invalid user ID');
-  }
-  
-  const achievements = await storage.getUserAchievements(userId);
-  
-  res.json({
-    success: true,
-    data: achievements
-  });
-}));
-
-/**
  * POST /api/tournaments/check-expiration
  * Check and process expired tournaments (admin only)
  */
@@ -2041,29 +1661,13 @@ router.post('/tournaments/check-expiration', requireAuth, asyncHandler(async (re
   if (!req.user.email.includes('admin')) {
     throw new UnauthorizedError('Admin access required');
   }
-  
+
   const { tournamentExpirationService } = await import('../services/tournamentExpiration');
   await tournamentExpirationService.processExpiredTournaments();
-  
+
   res.json({
     success: true,
     message: 'Expired tournaments processed successfully'
-  });
-}));
-
-/**
- * POST /api/check-portfolio-growth
- * Manual trigger for portfolio growth achievement check
- */
-router.post('/check-portfolio-growth', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  
-  // Manually trigger portfolio growth check
-  await checkPersonalPortfolioGrowthAchievements(userId);
-
-  res.json({
-    success: true,
-    message: 'Portfolio growth check completed',
   });
 }));
 

@@ -1,4 +1,5 @@
-import { hashPassword } from "./auth";
+import { scrypt, randomBytes } from "crypto";
+import { promisify } from "util";
 import {
   users,
   watchlist,
@@ -42,6 +43,15 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
+
+// Password hashing utilities
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
 
 export interface IStorage {
   // User operations for email/password auth
@@ -150,39 +160,69 @@ export class DatabaseStorage implements IStorage {
 
   async createUser(userData: InsertUser): Promise<User> {
     try {
-      // Get the next available userId by finding the highest existing userId and adding 1
-      const maxUserIdResult = await db.select({ maxUserId: sql`COALESCE(MAX(user_id), -1)` }).from(users);
-      const maxUserId = (maxUserIdResult[0]?.maxUserId as number) || -1;
-      const nextUserId = (maxUserId >= 0) ? maxUserId + 1 : 0;
-
       // Hash the password before storing
       const hashedPassword = await hashPassword(userData.password);
 
+      // Get the next available userId by finding the highest existing userId and adding 1
+      // Use a transaction with retry logic to handle race conditions
+      let attempts = 0;
+      const maxAttempts = 5;
 
-    // Insert user with automatically assigned userId and hashed password
-    const result = await db.insert(users).values({
-      ...userData,
-      password: hashedPassword,
-      userId: nextUserId
-    }).returning();
-    
-    const newUser = result[0];
-    
-    // Automatically award the "Welcome" achievement to all new users
-    try {
-      await this.awardAchievement({
-        userId: newUser.id,
-        achievementType: 'welcome',
-        achievementTier: 'common',
-        achievementName: 'Welcome',
-        achievementDescription: 'Joined the platform'
-      });
-    } catch (achievementError) {
-      console.error('Error awarding welcome achievement:', achievementError);
-      // Don't fail user creation if achievement fails
-    }
-    
-    return newUser;
+      while (attempts < maxAttempts) {
+        try {
+          const result = await db.transaction(async (tx) => {
+            // Get max userId with FOR UPDATE to lock the row
+            const maxUserIdResult = await tx.select({
+              maxUserId: sql`COALESCE(MAX(user_id), -1)`
+            }).from(users);
+
+            const maxUserId = (maxUserIdResult[0]?.maxUserId as number) ?? -1;
+            const nextUserId = maxUserId + 1;
+
+            console.log(`Attempting to create user with userId: ${nextUserId} (max was: ${maxUserId})`);
+
+            // Insert user with automatically assigned userId and hashed password
+            return await tx.insert(users).values({
+              ...userData,
+              password: hashedPassword,
+              userId: nextUserId
+            }).returning();
+          });
+
+          const newUser = result[0];
+
+          // Automatically award the "Welcome" achievement to all new users
+          try {
+            await this.awardAchievement({
+              userId: newUser.id,
+              achievementType: 'welcome',
+              achievementTier: 'common',
+              achievementName: 'Welcome',
+              achievementDescription: 'Joined the platform'
+            });
+          } catch (achievementError) {
+            console.error('Error awarding welcome achievement:', achievementError);
+            // Don't fail user creation if achievement fails
+          }
+
+          return newUser; // Success! Return the user
+        } catch (error: any) {
+          // If it's a duplicate key error, retry with a new userId
+          if (error?.code === '23505' && error?.constraint === 'users_user_id_unique') {
+            attempts++;
+            console.log(`Duplicate userId detected, retrying... (attempt ${attempts}/${maxAttempts})`);
+            if (attempts >= maxAttempts) {
+              throw new Error('Failed to create user after maximum retry attempts');
+            }
+            // Wait a bit before retrying to avoid tight loop
+            await new Promise(resolve => setTimeout(resolve, 100 * attempts));
+            continue;
+          }
+          throw error; // Re-throw if it's not a duplicate key error
+        }
+      }
+
+      throw new Error('Failed to create user: maximum attempts reached');
     } catch (error) {
       console.error('Error in createUser:', error);
       throw error;
