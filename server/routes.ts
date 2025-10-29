@@ -225,17 +225,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const newBalance = currentBalance - totalCost;
       await storage.updateUserBalance(userId, newBalance);
 
-      // Award First Trade achievement if not already earned
-      const hasFirstTrade = await storage.hasAchievement(userId, 'First Trade');
-      if (!hasFirstTrade) {
-        await storage.awardAchievement({
-          userId: userId,
-          achievementType: 'first_trade',
-          achievementTier: 'common',
-          achievementName: 'First Trade',
-          achievementDescription: 'Made your first trade'
-        });
-      }
       
       res.status(201).json({ 
         purchase,

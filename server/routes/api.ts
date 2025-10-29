@@ -267,27 +267,6 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     await storage.updateTournamentStatus(tournament.id, 'active', now);
   }
 
-  // Award Tournament Creator achievement (rare)
-  await storage.awardAchievement({
-    userId: userId,
-    achievementType: 'tournament_creator',
-    achievementTier: 'rare',
-    achievementName: 'Tournament Creator',
-    achievementDescription: 'Created a tournament',
-    earnedAt: new Date(),
-    createdAt: new Date()
-  });
-
-  // Award Tournament Participant achievement
-  await storage.awardAchievement({
-    userId: userId,
-    achievementType: 'tournament_participant',
-    achievementTier: 'common',
-    achievementName: 'Tournament Participant',
-    achievementDescription: 'Joined a tournament',
-    earnedAt: new Date(),
-    createdAt: new Date()
-  });
 
   res.json({
     success: true,
@@ -456,17 +435,6 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
 
-    // Award Tournament Participant achievement
-    await storage.awardAchievement({
-      userId: userId,
-      achievementType: 'tournament_participant',
-      achievementTier: 'common',
-      achievementName: 'Tournament Participant',
-      achievementDescription: 'Joined a tournament',
-      earnedAt: new Date(),
-      createdAt: new Date()
-    });
-
     res.json({
       success: true,
       data: participant,
@@ -502,17 +470,6 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
 
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
-
-    // Award Tournament Participant achievement
-    await storage.awardAchievement({
-      userId: userId,
-      achievementType: 'tournament_participant',
-      achievementTier: 'common',
-      achievementName: 'Tournament Participant',
-      achievementDescription: 'Joined a tournament',
-      earnedAt: new Date(),
-      createdAt: new Date()
-    });
 
     res.json({
       success: true,
@@ -991,15 +948,6 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   // Update user balance
   await storage.updateTournamentBalance(tournamentId, userId, currentBalance - totalCost);
 
-  // Award First Trade achievement
-  await storage.awardAchievement({
-    userId: userId,
-    achievementType: 'first_trade',
-    achievementTier: 'common',
-    achievementName: 'First Trade',
-    achievementDescription: 'Made your first trade'
-  });
-
   res.status(201).json({
     success: true,
     data: { purchase },
@@ -1071,23 +1019,7 @@ router.get('/tournaments/leaderboard', requireAuth, asyncHandler(async (req, res
   
   // Sort by percentage change (highest first)
   allParticipants.sort((a, b) => b.percentageChange - a.percentageChange);
-  
-  // Award special achievement to #1 ranked user
-  if (allParticipants.length > 0) {
-    const topUser = allParticipants[0];
-    try {
-      await storage.awardAchievement({
-        userId: topUser.userId,
-        achievementType: 'tournament_overlord',
-        achievementTier: 'special',
-        achievementName: 'Tournament Overlord',
-        achievementDescription: 'Ranked #1 on tournament leaderboard'
-      });
-    } catch (error) {
-      console.error('Error awarding Tournament Overlord achievement:', error);
-    }
-  }
-  
+
   // Find user's rank
   const userRank = allParticipants.findIndex(p => p.userId === userId) + 1;
   
@@ -1144,23 +1076,7 @@ router.get('/personal/leaderboard', requireAuth, asyncHandler(async (req, res) =
   
   // Sort by percentage change (highest first)
   userPortfolios.sort((a, b) => b.percentageChange - a.percentageChange);
-  
-  // Award special achievement to #1 ranked user
-  if (userPortfolios.length > 0) {
-    const topUser = userPortfolios[0];
-    try {
-      await storage.awardAchievement({
-        userId: topUser.id,
-        achievementType: 'portfolio_emperor',
-        achievementTier: 'special',
-        achievementName: 'Portfolio Emperor',
-        achievementDescription: 'Ranked #1 on personal portfolio leaderboard'
-      });
-    } catch (error) {
-      console.error('Error awarding Portfolio Emperor achievement:', error);
-    }
-  }
-  
+
   // Find user's rank
   const userRank = userPortfolios.findIndex(p => p.id === userId) + 1;
   
@@ -1198,23 +1114,7 @@ router.get('/streak/leaderboard', requireAuth, asyncHandler(async (req, res) => 
   
   // Sort by trading streak (highest first)
   userStreaks.sort((a, b) => b.tradingStreak - a.tradingStreak);
-  
-  // Award special achievement to #1 ranked user
-  if (userStreaks.length > 0) {
-    const topUser = userStreaks[0];
-    try {
-      await storage.awardAchievement({
-        userId: topUser.id,
-        achievementType: 'streak_master',
-        achievementTier: 'special',
-        achievementName: 'Streak Master',
-        achievementDescription: 'Ranked #1 on trading streak leaderboard'
-      });
-    } catch (error) {
-      console.error('Error awarding Streak Master achievement:', error);
-    }
-  }
-  
+
   // Find user's rank
   const userRank = userStreaks.findIndex(p => p.id === userId) + 1;
 
@@ -1579,21 +1479,16 @@ router.get('/users/public', asyncHandler(async (req, res) => {
   // Get all users with only public information
   const users = await storage.getAllUsers();
   
-  const publicUsers = await Promise.all(users.map(async (user) => {
-    // Get achievement count (this will automatically ensure Welcome achievement exists)
-    const achievements = await storage.getUserAchievements(user.id);
-    const achievementCount = achievements.length;
-    
+  const publicUsers = users.map((user) => {
     return {
       id: user.id,
       username: user.username,
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
       totalTrades: user.totalTrades || 0,
-      achievementCount: achievementCount,
       // Don't include sensitive information like email, password, balances, etc.
     };
-  }));
+  });
   
   res.json({
     success: true,

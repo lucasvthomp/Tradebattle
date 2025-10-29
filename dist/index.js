@@ -55,7 +55,6 @@ __export(schema_exports, {
   insertTournamentSchema: () => insertTournamentSchema,
   insertTournamentStockPurchaseSchema: () => insertTournamentStockPurchaseSchema,
   insertTradeHistorySchema: () => insertTradeHistorySchema,
-  insertUserAchievementSchema: () => insertUserAchievementSchema,
   insertUserSchema: () => insertUserSchema,
   insertWatchlistSchema: () => insertWatchlistSchema,
   loginSchema: () => loginSchema,
@@ -71,7 +70,6 @@ __export(schema_exports, {
   tournamentStockPurchases: () => tournamentStockPurchases,
   tournaments: () => tournaments,
   tradeHistory: () => tradeHistory,
-  userAchievements: () => userAchievements,
   usernameSchema: () => usernameSchema,
   users: () => users,
   watchlist: () => watchlist
@@ -91,7 +89,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { createInsertSchema as createInsertSchema2 } from "drizzle-zod";
 import { z } from "zod";
-var sessions, users, watchlist, stockPurchases, personalStockPurchases, portfolioHistory, contactSubmissions, adminLogs, tournaments, tournamentParticipants, tournamentStockPurchases, userAchievements, tournamentCreatorRewards, insertWatchlistSchema, insertStockPurchaseSchema, insertContactSchema, insertAdminLogSchema, insertTournamentSchema, insertCreatorRewardSchema, insertTournamentParticipantSchema, insertTournamentStockPurchaseSchema, insertPersonalStockPurchaseSchema, insertPortfolioHistorySchema, tradeHistory, insertTradeHistorySchema, insertUserAchievementSchema, usernameSchema, insertUserSchema, loginSchema, registrationSchema, registerSchema;
+var sessions, users, watchlist, stockPurchases, personalStockPurchases, portfolioHistory, contactSubmissions, adminLogs, tournaments, tournamentParticipants, tournamentStockPurchases, tournamentCreatorRewards, insertWatchlistSchema, insertStockPurchaseSchema, insertContactSchema, insertAdminLogSchema, insertTournamentSchema, insertCreatorRewardSchema, insertTournamentParticipantSchema, insertTournamentStockPurchaseSchema, insertPersonalStockPurchaseSchema, insertPortfolioHistorySchema, tradeHistory, insertTradeHistorySchema, usernameSchema, insertUserSchema, loginSchema, registrationSchema, registerSchema;
 var init_schema = __esm({
   "shared/schema.ts"() {
     "use strict";
@@ -263,21 +261,6 @@ var init_schema = __esm({
       purchaseDate: timestamp2("purchase_date").defaultNow().notNull(),
       createdAt: timestamp2("created_at").defaultNow()
     });
-    userAchievements = pgTable2("user_achievements", {
-      id: serial2("id").primaryKey(),
-      userId: integer2("user_id").references(() => users.id).notNull(),
-      achievementType: varchar2("achievement_type").notNull(),
-      // 'tournament_winner', 'tournament_top3', 'first_trade', etc.
-      achievementTier: varchar2("achievement_tier").notNull(),
-      // 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'
-      achievementName: varchar2("achievement_name").notNull(),
-      achievementDescription: text2("achievement_description").notNull(),
-      earnedAt: timestamp2("earned_at").defaultNow().notNull(),
-      createdAt: timestamp2("created_at").defaultNow()
-    }, (table) => ({
-      // Unique constraint: user can only have one of each achievement type globally
-      uniqueUserAchievement: unique("unique_user_achievement").on(table.userId, table.achievementType)
-    }));
     tournamentCreatorRewards = pgTable2("tournament_creator_rewards", {
       id: serial2("id").primaryKey(),
       tournamentId: integer2("tournament_id").references(() => tournaments.id).notNull(),
@@ -388,13 +371,6 @@ var init_schema = __esm({
       price: true,
       totalValue: true
     });
-    insertUserAchievementSchema = createInsertSchema2(userAchievements).pick({
-      userId: true,
-      achievementType: true,
-      achievementTier: true,
-      achievementName: true,
-      achievementDescription: true
-    });
     usernameSchema = z.string().min(3, "Username must be at least 3 characters").max(15, "Username must be no more than 15 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores");
     insertUserSchema = createInsertSchema2(users).pick({
       email: true,
@@ -501,17 +477,6 @@ var init_storage = __esm({
                 }).returning();
               });
               const newUser = result[0];
-              try {
-                await this.awardAchievement({
-                  userId: newUser.id,
-                  achievementType: "welcome",
-                  achievementTier: "common",
-                  achievementName: "Welcome",
-                  achievementDescription: "Joined the platform"
-                });
-              } catch (achievementError) {
-                console.error("Error awarding welcome achievement:", achievementError);
-              }
               return newUser;
             } catch (error) {
               if (error?.code === "23505" && error?.constraint === "users_user_id_unique") {
@@ -788,41 +753,6 @@ var init_storage = __esm({
         const result = await db.select({ count: sql`count(*)` }).from(tradeHistory).where(eq(tradeHistory.userId, userId));
         return result[0].count;
       }
-      async getUserAchievements(userId) {
-        await this.ensureWelcomeAchievement(userId);
-        return await db.select().from(userAchievements).where(eq(userAchievements.userId, userId)).orderBy(desc(userAchievements.earnedAt));
-      }
-      async awardAchievement(achievement) {
-        const result = await db.insert(userAchievements).values(achievement).onConflictDoNothing().returning();
-        if (result.length === 0) {
-          const existing = await db.select().from(userAchievements).where(
-            and(
-              eq(userAchievements.userId, achievement.userId),
-              eq(userAchievements.achievementType, achievement.achievementType)
-            )
-          ).limit(1);
-          return existing[0];
-        }
-        return result[0];
-      }
-      async awardAchievementByParams(userId, achievementType, tier, name, description) {
-        return await this.awardAchievement({
-          userId,
-          achievementType,
-          achievementTier: tier,
-          achievementName: name,
-          achievementDescription: description
-        });
-      }
-      async hasAchievement(userId, achievementType) {
-        const result = await db.select({ count: sql`count(*)` }).from(userAchievements).where(
-          and(
-            eq(userAchievements.userId, userId),
-            eq(userAchievements.achievementType, achievementType)
-          )
-        );
-        return result[0].count > 0;
-      }
       async updateTournamentStatus(tournamentId, status, endedAt) {
         const updateData = { status };
         if (endedAt) {
@@ -933,19 +863,6 @@ var init_storage = __esm({
           })
         );
         return tournamentsWithParticipants;
-      }
-      // Ensure user has Welcome achievement
-      async ensureWelcomeAchievement(userId) {
-        const hasWelcome = await this.hasAchievement(userId, "welcome");
-        if (!hasWelcome) {
-          await this.awardAchievement({
-            userId,
-            achievementType: "welcome",
-            achievementTier: "common",
-            achievementName: "Welcome",
-            achievementDescription: "Joined the platform"
-          });
-        }
       }
       async incrementTournamentWins(userId) {
         await db.update(users).set({
@@ -1887,77 +1804,11 @@ var init_tournamentExpiration = __esm({
        */
       async awardTournamentAchievements(tournamentId, results) {
         for (const result of results) {
-          const { userId, rank, totalValue } = result;
-          if (rank === 1) {
-            await this.awardGlobalAchievement(userId, {
-              type: "tournament_winner",
-              tier: "legendary",
-              name: "Tournament Champion",
-              description: "Won 1st place in a tournament"
-            });
-          } else if (rank === 2) {
-            await this.awardGlobalAchievement(userId, {
-              type: "tournament_second",
-              tier: "epic",
-              name: "Silver Medalist",
-              description: "Finished 2nd in a tournament"
-            });
-          } else if (rank === 3) {
-            await this.awardGlobalAchievement(userId, {
-              type: "tournament_third",
-              tier: "rare",
-              name: "Bronze Medalist",
-              description: "Finished 3rd in a tournament"
-            });
-          } else if (rank <= 5) {
-            await this.awardGlobalAchievement(userId, {
-              type: "tournament_top5",
-              tier: "uncommon",
-              name: "Top 5 Finisher",
-              description: "Finished in the top 5 of a tournament"
-            });
-          }
-          if (totalValue >= 15e3) {
-            await this.awardGlobalAchievement(userId, {
-              type: "high_performer",
-              tier: "epic",
-              name: "High Performer",
-              description: "Achieved over 50% profit in a tournament"
-            });
-          } else if (totalValue >= 12e3) {
-            await this.awardGlobalAchievement(userId, {
-              type: "profit_maker",
-              tier: "rare",
-              name: "Profit Maker",
-              description: "Achieved over 20% profit in a tournament"
-            });
-          }
+          const { userId, rank } = result;
           if (rank === 1) {
             await storage.incrementTournamentWins(userId);
-            const winCount = await storage.getTournamentWins(userId);
-            if (winCount >= 10) {
-              await this.awardGlobalAchievement(userId, {
-                type: "tournament_legend",
-                tier: "mythic",
-                name: "Tournament Legend",
-                description: "Won 10 tournaments"
-              });
-            }
           }
         }
-      }
-      /**
-       * Award a global achievement to a user (max 1 per person)
-       */
-      async awardGlobalAchievement(userId, achievement) {
-        await storage.awardAchievement({
-          userId,
-          achievementType: achievement.type,
-          achievementTier: achievement.tier,
-          achievementName: achievement.name,
-          achievementDescription: achievement.description
-        });
-        console.log(`Awarded global ${achievement.name} to user ${userId}`);
       }
       /**
        * Check if a tournament has expired
@@ -2519,24 +2370,6 @@ router.post("/tournaments", requireAuth, asyncHandler(async (req, res) => {
   if (startTime <= now) {
     await storage.updateTournamentStatus(tournament.id, "active", now);
   }
-  await storage.awardAchievement({
-    userId,
-    achievementType: "tournament_creator",
-    achievementTier: "rare",
-    achievementName: "Tournament Creator",
-    achievementDescription: "Created a tournament",
-    earnedAt: /* @__PURE__ */ new Date(),
-    createdAt: /* @__PURE__ */ new Date()
-  });
-  await storage.awardAchievement({
-    userId,
-    achievementType: "tournament_participant",
-    achievementTier: "common",
-    achievementName: "Tournament Participant",
-    achievementDescription: "Joined a tournament",
-    earnedAt: /* @__PURE__ */ new Date(),
-    createdAt: /* @__PURE__ */ new Date()
-  });
   res.json({
     success: true,
     data: tournament
@@ -2642,15 +2475,6 @@ router.post("/tournaments/code/:code/join", requireAuth, asyncHandler(async (req
   }
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
-    await storage.awardAchievement({
-      userId,
-      achievementType: "tournament_participant",
-      achievementTier: "common",
-      achievementName: "Tournament Participant",
-      achievementDescription: "Joined a tournament",
-      earnedAt: /* @__PURE__ */ new Date(),
-      createdAt: /* @__PURE__ */ new Date()
-    });
     res.json({
       success: true,
       data: participant
@@ -2677,15 +2501,6 @@ router.post("/tournaments/:id/join", requireAuth, asyncHandler(async (req, res) 
   }
   try {
     const participant = await storage.joinTournament(tournament.id, userId);
-    await storage.awardAchievement({
-      userId,
-      achievementType: "tournament_participant",
-      achievementTier: "common",
-      achievementName: "Tournament Participant",
-      achievementDescription: "Joined a tournament",
-      earnedAt: /* @__PURE__ */ new Date(),
-      createdAt: /* @__PURE__ */ new Date()
-    });
     res.json({
       success: true,
       data: participant
@@ -3007,13 +2822,6 @@ router.post("/tournaments/:id/purchase", requireAuth, asyncHandler(async (req, r
     totalValue: totalCost.toString()
   });
   await storage.updateTournamentBalance(tournamentId, userId, currentBalance - totalCost);
-  await storage.awardAchievement({
-    userId,
-    achievementType: "first_trade",
-    achievementTier: "common",
-    achievementName: "First Trade",
-    achievementDescription: "Made your first trade"
-  });
   res.status(201).json({
     success: true,
     data: { purchase }
@@ -3057,20 +2865,6 @@ router.get("/tournaments/leaderboard", requireAuth, asyncHandler(async (req, res
     }
   }
   allParticipants.sort((a, b) => b.percentageChange - a.percentageChange);
-  if (allParticipants.length > 0) {
-    const topUser = allParticipants[0];
-    try {
-      await storage.awardAchievement({
-        userId: topUser.userId,
-        achievementType: "tournament_overlord",
-        achievementTier: "special",
-        achievementName: "Tournament Overlord",
-        achievementDescription: "Ranked #1 on tournament leaderboard"
-      });
-    } catch (error) {
-      console.error("Error awarding Tournament Overlord achievement:", error);
-    }
-  }
   const userRank = allParticipants.findIndex((p) => p.userId === userId) + 1;
   res.json({
     success: true,
@@ -3109,20 +2903,6 @@ router.get("/personal/leaderboard", requireAuth, asyncHandler(async (req, res) =
     });
   }
   userPortfolios.sort((a, b) => b.percentageChange - a.percentageChange);
-  if (userPortfolios.length > 0) {
-    const topUser = userPortfolios[0];
-    try {
-      await storage.awardAchievement({
-        userId: topUser.id,
-        achievementType: "portfolio_emperor",
-        achievementTier: "special",
-        achievementName: "Portfolio Emperor",
-        achievementDescription: "Ranked #1 on personal portfolio leaderboard"
-      });
-    } catch (error) {
-      console.error("Error awarding Portfolio Emperor achievement:", error);
-    }
-  }
   const userRank = userPortfolios.findIndex((p) => p.id === userId) + 1;
   res.json({
     success: true,
@@ -3147,20 +2927,6 @@ router.get("/streak/leaderboard", requireAuth, asyncHandler(async (req, res) => 
     });
   }
   userStreaks.sort((a, b) => b.tradingStreak - a.tradingStreak);
-  if (userStreaks.length > 0) {
-    const topUser = userStreaks[0];
-    try {
-      await storage.awardAchievement({
-        userId: topUser.id,
-        achievementType: "streak_master",
-        achievementTier: "special",
-        achievementName: "Streak Master",
-        achievementDescription: "Ranked #1 on trading streak leaderboard"
-      });
-    } catch (error) {
-      console.error("Error awarding Streak Master achievement:", error);
-    }
-  }
   const userRank = userStreaks.findIndex((p) => p.id === userId) + 1;
   res.json({
     success: true,
@@ -3391,19 +3157,16 @@ router.delete("/admin/tournaments/:id", requireAuth, asyncHandler(async (req, re
 }));
 router.get("/users/public", asyncHandler(async (req, res) => {
   const users2 = await storage.getAllUsers();
-  const publicUsers = await Promise.all(users2.map(async (user) => {
-    const achievements = await storage.getUserAchievements(user.id);
-    const achievementCount = achievements.length;
+  const publicUsers = users2.map((user) => {
     return {
       id: user.id,
       username: user.username,
       subscriptionTier: user.subscriptionTier,
       createdAt: user.createdAt,
-      totalTrades: user.totalTrades || 0,
-      achievementCount
+      totalTrades: user.totalTrades || 0
       // Don't include sensitive information like email, password, balances, etc.
     };
-  }));
+  });
   res.json({
     success: true,
     data: publicUsers
@@ -3968,16 +3731,6 @@ async function registerRoutes(app2) {
       const purchase = await storage.purchaseStock(userId, validatedData);
       const newBalance = currentBalance - totalCost;
       await storage.updateUserBalance(userId, newBalance);
-      const hasFirstTrade = await storage.hasAchievement(userId, "First Trade");
-      if (!hasFirstTrade) {
-        await storage.awardAchievement({
-          userId,
-          achievementType: "first_trade",
-          achievementTier: "common",
-          achievementName: "First Trade",
-          achievementDescription: "Made your first trade"
-        });
-      }
       res.status(201).json({
         purchase,
         newBalance

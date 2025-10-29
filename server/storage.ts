@@ -11,7 +11,6 @@ import {
   tournamentParticipants,
   tournamentStockPurchases,
   tradeHistory,
-  userAchievements,
   portfolioHistory,
   chatMessages,
   type User,
@@ -34,8 +33,6 @@ import {
   type InsertPersonalStockPurchase,
   type TradeHistory,
   type InsertTradeHistory,
-  type UserAchievement,
-  type InsertUserAchievement,
   type PortfolioHistory,
   type InsertPortfolioHistory,
   type ChatMessage,
@@ -114,13 +111,6 @@ export interface IStorage {
   recordTrade(trade: InsertTradeHistory): Promise<TradeHistory>;
   getUserTradeCount(userId: number): Promise<number>;
   
-  // Achievement operations
-  getUserAchievements(userId: number): Promise<UserAchievement[]>;
-  awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
-  awardAchievementByParams(userId: number, achievementType: string, tier: string, name: string, description: string): Promise<UserAchievement>;
-  hasAchievement(userId: number, achievementType: string): Promise<boolean>;
-  ensureWelcomeAchievement(userId: number): Promise<void>;
-  
   // Tournament status operations
   updateTournamentStatus(tournamentId: number, status: string, endedAt?: Date): Promise<Tournament>;
   getExpiredTournaments(): Promise<Tournament[]>;
@@ -190,20 +180,6 @@ export class DatabaseStorage implements IStorage {
           });
 
           const newUser = result[0];
-
-          // Automatically award the "Welcome" achievement to all new users
-          try {
-            await this.awardAchievement({
-              userId: newUser.id,
-              achievementType: 'welcome',
-              achievementTier: 'common',
-              achievementName: 'Welcome',
-              achievementDescription: 'Joined the platform'
-            });
-          } catch (achievementError) {
-            console.error('Error awarding welcome achievement:', achievementError);
-            // Don't fail user creation if achievement fails
-          }
 
           return newUser; // Success! Return the user
         } catch (error: any) {
@@ -675,65 +651,6 @@ export class DatabaseStorage implements IStorage {
     return result[0].count;
   }
 
-  async getUserAchievements(userId: number): Promise<UserAchievement[]> {
-    // Ensure user has Welcome achievement before returning achievements
-    await this.ensureWelcomeAchievement(userId);
-    
-    return await db
-      .select()
-      .from(userAchievements)
-      .where(eq(userAchievements.userId, userId))
-      .orderBy(desc(userAchievements.earnedAt));
-  }
-
-  async awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement> {
-    const result = await db
-      .insert(userAchievements)
-      .values(achievement)
-      .onConflictDoNothing()
-      .returning();
-    
-    if (result.length === 0) {
-      // Achievement already exists, return existing one
-      const existing = await db
-        .select()
-        .from(userAchievements)
-        .where(
-          and(
-            eq(userAchievements.userId, achievement.userId),
-            eq(userAchievements.achievementType, achievement.achievementType)
-          )
-        )
-        .limit(1);
-      return existing[0];
-    }
-    
-    return result[0];
-  }
-
-  async awardAchievementByParams(userId: number, achievementType: string, tier: string, name: string, description: string): Promise<UserAchievement> {
-    return await this.awardAchievement({
-      userId,
-      achievementType,
-      achievementTier: tier,
-      achievementName: name,
-      achievementDescription: description
-    });
-  }
-
-  async hasAchievement(userId: number, achievementType: string): Promise<boolean> {
-    const result = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(userAchievements)
-      .where(
-        and(
-          eq(userAchievements.userId, userId),
-          eq(userAchievements.achievementType, achievementType)
-        )
-      );
-    
-    return result[0].count > 0;
-  }
 
   async updateTournamentStatus(tournamentId: number, status: string, endedAt?: Date): Promise<Tournament> {
     const updateData: any = { status };
@@ -900,19 +817,6 @@ export class DatabaseStorage implements IStorage {
     return tournamentsWithParticipants;
   }
 
-  // Ensure user has Welcome achievement
-  async ensureWelcomeAchievement(userId: number): Promise<void> {
-    const hasWelcome = await this.hasAchievement(userId, 'welcome');
-    if (!hasWelcome) {
-      await this.awardAchievement({
-        userId: userId,
-        achievementType: 'welcome',
-        achievementTier: 'common',
-        achievementName: 'Welcome',
-        achievementDescription: 'Joined the platform'
-      });
-    }
-  }
 
   async incrementTournamentWins(userId: number): Promise<void> {
     await db

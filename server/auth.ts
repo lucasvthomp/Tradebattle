@@ -145,8 +145,6 @@ export function setupAuth(app: Express) {
       const user = await storage.createUser(userData);
       console.log("User created successfully:", { id: user.id, userId: user.userId, username: user.username });
 
-      // Welcome achievement is automatically awarded in createUser()
-
       // Log the user in automatically
       console.log("Logging user in automatically");
       req.login(user, (err) => {

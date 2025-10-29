@@ -177,20 +177,6 @@ export const tournamentStockPurchases = pgTable("tournament_stock_purchases", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// User achievements table for tracking earned achievements
-export const userAchievements = pgTable("user_achievements", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  achievementType: varchar("achievement_type").notNull(), // 'tournament_winner', 'tournament_top3', 'first_trade', etc.
-  achievementTier: varchar("achievement_tier").notNull(), // 'common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'
-  achievementName: varchar("achievement_name").notNull(),
-  achievementDescription: text("achievement_description").notNull(),
-  earnedAt: timestamp("earned_at").defaultNow().notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-}, (table) => ({
-  // Unique constraint: user can only have one of each achievement type globally
-  uniqueUserAchievement: unique("unique_user_achievement").on(table.userId, table.achievementType),
-}));
 
 // Tournament creator rewards table for tracking 5% creator benefits
 export const tournamentCreatorRewards = pgTable("tournament_creator_rewards", {
@@ -312,13 +298,6 @@ export const insertTradeHistorySchema = createInsertSchema(tradeHistory).pick({
   totalValue: true,
 });
 
-export const insertUserAchievementSchema = createInsertSchema(userAchievements).pick({
-  userId: true,
-  achievementType: true,
-  achievementTier: true,
-  achievementName: true,
-  achievementDescription: true,
-});
 
 // Type exports
 // Username validation schema
@@ -387,8 +366,6 @@ export type PersonalStockPurchase = typeof personalStockPurchases.$inferSelect;
 export type InsertPersonalStockPurchase = z.infer<typeof insertPersonalStockPurchaseSchema>;
 export type TradeHistory = typeof tradeHistory.$inferSelect;
 export type InsertTradeHistory = z.infer<typeof insertTradeHistorySchema>;
-export type UserAchievement = typeof userAchievements.$inferSelect;
-export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
 export type PortfolioHistory = typeof portfolioHistory.$inferSelect;
 export type InsertPortfolioHistory = z.infer<typeof insertPortfolioHistorySchema>;
 
