@@ -87,7 +87,7 @@ export default function Landing() {
     {
       step: "4",
       title: "Win & Learn",
-      description: "Earn achievements, climb leaderboards, and improve your trading skills",
+      description: "Climb leaderboards and improve your trading skills",
       icon: Award
     }
   ];

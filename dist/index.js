@@ -1717,7 +1717,6 @@ var init_tournamentExpiration = __esm({
           console.log(`Processing expired tournament: ${tournament.name} (ID: ${tournament.id})`);
           const results = await this.calculateFinalStandings(tournament.id);
           await this.distributePrizeMoney(tournament, results);
-          await this.awardTournamentAchievements(tournament.id, results);
           await storage.updateTournamentStatus(tournament.id, "completed", /* @__PURE__ */ new Date());
           console.log(`Tournament ${tournament.name} completed successfully`);
         }
@@ -1797,17 +1796,6 @@ var init_tournamentExpiration = __esm({
           console.log(`Distributed $${winnerAmount} (95%) to winner user ${winner.userId} (${winner.firstName} ${winner.lastName}) and $${creatorAmount} (5%) to creator user ${tournament.creatorId} for tournament ${tournament.name}`);
         } catch (error) {
           console.error(`Failed to distribute prize money for tournament ${tournament.name}:`, error);
-        }
-      }
-      /**
-       * Award achievements based on tournament results
-       */
-      async awardTournamentAchievements(tournamentId, results) {
-        for (const result of results) {
-          const { userId, rank } = result;
-          if (rank === 1) {
-            await storage.incrementTournamentWins(userId);
-          }
         }
       }
       /**

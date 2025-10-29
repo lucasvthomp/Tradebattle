@@ -29,10 +29,7 @@ export class TournamentExpirationService {
       
       // Distribute prize money to the winner
       await this.distributePrizeMoney(tournament, results);
-      
-      // Award achievements based on results
-      await this.awardTournamentAchievements(tournament.id, results);
-      
+
       // Mark tournament as completed
       await storage.updateTournamentStatus(tournament.id, 'completed', new Date());
       
@@ -139,20 +136,6 @@ export class TournamentExpirationService {
     }
   }
 
-  /**
-   * Award achievements based on tournament results
-   */
-  private async awardTournamentAchievements(tournamentId: number, results: TournamentResult[]): Promise<void> {
-    for (const result of results) {
-      const { userId, rank } = result;
-
-      // Check for tournament wins to increment counter
-      if (rank === 1) {
-        // Increment the private win counter
-        await storage.incrementTournamentWins(userId);
-      }
-    }
-  }
 
 
 
