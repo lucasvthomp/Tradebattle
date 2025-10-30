@@ -25,7 +25,6 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Link } from "wouter";
-import { MarketStatus } from "@/components/market-status";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -249,16 +248,6 @@ export default function Hub() {
               </motion.div>
             ))}
           </div>
-        </motion.div>
-
-        {/* Market Status Footer */}
-        <motion.div 
-          className="mt-12 text-center"
-          variants={fadeInUp}
-          initial="initial"
-          animate="animate"
-        >
-          <MarketStatus variant="inline" />
         </motion.div>
 
       </div>

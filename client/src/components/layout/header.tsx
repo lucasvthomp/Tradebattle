@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BalanceDialog } from "@/components/balance-dialog";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
+import { MarketStatus } from "@/components/market-status";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,7 +25,7 @@ export default function Header() {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-md border-b border-border/50">
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
-          {/* Left side - Logo - clicks to hub if authenticated, home if not */}
+          {/* Left side - Logo and Market Status */}
           <div className="flex items-center space-x-4">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -32,6 +33,9 @@ export default function Header() {
               </div>
               <span className="text-xl font-bold text-foreground">ORSATH</span>
             </Link>
+
+            {/* Market Status Indicator */}
+            <MarketStatus variant="inline" />
           </div>
 
           {/* Right side - Clean user info and actions */}

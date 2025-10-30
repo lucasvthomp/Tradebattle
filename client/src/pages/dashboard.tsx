@@ -37,7 +37,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MarketStatusDisclaimer } from "@/components/MarketStatusDisclaimer";
 import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
 import { Responsive, WidthProvider, Layout as GridLayout } from "react-grid-layout";
 import "react-grid-layout/css/styles.css";

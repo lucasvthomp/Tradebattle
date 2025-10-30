@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Globe, Moon, Sun } from "lucide-react";
@@ -103,16 +104,15 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
 
   if (variant === "inline") {
     return (
-      <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-        <div className={`w-2 h-2 rounded-full ${getStatusColor()} ${isMarketOpen ? 'animate-pulse' : ''}`}></div>
-        <StatusIcon className="w-4 h-4" />
-        <span>{getStatusText()}</span>
-        {isMarketOpen && timeUntilClose && (
-          <span className="text-xs">• Closes in {timeUntilClose}</span>
-        )}
-        {!isMarketOpen && timeUntilOpen && (
-          <span className="text-xs">• Opens in {timeUntilOpen}</span>
-        )}
+      <div className="flex items-center space-x-1.5 px-2 py-1 rounded-md bg-muted/30 border border-border/50">
+        <Clock className="w-3.5 h-3.5 text-muted-foreground" />
+        <span className="text-xs font-medium text-muted-foreground">
+          Market {isMarketOpen ? (
+            <span className="text-green-600 dark:text-green-400">Open</span>
+          ) : (
+            <span className="text-orange-600 dark:text-orange-400">Closed</span>
+          )}
+        </span>
       </div>
     );
   }
