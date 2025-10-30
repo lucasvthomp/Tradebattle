@@ -297,7 +297,7 @@ export default function TournamentsPage() {
 
   return (
     <div className="h-[calc(100vh-4rem)] overflow-auto">
-      <div className="container mx-auto p-6 max-w-7xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6">
         <motion.div
           initial="initial"
           animate="animate"

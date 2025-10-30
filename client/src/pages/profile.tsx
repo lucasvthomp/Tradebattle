@@ -354,7 +354,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-8">
         <motion.div
           className="max-w-4xl mx-auto"
           initial="initial"

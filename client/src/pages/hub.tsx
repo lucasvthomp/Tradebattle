@@ -103,20 +103,20 @@ export default function Hub() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container mx-auto px-6 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 lg:py-8">
         
         {/* Personal Greeting Header */}
-        <motion.div 
-          className="mb-12"
+        <motion.div
+          className="mb-8 lg:mb-10"
           {...fadeInUp}
         >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground tracking-tight">
                 {getGreeting()}, {user?.username || "Trader"}
               </h1>
-              <p className="text-lg text-muted-foreground mt-2 flex items-center">
-                <Sparkles className="w-5 h-5 mr-2 text-primary/60" />
+              <p className="text-base sm:text-lg text-muted-foreground mt-2 flex items-center">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-primary/60" />
                 {t('hubWelcomeMessage') || "Ready to make your mark on the markets?"}
               </p>
             </div>
@@ -130,13 +130,13 @@ export default function Hub() {
         </motion.div>
 
         {/* Primary Action Cards - Hero Section */}
-        <motion.div 
-          className="mb-12"
+        <motion.div
+          className="mb-8 lg:mb-10"
           variants={staggerChildren}
           initial="initial"
           animate="animate"
         >
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-6">
             {primaryActions.map((action, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Link href={action.href}>
