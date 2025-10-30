@@ -88,9 +88,9 @@ export function TradingExecutionWidget({
     (orderType === 'market' || (orderType === 'limit' && limitPrice && parseFloat(limitPrice) > 0));
 
   return (
-    <div className="h-full flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
       {/* Stock Search */}
-      <div className="p-3 border-b border-border/30">
+      <div className="p-3 border-b border-border/20">
         <StockSearchBar
           type="purchase"
           placeholder="Search symbol"
@@ -102,7 +102,7 @@ export function TradingExecutionWidget({
       {selectedStock ? (
         <div className="flex-1 flex flex-col overflow-hidden">
           {/* Stock Header */}
-          <div className="p-3 border-b border-border/30">
+          <div className="p-3 border-b border-border/20">
             <div className="text-lg font-bold mb-0.5">{selectedStock.symbol}</div>
             <div className="text-base font-semibold">${selectedStock.price?.toFixed(2)}</div>
             {selectedStock.changePercent !== undefined && (

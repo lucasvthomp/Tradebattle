@@ -106,7 +106,7 @@ export default function Dashboard() {
   // Calculate max rows to fit in viewport
   const calculateMaxRows = () => {
     const availableHeight = dimensions.height - 192;
-    const totalRowHeight = rowHeight + 8; // rowHeight + margin
+    const totalRowHeight = rowHeight + 4; // rowHeight + margin (4px for smoother single-unit movement)
     return Math.floor(availableHeight / totalRowHeight);
   };
 
@@ -123,11 +123,11 @@ export default function Dashboard() {
 
   // Widget size constraints - optimized for content and user experience
   const widgetConstraints: Record<string, any> = {
-    portfolio: { minW: 2, minH: 2, maxW: 3, maxH: 3 },        // Small/compact - shows key metrics
-    buyStocks: { minW: 3, minH: 3, maxW: 4, maxH: 5 },        // Medium - needs space for trading controls
-    leaderboard: { minW: 3, minH: 3, maxW: 4, maxH: 6 },      // Medium - scrollable list
-    chart: { minW: 4, minH: 3, maxW: 12, maxH: 8 },           // Flexible - can expand for better visibility
-    holdings: { minW: 3, minH: 3, maxW: 6, maxH: 6 },         // Medium-large - scrollable holdings list
+    portfolio: { minW: 1, minH: 1, maxW: 4, maxH: 4 },        // Small/compact - shows key metrics
+    buyStocks: { minW: 1, minH: 1, maxW: 6, maxH: 8 },        // Medium - needs space for trading controls
+    leaderboard: { minW: 1, minH: 1, maxW: 6, maxH: 8 },      // Medium - scrollable list
+    chart: { minW: 1, minH: 1, maxW: 12, maxH: 10 },           // Flexible - can expand for better visibility
+    holdings: { minW: 1, minH: 1, maxW: 8, maxH: 8 },         // Medium-large - scrollable holdings list
   };
 
   // Apply constraints to layout items and prevent widgets from going below screen
@@ -515,16 +515,18 @@ export default function Dashboard() {
               rowHeight={rowHeight}
               maxRows={maxRows}
               onLayoutChange={handleLayoutChange}
-              compactType="vertical"
+              compactType={null}
               preventCollision={false}
               isDraggable={true}
               isResizable={true}
               resizeHandles={['se']}
               isBounded={true}
-              margin={[8, 8]}
+              margin={[4, 4]}
               containerPadding={[0, 0]}
               allowOverlap={false}
               autoSize={false}
+              transformScale={1}
+              useCSSTransforms={true}
             >
                       {widgets.find(w => w.i === 'portfolio')?.enabled && (
                         <div key="portfolio">
