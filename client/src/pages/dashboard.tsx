@@ -114,11 +114,11 @@ export default function Dashboard() {
 
   // Widget configuration state
   const [widgets, setWidgets] = useState<WidgetConfig[]>([
-    { i: 'portfolio', type: 'portfolio', enabled: true },
+    { i: 'portfolio', type: 'portfolio', enabled: false },
     { i: 'buyStocks', type: 'buyStocks', enabled: true },
-    { i: 'holdings', type: 'holdings', enabled: true },
+    { i: 'holdings', type: 'holdings', enabled: false },
     { i: 'chart', type: 'chart', enabled: true },
-    { i: 'leaderboard', type: 'leaderboard', enabled: true },
+    { i: 'leaderboard', type: 'leaderboard', enabled: false },
   ]);
 
   // Widget size constraints - optimized for content and user experience
@@ -163,32 +163,20 @@ export default function Dashboard() {
     }
     return {
       lg: [
-        { i: 'portfolio', x: 0, y: 0, w: 2, h: 2, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 2, y: 0, w: 3, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'leaderboard', x: 5, y: 0, w: 3, h: 3, ...widgetConstraints.leaderboard },
-        { i: 'chart', x: 0, y: 3, w: 7, h: 4, ...widgetConstraints.chart },
-        { i: 'holdings', x: 7, y: 3, w: 5, h: 4, ...widgetConstraints.holdings },
+        { i: 'buyStocks', x: 0, y: 0, w: 4, h: 7, ...widgetConstraints.buyStocks },  // Left 1/3
+        { i: 'chart', x: 4, y: 0, w: 8, h: 7, ...widgetConstraints.chart },          // Right 2/3
       ],
       md: [
-        { i: 'portfolio', x: 0, y: 0, w: 2, h: 2, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 2, y: 0, w: 4, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'leaderboard', x: 6, y: 0, w: 4, h: 3, ...widgetConstraints.leaderboard },
-        { i: 'chart', x: 0, y: 3, w: 6, h: 4, ...widgetConstraints.chart },
-        { i: 'holdings', x: 6, y: 3, w: 4, h: 4, ...widgetConstraints.holdings },
+        { i: 'buyStocks', x: 0, y: 0, w: 3, h: 7, ...widgetConstraints.buyStocks },  // Left 1/3
+        { i: 'chart', x: 3, y: 0, w: 7, h: 7, ...widgetConstraints.chart },          // Right 2/3
       ],
       sm: [
-        { i: 'portfolio', x: 0, y: 0, w: 3, h: 2, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 3, y: 0, w: 3, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'chart', x: 0, y: 3, w: 6, h: 4, ...widgetConstraints.chart },
-        { i: 'holdings', x: 0, y: 7, w: 6, h: 4, ...widgetConstraints.holdings },
-        { i: 'leaderboard', x: 0, y: 11, w: 6, h: 4, ...widgetConstraints.leaderboard },
+        { i: 'buyStocks', x: 0, y: 0, w: 6, h: 4, ...widgetConstraints.buyStocks },  // Top full width
+        { i: 'chart', x: 0, y: 4, w: 6, h: 5, ...widgetConstraints.chart },          // Bottom full width
       ],
       xs: [
-        { i: 'portfolio', x: 0, y: 0, w: 4, h: 2, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 0, y: 2, w: 4, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'chart', x: 0, y: 5, w: 4, h: 4, ...widgetConstraints.chart },
-        { i: 'holdings', x: 0, y: 9, w: 4, h: 4, ...widgetConstraints.holdings },
-        { i: 'leaderboard', x: 0, y: 13, w: 4, h: 4, ...widgetConstraints.leaderboard },
+        { i: 'buyStocks', x: 0, y: 0, w: 4, h: 4, ...widgetConstraints.buyStocks },  // Top full width
+        { i: 'chart', x: 0, y: 4, w: 4, h: 5, ...widgetConstraints.chart },          // Bottom full width
       ],
     };
   });
