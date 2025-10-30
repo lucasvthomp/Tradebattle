@@ -130,14 +130,22 @@ export default function Dashboard() {
     holdings: { minW: 3, minH: 3, maxW: 6, maxH: 6 },         // Medium-large - scrollable holdings list
   };
 
-  // Apply constraints to layout items
+  // Apply constraints to layout items and prevent widgets from going below screen
   const applyConstraints = (layout: any[]) => {
-    return layout.map(item => ({
-      ...item,
-      ...widgetConstraints[item.i],
-      // Don't restrict y position - allow free vertical movement
-      // Don't enforce height limits - constraints will be applied by minH/maxH properties
-    }));
+    const currentMaxRows = calculateMaxRows();
+    return layout.map(item => {
+      const constraints = widgetConstraints[item.i] || {};
+      const itemHeight = item.h || constraints.minH || 2;
+      // Calculate max Y position: total rows minus widget height
+      const maxY = Math.max(0, currentMaxRows - itemHeight);
+
+      return {
+        ...item,
+        ...constraints,
+        // Ensure widget doesn't go below visible area
+        y: Math.min(item.y || 0, maxY),
+      };
+    });
   };
 
   // Load saved layout from localStorage
@@ -341,14 +349,26 @@ export default function Dashboard() {
     };
   }, [tournamentPortfolio, tournamentBalance, selectedTournament]);
 
-  // Save layout to localStorage with constraints
+  // Save layout to localStorage with constraints and enforce bottom boundary
   const handleLayoutChange = (layout: any, layouts: any) => {
-    // Apply constraints before saving
+    // Enforce bottom boundary - prevent widgets from going below visible area
+    const enforceBottomBoundary = (items: any[]) => {
+      return items.map(item => {
+        const bottomEdge = item.y + item.h;
+        // If widget bottom exceeds maxRows, move it up
+        if (bottomEdge > maxRows) {
+          return { ...item, y: Math.max(0, maxRows - item.h) };
+        }
+        return item;
+      });
+    };
+
+    // Apply constraints and boundary enforcement before saving
     const constrainedLayouts = {
-      lg: applyConstraints(layouts.lg || []),
-      md: applyConstraints(layouts.md || []),
-      sm: applyConstraints(layouts.sm || []),
-      xs: applyConstraints(layouts.xs || [])
+      lg: enforceBottomBoundary(applyConstraints(layouts.lg || [])),
+      md: enforceBottomBoundary(applyConstraints(layouts.md || [])),
+      sm: enforceBottomBoundary(applyConstraints(layouts.sm || [])),
+      xs: enforceBottomBoundary(applyConstraints(layouts.xs || []))
     };
     setLayouts(constrainedLayouts);
     localStorage.setItem('dashboard-layouts', JSON.stringify(constrainedLayouts));
@@ -486,7 +506,7 @@ export default function Dashboard() {
         </Card>
       ) : (
         selectedTournament && (
-          <div style={{ height: `${dimensions.height - 192}px`, overflowY: 'auto', overflowX: 'hidden' }}>
+          <div style={{ height: `${dimensions.height - 192}px`, overflow: 'hidden', position: 'relative' }}>
             <ResponsiveGridLayout
               className="layout"
               layouts={layouts}
@@ -502,7 +522,10 @@ export default function Dashboard() {
               resizeHandles={['se']}
               isBounded={true}
               margin={[8, 8]}
+              containerPadding={[0, 0]}
               allowOverlap={false}
+              autoSize={false}
+              verticalCompact={false}
             >
                       {widgets.find(w => w.i === 'portfolio')?.enabled && (
                         <div key="portfolio">
