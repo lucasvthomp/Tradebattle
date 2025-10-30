@@ -515,7 +515,7 @@ export default function Dashboard() {
               rowHeight={rowHeight}
               maxRows={maxRows}
               onLayoutChange={handleLayoutChange}
-              compactType={null}
+              compactType="vertical"
               preventCollision={false}
               isDraggable={true}
               isResizable={true}
@@ -525,7 +525,6 @@ export default function Dashboard() {
               containerPadding={[0, 0]}
               allowOverlap={false}
               autoSize={false}
-              verticalCompact={false}
             >
                       {widgets.find(w => w.i === 'portfolio')?.enabled && (
                         <div key="portfolio">
