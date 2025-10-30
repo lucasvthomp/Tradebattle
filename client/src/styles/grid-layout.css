@@ -7,9 +7,35 @@
   overflow: hidden !important;
 }
 
+/* Dotted grid background at intersections - only visible when dragging or resizing */
+.react-grid-layout::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    radial-gradient(circle, rgba(148, 163, 184, 0.4) 1.5px, transparent 1.5px);
+  background-size: 40px 40px;
+  background-position: 0 0;
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Show grid when any item is being dragged or resized */
+.react-grid-layout:has(.react-draggable-dragging)::before,
+.react-grid-layout:has(.resizing)::before {
+  opacity: 1;
+}
+
 .react-grid-item {
   transition: all 200ms ease;
   transition-property: left, top, width, height;
+  position: relative;
+  z-index: 1;
 }
 
 .react-grid-item img {
@@ -46,97 +72,56 @@
   border: 2px dashed rgba(99, 102, 241, 0.5);
 }
 
+/* Resize handle - only bottom-right corner */
 .react-grid-item > .react-resizable-handle {
   position: absolute;
   width: 20px;
   height: 20px;
+  opacity: 0;
+  transition: opacity 200ms ease;
 }
 
-.react-grid-item > .react-resizable-handle::after {
+/* Show resize handle on hover */
+.react-grid-item:hover > .react-resizable-handle {
+  opacity: 1;
+}
+
+/* Always show when resizing */
+.react-grid-item.resizing > .react-resizable-handle {
+  opacity: 1;
+}
+
+/* Curved line indicator at bottom-right - Robinhood style */
+.react-grid-item > .react-resizable-handle-se::after {
   content: "";
   position: absolute;
-  right: 3px;
-  bottom: 3px;
-  width: 8px;
-  height: 8px;
-  border-right: 3px solid rgba(99, 102, 241, 0.6);
-  border-bottom: 3px solid rgba(99, 102, 241, 0.6);
-  border-radius: 0 0 2px 0;
+  right: 4px;
+  bottom: 4px;
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid rgba(148, 163, 184, 0.4);
+  border-bottom: 2px solid rgba(148, 163, 184, 0.4);
+  border-radius: 0 0 4px 0;
+  transition: all 200ms ease;
 }
 
-/* Resize handle positions */
-.react-resizable-handle-sw {
-  bottom: 0;
-  left: 0;
-  cursor: sw-resize;
-  transform: rotate(90deg);
+/* Enhance on hover */
+.react-grid-item:hover > .react-resizable-handle-se::after {
+  border-right-color: rgba(99, 102, 241, 0.8);
+  border-bottom-color: rgba(99, 102, 241, 0.8);
+  width: 14px;
+  height: 14px;
 }
 
+/* Bottom-right resize handle */
 .react-resizable-handle-se {
   bottom: 0;
   right: 0;
   cursor: se-resize;
 }
 
-.react-resizable-handle-nw {
-  top: 0;
-  left: 0;
-  cursor: nw-resize;
-  transform: rotate(180deg);
-}
-
-.react-resizable-handle-ne {
-  top: 0;
-  right: 0;
-  cursor: ne-resize;
-  transform: rotate(270deg);
-}
-
-.react-resizable-handle-w,
-.react-resizable-handle-e {
-  top: 50%;
-  margin-top: -10px;
-  cursor: ew-resize;
-}
-
-.react-resizable-handle-w {
-  left: 0;
-  transform: rotate(135deg);
-}
-
-.react-resizable-handle-e {
-  right: 0;
-  transform: rotate(-45deg);
-}
-
-.react-resizable-handle-n,
-.react-resizable-handle-s {
-  left: 50%;
-  margin-left: -10px;
-  cursor: ns-resize;
-}
-
-.react-resizable-handle-n {
-  top: 0;
-  transform: rotate(-135deg);
-}
-
-.react-resizable-handle-s {
-  bottom: 0;
-  transform: rotate(45deg);
-}
-
-/* Make resize handles more visible on hover */
-.react-grid-item:hover > .react-resizable-handle::after {
-  border-right-color: rgba(99, 102, 241, 1);
-  border-bottom-color: rgba(99, 102, 241, 1);
-  width: 10px;
-  height: 10px;
-}
-
 /* Widget card hover effect */
-.react-grid-item:hover .cursor-move {
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+.react-grid-item:hover > div {
   transition: box-shadow 200ms ease;
 }
 

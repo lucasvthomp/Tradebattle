@@ -100,17 +100,17 @@ export default function Dashboard() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Calculate dynamic row height based on viewport
-  const calculateRowHeight = () => {
-    // Available height: viewport height minus header (4rem) and dashboard controls (~8rem)
-    const availableHeight = dimensions.height - 192; // ~12rem in pixels
-    // Divide by number of rows (7) to get optimal row height
-    const calculatedHeight = Math.floor(availableHeight / 7);
-    // Ensure minimum height of 60px and maximum of 120px
-    return Math.max(60, Math.min(120, calculatedHeight));
+  // Use fixed row height for consistent, predictable movement
+  const rowHeight = 80;
+
+  // Calculate max rows to fit in viewport
+  const calculateMaxRows = () => {
+    const availableHeight = dimensions.height - 192;
+    const totalRowHeight = rowHeight + 8; // rowHeight + margin
+    return Math.floor(availableHeight / totalRowHeight);
   };
 
-  const rowHeight = calculateRowHeight();
+  const maxRows = calculateMaxRows();
 
   // Widget configuration state
   const [widgets, setWidgets] = useState<WidgetConfig[]>([
@@ -121,13 +121,13 @@ export default function Dashboard() {
     { i: 'leaderboard', type: 'leaderboard', enabled: true },
   ]);
 
-  // Widget size constraints
+  // Widget size constraints - optimized for content and user experience
   const widgetConstraints: Record<string, any> = {
-    portfolio: { minW: 3, minH: 3, maxW: 4, maxH: 4 },
-    buyStocks: { minW: 3, minH: 2, maxW: 4, maxH: 4 },
-    leaderboard: { minW: 3, minH: 3, maxW: 4, maxH: 4 },
-    chart: { minW: 4, minH: 3, maxW: 12, maxH: 8 },
-    holdings: { minW: 3, minH: 3, maxW: 6, maxH: 4 },
+    portfolio: { minW: 2, minH: 2, maxW: 3, maxH: 3 },        // Small/compact - shows key metrics
+    buyStocks: { minW: 3, minH: 3, maxW: 4, maxH: 5 },        // Medium - needs space for trading controls
+    leaderboard: { minW: 3, minH: 3, maxW: 4, maxH: 6 },      // Medium - scrollable list
+    chart: { minW: 4, minH: 3, maxW: 12, maxH: 8 },           // Flexible - can expand for better visibility
+    holdings: { minW: 3, minH: 3, maxW: 6, maxH: 6 },         // Medium-large - scrollable holdings list
   };
 
   // Apply constraints to layout items
@@ -135,10 +135,8 @@ export default function Dashboard() {
     return layout.map(item => ({
       ...item,
       ...widgetConstraints[item.i],
-      // Enforce y position doesn't exceed maxRows
-      y: Math.min(item.y, 4),
-      // Enforce height doesn't push off screen
-      h: Math.min(item.h, widgetConstraints[item.i]?.maxH || 4)
+      // Don't restrict y position - allow free vertical movement
+      // Don't enforce height limits - constraints will be applied by minH/maxH properties
     }));
   };
 
@@ -157,32 +155,32 @@ export default function Dashboard() {
     }
     return {
       lg: [
-        { i: 'portfolio', x: 0, y: 0, w: 3, h: 3, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 3, y: 0, w: 3, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'leaderboard', x: 6, y: 0, w: 3, h: 3, ...widgetConstraints.leaderboard },
+        { i: 'portfolio', x: 0, y: 0, w: 2, h: 2, ...widgetConstraints.portfolio },
+        { i: 'buyStocks', x: 2, y: 0, w: 3, h: 3, ...widgetConstraints.buyStocks },
+        { i: 'leaderboard', x: 5, y: 0, w: 3, h: 3, ...widgetConstraints.leaderboard },
         { i: 'chart', x: 0, y: 3, w: 7, h: 4, ...widgetConstraints.chart },
         { i: 'holdings', x: 7, y: 3, w: 5, h: 4, ...widgetConstraints.holdings },
       ],
       md: [
-        { i: 'portfolio', x: 0, y: 0, w: 4, h: 3, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 5, y: 0, w: 5, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'leaderboard', x: 0, y: 3, w: 4, h: 4, ...widgetConstraints.leaderboard },
-        { i: 'chart', x: 4, y: 3, w: 6, h: 4, ...widgetConstraints.chart },
-        { i: 'holdings', x: 0, y: 7, w: 10, h: 3, ...widgetConstraints.holdings },
+        { i: 'portfolio', x: 0, y: 0, w: 2, h: 2, ...widgetConstraints.portfolio },
+        { i: 'buyStocks', x: 2, y: 0, w: 4, h: 3, ...widgetConstraints.buyStocks },
+        { i: 'leaderboard', x: 6, y: 0, w: 4, h: 3, ...widgetConstraints.leaderboard },
+        { i: 'chart', x: 0, y: 3, w: 6, h: 4, ...widgetConstraints.chart },
+        { i: 'holdings', x: 6, y: 3, w: 4, h: 4, ...widgetConstraints.holdings },
       ],
       sm: [
-        { i: 'portfolio', x: 0, y: 0, w: 6, h: 3, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 0, y: 3, w: 6, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'chart', x: 0, y: 6, w: 6, h: 4, ...widgetConstraints.chart },
-        { i: 'holdings', x: 0, y: 10, w: 6, h: 3, ...widgetConstraints.holdings },
-        { i: 'leaderboard', x: 0, y: 13, w: 6, h: 4, ...widgetConstraints.leaderboard },
+        { i: 'portfolio', x: 0, y: 0, w: 3, h: 2, ...widgetConstraints.portfolio },
+        { i: 'buyStocks', x: 3, y: 0, w: 3, h: 3, ...widgetConstraints.buyStocks },
+        { i: 'chart', x: 0, y: 3, w: 6, h: 4, ...widgetConstraints.chart },
+        { i: 'holdings', x: 0, y: 7, w: 6, h: 4, ...widgetConstraints.holdings },
+        { i: 'leaderboard', x: 0, y: 11, w: 6, h: 4, ...widgetConstraints.leaderboard },
       ],
       xs: [
-        { i: 'portfolio', x: 0, y: 0, w: 4, h: 3, ...widgetConstraints.portfolio },
-        { i: 'buyStocks', x: 0, y: 3, w: 4, h: 3, ...widgetConstraints.buyStocks },
-        { i: 'chart', x: 0, y: 6, w: 4, h: 4, ...widgetConstraints.chart },
-        { i: 'holdings', x: 0, y: 10, w: 4, h: 3, ...widgetConstraints.holdings },
-        { i: 'leaderboard', x: 0, y: 13, w: 4, h: 3, ...widgetConstraints.leaderboard },
+        { i: 'portfolio', x: 0, y: 0, w: 4, h: 2, ...widgetConstraints.portfolio },
+        { i: 'buyStocks', x: 0, y: 2, w: 4, h: 3, ...widgetConstraints.buyStocks },
+        { i: 'chart', x: 0, y: 5, w: 4, h: 4, ...widgetConstraints.chart },
+        { i: 'holdings', x: 0, y: 9, w: 4, h: 4, ...widgetConstraints.holdings },
+        { i: 'leaderboard', x: 0, y: 13, w: 4, h: 4, ...widgetConstraints.leaderboard },
       ],
     };
   });
@@ -488,22 +486,23 @@ export default function Dashboard() {
         </Card>
       ) : (
         selectedTournament && (
-          <div className="overflow-hidden" style={{ height: `${dimensions.height - 192}px` }}>
+          <div style={{ height: `${dimensions.height - 192}px`, overflowY: 'auto', overflowX: 'hidden' }}>
             <ResponsiveGridLayout
               className="layout"
               layouts={layouts}
               breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480 }}
               cols={{ lg: 12, md: 10, sm: 6, xs: 4 }}
               rowHeight={rowHeight}
+              maxRows={maxRows}
               onLayoutChange={handleLayoutChange}
-              compactType="vertical"
-              preventCollision={true}
+              compactType={null}
+              preventCollision={false}
               isDraggable={true}
               isResizable={true}
-              resizeHandles={['se', 'sw', 'ne', 'nw', 's', 'n', 'e', 'w']}
+              resizeHandles={['se']}
               isBounded={true}
               margin={[8, 8]}
-              verticalCompact={true}
+              allowOverlap={false}
             >
                       {widgets.find(w => w.i === 'portfolio')?.enabled && (
                         <div key="portfolio">
