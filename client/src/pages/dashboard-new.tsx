@@ -260,19 +260,11 @@ export default function Dashboard() {
             />
 
             {/* Main Content Area - Split Layout */}
-            <div className="flex-1 flex overflow-hidden min-h-0">
-              {/* Left Side - Chart */}
-              <div className="flex-1 bg-card overflow-hidden min-h-0 border-r border-border/40">
-                <AdvancedTradingChart
-                  selectedStock={selectedChartStock}
-                  tournamentId={selectedTournament.id}
-                />
-              </div>
-
-              {/* Right Side - Trading or Holdings */}
-              <div className="w-1/3 flex flex-col min-h-0">
+            <div className="flex-1 flex gap-4 p-4 overflow-hidden">
+              {/* Left Side - Trading or Holdings */}
+              <div className="w-1/3 flex flex-col">
                 {showHoldings ? (
-                  <div className="h-full bg-card overflow-y-auto min-h-0">
+                  <div className="h-full bg-card/95 backdrop-blur-sm border-2 border-border rounded-lg overflow-hidden shadow-md">
                     <HoldingsWidget
                       holdings={getCurrentPortfolio()}
                       isLoading={false}
@@ -284,7 +276,7 @@ export default function Dashboard() {
                     />
                   </div>
                 ) : (
-                  <div className="h-full bg-card overflow-y-auto min-h-0">
+                  <div className="h-full bg-card/95 backdrop-blur-sm border-2 border-border rounded-lg overflow-hidden shadow-md overflow-y-auto">
                     <TradingExecutionWidget
                       tournamentId={selectedTournament.id}
                       holdings={getCurrentPortfolio()}
@@ -292,6 +284,14 @@ export default function Dashboard() {
                     />
                   </div>
                 )}
+              </div>
+
+              {/* Right Side - Chart */}
+              <div className="flex-1 bg-card/95 backdrop-blur-sm border-2 border-border rounded-lg overflow-hidden shadow-md">
+                <AdvancedTradingChart
+                  selectedStock={selectedChartStock}
+                  tournamentId={selectedTournament.id}
+                />
               </div>
             </div>
           </div>
