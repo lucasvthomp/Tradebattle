@@ -83,7 +83,7 @@ export default function AuthPage() {
             <div className="text-center space-y-2">
               <h1 className="text-3xl font-bold tracking-tight">Welcome to ORSATH</h1>
               <p className="text-muted-foreground">
-                Orellana, Santos & Thompson Investment Research
+                ORSATH Holdings, LLC
               </p>
             </div>
 

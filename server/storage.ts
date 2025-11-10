@@ -123,6 +123,7 @@ export interface IStorage {
   
   // Tournament status operations
   updateTournamentStatus(tournamentId: number, status: string, endedAt?: Date): Promise<Tournament>;
+  cancelTournament(tournamentId: number, reason: string): Promise<Tournament>;
   getExpiredTournaments(): Promise<Tournament[]>;
   getWaitingTournaments(): Promise<Tournament[]>;
   getArchivedTournaments(userId: number): Promise<Tournament[]>;
@@ -385,31 +386,38 @@ export class DatabaseStorage implements IStorage {
 
   // Tournament operations
   async createTournament(tournament: InsertTournament, creatorId: number): Promise<Tournament> {
+    console.log('[Storage] createTournament called with:', JSON.stringify(tournament, null, 2), 'Creator:', creatorId);
+
     // Generate unique 8-character code
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
-    
+    console.log('[Storage] Generated code:', code);
+
     const buyInAmount = Number(tournament.buyInAmount || 0);
-    
+    console.log('[Storage] Buy-in amount:', buyInAmount);
+
     // If tournament has buy-in, check creator balance and deduct
     if (buyInAmount > 0) {
+      console.log('[Storage] Processing buy-in...');
       // Get creator's current site cash
       const user = await db.select().from(users).where(eq(users.id, creatorId)).limit(1);
       if (!user[0]) {
         throw new Error('Creator not found');
       }
-      
+
       const currentSiteCash = Number(user[0].siteCash || 0);
-      
+      console.log('[Storage] Creator site cash:', currentSiteCash);
+
       // Check if creator has sufficient site cash
       if (currentSiteCash < buyInAmount) {
         throw new Error(`Insufficient site cash to create tournament. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`);
       }
-      
+
       // Deduct buy-in amount from creator's site cash
       await db.update(users)
         .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
         .where(eq(users.id, creatorId));
-        
+      console.log('[Storage] Deducted buy-in from creator');
+
       // Log the transaction
       await db.insert(adminLogs).values({
         adminUserId: creatorId,
@@ -420,21 +428,37 @@ export class DatabaseStorage implements IStorage {
         notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
       });
     }
-    
-    const result = await db.insert(tournaments).values({
+
+    const insertValues = {
       ...tournament,
       code,
       creatorId,
       currentPot: buyInAmount.toString() // Set initial pot to creator's buy-in
-    }).returning();
-    
+    };
+    console.log('[Storage] Inserting tournament with values:', JSON.stringify(insertValues, null, 2));
+
+    let result;
+    try {
+      result = await db.insert(tournaments).values(insertValues).returning();
+      console.log('[Storage] Tournament created successfully:', result[0].id);
+    } catch (error) {
+      console.error('[Storage] ERROR creating tournament:', error);
+      throw error;
+    }
+
     // Add creator as first participant with specified starting balance
-    await db.insert(tournamentParticipants).values({
-      tournamentId: result[0].id,
-      userId: creatorId,
-      balance: (tournament.startingBalance || "10000.00").toString()
-    });
-    
+    try {
+      await db.insert(tournamentParticipants).values({
+        tournamentId: result[0].id,
+        userId: creatorId,
+        balance: (tournament.startingBalance || "10000.00").toString()
+      });
+      console.log('[Storage] Added creator as participant');
+    } catch (error) {
+      console.error('[Storage] ERROR adding participant:', error);
+      throw error;
+    }
+
     return result[0];
   }
 
@@ -514,7 +538,8 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(tournamentParticipants.userId, userId),
-          ne(tournaments.status, 'completed')
+          ne(tournaments.status, 'completed'),
+          ne(tournaments.status, 'cancelled')
         )
       )
       .orderBy(desc(tournaments.createdAt));
@@ -650,7 +675,8 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(tournaments)
       .where(and(
         eq(tournaments.isPublic, true),
-        ne(tournaments.status, 'completed')
+        ne(tournaments.status, 'completed'),
+        ne(tournaments.status, 'cancelled')
       ));
   }
 
@@ -749,6 +775,19 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async cancelTournament(tournamentId: number, reason: string): Promise<Tournament> {
+    const result = await db
+      .update(tournaments)
+      .set({
+        status: 'cancelled',
+        cancellationReason: reason,
+        endedAt: new Date()
+      })
+      .where(eq(tournaments.id, tournamentId))
+      .returning();
+    return result[0];
+  }
+
   async getExpiredTournaments(): Promise<Tournament[]> {
     const now = new Date();
     // For now, we'll use a simple approach - tournaments that have been active for more than their timeframe
@@ -839,7 +878,10 @@ export class DatabaseStorage implements IStorage {
       .where(
         and(
           eq(tournamentParticipants.userId, userId),
-          eq(tournaments.status, 'completed')
+          or(
+            eq(tournaments.status, 'completed'),
+            eq(tournaments.status, 'cancelled')
+          )
         )
       )
       .orderBy(desc(tournaments.endedAt));
@@ -1012,6 +1054,30 @@ export class DatabaseStorage implements IStorage {
   async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
     const result = await db.insert(chatMessages).values(message).returning();
     return result[0];
+  }
+
+  async transferBalance(senderId: number, recipientId: number, amount: number): Promise<void> {
+    // Get both users
+    const sender = await this.getUserById(senderId);
+    const recipient = await this.getUserById(recipientId);
+
+    if (!sender || !recipient) {
+      throw new Error('User not found');
+    }
+
+    const senderBalance = parseFloat(sender.siteCash);
+    const recipientBalance = parseFloat(recipient.siteCash);
+
+    // Perform the transfer
+    await db
+      .update(users)
+      .set({ siteCash: (senderBalance - amount).toString() })
+      .where(eq(users.id, senderId));
+
+    await db
+      .update(users)
+      .set({ siteCash: (recipientBalance + amount).toString() })
+      .where(eq(users.id, recipientId));
   }
 }
 

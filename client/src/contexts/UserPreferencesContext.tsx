@@ -1152,6 +1152,7 @@ interface UserPreferencesContextType {
   t: (key: string) => string;
   formatCurrency: (amount: number, sourceCurrency?: string) => string;
   convertAndFormatCurrency: (amount: number, sourceCurrency: string) => string;
+  formatNumber: (value: number, decimals?: number) => string;
   exchangeRates: Record<string, number>;
   updatePreferences: (language?: string, currency?: string) => Promise<void>;
 }
@@ -1230,6 +1231,14 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
     return formatCurrency(amount, sourceCurrency);
   };
 
+  // Format plain numbers with commas (for non-currency numbers)
+  const formatNumber = (value: number, decimals: number = 0): string => {
+    return value.toLocaleString('en-US', {
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    });
+  };
+
   // Update preferences function
   const updatePreferences = async (newLanguage?: string, newCurrency?: string) => {
     if (!user) return;
@@ -1272,6 +1281,7 @@ export function UserPreferencesProvider({ children }: UserPreferencesProviderPro
     t,
     formatCurrency,
     convertAndFormatCurrency,
+    formatNumber,
     exchangeRates,
     updatePreferences,
   };

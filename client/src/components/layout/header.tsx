@@ -14,28 +14,32 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus } from "lucide-react";
-export default function Header() {
+interface HeaderProps {
+  chatOpen?: boolean;
+  onChatToggle?: () => void;
+}
+
+export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) {
   const { user, logoutMutation } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
   const [, navigate] = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-md border-b border-border/50">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ backgroundColor: 'rgba(10, 26, 47, 0.98)', borderColor: '#2B3A4C' }}>
       <div className="container mx-auto">
         <nav className="flex items-center justify-between h-16">
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center space-x-4">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">O</span>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#E3B341' }}>
+                <span className="font-bold text-sm" style={{ color: '#0A1A2F' }}>O</span>
               </div>
-              <span className="text-xl font-bold text-foreground">ORSATH</span>
+              <span className="text-xl font-bold" style={{ color: '#FFFFFF' }}>ORSATH</span>
             </Link>
 
-            {/* Market Status Indicator */}
-            <MarketStatus variant="inline" />
+            {/* Market Status Clock */}
+            <MarketStatus variant="clock" />
           </div>
 
           {/* Right side - Clean user info and actions */}
@@ -45,9 +49,9 @@ export default function Header() {
                 {/* Balance Display - Clickable for balance management */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 bg-muted/30 backdrop-blur-sm border border-border/50 rounded-md hover:bg-muted/50">
-                      <DollarSign className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-semibold">
+                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 backdrop-blur-sm border rounded-md" style={{ backgroundColor: 'rgba(43, 58, 76, 0.3)', borderColor: '#2B3A4C' }}>
+                      <DollarSign className="w-4 h-4" style={{ color: '#E3B341' }} />
+                      <span className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>
                         {formatCurrency(Number(user.siteCash) || 0)}
                       </span>
                     </Button>
@@ -65,15 +69,17 @@ export default function Header() {
                 </DropdownMenu>
 
                 {/* Chat Button - only show for authenticated users */}
-                <Button
-                  onClick={() => setChatOpen(!chatOpen)}
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span className="text-sm font-medium">{t('chat')}</span>
-                </Button>
+                {onChatToggle && (
+                  <Button
+                    onClick={onChatToggle}
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span className="text-sm font-medium">{t('chat')}</span>
+                  </Button>
+                )}
 
                 {/* User Menu with integrated balance */}
                 <DropdownMenu>
@@ -87,13 +93,13 @@ export default function Header() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    {(user?.subscriptionTier === 'administrator') && (
+                    {(user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS') && (
                       <>
                         <DropdownMenuSeparator />
                         <Link href="/admin">
                           <DropdownMenuItem>
                             <Shield className="w-4 h-4 mr-2" />
-                            Admin Panel
+                            Admin
                           </DropdownMenuItem>
                         </Link>
                         <DropdownMenuSeparator />
@@ -129,16 +135,10 @@ export default function Header() {
       </div>
       
       {/* Balance Dialog */}
-      <BalanceDialog 
+      <BalanceDialog
         open={balanceDialogOpen}
         onOpenChange={setBalanceDialogOpen}
         currentBalance={Number(user?.balance) || 0}
-      />
-
-      {/* Global Chat Sidebar */}
-      <ChatSidebar
-        isOpen={chatOpen}
-        onToggle={() => setChatOpen(!chatOpen)}
       />
     </header>
   );

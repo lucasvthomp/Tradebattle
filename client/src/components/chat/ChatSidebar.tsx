@@ -1,16 +1,32 @@
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Send, MessageSquare, X, User, Globe, Trophy, Users } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Send, MessageSquare, X, User, Globe, Trophy, Users, DollarSign, UserCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 interface ChatMessage {
   id: number;
@@ -34,11 +50,15 @@ interface ChatSidebarProps {
 
 export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const { user } = useAuth();
-  const { t } = useUserPreferences();
+  const { t, formatCurrency } = useUserPreferences();
   const [newMessage, setNewMessage] = useState("");
   const [selectedChat, setSelectedChat] = useState<string>("global");
+  const [tipDialogOpen, setTipDialogOpen] = useState(false);
+  const [tipAmount, setTipAmount] = useState("");
+  const [selectedUser, setSelectedUser] = useState<{ id: number; username: string } | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
 
   // Fetch user's tournaments for chat selection
   const { data: userTournamentsResponse } = useQuery<{data: Tournament[]}>({
@@ -75,8 +95,8 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: { message: string; tournamentId?: number }) => {
-      const endpoint = isGlobalChat 
-        ? '/api/chat/global' 
+      const endpoint = isGlobalChat
+        ? '/api/chat/global'
         : `/api/chat/tournament/${tournamentId}`;
       const response = await apiRequest("POST", endpoint, messageData);
       return response.json();
@@ -87,6 +107,23 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     }
   });
 
+  // Send tip mutation
+  const sendTipMutation = useMutation({
+    mutationFn: async ({ recipientId, amount }: { recipientId: number; amount: number }) => {
+      const response = await apiRequest("POST", "/api/tips", {
+        recipientId,
+        amount
+      });
+      return response.json();
+    },
+    onSuccess: () => {
+      setTipDialogOpen(false);
+      setTipAmount("");
+      setSelectedUser(null);
+      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+    }
+  });
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user) return;
@@ -94,6 +131,14 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     sendMessageMutation.mutate({
       message: newMessage.trim(),
       tournamentId: isGlobalChat ? undefined : tournamentId
+    });
+  };
+
+  const handleSendTip = () => {
+    if (!selectedUser || !tipAmount || parseFloat(tipAmount) <= 0) return;
+    sendTipMutation.mutate({
+      recipientId: selectedUser.id,
+      amount: parseFloat(tipAmount)
     });
   };
 
@@ -150,32 +195,16 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const chatInfo = getCurrentChatInfo();
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onToggle}
-            className="fixed top-16 left-0 right-0 bottom-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
-          />
-
-          {/* Chat Sidebar - Semi-transparent */}
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-16 right-0 h-[calc(100vh-4rem)] w-80 bg-background/80 backdrop-blur-md border-l border-border/50 shadow-xl z-50 flex flex-col"
-          >
+    <motion.div
+      initial={{ x: "100%" }}
+      animate={{ x: 0 }}
+      exit={{ x: "100%" }}
+      transition={{ type: "spring", damping: 30, stiffness: 300 }}
+      className="h-full w-full bg-background/95 backdrop-blur-md border-l border-border/50 shadow-xl flex flex-col sticky top-16"
+    >
             {/* Compact Header with Chat Selector */}
             <div className="flex items-center justify-between p-3 border-b border-border/30 bg-background/40">
-              <div className="flex items-center space-x-3 flex-1">
-                <div className={`w-6 h-6 ${chatInfo.color} rounded flex items-center justify-center`}>
-                  {chatInfo.icon}
-                </div>
+              <div className="flex items-center flex-1">
                 {/* Compact Chat Selector */}
                 <Select value={selectedChat} onValueChange={setSelectedChat}>
                   <SelectTrigger className="w-full h-8 text-sm bg-background/60 border-border/50">
@@ -184,7 +213,6 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   <SelectContent className="bg-background/95 backdrop-blur-md border-border/50">
                     <SelectItem value="global">
                       <div className="flex items-center space-x-2">
-                        <Globe className="w-3 h-3" />
                         <span>Global Chat</span>
                       </div>
                     </SelectItem>
@@ -236,10 +264,38 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   </div>
                 ) : (
                   messages.map((message) => (
-                    <div key={message.id} className="flex space-x-2">
-                      <div className="w-7 h-7 bg-muted/60 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0">
-                        <User className="w-3 h-3" />
-                      </div>
+                    <div key={message.id} className="flex space-x-3">
+                      {/* Clickable Avatar with Dropdown */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button className="w-12 h-12 bg-muted/60 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 hover:bg-muted/80 transition-colors cursor-pointer">
+                            <User className="w-6 h-6" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          <DropdownMenuItem
+                            onClick={() => navigate(`/people/${message.userId}`)}
+                            className="cursor-pointer"
+                          >
+                            <UserCircle className="w-4 h-4 mr-2" />
+                            View Full Profile
+                          </DropdownMenuItem>
+                          {message.userId !== user?.id && (
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedUser({ id: message.userId, username: message.username });
+                                setTipDialogOpen(true);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              <DollarSign className="w-4 h-4 mr-2" />
+                              Send Tip
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+
+                      {/* Message Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-1">
                           <span className="text-sm font-medium">
@@ -286,9 +342,58 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 <span>{newMessage.length}/500</span>
               </div>
             </div>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+
+      {/* Tip Dialog */}
+      <Dialog open={tipDialogOpen} onOpenChange={setTipDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Send Tip to {selectedUser?.username}</DialogTitle>
+            <DialogDescription>
+              Send a tip from your balance to support this user.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="tip-amount">Amount</Label>
+              <Input
+                id="tip-amount"
+                type="number"
+                placeholder="Enter amount"
+                value={tipAmount}
+                onChange={(e) => setTipAmount(e.target.value)}
+                min="0.01"
+                step="0.01"
+              />
+              <p className="text-xs text-muted-foreground">
+                Your balance: {formatCurrency(Number(user?.siteCash) || 0)}
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setTipDialogOpen(false);
+                setTipAmount("");
+                setSelectedUser(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSendTip}
+              disabled={
+                !tipAmount ||
+                parseFloat(tipAmount) <= 0 ||
+                parseFloat(tipAmount) > Number(user?.siteCash) ||
+                sendTipMutation.isPending
+              }
+            >
+              {sendTipMutation.isPending ? "Sending..." : "Send Tip"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </motion.div>
   );
 }

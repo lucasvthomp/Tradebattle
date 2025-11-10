@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
-import { useQuery, useMutation, useQueryClient } from "@tantml:function_calls>
-<invoke name="useToast">
-import { Plus, Trophy, Users } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+import { Plus, Trophy } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
 
 // Components
@@ -79,7 +77,7 @@ export default function Dashboard() {
     mutationFn: async (order: OrderRequest) => {
       if (!selectedTournament) return;
 
-      const endpoint = \`/api/tournaments/\${selectedTournament.id}/purchase\`;
+      const endpoint = `/api/tournaments/\${selectedTournament.id}/purchase`;
       const payload = {
         symbol: order.stock.symbol,
         companyName: order.stock.shortName || order.stock.longName || order.stock.symbol,
@@ -96,7 +94,7 @@ export default function Dashboard() {
     onSuccess: (_, order) => {
       const actionLabel = order.action === 'buy' ? 'Purchase' :
                          order.action === 'short_sell' ? 'Short sell' : 'Cover';
-      toast({ title: \`\${actionLabel} successful!\` });
+      toast({ title: `\${actionLabel} successful!` });
       setBuyDialogOpen(false);
       setShortDialogOpen(false);
       setCurrentOrder(null);
@@ -109,8 +107,8 @@ export default function Dashboard() {
       const actionLabel = order.action === 'buy' ? 'Purchase' :
                          order.action === 'short_sell' ? 'Short sell' : 'Cover';
       toast({
-        title: \`\${actionLabel} failed\`,
-        description: error.message || \`Unable to execute \${actionLabel.toLowerCase()}\`,
+        title: `\${actionLabel} failed`,
+        description: error.message || `Unable to execute \${actionLabel.toLowerCase()}`,
         variant: "destructive",
       });
     },
@@ -133,7 +131,7 @@ export default function Dashboard() {
   const sellStockMutation = useMutation({
     mutationFn: async (data: { symbol: string; sharesToSell: number; currentPrice: number; tournamentId?: number }) => {
       const endpoint = data.tournamentId
-        ? \`/api/tournaments/\${data.tournamentId}/sell\`
+        ? `/api/tournaments/\${data.tournamentId}/sell`
         : "/api/personal-portfolio/sell";
 
       const payload = data.tournamentId
@@ -200,7 +198,7 @@ export default function Dashboard() {
 
   if (!user) {
     return (
-      <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
+      <div className="h-full flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">Please Log In</h2>
           <p className="text-muted-foreground">You need to be logged in to view your trading dashboard.</p>
@@ -210,7 +208,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-background flex flex-col overflow-hidden">
+    <div className="h-full bg-background flex flex-col overflow-hidden">
       {/* Tournament Trading Section */}
       {activeTournaments.length === 0 ? (
         <Card className="flex items-center justify-center flex-1 m-6">
@@ -232,18 +230,8 @@ export default function Dashboard() {
         </Card>
       ) : (
         selectedTournament && (
-          <div className="flex flex-col flex-1 overflow-hidden">
-            {/* Portfolio Stats Bar with Tournament Selector */}
-            <div className="flex items-center justify-end px-6 py-2 border-b border-border/50">
-              <Button
-                variant={showHoldings ? "default" : "outline"}
-                size="sm"
-                onClick={() => setShowHoldings(!showHoldings)}
-              >
-                {showHoldings ? "Show Trading" : "Show Holdings"}
-              </Button>
-            </div>
-
+          <div className="flex flex-col h-full overflow-hidden">
+            {/* Portfolio Stats Bar */}
             <PortfolioStatsBar
               portfolioValue={portfolioMetrics.totalValue}
               cashBalance={portfolioMetrics.cashBalance}
@@ -261,7 +249,7 @@ export default function Dashboard() {
 
             {/* Main Content Area - Split Layout */}
             <div className="flex-1 flex overflow-hidden min-h-0">
-              {/* Left Side - Chart */}
+              {/* Left Side - Chart (2/3 width) */}
               <div className="flex-1 bg-card overflow-hidden min-h-0 border-r border-border/40">
                 <AdvancedTradingChart
                   selectedStock={selectedChartStock}
@@ -269,28 +257,28 @@ export default function Dashboard() {
                 />
               </div>
 
-              {/* Right Side - Trading or Holdings */}
+              {/* Right Side - Trading or Holdings (1/3 width) */}
               <div className="w-1/3 flex flex-col min-h-0">
                 {showHoldings ? (
-                  <div className="h-full bg-card overflow-y-auto min-h-0">
-                    <HoldingsWidget
-                      holdings={getCurrentPortfolio()}
-                      isLoading={false}
-                      onChartClick={(symbol) => setSelectedChartStock(symbol)}
-                      onSellClick={(holding) => {
-                        setSelectedSellStock(holding);
-                        setSellDialogOpen(true);
-                      }}
-                    />
-                  </div>
+                  <HoldingsWidget
+                    holdings={getCurrentPortfolio()}
+                    isLoading={false}
+                    onChartClick={(symbol) => setSelectedChartStock(symbol)}
+                    onSellClick={(holding) => {
+                      setSelectedSellStock(holding);
+                      setSellDialogOpen(true);
+                    }}
+                    showHoldings={showHoldings}
+                    onToggleView={() => setShowHoldings(!showHoldings)}
+                  />
                 ) : (
-                  <div className="h-full bg-card overflow-y-auto min-h-0">
-                    <TradingExecutionWidget
-                      tournamentId={selectedTournament.id}
-                      holdings={getCurrentPortfolio()}
-                      onExecute={handleOrderExecution}
-                    />
-                  </div>
+                  <TradingExecutionWidget
+                    tournamentId={selectedTournament.id}
+                    holdings={getCurrentPortfolio()}
+                    onExecute={handleOrderExecution}
+                    showHoldings={showHoldings}
+                    onToggleView={() => setShowHoldings(!showHoldings)}
+                  />
                 )}
               </div>
             </div>

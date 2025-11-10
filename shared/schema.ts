@@ -139,7 +139,8 @@ export const tournaments = pgTable("tournaments", {
   currentPlayers: integer("current_players").default(1).notNull(),
   startingBalance: numeric("starting_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(),
   timeframe: varchar("timeframe").default("4 weeks").notNull(), // Tournament duration
-  status: varchar("status").default("waiting"), // waiting, active, completed
+  status: varchar("status").default("waiting"), // waiting, active, completed, cancelled
+  cancellationReason: text("cancellation_reason"), // Reason if tournament was cancelled
   buyInAmount: numeric("buy_in_amount", { precision: 15, scale: 2 }).default("0.00").notNull(), // Real money buy-in amount
   currentPot: numeric("current_pot", { precision: 15, scale: 2 }).default("0.00").notNull(), // Total accumulated buy-ins
   tradingRestriction: varchar("trading_restriction", { length: 50 }).default("none").notNull(), // Trading category restrictions
@@ -245,6 +246,8 @@ export const insertTournamentSchema = createInsertSchema(tournaments).pick({
   buyInAmount: true,
   tradingRestriction: true,
   isPublic: true,
+  tournamentType: true,
+  scheduledStartTime: true,
 });
 
 export const insertCreatorRewardSchema = createInsertSchema(tournamentCreatorRewards).pick({

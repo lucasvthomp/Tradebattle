@@ -3,20 +3,21 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { 
-  Home, 
-  BarChart3, 
-  Briefcase, 
-  Trophy, 
-  Users, 
-  Crown, 
-  Phone, 
+import {
+  Home,
+  BarChart3,
+  Briefcase,
+  Trophy,
+  Users,
+  Crown,
+  Phone,
   Menu,
   X,
   ShoppingBag,
   Gift,
   Target,
-  Swords
+  Swords,
+  Shield
 } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
@@ -40,6 +41,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       { href: "/people", label: t('people'), icon: Users },
       { href: "/shop", label: "Shop", icon: ShoppingBag },
       { href: "/contact", label: "Support", icon: Phone },
+      ...(user.username === "LUCAS" ? [{ href: "/admin", label: "Admin", icon: Shield }] : []),
     ] : [
       { href: "/contact", label: "Support", icon: Phone },
     ]),

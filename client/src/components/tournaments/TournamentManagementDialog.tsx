@@ -272,8 +272,8 @@ export function TournamentManagementDialog({
                 </Button>
               </div>
               
-              {/* Private Tournament Powers */}
-              {isPrivate && isWaiting && (
+              {/* Tournament Powers - Available for all creators */}
+              {isWaiting && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <div>
@@ -282,7 +282,7 @@ export function TournamentManagementDialog({
                     </div>
                     <Button
                       onClick={() => startEarlyMutation.mutate()}
-                      disabled={startEarlyMutation.isPending || tournament.currentPlayers < 2}
+                      disabled={startEarlyMutation.isPending}
                       className="bg-green-600 hover:bg-green-700"
                     >
                       <Play className="w-4 h-4 mr-2" />
@@ -290,20 +290,22 @@ export function TournamentManagementDialog({
                     </Button>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">Cancel Tournament</p>
-                      <p className="text-sm text-muted-foreground">Delete the tournament before it starts</p>
+                  {isPrivate && (
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">Cancel Tournament</p>
+                        <p className="text-sm text-muted-foreground">Delete the tournament before it starts</p>
+                      </div>
+                      <Button
+                        onClick={() => setCancelDialogOpen(true)}
+                        disabled={hasStarted}
+                        variant="destructive"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Cancel Tournament
+                      </Button>
                     </div>
-                    <Button
-                      onClick={() => setCancelDialogOpen(true)}
-                      disabled={hasStarted}
-                      variant="destructive"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Cancel Tournament
-                    </Button>
-                  </div>
+                  )}
                 </div>
               )}
 

@@ -6,6 +6,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth, AuthProvider } from "@/hooks/use-auth";
 import { ThemeProvider } from "@/hooks/use-theme";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
+import { ChatProvider } from "@/contexts/ChatContext";
+import { useState, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
+import { PageLoader } from "@/components/ui/page-loader";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import UnauthenticatedHome from "@/pages/unauthenticated-home";
@@ -34,60 +38,73 @@ import Footer from "@/components/layout/footer";
 function Router() {
   const { user, isLoading } = useAuth();
   const [location] = useLocation();
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Handle page transitions
+  useEffect(() => {
+    setIsTransitioning(true);
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 400); // 400ms transition
+
+    return () => clearTimeout(timer);
+  }, [location]);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   // Hide footer on dashboard and portfolio pages (dashboard route)
   const shouldShowFooter = !['/', '/dashboard', '/portfolio'].includes(location) || !user;
 
   return (
-    <Layout>
-      <Switch>
-        {!user ? (
-          <>
-            {/* Unauthenticated users see the conversion-focused home page */}
-            <Route path="/" component={UnauthenticatedHome} />
-            <Route path="/contact" component={Contact} />
-            <Route path="/about" component={About} />
-            <Route path="/privacy" component={Privacy} />
-            <Route path="/terms" component={Terms} />
-            <Route path="/login" component={Login} />
-            <Route path="/signup" component={Signup} />
-          </>
-        ) : (
-          <>
-            {/* Authenticated users: root redirects to dashboard, hub accessible via logo */}
-            <Route path="/" component={Dashboard} />
-            <Route path="/hub" component={Hub} />
-            <Route path="/dashboard" component={Dashboard} />
-            <Route path="/portfolio" component={Dashboard} />
-            <Route path="/tournaments" component={Tournaments} />
-            <Route path="/leaderboard" component={Leaderboard} />
-            <Route path="/people" component={People} />
-            <Route path="/people/:userId" component={People} />
-            <Route path="/events" component={Events} />
-            <Route path="/shop" component={Shop} />
-            <Route path="/withdraw" component={Withdraw} />
+    <>
+      <AnimatePresence mode="wait">
+        {isTransitioning && <PageLoader key="loader" />}
+      </AnimatePresence>
 
-            <Route path="/contact" component={Contact} />
-            <Route path="/about" component={About} />
-            <Route path="/privacy" component={Privacy} />
-            <Route path="/terms" component={Terms} />
-            <Route path="/profile" component={Profile} />
-            <Route path="/admin" component={Admin} />
-            <Route path="/archive" component={Archive} />
-          </>
-        )}
-        <Route component={NotFound} />
-      </Switch>
-      {shouldShowFooter && <Footer />}
-    </Layout>
+      <Layout>
+        <Switch>
+          {!user ? (
+            <>
+              {/* Unauthenticated users see the conversion-focused home page */}
+              <Route path="/" component={UnauthenticatedHome} />
+              <Route path="/contact" component={Contact} />
+              <Route path="/about" component={About} />
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/terms" component={Terms} />
+              <Route path="/login" component={Login} />
+              <Route path="/signup" component={Signup} />
+            </>
+          ) : (
+            <>
+              {/* Authenticated users: root redirects to dashboard, hub accessible via logo */}
+              <Route path="/" component={Dashboard} />
+              <Route path="/hub" component={Hub} />
+              <Route path="/dashboard" component={Dashboard} />
+              <Route path="/portfolio" component={Dashboard} />
+              <Route path="/tournaments" component={Tournaments} />
+              <Route path="/leaderboard" component={Leaderboard} />
+              <Route path="/people" component={People} />
+              <Route path="/people/:userId" component={People} />
+              <Route path="/events" component={Events} />
+              <Route path="/shop" component={Shop} />
+              <Route path="/withdraw" component={Withdraw} />
+
+              <Route path="/contact" component={Contact} />
+              <Route path="/about" component={About} />
+              <Route path="/privacy" component={Privacy} />
+              <Route path="/terms" component={Terms} />
+              <Route path="/profile" component={Profile} />
+              <Route path="/admin" component={Admin} />
+              <Route path="/archive" component={Archive} />
+            </>
+          )}
+          <Route component={NotFound} />
+        </Switch>
+        {shouldShowFooter && <Footer />}
+      </Layout>
+    </>
   );
 }
 
@@ -97,10 +114,12 @@ function App() {
       <AuthProvider>
         <UserPreferencesProvider>
           <ThemeProvider defaultTheme="dark" storageKey="orsath-ui-theme">
-            <TooltipProvider>
-              <Router />
-              <Toaster />
-            </TooltipProvider>
+            <ChatProvider>
+              <TooltipProvider>
+                <Router />
+                <Toaster />
+              </TooltipProvider>
+            </ChatProvider>
           </ThemeProvider>
         </UserPreferencesProvider>
       </AuthProvider>

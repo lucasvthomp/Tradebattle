@@ -133,6 +133,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           7 * 24 * 60 * 60 * 1000 // 1 week default
         )).toISOString(),
         buyInAmount: data.buyInAmount,
+        tradingRestriction: 'none',
         isPublic: data.isPublic
       });
       return res.json();

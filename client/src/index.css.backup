@@ -245,18 +245,18 @@
   ::-webkit-scrollbar {
     width: 8px;
   }
-
+  
   ::-webkit-scrollbar-track {
-    background: #1E2D3F;
+    background: hsl(240, 6%, 16%);
   }
-
+  
   ::-webkit-scrollbar-thumb {
-    background: #2B3A4C;
+    background: hsl(240, 6%, 24%);
     border-radius: 4px;
   }
-
+  
   ::-webkit-scrollbar-thumb:hover {
-    background: #E3B341;
+    background: hsl(142, 76%, 36%);
   }
 }
 
@@ -264,61 +264,34 @@
   .text-balance {
     text-wrap: balance;
   }
-
-  /* Navy & Gold Utilities */
+  
+  /* Gaming-inspired utilities */
+  .neon-glow {
+    box-shadow: var(--shadow-neon);
+  }
+  
   .gold-glow {
     box-shadow: var(--shadow-gold);
   }
-
-  .card-shadow {
+  
+  .card-glow {
     box-shadow: var(--shadow-card);
   }
-
-  /* Text Colors */
-  .text-secondary {
-    color: #C9D1E2;
+  
+  .gradient-primary {
+    background: var(--gradient-primary);
   }
-
-  .text-muted {
-    color: #8A93A6;
+  
+  .gradient-secondary {
+    background: var(--gradient-secondary);
   }
-
-  .text-disabled {
-    color: #556070;
+  
+  .gradient-accent {
+    background: var(--gradient-accent);
   }
-
-  /* Status Colors */
-  .text-profit {
-    color: #28C76F;
-  }
-
-  .text-loss {
-    color: #FF4F58;
-  }
-
-  .text-gold {
-    color: #E3B341;
-  }
-
-  .bg-profit {
-    background-color: #28C76F;
-  }
-
-  .bg-loss {
-    background-color: #FF4F58;
-  }
-
-  .bg-gold {
-    background-color: #E3B341;
-  }
-
-  /* Backgrounds */
-  .bg-sidebar {
-    background-color: #0D1F33;
-  }
-
-  .bg-hover {
-    background-color: #142538;
+  
+  .gradient-card {
+    background: var(--gradient-card);
   }
   
   /* Enhanced animations */
@@ -396,61 +369,53 @@
     color: hsl(0, 0%, 0%);
   }
   
-  /* Card Styles */
+  /* More opaque navigation bars and sidebars */
   .card {
-    background-color: #1E2D3F !important;
-    border-color: #2B3A4C;
+    background-color: hsl(var(--card) / 0.8) !important;
     backdrop-filter: blur(12px);
   }
-
-  .card-inner {
-    background-color: #142538;
-  }
-
-  /* Status Colors */
+  
   .status-profit {
-    color: #28C76F;
-  }
-
-  .status-loss {
-    color: #FF4F58;
+    color: var(--green-profit);
   }
   
-  /* Button Styles - Navy & Gold */
+  .status-loss {
+    color: var(--red-loss);
+  }
+  
+  /* Button enhancements */
   .btn-primary {
-    background: #E3B341;
+    background: hsl(var(--primary));
     border: none;
-    color: #0A1A2F;
+    color: hsl(var(--primary-foreground));
     font-weight: 600;
-    transition: background-color 0.2s ease;
+    transition: opacity 0.2s ease;
   }
-
+  
   .btn-primary:hover {
-    background: #d4a136;
+    opacity: 0.9;
   }
-
+  
   .btn-secondary {
-    background: transparent;
-    border: 2px solid #E3B341;
-    color: #E3B341;
-    transition: all 0.2s ease;
+    background: hsl(var(--secondary));
+    border: 1px solid hsl(var(--border));
+    transition: border-color 0.2s ease;
   }
-
+  
   .btn-secondary:hover {
-    background: rgba(227, 179, 65, 0.1);
-    box-shadow: 0 0 10px rgba(227, 179, 65, 0.2);
+    border-color: hsl(var(--primary));
   }
-
-  .btn-danger {
-    background: #FF4F58;
-    border: none;
-    color: #FFFFFF;
+  
+  .btn-accent {
+    background: var(--gradient-accent);
+    color: hsl(0, 0%, 0%);
     font-weight: 600;
-    transition: background-color 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-
-  .btn-danger:hover {
-    background: #ff3b45;
+  
+  .btn-accent:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-gold);
   }
   
   /* Interactive card effects */
@@ -464,24 +429,23 @@
     border-color: hsl(var(--border));
   }
   
-  /* Premium text effects */
+  /* Gradient text effects */
   .gradient-text {
-    color: #FFFFFF;
+    color: hsl(var(--foreground));
   }
-
+  
   .gradient-text-profit {
-    color: #28C76F;
-    font-weight: 600;
+    background: linear-gradient(135deg, var(--green-profit), hsl(142, 76%, 46%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-
+  
   .gradient-text-loss {
-    color: #FF4F58;
-    font-weight: 600;
-  }
-
-  .gradient-text-gold {
-    color: #E3B341;
-    font-weight: 600;
+    background: linear-gradient(135deg, var(--red-loss), hsl(0, 84%, 70%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   @keyframes scroll {
@@ -731,28 +695,23 @@ textarea:focus-visible {
   pointer-events: none;
 }
 
-/* Status badge styles - Navy & Gold */
+/* Status badge styles */
 .status-active {
-  background: #28C76F;
-  color: #FFFFFF;
+  background: linear-gradient(135deg, var(--neon-green), hsl(142, 76%, 46%));
+  color: hsl(0, 0%, 100%);
   @apply text-white font-semibold;
+  box-shadow: 0 0 20px var(--neon-green);
+  /* Removed pulse-glow animation to prevent moving gradients */
 }
 
 .status-inactive {
-  background: #FF4F58;
+  background: linear-gradient(135deg, var(--red-loss), hsl(0, 84%, 70%));
   @apply text-white font-semibold;
 }
 
 .status-waiting {
-  background: #E3B341;
-  color: #0A1A2F;
-  @apply font-semibold;
-}
-
-.status-ended {
-  background: #556070;
-  color: #FFFFFF;
-  @apply text-white font-semibold;
+  background: linear-gradient(135deg, var(--gold), hsl(51, 100%, 60%));
+  @apply text-black font-semibold;
 }
 
 /* Sidebar and Chat Panel Enhancements */

@@ -1,8 +1,8 @@
-import { TrendingUp, TrendingDown, Trophy, DollarSign, Users, LayoutList, ShoppingCart } from "lucide-react";
+import { TrendingUp, TrendingDown, Trophy, DollarSign, Users, Clock } from "lucide-react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 
 interface PortfolioStatsBarProps {
   portfolioValue: number;
@@ -14,8 +14,6 @@ interface PortfolioStatsBarProps {
   selectedTournament?: any;
   activeTournaments?: any[];
   onTournamentChange?: (tournamentId: string) => void;
-  showHoldings?: boolean;
-  onToggleView?: () => void;
 }
 
 export function PortfolioStatsBar({
@@ -28,15 +26,47 @@ export function PortfolioStatsBar({
   selectedTournament,
   activeTournaments = [],
   onTournamentChange,
-  showHoldings = false,
-  onToggleView
 }: PortfolioStatsBarProps) {
   const { formatCurrency } = useUserPreferences();
   const isPositive = profitLoss >= 0;
+  const [timeRemaining, setTimeRemaining] = useState("");
+
+  // Calculate time remaining for tournament
+  useEffect(() => {
+    if (!selectedTournament?.endDate) return;
+
+    const updateTimeRemaining = () => {
+      const now = new Date();
+      const end = new Date(selectedTournament.endDate);
+      const diff = end.getTime() - now.getTime();
+
+      if (diff <= 0) {
+        setTimeRemaining("Ended");
+        return;
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        setTimeRemaining(`${days}d ${hours}h`);
+      } else if (hours > 0) {
+        setTimeRemaining(`${hours}h ${minutes}m`);
+      } else {
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeRemaining(`${minutes}m ${seconds}s`);
+      }
+    };
+
+    updateTimeRemaining();
+    const interval = setInterval(updateTimeRemaining, 1000);
+    return () => clearInterval(interval);
+  }, [selectedTournament?.endDate]);
 
   return (
-    <div className="w-full bg-card/95 backdrop-blur border-b border-border/50 px-6 py-3">
-      <div className="flex items-center justify-between gap-6 flex-wrap">
+    <div className="w-full bg-muted/60 backdrop-blur border-b border-border/50 px-4 py-2.5">
+      <div className="flex items-center justify-between gap-2 flex-wrap">
         {/* Tournament Selector */}
         {activeTournaments.length > 0 && selectedTournament && onTournamentChange && (
           <div className="flex items-center gap-2">
@@ -111,25 +141,19 @@ export function PortfolioStatsBar({
           </div>
         )}
 
-        {/* View Toggle Button */}
-        {onToggleView && (
-          <Button
-            variant={showHoldings ? "default" : "outline"}
-            size="sm"
-            onClick={onToggleView}
-          >
-            {showHoldings ? (
-              <>
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Trade
-              </>
-            ) : (
-              <>
-                <LayoutList className="w-4 h-4 mr-2" />
-                Holdings
-              </>
-            )}
-          </Button>
+        {/* Time Remaining */}
+        {timeRemaining && (
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 rounded-md bg-blue-500/10">
+              <Clock className="w-4 h-4 text-blue-500" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase text-muted-foreground font-medium">Time Left</div>
+              <div className="text-base font-bold leading-tight text-blue-500">
+                {timeRemaining}
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>

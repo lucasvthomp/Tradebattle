@@ -224,7 +224,9 @@ var init_schema = __esm({
       timeframe: varchar2("timeframe").default("4 weeks").notNull(),
       // Tournament duration
       status: varchar2("status").default("waiting"),
-      // waiting, active, completed
+      // waiting, active, completed, cancelled
+      cancellationReason: text2("cancellation_reason"),
+      // Reason if tournament was cancelled
       buyInAmount: numeric("buy_in_amount", { precision: 15, scale: 2 }).default("0.00").notNull(),
       // Real money buy-in amount
       currentPot: numeric("current_pot", { precision: 15, scale: 2 }).default("0.00").notNull(),
@@ -327,7 +329,9 @@ var init_schema = __esm({
       timeframe: true,
       buyInAmount: true,
       tradingRestriction: true,
-      isPublic: true
+      isPublic: true,
+      tournamentType: true,
+      scheduledStartTime: true
     });
     insertCreatorRewardSchema = createInsertSchema2(tournamentCreatorRewards).pick({
       tournamentId: true,
@@ -453,7 +457,7 @@ var init_db = __esm({
 // server/storage.ts
 import { scrypt, randomBytes } from "crypto";
 import { promisify } from "util";
-import { eq, desc, asc, and, sql, ne, isNull } from "drizzle-orm";
+import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
 async function hashPassword(password) {
   const salt = randomBytes(16).toString("hex");
   const buf = await scryptAsync(password, salt, 64);
@@ -622,18 +626,24 @@ var init_storage = __esm({
       }
       // Tournament operations
       async createTournament(tournament, creatorId) {
+        console.log("[Storage] createTournament called with:", JSON.stringify(tournament, null, 2), "Creator:", creatorId);
         const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+        console.log("[Storage] Generated code:", code);
         const buyInAmount = Number(tournament.buyInAmount || 0);
+        console.log("[Storage] Buy-in amount:", buyInAmount);
         if (buyInAmount > 0) {
+          console.log("[Storage] Processing buy-in...");
           const user = await db.select().from(users).where(eq(users.id, creatorId)).limit(1);
           if (!user[0]) {
             throw new Error("Creator not found");
           }
           const currentSiteCash = Number(user[0].siteCash || 0);
+          console.log("[Storage] Creator site cash:", currentSiteCash);
           if (currentSiteCash < buyInAmount) {
             throw new Error(`Insufficient site cash to create tournament. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`);
           }
           await db.update(users).set({ siteCash: (currentSiteCash - buyInAmount).toString() }).where(eq(users.id, creatorId));
+          console.log("[Storage] Deducted buy-in from creator");
           await db.insert(adminLogs).values({
             adminUserId: creatorId,
             targetUserId: creatorId,
@@ -643,18 +653,33 @@ var init_storage = __esm({
             notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
           });
         }
-        const result = await db.insert(tournaments).values({
+        const insertValues = {
           ...tournament,
           code,
           creatorId,
           currentPot: buyInAmount.toString()
           // Set initial pot to creator's buy-in
-        }).returning();
-        await db.insert(tournamentParticipants).values({
-          tournamentId: result[0].id,
-          userId: creatorId,
-          balance: (tournament.startingBalance || "10000.00").toString()
-        });
+        };
+        console.log("[Storage] Inserting tournament with values:", JSON.stringify(insertValues, null, 2));
+        let result;
+        try {
+          result = await db.insert(tournaments).values(insertValues).returning();
+          console.log("[Storage] Tournament created successfully:", result[0].id);
+        } catch (error) {
+          console.error("[Storage] ERROR creating tournament:", error);
+          throw error;
+        }
+        try {
+          await db.insert(tournamentParticipants).values({
+            tournamentId: result[0].id,
+            userId: creatorId,
+            balance: (tournament.startingBalance || "10000.00").toString()
+          });
+          console.log("[Storage] Added creator as participant");
+        } catch (error) {
+          console.error("[Storage] ERROR adding participant:", error);
+          throw error;
+        }
         return result[0];
       }
       async joinTournament(tournamentId, userId) {
@@ -698,7 +723,8 @@ var init_storage = __esm({
         }).from(tournaments).innerJoin(tournamentParticipants, eq(tournaments.id, tournamentParticipants.tournamentId)).where(
           and(
             eq(tournamentParticipants.userId, userId),
-            ne(tournaments.status, "completed")
+            ne(tournaments.status, "completed"),
+            ne(tournaments.status, "cancelled")
           )
         ).orderBy(desc(tournaments.createdAt));
         return results.map((result) => ({
@@ -775,7 +801,8 @@ var init_storage = __esm({
       async getPublicTournaments() {
         return await db.select().from(tournaments).where(and(
           eq(tournaments.isPublic, true),
-          ne(tournaments.status, "completed")
+          ne(tournaments.status, "completed"),
+          ne(tournaments.status, "cancelled")
         ));
       }
       // Trade tracking operations
@@ -829,6 +856,14 @@ var init_storage = __esm({
           updateData.endedAt = endedAt;
         }
         const result = await db.update(tournaments).set(updateData).where(eq(tournaments.id, tournamentId)).returning();
+        return result[0];
+      }
+      async cancelTournament(tournamentId, reason) {
+        const result = await db.update(tournaments).set({
+          status: "cancelled",
+          cancellationReason: reason,
+          endedAt: /* @__PURE__ */ new Date()
+        }).where(eq(tournaments.id, tournamentId)).returning();
         return result[0];
       }
       async getExpiredTournaments() {
@@ -896,7 +931,10 @@ var init_storage = __esm({
         const userTournaments = await db.select().from(tournaments).innerJoin(tournamentParticipants, eq(tournaments.id, tournamentParticipants.tournamentId)).where(
           and(
             eq(tournamentParticipants.userId, userId),
-            eq(tournaments.status, "completed")
+            or(
+              eq(tournaments.status, "completed"),
+              eq(tournaments.status, "cancelled")
+            )
           )
         ).orderBy(desc(tournaments.endedAt));
         const tournamentsWithParticipants = await Promise.all(
@@ -999,6 +1037,17 @@ var init_storage = __esm({
       async createChatMessage(message) {
         const result = await db.insert(chatMessages).values(message).returning();
         return result[0];
+      }
+      async transferBalance(senderId, recipientId, amount) {
+        const sender = await this.getUserById(senderId);
+        const recipient = await this.getUserById(recipientId);
+        if (!sender || !recipient) {
+          throw new Error("User not found");
+        }
+        const senderBalance = parseFloat(sender.siteCash);
+        const recipientBalance = parseFloat(recipient.siteCash);
+        await db.update(users).set({ siteCash: (senderBalance - amount).toString() }).where(eq(users.id, senderId));
+        await db.update(users).set({ siteCash: (recipientBalance + amount).toString() }).where(eq(users.id, recipientId));
       }
     };
     storage = new DatabaseStorage();
@@ -1814,8 +1863,18 @@ var init_tournamentExpiration = __esm({
         const now = /* @__PURE__ */ new Date();
         for (const tournament of waitingTournaments) {
           if (tournament.scheduledStartTime && tournament.scheduledStartTime <= now) {
-            console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached`);
-            await storage.updateTournamentStatus(tournament.id, "active", /* @__PURE__ */ new Date());
+            const currentPlayers = tournament.currentPlayers || 0;
+            if (currentPlayers < 2) {
+              console.log(`Cancelling tournament: ${tournament.name} (ID: ${tournament.id}) - insufficient players (${currentPlayers}/2)`);
+              await storage.cancelTournament(tournament.id, "Insufficient players - minimum 2 players required to start");
+              if (tournament.buyInAmount && tournament.buyInAmount > 0) {
+                await storage.addUserBalance(tournament.creatorId, tournament.buyInAmount);
+                console.log(`Refunded $${tournament.buyInAmount} to creator (user ${tournament.creatorId})`);
+              }
+            } else {
+              console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached with ${currentPlayers} players`);
+              await storage.updateTournamentStatus(tournament.id, "active", /* @__PURE__ */ new Date());
+            }
           } else if (tournament.scheduledStartTime) {
             const timeUntilStart = tournament.scheduledStartTime.getTime() - now.getTime();
             const minutesUntilStart = Math.ceil(timeUntilStart / (1e3 * 60));
@@ -2493,50 +2552,58 @@ router.post("/tournaments", requireAuth, asyncHandler(async (req, res) => {
     isPublic
   } = req.body;
   const userId = req.user.id;
+  console.log("[Tournament Creation] Request body:", JSON.stringify(req.body, null, 2));
   if (!userId) {
     throw new ValidationError("User not authenticated");
   }
   const user = await storage.getUser(userId);
+  console.log("[Tournament Creation] User:", userId, "Balance:", user?.siteCash);
   if (!name || !startingBalance) {
     throw new ValidationError("Tournament name and starting balance are required");
   }
   const buyIn = parseFloat(buyInAmount) || 0;
+  console.log("[Tournament Creation] Buy-in amount:", buyIn);
   const startTime = scheduledStartTime ? new Date(scheduledStartTime) : /* @__PURE__ */ new Date();
-  const tournament = await storage.createTournament({
+  console.log("[Tournament Creation] Start time:", startTime);
+  const tournamentData = {
     name: sanitizeInput(name),
     maxPlayers: maxPlayers || 10,
     tournamentType: tournamentType || "stocks",
-    startingBalance: parseFloat(startingBalance),
+    startingBalance: parseFloat(startingBalance).toString(),
     timeframe: duration || "1 week",
     scheduledStartTime: startTime,
-    buyInAmount: buyIn,
-    currentPot: 0,
-    // Will be set by storage layer after buy-in deduction
+    buyInAmount: buyIn.toString(),
     tradingRestriction: tradingRestriction || "none",
     isPublic: isPublic !== void 0 ? isPublic : true
-  }, userId);
+  };
+  console.log("[Tournament Creation] Tournament data:", JSON.stringify(tournamentData, null, 2));
+  const tournament = await storage.createTournament(tournamentData, userId);
   const now = /* @__PURE__ */ new Date();
   if (startTime <= now) {
-    await storage.updateTournamentStatus(tournament.id, "active", now);
+    console.log("[Tournament Creation] Activating tournament immediately");
+    await storage.updateTournament(tournament.id, {
+      status: "active",
+      startedAt: now
+    });
   }
-  await storage.awardAchievement({
-    userId,
-    achievementType: "tournament_creator",
-    achievementTier: "rare",
-    achievementName: "Tournament Creator",
-    achievementDescription: "Created a tournament",
-    earnedAt: /* @__PURE__ */ new Date(),
-    createdAt: /* @__PURE__ */ new Date()
-  });
-  await storage.awardAchievement({
-    userId,
-    achievementType: "tournament_participant",
-    achievementTier: "common",
-    achievementName: "Tournament Participant",
-    achievementDescription: "Joined a tournament",
-    earnedAt: /* @__PURE__ */ new Date(),
-    createdAt: /* @__PURE__ */ new Date()
-  });
+  try {
+    await storage.awardAchievement({
+      userId,
+      achievementType: "tournament_creator",
+      achievementTier: "rare",
+      achievementName: "Tournament Creator",
+      achievementDescription: "Created a tournament"
+    });
+    await storage.awardAchievement({
+      userId,
+      achievementType: "tournament_participant",
+      achievementTier: "common",
+      achievementName: "Tournament Participant",
+      achievementDescription: "Joined a tournament"
+    });
+  } catch (error) {
+    console.error("Failed to award achievements:", error);
+  }
   res.json({
     success: true,
     data: tournament
@@ -2555,14 +2622,8 @@ router.post("/tournaments/:id/start-early", requireAuth, asyncHandler(async (req
   if (tournament.creatorId !== userId) {
     throw new ValidationError("Only tournament creators can start tournaments early");
   }
-  if (tournament.isPublic) {
-    throw new ValidationError("Only private tournaments can be started early");
-  }
   if (tournament.status !== "waiting") {
     throw new ValidationError("Tournament has already started or ended");
-  }
-  if (tournament.currentPlayers < 2) {
-    throw new ValidationError("Need at least 2 participants to start tournament");
   }
   await storage.updateTournament(tournamentId, {
     status: "active",
@@ -3247,7 +3308,7 @@ router.get("/leaderboard/most-growth", requireAuth, asyncHandler(async (req, res
 router.get("/admin/users", requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin") {
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS") {
     return res.status(403).json({
       success: false,
       error: "Admin access required"
@@ -3261,7 +3322,7 @@ router.patch("/admin/users/:userId/username", requireAuth, asyncHandler(async (r
   const targetUserId = parseInt(req.params.userId);
   const { username } = req.body;
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin") {
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS") {
     return res.status(403).json({ error: "Admin access required" });
   }
   if (!username || username.trim().length < 3) {
@@ -3275,7 +3336,7 @@ router.patch("/admin/users/:userId/balance", requireAuth, asyncHandler(async (re
   const targetUserId = parseInt(req.params.userId);
   const { amount, operation } = req.body;
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin") {
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS") {
     return res.status(403).json({ error: "Admin access required" });
   }
   if (!amount || amount <= 0) {
@@ -3292,7 +3353,7 @@ router.patch("/admin/users/:userId/note", requireAuth, asyncHandler(async (req, 
   const targetUserId = parseInt(req.params.userId);
   const { note } = req.body;
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin") {
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS") {
     return res.status(403).json({ error: "Admin access required" });
   }
   await storage.updateUserAdminNote(targetUserId, note || "");
@@ -3302,7 +3363,7 @@ router.patch("/admin/users/:userId/ban", requireAuth, asyncHandler(async (req, r
   const userId = req.user.id;
   const targetUserId = parseInt(req.params.userId);
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin") {
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS") {
     return res.status(403).json({ error: "Admin access required" });
   }
   await storage.banUser(targetUserId);
@@ -3311,7 +3372,7 @@ router.patch("/admin/users/:userId/ban", requireAuth, asyncHandler(async (req, r
 router.get("/admin/tournaments", requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const user = await storage.getUser(userId);
-  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin") {
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS") {
     throw new ValidationError("Access denied. Admin privileges required.");
   }
   const allTournaments = await storage.getAllTournaments();
@@ -3364,7 +3425,7 @@ router.delete("/admin/tournaments/:id", requireAuth, asyncHandler(async (req, re
     throw new ValidationError("Invalid tournament ID");
   }
   const user = await storage.getUser(userId);
-  if (!user || user.userId !== 0 && user.userId !== 1 && user.userId !== 2) {
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS") {
     throw new ValidationError("Access denied. Admin privileges required.");
   }
   const tournaments2 = await storage.getAllTournaments();
@@ -3441,7 +3502,9 @@ router.get("/tournaments/archived", requireAuth, asyncHandler(async (req, res) =
   });
 }));
 router.post("/tournaments/check-expiration", requireAuth, asyncHandler(async (req, res) => {
-  if (!req.user.email.includes("admin")) {
+  const userId = req.user.id;
+  const user = await storage.getUser(userId);
+  if (!user || user.subscriptionTier !== "administrator" && user.subscriptionTier !== "admin" && user.username !== "LUCAS" && !req.user.email.includes("admin")) {
     throw new UnauthorizedError("Admin access required");
   }
   const { tournamentExpirationService: tournamentExpirationService2 } = await Promise.resolve().then(() => (init_tournamentExpiration(), tournamentExpiration_exports));
@@ -3645,6 +3708,37 @@ router.post("/convert-currency", asyncHandler(async (req, res) => {
       rate,
       timestamp: (/* @__PURE__ */ new Date()).toISOString()
     }
+  });
+}));
+router.post("/tips", requireAuth, asyncHandler(async (req, res) => {
+  const senderId = req.user.id;
+  const { recipientId, amount } = req.body;
+  if (!recipientId || !amount) {
+    throw new ValidationError("Recipient ID and amount are required");
+  }
+  const tipAmount = parseFloat(amount);
+  if (isNaN(tipAmount) || tipAmount <= 0) {
+    throw new ValidationError("Invalid tip amount");
+  }
+  const sender = await storage.getUserById(senderId);
+  if (!sender) {
+    throw new NotFoundError("Sender not found");
+  }
+  const senderBalance = parseFloat(sender.siteCash);
+  if (senderBalance < tipAmount) {
+    throw new ValidationError("Insufficient balance");
+  }
+  const recipient = await storage.getUserById(recipientId);
+  if (!recipient) {
+    throw new NotFoundError("Recipient not found");
+  }
+  if (senderId === recipientId) {
+    throw new ValidationError("You cannot tip yourself");
+  }
+  await storage.transferBalance(senderId, recipientId, tipAmount);
+  res.json({
+    success: true,
+    message: `Successfully sent ${tipAmount} to ${recipient.username}`
   });
 }));
 var api_default = router;

@@ -45,8 +45,8 @@ export function SimplifiedSidebar() {
   const userItems = user ? [
     { href: "/profile", label: t('settings'), icon: Settings },
     { href: "/archive", label: t('archive'), icon: Archive },
-    ...(user.subscriptionTier === 'administrator' ? [
-      { href: "/admin", label: t('admin'), icon: Shield }
+    ...(user.subscriptionTier === 'administrator' || user.username === 'LUCAS' ? [
+      { href: "/admin", label: "Admin", icon: Shield }
     ] : [])
   ] : [];
 
@@ -59,10 +59,11 @@ export function SimplifiedSidebar() {
   return (
     <>
       {/* Simplified Always-Visible Sidebar */}
-      <div 
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] bg-background/90 backdrop-blur-md border-r border-border/50 z-30 transition-all duration-300 ease-in-out ${
+      <div
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-30 transition-all duration-300 ease-in-out ${
           expanded ? 'w-64' : 'w-16'
         }`}
+        style={{ backgroundColor: '#0D1F33', borderColor: '#2B3A4C' }}
         onMouseEnter={() => setExpanded(true)}
         onMouseLeave={() => setExpanded(false)}
       >
@@ -74,9 +75,26 @@ export function SimplifiedSidebar() {
               href={item.href}
               className={`group flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
                 isActive(item.href)
-                  ? "bg-primary/10 text-primary border border-primary/20"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? "border"
+                  : "hover:text-foreground"
               }`}
+              style={
+                isActive(item.href)
+                  ? { backgroundColor: 'rgba(227, 179, 65, 0.15)', color: '#E3B341', borderColor: 'rgba(227, 179, 65, 0.3)' }
+                  : { color: '#8A93A6' }
+              }
+              onMouseEnter={(e) => {
+                if (!isActive(item.href)) {
+                  e.currentTarget.style.backgroundColor = '#142538';
+                  e.currentTarget.style.color = '#FFFFFF';
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive(item.href)) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.color = '#8A93A6';
+                }
+              }}
             >
               <item.icon className={`w-5 h-5 ${expanded ? 'mr-3' : ''}`} />
               {expanded && (
@@ -90,7 +108,7 @@ export function SimplifiedSidebar() {
 
         {/* Separator */}
         {user && (
-          <div className="mx-3 my-3 h-px bg-border" />
+          <div className="mx-3 my-3 h-px" style={{ backgroundColor: '#2B3A4C' }} />
         )}
 
         {/* User Actions */}
@@ -102,9 +120,26 @@ export function SimplifiedSidebar() {
                 href={item.href}
                 className={`group flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
                   isActive(item.href)
-                    ? "bg-primary/10 text-primary border border-primary/20"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    ? "border"
+                    : "hover:text-foreground"
                 }`}
+                style={
+                  isActive(item.href)
+                    ? { backgroundColor: 'rgba(227, 179, 65, 0.15)', color: '#E3B341', borderColor: 'rgba(227, 179, 65, 0.3)' }
+                    : { color: '#8A93A6' }
+                }
+                onMouseEnter={(e) => {
+                  if (!isActive(item.href)) {
+                    e.currentTarget.style.backgroundColor = '#142538';
+                    e.currentTarget.style.color = '#FFFFFF';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive(item.href)) {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.color = '#8A93A6';
+                  }
+                }}
               >
                 <item.icon className={`w-5 h-5 ${expanded ? 'mr-3' : ''}`} />
                 {expanded && (
@@ -123,10 +158,20 @@ export function SimplifiedSidebar() {
             <Button
               onClick={() => setCodeDialogOpen(true)}
               className={`w-full transition-all duration-200 ${
-                expanded 
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2'
-                  : 'bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white p-3 aspect-square'
+                expanded
+                  ? 'px-4 py-2'
+                  : 'p-3 aspect-square'
               }`}
+              style={{
+                backgroundColor: '#E3B341',
+                color: '#0A1A2F'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#d4a136';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#E3B341';
+              }}
               size={expanded ? "default" : "icon"}
             >
               {expanded ? (

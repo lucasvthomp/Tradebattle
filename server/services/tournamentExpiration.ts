@@ -46,14 +46,30 @@ export class TournamentExpirationService {
   private async startWaitingTournaments(): Promise<void> {
     const waitingTournaments = await storage.getWaitingTournaments();
     console.log(`Found ${waitingTournaments.length} waiting tournaments`);
-    
+
     const now = new Date();
-    
+
     for (const tournament of waitingTournaments) {
       // Check if the tournament's scheduled start time has passed
       if (tournament.scheduledStartTime && tournament.scheduledStartTime <= now) {
-        console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached`);
-        await storage.updateTournamentStatus(tournament.id, 'active', new Date());
+        // Check if tournament has at least 2 players
+        const currentPlayers = tournament.currentPlayers || 0;
+
+        if (currentPlayers < 2) {
+          // Cancel tournament due to insufficient players
+          console.log(`Cancelling tournament: ${tournament.name} (ID: ${tournament.id}) - insufficient players (${currentPlayers}/2)`);
+          await storage.cancelTournament(tournament.id, 'Insufficient players - minimum 2 players required to start');
+
+          // Refund the creator's buy-in
+          if (tournament.buyInAmount && tournament.buyInAmount > 0) {
+            await storage.addUserBalance(tournament.creatorId, tournament.buyInAmount);
+            console.log(`Refunded $${tournament.buyInAmount} to creator (user ${tournament.creatorId})`);
+          }
+        } else {
+          // Start the tournament
+          console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached with ${currentPlayers} players`);
+          await storage.updateTournamentStatus(tournament.id, 'active', new Date());
+        }
       } else if (tournament.scheduledStartTime) {
         const timeUntilStart = tournament.scheduledStartTime.getTime() - now.getTime();
         const minutesUntilStart = Math.ceil(timeUntilStart / (1000 * 60));

@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Shield } from "lucide-react";
+import { TrendingUp, TrendingDown, Shield, LayoutList, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,6 +17,8 @@ interface TradingExecutionWidgetProps {
   holdings?: any[];
   onExecute: (order: OrderRequest) => void;
   onRemove?: () => void;
+  showHoldings?: boolean;
+  onToggleView?: () => void;
 }
 
 export interface OrderRequest {
@@ -43,7 +45,9 @@ export function TradingExecutionWidget({
   tournamentId,
   holdings = [],
   onExecute,
-  onRemove
+  onRemove,
+  showHoldings = false,
+  onToggleView
 }: TradingExecutionWidgetProps) {
   const { formatCurrency } = useUserPreferences();
   const [selectedStock, setSelectedStock] = useState<any>(null);
@@ -88,7 +92,34 @@ export function TradingExecutionWidget({
     (orderType === 'market' || (orderType === 'limit' && limitPrice && parseFloat(limitPrice) > 0));
 
   return (
-    <div className="h-full flex flex-col bg-card/95 backdrop-blur-sm border border-border/50 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+    <div className="h-full flex flex-col bg-card/95 backdrop-blur-sm border-l border-border/50 overflow-hidden">
+      {/* Header with Toggle */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border/20 bg-muted/30">
+        <h3 className="text-sm font-semibold text-foreground">
+          {showHoldings ? "Holdings" : "Trade Execution"}
+        </h3>
+        {onToggleView && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onToggleView}
+            className="h-7 text-xs"
+          >
+            {showHoldings ? (
+              <>
+                <ShoppingCart className="w-3 h-3 mr-1.5" />
+                Trade
+              </>
+            ) : (
+              <>
+                <LayoutList className="w-3 h-3 mr-1.5" />
+                Holdings
+              </>
+            )}
+          </Button>
+        )}
+      </div>
+
       {/* Stock Search */}
       <div className="p-3 border-b border-border/20">
         <StockSearchBar

@@ -35,7 +35,7 @@ export function ChartWidget({
   }, []);
 
   return (
-    <div className="h-full w-full bg-card/95 backdrop-blur-sm border-2 border-border rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-y-auto">
+    <div className="h-full w-full bg-card border border-border overflow-hidden">
       <div ref={containerRef} className="h-full w-full">
         <AdvancedTradingChart
           key={key}

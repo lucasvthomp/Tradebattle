@@ -105,8 +105,8 @@ export default function Admin() {
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [endTournamentOpen, setEndTournamentOpen] = useState(false);
 
-  // Check if user is admin (based on subscription tier)
-  const isAdmin = user?.subscriptionTier === 'administrator';
+  // Check if user is admin (based on subscription tier or username)
+  const isAdmin = user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS';
 
   // Redirect if not admin
   useEffect(() => {

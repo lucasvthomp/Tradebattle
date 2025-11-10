@@ -15,12 +15,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  Trophy, 
-  Users, 
-  Clock, 
-  DollarSign, 
-  Plus, 
+import {
+  Trophy,
+  Users,
+  Clock,
+  DollarSign,
+  Plus,
   Search,
   Eye,
   EyeOff,
@@ -37,7 +37,8 @@ import {
   Lock,
   Globe,
   Crown,
-  MessageSquare
+  MessageSquare,
+  Play
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -751,12 +752,23 @@ function TournamentCard({
 }) {
   const { formatCurrency } = useUserPreferences();
   const { user } = useAuth();
+  const [, forceUpdate] = React.useReducer(x => x + 1, 0);
+
+  // Update countdown every second
+  React.useEffect(() => {
+    if (type === "upcoming" && tournament.scheduledStartTime) {
+      const interval = setInterval(() => {
+        forceUpdate();
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [type, tournament.scheduledStartTime]);
 
   const currentPot = tournament.currentPlayers * tournament.buyInAmount;
   const isCreator = tournament.creatorId === user?.id;
   const isParticipant = tournament.participants?.some((p: any) => p.userId === user?.id) || isCreator;
   const isHighPot = currentPot >= 10000; // High value tournament threshold
-  
+
   const getTournamentTypeIcon = (tournamentType: string) => {
     return tournamentType === "crypto" ? Bitcoin : TrendingUp;
   };
@@ -769,7 +781,13 @@ function TournamentCard({
       if (timeLeft > 0) {
         const hours = Math.floor(timeLeft / (1000 * 60 * 60));
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-        return `Starts in ${hours}h ${minutes}m`;
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        if (hours > 0) {
+          return `Starts in ${hours}h ${minutes}m`;
+        } else {
+          return `Starts in ${minutes}m ${seconds}s`;
+        }
       }
       return "Starting soon";
     }
@@ -1035,17 +1053,38 @@ function TournamentCard({
                 </Button>
               </motion.div>
             ) : isCreator ? (
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button
-                  onClick={onManage}
-                  className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-primary/10 to-purple-500/10 hover:from-primary/20 hover:to-purple-500/20"
-                  variant="outline"
-                  size="sm"
-                >
-                  <Shield className="w-4 h-4 mr-2" />
-                  Manage
-                </Button>
-              </motion.div>
+              <>
+                {type === "upcoming" && (
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      onClick={async () => {
+                        try {
+                          await apiRequest("POST", `/api/tournaments/${tournament.id}/start-early`);
+                          window.location.reload();
+                        } catch (error: any) {
+                          console.error("Failed to start tournament:", error);
+                        }
+                      }}
+                      className="w-full transition-all duration-300 font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:shadow-green-500/30"
+                      size="sm"
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      Start Tournament
+                    </Button>
+                  </motion.div>
+                )}
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    onClick={onManage}
+                    className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-primary/10 to-purple-500/10 hover:from-primary/20 hover:to-purple-500/20"
+                    variant="outline"
+                    size="sm"
+                  >
+                    <Shield className="w-4 h-4 mr-2" />
+                    Manage
+                  </Button>
+                </motion.div>
+              </>
             ) : type === "upcoming" ? (
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button

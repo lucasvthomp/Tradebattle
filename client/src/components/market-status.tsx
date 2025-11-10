@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
-import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Clock, Globe, Moon, Sun } from "lucide-react";
 
 interface MarketStatusProps {
-  variant?: "badge" | "card" | "inline";
+  variant?: "badge" | "card" | "inline" | "clock";
   showScheduleNote?: boolean;
 }
 
@@ -14,29 +19,31 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   const [isMarketOpen, setIsMarketOpen] = useState(false);
   const [timeUntilOpen, setTimeUntilOpen] = useState("");
   const [timeUntilClose, setTimeUntilClose] = useState("");
+  const [minutesUntilEvent, setMinutesUntilEvent] = useState(0);
+  const [showCountdown, setShowCountdown] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
       const now = new Date();
       setCurrentTime(now);
-      
+
       // Calculate market status (NYSE hours: 9:30 AM - 4:00 PM ET, Mon-Fri)
       const nyTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
       const day = nyTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
       const hour = nyTime.getHours();
       const minute = nyTime.getMinutes();
       const totalMinutes = hour * 60 + minute;
-      
+
       // Market is closed on weekends (Saturday = 6, Sunday = 0)
       const isWeekend = day === 0 || day === 6;
-      
+
       // Market hours: 9:30 AM (570 minutes) to 4:00 PM (960 minutes)
       const marketOpen = 9 * 60 + 30; // 9:30 AM in minutes
       const marketClose = 16 * 60; // 4:00 PM in minutes
-      
+
       const isOpen = !isWeekend && totalMinutes >= marketOpen && totalMinutes < marketClose;
       setIsMarketOpen(isOpen);
-      
+
       // Calculate time until next market event
       if (isOpen) {
         // Market is open, calculate time until close
@@ -45,10 +52,12 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
         const minsUntilClose = minutesUntilClose % 60;
         setTimeUntilClose(`${hoursUntilClose}h ${minsUntilClose}m`);
         setTimeUntilOpen("");
+        setMinutesUntilEvent(minutesUntilClose);
+        setShowCountdown(minutesUntilClose <= 120); // Show countdown if within 2 hours
       } else {
         // Market is closed, calculate time until open
         let minutesUntilOpen;
-        
+
         if (isWeekend) {
           // If it's weekend, calculate until Monday 9:30 AM
           const daysUntilMonday = day === 0 ? 1 : (7 - day + 1); // If Sunday, 1 day. Otherwise, days until next Monday
@@ -60,10 +69,10 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
           // Same day, after market close - next trading day
           minutesUntilOpen = (24 * 60) - totalMinutes + marketOpen;
         }
-        
+
         const hoursUntilOpen = Math.floor(minutesUntilOpen / 60);
         const minsUntilOpen = minutesUntilOpen % 60;
-        
+
         if (hoursUntilOpen >= 24) {
           const daysUntilOpen = Math.floor(hoursUntilOpen / 24);
           const remainingHours = hoursUntilOpen % 24;
@@ -72,6 +81,8 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
           setTimeUntilOpen(`${hoursUntilOpen}h ${minsUntilOpen}m`);
         }
         setTimeUntilClose("");
+        setMinutesUntilEvent(minutesUntilOpen);
+        setShowCountdown(minutesUntilOpen <= 120); // Show countdown if within 2 hours
       }
     }, 1000);
 
@@ -114,6 +125,55 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
           )}
         </span>
       </div>
+    );
+  }
+
+  if (variant === "clock") {
+    const formatCountdown = (minutes: number) => {
+      const hours = Math.floor(minutes / 60);
+      const mins = minutes % 60;
+      return `${hours}:${mins.toString().padStart(2, '0')}`;
+    };
+
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="flex items-center space-x-2">
+              <Clock
+                className={`w-5 h-5 ${
+                  isMarketOpen
+                    ? "text-green-500"
+                    : "text-orange-500"
+                }`}
+              />
+              {showCountdown && (
+                <span className={`text-sm font-medium tabular-nums ${
+                  isMarketOpen ? "text-green-500" : "text-orange-500"
+                }`}>
+                  {formatCountdown(minutesUntilEvent)}
+                </span>
+              )}
+            </div>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-xs">
+            <div className="space-y-2">
+              <div className="font-semibold">Market Hours (NYSE)</div>
+              <div className="text-xs space-y-1">
+                <div>Monday - Friday</div>
+                <div>9:30 AM - 4:00 PM ET</div>
+                <div className="pt-2 border-t border-border/50">
+                  {isMarketOpen ? (
+                    <span className="text-green-500">Currently Open - Closes in {timeUntilClose}</span>
+                  ) : (
+                    <span className="text-orange-500">Currently Closed - Opens in {timeUntilOpen}</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   }
 

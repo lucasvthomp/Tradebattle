@@ -30,7 +30,6 @@ import {
   Flame
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { PortfolioGraph } from "@/components/ui/portfolio-graph";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -303,17 +302,6 @@ export default function People() {
                   </div>
                 </CardContent>
               </Card>
-            </motion.div>
-
-            {/* Portfolio Performance */}
-            <motion.div variants={fadeInUp}>
-              <PortfolioGraph 
-                userId={parseInt(profileUserId)}
-                portfolioType="personal"
-                title="Portfolio Performance"
-                height={250}
-                className="mb-8"
-              />
             </motion.div>
 
           </motion.div>
