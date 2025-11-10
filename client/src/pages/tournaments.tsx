@@ -51,14 +51,33 @@ import { ChatSystem } from "@/components/chat/ChatSystem";
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.3 }
+  transition: { duration: 0.4, ease: "easeOut" }
 };
 
 const staggerChildren = {
   animate: {
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.08,
+      delayChildren: 0.1
     }
+  }
+};
+
+const cardVariants = {
+  initial: { opacity: 0, y: 30, scale: 0.95 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: [0.4, 0, 0.2, 1]
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    transition: { duration: 0.3 }
   }
 };
 
@@ -296,8 +315,8 @@ export default function TournamentsPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6">
+    <div className="h-[calc(100vh-4rem)] overflow-auto bg-gradient-to-b from-background via-background to-muted/10">
+      <div className="container mx-auto py-6 lg:py-8">
         <motion.div
           initial="initial"
           animate="animate"
@@ -307,10 +326,30 @@ export default function TournamentsPage() {
           {/* Market Status Disclaimer */}
 
           {/* Header */}
-          <motion.div variants={fadeInUp} className="flex items-center justify-between">
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">Tournaments</h1>
-              <p className="text-muted-foreground">Join competitions and test your trading skills</p>
+              <div className="flex items-center gap-3 mb-3">
+                <motion.div
+                  animate={{
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <div className="relative">
+                    <Trophy className="h-8 w-8 lg:h-10 lg:w-10 text-primary relative z-10" />
+                    <div className="absolute inset-0 bg-primary/30 blur-xl animate-pulse" />
+                  </div>
+                </motion.div>
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+                  Tournaments
+                </h1>
+              </div>
+              <p className="text-sm sm:text-base text-muted-foreground ml-0 lg:ml-14 font-medium">Join competitions and test your trading skills against the world</p>
             </div>
             <div className="flex items-center space-x-3">
               <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
@@ -396,14 +435,26 @@ export default function TournamentsPage() {
           {/* Tournament Tabs */}
           <motion.div variants={fadeInUp}>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="upcoming" className="flex items-center space-x-2">
+              <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/50 backdrop-blur-sm border border-border/50">
+                <TabsTrigger
+                  value="upcoming"
+                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white transition-all duration-300"
+                >
                   <Timer className="w-4 h-4" />
-                  <span>Upcoming Tournaments ({sortedUpcoming.length})</span>
+                  <span className="hidden sm:inline">Upcoming</span>
+                  <Badge variant="secondary" className="ml-1 bg-background/20 text-inherit border-0">
+                    {sortedUpcoming.length}
+                  </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="ongoing" className="flex items-center space-x-2">
+                <TabsTrigger
+                  value="ongoing"
+                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white transition-all duration-300"
+                >
                   <Trophy className="w-4 h-4" />
-                  <span>Ongoing Tournaments ({sortedOngoing.length})</span>
+                  <span className="hidden sm:inline">Ongoing</span>
+                  <Badge variant="secondary" className="ml-1 bg-background/20 text-inherit border-0">
+                    {sortedOngoing.length}
+                  </Badge>
                 </TabsTrigger>
               </TabsList>
 
@@ -653,13 +704,19 @@ function TournamentGrid({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <AnimatePresence>
-        {tournaments.map((tournament) => (
-          <TournamentCard 
-            key={tournament.id} 
-            tournament={tournament} 
+    <motion.div
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      variants={staggerChildren}
+      initial="initial"
+      animate="animate"
+    >
+      <AnimatePresence mode="popLayout">
+        {tournaments.map((tournament, index) => (
+          <TournamentCard
+            key={tournament.id}
+            tournament={tournament}
             type={type}
+            index={index}
             onJoin={() => onJoinTournament(tournament)}
             isJoining={isJoining}
             onManage={() => onManage(tournament)}
@@ -668,22 +725,24 @@ function TournamentGrid({
           />
         ))}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 
 // Tournament Card Component
-function TournamentCard({ 
-  tournament, 
-  type, 
-  onJoin, 
+function TournamentCard({
+  tournament,
+  type,
+  index,
+  onJoin,
   isJoining,
   onManage,
   onOpenChat,
   onViewLeaderboard
-}: { 
-  tournament: any, 
-  type: "upcoming" | "ongoing", 
+}: {
+  tournament: any,
+  type: "upcoming" | "ongoing",
+  index: number,
   onJoin: () => void,
   isJoining: boolean,
   onManage: () => void,
@@ -692,10 +751,11 @@ function TournamentCard({
 }) {
   const { formatCurrency } = useUserPreferences();
   const { user } = useAuth();
-  
+
   const currentPot = tournament.currentPlayers * tournament.buyInAmount;
   const isCreator = tournament.creatorId === user?.id;
   const isParticipant = tournament.participants?.some((p: any) => p.userId === user?.id) || isCreator;
+  const isHighPot = currentPot >= 10000; // High value tournament threshold
   
   const getTournamentTypeIcon = (tournamentType: string) => {
     return tournamentType === "crypto" ? Bitcoin : TrendingUp;
@@ -718,112 +778,292 @@ function TournamentCard({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ scale: 1.01 }}
-      transition={{ duration: 0.2 }}
+      variants={cardVariants}
+      custom={index}
+      whileHover={{
+        y: -8,
+        scale: 1.02,
+        transition: { duration: 0.3, ease: "easeOut" }
+      }}
+      className="h-full"
     >
-      <Card className="h-full hover:shadow-lg transition-all duration-300 border border-border/50 hover:border-border bg-background">
-        <CardHeader className="pb-4">
-          <div className="flex items-start justify-between">
+      <Card className={`h-full relative overflow-hidden group backdrop-blur-sm transition-all duration-500 border-2 ${
+        isHighPot
+          ? type === "ongoing"
+            ? "border-green-500/50 hover:border-green-400 bg-gradient-to-br from-card via-green-500/5 to-emerald-500/10 shadow-lg shadow-green-500/20 hover:shadow-2xl hover:shadow-green-400/30"
+            : "border-orange-500/50 hover:border-orange-400 bg-gradient-to-br from-card via-orange-500/5 to-red-500/10 shadow-lg shadow-orange-500/20 hover:shadow-2xl hover:shadow-orange-400/30"
+          : type === "ongoing"
+            ? "border-green-500/30 hover:border-green-500/60 bg-gradient-to-br from-card/95 via-card/90 to-green-500/5 hover:shadow-xl hover:shadow-green-500/10"
+            : "border-orange-500/30 hover:border-orange-500/60 bg-gradient-to-br from-card/95 via-card/90 to-orange-500/5 hover:shadow-xl hover:shadow-orange-500/10"
+      }`}>
+        {/* High pot crown indicator */}
+        {isHighPot && (
+          <div className="absolute top-3 right-3 z-20">
+            <motion.div
+              animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            >
+              <Crown className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" />
+            </motion.div>
+          </div>
+        )}
+
+        {/* Animated gradient overlay */}
+        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ${
+          type === "ongoing"
+            ? "bg-gradient-to-br from-green-500/10 via-transparent to-emerald-500/10"
+            : "bg-gradient-to-br from-orange-500/10 via-transparent to-red-500/10"
+        }`} />
+
+        {/* Shimmer effect on hover */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+          <div className={`absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ${
+            type === "ongoing"
+              ? "bg-gradient-to-r from-transparent via-green-400/10 to-transparent"
+              : "bg-gradient-to-r from-transparent via-orange-400/10 to-transparent"
+          }`} />
+        </div>
+
+        <CardHeader className="pb-4 relative z-10">
+          <div className="flex items-start justify-between mb-3">
             <div className="flex-1">
-              <CardTitle className="text-xl font-bold text-foreground mb-2 truncate">
+              <div className="flex items-center gap-2 mb-2">
+                <motion.div
+                  whileHover={{ rotate: 360, scale: 1.1 }}
+                  transition={{ duration: 0.6, ease: "easeInOut" }}
+                  className={`p-2 rounded-lg shadow-lg ${
+                    type === "ongoing"
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600 shadow-green-500/30"
+                      : "bg-gradient-to-br from-orange-500 to-red-600 shadow-orange-500/30"
+                  }`}
+                >
+                  <TournamentTypeIcon className="w-4 h-4 text-white" />
+                </motion.div>
+                {type === "ongoing" && (
+                  <motion.div
+                    animate={{ opacity: [1, 0.6, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="flex items-center gap-1 px-2 py-0.5 bg-green-500/20 rounded-full border border-green-500/30"
+                  >
+                    <div className="w-2 h-2 bg-green-500 rounded-full shadow-[0_0_8px_rgba(34,197,94,0.8)]" />
+                    <span className="text-xs font-bold text-green-600 dark:text-green-400">LIVE</span>
+                  </motion.div>
+                )}
+              </div>
+              <CardTitle className="text-xl font-bold text-foreground mb-2 truncate group-hover:text-primary transition-colors duration-300">
                 {tournament.name}
               </CardTitle>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 flex-wrap">
+                <Badge variant="outline" className={`text-xs font-semibold backdrop-blur-sm transition-all duration-300 ${
+                  tournament.tournamentType === "crypto"
+                    ? "border-orange-500/50 text-orange-600 dark:text-orange-400 bg-orange-500/10 hover:bg-orange-500/20"
+                    : "border-blue-500/50 text-blue-600 dark:text-blue-400 bg-blue-500/10 hover:bg-blue-500/20"
+                }`}>
                   {tournament.tournamentType === "crypto" ? "Crypto" : "Stocks"}
-                </span>
-                <span className="text-sm text-muted-foreground">•</span>
-                <Badge variant={type === "upcoming" ? "secondary" : "default"} className="text-xs">
-                  {type === "upcoming" ? "Upcoming" : "Live"}
                 </Badge>
+                {!tournament.isPublic && (
+                  <Badge variant="outline" className="text-xs font-semibold border-purple-500/50 text-purple-600 dark:text-purple-400 bg-purple-500/10 backdrop-blur-sm hover:bg-purple-500/20 transition-all duration-300">
+                    <Lock className="w-3 h-3 mr-1" />
+                    Private
+                  </Badge>
+                )}
               </div>
             </div>
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-4">
-          {/* Current Pot - Clean */}
-          <div className="text-center py-3 bg-muted/30 rounded-lg">
-            <div className="text-sm text-muted-foreground">Current Pot</div>
-            <div className="text-2xl font-bold text-foreground">
-              {formatCurrency(currentPot)}
+        <CardContent className="space-y-4 relative z-10">
+          {/* Current Pot - Enhanced */}
+          <motion.div
+            whileHover={{ scale: 1.03 }}
+            transition={{ duration: 0.3 }}
+            className={`relative text-center py-5 rounded-xl border-2 overflow-hidden backdrop-blur-sm ${
+              isHighPot
+                ? type === "ongoing"
+                  ? "bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-green-600/20 border-green-400/50 shadow-lg shadow-green-500/20"
+                  : "bg-gradient-to-br from-orange-500/20 via-red-500/15 to-orange-600/20 border-orange-400/50 shadow-lg shadow-orange-500/20"
+                : type === "ongoing"
+                  ? "bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-green-600/10 border-green-500/30"
+                  : "bg-gradient-to-br from-orange-500/10 via-red-500/5 to-orange-600/10 border-orange-500/30"
+            }`}
+          >
+            {/* Animated background pattern */}
+            <div className="absolute inset-0 opacity-20">
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse" />
             </div>
-            <div className="text-xs text-muted-foreground mt-1">
-              {tournament.currentPlayers} player{tournament.currentPlayers !== 1 ? 's' : ''} joined
-            </div>
-          </div>
 
-          {/* Tournament Stats - Simplified */}
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Players</span>
-              <span className="font-medium">{tournament.currentPlayers}/{tournament.maxPlayers}</span>
+            <div className="relative z-10">
+              <div className="flex items-center justify-center gap-1.5 mb-1">
+                <motion.div
+                  animate={{
+                    rotate: [0, 360],
+                    scale: [1, 1.2, 1]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <DollarSign className={`w-5 h-5 ${
+                    isHighPot ? "text-yellow-500" : "text-primary"
+                  }`} />
+                </motion.div>
+                <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Prize Pool</span>
+              </div>
+              <motion.div
+                animate={isHighPot ? {
+                  textShadow: [
+                    "0 0 20px rgba(234, 179, 8, 0.3)",
+                    "0 0 30px rgba(234, 179, 8, 0.5)",
+                    "0 0 20px rgba(234, 179, 8, 0.3)"
+                  ]
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+                className={`text-4xl font-black bg-gradient-to-r ${
+                  isHighPot
+                    ? "from-yellow-400 via-yellow-500 to-yellow-600"
+                    : type === "ongoing"
+                      ? "from-green-500 via-emerald-500 to-green-600"
+                      : "from-orange-500 via-red-500 to-orange-600"
+                } bg-clip-text text-transparent mb-1.5 drop-shadow-lg`}
+              >
+                {formatCurrency(currentPot)}
+              </motion.div>
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground font-medium">
+                <Users className="w-3.5 h-3.5" />
+                <span>{tournament.currentPlayers} player{tournament.currentPlayers !== 1 ? 's' : ''} joined</span>
+              </div>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Duration</span>
-              <span className="font-medium">{tournament.timeframe}</span>
+          </motion.div>
+
+          {/* Tournament Stats - Enhanced */}
+          <div className="space-y-2.5 text-sm bg-gradient-to-br from-muted/40 via-muted/30 to-muted/40 backdrop-blur-sm rounded-lg p-3.5 border border-border/30">
+            <div className="flex justify-between items-center group/stat">
+              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <Users className="w-4 h-4" />
+                <span className="font-medium">Players</span>
+              </div>
+              <span className="font-bold text-foreground">{tournament.currentPlayers}/{tournament.maxPlayers}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Starting Balance</span>
-              <span className="font-medium">{formatCurrency(tournament.startingBalance)}</span>
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            <div className="flex justify-between items-center group/stat">
+              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <Clock className="w-4 h-4" />
+                <span className="font-medium">Duration</span>
+              </div>
+              <span className="font-bold text-foreground">{tournament.timeframe}</span>
+            </div>
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            <div className="flex justify-between items-center group/stat">
+              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <DollarSign className="w-4 h-4" />
+                <span className="font-medium">Buy-in</span>
+              </div>
+              <span className="font-bold text-foreground">{formatCurrency(tournament.buyInAmount)}</span>
+            </div>
+            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+            <div className="flex justify-between items-center group/stat">
+              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <Target className="w-4 h-4" />
+                <span className="font-medium">Starting Balance</span>
+              </div>
+              <span className="font-bold text-foreground">{formatCurrency(tournament.startingBalance)}</span>
             </div>
           </div>
 
           {/* Time Information */}
           {type === "upcoming" && (
-            <div className="text-center p-2 bg-orange-50 dark:bg-orange-950/30 rounded-lg">
-              <p className="text-sm font-medium text-orange-600 dark:text-orange-400">
-                {getTimeRemaining()}
-              </p>
-            </div>
+            <motion.div
+              animate={{
+                scale: [1, 1.02, 1],
+                boxShadow: [
+                  "0 0 0px rgba(249, 115, 22, 0)",
+                  "0 0 20px rgba(249, 115, 22, 0.3)",
+                  "0 0 0px rgba(249, 115, 22, 0)"
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-center p-3.5 bg-gradient-to-r from-orange-500/20 via-red-500/20 to-orange-500/20 rounded-lg border-2 border-orange-500/40 backdrop-blur-sm"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                >
+                  <Timer className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                </motion.div>
+                <p className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                  {getTimeRemaining()}
+                </p>
+              </div>
+            </motion.div>
           )}
 
           {/* Action Buttons */}
           <div className="space-y-2">
-            <Button
-              onClick={onOpenChat}
-              className="w-full"
-              variant="outline"
-              size="sm"
-            >
-              Chat
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                onClick={onOpenChat}
+                className="w-full transition-all duration-300 hover:shadow-lg"
+                variant="outline"
+                size="sm"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Chat
+              </Button>
+            </motion.div>
             
             {type === "ongoing" && tournament.isPublic && !isParticipant ? (
               // Show "View" button for ongoing public tournaments where user is not a participant
-              <Button
-                onClick={onViewLeaderboard}
-                className="w-full"
-                variant="outline"
-                size="sm"
-              >
-                <Trophy className="w-4 h-4 mr-2" />
-                View Leaderboard
-              </Button>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={onViewLeaderboard}
+                  className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20"
+                  variant="outline"
+                  size="sm"
+                >
+                  <Trophy className="w-4 h-4 mr-2" />
+                  View Leaderboard
+                </Button>
+              </motion.div>
             ) : isCreator ? (
-              <Button
-                onClick={onManage}
-                className="w-full"
-                variant="outline"
-                size="sm"
-              >
-                Manage
-              </Button>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={onManage}
+                  className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-primary/10 to-purple-500/10 hover:from-primary/20 hover:to-purple-500/20"
+                  variant="outline"
+                  size="sm"
+                >
+                  <Shield className="w-4 h-4 mr-2" />
+                  Manage
+                </Button>
+              </motion.div>
             ) : type === "upcoming" ? (
-              <Button
-                onClick={onJoin}
-                disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
-                className="w-full"
-                size="sm"
-              >
-                {isJoining ? "Joining..." : 
-                 tournament.currentPlayers >= tournament.maxPlayers ? "Full" :
-                 tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
-                }
-              </Button>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={onJoin}
+                  disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
+                  className={`w-full transition-all duration-300 font-bold ${
+                    !(isJoining || tournament.currentPlayers >= tournament.maxPlayers)
+                      ? "bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:shadow-primary/30"
+                      : ""
+                  }`}
+                  size="sm"
+                >
+                  {isJoining ? "Joining..." :
+                   tournament.currentPlayers >= tournament.maxPlayers ? "Full" :
+                   tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
+                  }
+                </Button>
+              </motion.div>
             ) : null}
           </div>
         </CardContent>

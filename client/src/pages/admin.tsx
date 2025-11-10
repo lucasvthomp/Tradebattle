@@ -301,7 +301,7 @@ export default function Admin() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-8">
+    <div className="container mx-auto py-6 md:py-8">
       <motion.div
         initial="initial"
         animate="animate"

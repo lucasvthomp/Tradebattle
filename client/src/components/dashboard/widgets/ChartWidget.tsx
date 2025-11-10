@@ -1,5 +1,3 @@
-import { WidgetWrapper } from "./WidgetWrapper";
-import { BarChart3 } from "lucide-react";
 import { AdvancedTradingChart } from "@/components/portfolio/widgets/AdvancedTradingChart";
 import React, { useEffect, useRef } from "react";
 
@@ -37,14 +35,7 @@ export function ChartWidget({
   }, []);
 
   return (
-    <WidgetWrapper
-      title="Trading Chart"
-      icon={<BarChart3 className="w-4 h-4" />}
-      onRemove={onRemove}
-      onExpand={onExpand}
-      isExpanded={isExpanded}
-      className="chart-widget"
-    >
+    <div className="h-full w-full bg-card/95 backdrop-blur-sm border-2 border-border rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-y-auto">
       <div ref={containerRef} className="h-full w-full">
         <AdvancedTradingChart
           key={key}
@@ -52,6 +43,6 @@ export function ChartWidget({
           tournamentId={tournamentId}
         />
       </div>
-    </WidgetWrapper>
+    </div>
   );
 }

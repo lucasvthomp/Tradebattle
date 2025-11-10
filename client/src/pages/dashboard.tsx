@@ -100,7 +100,7 @@ export default function Dashboard() {
   }, []);
 
   // Use fixed row height for consistent, predictable movement
-  const rowHeight = 80;
+  const rowHeight = 20;
 
   // Calculate max rows to fit in viewport
   const calculateMaxRows = () => {
@@ -122,11 +122,11 @@ export default function Dashboard() {
 
   // Widget size constraints - optimized for content and user experience
   const widgetConstraints: Record<string, any> = {
-    portfolio: { minW: 1, minH: 1, maxW: 4, maxH: 4 },        // Small/compact - shows key metrics
-    buyStocks: { minW: 1, minH: 1, maxW: 6, maxH: 8 },        // Medium - needs space for trading controls
-    leaderboard: { minW: 1, minH: 1, maxW: 6, maxH: 8 },      // Medium - scrollable list
-    chart: { minW: 1, minH: 1, maxW: 12, maxH: 10 },           // Flexible - can expand for better visibility
-    holdings: { minW: 1, minH: 1, maxW: 8, maxH: 8 },         // Medium-large - scrollable holdings list
+    portfolio: { minW: 2, minH: 2, maxW: 6, maxH: 30 },        // Small/compact - shows key metrics
+    buyStocks: { minW: 2, minH: 6, maxW: 6, maxH: 80 },        // Tall narrow rectangle - can stretch very tall vertically
+    leaderboard: { minW: 3, minH: 4, maxW: 8, maxH: 80 },      // Medium - scrollable list
+    chart: { minW: 4, minH: 4, maxW: 12, maxH: 80 },           // Flexible - can expand to fill screen (2/3+ width, full height)
+    holdings: { minW: 3, minH: 3, maxW: 10, maxH: 80 },        // Medium-large - scrollable holdings list
   };
 
   // Apply constraints to layout items and prevent widgets from going below screen
@@ -162,20 +162,20 @@ export default function Dashboard() {
     }
     return {
       lg: [
-        { i: 'buyStocks', x: 0, y: 0, w: 4, h: 7, ...widgetConstraints.buyStocks },  // Left 1/3
-        { i: 'chart', x: 4, y: 0, w: 8, h: 7, ...widgetConstraints.chart },          // Right 2/3
+        { i: 'buyStocks', x: 0, y: 0, w: 4, h: 30, ...widgetConstraints.buyStocks },  // 1/3 width left panel, tall for trading
+        { i: 'chart', x: 4, y: 0, w: 8, h: 30, ...widgetConstraints.chart },          // 2/3 width chart area
       ],
       md: [
-        { i: 'buyStocks', x: 0, y: 0, w: 3, h: 7, ...widgetConstraints.buyStocks },  // Left 1/3
-        { i: 'chart', x: 3, y: 0, w: 7, h: 7, ...widgetConstraints.chart },          // Right 2/3
+        { i: 'buyStocks', x: 0, y: 0, w: 4, h: 28, ...widgetConstraints.buyStocks },  // 1/3 width left panel
+        { i: 'chart', x: 4, y: 0, w: 6, h: 28, ...widgetConstraints.chart },          // 2/3 width chart area
       ],
       sm: [
-        { i: 'buyStocks', x: 0, y: 0, w: 6, h: 4, ...widgetConstraints.buyStocks },  // Top full width
-        { i: 'chart', x: 0, y: 4, w: 6, h: 5, ...widgetConstraints.chart },          // Bottom full width
+        { i: 'buyStocks', x: 0, y: 0, w: 6, h: 20, ...widgetConstraints.buyStocks },  // Top full width
+        { i: 'chart', x: 0, y: 20, w: 6, h: 22, ...widgetConstraints.chart },         // Bottom full width
       ],
       xs: [
-        { i: 'buyStocks', x: 0, y: 0, w: 4, h: 4, ...widgetConstraints.buyStocks },  // Top full width
-        { i: 'chart', x: 0, y: 4, w: 4, h: 5, ...widgetConstraints.chart },          // Bottom full width
+        { i: 'buyStocks', x: 0, y: 0, w: 4, h: 18, ...widgetConstraints.buyStocks },  // Top full width
+        { i: 'chart', x: 0, y: 18, w: 4, h: 20, ...widgetConstraints.chart },         // Bottom full width
       ],
     };
   });
@@ -386,7 +386,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] bg-background overflow-hidden px-4 py-4">
+    <div className="h-[calc(100vh-4rem)] bg-background overflow-hidden px-4 sm:px-6 lg:px-8 py-4">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}

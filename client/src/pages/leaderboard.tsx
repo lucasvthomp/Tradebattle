@@ -134,7 +134,7 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 md:py-8 lg:py-10 max-w-[1600px]">
+      <div className="container mx-auto py-6 md:py-8 lg:py-10">
         <motion.div
           initial="hidden"
           animate="visible"

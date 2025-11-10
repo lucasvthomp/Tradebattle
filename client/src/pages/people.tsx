@@ -199,9 +199,9 @@ export default function People() {
 
     return (
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-8 px-4">
+        <div className="container mx-auto py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="max-w-4xl mx-auto"
+            className="max-w-5xl mx-auto"
             initial="initial"
             animate="animate"
             variants={staggerChildren}
@@ -325,17 +325,16 @@ export default function People() {
   // Main people browsing page
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto py-6 lg:py-8">
         <motion.div
-          className="max-w-6xl mx-auto"
           initial="initial"
           animate="animate"
           variants={staggerChildren}
         >
           {/* Header */}
-          <motion.div className="mb-8" variants={fadeInUp}>
-            <h1 className="text-3xl font-bold text-foreground mb-2">People</h1>
-            <p className="text-muted-foreground">Discover and connect with traders in our community</p>
+          <motion.div className="mb-6 lg:mb-8" variants={fadeInUp}>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-2">People</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Discover and connect with traders in our community</p>
           </motion.div>
 
           {/* Search and Filters */}

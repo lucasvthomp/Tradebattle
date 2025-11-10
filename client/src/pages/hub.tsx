@@ -103,7 +103,7 @@ export default function Hub() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 lg:py-8">
+      <div className="container mx-auto py-6 lg:py-8">
         
         {/* Personal Greeting Header */}
         <motion.div
@@ -192,19 +192,19 @@ export default function Hub() {
         </motion.div>
 
         {/* Stats Bar - Minimal and Clean */}
-        <motion.div 
-          className="mb-12"
+        <motion.div
+          className="mb-8 lg:mb-10"
           variants={fadeInUp}
           initial="initial"
           animate="animate"
         >
           <Card className="border-0 bg-card/40 backdrop-blur-sm">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="grid grid-cols-3 divide-x divide-border/50">
                 {liveStats.map((stat, index) => (
-                  <div key={index} className="text-center px-4">
-                    <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
-                    <div className="text-sm text-muted-foreground mb-1">{stat.label}</div>
+                  <div key={index} className="text-center px-2 sm:px-4">
+                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1">{stat.value}</div>
+                    <div className="text-xs sm:text-sm text-muted-foreground mb-1">{stat.label}</div>
                     <div className="text-xs text-primary font-medium">{stat.trend}</div>
                   </div>
                 ))}
@@ -214,21 +214,21 @@ export default function Hub() {
         </motion.div>
 
         {/* Secondary Features - Horizontal Strip */}
-        <motion.div 
+        <motion.div
           className="mb-8"
           variants={staggerChildren}
           initial="initial"
           animate="animate"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-foreground">Quick Access</h2>
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+          <div className="flex items-center justify-between mb-4 lg:mb-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-foreground">Quick Access</h2>
+            <Button variant="ghost" size="sm" className="text-xs sm:text-sm text-muted-foreground hover:text-foreground">
               View All
               <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
-          
-          <div className="grid grid-cols-3 gap-3 lg:gap-4">
+
+          <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
             {secondaryFeatures.map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Link href={feature.href}>

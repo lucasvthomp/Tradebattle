@@ -498,141 +498,125 @@ export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Adv
 
   return (
     <div className="h-full flex flex-col bg-background">
-      <div className="px-4 py-3 border-b border-border/30">
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="text-sm font-medium flex items-center space-x-2 text-muted-foreground">
-            <BarChart3 className="w-4 h-4" />
-            <span>{selectedSymbol}</span>
+      <div className="px-3 py-2 border-b border-border/20">
+        <div className="flex items-center gap-2 mb-2">
+          {/* Stock Search */}
+          <div className="relative flex-1">
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => handleSearchInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onFocus={() => {
+                if (searchResults.length > 0) setShowDropdown(true);
+              }}
+              onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+              placeholder="Search symbol..."
+              className="pl-8 h-8 text-sm"
+              autoComplete="off"
+            />
+            {showDropdown && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-md shadow-lg max-h-60 overflow-y-auto z-50">
+                {searchResults.map((result) => (
+                  <button
+                    key={result.symbol}
+                    onClick={() => {
+                      setSearchQuery(result.symbol);
+                      setSelectedSymbol(result.symbol);
+                      setShowDropdown(false);
+                      updateChart(result.symbol, selectedTimeframe);
+                    }}
+                    className="w-full px-3 py-2 text-left hover:bg-accent transition-colors text-sm"
+                  >
+                    <div className="font-medium">{result.symbol}</div>
+                    <div className="text-xs text-muted-foreground truncate">{result.name}</div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center space-x-2 flex-wrap gap-2">
-            {/* Symbol Search */}
-            <div className="relative">
-              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearchInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
-                onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                placeholder="Search stocks..."
-                className="pl-8 w-48 h-8"
-              />
+          {/* Timeframe Selector */}
+          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
+            <SelectTrigger className="w-20 h-8 text-xs">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="1H">1H</SelectItem>
+              <SelectItem value="1D">1D</SelectItem>
+              <SelectItem value="1W">1W</SelectItem>
+              <SelectItem value="1M">1M</SelectItem>
+              <SelectItem value="3M">3M</SelectItem>
+              <SelectItem value="6M">6M</SelectItem>
+              <SelectItem value="YTD">YTD</SelectItem>
+              <SelectItem value="1Y">1Y</SelectItem>
+              <SelectItem value="5Y">5Y</SelectItem>
+            </SelectContent>
+          </Select>
 
-              {showDropdown && (searchResults.length > 0 || isSearching) && (
-                <div className="absolute top-full right-0 w-80 mt-1 bg-background border border-border rounded-md shadow-lg z-50 max-h-64 overflow-y-auto">
-                  {isSearching ? (
-                    <div className="p-3 text-center text-muted-foreground">
-                      <RefreshCw className="w-4 h-4 animate-spin mx-auto mb-1" />
-                      Searching...
-                    </div>
-                  ) : (
-                    searchResults.map((result, index) => (
-                      <div
-                        key={index}
-                        onClick={() => selectSearchResult(result)}
-                        className="p-3 hover:bg-accent cursor-pointer border-b border-border last:border-b-0"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center space-x-2">
-                              <span className="font-medium text-sm">{result.symbol}</span>
-                              <span className="text-xs text-muted-foreground truncate">
-                                {result.name || result.shortName}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Timeframe Selector */}
-            <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-              <SelectTrigger className="w-24 h-8">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="1H">1H</SelectItem>
-                <SelectItem value="1D">1D</SelectItem>
-                <SelectItem value="1W">1W</SelectItem>
-                <SelectItem value="1M">1M</SelectItem>
-                <SelectItem value="3M">3M</SelectItem>
-                <SelectItem value="6M">6M</SelectItem>
-                <SelectItem value="YTD">YTD</SelectItem>
-                <SelectItem value="1Y">1Y</SelectItem>
-                <SelectItem value="5Y">5Y</SelectItem>
-              </SelectContent>
-            </Select>
-
-            {/* Indicators Menu */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="sm" variant="outline" className="h-8">
-                  <Settings className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Indicators</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {indicators.map(indicator => (
-                  <DropdownMenuCheckboxItem
-                    key={indicator.id}
-                    checked={indicator.enabled}
-                    onCheckedChange={() => toggleIndicator(indicator.id)}
-                  >
-                    {indicator.name}
-                  </DropdownMenuCheckboxItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Zoom Controls */}
-            <div className="flex items-center space-x-1 border border-border rounded-md">
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleZoomIn}
-                className="h-8 w-8 p-0"
-                title="Zoom In"
-              >
-                <Plus className="w-4 h-4" />
+          {/* Indicators Menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="sm" variant="outline" className="h-8 w-8 p-0">
+                <Settings className="w-4 h-4" />
               </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleZoomOut}
-                className="h-8 w-8 p-0"
-                title="Zoom Out"
-              >
-                <Minus className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleResetZoom}
-                className="h-8 w-8 p-0"
-                title="Reset Zoom"
-              >
-                <Maximize2 className="w-4 h-4" />
-              </Button>
-            </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Indicators</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {indicators.map(indicator => (
+                <DropdownMenuCheckboxItem
+                  key={indicator.id}
+                  checked={indicator.enabled}
+                  onCheckedChange={() => toggleIndicator(indicator.id)}
+                >
+                  {indicator.name}
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-            {/* Refresh Button */}
+          {/* Zoom Controls */}
+          <div className="flex items-center border border-border rounded-md">
             <Button
               size="sm"
-              variant="outline"
-              onClick={() => updateChart(selectedSymbol, selectedTimeframe)}
-              disabled={isLoading}
-              className="h-8"
+              variant="ghost"
+              onClick={handleZoomIn}
+              className="h-8 w-8 p-0 rounded-r-none"
+              title="Zoom In"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+              <Plus className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleZoomOut}
+              className="h-8 w-8 p-0 rounded-none border-x"
+              title="Zoom Out"
+            >
+              <Minus className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleResetZoom}
+              className="h-8 w-8 p-0 rounded-l-none"
+              title="Reset Zoom"
+            >
+              <Maximize2 className="w-4 h-4" />
             </Button>
           </div>
+
+          {/* Refresh Button */}
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => updateChart(selectedSymbol, selectedTimeframe)}
+            disabled={isLoading}
+            className="h-8 w-8 p-0"
+          >
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
       </div>
       <div className="flex-1 p-4">
