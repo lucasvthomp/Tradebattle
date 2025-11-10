@@ -7,47 +7,47 @@
 :root {
   /* Navy & Gold Trader Color System */
 
-  /* Primary Brand Colors */
-  --background: 211 65% 11%;  /* #0A1A2F - Primary Background */
-  --foreground: 0 0% 100%;  /* #FFFFFF - Primary Text (Headings) */
+  /* Primary Brand Colors - Darker & Bluer Navy */
+  --background: 215 75% 9%;  /* #06121F - Darker, bluer primary background */
+  --foreground: 0 0% 100%;  /* #FFFFFF - Primary Text (Headings only) */
 
-  /* Card & Panel Hierarchy */
-  --card: 211 35% 18%;  /* #1E2D3F - Dark Panel/Card Background */
-  --card-foreground: 0 0% 100%;
-  --popover: 211 35% 18%;
-  --popover-foreground: 0 0% 100%;
+  /* Card & Panel Hierarchy - Darker & Bluer */
+  --card: 215 50% 15%;  /* #172535 - Darker, bluer card background */
+  --card-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text (Body) */
+  --popover: 215 50% 15%;
+  --popover-foreground: 219 36% 84%;  /* #C9D1E2 - Body text in popovers */
 
   /* Gold Accent - Use sparingly */
   --primary: 43 71% 57%;  /* #E3B341 - Gold Accent */
-  --primary-foreground: 211 65% 11%;  /* Dark text on gold */
+  --primary-foreground: 215 75% 9%;  /* Dark navy text on gold */
 
-  /* Secondary Colors for Structure */
-  --secondary: 211 46% 16%;  /* #142538 - Hover/Focus Overlay */
+  /* Secondary Colors for Structure - Darker & Bluer */
+  --secondary: 215 55% 13%;  /* #0E1B28 - Darker, bluer hover/focus overlay */
   --secondary-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text */
 
-  /* Muted Colors */
-  --muted: 211 27% 23%;  /* #2B3A4C - Card Border/Lines/Dividers */
-  --muted-foreground: 220 14% 60%;  /* #8A93A6 - Muted Text */
+  /* Muted Colors - Darker & Bluer */
+  --muted: 215 40% 20%;  /* #1F2D3D - Darker, bluer borders/dividers */
+  --muted-foreground: 220 14% 60%;  /* #8A93A6 - Muted Text (labels, timestamps) */
 
   /* Accent - Gold */
   --accent: 43 71% 57%;  /* #E3B341 - Gold */
-  --accent-foreground: 211 65% 11%;
+  --accent-foreground: 215 75% 9%;
 
   /* Destructive - Loss Red */
   --destructive: 357 100% 65%;  /* #FF4F58 - Error/Loss Red */
   --destructive-foreground: 0 0% 100%;
 
-  /* Borders & Inputs */
-  --border: 211 27% 23%;  /* #2B3A4C */
-  --input: 211 35% 18%;  /* #1E2D3F */
+  /* Borders & Inputs - Darker & Bluer */
+  --border: 215 40% 20%;  /* #1F2D3D - Darker, bluer borders */
+  --input: 215 50% 15%;  /* #172535 - Darker, bluer inputs */
   --ring: 43 71% 57%;  /* Gold ring for focus states */
   --radius: 0.75rem;
 
-  /* Extended Color Palette */
-  --sidebar-bg: 211 59% 13%;  /* #0D1F33 - Sidebar Background */
-  --hover-overlay: 211 46% 16%;  /* #142538 - Hover/Focus Overlay */
+  /* Extended Color Palette - Darker & Bluer */
+  --sidebar-bg: 215 65% 11%;  /* #0A1623 - Darker, bluer sidebar */
+  --hover-overlay: 215 55% 13%;  /* #0E1B28 - Darker, bluer hover */
   --secondary-text: 219 36% 84%;  /* #C9D1E2 - Secondary Text (Body) */
-  --disabled-text: 215 13% 39%;  /* #556070 - Disabled Text */
+  --disabled-text: 215 15% 37%;  /* #4D5663 - Disabled Text */
   --neutral-gray: 217 16% 71%;  /* #A7B1C2 - Neutral Gray */
 
   /* Status / Market Colors */
@@ -56,7 +56,7 @@
   --gold-highlight: 43 71% 57%;  /* #E3B341 - Important tags */
 
   /* Shadows */
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.35);
   --shadow-gold: 0 0 20px rgba(227, 179, 65, 0.2);
 }
 
@@ -216,19 +216,20 @@
 
   html {
     @apply bg-background;
-    background: #0A1A2F !important;
+    background: #06121F !important;
     min-height: 100%;
     height: 100%;
     overscroll-behavior: none;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background;
+    color: #C9D1E2; /* Secondary text color for body */
     font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #0A1A2F !important;
+    background: #06121F !important;
     background-attachment: fixed !important;
     min-height: 100vh;
     height: 100%;
@@ -237,21 +238,21 @@
 
   /* Prevent white background from showing on overscroll */
   #root {
-    background: #0A1A2F;
+    background: #06121F;
     min-height: 100vh;
   }
-  
-  /* Scrollbar styling */
+
+  /* Scrollbar styling - Darker & Bluer */
   ::-webkit-scrollbar {
     width: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #1E2D3F;
+    background: #172535;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #2B3A4C;
+    background: #1F2D3D;
     border-radius: 4px;
   }
 
