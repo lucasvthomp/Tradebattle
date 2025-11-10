@@ -9,13 +9,13 @@
 
   /* Primary Brand Colors - Darker & Bluer Navy */
   --background: 215 75% 9%;  /* #06121F - Darker, bluer primary background */
-  --foreground: 0 0% 100%;  /* #FFFFFF - Primary Text (Headings only) */
+  --foreground: 215 8% 86%;  /* Softer off-white for primary text - less bright */
 
   /* Card & Panel Hierarchy - Darker & Bluer */
   --card: 215 50% 15%;  /* #172535 - Darker, bluer card background */
-  --card-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text (Body) */
+  --card-foreground: 215 12% 78%;  /* Softer body text, less bright */
   --popover: 215 50% 15%;
-  --popover-foreground: 219 36% 84%;  /* #C9D1E2 - Body text in popovers */
+  --popover-foreground: 215 12% 78%;  /* Softer body text in popovers */
 
   /* Gold Accent - Use sparingly */
   --primary: 43 71% 57%;  /* #E3B341 - Gold Accent */
@@ -23,11 +23,11 @@
 
   /* Secondary Colors for Structure - Darker & Bluer */
   --secondary: 215 55% 13%;  /* #0E1B28 - Darker, bluer hover/focus overlay */
-  --secondary-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text */
+  --secondary-foreground: 215 12% 78%;  /* Softer, less bright text */
 
   /* Muted Colors - Darker & Bluer */
   --muted: 215 40% 20%;  /* #1F2D3D - Darker, bluer borders/dividers */
-  --muted-foreground: 220 14% 60%;  /* #8A93A6 - Muted Text (labels, timestamps) */
+  --muted-foreground: 215 10% 62%;  /* Softer muted text, less bright */
 
   /* Accent - Gold */
   --accent: 43 71% 57%;  /* #E3B341 - Gold */
@@ -38,7 +38,7 @@
   --destructive-foreground: 0 0% 100%;
 
   /* Borders & Inputs - Darker & Bluer */
-  --border: 215 40% 20%;  /* #1F2D3D - Darker, bluer borders */
+  --border: 215 40% 30%;  /* #324559 - More visible borders for better card definition */
   --input: 215 50% 15%;  /* #172535 - Darker, bluer inputs */
   --ring: 43 71% 57%;  /* Gold ring for focus states */
   --radius: 0.75rem;
@@ -46,9 +46,9 @@
   /* Extended Color Palette - Darker & Bluer */
   --sidebar-bg: 215 65% 11%;  /* #0A1623 - Darker, bluer sidebar */
   --hover-overlay: 215 55% 13%;  /* #0E1B28 - Darker, bluer hover */
-  --secondary-text: 219 36% 84%;  /* #C9D1E2 - Secondary Text (Body) */
-  --disabled-text: 215 15% 37%;  /* #4D5663 - Disabled Text */
-  --neutral-gray: 217 16% 71%;  /* #A7B1C2 - Neutral Gray */
+  --secondary-text: 215 12% 78%;  /* Softer body text, less bright */
+  --disabled-text: 215 8% 48%;  /* Softer disabled text */
+  --neutral-gray: 215 12% 66%;  /* Softer neutral gray */
 
   /* Status / Market Colors */
   --profit-green: 142 69% 47%;  /* #28C76F - Success/Profit */
@@ -112,39 +112,39 @@
 .dark {
   /* Navy & Gold Trader Color System - Dark Mode */
 
-  /* Primary Brand Colors */
-  --background: 211 65% 11%;  /* #0A1A2F */
-  --foreground: 0 0% 100%;  /* #FFFFFF */
+  /* Primary Brand Colors - Darker & Bluer Navy */
+  --background: 215 75% 9%;  /* Darker, bluer primary background */
+  --foreground: 215 8% 86%;  /* Softer off-white for primary text - less bright */
 
-  /* Card & Panel Hierarchy */
-  --card: 211 35% 18%;  /* #1E2D3F */
-  --card-foreground: 0 0% 100%;
-  --popover: 211 35% 18%;
-  --popover-foreground: 0 0% 100%;
+  /* Card & Panel Hierarchy - Darker & Bluer */
+  --card: 215 50% 15%;  /* Darker, bluer card background */
+  --card-foreground: 215 12% 78%;  /* Softer body text, less bright */
+  --popover: 215 50% 15%;
+  --popover-foreground: 215 12% 78%;  /* Softer body text in popovers */
 
   /* Gold Accent */
   --primary: 43 71% 57%;  /* #E3B341 */
-  --primary-foreground: 211 65% 11%;
+  --primary-foreground: 215 75% 9%;  /* Dark navy text on gold */
 
-  /* Secondary Colors */
-  --secondary: 211 46% 16%;  /* #142538 */
-  --secondary-foreground: 219 36% 84%;  /* #C9D1E2 */
+  /* Secondary Colors - Darker & Bluer */
+  --secondary: 215 55% 13%;  /* Darker, bluer hover/focus overlay */
+  --secondary-foreground: 215 12% 78%;  /* Softer text */
 
-  /* Muted Colors */
-  --muted: 211 27% 23%;  /* #2B3A4C */
-  --muted-foreground: 220 14% 60%;  /* #8A93A6 */
+  /* Muted Colors - Darker & Bluer */
+  --muted: 215 40% 20%;  /* Darker, bluer borders/dividers */
+  --muted-foreground: 215 10% 62%;  /* Softer muted text */
 
   /* Accent - Gold */
   --accent: 43 71% 57%;  /* #E3B341 */
-  --accent-foreground: 211 65% 11%;
+  --accent-foreground: 215 75% 9%;
 
   /* Destructive - Loss Red */
   --destructive: 357 100% 65%;  /* #FF4F58 */
   --destructive-foreground: 0 0% 100%;
 
-  /* Borders & Inputs */
-  --border: 211 27% 23%;  /* #2B3A4C */
-  --input: 211 35% 18%;  /* #1E2D3F */
+  /* Borders & Inputs - Darker & Bluer */
+  --border: 215 40% 30%;  /* More visible borders for better card definition */
+  --input: 215 50% 15%;  /* Darker, bluer inputs */
   --ring: 43 71% 57%;  /* Gold */
 }
 
@@ -224,7 +224,7 @@
 
   body {
     @apply bg-background;
-    color: #C9D1E2; /* Secondary text color for body */
+    color: #B8BDC8; /* Softer body text, less bright */
     font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
@@ -277,15 +277,15 @@
 
   /* Text Colors */
   .text-secondary {
-    color: #C9D1E2;
+    color: #E9EBEE;
   }
 
   .text-muted {
-    color: #8A93A6;
+    color: #B3B8C2;
   }
 
   .text-disabled {
-    color: #556070;
+    color: #7F8590;
   }
 
   /* Status Colors */

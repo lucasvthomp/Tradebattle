@@ -90,7 +90,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }, []);
 
   const getStatusColor = () => {
-    return isMarketOpen ? "bg-green-500" : "bg-red-500";
+    return isMarketOpen ? "bg-[#28C76F]" : "bg-[#FF4F58]";
   };
 
   const getStatusText = () => {
@@ -119,9 +119,9 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
         <Clock className="w-3.5 h-3.5 text-muted-foreground" />
         <span className="text-xs font-medium text-muted-foreground">
           Market {isMarketOpen ? (
-            <span className="text-green-600 dark:text-green-400">Open</span>
+            <span className="text-[#28C76F]">Open</span>
           ) : (
-            <span className="text-orange-600 dark:text-orange-400">Closed</span>
+            <span className="text-[#FF9F43]">Closed</span>
           )}
         </span>
       </div>
@@ -143,13 +143,13 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
               <Clock
                 className={`w-5 h-5 ${
                   isMarketOpen
-                    ? "text-green-500"
-                    : "text-orange-500"
+                    ? "text-[#28C76F]"
+                    : "text-[#FF9F43]"
                 }`}
               />
               {showCountdown && (
                 <span className={`text-sm font-medium tabular-nums ${
-                  isMarketOpen ? "text-green-500" : "text-orange-500"
+                  isMarketOpen ? "text-[#28C76F]" : "text-[#FF9F43]"
                 }`}>
                   {formatCountdown(minutesUntilEvent)}
                 </span>
@@ -164,9 +164,9 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
                 <div>9:30 AM - 4:00 PM ET</div>
                 <div className="pt-2 border-t border-border/50">
                   {isMarketOpen ? (
-                    <span className="text-green-500">Currently Open - Closes in {timeUntilClose}</span>
+                    <span className="text-[#28C76F]">Currently Open - Closes in {timeUntilClose}</span>
                   ) : (
-                    <span className="text-orange-500">Currently Closed - Opens in {timeUntilOpen}</span>
+                    <span className="text-[#FF9F43]">Currently Closed - Opens in {timeUntilOpen}</span>
                   )}
                 </div>
               </div>
@@ -178,7 +178,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }
 
   return (
-    <Card className={`border-0 ${isMarketOpen ? 'bg-green-50 dark:bg-green-950/20' : 'bg-red-50 dark:bg-red-950/20'}`}>
+    <Card className={`border-0 ${isMarketOpen ? 'bg-[#28C76F]/10' : 'bg-[#FF4F58]/10'}`}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">

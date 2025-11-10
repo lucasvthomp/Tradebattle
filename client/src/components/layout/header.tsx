@@ -26,16 +26,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const [, navigate] = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b" style={{ backgroundColor: 'rgba(6, 18, 31, 0.98)', borderColor: '#1F2D3D' }}>
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-muted" style={{ backgroundColor: 'rgba(10, 26, 47, 0.98)' }}>
       <div className="container mx-auto">
         <nav className="flex items-center justify-between h-16">
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center space-x-4">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#E3B341' }}>
-                <span className="font-bold text-sm" style={{ color: '#06121F' }}>O</span>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
+                <span className="font-bold text-sm text-background">O</span>
               </div>
-              <span className="text-xl font-bold" style={{ color: '#FFFFFF' }}>ORSATH</span>
+              <span className="text-xl font-bold text-foreground">ORSATH</span>
             </Link>
 
             {/* Market Status Clock */}
@@ -49,9 +49,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display - Clickable for balance management */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 backdrop-blur-sm border rounded-md" style={{ backgroundColor: 'rgba(43, 58, 76, 0.3)', borderColor: '#2B3A4C' }}>
-                      <DollarSign className="w-4 h-4" style={{ color: '#E3B341' }} />
-                      <span className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>
+                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 backdrop-blur-sm border border-muted rounded-md bg-card/30">
+                      <DollarSign className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-semibold text-foreground">
                         {formatCurrency(Number(user.siteCash) || 0)}
                       </span>
                     </Button>

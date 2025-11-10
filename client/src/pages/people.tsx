@@ -219,7 +219,7 @@ export default function People() {
 
             {/* Profile Header */}
             <motion.div variants={fadeInUp}>
-              <Card className="mb-8 border-0 shadow-lg">
+              <Card className="mb-8 border border-border shadow-lg">
                 <CardContent className="p-8">
                   <div className="flex items-center space-x-6">
                     <Avatar className="w-24 h-24">
@@ -275,7 +275,7 @@ export default function People() {
 
             {/* Achievements */}
             <motion.div variants={fadeInUp}>
-              <Card className="mb-8 border-0 shadow-lg">
+              <Card className="mb-8 border border-border shadow-lg">
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <Award className="w-5 h-5 mr-2" />
@@ -414,7 +414,7 @@ export default function People() {
               {isLoadingUsers ? (
                 // Loading skeletons
                 Array.from({ length: 6 }).map((_, i) => (
-                  <Card key={i} className="border-0 shadow-lg">
+                  <Card key={i} className="border border-border shadow-lg">
                     <CardContent className="p-6">
                       <div className="animate-pulse">
                         <div className="w-16 h-16 bg-muted rounded-full mb-4"></div>
@@ -440,7 +440,7 @@ export default function People() {
                   const achievementCount = person.achievementCount || 0;
                   
                   return (
-                    <Card key={person.id} className="border-0 shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
+                    <Card key={person.id} className="border border-border shadow-lg hover:shadow-xl transition-shadow cursor-pointer">
                       <CardContent className="p-6">
                         <div className="flex items-center space-x-4 mb-4">
                           <Avatar className="w-16 h-16">

@@ -21,7 +21,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Send, MessageSquare, X, User, Globe, Trophy, Users, DollarSign, UserCircle } from "lucide-react";
+import { Send, MessageSquare, X, User, Trophy, Users, DollarSign, UserCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -169,7 +169,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       return {
         name: "Global Chat",
         description: "Chat with all platform users",
-        icon: <Globe className="w-4 h-4" />,
+        icon: <MessageSquare className="w-4 h-4" />,
         color: "bg-blue-500"
       };
     }
@@ -268,8 +268,8 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       {/* Clickable Avatar with Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="w-12 h-12 bg-muted/60 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 hover:bg-muted/80 transition-colors cursor-pointer">
-                            <User className="w-6 h-6" />
+                          <button className="w-14 h-14 bg-muted/60 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 hover:bg-muted/80 transition-colors cursor-pointer">
+                            <User className="w-7 h-7" />
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
