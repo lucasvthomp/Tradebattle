@@ -436,7 +436,7 @@ export default function TournamentsPage() {
           {/* Tournament Tabs */}
           <motion.div variants={fadeInUp}>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/50 backdrop-blur-sm border border-border/50">
+              <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/50 backdrop-blur-sm">
                 <TabsTrigger
                   value="upcoming"
                   className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white transition-all duration-300"

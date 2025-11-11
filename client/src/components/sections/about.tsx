@@ -5,10 +5,10 @@ export default function About() {
   const features = [
     "Zero financial risk - trade with virtual money",
     "Real market data and live stock prices",
-    "Achievement system with unlockable badges",
     "Competitive leaderboards and rankings",
     "Personal portfolio tracking and analytics",
     "Tournament system with automated expiration",
+    "Advanced trading analytics and insights",
   ];
 
   return (

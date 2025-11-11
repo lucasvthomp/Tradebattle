@@ -7,9 +7,9 @@
 :root {
   /* Navy & Gold Trader Color System */
 
-  /* Primary Brand Colors - Darker & Bluer Navy */
-  --background: 215 75% 9%;  /* #06121F - Darker, bluer primary background */
-  --foreground: 215 8% 86%;  /* Softer off-white for primary text - less bright */
+  /* Primary Brand Colors */
+  --background: 211 65% 11%;  /* #0A1A2F - Primary Background */
+  --foreground: 0 0% 100%;  /* #FFFFFF - Primary Text (Headings) */
 
   /* Card & Panel Hierarchy - Darker & Bluer */
   --card: 211 35% 18%;  /* #1E2D3F - Card background for visibility */
@@ -114,7 +114,7 @@
 
   /* Primary Brand Colors - Darker & Bluer Navy */
   --background: 215 75% 9%;  /* Darker, bluer primary background */
-  --foreground: 215 8% 86%;  /* Softer off-white for primary text - less bright */
+  --foreground: 219 36% 84%;  /* Standard text matching sidebar */
 
   /* Card & Panel Hierarchy - Darker & Bluer */
   --card: 215 50% 18%;  /* Lighter card background for better visibility */
@@ -223,8 +223,7 @@
   }
 
   body {
-    @apply bg-background;
-    color: #B8BDC8; /* Softer body text, less bright */
+    @apply bg-background text-muted-foreground;
     font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
@@ -428,7 +427,7 @@
   input, textarea, select {
     background-color: #142538 !important;
     border: 1px solid #2B3A4C !important;
-    color: #C9D1E2;
+    @apply text-muted-foreground;
   }
 
   input:focus, textarea:focus, select:focus {

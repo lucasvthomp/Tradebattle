@@ -1,773 +1,310 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, TrendingUp, DollarSign, Crown, Medal, Award, Sparkles, Users } from "lucide-react";
+import { Trophy, TrendingUp, DollarSign, Crown, Target, Zap, Award } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
-};
+// Placeholder data for testing
+const mockWageredData = [
+  { id: 1, username: "TradeMaster", totalWagered: 125000, tournamentCount: 42 },
+  { id: 2, username: "WallStreetWolf", totalWagered: 98500, tournamentCount: 38 },
+  { id: 3, username: "BullRun2024", totalWagered: 87200, tournamentCount: 35 },
+  { id: 4, username: "DiamondHands", totalWagered: 76300, tournamentCount: 31 },
+  { id: 5, username: "QuantKing", totalWagered: 65400, tournamentCount: 28 },
+  { id: 6, username: "AlphaSeeker", totalWagered: 54200, tournamentCount: 24 },
+  { id: 7, username: "MarketMaven", totalWagered: 48900, tournamentCount: 22 },
+  { id: 8, username: "RiskTaker", totalWagered: 43100, tournamentCount: 19 },
+  { id: 9, username: "GoldRush", totalWagered: 38700, tournamentCount: 17 },
+  { id: 10, username: "TechBull", totalWagered: 35200, tournamentCount: 15 },
+];
 
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
+const mockHighWagerTournaments = [
+  { id: 1, name: "Elite Traders Championship", buyInAmount: 25000, currentPlayers: 48, maxPlayers: 50, status: "active" },
+  { id: 2, name: "High Stakes Spring Classic", buyInAmount: 20000, currentPlayers: 42, maxPlayers: 100, status: "active" },
+  { id: 3, name: "Pro League Finals", buyInAmount: 15000, currentPlayers: 35, maxPlayers: 75, status: "waiting" },
+  { id: 4, name: "Diamond Tier Showdown", buyInAmount: 12500, currentPlayers: 28, maxPlayers: 50, status: "active" },
+  { id: 5, name: "Master Class Tournament", buyInAmount: 10000, currentPlayers: 45, maxPlayers: 60, status: "active" },
+  { id: 6, name: "Premium Traders League", buyInAmount: 8500, currentPlayers: 33, maxPlayers: 40, status: "waiting" },
+  { id: 7, name: "Gold Standard Series", buyInAmount: 7500, currentPlayers: 29, maxPlayers: 50, status: "active" },
+  { id: 8, name: "Platinum Championship", buyInAmount: 6000, currentPlayers: 22, maxPlayers: 30, status: "active" },
+];
 
-const itemVariant = {
-  hidden: { opacity: 0, x: -20 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.4 } }
-};
+const mockGrowthData = [
+  { id: 1, username: "MoonShot", portfolioValue: 287500, startingBalance: 100000, percentageChange: 187.5, tournamentName: "Spring Growth Rally" },
+  { id: 2, username: "VolatilityVince", portfolioValue: 245000, startingBalance: 100000, percentageChange: 145.0, tournamentName: "Tech Stocks Frenzy" },
+  { id: 3, username: "GrowthGuru", portfolioValue: 198000, startingBalance: 100000, percentageChange: 98.0, tournamentName: "High Volatility Week" },
+  { id: 4, username: "RocketTrader", portfolioValue: 176500, startingBalance: 100000, percentageChange: 76.5, tournamentName: "Momentum Masters" },
+  { id: 5, username: "SmartMoney", portfolioValue: 165000, startingBalance: 100000, percentageChange: 65.0, tournamentName: "Value Investing Cup" },
+  { id: 6, username: "TrendFollower", portfolioValue: 152000, startingBalance: 100000, percentageChange: 52.0, tournamentName: "Bull Market Sprint" },
+  { id: 7, username: "SwingKing", portfolioValue: 143500, startingBalance: 100000, percentageChange: 43.5, tournamentName: "Swing Trading Pro" },
+  { id: 8, username: "DayTraderPro", portfolioValue: 135200, startingBalance: 100000, percentageChange: 35.2, tournamentName: "Day Trading Finals" },
+];
 
 export default function Leaderboard() {
   const { user } = useAuth();
-  const { t, formatCurrency } = useUserPreferences();
+  const { formatCurrency } = useUserPreferences();
   const [activeTab, setActiveTab] = useState("wagered");
 
-  // Fetch total wagered leaderboard
-  const { data: wageredLeaderboard, isLoading: wageredLoading } = useQuery({
-    queryKey: ['/api/leaderboard/total-wagered'],
-    enabled: activeTab === "wagered",
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000,
-  });
-
-  // Fetch highest wager tournaments
-  const { data: highWagerLeaderboard, isLoading: highWagerLoading } = useQuery({
-    queryKey: ['/api/leaderboard/highest-wager'],
-    enabled: activeTab === "highwager",
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000,
-  });
-
-  // Fetch most growth leaderboard
-  const { data: growthLeaderboard, isLoading: growthLoading } = useQuery({
-    queryKey: ['/api/leaderboard/most-growth'],
-    enabled: activeTab === "growth",
-    refetchInterval: 5 * 60 * 1000,
-    refetchOnWindowFocus: true,
-    staleTime: 4 * 60 * 1000,
-  });
-
-  const getRankBadge = (rank: number) => {
-    const badges = {
-      1: {
-        icon: <Crown className="h-5 w-5" />,
-        bg: "bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600",
-        ring: "ring-2 ring-yellow-500/50 shadow-lg shadow-yellow-500/30",
-        text: "text-yellow-900"
-      },
-      2: {
-        icon: <Medal className="h-5 w-5" />,
-        bg: "bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500",
-        ring: "ring-2 ring-gray-400/50 shadow-lg shadow-gray-400/30",
-        text: "text-gray-900"
-      },
-      3: {
-        icon: <Award className="h-5 w-5" />,
-        bg: "bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800",
-        ring: "ring-2 ring-amber-600/50 shadow-lg shadow-amber-600/30",
-        text: "text-amber-100"
-      }
-    };
-
-    if (rank <= 3) {
-      const badge = badges[rank as keyof typeof badges];
-      return (
-        <div className={`relative flex items-center justify-center w-12 h-12 rounded-full ${badge.bg} ${badge.ring}`}>
-          <div className={badge.text}>
-            {badge.icon}
-          </div>
-          {rank === 1 && (
-            <motion.div
-              className="absolute -top-1 -right-1"
-              animate={{
-                rotate: [0, 10, -10, 0],
-                scale: [1, 1.2, 1]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-            >
-              <Sparkles className="h-4 w-4 text-yellow-400" />
-            </motion.div>
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <div className="flex items-center justify-center w-12 h-12 rounded-full bg-muted border-2 border-border">
-        <span className="text-lg font-bold text-muted-foreground">{rank}</span>
-      </div>
-    );
-  };
-
-  const getRowBackground = (rank: number, isCurrentUser: boolean) => {
-    if (isCurrentUser) {
-      return "bg-primary/10 border-primary hover:bg-primary/15";
-    }
-
+  const getRankIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return "bg-gradient-to-r from-yellow-500/5 via-yellow-400/10 to-amber-500/5 border-yellow-500/30 hover:border-yellow-500/50 hover:shadow-lg hover:shadow-yellow-500/20";
+        return <Crown className="h-5 w-5 text-[#E3B341]" />;
       case 2:
-        return "bg-gradient-to-r from-gray-400/5 via-gray-300/10 to-gray-400/5 border-gray-400/30 hover:border-gray-400/50 hover:shadow-lg hover:shadow-gray-400/20";
+        return <Award className="h-5 w-5 text-[#C9D1E2]" />;
       case 3:
-        return "bg-gradient-to-r from-amber-600/5 via-amber-500/10 to-orange-600/5 border-amber-600/30 hover:border-amber-600/50 hover:shadow-lg hover:shadow-amber-600/20";
+        return <Target className="h-5 w-5 text-[#CD7F32]" />;
       default:
-        return "bg-card border-border hover:border-primary/50 hover:bg-muted/50";
+        return null;
+    }
+  };
+
+  const getRankStyle = (rank: number) => {
+    switch (rank) {
+      case 1:
+        return "bg-[#E3B341] text-[#0A1A2F]";
+      case 2:
+        return "bg-[#C9D1E2] text-[#0A1A2F]";
+      case 3:
+        return "bg-[#CD7F32] text-white";
+      default:
+        return "bg-[#142538] text-[#C9D1E2]";
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20">
-      <div className="container mx-auto py-6 md:py-8 lg:py-10">
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-8 px-4">
+        {/* Header */}
         <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={fadeInUp}
-          className="text-center mb-8 md:mb-10 lg:mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
         >
-          <div className="inline-flex items-center gap-2 md:gap-3 mb-3 md:mb-4">
-            <Trophy className="h-8 w-8 md:h-10 md:w-10 text-primary animate-pulse" />
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              {t('leaderboard')}
-            </h1>
-            <Trophy className="h-8 w-8 md:h-10 md:w-10 text-primary animate-pulse" />
+          <div className="flex items-center gap-3 mb-2">
+            <Trophy className="h-8 w-8" style={{ color: '#E3B341' }} />
+            <h1 className="text-4xl font-bold text-white">Leaderboards</h1>
           </div>
-          <p className="text-muted-foreground text-sm md:text-base lg:text-lg max-w-2xl mx-auto px-4">
-            {t('leaderboardDescription')}
-          </p>
+          <p className="text-[#8A93A6]">Top performers across all tournaments and categories</p>
         </motion.div>
 
-        <motion.div variants={fadeInUp}>
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3 mb-8 h-14 bg-muted/50 backdrop-blur-sm border border-border/50">
-              <TabsTrigger
-                value="wagered"
-                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
-              >
-                <DollarSign className="h-5 w-5" />
-                <span className="hidden sm:inline">Total Wagered</span>
-                <span className="sm:hidden">Wagered</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="highwager"
-                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
-              >
-                <Trophy className="h-5 w-5" />
-                <span className="hidden sm:inline">Highest Wager</span>
-                <span className="sm:hidden">High</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="growth"
-                className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-300"
-              >
-                <TrendingUp className="h-5 w-5" />
-                <span className="hidden sm:inline">Most Growth</span>
-                <span className="sm:hidden">Growth</span>
-              </TabsTrigger>
-            </TabsList>
+        {/* Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3 bg-[#1E2D3F] border border-[#2B3A4C]">
+            <TabsTrigger
+              value="wagered"
+              className="text-[#8A93A6] data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+            >
+              <DollarSign className="h-4 w-4 mr-2" />
+              Total Wagered
+            </TabsTrigger>
+            <TabsTrigger
+              value="highwager"
+              className="text-[#8A93A6] data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+            >
+              <Trophy className="h-4 w-4 mr-2" />
+              High Stakes
+            </TabsTrigger>
+            <TabsTrigger
+              value="growth"
+              className="text-[#8A93A6] data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Top Growth
+            </TabsTrigger>
+          </TabsList>
 
-            <AnimatePresence mode="wait">
-              <TabsContent value="wagered" className="space-y-6">
-                {/* Podium Display for Top 3 */}
-                {!wageredLoading && (wageredLeaderboard as any)?.data?.rankings?.length >= 3 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-primary/10 via-purple-500/10 to-pink-500/10 backdrop-blur-sm border-2 border-primary/20 p-4 sm:p-6 md:p-8 shadow-2xl"
-                  >
-                    {/* Background decorative elements */}
-                    <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(white,transparent_85%)]" />
-                    <div className="absolute top-0 right-0 w-32 h-32 md:w-64 md:h-64 bg-primary/10 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 md:w-64 md:h-64 bg-purple-500/10 rounded-full blur-3xl" />
-
-                    <div className="relative">
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-center mb-4 sm:mb-6 md:mb-8 flex items-center justify-center gap-2">
-                        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-yellow-500 animate-pulse" />
-                        <span className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
-                          Top 3 Champions
-                        </span>
-                        <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-yellow-500 animate-pulse" />
-                      </h3>
-
-                      <div className="flex items-end justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8">
-                        {/* 2nd Place */}
+          <AnimatePresence mode="wait">
+            {/* Total Wagered Tab */}
+            <TabsContent value="wagered" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5" style={{ color: '#E3B341' }} />
+                    Top Traders by Total Wagered
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {mockWageredData.map((trader, index) => {
+                      const rank = index + 1;
+                      return (
                         <motion.div
-                          initial={{ opacity: 0, y: 100 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.4 }}
-                          className="flex flex-col items-center flex-1 max-w-xs"
+                          key={trader.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="flex items-center justify-between p-4 rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
                         >
-                          <motion.div
-                            whileHover={{ scale: 1.05, rotate: 2 }}
-                            className="relative mb-4 group"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                            <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 flex items-center justify-center border-4 border-gray-200 shadow-xl">
-                              <Medal className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
+                              {rank <= 3 ? getRankIcon(rank) : rank}
                             </div>
-                            <div className="absolute -top-2 -right-2 bg-gray-700 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg shadow-lg">
-                              2
+                            <div>
+                              <div className="font-semibold text-white">{trader.username}</div>
+                              <div className="text-sm text-[#8A93A6]">{trader.tournamentCount} tournaments</div>
                             </div>
-                          </motion.div>
-
-                          <div className="bg-gradient-to-br from-gray-400/20 to-gray-500/20 backdrop-blur-sm rounded-2xl p-4 w-full border-2 border-gray-400/30 shadow-lg hover:shadow-2xl hover:shadow-gray-400/30 transition-all duration-300">
-                            <div className="text-center">
-                              <p className="font-bold text-lg mb-1 truncate">{(wageredLeaderboard as any).data.rankings[1].username}</p>
-                              <p className="text-2xl font-black bg-gradient-to-r from-gray-300 to-gray-600 bg-clip-text text-transparent mb-1">
-                                {formatCurrency((wageredLeaderboard as any).data.rankings[1].totalWagered || 0)}
-                              </p>
-                              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                <Trophy className="h-3 w-3" />
-                                {(wageredLeaderboard as any).data.rankings[1].tournamentCount || 0} tournaments
-                              </p>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-lg" style={{ color: '#E3B341' }}>
+                              {formatCurrency(trader.totalWagered)}
                             </div>
-
-                            {/* Podium */}
-                            <div className="mt-4 bg-gradient-to-t from-gray-500 to-gray-400 h-32 lg:h-40 rounded-t-xl border-2 border-gray-300 relative overflow-hidden">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
-                              <div className="absolute bottom-2 left-0 right-0 text-center">
-                                <p className="text-4xl font-black text-white/80">2</p>
-                              </div>
-                            </div>
+                            <div className="text-xs text-[#8A93A6]">Total Wagered</div>
                           </div>
                         </motion.div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                        {/* 1st Place */}
+            {/* High Wager Tournaments Tab */}
+            <TabsContent value="highwager" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5" style={{ color: '#E3B341' }} />
+                    Highest Buy-In Tournaments
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {mockHighWagerTournaments.map((tournament, index) => {
+                      const rank = index + 1;
+                      return (
                         <motion.div
-                          initial={{ opacity: 0, y: 100 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.3 }}
-                          className="flex flex-col items-center flex-1 max-w-xs"
+                          key={tournament.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="flex items-center justify-between p-4 rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
                         >
-                          <motion.div
-                            animate={{
-                              y: [0, -10, 0],
-                              scale: [1, 1.05, 1]
-                            }}
-                            transition={{
-                              duration: 3,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                            whileHover={{ scale: 1.1, rotate: 5 }}
-                            className="relative mb-4 group"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition-opacity animate-pulse" />
-                            <div className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 flex items-center justify-center border-4 border-yellow-300 shadow-2xl">
-                              <Crown className="w-12 h-12 lg:w-16 lg:h-16 text-white" />
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
+                              {rank <= 3 ? getRankIcon(rank) : rank}
                             </div>
-                            <motion.div
-                              animate={{ rotate: [0, 10, -10, 0] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              className="absolute -top-2 -right-2 bg-yellow-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl shadow-lg"
-                            >
-                              1
-                            </motion.div>
-                            <motion.div
-                              animate={{
-                                rotate: [0, 360],
-                                scale: [1, 1.2, 1]
-                              }}
-                              transition={{
-                                duration: 4,
-                                repeat: Infinity,
-                                ease: "linear"
-                              }}
-                              className="absolute -top-1 -left-1"
-                            >
-                              <Sparkles className="h-6 w-6 text-yellow-400" />
-                            </motion.div>
-                          </motion.div>
-
-                          <div className="bg-gradient-to-br from-yellow-500/30 to-amber-600/30 backdrop-blur-sm rounded-2xl p-4 w-full border-2 border-yellow-500/50 shadow-2xl hover:shadow-3xl hover:shadow-yellow-500/40 transition-all duration-300">
-                            <div className="text-center">
-                              <p className="font-bold text-xl mb-1 truncate">{(wageredLeaderboard as any).data.rankings[0].username}</p>
-                              <p className="text-3xl font-black bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent mb-1">
-                                {formatCurrency((wageredLeaderboard as any).data.rankings[0].totalWagered || 0)}
-                              </p>
-                              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                <Trophy className="h-3 w-3" />
-                                {(wageredLeaderboard as any).data.rankings[0].tournamentCount || 0} tournaments
-                              </p>
-                            </div>
-
-                            {/* Podium - tallest */}
-                            <div className="mt-4 bg-gradient-to-t from-amber-600 to-yellow-500 h-48 lg:h-56 rounded-t-xl border-2 border-yellow-400 relative overflow-hidden">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent" />
-                              <motion.div
-                                animate={{
-                                  opacity: [0.3, 0.6, 0.3]
-                                }}
-                                transition={{
-                                  duration: 2,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                                className="absolute inset-0 bg-gradient-to-br from-yellow-200/30 to-transparent"
-                              />
-                              <div className="absolute bottom-2 left-0 right-0 text-center">
-                                <p className="text-5xl font-black text-white/90">1</p>
+                            <div>
+                              <div className="font-semibold text-white">{tournament.name}</div>
+                              <div className="text-sm text-[#8A93A6]">
+                                {tournament.currentPlayers}/{tournament.maxPlayers} players •
+                                <span className={tournament.status === 'active' ? 'text-[#28C76F]' : 'text-[#E3B341]'}>
+                                  {' '}{tournament.status}
+                                </span>
                               </div>
                             </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-lg" style={{ color: '#E3B341' }}>
+                              {formatCurrency(tournament.buyInAmount)}
+                            </div>
+                            <div className="text-xs text-[#8A93A6]">Buy-In</div>
                           </div>
                         </motion.div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-                        {/* 3rd Place */}
+            {/* Top Growth Tab */}
+            <TabsContent value="growth" className="space-y-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" style={{ color: '#E3B341' }} />
+                    Highest Portfolio Growth
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    {mockGrowthData.map((participant, index) => {
+                      const rank = index + 1;
+                      return (
                         <motion.div
-                          initial={{ opacity: 0, y: 100 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.5 }}
-                          className="flex flex-col items-center flex-1 max-w-xs"
+                          key={participant.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="flex items-center justify-between p-4 rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
                         >
-                          <motion.div
-                            whileHover={{ scale: 1.05, rotate: -2 }}
-                            className="relative mb-4 group"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-amber-600 to-orange-800 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                            <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800 flex items-center justify-center border-4 border-amber-500 shadow-xl">
-                              <Award className="w-10 h-10 lg:w-12 lg:h-12 text-amber-100" />
+                          <div className="flex items-center gap-4">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
+                              {rank <= 3 ? getRankIcon(rank) : rank}
                             </div>
-                            <div className="absolute -top-2 -right-2 bg-amber-800 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg shadow-lg">
-                              3
-                            </div>
-                          </motion.div>
-
-                          <div className="bg-gradient-to-br from-amber-600/20 to-orange-800/20 backdrop-blur-sm rounded-2xl p-4 w-full border-2 border-amber-600/30 shadow-lg hover:shadow-2xl hover:shadow-amber-600/30 transition-all duration-300">
-                            <div className="text-center">
-                              <p className="font-bold text-lg mb-1 truncate">{(wageredLeaderboard as any).data.rankings[2].username}</p>
-                              <p className="text-2xl font-black bg-gradient-to-r from-amber-600 to-orange-800 bg-clip-text text-transparent mb-1">
-                                {formatCurrency((wageredLeaderboard as any).data.rankings[2].totalWagered || 0)}
-                              </p>
-                              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                <Trophy className="h-3 w-3" />
-                                {(wageredLeaderboard as any).data.rankings[2].tournamentCount || 0} tournaments
-                              </p>
-                            </div>
-
-                            {/* Podium */}
-                            <div className="mt-4 bg-gradient-to-t from-orange-800 to-amber-700 h-24 lg:h-32 rounded-t-xl border-2 border-amber-600 relative overflow-hidden">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
-                              <div className="absolute bottom-2 left-0 right-0 text-center">
-                                <p className="text-4xl font-black text-white/80">3</p>
+                            <div>
+                              <div className="font-semibold text-white">{participant.username}</div>
+                              <div className="text-sm text-[#8A93A6]">
+                                {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
                               </div>
                             </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="font-bold text-lg text-[#28C76F]">
+                              +{participant.percentageChange.toFixed(1)}%
+                            </div>
+                            <div className="text-sm text-[#C9D1E2]">{formatCurrency(participant.portfolioValue)}</div>
                           </div>
                         </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </AnimatePresence>
+        </Tabs>
 
-                <Card className="border-2 border-border/50 shadow-2xl bg-card/95 backdrop-blur-sm">
-                  <CardHeader className="border-b border-border/50 bg-gradient-to-r from-primary/5 to-purple-500/5">
-                    <CardTitle className="text-2xl flex items-center gap-2">
-                      <DollarSign className="h-6 w-6 text-primary" />
-                      Complete Rankings
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">All players ranked by cumulative tournament buy-ins</p>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    {wageredLoading ? (
-                      <div className="flex justify-center py-12">
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="rounded-full h-12 w-12 border-4 border-primary border-t-transparent"
-                        />
-                      </div>
-                    ) : (
-                      <motion.div
-                        className="space-y-3"
-                        variants={staggerContainer}
-                        initial="hidden"
-                        animate="visible"
-                      >
-                        {(wageredLeaderboard as any)?.data?.rankings?.map((user: any, index: number) => {
-                          const rank = index + 1;
+        {/* Stats Summary */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8"
+        >
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-lg bg-[#142538]">
+                  <DollarSign className="h-6 w-6" style={{ color: '#E3B341' }} />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">{formatCurrency(652300)}</div>
+                  <div className="text-sm text-[#8A93A6]">Total Volume</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                          return (
-                            <motion.div
-                              key={user.id}
-                              variants={itemVariant}
-                              whileHover={{ scale: 1.02, x: 5, transition: { duration: 0.2 } }}
-                              className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 ${getRowBackground(rank, false)}`}
-                            >
-                              <div className="flex items-center gap-4">
-                                {getRankBadge(rank)}
-                                <div>
-                                  <div className="font-bold text-lg">{user.username}</div>
-                                  <div className="text-sm text-muted-foreground flex items-center gap-2">
-                                    <Trophy className="h-3 w-3" />
-                                    {user.tournamentCount || 0} tournaments entered
-                                  </div>
-                                </div>
-                              </div>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-lg bg-[#142538]">
+                  <Trophy className="h-6 w-6" style={{ color: '#E3B341' }} />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">284</div>
+                  <div className="text-sm text-[#8A93A6]">Active Tournaments</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                              <div className="text-right">
-                                <div className="font-bold text-2xl bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                                  {formatCurrency(user.totalWagered || 0)}
-                                </div>
-                                <div className="text-xs text-muted-foreground uppercase tracking-wider">Total wagered</div>
-                              </div>
-                            </motion.div>
-                          );
-                        }) || (
-                          <div className="text-center py-12 text-muted-foreground">
-                            <Trophy className="h-16 w-16 mx-auto mb-4 opacity-20" />
-                            <p className="text-lg">No wagering data available</p>
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="highwager" className="space-y-6">
-                {/* Podium Display for Top 3 Tournaments */}
-                {!highWagerLoading && (highWagerLeaderboard as any)?.data?.rankings?.length >= 3 && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
-                    className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-purple-500/10 to-pink-500/10 backdrop-blur-sm border-2 border-primary/20 p-8 shadow-2xl"
-                  >
-                    <div className="absolute inset-0 bg-grid-white/5 [mask-image:radial-gradient(white,transparent_85%)]" />
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
-
-                    <div className="relative">
-                      <h3 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-2">
-                        <Trophy className="h-6 w-6 text-yellow-500 animate-pulse" />
-                        <span className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent">
-                          Top 3 High Stakes Tournaments
-                        </span>
-                        <Trophy className="h-6 w-6 text-yellow-500 animate-pulse" />
-                      </h3>
-
-                      <div className="flex items-end justify-center gap-4 lg:gap-8">
-                        {/* 2nd Place */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 100 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.4 }}
-                          className="flex flex-col items-center flex-1 max-w-xs"
-                        >
-                          <motion.div
-                            whileHover={{ scale: 1.05, rotate: 2 }}
-                            className="relative mb-4 group"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-500 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                            <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-gray-300 via-gray-400 to-gray-500 flex items-center justify-center border-4 border-gray-200 shadow-xl">
-                              <Medal className="w-10 h-10 lg:w-12 lg:h-12 text-white" />
-                            </div>
-                            <div className="absolute -top-2 -right-2 bg-gray-700 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg shadow-lg">
-                              2
-                            </div>
-                          </motion.div>
-
-                          <div className="bg-gradient-to-br from-gray-400/20 to-gray-500/20 backdrop-blur-sm rounded-2xl p-4 w-full border-2 border-gray-400/30 shadow-lg hover:shadow-2xl hover:shadow-gray-400/30 transition-all duration-300">
-                            <div className="text-center">
-                              <p className="font-bold text-lg mb-1 truncate">{(highWagerLeaderboard as any).data.rankings[1].name}</p>
-                              <p className="text-2xl font-black bg-gradient-to-r from-gray-300 to-gray-600 bg-clip-text text-transparent mb-1">
-                                {formatCurrency((highWagerLeaderboard as any).data.rankings[1].buyInAmount || 0)}
-                              </p>
-                              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {(highWagerLeaderboard as any).data.rankings[1].currentPlayers}/{(highWagerLeaderboard as any).data.rankings[1].maxPlayers} players
-                              </p>
-                            </div>
-                            <div className="mt-4 bg-gradient-to-t from-gray-500 to-gray-400 h-32 lg:h-40 rounded-t-xl border-2 border-gray-300 relative overflow-hidden">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
-                              <div className="absolute bottom-2 left-0 right-0 text-center">
-                                <p className="text-4xl font-black text-white/80">2</p>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-
-                        {/* 1st Place */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 100 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.3 }}
-                          className="flex flex-col items-center flex-1 max-w-xs"
-                        >
-                          <motion.div
-                            animate={{
-                              y: [0, -10, 0],
-                              scale: [1, 1.05, 1]
-                            }}
-                            transition={{
-                              duration: 3,
-                              repeat: Infinity,
-                              ease: "easeInOut"
-                            }}
-                            whileHover={{ scale: 1.1, rotate: 5 }}
-                            className="relative mb-4 group"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-yellow-400 to-amber-600 rounded-full blur-2xl opacity-60 group-hover:opacity-100 transition-opacity animate-pulse" />
-                            <div className="relative w-24 h-24 lg:w-32 lg:h-32 rounded-full bg-gradient-to-br from-yellow-400 via-yellow-500 to-amber-600 flex items-center justify-center border-4 border-yellow-300 shadow-2xl">
-                              <Crown className="w-12 h-12 lg:w-16 lg:h-16 text-white" />
-                            </div>
-                            <motion.div
-                              animate={{ rotate: [0, 10, -10, 0] }}
-                              transition={{ duration: 2, repeat: Infinity }}
-                              className="absolute -top-2 -right-2 bg-yellow-600 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl shadow-lg"
-                            >
-                              1
-                            </motion.div>
-                            <motion.div
-                              animate={{
-                                rotate: [0, 360],
-                                scale: [1, 1.2, 1]
-                              }}
-                              transition={{
-                                duration: 4,
-                                repeat: Infinity,
-                                ease: "linear"
-                              }}
-                              className="absolute -top-1 -left-1"
-                            >
-                              <Sparkles className="h-6 w-6 text-yellow-400" />
-                            </motion.div>
-                          </motion.div>
-
-                          <div className="bg-gradient-to-br from-yellow-500/30 to-amber-600/30 backdrop-blur-sm rounded-2xl p-4 w-full border-2 border-yellow-500/50 shadow-2xl hover:shadow-3xl hover:shadow-yellow-500/40 transition-all duration-300">
-                            <div className="text-center">
-                              <p className="font-bold text-xl mb-1 truncate">{(highWagerLeaderboard as any).data.rankings[0].name}</p>
-                              <p className="text-3xl font-black bg-gradient-to-r from-yellow-400 via-yellow-500 to-amber-600 bg-clip-text text-transparent mb-1">
-                                {formatCurrency((highWagerLeaderboard as any).data.rankings[0].buyInAmount || 0)}
-                              </p>
-                              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {(highWagerLeaderboard as any).data.rankings[0].currentPlayers}/{(highWagerLeaderboard as any).data.rankings[0].maxPlayers} players
-                              </p>
-                            </div>
-                            <div className="mt-4 bg-gradient-to-t from-amber-600 to-yellow-500 h-48 lg:h-56 rounded-t-xl border-2 border-yellow-400 relative overflow-hidden">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent" />
-                              <motion.div
-                                animate={{
-                                  opacity: [0.3, 0.6, 0.3]
-                                }}
-                                transition={{
-                                  duration: 2,
-                                  repeat: Infinity,
-                                  ease: "easeInOut"
-                                }}
-                                className="absolute inset-0 bg-gradient-to-br from-yellow-200/30 to-transparent"
-                              />
-                              <div className="absolute bottom-2 left-0 right-0 text-center">
-                                <p className="text-5xl font-black text-white/90">1</p>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-
-                        {/* 3rd Place */}
-                        <motion.div
-                          initial={{ opacity: 0, y: 100 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.6, delay: 0.5 }}
-                          className="flex flex-col items-center flex-1 max-w-xs"
-                        >
-                          <motion.div
-                            whileHover={{ scale: 1.05, rotate: -2 }}
-                            className="relative mb-4 group"
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-br from-amber-600 to-orange-800 rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity" />
-                            <div className="relative w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-gradient-to-br from-amber-600 via-amber-700 to-orange-800 flex items-center justify-center border-4 border-amber-500 shadow-xl">
-                              <Award className="w-10 h-10 lg:w-12 lg:h-12 text-amber-100" />
-                            </div>
-                            <div className="absolute -top-2 -right-2 bg-amber-800 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-lg shadow-lg">
-                              3
-                            </div>
-                          </motion.div>
-
-                          <div className="bg-gradient-to-br from-amber-600/20 to-orange-800/20 backdrop-blur-sm rounded-2xl p-4 w-full border-2 border-amber-600/30 shadow-lg hover:shadow-2xl hover:shadow-amber-600/30 transition-all duration-300">
-                            <div className="text-center">
-                              <p className="font-bold text-lg mb-1 truncate">{(highWagerLeaderboard as any).data.rankings[2].name}</p>
-                              <p className="text-2xl font-black bg-gradient-to-r from-amber-600 to-orange-800 bg-clip-text text-transparent mb-1">
-                                {formatCurrency((highWagerLeaderboard as any).data.rankings[2].buyInAmount || 0)}
-                              </p>
-                              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
-                                <Users className="h-3 w-3" />
-                                {(highWagerLeaderboard as any).data.rankings[2].currentPlayers}/{(highWagerLeaderboard as any).data.rankings[2].maxPlayers} players
-                              </p>
-                            </div>
-                            <div className="mt-4 bg-gradient-to-t from-orange-800 to-amber-700 h-24 lg:h-32 rounded-t-xl border-2 border-amber-600 relative overflow-hidden">
-                              <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent" />
-                              <div className="absolute bottom-2 left-0 right-0 text-center">
-                                <p className="text-4xl font-black text-white/80">3</p>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                <Card className="border-2 border-border/50 shadow-2xl bg-card/95 backdrop-blur-sm">
-                  <CardHeader className="border-b border-border/50 bg-gradient-to-r from-primary/5 to-purple-500/5">
-                    <CardTitle className="text-2xl flex items-center gap-2">
-                      <Trophy className="h-6 w-6 text-primary" />
-                      All High Wager Tournaments
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">Complete list of tournaments with the highest buy-in amounts</p>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    {highWagerLoading ? (
-                      <div className="flex justify-center py-12">
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="rounded-full h-12 w-12 border-4 border-primary border-t-transparent"
-                        />
-                      </div>
-                    ) : (
-                      <motion.div
-                        className="space-y-3"
-                        variants={staggerContainer}
-                        initial="hidden"
-                        animate="visible"
-                      >
-                        {(highWagerLeaderboard as any)?.data?.rankings?.map((tournament: any, index: number) => {
-                          const rank = index + 1;
-
-                          return (
-                            <motion.div
-                              key={tournament.id}
-                              variants={itemVariant}
-                              whileHover={{ scale: 1.02, x: 5, transition: { duration: 0.2 } }}
-                              className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 ${getRowBackground(rank, false)}`}
-                            >
-                              <div className="flex items-center gap-4">
-                                {getRankBadge(rank)}
-                                <div>
-                                  <div className="font-bold text-lg">{tournament.name}</div>
-                                  <div className="text-sm text-muted-foreground flex items-center gap-2">
-                                    <Users className="h-3 w-3" />
-                                    {tournament.currentPlayers} / {tournament.maxPlayers} players
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="text-right">
-                                <div className="font-bold text-2xl bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                                  {formatCurrency(tournament.buyInAmount || 0)}
-                                </div>
-                                <div className="text-xs text-muted-foreground uppercase tracking-wider">Buy-in amount</div>
-                              </div>
-                            </motion.div>
-                          );
-                        }) || (
-                          <div className="text-center py-12 text-muted-foreground">
-                            <Trophy className="h-16 w-16 mx-auto mb-4 opacity-20" />
-                            <p className="text-lg">No high wager tournament data available</p>
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
-              <TabsContent value="growth" className="space-y-6">
-                <Card className="border-2 border-border/50 shadow-2xl bg-card/95 backdrop-blur-sm">
-                  <CardHeader className="border-b border-border/50 bg-gradient-to-r from-primary/5 to-purple-500/5">
-                    <CardTitle className="text-2xl flex items-center gap-2">
-                      <TrendingUp className="h-6 w-6 text-primary" />
-                      Most Growth in Tournament
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">Players with the highest percentage returns in a single tournament</p>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    {growthLoading ? (
-                      <div className="flex justify-center py-12">
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="rounded-full h-12 w-12 border-4 border-primary border-t-transparent"
-                        />
-                      </div>
-                    ) : (
-                      <motion.div
-                        className="space-y-3"
-                        variants={staggerContainer}
-                        initial="hidden"
-                        animate="visible"
-                      >
-                        {(growthLeaderboard as any)?.data?.rankings?.map((participant: any, index: number) => {
-                          const rank = index + 1;
-                          const growth = participant.percentageChange || 0;
-                          const isCurrentUser = participant.userId === user?.id;
-
-                          return (
-                            <motion.div
-                              key={participant.id}
-                              variants={itemVariant}
-                              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
-                              className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all duration-300 ${getRowBackground(rank, isCurrentUser)}`}
-                            >
-                              <div className="flex items-center gap-4">
-                                {getRankBadge(rank)}
-                                <div>
-                                  <div className="font-bold text-lg flex items-center gap-2">
-                                    {participant.username}
-                                    {isCurrentUser && (
-                                      <span className="text-xs bg-primary text-primary-foreground px-2 py-0.5 rounded-full">You</span>
-                                    )}
-                                  </div>
-                                  <div className="text-sm text-muted-foreground">
-                                    {participant.tournamentName} • Starting: {formatCurrency(participant.startingBalance)}
-                                  </div>
-                                </div>
-                              </div>
-
-                              <div className="text-right">
-                                <div className="font-bold text-2xl bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                                  {formatCurrency(participant.portfolioValue)}
-                                </div>
-                                <div className={`text-sm flex items-center justify-end gap-1 font-bold ${
-                                  growth >= 0 ? 'text-green-500' : 'text-red-500'
-                                }`}>
-                                  <TrendingUp className="h-4 w-4" />
-                                  {growth >= 0 ? '+' : ''}{growth.toFixed(2)}% Growth
-                                </div>
-                              </div>
-                            </motion.div>
-                          );
-                        }) || (
-                          <div className="text-center py-12 text-muted-foreground">
-                            <TrendingUp className="h-16 w-16 mx-auto mb-4 opacity-20" />
-                            <p className="text-lg">No growth data available</p>
-                          </div>
-                        )}
-                      </motion.div>
-                    )}
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </AnimatePresence>
-          </Tabs>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-lg bg-[#142538]">
+                  <Zap className="h-6 w-6" style={{ color: '#E3B341' }} />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">1,247</div>
+                  <div className="text-sm text-[#8A93A6]">Active Traders</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </div>

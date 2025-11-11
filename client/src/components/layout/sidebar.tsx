@@ -100,7 +100,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="p-4 border-t border-border/50 backdrop-blur-sm">
             <Button
               onClick={() => setCodeDialogOpen(true)}
-              className="w-full bg-gradient-to-r from-purple-500/80 to-pink-500/80 hover:from-purple-600/90 hover:to-pink-600/90 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 hover-lift backdrop-blur-md border border-purple-300/20 shadow-lg"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
               size="lg"
             >
               <div className="flex items-center justify-center space-x-2">

@@ -124,23 +124,6 @@ export default function Support() {
       ]
     },
     {
-      category: "Achievements & Leaderboards",
-      questions: [
-        {
-          question: "How do I earn achievements?",
-          answer: "Achievements are earned automatically by reaching milestones like making your first trade, joining tournaments, or achieving portfolio growth targets (10%, 25%, 100%)."
-        },
-        {
-          question: "What are trading streaks?",
-          answer: "Trading streaks track consecutive days where you make at least one trade in your personal portfolio. Maintain daily trading activity to build longer streaks and earn special achievements."
-        },
-        {
-          question: "How do leaderboards work?",
-          answer: "Leaderboards rank users by tournament performance, personal portfolio value, and trading streaks. Rankings update in real-time as you trade and compete."
-        }
-      ]
-    },
-    {
       category: "Account Features",
       questions: [
         {
@@ -182,7 +165,7 @@ export default function Support() {
       title: "Platform Features",
       description: "Master all ORSATH tools and capabilities",
       icon: TrendingUp,
-      items: ["Portfolio tracking", "Achievement system", "Social features", "Analytics"]
+      items: ["Portfolio tracking", "Social features", "Analytics", "Real-time data"]
     }
   ];
 
