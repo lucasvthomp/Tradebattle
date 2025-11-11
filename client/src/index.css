@@ -12,22 +12,22 @@
   --foreground: 215 8% 86%;  /* Softer off-white for primary text - less bright */
 
   /* Card & Panel Hierarchy - Darker & Bluer */
-  --card: 215 50% 18%;  /* #1A2A3D - Lighter card background for better visibility */
-  --card-foreground: 215 12% 78%;  /* Softer body text, less bright */
-  --popover: 215 50% 18%;
-  --popover-foreground: 215 12% 78%;  /* Softer body text in popovers */
+  --card: 211 35% 18%;  /* #1E2D3F - Card background for visibility */
+  --card-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text (Body) */
+  --popover: 211 35% 18%;
+  --popover-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text in popovers */
 
   /* Gold Accent - Use sparingly */
   --primary: 43 71% 57%;  /* #E3B341 - Gold Accent */
   --primary-foreground: 215 75% 9%;  /* Dark navy text on gold */
 
-  /* Secondary Colors for Structure - Darker & Bluer */
-  --secondary: 215 55% 13%;  /* #0E1B28 - Darker, bluer hover/focus overlay */
-  --secondary-foreground: 215 12% 78%;  /* Softer, less bright text */
+  /* Secondary Colors for Structure */
+  --secondary: 211 46% 16%;  /* #142538 - Hover/Focus Overlay */
+  --secondary-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text */
 
-  /* Muted Colors - Darker & Bluer */
-  --muted: 215 40% 20%;  /* #1F2D3D - Darker, bluer borders/dividers */
-  --muted-foreground: 215 10% 62%;  /* Softer muted text, less bright */
+  /* Muted Colors */
+  --muted: 211 27% 23%;  /* #2B3A4C - Card Border/Lines/Dividers */
+  --muted-foreground: 220 14% 60%;  /* #8A93A6 - Muted Text */
 
   /* Accent - Gold */
   --accent: 43 71% 57%;  /* #E3B341 - Gold */
@@ -38,8 +38,8 @@
   --destructive-foreground: 0 0% 100%;
 
   /* Borders & Inputs - Darker & Bluer */
-  --border: 215 40% 30%;  /* #324559 - More visible borders for better card definition */
-  --input: 215 40% 18%;  /* #1E2D3F - Input background matching cards */
+  --border: 215 30% 28%;  /* #2B3A4C - Visible borders for card definition */
+  --input: 211 35% 18%;  /* #1E2D3F - Input background matching cards */
   --ring: 43 71% 57%;  /* Gold ring for focus states */
   --radius: 0.75rem;
 
@@ -400,14 +400,28 @@
   /* Card Styles - Navy & Gold Color Hierarchy */
   .card {
     background-color: #1E2D3F !important;
-    border: 1px solid rgba(43, 58, 76, 0.4) !important;
+    border: 1px solid #2B3A4C !important;
     backdrop-filter: blur(12px);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   }
 
   .card-inner {
     background-color: #142538;
-    border: none;
+    border: 1px solid rgba(43, 58, 76, 0.3);
+  }
+
+  /* All interactive elements should have visible backgrounds */
+  button:not([class*="bg-transparent"]) {
+    background-color: #1E2D3F;
+  }
+
+  button[class*="ghost"] {
+    background-color: rgba(30, 45, 63, 0.5) !important;
+  }
+
+  button[class*="outline"] {
+    background-color: #1E2D3F !important;
+    border: 1px solid #2B3A4C !important;
   }
 
   /* Input & Form Styles */
@@ -431,6 +445,18 @@
   /* Dialog/Dropdown/Popover backgrounds */
   [role="dialog"], [role="menu"], [role="listbox"], [role="combobox"] {
     background-color: #1E2D3F !important;
+    border: 1px solid #2B3A4C !important;
+  }
+
+  /* Ensure all divs inside cards have backgrounds */
+  .card > div, .card div[class*="content"], .card div[class*="header"] {
+    background-color: transparent;
+  }
+
+  /* Badge backgrounds */
+  .badge, [class*="badge"] {
+    background-color: #142538 !important;
+    border: 1px solid #2B3A4C;
   }
 
   /* Status Colors */

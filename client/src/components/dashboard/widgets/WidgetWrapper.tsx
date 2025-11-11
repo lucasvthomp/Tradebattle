@@ -22,7 +22,7 @@ export function WidgetWrapper({
   className = ""
 }: WidgetWrapperProps) {
   return (
-    <div className={`h-full flex flex-col bg-card/95 backdrop-blur-sm rounded-lg overflow-hidden cursor-move shadow-md hover:shadow-lg transition-shadow ${className}`}>
+    <div className={`h-full flex flex-col bg-card/95 backdrop-blur-sm border border-border/40 rounded-lg overflow-hidden cursor-move shadow-md hover:shadow-lg transition-shadow ${className}`}>
       <div className="px-4 py-3 border-b border-muted/50 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="text-sm font-medium flex items-center space-x-2 text-muted-foreground">
