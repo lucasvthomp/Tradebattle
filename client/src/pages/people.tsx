@@ -75,15 +75,22 @@ export default function People() {
 
 
   // Fetch all users for browsing
-  const { data: allUsers, isLoading: isLoadingUsers } = useQuery({
+  const { data: allUsers, isLoading: isLoadingUsers, error: usersError } = useQuery({
     queryKey: ['/api/users/public'],
     enabled: !profileUserId,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   });
 
   // Fetch specific user profile
-  const { data: profileUser, isLoading: isLoadingProfile } = useQuery({
+  const { data: profileUser, isLoading: isLoadingProfile, error: profileError } = useQuery({
     queryKey: ['/api/users/public', profileUserId],
     enabled: !!profileUserId,
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   // Filter and sort users
@@ -408,6 +415,23 @@ export default function People() {
             <p className="text-sm sm:text-base" style={{ color: '#8A93A6' }}>Discover and connect with traders in our community</p>
           </motion.div>
 
+          {/* Error State */}
+          {usersError && (
+            <motion.div variants={fadeInUp} className="mb-6">
+              <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#FF3333', borderWidth: '2px' }}>
+                <CardContent className="p-6 text-center">
+                  <h3 className="text-lg font-bold mb-2" style={{ color: '#FF3333' }}>Error Loading Users</h3>
+                  <p style={{ color: '#8A93A6' }} className="mb-4">
+                    {(usersError as Error)?.message || 'Unable to load user data. Please try again.'}
+                  </p>
+                  <Button onClick={() => window.location.reload()} style={{ backgroundColor: '#E3B341', color: '#06121F' }}>
+                    Reload Page
+                  </Button>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
           {/* Search and Filters */}
           <motion.div className="mb-8" variants={fadeInUp}>
             <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -458,13 +482,30 @@ export default function People() {
           {/* People Grid */}
           <motion.div variants={fadeInUp}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {isLoadingUsers ? (
+              {usersError ? (
+                // Error state with retry
+                <div className="col-span-full text-center py-12">
+                  <div className="max-w-md mx-auto">
+                    <Users className="w-12 h-12 mx-auto mb-4" style={{ color: '#FF4F58' }} />
+                    <p className="text-lg mb-2" style={{ color: '#C9D1E2' }}>Failed to load people</p>
+                    <p className="text-sm mb-4" style={{ color: '#8A93A6' }}>
+                      There was an error loading the user list. Please try again.
+                    </p>
+                    <Button
+                      onClick={() => window.location.reload()}
+                      style={{ backgroundColor: '#E3B341', color: '#06121F' }}
+                    >
+                      Retry
+                    </Button>
+                  </div>
+                </div>
+              ) : isLoadingUsers ? (
                 // Loading skeletons
                 Array.from({ length: 6 }).map((_, i) => (
                   <Card key={i} className="shadow-lg" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
                     <CardContent className="p-6">
                       <div className="animate-pulse">
-                        <div className="w-16 h-16 rounded-full mb-4" style={{ backgroundColor: '#142538' }}></div>
+                        <div className="w-16 h-16 rounded-lg mb-4" style={{ backgroundColor: '#142538' }}></div>
                         <div className="h-4 rounded mb-2" style={{ backgroundColor: '#142538' }}></div>
                         <div className="h-3 rounded w-3/4 mb-4" style={{ backgroundColor: '#142538' }}></div>
                         <div className="space-y-2">
