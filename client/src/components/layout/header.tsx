@@ -49,7 +49,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display - Clickable for balance management */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 backdrop-blur-sm border border-muted rounded-md bg-card/30">
+                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2">
                       <DollarSign className="w-4 h-4 text-primary" />
                       <span className="text-sm font-semibold text-foreground">
                         {formatCurrency(Number(user.siteCash) || 0)}
@@ -74,7 +74,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     onClick={onChatToggle}
                     variant="ghost"
                     size="sm"
-                    className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md"
+                    className="flex items-center space-x-2 px-3 py-2"
                   >
                     <MessageSquare className="w-4 h-4" />
                     <span className="text-sm font-medium">{t('chat')}</span>
@@ -84,7 +84,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* User Menu with integrated balance */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 hover:bg-muted/50 border border-border rounded-md">
+                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2">
                       <User className="w-4 h-4" />
                       <span className="text-sm font-medium">
                         {user?.username || "User"}

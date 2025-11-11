@@ -211,7 +211,7 @@
 
 @layer base {
   * {
-    @apply border-border;
+    /* Removed universal border - borders only on specific components */
   }
 
   html {
@@ -399,13 +399,32 @@
   
   /* Card Styles */
   .card {
-    background-color: #1E2D3F !important;
-    border-color: #2B3A4C;
+    background-color: #172535 !important;
+    border: none !important;
     backdrop-filter: blur(12px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 
   .card-inner {
-    background-color: #142538;
+    background-color: #0E1B28;
+    border: none;
+  }
+
+  /* Input & Form Styles - Only these have visible borders */
+  input, textarea, select {
+    background-color: #0E1B28 !important;
+    border: 1px solid #263544 !important;
+    color: #B8BDC8;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: #E3B341 !important;
+    outline: none;
+  }
+
+  /* Remove borders from buttons by default */
+  button {
+    border: none;
   }
 
   /* Status Colors */
@@ -457,12 +476,14 @@
   /* Interactive card effects */
   .interactive-card {
     @apply transition-colors duration-200;
-    background: var(--card);
-    border: 1px solid var(--border);
+    background: #172535;
+    border: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
-  
+
   .interactive-card:hover {
-    border-color: hsl(var(--border));
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    background: #1A2A3D;
   }
   
   /* Premium text effects */
