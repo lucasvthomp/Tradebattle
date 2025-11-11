@@ -133,7 +133,7 @@ export function ChatSystem({ tournamentId, isOpen, onToggle }: ChatSystemProps) 
                         message.userId === user?.id ? 'flex-row-reverse space-x-reverse' : ''
                       }`}
                     >
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center overflow-hidden">
+                      <div className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
                         {message.profilePicture ? (
                           <img 
                             src={message.profilePicture} 

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Send, MessageSquare, X, User, Trophy, Users, DollarSign, UserCircle } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -256,7 +257,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             {/* Messages Area - Semi-transparent */}
             <div className="flex-1 overflow-hidden">
               <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(10, 26, 47, 0.5)' }}>
-                <div className="space-y-3">
+                <div className="space-y-2">
                 {isLoading ? (
                   <div className="text-center py-4">
                     <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#E3B341', borderTopColor: 'transparent' }} />
@@ -270,13 +271,17 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   </div>
                 ) : (
                   messages.map((message) => (
-                    <div key={message.id} className="flex space-x-3">
+                    <div key={message.id} className="flex space-x-2">
                       {/* Clickable Avatar with Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="w-14 h-14 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer" style={{ backgroundColor: '#1E2D3F', border: '2px solid #2B3A4C' }}>
-                            <User className="w-7 h-7" style={{ color: '#C9D1E2' }} />
-                          </button>
+                          <div className="cursor-pointer">
+                            <Avatar className="w-8 h-8" style={{ border: '2px solid #2B3A4C' }}>
+                              <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#1E2D3F', color: '#E3B341' }}>
+                                {message.username.slice(0, 2).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                          </div>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                           <DropdownMenuItem
@@ -305,19 +310,19 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
                       {/* Message Content */}
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <span className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
+                        <div className="flex items-center space-x-1.5 mb-0.5">
+                          <span className="text-xs font-semibold" style={{ color: '#C9D1E2' }}>
                             {message.username}
                           </span>
                           {message.userId === user?.id && (
-                            <Badge variant="secondary" className="text-xs" style={{ backgroundColor: '#E3B341', color: '#06121F' }}>You</Badge>
+                            <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#06121F' }}>You</Badge>
                           )}
-                          <span className="text-xs" style={{ color: '#8A93A6' }}>
+                          <span className="text-[10px]" style={{ color: '#8A93A6' }}>
                             {formatTimestamp(message.createdAt)}
                           </span>
                         </div>
-                        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}>
-                          <p className="text-sm break-words leading-tight" style={{ color: '#C9D1E2' }}>{message.message}</p>
+                        <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}>
+                          <p className="text-xs break-words leading-snug" style={{ color: '#C9D1E2' }}>{message.message}</p>
                         </div>
                       </div>
                     </div>
