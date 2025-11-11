@@ -17,6 +17,7 @@ import Hub from "@/pages/hub";
 import Dashboard from "@/pages/dashboard";
 import Portfolio from "@/pages/portfolio";
 import Tournaments from "@/pages/tournaments";
+import TournamentsTest from "@/pages/tournaments-test";
 import Leaderboard from "@/pages/leaderboard";
 import People from "@/pages/people";
 import Events from "@/pages/events";
@@ -83,7 +84,7 @@ function Router() {
               <Route path="/hub" component={Hub} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/portfolio" component={Dashboard} />
-              <Route path="/tournaments" component={Tournaments} />
+              <Route path="/tournaments" component={TournamentsTest} />
               <Route path="/leaderboard" component={Leaderboard} />
               <Route path="/people" component={People} />
               <Route path="/people/:userId" component={People} />

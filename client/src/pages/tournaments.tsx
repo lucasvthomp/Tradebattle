@@ -316,7 +316,7 @@ export default function TournamentsPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto bg-gradient-to-b from-background via-background to-muted/10">
+    <div className="h-[calc(100vh-4rem)] overflow-auto" style={{ backgroundColor: '#06121F' }}>
       <div className="container mx-auto py-6 lg:py-8">
         <motion.div
           initial="initial"
@@ -360,25 +360,27 @@ export default function TournamentsPage() {
                     Join Private
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                   <DialogHeader>
-                    <DialogTitle>Join Private Tournament</DialogTitle>
+                    <DialogTitle style={{ color: '#C9D1E2' }}>Join Private Tournament</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="join-code">Tournament Code</Label>
+                      <Label htmlFor="join-code" style={{ color: '#C9D1E2' }}>Tournament Code</Label>
                       <Input
                         id="join-code"
                         value={joinCode}
                         onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                         placeholder="Enter 8-character code"
                         maxLength={8}
+                        style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
-                    <Button 
+                    <Button
                       onClick={() => joinByCodeMutation.mutate(joinCode)}
                       disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
                       className="w-full"
+                      style={{ backgroundColor: '#E3B341', color: '#06121F' }}
                     >
                       {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
                     </Button>
@@ -413,10 +415,10 @@ export default function TournamentsPage() {
                 <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="stocks">Stocks Only</SelectItem>
-                  <SelectItem value="crypto">Crypto Only</SelectItem>
+                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+                  <SelectItem value="all" style={{ color: '#C9D1E2' }}>All Types</SelectItem>
+                  <SelectItem value="stocks" style={{ color: '#C9D1E2' }}>Stocks Only</SelectItem>
+                  <SelectItem value="crypto" style={{ color: '#C9D1E2' }}>Crypto Only</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -424,11 +426,11 @@ export default function TournamentsPage() {
               <SelectTrigger className="w-48">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="starting-soon">Starting Soonest</SelectItem>
-                <SelectItem value="pot-high-low">Highest Pot</SelectItem>
-                <SelectItem value="pot-low-high">Lowest Pot</SelectItem>
-                <SelectItem value="most-recent">Most Recent</SelectItem>
+              <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+                <SelectItem value="starting-soon" style={{ color: '#C9D1E2' }}>Starting Soonest</SelectItem>
+                <SelectItem value="pot-high-low" style={{ color: '#C9D1E2' }}>Highest Pot</SelectItem>
+                <SelectItem value="pot-low-high" style={{ color: '#C9D1E2' }}>Lowest Pot</SelectItem>
+                <SelectItem value="most-recent" style={{ color: '#C9D1E2' }}>Most Recent</SelectItem>
               </SelectContent>
             </Select>
           </motion.div>
