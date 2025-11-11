@@ -1583,26 +1583,47 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
  * Get all users with public profile information
  */
 router.get('/users/public', asyncHandler(async (req, res) => {
-  
+
   // Get all users with only public information
   const users = await storage.getAllUsers();
-  
+
+  // If no users found, return empty array
+  if (!users || users.length === 0) {
+    return res.json({
+      success: true,
+      data: []
+    });
+  }
+
   const publicUsers = await Promise.all(users.map(async (user) => {
-    // Get achievement count (this will automatically ensure Welcome achievement exists)
-    const achievements = await storage.getUserAchievements(user.id);
-    const achievementCount = achievements.length;
-    
-    return {
-      id: user.id,
-      username: user.username,
-      subscriptionTier: user.subscriptionTier,
-      createdAt: user.createdAt,
-      totalTrades: user.totalTrades || 0,
-      achievementCount: achievementCount,
-      // Don't include sensitive information like email, password, balances, etc.
-    };
+    try {
+      // Get achievement count (this will automatically ensure Welcome achievement exists)
+      const achievements = await storage.getUserAchievements(user.id);
+      const achievementCount = achievements.length;
+
+      return {
+        id: user.id,
+        username: user.username,
+        subscriptionTier: user.subscriptionTier,
+        createdAt: user.createdAt,
+        totalTrades: user.totalTrades || 0,
+        achievementCount: achievementCount,
+        // Don't include sensitive information like email, password, balances, etc.
+      };
+    } catch (error) {
+      // If achievement fetch fails for one user, still return user data without achievement count
+      console.error(`Failed to fetch achievements for user ${user.id}:`, error);
+      return {
+        id: user.id,
+        username: user.username,
+        subscriptionTier: user.subscriptionTier,
+        createdAt: user.createdAt,
+        totalTrades: user.totalTrades || 0,
+        achievementCount: 0,
+      };
+    }
   }));
-  
+
   res.json({
     success: true,
     data: publicUsers

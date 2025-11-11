@@ -3456,18 +3456,36 @@ router.delete("/admin/tournaments/:id", requireAuth, asyncHandler(async (req, re
 }));
 router.get("/users/public", asyncHandler(async (req, res) => {
   const users2 = await storage.getAllUsers();
+  if (!users2 || users2.length === 0) {
+    return res.json({
+      success: true,
+      data: []
+    });
+  }
   const publicUsers = await Promise.all(users2.map(async (user) => {
-    const achievements = await storage.getUserAchievements(user.id);
-    const achievementCount = achievements.length;
-    return {
-      id: user.id,
-      username: user.username,
-      subscriptionTier: user.subscriptionTier,
-      createdAt: user.createdAt,
-      totalTrades: user.totalTrades || 0,
-      achievementCount
-      // Don't include sensitive information like email, password, balances, etc.
-    };
+    try {
+      const achievements = await storage.getUserAchievements(user.id);
+      const achievementCount = achievements.length;
+      return {
+        id: user.id,
+        username: user.username,
+        subscriptionTier: user.subscriptionTier,
+        createdAt: user.createdAt,
+        totalTrades: user.totalTrades || 0,
+        achievementCount
+        // Don't include sensitive information like email, password, balances, etc.
+      };
+    } catch (error) {
+      console.error(`Failed to fetch achievements for user ${user.id}:`, error);
+      return {
+        id: user.id,
+        username: user.username,
+        subscriptionTier: user.subscriptionTier,
+        createdAt: user.createdAt,
+        totalTrades: user.totalTrades || 0,
+        achievementCount: 0
+      };
+    }
   }));
   res.json({
     success: true,

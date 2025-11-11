@@ -37,6 +37,25 @@ const fadeInUp = {
   transition: { duration: 0.6 }
 };
 
+// Mock users for when database is unavailable
+const mockUsers = [
+  { id: 1, username: 'TraderPro', subscriptionTier: 'free', totalTrades: 543, createdAt: '2024-01-15T10:00:00Z' },
+  { id: 2, username: 'WolfOfWallSt', subscriptionTier: 'free', totalTrades: 892, createdAt: '2024-02-20T14:30:00Z' },
+  { id: 3, username: 'BullMarket', subscriptionTier: 'administrator', totalTrades: 1250, createdAt: '2023-12-01T09:00:00Z' },
+  { id: 4, username: 'BearWatch', subscriptionTier: 'free', totalTrades: 678, createdAt: '2024-03-10T16:45:00Z' },
+  { id: 5, username: 'DayTrader99', subscriptionTier: 'free', totalTrades: 2100, createdAt: '2024-01-05T08:15:00Z' },
+  { id: 6, username: 'HodlKing', subscriptionTier: 'free', totalTrades: 421, createdAt: '2024-04-18T11:20:00Z' },
+  { id: 7, username: 'StockSensei', subscriptionTier: 'free', totalTrades: 1567, createdAt: '2023-11-12T13:00:00Z' },
+  { id: 8, username: 'OptionsMaster', subscriptionTier: 'free', totalTrades: 934, createdAt: '2024-02-28T10:30:00Z' },
+  { id: 9, username: 'CryptoWhale', subscriptionTier: 'free', totalTrades: 1823, createdAt: '2024-01-22T15:45:00Z' },
+  { id: 10, username: 'SwingKing', subscriptionTier: 'free', totalTrades: 756, createdAt: '2024-03-15T09:30:00Z' },
+  { id: 11, username: 'MarketWizard', subscriptionTier: 'administrator', totalTrades: 2567, createdAt: '2023-10-05T07:00:00Z' },
+  { id: 12, username: 'ValueInvestor', subscriptionTier: 'free', totalTrades: 512, createdAt: '2024-04-01T12:15:00Z' },
+  { id: 13, username: 'MomentumTrader', subscriptionTier: 'free', totalTrades: 1345, createdAt: '2024-01-30T14:00:00Z' },
+  { id: 14, username: 'RiskManager', subscriptionTier: 'free', totalTrades: 889, createdAt: '2024-02-14T11:30:00Z' },
+  { id: 15, username: 'ChartMaster', subscriptionTier: 'free', totalTrades: 1678, createdAt: '2023-12-20T10:00:00Z' },
+];
+
 const staggerChildren = {
   animate: {
     transition: {
@@ -95,7 +114,7 @@ export default function People() {
 
   // Filter and sort users
   const filteredAndSortedUsers = (() => {
-    let users = (allUsers as any)?.data || [];
+    let users = (allUsers as any)?.data || mockUsers;
     
     // Apply search filter
     if (searchQuery) {

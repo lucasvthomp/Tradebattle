@@ -302,7 +302,7 @@ export default function Profile() {
                   <motion.div
                     whileHover={{ scale: 1.05, rotate: 5 }}
                     transition={{ duration: 0.2 }}
-                    className="w-20 h-20 rounded-full flex items-center justify-center overflow-hidden relative"
+                    className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden relative"
                     style={{ borderColor: '#E3B341', borderWidth: '3px', borderStyle: 'solid' }}
                   >
                     {user.profilePicture ? (

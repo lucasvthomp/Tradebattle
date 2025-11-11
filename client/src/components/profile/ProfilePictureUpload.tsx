@@ -85,7 +85,7 @@ export function ProfilePictureUpload() {
       <CardContent className="space-y-4">
         <div className="flex items-center space-x-4">
           {/* Profile Picture Preview */}
-          <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
+          <div className="w-20 h-20 rounded-xl bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
             {previewUrl ? (
               <img 
                 src={previewUrl} 
