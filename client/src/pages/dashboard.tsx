@@ -208,18 +208,18 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-screen bg-background flex flex-col">
+    <div className="h-screen flex flex-col" style={{ backgroundColor: '#06121F' }}>
       {/* Tournament Trading Section */}
       {activeTournaments.length === 0 ? (
-        <Card className="flex items-center justify-center flex-1 m-6">
+        <Card className="flex items-center justify-center flex-1 m-6" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
           <CardContent className="py-8">
             <div className="text-center">
-              <Trophy className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Active Tournaments</h3>
-              <p className="text-muted-foreground mb-4">
+              <Trophy className="w-12 h-12 mx-auto mb-4" style={{ color: '#E3B341' }} />
+              <h3 className="text-lg font-semibold mb-2" style={{ color: '#C9D1E2' }}>No Active Tournaments</h3>
+              <p className="mb-4" style={{ color: '#8A93A6' }}>
                 Join or create a tournament to start competitive trading
               </p>
-              <Button asChild>
+              <Button asChild style={{ backgroundColor: '#E3B341', color: '#06121F' }}>
                 <a href="/tournaments">
                   <Plus className="w-4 h-4 mr-2" />
                   Browse Tournaments
@@ -319,16 +319,16 @@ export default function Dashboard() {
 
       {/* Sell Stock Dialog */}
       <Dialog open={sellDialogOpen} onOpenChange={setSellDialogOpen}>
-        <DialogContent>
+        <DialogContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
           <DialogHeader>
-            <DialogTitle>Sell Stock - {selectedSellStock?.symbol}</DialogTitle>
-            <DialogDescription>
+            <DialogTitle style={{ color: '#C9D1E2' }}>Sell Stock - {selectedSellStock?.symbol}</DialogTitle>
+            <DialogDescription style={{ color: '#8A93A6' }}>
               Enter the number of shares you want to sell
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="sellAmount">Shares to Sell</Label>
+              <Label htmlFor="sellAmount" style={{ color: '#C9D1E2' }}>Shares to Sell</Label>
               <Input
                 id="sellAmount"
                 type="number"
@@ -337,13 +337,14 @@ export default function Dashboard() {
                 value={sellAmount}
                 onChange={(e) => setSellAmount(e.target.value)}
                 placeholder="Enter number of shares to sell..."
+                style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
               />
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm mt-1" style={{ color: '#8A93A6' }}>
                 You own {selectedSellStock?.shares || 0} shares
               </p>
             </div>
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setSellDialogOpen(false)}>
+              <Button variant="outline" onClick={() => setSellDialogOpen(false)} style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                 Cancel
               </Button>
               <Button
@@ -359,6 +360,7 @@ export default function Dashboard() {
                   }
                 }}
                 disabled={!sellAmount || parseInt(sellAmount) <= 0 || sellStockMutation.isPending}
+                style={{ backgroundColor: '#FF4F58', color: '#FFFFFF' }}
               >
                 {sellStockMutation.isPending ? "Selling..." : "Sell Stock"}
               </Button>

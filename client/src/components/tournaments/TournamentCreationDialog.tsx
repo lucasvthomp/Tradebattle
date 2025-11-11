@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -16,14 +16,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { 
+import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { 
+import {
   Trophy,
   Users,
   DollarSign,
@@ -37,6 +37,7 @@ import {
   Info,
   Gift
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { 
   Tooltip,
   TooltipContent,
@@ -219,56 +220,74 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     }
   };
 
+  // Calculate prize pool for preview
+  const prizePool = formData.buyInAmount > 0
+    ? formData.buyInAmount * formData.maxPlayers * 0.95
+    : 0;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
-        <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle className="flex items-center space-x-3">
-              <div className="p-2 rounded-lg" style={{ backgroundColor: '#E3B341' }}>
-                <Trophy className="w-5 h-5" style={{ color: '#06121F' }} />
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#0A1A2F', borderColor: '#E3B341', borderWidth: '2px' }}>
+        <div className="grid grid-cols-5 gap-0 h-full">
+          {/* Left Side - Form (3/5 width) */}
+          <div className="col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#142538' }}>
+            <DialogHeader>
+              <div className="flex items-center justify-between mb-3">
+                <DialogTitle className="flex items-center space-x-3">
+                  <motion.div
+                    className="p-2 rounded-lg relative overflow-hidden"
+                    style={{ backgroundColor: '#E3B341' }}
+                    whileHover={{ scale: 1.05, rotate: 5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-transparent animate-pulse" />
+                    <Trophy className="w-5 h-5 relative z-10" style={{ color: '#06121F' }} />
+                  </motion.div>
+                  <div>
+                    <span className="text-lg font-bold" style={{ color: '#C9D1E2' }}>Create Tournament</span>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Configure your competition</p>
+                  </div>
+                </DialogTitle>
+                <Badge className="font-bold" style={{ backgroundColor: '#28C76F', color: '#FFFFFF' }}>
+                  <Gift className="w-3 h-3 mr-1" />
+                  Free
+                </Badge>
               </div>
-              <span style={{ color: '#C9D1E2' }}>Create New Tournament</span>
-            </DialogTitle>
-            <Badge style={{ backgroundColor: '#28C76F', color: '#FFFFFF' }}>Free to Create</Badge>
-          </div>
-          <p className="text-sm mt-2" style={{ color: '#8A93A6' }}>
-            Set up your tournament and compete for glory
-          </p>
-        </DialogHeader>
+            </DialogHeader>
 
-        <div className="space-y-4">
+            <div className="space-y-2.5 pt-2">
 
 
-          {/* Tournament Info Grid - Row 1 */}
-          <div className="grid grid-cols-2 gap-3">
-            {/* 1. Tournament Title */}
-            <div className="col-span-2 space-y-2">
-              <div className="flex items-center space-x-2">
-                <Label htmlFor="tournament-name" className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
-                  Tournament Title
-                </Label>
-                <InfoTooltip content="Choose a unique and descriptive name for your tournament that participants will see when browsing." />
-              </div>
-              <Input
-                id="tournament-name"
-                placeholder="Enter tournament name..."
-                value={formData.name}
-                onChange={(e) => updateField("name", e.target.value)}
-                className={errors.name ? "border-red-500" : ""}
-                style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
-              />
-              {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+          {/* Tournament Title */}
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-2">
+              <Trophy className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
+              <Label htmlFor="tournament-name" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+                Tournament Title
+              </Label>
+              <InfoTooltip content="Choose a unique and descriptive name for your tournament that participants will see when browsing." />
             </div>
+            <Input
+              id="tournament-name"
+              placeholder="Enter tournament name..."
+              value={formData.name}
+              onChange={(e) => updateField("name", e.target.value)}
+              className={`${errors.name ? "border-red-500" : ""} focus:border-yellow-500 transition-all`}
+              style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+            />
+            {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
+          </div>
 
-            {/* 2. Max Players */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
-                <Label htmlFor="max-players" className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
-                  Max Players
+          {/* Tournament Settings Grid */}
+          <div className="grid grid-cols-3 gap-2.5">
+            {/* Max Players */}
+            <div className="space-y-1.5">
+              <div className="flex items-center space-x-1.5">
+                <Users className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
+                <Label htmlFor="max-players" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+                  Players
                 </Label>
-                <InfoTooltip content="Set the maximum number of participants (2-50). Tournament starts when this limit is reached or manually started." />
+                <InfoTooltip content="Set the maximum number of participants (2-50)." />
               </div>
               <Input
                 id="max-players"
@@ -277,20 +296,20 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 max="50"
                 value={formData.maxPlayers}
                 onChange={(e) => updateField("maxPlayers", parseInt(e.target.value) || 2)}
-                className={errors.maxPlayers ? "border-red-500" : ""}
+                className={`${errors.maxPlayers ? "border-red-500" : ""} text-center font-bold`}
                 style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
               />
-              {errors.maxPlayers && <p className="text-sm text-red-500">{errors.maxPlayers}</p>}
+              {errors.maxPlayers && <p className="text-xs text-red-500">{errors.maxPlayers}</p>}
             </div>
 
-            {/* 4. Starting Cash */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <DollarSign className="w-4 h-4" style={{ color: '#28C76F' }} />
-                <Label htmlFor="starting-balance" className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
+            {/* Starting Cash */}
+            <div className="space-y-1.5 col-span-2">
+              <div className="flex items-center space-x-1.5">
+                <DollarSign className="w-3.5 h-3.5" style={{ color: '#28C76F' }} />
+                <Label htmlFor="starting-balance" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
                   Starting Cash
                 </Label>
-                <InfoTooltip content="Virtual currency amount each participant starts with. This is paper money for practice trading - no real money involved." />
+                <InfoTooltip content="Virtual currency amount each participant starts with." />
               </div>
               <Input
                 id="starting-balance"
@@ -300,74 +319,80 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 step="1000"
                 value={formData.startingBalance}
                 onChange={(e) => updateField("startingBalance", parseInt(e.target.value) || 10000)}
-                className={errors.startingBalance ? "border-red-500" : ""}
+                className={`${errors.startingBalance ? "border-red-500" : ""} font-bold`}
                 style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
               />
-              {errors.startingBalance && <p className="text-sm text-red-500">{errors.startingBalance}</p>}
+              {errors.startingBalance && <p className="text-xs text-red-500">{errors.startingBalance}</p>}
             </div>
           </div>
 
-          {/* 3. Tournament Type */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Label className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Tournament Type</Label>
+          {/* Tournament Type */}
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-1.5">
+              <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Tournament Type</Label>
               <InfoTooltip content="Stocks: Trade traditional stock markets during market hours. Crypto: Trade cryptocurrencies 24/7." />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <Card
-                className={`cursor-pointer transition-all`}
+                className={`cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]`}
                 style={{
                   backgroundColor: formData.tournamentType === "stocks" ? '#1E2D3F' : '#142538',
                   borderColor: formData.tournamentType === "stocks" ? '#3B82F6' : '#2B3A4C',
-                  borderWidth: formData.tournamentType === "stocks" ? '2px' : '1px'
+                  borderWidth: formData.tournamentType === "stocks" ? '2px' : '1px',
+                  boxShadow: formData.tournamentType === "stocks" ? '0 0 20px rgba(59, 130, 246, 0.3)' : 'none'
                 }}
                 onClick={() => updateField("tournamentType", "stocks")}
               >
-                <CardContent className="flex items-center space-x-3 p-3">
-                  <TrendingUp className="w-5 h-5" style={{ color: '#3B82F6' }} />
+                <CardContent className="flex items-center space-x-2.5 p-2.5">
+                  <div className="p-1.5 rounded" style={{ backgroundColor: '#3B82F620' }}>
+                    <TrendingUp className="w-4 h-4" style={{ color: '#3B82F6' }} />
+                  </div>
                   <div>
-                    <p className="font-medium text-sm" style={{ color: '#C9D1E2' }}>Stocks</p>
-                    <p className="text-xs" style={{ color: '#8A93A6' }}>Trade markets</p>
+                    <p className="font-bold text-xs" style={{ color: '#C9D1E2' }}>Stocks</p>
+                    <p className="text-[10px]" style={{ color: '#8A93A6' }}>Market hours</p>
                   </div>
                 </CardContent>
               </Card>
 
               <Card
-                className={`cursor-pointer transition-all`}
+                className={`cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]`}
                 style={{
                   backgroundColor: formData.tournamentType === "crypto" ? '#1E2D3F' : '#142538',
                   borderColor: formData.tournamentType === "crypto" ? '#E3B341' : '#2B3A4C',
-                  borderWidth: formData.tournamentType === "crypto" ? '2px' : '1px'
+                  borderWidth: formData.tournamentType === "crypto" ? '2px' : '1px',
+                  boxShadow: formData.tournamentType === "crypto" ? '0 0 20px rgba(227, 179, 65, 0.3)' : 'none'
                 }}
                 onClick={() => updateField("tournamentType", "crypto")}
               >
-                <CardContent className="flex items-center space-x-3 p-3">
-                  <Bitcoin className="w-5 h-5" style={{ color: '#E3B341' }} />
+                <CardContent className="flex items-center space-x-2.5 p-2.5">
+                  <div className="p-1.5 rounded" style={{ backgroundColor: '#E3B34120' }}>
+                    <Bitcoin className="w-4 h-4" style={{ color: '#E3B341' }} />
+                  </div>
                   <div>
-                    <p className="font-medium text-sm" style={{ color: '#C9D1E2' }}>Crypto</p>
-                    <p className="text-xs" style={{ color: '#8A93A6' }}>24/7 trading</p>
+                    <p className="font-bold text-xs" style={{ color: '#C9D1E2' }}>Crypto</p>
+                    <p className="text-[10px]" style={{ color: '#8A93A6' }}>24/7 trading</p>
                   </div>
                 </CardContent>
               </Card>
             </div>
           </div>
 
-          {/* 5 & 6. Duration and Start Time Grid */}
-          <div className="grid grid-cols-2 gap-3">
-            {/* 5. Duration */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4" style={{ color: '#E3B341' }} />
-                <Label className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Duration</Label>
-                <InfoTooltip content="How long the tournament will run. Participants can trade within this timeframe to compete." />
+          {/* Duration and Start Time Grid */}
+          <div className="grid grid-cols-2 gap-2.5">
+            {/* Duration */}
+            <div className="space-y-1.5">
+              <div className="flex items-center space-x-1.5">
+                <Clock className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
+                <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Duration</Label>
+                <InfoTooltip content="How long the tournament will run." />
               </div>
               <Select value={formData.duration} onValueChange={(value) => updateField("duration", value)}>
-                <SelectTrigger style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                <SelectTrigger className="h-9 text-xs font-medium" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                   {DURATION_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value} style={{ color: '#C9D1E2' }}>
+                    <SelectItem key={option.value} value={option.value} className="text-xs" style={{ color: '#C9D1E2' }}>
                       {option.label}
                     </SelectItem>
                   ))}
@@ -375,20 +400,20 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               </Select>
             </div>
 
-            {/* 6. Start Delay */}
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <Timer className="w-4 h-4" style={{ color: '#28C76F' }} />
-                <Label className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Start Time</Label>
-                <InfoTooltip content="When the tournament will begin. You can start immediately or schedule for later to allow time for participant registration." />
+            {/* Start Delay */}
+            <div className="space-y-1.5">
+              <div className="flex items-center space-x-1.5">
+                <Timer className="w-3.5 h-3.5" style={{ color: '#28C76F' }} />
+                <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Start Time</Label>
+                <InfoTooltip content="When the tournament will begin." />
               </div>
               <Select value={formData.startDelay} onValueChange={(value) => updateField("startDelay", value)}>
-                <SelectTrigger style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                <SelectTrigger className="h-9 text-xs font-medium" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                   {START_DELAY_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value} style={{ color: '#C9D1E2' }}>
+                    <SelectItem key={option.value} value={option.value} className="text-xs" style={{ color: '#C9D1E2' }}>
                       {option.label}
                     </SelectItem>
                   ))}
@@ -397,28 +422,32 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             </div>
           </div>
 
-          {/* 7. Privacy Setting */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Label className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Tournament Visibility</Label>
-              <InfoTooltip content="Public: Anyone can find and join. Private: Only people with the join code can participate. Private tournaments give you more control." />
+          {/* Privacy Setting */}
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-1.5">
+              <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Visibility</Label>
+              <InfoTooltip content="Public: Anyone can find and join. Private: Only people with the join code can participate." />
             </div>
-            <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px', borderStyle: 'solid' }}>
-              <div className="flex items-center space-x-3">
-                {formData.isPublic ? (
-                  <Globe className="w-5 h-5" style={{ color: '#28C76F' }} />
-                ) : (
-                  <Shield className="w-5 h-5" style={{ color: '#E3B341' }} />
-                )}
+            <div className="flex items-center justify-between p-2.5 rounded-lg transition-all" style={{
+              backgroundColor: '#1E2D3F',
+              borderColor: formData.isPublic ? '#28C76F' : '#E3B341',
+              borderWidth: '2px',
+              borderStyle: 'solid'
+            }}>
+              <div className="flex items-center space-x-2.5">
+                <div className="p-1.5 rounded" style={{ backgroundColor: formData.isPublic ? '#28C76F20' : '#E3B34120' }}>
+                  {formData.isPublic ? (
+                    <Globe className="w-4 h-4" style={{ color: '#28C76F' }} />
+                  ) : (
+                    <Shield className="w-4 h-4" style={{ color: '#E3B341' }} />
+                  )}
+                </div>
                 <div>
-                  <p className="font-medium text-sm" style={{ color: '#C9D1E2' }}>
-                    {formData.isPublic ? "Public Tournament" : "Private Tournament"}
+                  <p className="font-bold text-xs" style={{ color: '#C9D1E2' }}>
+                    {formData.isPublic ? "Public" : "Private"}
                   </p>
-                  <p className="text-xs" style={{ color: '#8A93A6' }}>
-                    {formData.isPublic
-                      ? "Anyone can join"
-                      : "Code required to join"
-                    }
+                  <p className="text-[10px]" style={{ color: '#8A93A6' }}>
+                    {formData.isPublic ? "Anyone can join" : "Code required"}
                   </p>
                 </div>
               </div>
@@ -429,14 +458,14 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             </div>
           </div>
 
-          {/* Buy-in Amount Section */}
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <DollarSign className="w-4 h-4" style={{ color: '#28C76F' }} />
-              <Label htmlFor="buy-in-amount" className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
+          {/* Buy-in Amount */}
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-1.5">
+              <DollarSign className="w-3.5 h-3.5" style={{ color: '#28C76F' }} />
+              <Label htmlFor="buy-in-amount" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
                 Buy-in (Optional)
               </Label>
-              <InfoTooltip content="Optional entry fee that creates a prize pool. Participants pay this amount to join, and the platform takes a 5% commission." />
+              <InfoTooltip content="Optional entry fee that creates a prize pool. Platform takes a 5% commission." />
             </div>
             <Input
               id="buy-in-amount"
@@ -446,66 +475,302 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               value={formData.buyInAmount}
               onChange={(e) => updateField("buyInAmount", parseFloat(e.target.value) || 0)}
               placeholder="0.00"
-              className={errors.buyInAmount ? "border-red-500" : ""}
+              className={`${errors.buyInAmount ? "border-red-500" : ""} font-bold`}
               style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
             />
             {errors.buyInAmount && (
-              <p className="text-sm text-red-500">{errors.buyInAmount}</p>
+              <p className="text-xs text-red-500">{errors.buyInAmount}</p>
             )}
             {formData.buyInAmount > 0 && (
-              <div className="p-2 rounded" style={{ backgroundColor: '#28C76F20', borderColor: '#28C76F', borderWidth: '1px', borderStyle: 'solid' }}>
-                <p className="text-xs font-medium" style={{ color: '#28C76F' }}>
-                  Prize Pool: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.95)} • Platform Fee: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.05)}
+              <div className="p-2 rounded-lg" style={{ backgroundColor: '#28C76F15', borderColor: '#28C76F', borderWidth: '1px', borderStyle: 'solid' }}>
+                <p className="text-[10px] font-medium" style={{ color: '#28C76F' }}>
+                  💰 Prize Pool: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.95)} • Fee: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.05)}
                 </p>
               </div>
             )}
           </div>
 
-          {/* Terms of Service Agreement */}
-          <div className="space-y-2">
-            <div className="flex items-start space-x-3 p-3 rounded-lg" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px', borderStyle: 'solid' }}>
-              <Checkbox
-                id="agree-terms"
-                checked={formData.agreeToTerms}
-                onCheckedChange={(checked) => updateField("agreeToTerms", checked)}
-                className="mt-0.5"
-              />
-              <div className="flex-1">
-                <Label
-                  htmlFor="agree-terms"
-                  className="text-xs font-medium cursor-pointer"
-                  style={{ color: '#C9D1E2' }}
-                >
-                  I agree to the Terms of Service
-                </Label>
-                <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>
-                  Virtual trading only - no real money risk
-                </p>
-              </div>
+          {/* Terms of Service */}
+          <div className="flex items-start space-x-2.5 p-2.5 rounded-lg" style={{
+            backgroundColor: '#1E2D3F',
+            borderColor: formData.agreeToTerms ? '#28C76F' : '#2B3A4C',
+            borderWidth: '2px',
+            borderStyle: 'solid'
+          }}>
+            <Checkbox
+              id="agree-terms"
+              checked={formData.agreeToTerms}
+              onCheckedChange={(checked) => updateField("agreeToTerms", checked)}
+              className="mt-0.5"
+            />
+            <div className="flex-1">
+              <Label
+                htmlFor="agree-terms"
+                className="text-[11px] font-medium cursor-pointer"
+                style={{ color: '#C9D1E2' }}
+              >
+                I agree to the Terms of Service
+              </Label>
+              <p className="text-[10px] mt-0.5" style={{ color: '#8A93A6' }}>
+                Virtual trading only - no real money risk
+              </p>
             </div>
-            {errors.agreeToTerms && <p className="text-sm text-red-500">{errors.agreeToTerms}</p>}
           </div>
+          {errors.agreeToTerms && <p className="text-xs text-red-500 mt-1">{errors.agreeToTerms}</p>}
 
-          {/* Submit Button */}
-          <div className="flex justify-end space-x-3 pt-2">
+          {/* Submit Buttons */}
+          <div className="flex justify-end space-x-2.5 pt-1">
             <Button
               variant="outline"
               onClick={onClose}
               disabled={createTournamentMutation.isPending}
+              className="h-9"
               style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
             >
               Cancel
             </Button>
-            <Button
-              onClick={handleSubmit}
-              disabled={createTournamentMutation.isPending || !formData.agreeToTerms}
-              style={{ backgroundColor: '#E3B341', color: '#06121F' }}
-              className="font-bold disabled:opacity-50"
-            >
-              {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                onClick={handleSubmit}
+                disabled={createTournamentMutation.isPending || !formData.agreeToTerms}
+                className="h-9 font-bold disabled:opacity-50 transition-all"
+                style={{ backgroundColor: '#E3B341', color: '#06121F', boxShadow: '0 0 20px rgba(227, 179, 65, 0.3)' }}
+              >
+                {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
+              </Button>
+            </motion.div>
           </div>
         </div>
+      </div>
+
+      {/* Right Side - Live Preview (2/5 width) */}
+      <div className="col-span-2 p-6 overflow-y-auto" style={{ backgroundColor: '#0A1A2F', borderLeft: '2px solid #2B3A4C' }}>
+        <div className="sticky top-0">
+          <div className="flex items-center space-x-2 mb-4">
+            <div className="h-1 flex-1 rounded-full" style={{ backgroundColor: '#E3B341' }} />
+            <span className="text-xs font-bold" style={{ color: '#E3B341' }}>LIVE PREVIEW</span>
+            <div className="h-1 flex-1 rounded-full" style={{ backgroundColor: '#E3B341' }} />
+          </div>
+
+          {/* Animated Tournament Card Preview */}
+          <motion.div
+            key={`${formData.name}-${formData.tournamentType}-${formData.buyInAmount}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <Card
+              className="relative overflow-hidden"
+              style={{
+                backgroundColor: '#142538',
+                borderColor: formData.tournamentType === 'stocks' ? '#3B82F6' : '#E3B341',
+                borderWidth: '2px',
+                boxShadow: formData.tournamentType === 'stocks'
+                  ? '0 0 30px rgba(59, 130, 246, 0.2)'
+                  : '0 0 30px rgba(227, 179, 65, 0.2)'
+              }}
+            >
+              {/* Animated Background Gradient */}
+              <div className="absolute inset-0 opacity-10">
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: formData.tournamentType === 'stocks'
+                      ? 'linear-gradient(135deg, #3B82F6 0%, transparent 100%)'
+                      : 'linear-gradient(135deg, #E3B341 0%, transparent 100%)'
+                  }}
+                />
+              </div>
+
+              <CardHeader className="pb-2 relative z-10">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <motion.div
+                        animate={{ rotate: [0, 360] }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        className="p-1.5 rounded-lg shadow-lg"
+                        style={{
+                          backgroundColor: formData.tournamentType === 'stocks' ? '#3B82F6' : '#E3B341'
+                        }}
+                      >
+                        {formData.tournamentType === 'stocks' ? (
+                          <TrendingUp className="w-3.5 h-3.5 text-white" />
+                        ) : (
+                          <Bitcoin className="w-3.5 h-3.5 text-white" />
+                        )}
+                      </motion.div>
+                      {formData.isPublic ? (
+                        <Badge
+                          className="text-[10px] font-bold"
+                          style={{ backgroundColor: '#28C76F20', color: '#28C76F', borderColor: '#28C76F', borderWidth: '1px' }}
+                        >
+                          <Globe className="w-2.5 h-2.5 mr-0.5" />
+                          PUBLIC
+                        </Badge>
+                      ) : (
+                        <Badge
+                          className="text-[10px] font-bold"
+                          style={{ backgroundColor: '#E3B34120', color: '#E3B341', borderColor: '#E3B341', borderWidth: '1px' }}
+                        >
+                          <Shield className="w-2.5 h-2.5 mr-0.5" />
+                          PRIVATE
+                        </Badge>
+                      )}
+                    </div>
+                    <CardTitle className="text-lg font-bold text-foreground mb-1.5 truncate">
+                      {formData.name || "Untitled Tournament"}
+                    </CardTitle>
+                  </div>
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-2.5 relative z-10">
+                {/* Prize Pool Display */}
+                <motion.div
+                  animate={{
+                    scale: prizePool > 0 ? [1, 1.02, 1] : 1,
+                    boxShadow: prizePool > 0
+                      ? [
+                          '0 0 20px rgba(227, 179, 65, 0.3)',
+                          '0 0 30px rgba(227, 179, 65, 0.5)',
+                          '0 0 20px rgba(227, 179, 65, 0.3)'
+                        ]
+                      : 'none'
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="relative text-center py-3 rounded-xl border-2"
+                  style={{
+                    backgroundColor: prizePool > 0 ? '#E3B34120' : '#1E2D3F10',
+                    borderColor: prizePool > 0 ? '#E3B341' : '#2B3A4C'
+                  }}
+                >
+                  <div className="relative z-10">
+                    <motion.div
+                      className="text-2xl font-black bg-gradient-to-r bg-clip-text text-transparent mb-1"
+                      style={{
+                        backgroundImage: prizePool > 0
+                          ? 'linear-gradient(90deg, #E3B341 0%, #FFD700 50%, #E3B341 100%)'
+                          : 'linear-gradient(90deg, #8A93A6 0%, #C9D1E2 50%, #8A93A6 100%)'
+                      }}
+                    >
+                      {prizePool > 0 ? formatCurrency(prizePool) : formatCurrency(formData.startingBalance)}
+                    </motion.div>
+                    <p className="text-[10px] font-medium" style={{ color: '#8A93A6' }}>
+                      {prizePool > 0 ? 'Prize Pool' : 'Starting Balance'}
+                    </p>
+                  </div>
+                </motion.div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 gap-2">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="p-2 rounded-lg text-center"
+                    style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                  >
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Users className="w-3 h-3" style={{ color: '#3B82F6' }} />
+                      <span className="text-sm font-bold" style={{ color: '#C9D1E2' }}>
+                        {formData.maxPlayers}
+                      </span>
+                    </div>
+                    <p className="text-[9px]" style={{ color: '#8A93A6' }}>Max Players</p>
+                  </motion.div>
+
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="p-2 rounded-lg text-center"
+                    style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                  >
+                    <div className="flex items-center justify-center gap-1 mb-0.5">
+                      <Clock className="w-3 h-3" style={{ color: '#28C76F' }} />
+                      <span className="text-sm font-bold" style={{ color: '#C9D1E2' }}>
+                        {formData.duration}
+                      </span>
+                    </div>
+                    <p className="text-[9px]" style={{ color: '#8A93A6' }}>Duration</p>
+                  </motion.div>
+                </div>
+
+                {/* Start Time Indicator */}
+                <div
+                  className="p-2 rounded-lg flex items-center justify-between"
+                  style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                >
+                  <div className="flex items-center gap-1.5">
+                    <Timer className="w-3 h-3" style={{ color: '#E3B341' }} />
+                    <span className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+                      {formData.startDelay === 'immediately' ? 'Starts Immediately' : `Starts in ${formData.startDelay}`}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Buy-in Badge if applicable */}
+                {formData.buyInAmount > 0 && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="p-2 rounded-lg"
+                    style={{ backgroundColor: '#28C76F20', borderColor: '#28C76F', borderWidth: '1px' }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold" style={{ color: '#28C76F' }}>
+                        Buy-in: {formatCurrency(formData.buyInAmount)}
+                      </span>
+                      <Crown className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
+                    </div>
+                  </motion.div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Info Cards */}
+          <div className="mt-4 space-y-2">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="p-3 rounded-lg"
+              style={{ backgroundColor: '#14253820', borderColor: '#E3B341', borderWidth: '1px' }}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <Trophy className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
+                <span className="text-xs font-bold" style={{ color: '#E3B341' }}>
+                  Tournament Type
+                </span>
+              </div>
+              <p className="text-[11px]" style={{ color: '#C9D1E2' }}>
+                {formData.tournamentType === 'stocks'
+                  ? 'Trade stocks during market hours'
+                  : 'Trade cryptocurrencies 24/7'}
+              </p>
+            </motion.div>
+
+            {!formData.isPublic && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+                className="p-3 rounded-lg"
+                style={{ backgroundColor: '#14253820', borderColor: '#E3B341', borderWidth: '1px' }}
+              >
+                <div className="flex items-center gap-2 mb-1">
+                  <Shield className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
+                  <span className="text-xs font-bold" style={{ color: '#E3B341' }}>
+                    Private Tournament
+                  </span>
+                </div>
+                <p className="text-[11px]" style={{ color: '#C9D1E2' }}>
+                  You'll receive a code to share with participants
+                </p>
+              </motion.div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
       </DialogContent>
     </Dialog>
   );

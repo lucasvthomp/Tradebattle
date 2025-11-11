@@ -360,28 +360,176 @@ export default function TournamentsPage() {
                     Join Private
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Join Private Tournament</DialogTitle>
+                <DialogContent
+                  className="max-w-md relative overflow-hidden"
+                  style={{ backgroundColor: '#0A1A2F', borderColor: '#E3B341', borderWidth: '2px' }}
+                >
+                  {/* Animated background effects */}
+                  <div className="absolute inset-0 opacity-20">
+                    <div className="absolute inset-0" style={{
+                      background: 'radial-gradient(circle at 50% 50%, #E3B341 0%, transparent 70%)',
+                      animation: 'pulse 3s ease-in-out infinite'
+                    }} />
+                  </div>
+
+                  <DialogHeader className="relative z-10">
+                    <div className="flex flex-col items-center text-center space-y-3">
+                      <motion.div
+                        animate={{
+                          rotate: joinCode.length === 8 ? [0, -10, 10, -10, 0] : 0,
+                          scale: joinCode.length === 8 ? [1, 1.1, 1] : 1
+                        }}
+                        transition={{ duration: 0.5 }}
+                        className="p-4 rounded-full relative"
+                        style={{
+                          backgroundColor: joinCode.length === 8 ? '#28C76F' : '#E3B341',
+                          boxShadow: joinCode.length === 8
+                            ? '0 0 30px rgba(40, 199, 111, 0.5)'
+                            : '0 0 20px rgba(227, 179, 65, 0.3)'
+                        }}
+                      >
+                        {joinCode.length === 8 ? (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.3 }}
+                          >
+                            <Shield className="w-8 h-8" style={{ color: '#FFFFFF' }} />
+                          </motion.div>
+                        ) : (
+                          <Lock className="w-8 h-8" style={{ color: '#06121F' }} />
+                        )}
+                      </motion.div>
+
+                      <div>
+                        <DialogTitle className="text-2xl font-black" style={{
+                          color: '#C9D1E2',
+                          textShadow: '0 0 20px rgba(227, 179, 65, 0.3)'
+                        }}>
+                          {joinCode.length === 8 ? 'Access Granted' : 'Enter Secret Code'}
+                        </DialogTitle>
+                        <p className="text-sm mt-2" style={{ color: '#8A93A6' }}>
+                          {joinCode.length === 8 ? 'Ready to join private tournament' : 'Enter your 8-digit invitation code'}
+                        </p>
+                      </div>
+                    </div>
                   </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="join-code">Tournament Code</Label>
+
+                  <div className="space-y-6 mt-6 relative z-10">
+                    {/* Code input with special styling */}
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center space-x-2">
+                        {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+                          <motion.div
+                            key={index}
+                            animate={{
+                              scale: joinCode.length === index ? [1, 1.1, 1] : 1,
+                              borderColor: joinCode[index]
+                                ? (joinCode.length === 8 ? '#28C76F' : '#E3B341')
+                                : '#2B3A4C'
+                            }}
+                            transition={{ duration: 0.3 }}
+                            className="w-10 h-12 flex items-center justify-center rounded-lg font-black text-xl border-2"
+                            style={{
+                              backgroundColor: joinCode[index] ? '#1E2D3F' : '#142538',
+                              color: joinCode[index] ? '#E3B341' : '#8A93A6',
+                              boxShadow: joinCode[index]
+                                ? (joinCode.length === 8
+                                  ? '0 0 15px rgba(40, 199, 111, 0.3)'
+                                  : '0 0 10px rgba(227, 179, 65, 0.2)')
+                                : 'none'
+                            }}
+                          >
+                            {joinCode[index] || ''}
+                          </motion.div>
+                        ))}
+                      </div>
+
+                      {/* Hidden input for mobile keyboard */}
                       <Input
                         id="join-code"
                         value={joinCode}
                         onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                        placeholder="Enter 8-character code"
+                        placeholder="Enter code..."
                         maxLength={8}
+                        className="text-center text-sm uppercase opacity-50"
+                        style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        autoFocus
                       />
+
+                      {/* Progress indicator */}
+                      <div className="flex items-center justify-center space-x-1">
+                        {[...Array(8)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            animate={{
+                              backgroundColor: i < joinCode.length
+                                ? (joinCode.length === 8 ? '#28C76F' : '#E3B341')
+                                : '#2B3A4C',
+                              scale: i === joinCode.length - 1 ? [1, 1.5, 1] : 1
+                            }}
+                            transition={{ duration: 0.2 }}
+                            className="w-8 h-1 rounded-full"
+                          />
+                        ))}
+                      </div>
+
+                      <p className="text-xs text-center" style={{ color: '#8A93A6' }}>
+                        {joinCode.length}/8 digits entered
+                      </p>
                     </div>
-                    <Button 
-                      onClick={() => joinByCodeMutation.mutate(joinCode)}
-                      disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
-                      className="w-full"
+
+                    {/* Join button with animation */}
+                    <motion.div
+                      animate={{
+                        scale: joinCode.length === 8 ? [1, 1.02, 1] : 1
+                      }}
+                      transition={{ duration: 0.5, repeat: joinCode.length === 8 ? Infinity : 0 }}
                     >
-                      {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
-                    </Button>
+                      <Button
+                        onClick={() => joinByCodeMutation.mutate(joinCode)}
+                        disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
+                        className="w-full font-black text-lg py-6 disabled:opacity-50 transition-all"
+                        style={{
+                          backgroundColor: joinCode.length === 8 ? '#28C76F' : '#E3B341',
+                          color: '#FFFFFF',
+                          boxShadow: joinCode.length === 8
+                            ? '0 0 30px rgba(40, 199, 111, 0.4)'
+                            : '0 0 20px rgba(227, 179, 65, 0.3)'
+                        }}
+                      >
+                        {joinByCodeMutation.isPending ? (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="inline-block"
+                          >
+                            <Shield className="w-5 h-5" />
+                          </motion.div>
+                        ) : joinCode.length === 8 ? (
+                          <>
+                            <Shield className="w-5 h-5 mr-2" />
+                            Unlock Tournament
+                          </>
+                        ) : (
+                          <>
+                            <Lock className="w-5 h-5 mr-2" />
+                            Enter Code to Continue
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+
+                    {/* Info card */}
+                    <div
+                      className="p-3 rounded-lg flex items-start space-x-2"
+                      style={{ backgroundColor: '#14253820', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                    >
+                      <Info className="w-4 h-4 mt-0.5" style={{ color: '#E3B341' }} />
+                      <p className="text-xs" style={{ color: '#8A93A6' }}>
+                        Private tournaments require an invitation code from the tournament creator
+                      </p>
+                    </div>
                   </div>
                 </DialogContent>
               </Dialog>
@@ -840,33 +988,33 @@ function TournamentCard({
           }`} />
         </div>
 
-        <CardHeader className="pb-2 relative z-10">
-          <div className="flex items-start justify-between mb-2">
+        <CardHeader className="pb-1.5 pt-3 px-3 relative z-10">
+          <div className="flex items-start justify-between mb-1.5">
             <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1.5">
+              <div className="flex items-center gap-1.5 mb-1">
                 <motion.div
                   whileHover={{ rotate: 360, scale: 1.1 }}
                   transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className={`p-1.5 rounded-lg shadow-lg ${
+                  className={`p-1 rounded-lg shadow-lg ${
                     type === "upcoming"
                       ? "bg-gradient-to-br from-green-500 to-emerald-600 shadow-green-500/30"
                       : "bg-gradient-to-br from-yellow-500 to-amber-600 shadow-yellow-500/30"
                   }`}
                 >
-                  <TournamentTypeIcon className="w-3.5 h-3.5 text-white" />
+                  <TournamentTypeIcon className="w-3 h-3 text-white" />
                 </motion.div>
                 {type === "ongoing" && (
                   <motion.div
                     animate={{ opacity: [1, 0.6, 1] }}
                     transition={{ duration: 2, repeat: Infinity }}
-                    className="flex items-center gap-1 px-1.5 py-0.5 bg-yellow-500/20 rounded-full border border-yellow-500/30"
+                    className="flex items-center gap-0.5 px-1.5 py-0.5 bg-yellow-500/20 rounded-full border border-yellow-500/30"
                   >
                     <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
-                    <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">LIVE</span>
+                    <span className="text-[10px] font-bold text-yellow-600 dark:text-yellow-400">LIVE</span>
                   </motion.div>
                 )}
               </div>
-              <CardTitle className="text-lg font-bold text-foreground mb-1.5 truncate group-hover:text-primary transition-colors duration-300">
+              <CardTitle className="text-base font-bold text-foreground mb-1 truncate group-hover:text-primary transition-colors duration-300">
                 {tournament.name}
               </CardTitle>
               <div className="flex items-center gap-2 flex-wrap">
@@ -888,12 +1036,12 @@ function TournamentCard({
           </div>
         </CardHeader>
         
-        <CardContent className="space-y-2.5 relative z-10">
+        <CardContent className="space-y-2 px-3 pb-3 relative z-10">
           {/* Current Pot - Enhanced */}
           <motion.div
             whileHover={{ scale: 1.03 }}
             transition={{ duration: 0.3 }}
-            className={`relative text-center py-3 rounded-xl border-2 overflow-hidden backdrop-blur-sm ${
+            className={`relative text-center py-2 rounded-lg border-2 overflow-hidden backdrop-blur-sm ${
               isHighPot
                 ? type === "upcoming"
                   ? "bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-green-600/20 border-green-400/50 shadow-lg shadow-green-500/20"
@@ -909,7 +1057,7 @@ function TournamentCard({
             </div>
 
             <div className="relative z-10">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
+              <div className="flex items-center justify-center gap-1 mb-0.5">
                 <motion.div
                   animate={{
                     rotate: [0, 360],
@@ -921,11 +1069,11 @@ function TournamentCard({
                     ease: "easeInOut"
                   }}
                 >
-                  <DollarSign className={`w-5 h-5 ${
+                  <DollarSign className={`w-4 h-4 ${
                     isHighPot ? "text-yellow-500" : "text-primary"
                   }`} />
                 </motion.div>
-                <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Prize Pool</span>
+                <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Prize</span>
               </div>
               <motion.div
                 animate={isHighPot ? {
@@ -936,7 +1084,7 @@ function TournamentCard({
                   ]
                 } : {}}
                 transition={{ duration: 2, repeat: Infinity }}
-                className={`text-2xl font-black bg-gradient-to-r ${
+                className={`text-xl font-black bg-gradient-to-r ${
                   isHighPot
                     ? "from-yellow-400 via-yellow-500 to-yellow-600"
                     : type === "upcoming"
@@ -948,40 +1096,40 @@ function TournamentCard({
               </motion.div>
               <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground font-medium">
                 <Users className="w-3 h-3" />
-                <span>{tournament.currentPlayers} player{tournament.currentPlayers !== 1 ? 's' : ''} joined</span>
+                <span>{tournament.currentPlayers} joined</span>
               </div>
             </div>
           </motion.div>
 
           {/* Tournament Stats - Enhanced */}
-          <div className="space-y-2.5 text-sm bg-gradient-to-br from-muted/40 via-muted/30 to-muted/40 backdrop-blur-sm rounded-lg p-3.5 border border-border/30">
+          <div className="space-y-1.5 text-xs bg-gradient-to-br from-muted/40 via-muted/30 to-muted/40 backdrop-blur-sm rounded-lg p-2.5 border border-border/30">
             <div className="flex justify-between items-center group/stat">
-              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
-                <Users className="w-4 h-4" />
+              <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <Users className="w-3.5 h-3.5" />
                 <span className="font-medium">Players</span>
               </div>
               <span className="font-bold text-foreground">{tournament.currentPlayers}/{tournament.maxPlayers}</span>
             </div>
             <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
             <div className="flex justify-between items-center group/stat">
-              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
-                <Clock className="w-4 h-4" />
+              <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <Clock className="w-3.5 h-3.5" />
                 <span className="font-medium">Duration</span>
               </div>
               <span className="font-bold text-foreground">{tournament.timeframe}</span>
             </div>
             <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
             <div className="flex justify-between items-center group/stat">
-              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
-                <DollarSign className="w-4 h-4" />
+              <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <DollarSign className="w-3.5 h-3.5" />
                 <span className="font-medium">Buy-in</span>
               </div>
               <span className="font-bold text-foreground">{formatCurrency(tournament.buyInAmount)}</span>
             </div>
             <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
             <div className="flex justify-between items-center group/stat">
-              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
-                <Target className="w-4 h-4" />
+              <div className="flex items-center gap-1.5 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                <Target className="w-3.5 h-3.5" />
                 <span className="font-medium">Starting Balance</span>
               </div>
               <span className="font-bold text-foreground">{formatCurrency(tournament.startingBalance)}</span>
@@ -1000,16 +1148,16 @@ function TournamentCard({
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="text-center p-3.5 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-lg border-2 border-green-500/40 backdrop-blur-sm"
+              className="text-center p-2 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-lg border-2 border-green-500/40 backdrop-blur-sm"
             >
               <div className="flex items-center justify-center gap-2">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                 >
-                  <Timer className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <Timer className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
                 </motion.div>
-                <p className="text-sm font-bold text-green-600 dark:text-green-400">
+                <p className="text-xs font-bold text-green-600 dark:text-green-400">
                   {getTimeRemaining()}
                 </p>
               </div>
@@ -1017,7 +1165,7 @@ function TournamentCard({
           )}
 
           {/* Action Buttons */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 onClick={onOpenChat}

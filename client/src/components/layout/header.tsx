@@ -56,8 +56,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   }}
                   onClick={() => setBalanceDialogOpen(true)}
                 >
-                  <span className="text-sm font-bold">
-                    {formatCurrency(Number(user.siteCash) || 0)}
+                  <DollarSign className="w-4 h-4 mr-0.5" style={{ color: '#E3B341' }} />
+                  <span className="text-sm font-bold" style={{ color: '#E3B341' }}>
+                    {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </Button>
 

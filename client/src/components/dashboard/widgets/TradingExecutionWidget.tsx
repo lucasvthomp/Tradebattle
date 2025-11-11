@@ -187,9 +187,9 @@ export function TradingExecutionWidget({
                   <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="market">Market</SelectItem>
-                    <SelectItem value="limit">Limit</SelectItem>
+                  <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+                    <SelectItem value="market" style={{ color: '#C9D1E2' }}>Market</SelectItem>
+                    <SelectItem value="limit" style={{ color: '#C9D1E2' }}>Limit</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -232,9 +232,9 @@ export function TradingExecutionWidget({
                 <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Day</SelectItem>
-                  <SelectItem value="gtc">GTC</SelectItem>
+                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+                  <SelectItem value="day" style={{ color: '#C9D1E2' }}>Day</SelectItem>
+                  <SelectItem value="gtc" style={{ color: '#C9D1E2' }}>GTC</SelectItem>
                 </SelectContent>
               </Select>
             </div>

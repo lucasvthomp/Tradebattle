@@ -204,39 +204,39 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 30, stiffness: 300 }}
-      className="h-full w-full bg-background/95 backdrop-blur-md border-l border-border/50 shadow-xl flex flex-col overflow-hidden"
-      style={{ maxHeight: 'calc(100vh - 4rem)' }}
+      className="h-full w-full backdrop-blur-md shadow-xl flex flex-col overflow-hidden"
+      style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#142538', borderLeft: '2px solid #2B3A4C' }}
     >
             {/* Compact Header with Chat Selector */}
-            <div className="flex items-center justify-between p-3 border-b border-border/30 bg-background/40">
+            <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #2B3A4C', backgroundColor: '#0A1A2F' }}>
               <div className="flex items-center flex-1">
                 {/* Compact Chat Selector */}
                 <Select value={selectedChat} onValueChange={setSelectedChatRoom}>
-                  <SelectTrigger className="w-full h-8 text-sm bg-background/60 border-border/50">
+                  <SelectTrigger className="w-full h-8 text-sm" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-background/95 backdrop-blur-md border-border/50">
-                    <SelectItem value="global">
+                  <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+                    <SelectItem value="global" style={{ color: '#C9D1E2' }}>
                       <div className="flex items-center space-x-2">
                         <span>Global Chat</span>
                       </div>
                     </SelectItem>
                     {userTournaments.map((tournament) => (
-                      <SelectItem key={tournament.id} value={tournament.id.toString()}>
+                      <SelectItem key={tournament.id} value={tournament.id.toString()} style={{ color: '#C9D1E2' }}>
                         <div className="flex items-center space-x-2">
-                          <Trophy className="w-3 h-3" />
+                          <Trophy className="w-3 h-3" style={{ color: '#E3B341' }} />
                           <span className="truncate max-w-[180px]">{tournament.name}</span>
-                          <Badge variant="secondary" className="text-xs shrink-0">
+                          <Badge variant="secondary" className="text-xs shrink-0" style={{ backgroundColor: '#2B3A4C', color: '#C9D1E2' }}>
                             {tournament.status}
                           </Badge>
                         </div>
                       </SelectItem>
                     ))}
                     {userTournaments.length === 0 && (
-                      <SelectItem value="no-tournaments" disabled>
+                      <SelectItem value="no-tournaments" disabled style={{ color: '#8A93A6' }}>
                         <div className="flex items-center space-x-2">
-                          <Trophy className="w-3 h-3 text-muted-foreground" />
-                          <span className="text-muted-foreground">No tournaments</span>
+                          <Trophy className="w-3 h-3" style={{ color: '#8A93A6' }} />
+                          <span>No tournaments</span>
                         </div>
                       </SelectItem>
                     )}
@@ -255,16 +255,16 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
             {/* Messages Area - Semi-transparent */}
             <div className="flex-1 overflow-hidden">
-              <ScrollArea ref={scrollAreaRef} className="h-full p-3 bg-background/20">
+              <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(10, 26, 47, 0.5)' }}>
                 <div className="space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
-                    <div className="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#E3B341', borderTopColor: 'transparent' }} />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="text-center py-8">
-                    <MessageSquare className="w-10 h-10 mx-auto mb-3 text-muted-foreground/50" />
-                    <p className="text-sm text-muted-foreground">
+                    <MessageSquare className="w-10 h-10 mx-auto mb-3" style={{ color: '#8A93A6', opacity: 0.5 }} />
+                    <p className="text-sm" style={{ color: '#8A93A6' }}>
                       {isGlobalChat ? "No messages yet. Start the conversation!" : "No tournament messages yet."}
                     </p>
                   </div>
@@ -274,16 +274,17 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       {/* Clickable Avatar with Dropdown */}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <button className="w-14 h-14 bg-muted/60 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 hover:bg-muted/80 transition-colors cursor-pointer">
-                            <User className="w-7 h-7" />
+                          <button className="w-14 h-14 backdrop-blur-sm rounded-full flex items-center justify-center flex-shrink-0 transition-colors cursor-pointer" style={{ backgroundColor: '#1E2D3F', border: '2px solid #2B3A4C' }}>
+                            <User className="w-7 h-7" style={{ color: '#C9D1E2' }} />
                           </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start">
+                        <DropdownMenuContent align="start" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                           <DropdownMenuItem
                             onClick={() => navigate(`/people/${message.userId}`)}
                             className="cursor-pointer"
+                            style={{ color: '#C9D1E2' }}
                           >
-                            <UserCircle className="w-4 h-4 mr-2" />
+                            <UserCircle className="w-4 h-4 mr-2" style={{ color: '#E3B341' }} />
                             View Full Profile
                           </DropdownMenuItem>
                           {message.userId !== user?.id && (
@@ -293,8 +294,9 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                                 setTipDialogOpen(true);
                               }}
                               className="cursor-pointer"
+                              style={{ color: '#C9D1E2' }}
                             >
-                              <DollarSign className="w-4 h-4 mr-2" />
+                              <DollarSign className="w-4 h-4 mr-2" style={{ color: '#28C76F' }} />
                               Send Tip
                             </DropdownMenuItem>
                           )}
@@ -304,18 +306,18 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       {/* Message Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-1">
-                          <span className="text-sm font-medium">
+                          <span className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
                             {message.username}
                           </span>
                           {message.userId === user?.id && (
-                            <Badge variant="secondary" className="text-xs">You</Badge>
+                            <Badge variant="secondary" className="text-xs" style={{ backgroundColor: '#E3B341', color: '#06121F' }}>You</Badge>
                           )}
-                          <span className="text-xs text-muted-foreground/70">
+                          <span className="text-xs" style={{ color: '#8A93A6' }}>
                             {formatTimestamp(message.createdAt)}
                           </span>
                         </div>
-                        <div className="bg-muted/40 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/20">
-                          <p className="text-sm break-words leading-tight">{message.message}</p>
+                        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}>
+                          <p className="text-sm break-words leading-tight" style={{ color: '#C9D1E2' }}>{message.message}</p>
                         </div>
                       </div>
                     </div>
@@ -326,13 +328,14 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             </div>
 
             {/* Message Input - Semi-transparent */}
-            <div className="p-3 border-t border-border/30 bg-background/40">
+            <div className="p-3" style={{ borderTop: '1px solid #2B3A4C', backgroundColor: 'rgba(10, 26, 47, 0.9)' }}>
               <form onSubmit={handleSendMessage} className="flex space-x-2">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   placeholder={`Message ${isGlobalChat ? 'everyone' : 'tournament'}...`}
-                  className="flex-1 bg-background/60 border-border/50 text-sm h-9"
+                  className="flex-1 text-sm h-9"
+                  style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                   maxLength={500}
                 />
                 <Button
@@ -340,11 +343,12 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   size="sm"
                   disabled={!newMessage.trim() || sendMessageMutation.isPending}
                   className="px-3 h-9"
+                  style={{ backgroundColor: '#E3B341', color: '#06121F' }}
                 >
                   <Send className="w-4 h-4" />
                 </Button>
               </form>
-              <div className="flex items-center justify-between mt-2 text-xs text-muted-foreground/70">
+              <div className="flex items-center justify-between mt-2 text-xs" style={{ color: '#8A93A6' }}>
                 <span>{messages.length} messages</span>
                 <span>{newMessage.length}/500</span>
               </div>
@@ -352,16 +356,23 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
       {/* Tip Dialog */}
       <Dialog open={tipDialogOpen} onOpenChange={setTipDialogOpen}>
-        <DialogContent>
+        <DialogContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
           <DialogHeader>
-            <DialogTitle>Send Tip to {selectedUser?.username}</DialogTitle>
-            <DialogDescription>
-              Send a tip from your balance to support this user.
-            </DialogDescription>
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="p-2 rounded-lg" style={{ backgroundColor: '#28C76F' }}>
+                <DollarSign className="w-5 h-5" style={{ color: '#06121F' }} />
+              </div>
+              <div>
+                <DialogTitle style={{ color: '#C9D1E2' }}>Send Tip to {selectedUser?.username}</DialogTitle>
+                <DialogDescription style={{ color: '#8A93A6' }}>
+                  Send a tip from your balance to support this user.
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="tip-amount">Amount</Label>
+              <Label htmlFor="tip-amount" style={{ color: '#C9D1E2' }}>Amount</Label>
               <Input
                 id="tip-amount"
                 type="number"
@@ -370,9 +381,10 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 onChange={(e) => setTipAmount(e.target.value)}
                 min="0.01"
                 step="0.01"
+                style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
               />
-              <p className="text-xs text-muted-foreground">
-                Your balance: {formatCurrency(Number(user?.siteCash) || 0)}
+              <p className="text-xs" style={{ color: '#8A93A6' }}>
+                Your balance: ${(Number(user?.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
           </div>
@@ -384,6 +396,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 setTipAmount("");
                 setSelectedUser(null);
               }}
+              style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
             >
               Cancel
             </Button>
@@ -395,6 +408,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 parseFloat(tipAmount) > Number(user?.siteCash) ||
                 sendTipMutation.isPending
               }
+              style={{ backgroundColor: '#28C76F', color: '#FFFFFF' }}
             >
               {sendTipMutation.isPending ? "Sending..." : "Send Tip"}
             </Button>

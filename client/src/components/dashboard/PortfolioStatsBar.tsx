@@ -78,9 +78,9 @@ export function PortfolioStatsBar({
               <SelectTrigger className="w-[200px] h-9 border-0" style={{ backgroundColor: '#1E2D3F', color: '#C9D1E2' }}>
                 <SelectValue placeholder="Select tournament" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                 {activeTournaments.map((tournament: any) => (
-                  <SelectItem key={tournament.id} value={tournament.id.toString()}>
+                  <SelectItem key={tournament.id} value={tournament.id.toString()} style={{ color: '#C9D1E2' }}>
                     {tournament.name}
                   </SelectItem>
                 ))}
