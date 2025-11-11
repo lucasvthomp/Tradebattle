@@ -335,12 +335,8 @@ export default function Profile() {
 
           {/* Main Content */}
           <motion.div variants={fadeInUp}>
-            <Tabs defaultValue="public" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="public" className="flex items-center space-x-2">
-                  <User className="w-4 h-4" />
-                  <span>Public Profile</span>
-                </TabsTrigger>
+            <Tabs defaultValue="account" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="account" className="flex items-center space-x-2">
                   <Settings className="w-4 h-4" />
                   <span>Account Settings</span>
@@ -355,50 +351,6 @@ export default function Profile() {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="public">
-                <Card className="border-0 shadow-lg">
-                  <CardHeader>
-                    <CardTitle>Public Profile</CardTitle>
-                    <CardDescription>
-                      This information is visible to other users on the platform
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="username">Username</Label>
-                        <Input 
-                          id="username"
-                          {...form.register("username")}
-                          placeholder={user?.username}
-                        />
-                        <p className="text-xs text-muted-foreground">
-                          Username can only be changed once every 2 weeks. Contains only letters, numbers, and underscores.
-                        </p>
-                        {form.formState.errors.username && (
-                          <p className="text-sm text-destructive">
-                            {form.formState.errors.username.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-
-
-                    <Button 
-                      className="w-full" 
-                      onClick={(e) => {
-                        e.preventDefault();
-                        form.handleSubmit(handleSaveProfile)();
-                      }}
-                      disabled={updateProfileMutation.isPending}
-                    >
-                      {updateProfileMutation.isPending ? "Updating..." : "Update Public Profile"}
-                    </Button>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-
               <TabsContent value="account" className="space-y-6">
                 {/* Profile Picture Upload */}
                 <ProfilePictureUpload />
@@ -407,34 +359,38 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle>Account Settings</CardTitle>
                     <CardDescription>
-                      Manage your private account information and settings
+                      Manage your account information and public profile
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <form onSubmit={form.handleSubmit(handleSaveProfile)} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="userId">User ID</Label>
-                          <Input 
-                            id="userId" 
-                            value={user.userId !== null ? user.userId : "Not assigned"} 
-                            className="bg-muted cursor-not-allowed" 
-                            disabled 
+                          <Label htmlFor="username">Username</Label>
+                          <Input
+                            id="username"
+                            {...form.register("username")}
+                            placeholder={user?.username}
                           />
                           <p className="text-xs text-muted-foreground">
-                            Your unique account identifier
+                            Username can only be changed once every 2 weeks. Contains only letters, numbers, and underscores.
                           </p>
+                          {form.formState.errors.username && (
+                            <p className="text-sm text-destructive">
+                              {form.formState.errors.username.message}
+                            </p>
+                          )}
                         </div>
 
                         <div className="space-y-2">
                           <Label htmlFor="email">Email Address</Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                              id="email" 
-                              type="email" 
+                            <Input
+                              id="email"
+                              type="email"
                               {...form.register("email")}
-                              className="pl-10" 
+                              className="pl-10"
                               placeholder="Enter your email"
                             />
                           </div>
@@ -444,21 +400,9 @@ export default function Profile() {
                             </p>
                           )}
                         </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="joinDate">Member Since</Label>
-                          <div className="relative">
-                            <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                            <Input 
-                              id="joinDate" 
-                              value={joinDate} 
-                              className="pl-10" 
-                              disabled 
-                            />
-                          </div>
-                        </div>
                       </div>
-                      <Button 
-                        type="submit" 
+                      <Button
+                        type="submit"
                         disabled={updateProfileMutation.isPending}
                       >
                         {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
