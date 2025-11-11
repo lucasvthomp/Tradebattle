@@ -246,7 +246,7 @@ export default function Leaderboard() {
                           </div>
                           <div className="text-right">
                             <div className="font-bold text-lg text-[#28C76F]">
-                              +{participant.percentageChange.toFixed(1)}%
+                              +{participant.percentageChange.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
                             </div>
                             <div className="text-sm text-[#C9D1E2]">{formatCurrency(participant.portfolioValue)}</div>
                           </div>

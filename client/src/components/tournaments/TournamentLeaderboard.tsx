@@ -144,7 +144,7 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
                     ) : (
                       <TrendingDown className="w-3 h-3 mr-1" />
                     )}
-                    {((profitLoss / startingBalance) * 100).toFixed(1)}%
+                    {((profitLoss / startingBalance) * 100).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
                   </div>
                 </div>
               </motion.div>

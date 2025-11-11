@@ -47,7 +47,7 @@ import { TournamentManagementDialog } from "@/components/tournaments/TournamentM
 import { BuyInIncentiveBox } from "@/components/ui/buy-in-incentive-box";
 import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
 import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
-import { ChatSystem } from "@/components/chat/ChatSystem";
+import { useChatContext } from "@/contexts/ChatContext";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -119,6 +119,7 @@ export default function TournamentsPage() {
   const { user } = useAuth();
   const { formatCurrency, t } = useUserPreferences();
   const { toast } = useToast();
+  const { openTournamentChat } = useChatContext();
 
   // State management
   const [activeTab, setActiveTab] = useState("upcoming");
@@ -130,7 +131,6 @@ export default function TournamentsPage() {
   const [sortBy, setSortBy] = useState("starting-soon");
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [tournamentChatOpen, setTournamentChatOpen] = useState<number | null>(null);
 
   // State for join confirmation dialog
   const [joinConfirmationOpen, setJoinConfirmationOpen] = useState(false);
@@ -467,7 +467,7 @@ export default function TournamentsPage() {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
-                  onOpenChat={(tournamentId) => setTournamentChatOpen(tournamentId)}
+                  onOpenChat={(tournamentId) => openTournamentChat(tournamentId)}
                   onJoinTournament={handleJoinTournament}
                   isJoining={joinTournamentMutation.isPending}
                 />
@@ -481,7 +481,7 @@ export default function TournamentsPage() {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
-                  onOpenChat={(tournamentId) => setTournamentChatOpen(tournamentId)}
+                  onOpenChat={(tournamentId) => openTournamentChat(tournamentId)}
                   onJoinTournament={handleJoinTournament}
                   onViewLeaderboard={(tournament) => {
                     setSelectedLeaderboardTournament(tournament);
@@ -504,15 +504,6 @@ export default function TournamentsPage() {
             setManagementDialogOpen(false);
             setSelectedTournament(null);
           }}
-        />
-      )}
-
-      {/* Tournament-specific Chat System */}
-      {tournamentChatOpen && (
-        <ChatSystem
-          tournamentId={tournamentChatOpen}
-          isOpen={true}
-          onToggle={() => setTournamentChatOpen(null)}
         />
       )}
 
@@ -1110,6 +1101,3 @@ function TournamentCard({
     </motion.div>
   );
 }
-
-// Add ChatSystem to the main TournamentsPage
-export { ChatSystem } from "@/components/chat/ChatSystem";

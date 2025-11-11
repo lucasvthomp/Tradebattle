@@ -194,7 +194,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     if (formData.buyInAmount > 0) {
       const userBalance = parseFloat(user?.siteCash?.toString() || '0');
       if (formData.buyInAmount > userBalance) {
-        newErrors.buyInAmount = `Insufficient funds. You need $${formData.buyInAmount.toFixed(2)} but only have $${userBalance.toFixed(2)} in your account.`;
+        newErrors.buyInAmount = `Insufficient funds. You need $${formData.buyInAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} but only have $${userBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} in your account.`;
       }
     }
 

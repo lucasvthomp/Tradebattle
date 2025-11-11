@@ -213,7 +213,7 @@ export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Adv
           time: item.date,
           value: parseFloat(item.volume) || 0,
           color: parseFloat(item.close) >= parseFloat(item.open) ?
-            'rgba(38, 166, 154, 0.5)' : 'rgba(239, 83, 80, 0.5)'
+            'rgba(40, 199, 111, 0.5)' : 'rgba(255, 45, 45, 0.5)'
         }));
 
         // Sort by time
@@ -393,16 +393,16 @@ export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Adv
 
     // Add candlestick series (v5 API)
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#26a69a',
-      downColor: '#ef5350',
+      upColor: '#28C76F',
+      downColor: '#FF2D2D',
       borderVisible: false,
-      wickUpColor: '#26a69a',
-      wickDownColor: '#ef5350',
+      wickUpColor: '#28C76F',
+      wickDownColor: '#FF2D2D',
     });
 
     // Add volume series (v5 API)
     const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#26a69a',
+      color: '#28C76F',
       priceFormat: {
         type: 'volume',
       },

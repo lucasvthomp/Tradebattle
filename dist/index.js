@@ -644,14 +644,18 @@ var init_storage = __esm({
           }
           await db.update(users).set({ siteCash: (currentSiteCash - buyInAmount).toString() }).where(eq(users.id, creatorId));
           console.log("[Storage] Deducted buy-in from creator");
-          await db.insert(adminLogs).values({
-            adminUserId: creatorId,
-            targetUserId: creatorId,
-            action: "tournament_creator_buyin",
-            oldValue: currentSiteCash.toString(),
-            newValue: (currentSiteCash - buyInAmount).toString(),
-            notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
-          });
+          try {
+            await db.insert(adminLogs).values({
+              adminUserId: creatorId,
+              targetUserId: creatorId,
+              action: "tournament_creator_buyin",
+              oldValue: currentSiteCash.toString(),
+              newValue: (currentSiteCash - buyInAmount).toString(),
+              notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
+            });
+          } catch (logError2) {
+            console.error("[Storage] WARNING: Failed to log transaction:", logError2);
+          }
         }
         const insertValues = {
           ...tournament,

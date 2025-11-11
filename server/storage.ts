@@ -418,15 +418,20 @@ export class DatabaseStorage implements IStorage {
         .where(eq(users.id, creatorId));
       console.log('[Storage] Deducted buy-in from creator');
 
-      // Log the transaction
-      await db.insert(adminLogs).values({
-        adminUserId: creatorId,
-        targetUserId: creatorId,
-        action: 'tournament_creator_buyin',
-        oldValue: currentSiteCash.toString(),
-        newValue: (currentSiteCash - buyInAmount).toString(),
-        notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
-      });
+      // Log the transaction (wrapped in try-catch to prevent tournament creation failure)
+      try {
+        await db.insert(adminLogs).values({
+          adminUserId: creatorId,
+          targetUserId: creatorId,
+          action: 'tournament_creator_buyin',
+          oldValue: currentSiteCash.toString(),
+          newValue: (currentSiteCash - buyInAmount).toString(),
+          notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
+        });
+      } catch (logError) {
+        console.error('[Storage] WARNING: Failed to log transaction:', logError);
+        // Continue with tournament creation even if logging fails
+      }
     }
 
     const insertValues = {

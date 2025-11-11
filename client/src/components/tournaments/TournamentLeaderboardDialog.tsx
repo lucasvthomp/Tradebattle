@@ -164,7 +164,7 @@ export function TournamentLeaderboardDialog({
                               <div className={`text-sm ${
                                 gainLoss >= 0 ? 'text-green-600' : 'text-red-600'
                               }`}>
-                                {gainLoss >= 0 ? '+' : ''}{gainLossPercent.toFixed(2)}%
+                                {gainLoss >= 0 ? '+' : ''}{gainLossPercent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%
                               </div>
                             </div>
                           </div>

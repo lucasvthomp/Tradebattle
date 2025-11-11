@@ -4,19 +4,35 @@ interface ChatContextType {
   chatOpen: boolean;
   setChatOpen: (open: boolean) => void;
   toggleChat: () => void;
+  selectedChatRoom: string;
+  setSelectedChatRoom: (room: string) => void;
+  openTournamentChat: (tournamentId: number) => void;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 export function ChatProvider({ children }: { children: ReactNode }) {
   const [chatOpen, setChatOpen] = useState(false);
+  const [selectedChatRoom, setSelectedChatRoom] = useState<string>('global');
 
   const toggleChat = () => {
     setChatOpen(prev => !prev);
   };
 
+  const openTournamentChat = (tournamentId: number) => {
+    setSelectedChatRoom(tournamentId.toString());
+    setChatOpen(true);
+  };
+
   return (
-    <ChatContext.Provider value={{ chatOpen, setChatOpen, toggleChat }}>
+    <ChatContext.Provider value={{
+      chatOpen,
+      setChatOpen,
+      toggleChat,
+      selectedChatRoom,
+      setSelectedChatRoom,
+      openTournamentChat
+    }}>
       {children}
     </ChatContext.Provider>
   );

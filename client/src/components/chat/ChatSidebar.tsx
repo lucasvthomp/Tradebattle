@@ -25,6 +25,7 @@ import { Send, MessageSquare, X, User, Trophy, Users, DollarSign, UserCircle } f
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { useChatContext } from "@/contexts/ChatContext";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 
@@ -51,14 +52,17 @@ interface ChatSidebarProps {
 export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const { user } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
+  const { selectedChatRoom, setSelectedChatRoom } = useChatContext();
   const [newMessage, setNewMessage] = useState("");
-  const [selectedChat, setSelectedChat] = useState<string>("global");
   const [tipDialogOpen, setTipDialogOpen] = useState(false);
   const [tipAmount, setTipAmount] = useState("");
   const [selectedUser, setSelectedUser] = useState<{ id: number; username: string } | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
+
+  // Use selectedChatRoom from context
+  const selectedChat = selectedChatRoom;
 
   // Fetch user's tournaments for chat selection
   const { data: userTournamentsResponse } = useQuery<{data: Tournament[]}>({
@@ -206,7 +210,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             <div className="flex items-center justify-between p-3 border-b border-border/30 bg-background/40">
               <div className="flex items-center flex-1">
                 {/* Compact Chat Selector */}
-                <Select value={selectedChat} onValueChange={setSelectedChat}>
+                <Select value={selectedChat} onValueChange={setSelectedChatRoom}>
                   <SelectTrigger className="w-full h-8 text-sm bg-background/60 border-border/50">
                     <SelectValue />
                   </SelectTrigger>

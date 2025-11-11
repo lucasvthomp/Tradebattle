@@ -65,52 +65,55 @@ export function PortfolioStatsBar({
   }, [selectedTournament?.endDate]);
 
   return (
-    <div className="w-full bg-secondary border-b border-border/50 px-6 py-3">
-      <div className="flex items-center gap-8">
+    <div className="w-full border-b border-border/50 px-6 py-3" style={{ backgroundColor: '#142538' }}>
+      <div className="flex items-center gap-6">
         {/* Tournament Selector */}
         {activeTournaments.length > 0 && selectedTournament && onTournamentChange && (
-          <Select
-            value={selectedTournament?.id?.toString() || ""}
-            onValueChange={onTournamentChange}
-          >
-            <SelectTrigger className="w-[200px] h-9 border border-border">
-              <SelectValue placeholder="Select tournament" />
-            </SelectTrigger>
-            <SelectContent>
-              {activeTournaments.map((tournament: any) => (
-                <SelectItem key={tournament.id} value={tournament.id.toString()}>
-                  {tournament.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex items-center gap-2">
+            <Trophy className="w-4 h-4" style={{ color: '#E3B341' }} />
+            <Select
+              value={selectedTournament?.id?.toString() || ""}
+              onValueChange={onTournamentChange}
+            >
+              <SelectTrigger className="w-[200px] h-9 border-0" style={{ backgroundColor: '#1E2D3F', color: '#C9D1E2' }}>
+                <SelectValue placeholder="Select tournament" />
+              </SelectTrigger>
+              <SelectContent>
+                {activeTournaments.map((tournament: any) => (
+                  <SelectItem key={tournament.id} value={tournament.id.toString()}>
+                    {tournament.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         )}
 
         {/* Total Portfolio Value with Cash/Stock breakdown */}
         <div className="flex items-center gap-3">
-          <div className="text-xl font-bold">{formatCurrency(portfolioValue)}</div>
-          <div className="flex flex-col text-xs text-muted-foreground">
+          <div className="text-xl font-bold text-white">{formatCurrency(portfolioValue)}</div>
+          <div className="flex flex-col text-xs leading-tight" style={{ color: '#8A93A6' }}>
             <div>Cash: {formatCurrency(cashBalance)}</div>
             <div>Stock: {formatCurrency(stockHoldingsValue)}</div>
           </div>
         </div>
 
         {/* Today's Return */}
-        <div className={`font-semibold ${isPositive ? 'text-[#28C76F]' : 'text-[#FF4F58]'}`}>
-          {isPositive ? '+' : ''}{formatCurrency(profitLoss)} ({isPositive ? '▲' : '▼'} {Math.abs(profitLossPercent).toFixed(2)}%)
+        <div className={`text-base font-semibold ${isPositive ? 'text-[#28C76F]' : 'text-[#FF4F58]'}`}>
+          {isPositive ? '+' : ''}{formatCurrency(profitLoss)} ({isPositive ? '▲' : '▼'} {Math.abs(profitLossPercent).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%)
         </div>
 
         {/* Time Remaining */}
         {timeRemaining && (
-          <div className="font-semibold">
+          <div className="text-base font-medium" style={{ color: '#C9D1E2' }}>
             {timeRemaining}
           </div>
         )}
 
         {/* Current Rank */}
         {rank && totalPlayers && (
-          <div className="font-semibold">
-            Rank #{rank} / {totalPlayers}
+          <div className="text-base font-semibold" style={{ color: '#E3B341' }}>
+            Rank #{rank}/{totalPlayers}
           </div>
         )}
       </div>
