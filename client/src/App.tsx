@@ -84,7 +84,7 @@ function Router() {
               <Route path="/hub" component={Hub} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/portfolio" component={Dashboard} />
-              <Route path="/tournaments" component={TournamentsTest} />
+              <Route path="/tournaments" component={Tournaments} />
               <Route path="/leaderboard" component={Leaderboard} />
               <Route path="/people" component={People} />
               <Route path="/people/:userId" component={People} />
