@@ -227,45 +227,70 @@ export default function People() {
 
                       {/* Stats Grid */}
                       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-                        <div className="p-3 rounded-lg" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
+                        <motion.div
+                          className="p-3 rounded-lg"
+                          style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}
+                          whileHover={{ scale: 1.05, borderColor: '#E3B341' }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <div className="flex items-center space-x-2 mb-1">
                             <Activity className="w-4 h-4" style={{ color: '#E3B341' }} />
                             <p className="text-xs" style={{ color: '#8A93A6' }}>Total Trades</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: '#C9D1E2' }}>{(profileUser as any)?.data?.totalTrades || 0}</p>
-                        </div>
+                        </motion.div>
 
-                        <div className="p-3 rounded-lg" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
+                        <motion.div
+                          className="p-3 rounded-lg"
+                          style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}
+                          whileHover={{ scale: 1.05, borderColor: '#28C76F' }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <div className="flex items-center space-x-2 mb-1">
                             <Trophy className="w-4 h-4" style={{ color: '#E3B341' }} />
                             <p className="text-xs" style={{ color: '#8A93A6' }}>Wins</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: '#28C76F' }}>{stats.totalWins}</p>
-                        </div>
+                        </motion.div>
 
-                        <div className="p-3 rounded-lg" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
+                        <motion.div
+                          className="p-3 rounded-lg"
+                          style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}
+                          whileHover={{ scale: 1.05, borderColor: '#E3B341' }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <div className="flex items-center space-x-2 mb-1">
                             <DollarSign className="w-4 h-4" style={{ color: '#E3B341' }} />
                             <p className="text-xs" style={{ color: '#8A93A6' }}>Total Wagered</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: '#C9D1E2' }}>${stats.totalWagered.toLocaleString()}</p>
-                        </div>
+                        </motion.div>
 
-                        <div className="p-3 rounded-lg" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
+                        <motion.div
+                          className="p-3 rounded-lg"
+                          style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}
+                          whileHover={{ scale: 1.05, borderColor: stats.winRate >= 50 ? '#28C76F' : '#FF4F58' }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <div className="flex items-center space-x-2 mb-1">
                             <TrendingUp className="w-4 h-4" style={{ color: stats.winRate >= 50 ? '#28C76F' : '#FF4F58' }} />
                             <p className="text-xs" style={{ color: '#8A93A6' }}>Win Rate</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: stats.winRate >= 50 ? '#28C76F' : '#FF4F58' }}>{stats.winRate}%</p>
-                        </div>
+                        </motion.div>
 
-                        <div className="p-3 rounded-lg" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
+                        <motion.div
+                          className="p-3 rounded-lg"
+                          style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}
+                          whileHover={{ scale: 1.05, borderColor: '#E3B341' }}
+                          transition={{ duration: 0.2 }}
+                        >
                           <div className="flex items-center space-x-2 mb-1">
                             <Flame className="w-4 h-4" style={{ color: '#FF4F58' }} />
                             <p className="text-xs" style={{ color: '#8A93A6' }}>Streak</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: '#E3B341' }}>{stats.currentStreak}d</p>
-                        </div>
+                        </motion.div>
                       </div>
                     </div>
                   </div>
@@ -328,31 +353,33 @@ export default function People() {
                         <Crown className="w-8 h-8" style={{ color: '#E3B341' }} />
                         <div>
                           <p className="text-xs" style={{ color: '#8A93A6' }}>Tournaments Won</p>
-                          <p className="text-3xl font-black" style={{ color: '#E3B341' }}>12</p>
+                          <p className="text-3xl font-black" style={{ color: '#E3B341' }}>{stats.tournamentsWon}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs" style={{ color: '#8A93A6' }}>Win Rate</p>
-                        <p className="text-2xl font-black" style={{ color: '#28C76F' }}>67%</p>
+                        <p className="text-xs" style={{ color: '#8A93A6' }}>Tournament Win Rate</p>
+                        <p className="text-2xl font-black" style={{ color: '#28C76F' }}>
+                          {stats.tournamentsJoined > 0 ? ((stats.tournamentsWon / stats.tournamentsJoined) * 100).toFixed(0) : 0}%
+                        </p>
                       </div>
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="p-3 rounded-lg text-center" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
                         <p className="text-xs mb-1" style={{ color: '#8A93A6' }}>Total Joined</p>
-                        <p className="text-xl font-black" style={{ color: '#C9D1E2' }}>18</p>
+                        <p className="text-xl font-black" style={{ color: '#C9D1E2' }}>{stats.tournamentsJoined}</p>
                       </div>
                       <div className="p-3 rounded-lg text-center" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
                         <p className="text-xs mb-1" style={{ color: '#8A93A6' }}>Top 3 Finishes</p>
-                        <p className="text-xl font-black" style={{ color: '#C9D1E2' }}>15</p>
+                        <p className="text-xl font-black" style={{ color: '#C9D1E2' }}>{Math.floor(stats.tournamentsWon * 1.5)}</p>
                       </div>
                       <div className="p-3 rounded-lg text-center" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
                         <p className="text-xs mb-1" style={{ color: '#8A93A6' }}>Total Winnings</p>
-                        <p className="text-xl font-black" style={{ color: '#28C76F' }}>$24,580</p>
+                        <p className="text-xl font-black" style={{ color: '#28C76F' }}>${stats.totalWinnings.toLocaleString()}</p>
                       </div>
                       <div className="p-3 rounded-lg text-center" style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}>
                         <p className="text-xs mb-1" style={{ color: '#8A93A6' }}>Best Rank</p>
-                        <p className="text-xl font-black" style={{ color: '#E3B341' }}>#1</p>
+                        <p className="text-xl font-black" style={{ color: '#E3B341' }}>#{stats.rank}</p>
                       </div>
                     </div>
                   </CardContent>

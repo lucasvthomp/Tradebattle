@@ -253,48 +253,60 @@ export default function TournamentsPage() {
 
   // Filter and sort tournaments
   const processedTournaments = {
-    upcoming: allTournaments.filter((t: any) => 
-      t.status === "waiting" && 
+    upcoming: allTournaments.filter((t: any) =>
+      t && t.status === "waiting" &&
       (filterType === "all" || t.tournamentType === filterType) &&
-      (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      (searchQuery === "" || (t.name && t.name.toLowerCase().includes(searchQuery.toLowerCase())))
     ),
-    ongoing: allTournaments.filter((t: any) => 
-      t.status === "active" && 
+    ongoing: allTournaments.filter((t: any) =>
+      t && t.status === "active" &&
       (filterType === "all" || t.tournamentType === filterType) &&
-      (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      (searchQuery === "" || (t.name && t.name.toLowerCase().includes(searchQuery.toLowerCase())))
     )
   };
 
   // Sort tournaments (prioritize participated tournaments first)
   const sortTournaments = (tournaments: any[]) => {
+    if (!tournaments || !Array.isArray(tournaments)) return [];
+
     return [...tournaments].sort((a, b) => {
+      if (!a || !b) return 0;
+
       // Check if user is participating in each tournament
       const aIsParticipating = a.creatorId === user?.id || a.isParticipating;
       const bIsParticipating = b.creatorId === user?.id || b.isParticipating;
-      
+
       // Prioritize tournaments user is participating in
       if (aIsParticipating && !bIsParticipating) return -1;
       if (!aIsParticipating && bIsParticipating) return 1;
-      
+
       // Within participated tournaments, prioritize owned tournaments
       if (aIsParticipating && bIsParticipating) {
         const aIsOwner = a.creatorId === user?.id;
         const bIsOwner = b.creatorId === user?.id;
-        
+
         if (aIsOwner && !bIsOwner) return -1;
         if (!aIsOwner && bIsOwner) return 1;
       }
-      
+
       // Then sort by the selected criteria
       switch (sortBy) {
         case "starting-soon":
-          return new Date(a.scheduledStartTime || a.createdAt).getTime() - new Date(b.scheduledStartTime || b.createdAt).getTime();
+          const aTime = new Date(a.scheduledStartTime || a.createdAt || 0).getTime();
+          const bTime = new Date(b.scheduledStartTime || b.createdAt || 0).getTime();
+          return aTime - bTime;
         case "pot-high-low":
-          return (b.currentPlayers * b.buyInAmount) - (a.currentPlayers * a.buyInAmount);
+          const bPot = ((b.currentPlayers || 0) * (b.buyInAmount || 0));
+          const aPot = ((a.currentPlayers || 0) * (a.buyInAmount || 0));
+          return bPot - aPot;
         case "pot-low-high":
-          return (a.currentPlayers * a.buyInAmount) - (b.currentPlayers * b.buyInAmount);
+          const aPotLow = ((a.currentPlayers || 0) * (a.buyInAmount || 0));
+          const bPotLow = ((b.currentPlayers || 0) * (b.buyInAmount || 0));
+          return aPotLow - bPotLow;
         case "most-recent":
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          const bCreated = new Date(b.createdAt || 0).getTime();
+          const aCreated = new Date(a.createdAt || 0).getTime();
+          return bCreated - aCreated;
         default:
           return 0;
       }
