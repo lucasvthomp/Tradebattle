@@ -94,21 +94,24 @@ export default function Leaderboard() {
           <TabsList className="grid w-full grid-cols-3 bg-[#1E2D3F] border border-[#2B3A4C]">
             <TabsTrigger
               value="wagered"
-              className="text-[#8A93A6] data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+              style={activeTab === "wagered" ? {} : { color: '#8A93A6' }}
             >
               <DollarSign className="h-4 w-4 mr-2" />
               Total Wagered
             </TabsTrigger>
             <TabsTrigger
               value="highwager"
-              className="text-[#8A93A6] data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+              style={activeTab === "highwager" ? {} : { color: '#8A93A6' }}
             >
               <Trophy className="h-4 w-4 mr-2" />
               High Stakes
             </TabsTrigger>
             <TabsTrigger
               value="growth"
-              className="text-[#8A93A6] data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
+              style={activeTab === "growth" ? {} : { color: '#8A93A6' }}
             >
               <TrendingUp className="h-4 w-4 mr-2" />
               Top Growth
