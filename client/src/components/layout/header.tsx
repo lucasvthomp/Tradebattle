@@ -47,26 +47,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
             {user ? (
               <>
                 {/* Balance Display - Clickable for balance management */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 border border-border/30">
-                      <DollarSign className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-semibold text-foreground">
-                        {formatCurrency(Number(user.siteCash) || 0)}
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem onClick={() => navigate("/shop")}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      {t('deposit')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate("/withdraw")}>
-                      <Minus className="w-4 h-4 mr-2" />
-                      {t('withdraw')}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button
+                  variant="ghost"
+                  className="flex items-center space-x-2 px-3 py-2 border border-border/30 hover:bg-primary/10 transition-colors"
+                  onClick={() => setBalanceDialogOpen(true)}
+                >
+                  <DollarSign className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-semibold text-foreground">
+                    {formatCurrency(Number(user.siteCash) || 0)}
+                  </span>
+                </Button>
 
                 {/* Chat Button - only show for authenticated users */}
                 {onChatToggle && (
@@ -138,7 +128,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
       <BalanceDialog
         open={balanceDialogOpen}
         onOpenChange={setBalanceDialogOpen}
-        currentBalance={Number(user?.balance) || 0}
+        currentBalance={Number(user?.siteCash) || 0}
       />
     </header>
   );
