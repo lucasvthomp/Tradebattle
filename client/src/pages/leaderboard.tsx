@@ -95,26 +95,26 @@ export default function Leaderboard() {
             <TabsTrigger
               value="wagered"
               className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
-              style={activeTab === "wagered" ? {} : { color: '#8A93A6' }}
+              style={activeTab === "wagered" ? {} : { color: '#8A93A6 !important' }}
             >
-              <DollarSign className="h-4 w-4 mr-2" />
-              Total Wagered
+              <DollarSign className="h-4 w-4 mr-2" style={{ color: activeTab === "wagered" ? undefined : '#8A93A6' }} />
+              <span style={{ color: activeTab === "wagered" ? undefined : '#8A93A6' }}>Total Wagered</span>
             </TabsTrigger>
             <TabsTrigger
               value="highwager"
               className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
-              style={activeTab === "highwager" ? {} : { color: '#8A93A6' }}
+              style={activeTab === "highwager" ? {} : { color: '#8A93A6 !important' }}
             >
-              <Trophy className="h-4 w-4 mr-2" />
-              High Stakes
+              <Trophy className="h-4 w-4 mr-2" style={{ color: activeTab === "highwager" ? undefined : '#8A93A6' }} />
+              <span style={{ color: activeTab === "highwager" ? undefined : '#8A93A6' }}>High Stakes</span>
             </TabsTrigger>
             <TabsTrigger
               value="growth"
               className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
-              style={activeTab === "growth" ? {} : { color: '#8A93A6' }}
+              style={activeTab === "growth" ? {} : { color: '#8A93A6 !important' }}
             >
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Top Growth
+              <TrendingUp className="h-4 w-4 mr-2" style={{ color: activeTab === "growth" ? undefined : '#8A93A6' }} />
+              <span style={{ color: activeTab === "growth" ? undefined : '#8A93A6' }}>Top Growth</span>
             </TabsTrigger>
           </TabsList>
 
