@@ -92,27 +92,36 @@ export function TradingExecutionWidget({
     (orderType === 'market' || (orderType === 'limit' && limitPrice && parseFloat(limitPrice) > 0));
 
   return (
-    <div className="h-full flex flex-col bg-card/95 backdrop-blur-sm border-l border-border/50 overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#1E2D3F' }}>
       {/* Header with Toggle */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border/20 bg-muted/30">
-        <h3 className="text-sm font-semibold text-foreground">
-          {showHoldings ? "Holdings" : "Trade Execution"}
-        </h3>
+      <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: '#2B3A4C', backgroundColor: '#142538' }}>
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-semibold" style={{ color: '#C9D1E2' }}>
+            {showHoldings ? "Holdings" : "Trade"}
+          </h3>
+          {selectedStock && (
+            <div className="flex items-baseline gap-2 ml-2 pl-2 border-l" style={{ borderColor: '#2B3A4C' }}>
+              <span className="text-sm font-bold" style={{ color: '#E3B341' }}>{selectedStock.symbol}</span>
+              <span className="text-xs" style={{ color: '#8A93A6' }}>${selectedStock.price?.toFixed(2)}</span>
+            </div>
+          )}
+        </div>
         {onToggleView && (
           <Button
             variant="ghost"
             size="sm"
             onClick={onToggleView}
-            className="h-7 text-xs"
+            className="h-6 text-xs"
+            style={{ color: '#8A93A6' }}
           >
             {showHoldings ? (
               <>
-                <ShoppingCart className="w-3 h-3 mr-1.5" />
+                <ShoppingCart className="w-3 h-3 mr-1" />
                 Trade
               </>
             ) : (
               <>
-                <LayoutList className="w-3 h-3 mr-1.5" />
+                <LayoutList className="w-3 h-3 mr-1" />
                 Holdings
               </>
             )}
@@ -121,10 +130,10 @@ export function TradingExecutionWidget({
       </div>
 
       {/* Stock Search */}
-      <div className="p-3 border-b border-border/20">
+      <div className="p-2 border-b" style={{ borderColor: '#2B3A4C' }}>
         <StockSearchBar
           type="purchase"
-          placeholder="Search symbol"
+          placeholder="Search symbol..."
           tournamentId={tournamentId}
           onStockSelect={handleStockSelect}
         />
@@ -132,152 +141,139 @@ export function TradingExecutionWidget({
 
       {selectedStock ? (
         <div className="flex-1 flex flex-col overflow-hidden">
-          {/* Stock Header */}
-          <div className="p-3 border-b border-border/20">
-            <div className="text-lg font-bold mb-0.5">{selectedStock.symbol}</div>
-            <div className="text-base font-semibold">${selectedStock.price?.toFixed(2)}</div>
-            {selectedStock.changePercent !== undefined && (
-              <div className={`text-xs ${selectedStock.changePercent >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {selectedStock.changePercent >= 0 ? '+' : ''}{selectedStock.changePercent.toFixed(2)}% Today
-              </div>
-            )}
-          </div>
-
           {/* Trading Form */}
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+          <div className="flex-1 overflow-y-auto p-2 space-y-2">
             {/* Buy/Short/Cover Toggle */}
-            <div className={`grid ${hasShortPosition ? 'grid-cols-3' : 'grid-cols-2'} gap-1.5`}>
+            <div className={`grid ${hasShortPosition ? 'grid-cols-3' : 'grid-cols-2'} gap-1`}>
               <Button
                 onClick={() => setAction('buy')}
-                className={`h-8 text-xs font-semibold ${
-                  action === 'buy'
-                    ? 'bg-green-600 hover:bg-green-700 text-white'
-                    : 'bg-transparent hover:bg-muted text-foreground border border-border/50'
-                }`}
+                className="h-7 text-xs font-semibold"
+                style={action === 'buy'
+                  ? { backgroundColor: '#28C76F', color: '#FFFFFF', border: 'none' }
+                  : { backgroundColor: '#142538', color: '#8A93A6', border: '1px solid #2B3A4C' }
+                }
               >
                 Buy
               </Button>
               <Button
                 onClick={() => setAction('short_sell')}
-                className={`h-8 text-xs font-semibold ${
-                  action === 'short_sell'
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-transparent hover:bg-muted text-foreground border border-border/50'
-                }`}
+                className="h-7 text-xs font-semibold"
+                style={action === 'short_sell'
+                  ? { backgroundColor: '#FF4F58', color: '#FFFFFF', border: 'none' }
+                  : { backgroundColor: '#142538', color: '#8A93A6', border: '1px solid #2B3A4C' }
+                }
               >
                 Short
               </Button>
               {hasShortPosition && (
                 <Button
                   onClick={() => setAction('short_cover')}
-                  className={`h-8 text-xs font-semibold ${
-                    action === 'short_cover'
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                      : 'bg-transparent hover:bg-muted text-foreground border border-border/50'
-                  }`}
+                  className="h-7 text-xs font-semibold"
+                  style={action === 'short_cover'
+                    ? { backgroundColor: '#3B82F6', color: '#FFFFFF', border: 'none' }
+                    : { backgroundColor: '#142538', color: '#8A93A6', border: '1px solid #2B3A4C' }
+                  }
                 >
                   Cover
                 </Button>
               )}
             </div>
 
-            {/* Order Type */}
-            <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Order type</label>
-              <Select value={orderType} onValueChange={(value: any) => setOrderType(value)}>
-                <SelectTrigger className="h-8 text-xs bg-background border-border/40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="market">Market</SelectItem>
-                  <SelectItem value="limit">Limit</SelectItem>
-                </SelectContent>
-              </Select>
+            {/* Order Type & Quantity - Compact Grid */}
+            <div className="grid grid-cols-2 gap-1.5">
+              <div className="space-y-0.5">
+                <label className="text-[10px]" style={{ color: '#8A93A6' }}>Type</label>
+                <Select value={orderType} onValueChange={(value: any) => setOrderType(value)}>
+                  <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="market">Market</SelectItem>
+                    <SelectItem value="limit">Limit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-0.5">
+                <label className="text-[10px]" style={{ color: '#8A93A6' }}>Shares</label>
+                <Input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="h-7 text-xs"
+                  style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                  placeholder="0"
+                />
+              </div>
             </div>
 
-            {/* Quantity */}
-            <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Quantity</label>
-              <Input
-                type="number"
-                min="0"
-                step="1"
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                className="h-8 text-xs bg-background border-border/40"
-                placeholder="0"
-              />
-            </div>
-
-            {/* Limit Price (only for limit orders) */}
+            {/* Limit Price & Time in Force - Compact Grid */}
             {orderType === 'limit' && (
-              <div className="space-y-1.5">
-                <label className="text-xs text-muted-foreground">Limit price</label>
+              <div className="space-y-0.5">
+                <label className="text-[10px]" style={{ color: '#8A93A6' }}>Limit Price</label>
                 <Input
                   type="number"
                   min="0"
                   step="0.01"
                   value={limitPrice}
                   onChange={(e) => setLimitPrice(e.target.value)}
-                  className="h-8 text-xs bg-background border-border/40"
+                  className="h-7 text-xs"
+                  style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                   placeholder="$0.00"
                 />
               </div>
             )}
 
-            {/* Time in Force */}
-            <div className="space-y-1.5">
-              <label className="text-xs text-muted-foreground">Time in force</label>
+            <div className="space-y-0.5">
+              <label className="text-[10px]" style={{ color: '#8A93A6' }}>Duration</label>
               <Select value={timeInForce} onValueChange={(value: any) => setTimeInForce(value)}>
-                <SelectTrigger className="h-8 text-xs bg-background border-border/40">
+                <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="day">Good for day</SelectItem>
-                  <SelectItem value="gtc">Good till canceled</SelectItem>
+                  <SelectItem value="day">Day</SelectItem>
+                  <SelectItem value="gtc">GTC</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Estimated Cost */}
-            <div className="pt-3 border-t border-border/30">
-              <div className="flex justify-between items-center mb-0.5">
-                <span className="text-xs text-muted-foreground">Estimated cost</span>
-                <span className="text-sm font-semibold">
+            {/* Estimated Cost - More Compact */}
+            <div className="pt-1.5 border-t" style={{ borderColor: '#2B3A4C' }}>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px]" style={{ color: '#8A93A6' }}>Est. Total</span>
+                <span className="text-sm font-semibold" style={{ color: '#E3B341' }}>
                   {formatCurrency(calculateEstimatedCost())}
                 </span>
-              </div>
-              <div className="text-[10px] text-muted-foreground">
-                Order will be placed at market price
               </div>
             </div>
           </div>
 
           {/* Action Button */}
-          <div className="p-3 border-t border-border/30">
+          <div className="p-2 border-t" style={{ borderColor: '#2B3A4C' }}>
             <Button
               onClick={handleSubmit}
               disabled={!isFormValid}
-              className={`w-full h-9 text-xs font-semibold ${
-                action === 'buy'
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : action === 'short_sell'
-                  ? 'bg-red-600 hover:bg-red-700'
-                  : 'bg-blue-600 hover:bg-blue-700'
-              } text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+              className="w-full h-8 text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: action === 'buy' ? '#28C76F' : action === 'short_sell' ? '#FF4F58' : '#3B82F6',
+                color: '#FFFFFF',
+                border: 'none'
+              }}
             >
               {action === 'buy'
-                ? `Buy ${selectedStock.symbol}`
+                ? 'Buy'
                 : action === 'short_sell'
-                ? `Short ${selectedStock.symbol}`
-                : `Cover ${selectedStock.symbol}`}
+                ? 'Short'
+                : 'Cover'}
             </Button>
           </div>
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center p-4">
-          <p className="text-sm text-muted-foreground text-center">
-            Search and select a stock to begin trading
+          <p className="text-xs text-center" style={{ color: '#8A93A6' }}>
+            Search a stock to trade
           </p>
         </div>
       )}

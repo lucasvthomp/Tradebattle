@@ -34,9 +34,9 @@ export default function Layout({ children }: LayoutProps) {
             </PageTransition>
           </main>
 
-          {/* Chat Sidebar - positioned in flow, not fixed */}
+          {/* Chat Sidebar - fixed position, independent of page scroll */}
           {user && chatOpen && (
-            <div className="w-80 flex-shrink-0">
+            <div className="fixed right-0 top-16 w-80 h-[calc(100vh-4rem)] z-40">
               <ChatSidebar
                 isOpen={chatOpen}
                 onToggle={toggleChat}

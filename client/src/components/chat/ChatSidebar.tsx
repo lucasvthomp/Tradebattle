@@ -204,7 +204,8 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 30, stiffness: 300 }}
-      className="h-full w-full bg-background/95 backdrop-blur-md border-l border-border/50 shadow-xl flex flex-col sticky top-16"
+      className="h-full w-full bg-background/95 backdrop-blur-md border-l border-border/50 shadow-xl flex flex-col overflow-hidden"
+      style={{ maxHeight: 'calc(100vh - 4rem)' }}
     >
             {/* Compact Header with Chat Selector */}
             <div className="flex items-center justify-between p-3 border-b border-border/30 bg-background/40">
@@ -253,8 +254,9 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             </div>
 
             {/* Messages Area - Semi-transparent */}
-            <ScrollArea ref={scrollAreaRef} className="flex-1 p-3 bg-background/20">
-              <div className="space-y-3">
+            <div className="flex-1 overflow-hidden">
+              <ScrollArea ref={scrollAreaRef} className="h-full p-3 bg-background/20">
+                <div className="space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
                     <div className="inline-block w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -319,8 +321,9 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                     </div>
                   ))
                 )}
-              </div>
-            </ScrollArea>
+                </div>
+              </ScrollArea>
+            </div>
 
             {/* Message Input - Semi-transparent */}
             <div className="p-3 border-t border-border/30 bg-background/40">

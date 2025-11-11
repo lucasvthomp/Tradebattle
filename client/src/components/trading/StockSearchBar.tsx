@@ -231,8 +231,8 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
         </div>
       )}
 
-      {/* Selected stock actions */}
-      {selectedStock && (
+      {/* Selected stock actions - only show if no parent callback (standalone mode) */}
+      {selectedStock && !onStockSelect && (
         <div className="mt-3 p-3 border rounded-lg bg-muted/30">
           <div className="flex items-center justify-between">
             <div>
