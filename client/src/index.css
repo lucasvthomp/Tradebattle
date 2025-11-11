@@ -12,9 +12,9 @@
   --foreground: 215 8% 86%;  /* Softer off-white for primary text - less bright */
 
   /* Card & Panel Hierarchy - Darker & Bluer */
-  --card: 215 50% 15%;  /* #172535 - Darker, bluer card background */
+  --card: 215 50% 18%;  /* #1A2A3D - Lighter card background for better visibility */
   --card-foreground: 215 12% 78%;  /* Softer body text, less bright */
-  --popover: 215 50% 15%;
+  --popover: 215 50% 18%;
   --popover-foreground: 215 12% 78%;  /* Softer body text in popovers */
 
   /* Gold Accent - Use sparingly */
@@ -39,7 +39,7 @@
 
   /* Borders & Inputs - Darker & Bluer */
   --border: 215 40% 30%;  /* #324559 - More visible borders for better card definition */
-  --input: 215 50% 15%;  /* #172535 - Darker, bluer inputs */
+  --input: 215 40% 18%;  /* #1E2D3F - Input background matching cards */
   --ring: 43 71% 57%;  /* Gold ring for focus states */
   --radius: 0.75rem;
 
@@ -117,9 +117,9 @@
   --foreground: 215 8% 86%;  /* Softer off-white for primary text - less bright */
 
   /* Card & Panel Hierarchy - Darker & Bluer */
-  --card: 215 50% 15%;  /* Darker, bluer card background */
+  --card: 215 50% 18%;  /* Lighter card background for better visibility */
   --card-foreground: 215 12% 78%;  /* Softer body text, less bright */
-  --popover: 215 50% 15%;
+  --popover: 215 50% 18%;
   --popover-foreground: 215 12% 78%;  /* Softer body text in popovers */
 
   /* Gold Accent */
@@ -397,34 +397,40 @@
     color: hsl(0, 0%, 0%);
   }
   
-  /* Card Styles */
+  /* Card Styles - Navy & Gold Color Hierarchy */
   .card {
-    background-color: #172535 !important;
-    border: none !important;
+    background-color: #1E2D3F !important;
+    border: 1px solid rgba(43, 58, 76, 0.4) !important;
     backdrop-filter: blur(12px);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   }
 
   .card-inner {
-    background-color: #0E1B28;
+    background-color: #142538;
     border: none;
   }
 
-  /* Input & Form Styles - Only these have visible borders */
+  /* Input & Form Styles */
   input, textarea, select {
-    background-color: #0E1B28 !important;
-    border: 1px solid #263544 !important;
-    color: #B8BDC8;
+    background-color: #142538 !important;
+    border: 1px solid #2B3A4C !important;
+    color: #C9D1E2;
   }
 
   input:focus, textarea:focus, select:focus {
     border-color: #E3B341 !important;
     outline: none;
+    box-shadow: 0 0 0 2px rgba(227, 179, 65, 0.15);
   }
 
-  /* Remove borders from buttons by default */
+  /* Buttons - minimal borders */
   button {
     border: none;
+  }
+
+  /* Dialog/Dropdown/Popover backgrounds */
+  [role="dialog"], [role="menu"], [role="listbox"], [role="combobox"] {
+    background-color: #1E2D3F !important;
   }
 
   /* Status Colors */
@@ -476,14 +482,14 @@
   /* Interactive card effects */
   .interactive-card {
     @apply transition-colors duration-200;
-    background: #172535;
+    background: #1A2A3D;
     border: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .interactive-card:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-    background: #1A2A3D;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    background: #1F3448;
   }
   
   /* Premium text effects */

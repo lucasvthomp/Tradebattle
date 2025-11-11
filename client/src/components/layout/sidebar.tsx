@@ -57,7 +57,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     <div className={`fixed left-0 top-0 h-full z-40 transition-transform duration-300 ${
       isOpen ? 'translate-x-0' : '-translate-x-full'
     }`}>
-      <div className="w-64 h-full backdrop-blur-xl bg-background/80 border-r border-border/50 flex flex-col shadow-2xl">
+      <div className="w-64 h-full bg-sidebar border-r border-border/50 flex flex-col shadow-2xl">
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-border/50 backdrop-blur-sm">
           <div className="flex items-center space-x-2">

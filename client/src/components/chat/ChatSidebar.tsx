@@ -308,7 +308,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                             {formatTimestamp(message.createdAt)}
                           </span>
                         </div>
-                        <div className="bg-muted/40 backdrop-blur-sm rounded-lg px-3 py-2 border border-border/30">
+                        <div className="bg-muted/40 backdrop-blur-sm rounded-lg px-3 py-2">
                           <p className="text-sm break-words leading-tight">{message.message}</p>
                         </div>
                       </div>
