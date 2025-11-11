@@ -439,7 +439,7 @@ export default function TournamentsPage() {
               <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/50 backdrop-blur-sm">
                 <TabsTrigger
                   value="upcoming"
-                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-red-500 data-[state=active]:text-white transition-all duration-300"
+                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white transition-all duration-300"
                 >
                   <Timer className="w-4 h-4" />
                   <span className="hidden sm:inline">Upcoming</span>
@@ -449,7 +449,7 @@ export default function TournamentsPage() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="ongoing"
-                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white transition-all duration-300"
+                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-amber-600 data-[state=active]:text-white transition-all duration-300"
                 >
                   <Trophy className="w-4 h-4" />
                   <span className="hidden sm:inline">Ongoing</span>
@@ -798,12 +798,12 @@ function TournamentCard({
     >
       <Card className={`h-full relative overflow-hidden group backdrop-blur-sm transition-all duration-500 border-2 ${
         isHighPot
-          ? type === "ongoing"
+          ? type === "upcoming"
             ? "border-green-500/50 hover:border-green-400 bg-gradient-to-br from-card via-green-500/5 to-emerald-500/10 shadow-lg shadow-green-500/20 hover:shadow-2xl hover:shadow-green-400/30"
-            : "border-orange-500/50 hover:border-orange-400 bg-gradient-to-br from-card via-orange-500/5 to-red-500/10 shadow-lg shadow-orange-500/20 hover:shadow-2xl hover:shadow-orange-400/30"
-          : type === "ongoing"
+            : "border-yellow-500/50 hover:border-yellow-400 bg-gradient-to-br from-card via-yellow-500/5 to-amber-500/10 shadow-lg shadow-yellow-500/20 hover:shadow-2xl hover:shadow-yellow-400/30"
+          : type === "upcoming"
             ? "border-green-500/30 hover:border-green-500/60 bg-gradient-to-br from-card/95 via-card/90 to-green-500/5 hover:shadow-xl hover:shadow-green-500/10"
-            : "border-orange-500/30 hover:border-orange-500/60 bg-gradient-to-br from-card/95 via-card/90 to-orange-500/5 hover:shadow-xl hover:shadow-orange-500/10"
+            : "border-yellow-500/30 hover:border-yellow-500/60 bg-gradient-to-br from-card/95 via-card/90 to-yellow-500/5 hover:shadow-xl hover:shadow-yellow-500/10"
       }`}>
         {/* High pot crown indicator */}
         {isHighPot && (
@@ -826,17 +826,17 @@ function TournamentCard({
 
         {/* Animated gradient overlay */}
         <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ${
-          type === "ongoing"
-            ? "bg-gradient-to-br from-yellow-500/10 via-transparent to-amber-500/10"
-            : "bg-gradient-to-br from-green-500/10 via-transparent to-emerald-500/10"
+          type === "upcoming"
+            ? "bg-gradient-to-br from-green-500/10 via-transparent to-emerald-500/10"
+            : "bg-gradient-to-br from-yellow-500/10 via-transparent to-amber-500/10"
         }`} />
 
         {/* Shimmer effect on hover */}
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
           <div className={`absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ${
-            type === "ongoing"
-              ? "bg-gradient-to-r from-transparent via-yellow-400/10 to-transparent"
-              : "bg-gradient-to-r from-transparent via-green-400/10 to-transparent"
+            type === "upcoming"
+              ? "bg-gradient-to-r from-transparent via-green-400/10 to-transparent"
+              : "bg-gradient-to-r from-transparent via-yellow-400/10 to-transparent"
           }`} />
         </div>
 
@@ -848,9 +848,9 @@ function TournamentCard({
                   whileHover={{ rotate: 360, scale: 1.1 }}
                   transition={{ duration: 0.6, ease: "easeInOut" }}
                   className={`p-1.5 rounded-lg shadow-lg ${
-                    type === "ongoing"
-                      ? "bg-gradient-to-br from-yellow-500 to-amber-600 shadow-yellow-500/30"
-                      : "bg-gradient-to-br from-green-500 to-emerald-600 shadow-green-500/30"
+                    type === "upcoming"
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600 shadow-green-500/30"
+                      : "bg-gradient-to-br from-yellow-500 to-amber-600 shadow-yellow-500/30"
                   }`}
                 >
                   <TournamentTypeIcon className="w-3.5 h-3.5 text-white" />
@@ -895,12 +895,12 @@ function TournamentCard({
             transition={{ duration: 0.3 }}
             className={`relative text-center py-3 rounded-xl border-2 overflow-hidden backdrop-blur-sm ${
               isHighPot
-                ? type === "ongoing"
-                  ? "bg-gradient-to-br from-yellow-500/20 via-amber-500/15 to-yellow-600/20 border-yellow-400/50 shadow-lg shadow-yellow-500/20"
-                  : "bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-green-600/20 border-green-400/50 shadow-lg shadow-green-500/20"
-                : type === "ongoing"
-                  ? "bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-yellow-600/10 border-yellow-500/30"
-                  : "bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-green-600/10 border-green-500/30"
+                ? type === "upcoming"
+                  ? "bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-green-600/20 border-green-400/50 shadow-lg shadow-green-500/20"
+                  : "bg-gradient-to-br from-yellow-500/20 via-amber-500/15 to-yellow-600/20 border-yellow-400/50 shadow-lg shadow-yellow-500/20"
+                : type === "upcoming"
+                  ? "bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-green-600/10 border-green-500/30"
+                  : "bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-yellow-600/10 border-yellow-500/30"
             }`}
           >
             {/* Animated background pattern */}
@@ -939,9 +939,9 @@ function TournamentCard({
                 className={`text-2xl font-black bg-gradient-to-r ${
                   isHighPot
                     ? "from-yellow-400 via-yellow-500 to-yellow-600"
-                    : type === "ongoing"
-                      ? "from-yellow-400 via-amber-500 to-yellow-600"
-                      : "from-green-500 via-emerald-500 to-green-600"
+                    : type === "upcoming"
+                      ? "from-green-500 via-emerald-500 to-green-600"
+                      : "from-yellow-400 via-amber-500 to-yellow-600"
                 } bg-clip-text text-transparent mb-1 drop-shadow-lg`}
               >
                 {formatCurrency(currentPot)}
@@ -994,22 +994,22 @@ function TournamentCard({
               animate={{
                 scale: [1, 1.02, 1],
                 boxShadow: [
-                  "0 0 0px rgba(249, 115, 22, 0)",
-                  "0 0 20px rgba(249, 115, 22, 0.3)",
-                  "0 0 0px rgba(249, 115, 22, 0)"
+                  "0 0 0px rgba(34, 197, 94, 0)",
+                  "0 0 20px rgba(34, 197, 94, 0.3)",
+                  "0 0 0px rgba(34, 197, 94, 0)"
                 ]
               }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="text-center p-3.5 bg-gradient-to-r from-orange-500/20 via-red-500/20 to-orange-500/20 rounded-lg border-2 border-orange-500/40 backdrop-blur-sm"
+              className="text-center p-3.5 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-lg border-2 border-green-500/40 backdrop-blur-sm"
             >
               <div className="flex items-center justify-center gap-2">
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
                 >
-                  <Timer className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <Timer className="w-4 h-4 text-green-600 dark:text-green-400" />
                 </motion.div>
-                <p className="text-sm font-bold text-orange-600 dark:text-orange-400">
+                <p className="text-sm font-bold text-green-600 dark:text-green-400">
                   {getTimeRemaining()}
                 </p>
               </div>

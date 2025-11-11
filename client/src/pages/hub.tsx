@@ -3,253 +3,352 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Trophy, 
-  TrendingUp, 
-  Users, 
+import {
+  Trophy,
   Award,
-  Calendar,
   BarChart3,
-  ChevronRight,
   Zap,
   Star,
-  Target,
   DollarSign,
   ArrowRight,
-  Activity,
-  Globe,
+  Flame,
+  Crown,
   Sparkles,
   Timer,
-  PlayCircle
+  Users,
+  Activity
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-};
+const FloatingIcons = () => {
+  const icons = [
+    { Icon: Trophy, color: '#E3B341', delay: 0 },
+    { Icon: DollarSign, color: '#28C76F', delay: 1 },
+    { Icon: Crown, color: '#E3B341', delay: 2 },
+    { Icon: Star, color: '#E3B341', delay: 3 },
+  ];
 
-const staggerChildren = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {icons.map((item, i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{
+            left: `${20 + i * 20}%`,
+            top: `${30 + (i % 2) * 40}%`,
+          }}
+          animate={{
+            y: [-20, 20, -20],
+            rotate: [0, 10, -10, 0],
+            opacity: [0.05, 0.15, 0.05],
+          }}
+          transition={{
+            duration: 4 + i,
+            delay: item.delay,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <item.Icon className="w-16 h-16" style={{ color: item.color }} />
+        </motion.div>
+      ))}
+    </div>
+  );
 };
 
 export default function Hub() {
   const { user } = useAuth();
-  const { t } = useUserPreferences();
+  const { t, formatCurrency } = useUserPreferences();
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Update time every minute for greeting
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Dynamic greeting based on time
   const getGreeting = () => {
     const hour = currentTime.getHours();
-    if (hour < 12) return t('goodMorning') || "Good Morning";
-    if (hour < 17) return t('goodAfternoon') || "Good Afternoon"; 
-    return t('goodEvening') || "Good Evening";
+    if (hour < 12) return "Good Morning";
+    if (hour < 17) return "Good Afternoon";
+    return "Good Evening";
   };
 
-  // Primary actions - streamlined and focused
+  // Fetch tournaments
+  const { data: tournamentsData } = useQuery({
+    queryKey: ['/api/tournaments'],
+  });
+
+  const activeTournaments = tournamentsData?.data?.filter((t: any) => t.status === 'active') || [];
+  const nextTournament = activeTournaments[0];
+
   const primaryActions = [
     {
-      title: t('dashboard'),
-      description: t('dashboardDescription') || "Jump into your personal trading dashboard",
+      title: "Trade Now",
+      description: "Jump into action with your live portfolio",
       href: "/dashboard",
       icon: BarChart3,
-      accent: "from-blue-500 to-purple-600",
-      feature: "trending"
+      bgColor: '#1E2D3F',
+      borderColor: '#28C76F',
+      badge: "Live",
+      badgeColor: "#28C76F",
     },
     {
-      title: t('joinTournament'),
-      description: t('joinTournamentDescription') || "Compete against traders worldwide",
-      href: "/tournaments", 
+      title: "Join Tournament",
+      description: `${activeTournaments.length} active tournaments waiting`,
+      href: "/tournaments",
       icon: Trophy,
-      accent: "from-orange-500 to-red-600",
-      feature: "hot"
+      bgColor: '#1E2D3F',
+      borderColor: '#E3B341',
+      badge: "Ongoing",
+      badgeColor: "#E3B341",
     },
     {
-      title: t('leaderboard'),
-      description: t('leaderboardDescription') || "See where you stand globally",
+      title: "Leaderboard",
+      description: "Compete for the top spot globally",
       href: "/leaderboard",
-      icon: Award,
-      accent: "from-green-500 to-emerald-600",
-      feature: "live"
+      icon: Crown,
+      bgColor: '#1E2D3F',
+      borderColor: '#E3B341',
+      badge: "Top 100",
+      badgeColor: "#E3B341",
     }
   ];
 
-  // Secondary features - clean and minimal
-  const secondaryFeatures = [
-    { title: t('community'), href: "/people", icon: Users },
-    { title: t('events') || "Events", href: "/events", icon: Calendar },
-    { title: t('analytics'), href: "/analytics", icon: Activity }
-  ];
-
-  // Live stats - minimal and informative
-  const liveStats = [
-    { label: "Active Traders", value: "2,847", trend: "+12%" },
-    { label: "Live Tournaments", value: "16", trend: "now" },
-    { label: "Daily Volume", value: "$1.2M", trend: "+8%" }
+  const quickStats = [
+    { label: "Balance", value: formatCurrency(Number(user?.siteCash) || 0), icon: DollarSign, color: '#E3B341' },
+    { label: "Active Trades", value: "12", icon: Activity, color: '#28C76F' },
+    { label: "Tournaments", value: activeTournaments.length, icon: Trophy, color: '#E3B341' },
+    { label: "Global Rank", value: "#152", icon: Award, color: '#3B82F6' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      <div className="container mx-auto py-6 lg:py-8">
-        
-        {/* Personal Greeting Header */}
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#06121F' }}>
+      {/* Floating Background */}
+      <FloatingIcons />
+
+      {/* Grid Background */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'linear-gradient(rgba(227, 179, 65, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(227, 179, 65, 0.1) 1px, transparent 1px)',
+          backgroundSize: '50px 50px'
+        }} />
+      </div>
+
+      <div className="container mx-auto py-8 relative z-10">
+        {/* Hero Header */}
         <motion.div
-          className="mb-8 lg:mb-10"
-          {...fadeInUp}
+          className="mb-10"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground tracking-tight">
-                {getGreeting()}, {user?.username || "Trader"}
-              </h1>
-              <p className="text-base sm:text-lg text-muted-foreground mt-2 flex items-center">
-                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-primary/60" />
-                {t('hubWelcomeMessage') || "Ready to make your mark on the markets?"}
+              <motion.div
+                className="flex items-center gap-3 mb-2"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <Crown className="w-10 h-10" style={{ color: '#E3B341' }} />
+                <h1 className="text-5xl font-black">
+                  {getGreeting()}, <span style={{ color: '#E3B341' }}>{user?.username}</span>!
+                </h1>
+              </motion.div>
+              <p className="text-xl flex items-center gap-2" style={{ color: '#8A93A6' }}>
+                <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#28C76F' }} />
+                Ready to compete and win?
               </p>
             </div>
-            
-            {/* Live indicator */}
-            <div className="hidden md:flex items-center space-x-2 text-sm">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-muted-foreground">Markets Live</span>
-            </div>
-          </div>
-        </motion.div>
 
-        {/* Primary Action Cards - Hero Section */}
-        <motion.div
-          className="mb-8 lg:mb-10"
-          variants={staggerChildren}
-          initial="initial"
-          animate="animate"
-        >
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 xl:gap-6">
-            {primaryActions.map((action, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Link href={action.href}>
-                  <Card className="group relative overflow-hidden cursor-pointer border-0 bg-card/60 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 hover:scale-[1.02] hover:shadow-xl">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${action.accent} opacity-5 group-hover:opacity-10 transition-opacity`} />
-                    
-                    {/* Feature badge */}
-                    <div className="absolute top-4 right-4">
-                      {action.feature === "trending" && (
-                        <Badge variant="secondary" className="text-xs bg-blue-500/20 text-blue-600 border-blue-500/30">
-                          <TrendingUp className="w-3 h-3 mr-1" />
-                          Trending
-                        </Badge>
-                      )}
-                      {action.feature === "hot" && (
-                        <Badge variant="secondary" className="text-xs bg-red-500/20 text-red-600 border-red-500/30">
-                          <Zap className="w-3 h-3 mr-1" />
-                          Hot
-                        </Badge>
-                      )}
-                      {action.feature === "live" && (
-                        <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-600 border-green-500/30">
-                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-1" />
-                          Live
-                        </Badge>
-                      )}
-                    </div>
-
-                    <CardContent className="p-6 lg:p-8">
-                      <div className="flex items-start justify-between mb-4 lg:mb-6">
-                        <div className={`p-3 lg:p-4 rounded-2xl bg-gradient-to-br ${action.accent} shadow-lg`}>
-                          <action.icon className="w-6 h-6 lg:w-8 lg:h-8 text-white" />
-                        </div>
-                      </div>
-                      
-                      <h3 className="text-xl lg:text-2xl font-bold text-foreground mb-2 lg:mb-3 group-hover:text-primary transition-colors">
-                        {action.title}
-                      </h3>
-                      <p className="text-muted-foreground mb-4 lg:mb-6 leading-relaxed text-sm lg:text-base">
-                        {action.description}
-                      </p>
-                      
-                      <div className="flex items-center text-primary font-medium group-hover:translate-x-1 transition-transform text-sm lg:text-base">
-                        <span>Get Started</span>
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </div>
-                    </CardContent>
-                  </Card>
+            {/* Balance Card */}
+            <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px' }} className="min-w-[280px]">
+              <CardContent className="p-6">
+                <div className="text-sm mb-1" style={{ color: '#8A93A6' }}>Your Balance</div>
+                <div className="flex items-center gap-3">
+                  <DollarSign className="w-8 h-8" style={{ color: '#E3B341' }} />
+                  <span className="text-3xl font-black" style={{ color: '#E3B341' }}>
+                    {formatCurrency(Number(user?.siteCash) || 0)}
+                  </span>
+                </div>
+                <Link href="/dashboard">
+                  <Button className="w-full mt-4 font-bold" style={{ backgroundColor: '#E3B341', color: '#06121F' }}>
+                    <Zap className="w-4 h-4 mr-2" />
+                    Trade Now
+                  </Button>
                 </Link>
-              </motion.div>
-            ))}
+              </CardContent>
+            </Card>
           </div>
         </motion.div>
 
-        {/* Stats Bar - Minimal and Clean */}
+        {/* Quick Stats */}
         <motion.div
-          className="mb-8 lg:mb-10"
-          variants={fadeInUp}
-          initial="initial"
-          animate="animate"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
-          <Card className="border-0 bg-card/40 backdrop-blur-sm">
-            <CardContent className="p-4 sm:p-6">
-              <div className="grid grid-cols-3 divide-x divide-border/50">
-                {liveStats.map((stat, index) => (
-                  <div key={index} className="text-center px-2 sm:px-4">
-                    <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mb-1">{stat.value}</div>
-                    <div className="text-xs sm:text-sm text-muted-foreground mb-1">{stat.label}</div>
-                    <div className="text-xs text-primary font-medium">{stat.trend}</div>
+          {quickStats.map((stat, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ scale: 1.05, y: -5 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }} className="transition-all hover:border-[#E3B341]">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Sparkles className="w-4 h-4 opacity-50" style={{ color: '#E3B341' }} />
+                    </motion.div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="text-2xl font-black mb-1" style={{ color: '#C9D1E2' }}>{stat.value}</div>
+                  <div className="text-xs" style={{ color: '#8A93A6' }}>{stat.label}</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </motion.div>
 
-        {/* Secondary Features - Horizontal Strip */}
+        {/* Primary Action Cards */}
+        <div className="grid lg:grid-cols-3 gap-6 mb-10">
+          {primaryActions.map((action, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.1 }}
+              whileHover={{ scale: 1.03, y: -5 }}
+            >
+              <Link href={action.href}>
+                <Card
+                  className="h-full cursor-pointer relative overflow-hidden group"
+                  style={{
+                    backgroundColor: action.bgColor,
+                    borderColor: action.borderColor,
+                    borderWidth: '2px'
+                  }}
+                >
+                  <motion.div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-10"
+                    style={{ backgroundColor: action.borderColor }}
+                    transition={{ duration: 0.3 }}
+                  />
+
+                  <Badge
+                    className="absolute top-4 right-4 animate-pulse font-bold"
+                    style={{ backgroundColor: action.badgeColor, color: '#FFFFFF' }}
+                  >
+                    {action.badge}
+                  </Badge>
+
+                  <CardContent className="p-8 relative z-10">
+                    <motion.div
+                      animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.1, 1] }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                    >
+                      <action.icon className="w-16 h-16 mb-4" style={{ color: action.borderColor }} />
+                    </motion.div>
+
+                    <h3 className="text-3xl font-black mb-3" style={{ color: '#C9D1E2' }}>{action.title}</h3>
+                    <p className="mb-6 text-sm" style={{ color: '#8A93A6' }}>{action.description}</p>
+
+                    <div className="flex items-center gap-2 font-bold group-hover:gap-3 transition-all" style={{ color: action.borderColor }}>
+                      <span>Let's Go</span>
+                      <ArrowRight className="w-5 h-5" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Featured Tournament */}
         <motion.div
-          className="mb-8"
-          variants={staggerChildren}
-          initial="initial"
-          animate="animate"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mb-10"
         >
-          <div className="flex items-center justify-between mb-4 lg:mb-6">
-            <h2 className="text-lg sm:text-xl font-semibold text-foreground">Quick Access</h2>
-            <Button variant="ghost" size="sm" className="text-xs sm:text-sm text-muted-foreground hover:text-foreground">
-              View All
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
+          <Link href="/tournaments">
+            <Card
+              className="cursor-pointer group relative overflow-hidden"
+              style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px' }}
+            >
+              <motion.div
+                className="absolute inset-0 opacity-0 group-hover:opacity-10"
+                style={{ backgroundColor: '#E3B341' }}
+                transition={{ duration: 0.3 }}
+              />
 
-          <div className="grid grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
-            {secondaryFeatures.map((feature, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Link href={feature.href}>
-                  <Card className="group cursor-pointer border-0 bg-card/30 backdrop-blur-sm hover:bg-card/60 transition-all duration-200 hover:scale-105">
-                    <CardContent className="p-4 lg:p-6 text-center">
-                      <div className="flex justify-center mb-2 lg:mb-3">
-                        <div className="p-2 lg:p-3 rounded-xl bg-muted/50 group-hover:bg-primary/10 transition-colors">
-                          <feature.icon className="w-4 h-4 lg:w-5 lg:h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                        </div>
+              <CardContent className="p-5 relative z-10">
+                <div className="grid md:grid-cols-2 gap-5 items-center">
+                  <div>
+                    <Badge
+                      className="mb-3 animate-pulse font-bold text-xs"
+                      style={{ backgroundColor: '#E3B341', color: '#06121F' }}
+                    >
+                      <Flame className="w-3 h-3 mr-1" />
+                      LIVE NOW
+                    </Badge>
+                    <h3 className="text-2xl font-black mb-3 flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                      <Trophy className="w-7 h-7" style={{ color: '#E3B341' }} />
+                      {nextTournament?.name || "Weekly Championship"}
+                    </h3>
+                    <p className="text-sm mb-4" style={{ color: '#8A93A6' }}>
+                      Prize Pool: <span className="text-2xl font-black" style={{ color: '#28C76F' }}>$7,500</span>
+                    </p>
+                    <div className="flex items-center gap-4 text-xs mb-4" style={{ color: '#8A93A6' }}>
+                      <div className="flex items-center gap-1.5">
+                        <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
+                        <span className="font-semibold">248 players</span>
                       </div>
-                      <h3 className="text-xs lg:text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-                        {feature.title}
-                      </h3>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+                      <div className="flex items-center gap-1.5">
+                        <Timer className="w-4 h-4" style={{ color: '#E3B341' }} />
+                        <span className="font-semibold">18h left</span>
+                      </div>
+                    </div>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Button
+                        className="font-bold"
+                        style={{ backgroundColor: '#E3B341', color: '#06121F' }}
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
+                        Join Tournament Now
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </motion.div>
+                  </div>
 
+                  <div className="relative">
+                    <motion.div
+                      className="text-center p-5 rounded-lg"
+                      style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                      animate={{ scale: [1, 1.02, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <Crown className="w-14 h-14 mx-auto mb-3" style={{ color: '#E3B341' }} />
+                      <div className="text-lg font-bold mb-2" style={{ color: '#C9D1E2' }}>First Place Wins</div>
+                      <div className="text-3xl font-black" style={{ color: '#28C76F' }}>$2,500</div>
+                      <p className="text-xs mt-2" style={{ color: '#8A93A6' }}>Top 20 positions paid out</p>
+                    </motion.div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </motion.div>
       </div>
     </div>
   );

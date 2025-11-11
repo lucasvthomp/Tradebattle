@@ -49,11 +49,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display - Clickable for balance management */}
                 <Button
                   variant="ghost"
-                  className="flex items-center space-x-2 px-3 py-2 border border-border/30 hover:bg-primary/10 transition-colors"
+                  className="h-10 flex items-center justify-center px-4 hover:bg-yellow-500/10 transition-all"
+                  style={{
+                    border: '2px solid #E3B341',
+                    color: '#E3B341'
+                  }}
                   onClick={() => setBalanceDialogOpen(true)}
                 >
-                  <DollarSign className="w-4 h-4 text-primary" />
-                  <span className="text-sm font-semibold text-foreground">
+                  <span className="text-sm font-bold">
                     {formatCurrency(Number(user.siteCash) || 0)}
                   </span>
                 </Button>
@@ -63,18 +66,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Button
                     onClick={onChatToggle}
                     variant="ghost"
-                    size="sm"
-                    className="flex items-center space-x-2 px-3 py-2 border border-border/30"
+                    className="h-10 w-10 p-0 flex items-center justify-center border border-border/30 hover:bg-muted/50 transition-colors"
                   >
                     <MessageSquare className="w-4 h-4" />
-                    <span className="text-sm font-medium">{t('chat')}</span>
                   </Button>
                 )}
 
                 {/* User Menu with integrated balance */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center space-x-2 px-3 py-2 border border-border/30">
+                    <Button variant="ghost" className="h-10 flex items-center space-x-2 px-3 border border-border/30 hover:bg-muted/50 transition-colors">
                       <User className="w-4 h-4" />
                       <span className="text-sm font-medium">
                         {user?.username || "User"}

@@ -2,374 +2,413 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import { 
-  TrendingUp, 
-  Trophy, 
-  Users, 
-  Target, 
+import {
+  TrendingUp,
+  Trophy,
+  Users,
+  Target,
   BarChart3,
-  Shield,
   Zap,
-  Globe,
   ArrowRight,
-  Play,
   DollarSign,
   Award,
-  Clock,
-  CheckCircle,
-  Star,
+  Sparkles,
+  Flame,
+  Crown,
   TrendingDown,
-  LineChart
+  Activity,
+  Timer
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
+import { useEffect, useState } from "react";
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 30 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
+// Animated floating money icons
+const FloatingMoney = () => {
+  const money = Array.from({ length: 15 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    delay: Math.random() * 5,
+    duration: 15 + Math.random() * 10
+  }));
 
-const staggerChildren = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-// Stock chart background SVG component
-const StockChartBackground = () => (
-  <div className="absolute inset-0 overflow-hidden">
-    <svg
-      className="absolute inset-0 w-full h-full opacity-10"
-      viewBox="0 0 800 400"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <linearGradient id="stockGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
-          <stop offset="100%" stopColor="#3b82f6" stopOpacity="0.05" />
-        </linearGradient>
-        <filter id="glow">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-          <feMerge> 
-            <feMergeNode in="coloredBlur"/>
-            <feMergeNode in="SourceGraphic"/>
-          </feMerge>
-        </filter>
-      </defs>
-      
-      {/* Grid lines */}
-      <g stroke="#3b82f6" strokeWidth="0.5" opacity="0.2">
-        {Array.from({ length: 10 }).map((_, i) => (
-          <line key={`h-${i}`} x1="0" y1={i * 40} x2="800" y2={i * 40} />
-        ))}
-        {Array.from({ length: 20 }).map((_, i) => (
-          <line key={`v-${i}`} x1={i * 40} y1="0" x2={i * 40} y2="400" />
-        ))}
-      </g>
-      
-      {/* Stock price line */}
-      <path
-        d="M 0 300 Q 100 250 200 280 T 400 200 T 600 160 T 800 120"
-        fill="none"
-        stroke="#3b82f6"
-        strokeWidth="2"
-        filter="url(#glow)"
-        opacity="0.8"
-      />
-      
-      {/* Area under the curve */}
-      <path
-        d="M 0 300 Q 100 250 200 280 T 400 200 T 600 160 T 800 120 L 800 400 L 0 400 Z"
-        fill="url(#stockGradient)"
-      />
-      
-      {/* Data points */}
-      {[
-        { x: 0, y: 300 },
-        { x: 200, y: 280 },
-        { x: 400, y: 200 },
-        { x: 600, y: 160 },
-        { x: 800, y: 120 }
-      ].map((point, i) => (
-        <circle
-          key={i}
-          cx={point.x}
-          cy={point.y}
-          r="3"
-          fill="#3b82f6"
-          filter="url(#glow)"
-          opacity="0.6"
-        />
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {money.map((item) => (
+        <motion.div
+          key={item.id}
+          className="absolute"
+          style={{ left: `${item.x}%`, top: `${item.y}%` }}
+          animate={{
+            y: [0, -100, 0],
+            x: [0, Math.random() * 20 - 10, 0],
+            opacity: [0, 0.6, 0],
+            scale: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: item.duration,
+            delay: item.delay,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          <DollarSign className="w-6 h-6" style={{ color: '#28C76F' }} />
+        </motion.div>
       ))}
-    </svg>
-  </div>
-);
+    </div>
+  );
+};
 
-export default function UnauthenticatedHome() {
-  const features = [
-    {
-      icon: Trophy,
-      title: "Competitive Trading",
-      description: "Join tournaments with traders worldwide. Compete for real prizes with virtual money.",
-      color: "text-yellow-500"
-    },
-    {
-      icon: Target,
-      title: "Risk-Free Trading",
-      description: "Practice trading strategies without financial risk. Perfect for beginners and experts alike.",
-      color: "text-blue-500"
-    },
-    {
-      icon: BarChart3,
-      title: "Real Market Data",
-      description: "Trade with authentic market prices and real-time data from major exchanges.",
-      color: "text-green-500"
-    },
-    {
-      icon: Users,
-      title: "Global Community",
-      description: "Connect with traders worldwide. Learn from the best and share your strategies.",
-      color: "text-purple-500"
-    }
-  ];
-
-  const howItWorks = [
-    {
-      step: "1",
-      title: "Sign Up & Get Started",
-      description: "Create your free account and receive $10,000 in virtual trading money",
-      icon: CheckCircle
-    },
-    {
-      step: "2", 
-      title: "Join Tournaments",
-      description: "Enter trading competitions with different themes, durations, and prize pools",
-      icon: Trophy
-    },
-    {
-      step: "3",
-      title: "Trade & Compete",
-      description: "Buy and sell stocks with real market data, compete against other traders",
-      icon: TrendingUp
-    },
-    {
-      step: "4",
-      title: "Win & Earn",
-      description: "Top performers win prizes and climb the global leaderboards",
-      icon: Award
-    }
-  ];
-
-  const stats = [
-    { label: "Active Traders", value: "10,000+", icon: Users },
-    { label: "Tournaments Daily", value: "50+", icon: Trophy },
-    { label: "Total Prizes", value: "$100K+", icon: DollarSign },
-    { label: "Countries", value: "80+", icon: Globe }
+// Live ticker animation
+const LiveTicker = () => {
+  const tickers = [
+    { symbol: "AAPL", change: "+2.4%", color: "text-[#28C76F]" },
+    { symbol: "TSLA", change: "+5.7%", color: "text-[#28C76F]" },
+    { symbol: "NVDA", change: "-1.2%", color: "text-[#FF3333]" },
+    { symbol: "MSFT", change: "+3.1%", color: "text-[#28C76F]" },
+    { symbol: "GOOGL", change: "+1.8%", color: "text-[#28C76F]" },
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section with Stock Chart Background */}
-      <section className="relative py-20 overflow-hidden">
-        <StockChartBackground />
-        <div className="relative z-10 container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.div {...fadeInUp}>
-              <Badge variant="secondary" className="mb-6 text-sm px-4 py-2">
-                <Star className="w-4 h-4 mr-2" />
-                The Future of Paper Trading
-              </Badge>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                Compete. Trade. Win.
+    <div className="absolute top-0 left-0 right-0 bg-black/20 backdrop-blur-sm border-b border-border/30 overflow-hidden">
+      <motion.div
+        className="flex items-center py-2 gap-8"
+        animate={{ x: ["0%", "-50%"] }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      >
+        {[...tickers, ...tickers, ...tickers].map((ticker, i) => (
+          <div key={i} className="flex items-center gap-2 whitespace-nowrap">
+            <span className="font-bold text-sm">{ticker.symbol}</span>
+            <span className={`text-sm font-semibold ${ticker.color}`}>{ticker.change}</span>
+          </div>
+        ))}
+      </motion.div>
+    </div>
+  );
+};
+
+// Prize pool counter
+const PrizeCounter = () => {
+  const [amount, setAmount] = useState(125000);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAmount(prev => prev + Math.random() * 100);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <motion.div
+      className="text-5xl md:text-7xl font-black mb-4"
+      style={{ color: '#28C76F' }}
+      animate={{ scale: [1, 1.05, 1] }}
+      transition={{ duration: 2, repeat: Infinity }}
+    >
+      ${amount.toLocaleString('en-US', { maximumFractionDigits: 0 })}
+    </motion.div>
+  );
+};
+
+export default function UnauthenticatedHome() {
+  const [countdown, setCountdown] = useState({ hours: 23, minutes: 45, seconds: 30 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        let { hours, minutes, seconds } = prev;
+        seconds--;
+        if (seconds < 0) { seconds = 59; minutes--; }
+        if (minutes < 0) { minutes = 59; hours--; }
+        if (hours < 0) { hours = 23; }
+        return { hours, minutes, seconds };
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const features = [
+    {
+      icon: Trophy,
+      title: "Win Real Cash",
+      description: "Top 10 winners share prize pools up to $50K per tournament",
+      highlight: "$50K",
+      color: "from-yellow-500 to-orange-600"
+    },
+    {
+      icon: Zap,
+      title: "Instant Action",
+      description: "New tournaments every hour. Jump in and compete instantly",
+      highlight: "24/7",
+      color: "from-blue-500 to-purple-600"
+    },
+    {
+      icon: Target,
+      title: "Zero Risk",
+      description: "Practice with $10,000 virtual money. Keep 100% of real winnings",
+      highlight: "Free",
+      color: "from-green-500 to-emerald-600"
+    },
+    {
+      icon: Crown,
+      title: "Climb Ranks",
+      description: "Earn XP, unlock achievements, and dominate the leaderboards",
+      highlight: "XP",
+      color: "from-purple-500 to-pink-600"
+    }
+  ];
+
+  const recentWinners = [
+    { username: "TraderKing", amount: "$2,450", rank: 1 },
+    { username: "BullMarket", amount: "$1,800", rank: 2 },
+    { username: "WolfOfWS", amount: "$1,200", rank: 3 },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-[#0a1a2f] via-[#162539] to-[#0f1e2e] text-white overflow-hidden">
+      {/* Live Ticker */}
+      <LiveTicker />
+
+      {/* Floating Money Background */}
+      <FloatingMoney />
+
+      {/* Hero Section */}
+      <section className="relative pt-32 pb-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-5xl mx-auto text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            >
+              {/* Badge */}
+              <motion.div
+                className="inline-block mb-6"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <Badge className="px-6 py-2 text-base font-bold" style={{ backgroundColor: '#28C76F', borderColor: '#28C76F' }}>
+                  <Flame className="w-5 h-5 mr-2 inline animate-pulse" />
+                  🔥 2,847 Players Online Now
+                </Badge>
+              </motion.div>
+
+              {/* Main Headline */}
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight">
+                <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
+                  Trade. Compete.
+                </span>
+                <br />
+                <span className="bg-gradient-to-r from-[#28C76F] to-[#22c55e] bg-clip-text text-transparent">
+                  Win Cash.
+                </span>
               </h1>
-              <p className="text-xl md:text-2xl text-muted-foreground mb-4">
-                No risk, all reward.
+
+              <p className="text-xl md:text-2xl text-gray-300 mb-4">
+                The world's most exciting stock trading game
               </p>
-              <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Join the world's most exciting paper trading competition platform. 
-                Practice with real market data, compete in tournaments, and climb the global leaderboards.
+              <p className="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">
+                Join tournaments, compete with real traders, win real money. No experience required.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Link href="/signup">
-                  <Button size="lg" className="text-lg px-8 py-6">
-                    Start Trading Free
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button size="lg" className="text-lg px-10 py-7 font-bold" style={{ backgroundColor: '#28C76F' }}>
+                      Start Playing Free
+                      <ArrowRight className="ml-2 w-6 h-6" />
+                    </Button>
+                  </motion.div>
                 </Link>
-                <Link href="/login">
-                  <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                    <Play className="mr-2 w-5 h-5" />
-                    Watch Demo
-                  </Button>
+                <Link href="/tournaments">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Button size="lg" variant="outline" className="text-lg px-10 py-7 font-bold border-2 hover:bg-white/10">
+                      <Trophy className="mr-2 w-6 h-6" />
+                      View Tournaments
+                    </Button>
+                  </motion.div>
                 </Link>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="flex flex-wrap justify-center gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" style={{ color: '#28C76F' }} />
+                  <span>Start with $10,000</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-4 h-4" style={{ color: '#FFD700' }} />
+                  <span>Win Real Money</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-yellow-400" />
+                  <span>Instant Join</span>
+                </div>
               </div>
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-card/50">
+      {/* Prize Pool Section */}
+      <section className="py-16 relative">
         <div className="container mx-auto px-4">
-          <motion.div 
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto"
-            variants={staggerChildren}
-            initial="initial"
-            whileInView="animate"
+          <motion.div
+            className="max-w-4xl mx-auto text-center"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
           >
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                variants={fadeInUp}
-                className="text-center"
-              >
-                <div className="flex justify-center mb-3">
-                  <stat.icon className="w-8 h-8 text-primary" />
+            <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#0f2240] border-[#28C76F]/30 border-2">
+              <CardContent className="p-12">
+                <div className="flex items-center justify-center gap-3 mb-4">
+                  <Trophy className="w-10 h-10" style={{ color: '#FFD700' }} />
+                  <h2 className="text-3xl font-bold">Total Prize Pool This Month</h2>
                 </div>
-                <div className="text-3xl font-bold text-foreground mb-1">
-                  {stat.value}
+                <PrizeCounter />
+                <p className="text-gray-400 text-lg mb-6">
+                  Join the action and claim your share
+                </p>
+
+                {/* Next Tournament Countdown */}
+                <div className="flex items-center justify-center gap-4 text-2xl font-mono font-bold">
+                  <Timer className="w-6 h-6" style={{ color: '#28C76F' }} />
+                  <span>Next Tournament:</span>
+                  <span style={{ color: '#28C76F' }}>
+                    {String(countdown.hours).padStart(2, '0')}:
+                    {String(countdown.minutes).padStart(2, '0')}:
+                    {String(countdown.seconds).padStart(2, '0')}
+                  </span>
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20">
+      {/* Recent Winners */}
+      <section className="py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <motion.div className="text-center mb-16" {...fadeInUp}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Choose Our Platform?
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Experience the thrill of trading without the risk. Our platform combines 
-                real market data with competitive gaming elements.
-              </p>
-            </motion.div>
-
-            <motion.div 
-              className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
-              variants={staggerChildren}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-            >
-              {features.map((feature, index) => (
+          <motion.div
+            className="max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl font-bold text-center mb-12">
+              <Crown className="inline w-8 h-8 mr-3" style={{ color: '#FFD700' }} />
+              Recent Winners
+            </h2>
+            <div className="grid md:grid-cols-3 gap-6">
+              {recentWinners.map((winner, i) => (
                 <motion.div
-                  key={index}
-                  variants={fadeInUp}
-                  className="group"
+                  key={i}
+                  whileHover={{ scale: 1.05, y: -10 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <Card className="h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                  <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#0f2240] border-[#28C76F]/20">
                     <CardContent className="p-6 text-center">
-                      <div className="flex justify-center mb-4">
-                        <div className="p-3 rounded-full bg-background">
-                          <feature.icon className={`w-8 h-8 ${feature.color}`} />
-                        </div>
+                      <div className="text-4xl mb-3">
+                        {winner.rank === 1 && "🥇"}
+                        {winner.rank === 2 && "🥈"}
+                        {winner.rank === 3 && "🥉"}
                       </div>
-                      <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                      <p className="text-muted-foreground text-sm leading-relaxed">
-                        {feature.description}
-                      </p>
+                      <div className="text-xl font-bold mb-2">{winner.username}</div>
+                      <div className="text-3xl font-black mb-1" style={{ color: '#28C76F' }}>
+                        {winner.amount}
+                      </div>
+                      <div className="text-sm text-gray-400">Just won!</div>
                     </CardContent>
                   </Card>
                 </motion.div>
               ))}
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="py-20 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <motion.div className="text-center mb-16" {...fadeInUp}>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                How It Works
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Get started in minutes and begin your journey to becoming a better trader
-              </p>
-            </motion.div>
-
-            <motion.div 
-              className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
-              variants={staggerChildren}
-              initial="initial"
-              whileInView="animate"
-              viewport={{ once: true }}
-            >
-              {howItWorks.map((step, index) => (
-                <motion.div
-                  key={index}
-                  variants={fadeInUp}
-                  className="text-center relative"
-                >
-                  <div className="flex justify-center mb-4">
-                    <div className="relative">
-                      <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold">
-                        {step.step}
-                      </div>
-                      {index < howItWorks.length - 1 && (
-                        <div className="hidden lg:block absolute top-8 left-16 w-20 h-0.5 bg-border"></div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex justify-center mb-3">
-                    <step.icon className="w-6 h-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-2">{step.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {step.description}
-                  </p>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
+      {/* Features Grid */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <motion.div 
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              className="text-center mb-16"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                Why Thousands Play Daily
+              </h2>
+            </motion.div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {features.map((feature, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ scale: 1.05, rotate: 1 }}
+                >
+                  <Card className={`h-full bg-gradient-to-br ${feature.color} border-0 relative overflow-hidden`}>
+                    <CardContent className="p-6 relative z-10">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        className="absolute -top-10 -right-10 opacity-20"
+                      >
+                        <feature.icon className="w-32 h-32" />
+                      </motion.div>
+                      <feature.icon className="w-12 h-12 mb-4" />
+                      <div className="text-4xl font-black mb-2">{feature.highlight}</div>
+                      <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
+                      <p className="text-sm opacity-90">{feature.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-20 relative">
+        <div className="container mx-auto px-4">
+          <motion.div
             className="max-w-4xl mx-auto text-center"
-            {...fadeInUp}
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
           >
-            <Card className="p-12 bg-gradient-to-r from-primary/10 to-secondary/10 border-primary/20">
-              <CardContent className="p-0">
-                <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                  Ready to Start Trading?
+            <Card className="bg-gradient-to-r from-[#28C76F] to-[#22c55e] border-0">
+              <CardContent className="p-16">
+                <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">
+                  Ready to Win?
                 </h2>
-                <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-                  Join thousands of traders who are already competing and improving their skills. 
-                  Start your trading journey today with $10,000 in virtual money.
+                <p className="text-xl text-white/90 mb-10">
+                  Join 10,000+ traders competing for real cash prizes every day
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link href="/signup">
-                    <Button size="lg" className="text-lg px-8 py-6">
+                <Link href="/signup">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button size="lg" className="bg-white text-[#28C76F] hover:bg-gray-100 text-xl px-12 py-8 font-black">
                       Create Free Account
-                      <ArrowRight className="ml-2 w-5 h-5" />
+                      <Sparkles className="ml-3 w-6 h-6" />
                     </Button>
-                  </Link>
-                  <Link href="/about">
-                    <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-                      Learn More
-                    </Button>
-                  </Link>
-                </div>
-                <p className="text-sm text-muted-foreground mt-6">
-                  <Shield className="inline w-4 h-4 mr-1" />
-                  100% Free • No Credit Card Required • Real Market Data
+                  </motion.div>
+                </Link>
+                <p className="text-sm text-white/70 mt-6">
+                  No credit card • No risk • Real prizes
                 </p>
               </CardContent>
             </Card>
