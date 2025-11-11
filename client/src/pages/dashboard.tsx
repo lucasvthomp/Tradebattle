@@ -208,7 +208,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-full bg-background flex flex-col overflow-hidden">
+    <div className="h-screen bg-background flex flex-col">
       {/* Tournament Trading Section */}
       {activeTournaments.length === 0 ? (
         <Card className="flex items-center justify-center flex-1 m-6">
@@ -230,7 +230,7 @@ export default function Dashboard() {
         </Card>
       ) : (
         selectedTournament && (
-          <div className="flex flex-col h-full overflow-hidden">
+          <div className="flex flex-col flex-1">
             {/* Portfolio Stats Bar */}
             <PortfolioStatsBar
               portfolioValue={portfolioMetrics.totalValue}
@@ -248,9 +248,9 @@ export default function Dashboard() {
             />
 
             {/* Main Content Area - Split Layout */}
-            <div className="flex-1 flex overflow-hidden min-h-0">
+            <div className="flex flex-1 gap-4 p-4">
               {/* Left Side - Chart (2/3 width) */}
-              <div className="flex-1 bg-card overflow-hidden min-h-0 border-r border-border/40">
+              <div className="flex-[2] flex flex-col">
                 <AdvancedTradingChart
                   selectedStock={selectedChartStock}
                   tournamentId={selectedTournament.id}
@@ -258,7 +258,7 @@ export default function Dashboard() {
               </div>
 
               {/* Right Side - Trading or Holdings (1/3 width) */}
-              <div className="w-1/3 flex flex-col min-h-0">
+              <div className="flex-1 flex flex-col">
                 {showHoldings ? (
                   <HoldingsWidget
                     holdings={getCurrentPortfolio()}
