@@ -29,15 +29,17 @@ export default function Dashboard() {
   const [selectedPrice, setSelectedPrice] = useState<number>(150.00);
   const [priceChange, setPriceChange] = useState<number>(2.50);
   const [priceChangePercent, setPriceChangePercent] = useState<number>(1.69);
-
-  // Trade execution state (independent from chart)
-  const [tradeSymbol, setTradeSymbol] = useState<string>("");
-  const [tradePrice, setTradePrice] = useState<number>(0);
+  // Order execution state (independent from chart)
+  const [orderTickerSymbol, setOrderTickerSymbol] = useState<string>("");
+  const [orderTickerPrice, setOrderTickerPrice] = useState<number>(0);
 
   // OHLCV data
   const [ohlcv, setOhlcv] = useState({ open: 148.50, high: 151.20, low: 147.80, close: 150.00, volume: 12500000 });
 
   // Order form state
+  // Trade execution state (independent from chart)
+  const [tradeSymbol, setTradeSymbol] = useState<string>("");
+  const [tradePrice, setTradePrice] = useState<number>(0);
   const [orderSide, setOrderSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState<string>('limit');
   const [quantity, setQuantity] = useState<number>(1);
