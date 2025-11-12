@@ -16,7 +16,14 @@ import {
   Sparkles,
   Timer,
   Users,
-  Activity
+  Activity,
+  TrendingUp,
+  Target,
+  Rocket,
+  Coins,
+  LineChart,
+  PieChart,
+  Percent
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -25,10 +32,16 @@ import { useQuery } from "@tanstack/react-query";
 
 const FloatingIcons = () => {
   const icons = [
-    { Icon: Trophy, color: '#E3B341', delay: 0 },
-    { Icon: DollarSign, color: '#28C76F', delay: 1 },
-    { Icon: Crown, color: '#E3B341', delay: 2 },
-    { Icon: Star, color: '#E3B341', delay: 3 },
+    { Icon: Trophy, color: '#E3B341', delay: 0, x: '10%', y: '20%' },
+    { Icon: DollarSign, color: '#28C76F', delay: 1, x: '85%', y: '15%' },
+    { Icon: Crown, color: '#E3B341', delay: 2, x: '75%', y: '65%' },
+    { Icon: Star, color: '#FFD700', delay: 3, x: '15%', y: '75%' },
+    { Icon: Rocket, color: '#FF4F58', delay: 1.5, x: '50%', y: '10%' },
+    { Icon: TrendingUp, color: '#28C76F', delay: 2.5, x: '90%', y: '45%' },
+    { Icon: Target, color: '#3B82F6', delay: 0.5, x: '5%', y: '50%' },
+    { Icon: Coins, color: '#E3B341', delay: 3.5, x: '30%', y: '85%' },
+    { Icon: Zap, color: '#FFD700', delay: 2, x: '60%', y: '80%' },
+    { Icon: LineChart, color: '#3B82F6', delay: 1, x: '40%', y: '25%' },
   ];
 
   return (
@@ -38,22 +51,51 @@ const FloatingIcons = () => {
           key={i}
           className="absolute"
           style={{
-            left: `${20 + i * 20}%`,
-            top: `${30 + (i % 2) * 40}%`,
+            left: item.x,
+            top: item.y,
           }}
           animate={{
-            y: [-20, 20, -20],
-            rotate: [0, 10, -10, 0],
-            opacity: [0.05, 0.15, 0.05],
+            y: [-30, 30, -30],
+            x: [-15, 15, -15],
+            rotate: [0, 15, -15, 0],
+            opacity: [0.08, 0.2, 0.08],
+            scale: [1, 1.2, 1],
           }}
           transition={{
-            duration: 4 + i,
+            duration: 5 + i * 0.5,
             delay: item.delay,
             repeat: Infinity,
             ease: "easeInOut"
           }}
         >
-          <item.Icon className="w-16 h-16" style={{ color: item.color }} />
+          <item.Icon className="w-20 h-20" style={{ color: item.color }} />
+        </motion.div>
+      ))}
+
+      {/* Animated currency symbols */}
+      {['$', '€', '¥', '₿'].map((symbol, i) => (
+        <motion.div
+          key={`symbol-${i}`}
+          className="absolute text-6xl font-bold"
+          style={{
+            left: `${25 + i * 20}%`,
+            top: `${40 + (i % 2) * 30}%`,
+            color: i % 2 === 0 ? '#E3B341' : '#28C76F',
+            opacity: 0.06,
+          }}
+          animate={{
+            y: [-40, 40, -40],
+            rotate: [0, 20, -20, 0],
+            opacity: [0.03, 0.12, 0.03],
+          }}
+          transition={{
+            duration: 6 + i,
+            delay: i * 0.8,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        >
+          {symbol}
         </motion.div>
       ))}
     </div>
