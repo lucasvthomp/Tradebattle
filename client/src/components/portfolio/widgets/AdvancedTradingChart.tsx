@@ -422,16 +422,16 @@ export function AdvancedTradingChart({
 
     // Add candlestick series (v5 API)
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#10B981',
-      downColor: '#EF4444',
+      upColor: '#28C76F',
+      downColor: '#FF4F58',
       borderVisible: false,
-      wickUpColor: '#10B981',
-      wickDownColor: '#EF4444',
+      wickUpColor: '#28C76F',
+      wickDownColor: '#FF4F58',
     });
 
     // Add volume series (v5 API)
     const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#10B981',
+      color: '#28C76F',
       priceFormat: {
         type: 'volume',
       },
