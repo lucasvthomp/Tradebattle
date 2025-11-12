@@ -133,7 +133,7 @@ export default function Dashboard() {
   return (
     <div className="h-screen flex" style={{ backgroundColor: '#06121F' }}>
       {/* LEFT SIDE: Chart Area */}
-      <div className="flex-1 flex flex-col p-4">
+      <div className="flex-1 flex flex-col" style={{ padding: 'clamp(12px, 1.5vw, 24px)' }}>
         {/* Single Horizontal Header Line: All Elements on Same Y-Axis */}
         <div className="flex items-center gap-3 mb-3 px-4 py-3 rounded-2xl backdrop-blur-xl" style={{
           background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2838 50%, #1E2D3F 100%)',
@@ -455,10 +455,11 @@ export default function Dashboard() {
       </div>
 
       {/* RIGHT SIDE: Watchlist + Order Panel */}
-      <div className="w-80 flex flex-col backdrop-blur-xl" style={{
+      <div className="flex flex-col backdrop-blur-xl" style={{
         background: 'linear-gradient(180deg, #1E2D3F 0%, #1A2838 100%)',
         borderLeft: '2px solid rgba(16, 185, 129, 0.15)',
-        boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)'
+        boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)',
+        width: 'clamp(300px, 22vw, 420px)'
       }}>
         {/* TOP HALF: Watchlist Section */}
         <div className="h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '3px solid #10B981', boxShadow: '0 2px 15px rgba(16, 185, 129, 0.3)' }}>

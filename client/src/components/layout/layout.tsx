@@ -26,9 +26,12 @@ export default function Layout({ children }: LayoutProps) {
         {/* Main Content Area with Chat */}
         <div className="flex flex-1 pt-16 min-h-0">
           {/* Main Content with Page Transitions */}
-          <main className={`flex-1 min-h-screen transition-all duration-300 ${
-            user && chatOpen ? 'mr-80' : ''
-          }`}>
+          <main
+            className="flex-1 min-h-screen transition-all duration-300"
+            style={{
+              marginRight: user && chatOpen ? 'clamp(280px, 22vw, 400px)' : '0'
+            }}
+          >
             <PageTransition>
               {children}
             </PageTransition>
@@ -36,7 +39,10 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Chat Sidebar - fixed position, independent of page scroll */}
           {user && chatOpen && (
-            <div className="fixed right-0 top-16 w-80 h-[calc(100vh-4rem)] z-40">
+            <div
+              className="fixed right-0 top-16 h-[calc(100vh-4rem)] z-40"
+              style={{ width: 'clamp(280px, 22vw, 400px)' }}
+            >
               <ChatSidebar
                 isOpen={chatOpen}
                 onToggle={toggleChat}
