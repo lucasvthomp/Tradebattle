@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus, Menu, X } from "lucide-react";
 interface HeaderProps {
   chatOpen?: boolean;
   onChatToggle?: () => void;
@@ -23,6 +23,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const { user, logoutMutation } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, navigate] = useLocation();
 
   return (
@@ -38,12 +39,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               <span className="text-xl font-bold text-foreground">ORSATH</span>
             </Link>
 
-            {/* Market Status Clock */}
-            <MarketStatus variant="clock" />
+            {/* Market Status Clock - hide on mobile portrait */}
+            <div className="hidden [@media(min-aspect-ratio:1/1)]:block">
+              <MarketStatus variant="clock" />
+            </div>
           </div>
 
-          {/* Right side - Clean user info and actions */}
-          <div className="flex items-center space-x-3">
+          {/* Desktop navigation - hide on portrait mobile */}
+          <div className="hidden [@media(min-aspect-ratio:1/1)]:flex items-center space-x-3">
             {user ? (
               <>
                 {/* Balance Display - Clickable for balance management */}
@@ -123,9 +126,120 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               </>
             )}
           </div>
+
+          {/* Mobile hamburger button - show only on portrait */}
+          <Button
+            variant="ghost"
+            className="[@media(min-aspect-ratio:1/1)]:hidden w-10 h-10 p-0"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </Button>
         </nav>
       </div>
-      
+
+      {/* Mobile Menu Panel - show only on portrait */}
+      {mobileMenuOpen && (
+        <div className="[@media(min-aspect-ratio:1/1)]:hidden border-t border-border" style={{ backgroundColor: 'rgba(10, 26, 47, 0.98)' }}>
+          <div className="container mx-auto px-4 py-4 space-y-3">
+            {user ? (
+              <>
+                {/* Balance Display */}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start h-12 hover:bg-yellow-500/10 border-2"
+                  style={{
+                    borderColor: '#E3B341',
+                    color: '#E3B341'
+                  }}
+                  onClick={() => {
+                    setBalanceDialogOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <DollarSign className="w-5 h-5 mr-2" />
+                  <span className="font-bold">
+                    {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </Button>
+
+                {/* Chat Button */}
+                {onChatToggle && (
+                  <Button
+                    onClick={() => {
+                      onChatToggle();
+                      setMobileMenuOpen(false);
+                    }}
+                    variant="ghost"
+                    className="w-full justify-start h-12 border border-border/30 hover:bg-muted/50"
+                  >
+                    <MessageSquare className="w-5 h-5 mr-2" />
+                    <span>Chat</span>
+                  </Button>
+                )}
+
+                {/* User Info */}
+                <div className="pt-2 pb-2 border-t border-border">
+                  <div className="flex items-center gap-2 px-3 py-2">
+                    <User className="w-5 h-5" />
+                    <span className="font-medium">{user?.username || "User"}</span>
+                  </div>
+                </div>
+
+                {/* Admin Link */}
+                {(user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS') && (
+                  <Link href="/admin">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Shield className="w-5 h-5 mr-2" />
+                      <span>Admin</span>
+                    </Button>
+                  </Link>
+                )}
+
+                {/* Logout */}
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start h-12 hover:bg-destructive/10 text-destructive"
+                  onClick={() => {
+                    logoutMutation.mutate();
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <LogOut className="w-5 h-5 mr-2" />
+                  <span>{t('logout')}</span>
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start h-12 hover:bg-muted/50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <LogIn className="w-5 h-5 mr-2" />
+                    <span>Log In</span>
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button
+                    className="w-full justify-start h-12 bg-primary hover:bg-primary/90"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <UserPlus className="w-5 h-5 mr-2" />
+                    <span>Sign Up</span>
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Balance Dialog */}
       <BalanceDialog
         open={balanceDialogOpen}

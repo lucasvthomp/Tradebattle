@@ -26,6 +26,7 @@ export function SimplifiedSidebar() {
   const { t } = useUserPreferences();
   const [location] = useLocation();
   const [expanded, setExpanded] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
 
   const navItems = [
@@ -58,17 +59,43 @@ export function SimplifiedSidebar() {
 
   return (
     <>
-      {/* Simplified Always-Visible Sidebar */}
+      {/* Mobile: Hamburger Menu Button */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className="md:hidden fixed left-4 top-20 z-50 w-10 h-10 flex items-center justify-center rounded-lg"
+        style={{
+          backgroundColor: '#1E2D3F',
+          border: '2px solid #2B3A4C'
+        }}
+      >
+        <div className="flex flex-col gap-1">
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
+        </div>
+      </button>
+
+      {/* Mobile: Overlay */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - Hidden on mobile by default, shown when menu open */}
       <div
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-30 transition-all duration-300 ease-in-out ${
-          expanded ? 'w-56' : 'w-16'
-        }`}
+        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 transition-all duration-300 ease-in-out
+          ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+          ${expanded ? 'w-56' : 'w-16'}
+        `}
         style={{
           backgroundColor: '#0D1F33',
           borderColor: '#2B3A4C'
         }}
-        onMouseEnter={() => setExpanded(true)}
-        onMouseLeave={() => setExpanded(false)}
+        onMouseEnter={() => !mobileMenuOpen && setExpanded(true)}
+        onMouseLeave={() => !mobileMenuOpen && setExpanded(false)}
       >
         {/* Navigation Items */}
         <nav className="p-3 space-y-2">
@@ -196,8 +223,8 @@ export function SimplifiedSidebar() {
         />
       </div>
 
-      {/* Main Content Spacing */}
-      <div className={`transition-all duration-300 ${expanded ? 'ml-56' : 'ml-16'}`} />
+      {/* Main Content Spacing - Only on desktop */}
+      <div className={`hidden md:block transition-all duration-300 ${expanded ? 'ml-56' : 'ml-16'}`} />
     </>
   );
 }

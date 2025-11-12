@@ -26,17 +26,17 @@ export default function Layout({ children }: LayoutProps) {
         {/* Main Content Area with Chat */}
         <div className="flex flex-1 pt-16 min-h-0">
           {/* Main Content with Page Transitions */}
-          <main className={`flex-1 min-h-screen transition-all duration-300 ${
-            user && chatOpen ? 'mr-80' : ''
+          <main className={`flex-1 min-h-screen transition-all duration-300 px-2 md:px-0 ${
+            user && chatOpen ? 'md:mr-80' : ''
           }`}>
             <PageTransition>
               {children}
             </PageTransition>
           </main>
 
-          {/* Chat Sidebar - fixed position, independent of page scroll */}
+          {/* Chat Sidebar - fixed position, independent of page scroll - Hidden on mobile portrait */}
           {user && chatOpen && (
-            <div className="fixed right-0 top-16 w-80 h-[calc(100vh-4rem)] z-40">
+            <div className="hidden md:block fixed right-0 top-16 w-80 h-[calc(100vh-4rem)] z-40">
               <ChatSidebar
                 isOpen={chatOpen}
                 onToggle={toggleChat}
