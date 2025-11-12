@@ -78,105 +78,282 @@ export default function Leaderboard() {
     const [first, second, third] = top3;
 
     return (
-      <div className="mb-8 relative">
+      <div className="mb-12 relative">
+        {/* Spotlight effect */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 -z-10">
+          <div className="w-full h-full rounded-full opacity-20" style={{
+            background: 'radial-gradient(circle, #E3B341 0%, transparent 70%)',
+            filter: 'blur(60px)'
+          }} />
+        </div>
+
         {/* Podium Container */}
-        <div className="flex items-end justify-center gap-6 mb-8 px-8">
-          {/* 2nd Place - Left */}
+        <div className="flex items-end justify-center gap-8 mb-8 px-8">
+          {/* 2nd Place - Left (Silver) */}
           {second && (
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
               className="flex flex-col items-center"
-              style={{ width: '200px' }}
+              style={{ width: '220px' }}
             >
               <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="rounded-2xl p-6 border-none shadow-2xl relative overflow-hidden mb-4"
+                whileHover={{ scale: 1.08, y: -8 }}
+                whileTap={{ scale: 0.95 }}
+                className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #C9D1E2 0%, #9aa5b5 100%)',
-                  boxShadow: '0 10px 40px rgba(201, 209, 226, 0.4)'
+                  background: 'linear-gradient(135deg, #C9D1E2 0%, #a8b6c8 50%, #8895a8 100%)',
+                  boxShadow: '0 15px 50px rgba(201, 209, 226, 0.5), 0 0 30px rgba(201, 209, 226, 0.3)',
+                  border: '3px solid rgba(255, 255, 255, 0.5)'
                 }}
               >
-                <div className="absolute -right-4 -top-4 text-7xl opacity-20">🥈</div>
+                {/* Decorative elements */}
+                <div className="absolute -right-6 -top-6 text-8xl opacity-15">🥈</div>
+                <div className="absolute left-2 bottom-2 text-4xl opacity-10">⭐</div>
+
+                {/* Shine effect */}
+                <motion.div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
+                  }}
+                  animate={{
+                    x: ['-200%', '200%'],
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    repeatDelay: 2
+                  }}
+                />
+
                 <div className="relative z-10 text-center">
-                  <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center" style={{
-                    background: 'rgba(6, 18, 31, 0.3)',
-                    backdropFilter: 'blur(10px)'
+                  <motion.div
+                    className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
+                    style={{
+                      background: 'rgba(6, 18, 31, 0.4)',
+                      backdropFilter: 'blur(10px)',
+                      boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)'
+                    }}
+                    animate={{ rotate: [0, 360] }}
+                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Award className="w-12 h-12" style={{ color: '#06121F' }} />
+                  </motion.div>
+                  <div className="text-2xl font-black mb-2" style={{
+                    color: '#06121F',
+                    textShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                  }}>{second.username}</div>
+                  <div className="text-3xl font-black" style={{
+                    color: '#06121F',
+                    textShadow: '0 2px 10px rgba(0,0,0,0.2)'
                   }}>
-                    <Award className="w-10 h-10" style={{ color: '#06121F' }} />
-                  </div>
-                  <div className="text-2xl font-black mb-2" style={{ color: '#06121F' }}>{second.username}</div>
-                  <div className="text-3xl font-black" style={{ color: '#06121F' }}>
                     {type === 'wagered' ? formatCurrency(second.totalWagered) : `+${second.percentageChange.toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
+
+              {/* Enhanced Pedestal */}
               <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: 140 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
-                className="w-full rounded-t-xl relative overflow-hidden"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 160, opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
+                className="w-full rounded-t-2xl relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(180deg, #C9D1E2 0%, #8895a8 100%)',
-                  boxShadow: '0 -5px 20px rgba(201, 209, 226, 0.3)'
+                  background: 'linear-gradient(180deg, #C9D1E2 0%, #a8b6c8 30%, #8895a8 100%)',
+                  boxShadow: '0 -10px 40px rgba(201, 209, 226, 0.4), inset 0 2px 20px rgba(255,255,255,0.3)',
+                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  borderBottom: 'none'
                 }}
               >
+                {/* Decorative lines on pedestal */}
+                <div className="absolute inset-0 opacity-30">
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-white"></div>
+                  <div className="absolute top-8 left-0 right-0 h-px bg-white opacity-50"></div>
+                  <div className="absolute top-16 left-0 right-0 h-px bg-white opacity-50"></div>
+                </div>
+
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-6xl font-black" style={{ color: 'rgba(6, 18, 31, 0.8)' }}>2</div>
-                  <div className="text-sm font-bold" style={{ color: 'rgba(6, 18, 31, 0.6)' }}>SILVER</div>
+                  <motion.div
+                    className="text-7xl font-black mb-2"
+                    style={{ color: 'rgba(6, 18, 31, 0.9)', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >2</motion.div>
+                  <div className="text-base font-bold tracking-wider" style={{
+                    color: 'rgba(6, 18, 31, 0.7)',
+                    textShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                  }}>SILVER</div>
                 </div>
               </motion.div>
             </motion.div>
           )}
 
-          {/* 1st Place - Center (Tallest) */}
+          {/* 1st Place - Center (Gold - Tallest) */}
           {first && (
             <motion.div
-              initial={{ opacity: 0, y: 50 }}
+              initial={{ opacity: 0, y: 100 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              transition={{ delay: 0.1, type: "spring", stiffness: 120 }}
               className="flex flex-col items-center"
-              style={{ width: '220px' }}
+              style={{ width: '240px' }}
             >
               <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-                className="rounded-2xl p-8 border-none shadow-2xl relative overflow-hidden mb-4"
+                whileHover={{ scale: 1.08, y: -10 }}
+                whileTap={{ scale: 0.95 }}
+                animate={{
+                  y: [0, -15, 0],
+                  boxShadow: [
+                    '0 20px 60px rgba(227, 179, 65, 0.5), 0 0 40px rgba(227, 179, 65, 0.3)',
+                    '0 25px 70px rgba(227, 179, 65, 0.6), 0 0 50px rgba(227, 179, 65, 0.4)',
+                    '0 20px 60px rgba(227, 179, 65, 0.5), 0 0 40px rgba(227, 179, 65, 0.3)'
+                  ]
+                }}
+                transition={{
+                  y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+                  boxShadow: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+                }}
+                className="rounded-3xl p-8 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 50%, #a87d28 100%)',
-                  boxShadow: '0 15px 50px rgba(227, 179, 65, 0.5)'
+                  background: 'linear-gradient(135deg, #FFD700 0%, #E3B341 30%, #c99a35 60%, #a87d28 100%)',
+                  border: '4px solid rgba(255, 215, 0, 0.6)'
                 }}
               >
-                <div className="absolute -right-6 -top-6 text-8xl opacity-20">👑</div>
-                <div className="absolute left-4 bottom-4 text-5xl opacity-15">🏆</div>
+                {/* Decorative elements */}
+                <div className="absolute -right-8 -top-8 text-9xl opacity-20">👑</div>
+                <div className="absolute left-3 bottom-3 text-6xl opacity-15">🏆</div>
+                <div className="absolute right-3 bottom-3 text-3xl opacity-10">⭐</div>
+
+                {/* Enhanced shine effect */}
+                <motion.div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)',
+                  }}
+                  animate={{
+                    x: ['-200%', '200%'],
+                  }}
+                  transition={{
+                    duration: 2.5,
+                    repeat: Infinity,
+                    repeatDelay: 1.5
+                  }}
+                />
+
+                {/* Particles/sparkles */}
+                {[...Array(3)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="absolute text-2xl"
+                    style={{
+                      left: `${20 + i * 30}%`,
+                      top: `${10 + i * 25}%`,
+                    }}
+                    animate={{
+                      y: [-10, -20, -10],
+                      opacity: [0.3, 0.7, 0.3],
+                      scale: [0.8, 1.2, 0.8]
+                    }}
+                    transition={{
+                      duration: 2 + i * 0.5,
+                      delay: i * 0.3,
+                      repeat: Infinity
+                    }}
+                  >
+                    ✨
+                  </motion.div>
+                ))}
+
                 <div className="relative z-10 text-center">
-                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center" style={{
-                    background: 'rgba(6, 18, 31, 0.3)',
-                    backdropFilter: 'blur(10px)'
+                  <motion.div
+                    className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
+                    style={{
+                      background: 'rgba(6, 18, 31, 0.4)',
+                      backdropFilter: 'blur(10px)',
+                      boxShadow: '0 0 30px rgba(0, 0, 0, 0.4)'
+                    }}
+                    animate={{
+                      rotate: [0, 360],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                      rotate: { duration: 20, repeat: Infinity, ease: "linear" },
+                      scale: { duration: 2, repeat: Infinity }
+                    }}
+                  >
+                    <Crown className="w-14 h-14" style={{ color: '#06121F' }} />
+                  </motion.div>
+                  <div className="text-3xl font-black mb-3" style={{
+                    color: '#06121F',
+                    textShadow: '0 3px 15px rgba(0,0,0,0.3)'
+                  }}>{first.username}</div>
+                  <div className="text-4xl font-black" style={{
+                    color: '#06121F',
+                    textShadow: '0 3px 15px rgba(0,0,0,0.3)'
                   }}>
-                    <Crown className="w-12 h-12" style={{ color: '#06121F' }} />
-                  </div>
-                  <div className="text-3xl font-black mb-3" style={{ color: '#06121F' }}>{first.username}</div>
-                  <div className="text-4xl font-black" style={{ color: '#06121F' }}>
                     {type === 'wagered' ? formatCurrency(first.totalWagered) : `+${first.percentageChange.toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
+
+              {/* Enhanced Gold Pedestal */}
               <motion.div
-                initial={{ height: 0 }}
-                animate={{ height: 180 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-                className="w-full rounded-t-xl relative overflow-hidden"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 200, opacity: 1 }}
+                transition={{ delay: 0.4, duration: 1, type: "spring" }}
+                className="w-full rounded-t-2xl relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(180deg, #E3B341 0%, #c99a35 50%, #9a7728 100%)',
-                  boxShadow: '0 -5px 30px rgba(227, 179, 65, 0.4)'
+                  background: 'linear-gradient(180deg, #FFD700 0%, #E3B341 20%, #c99a35 50%, #9a7728 100%)',
+                  boxShadow: '0 -15px 50px rgba(227, 179, 65, 0.5), inset 0 3px 30px rgba(255,215,0,0.4)',
+                  border: '3px solid rgba(255, 215, 0, 0.5)',
+                  borderBottom: 'none'
                 }}
               >
+                {/* Decorative lines on pedestal */}
+                <div className="absolute inset-0 opacity-40">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent"></div>
+                  <div className="absolute top-10 left-0 right-0 h-px bg-white opacity-60"></div>
+                  <div className="absolute top-20 left-0 right-0 h-px bg-white opacity-60"></div>
+                  <div className="absolute top-30 left-0 right-0 h-px bg-white opacity-60"></div>
+                </div>
+
+                {/* Animated glow */}
+                <motion.div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'radial-gradient(circle at center, rgba(255,215,0,0.3) 0%, transparent 70%)'
+                  }}
+                  animate={{
+                    opacity: [0.3, 0.6, 0.3]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity
+                  }}
+                />
+
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl font-black" style={{ color: 'rgba(6, 18, 31, 0.8)' }}>1</div>
-                  <div className="text-base font-bold" style={{ color: 'rgba(6, 18, 31, 0.6)' }}>GOLD</div>
+                  <motion.div
+                    className="text-8xl font-black mb-2"
+                    style={{
+                      color: 'rgba(6, 18, 31, 0.9)',
+                      textShadow: '0 5px 15px rgba(0,0,0,0.4)'
+                    }}
+                    animate={{
+                      scale: [1, 1.08, 1],
+                      textShadow: [
+                        '0 5px 15px rgba(0,0,0,0.4)',
+                        '0 8px 20px rgba(0,0,0,0.5)',
+                        '0 5px 15px rgba(0,0,0,0.4)'
+                      ]
+                    }}
+                    transition={{ duration: 2.5, repeat: Infinity }}
+                  >1</motion.div>
+                  <div className="text-lg font-bold tracking-widest" style={{
+                    color: 'rgba(6, 18, 31, 0.8)',
+                    textShadow: '0 3px 8px rgba(0,0,0,0.3)'
+                  }}>GOLD</div>
                 </div>
               </motion.div>
             </motion.div>

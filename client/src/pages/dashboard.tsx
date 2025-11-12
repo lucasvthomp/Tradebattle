@@ -356,44 +356,31 @@ export default function Dashboard() {
             </SelectContent>
           </Select>
 
-          {/* OHLCV Stats */}
-          <div className="flex items-center gap-1.5 text-[10px]">
-            <span className="px-2 py-0.5 rounded-full" style={{
-              backgroundColor: 'rgba(201, 209, 226, 0.1)',
-              border: '1px solid rgba(201, 209, 226, 0.2)',
-              color: '#8A93A6'
+          {/* Tournament Selector */}
+          <Select value={selectedTournament?.id?.toString()} onValueChange={(value) => {
+            const tournament = activeTournaments.find((t: any) => t.id.toString() === value);
+            setSelectedTournament(tournament);
+          }}>
+            <SelectTrigger className="w-56 h-10 rounded-xl text-sm font-semibold border-2" style={{
+              backgroundColor: '#1A2838',
+              borderColor: '#2B3A4C',
+              color: '#E3B341'
             }}>
-              O <span className="font-semibold" style={{ color: '#C9D1E2' }}>{ohlcv.open.toFixed(2)}</span>
-            </span>
-            <span className="px-2 py-0.5 rounded-full" style={{
-              backgroundColor: 'rgba(40, 199, 111, 0.1)',
-              border: '1px solid rgba(40, 199, 111, 0.2)',
-              color: '#8A93A6'
-            }}>
-              H <span className="font-semibold" style={{ color: '#28C76F' }}>{ohlcv.high.toFixed(2)}</span>
-            </span>
-            <span className="px-2 py-0.5 rounded-full" style={{
-              backgroundColor: 'rgba(255, 79, 88, 0.1)',
-              border: '1px solid rgba(255, 79, 88, 0.2)',
-              color: '#8A93A6'
-            }}>
-              L <span className="font-semibold" style={{ color: '#FF4F58' }}>{ohlcv.low.toFixed(2)}</span>
-            </span>
-            <span className="px-2 py-0.5 rounded-full" style={{
-              backgroundColor: 'rgba(201, 209, 226, 0.1)',
-              border: '1px solid rgba(201, 209, 226, 0.2)',
-              color: '#8A93A6'
-            }}>
-              C <span className="font-semibold" style={{ color: '#C9D1E2' }}>{ohlcv.close.toFixed(2)}</span>
-            </span>
-            <span className="px-2 py-0.5 rounded-full" style={{
-              backgroundColor: 'rgba(227, 179, 65, 0.1)',
-              border: '1px solid rgba(227, 179, 65, 0.2)',
-              color: '#8A93A6'
-            }}>
-              V <span className="font-semibold" style={{ color: '#E3B341' }}>{(ohlcv.volume / 1000000).toFixed(2)}M</span>
-            </span>
-          </div>
+              <SelectValue placeholder="Select Tournament" />
+            </SelectTrigger>
+            <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              {activeTournaments.map((tournament: any) => (
+                <SelectItem
+                  key={tournament.id}
+                  value={tournament.id.toString()}
+                  className="text-sm hover:bg-[#142538]"
+                  style={{ color: '#C9D1E2' }}
+                >
+                  {tournament.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Chart */}
