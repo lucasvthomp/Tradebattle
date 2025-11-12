@@ -317,7 +317,7 @@ export default function TournamentsPage() {
 
   return (
     <div className="h-[calc(100vh-4rem)] overflow-auto bg-gradient-to-b from-background via-background to-muted/10">
-      <div className="container mx-auto py-6 lg:py-8">
+      <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(16px, 3vh, 40px) clamp(16px, 2vw, 32px)' }}>
         <motion.div
           initial="initial"
           animate="animate"
@@ -329,7 +329,7 @@ export default function TournamentsPage() {
           {/* Header */}
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-3">
+              <div className="flex items-center mb-3" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
                 <motion.div
                   animate={{
                     rotate: [0, 5, -5, 0],
@@ -342,21 +342,25 @@ export default function TournamentsPage() {
                   }}
                 >
                   <div className="relative">
-                    <Trophy className="h-8 w-8 lg:h-10 lg:w-10 text-primary relative z-10" />
+                    <Trophy className="text-primary relative z-10" style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)' }} />
                     <div className="absolute inset-0 bg-primary/30 blur-xl animate-pulse" />
                   </div>
                 </motion.div>
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+                <h1 className="font-black bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient" style={{ fontSize: 'clamp(1.5rem, 4vw, 3.75rem)' }}>
                   Tournaments
                 </h1>
               </div>
-              <p className="text-sm sm:text-base text-muted-foreground ml-0 lg:ml-14 font-medium">Join competitions and test your trading skills against the world</p>
+              <p className="text-muted-foreground font-medium" style={{ fontSize: 'clamp(0.75rem, 1vw, 1.125rem)' }}>Join competitions and test your trading skills against the world</p>
             </div>
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
               <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline">
-                    <Lock className="w-4 h-4 mr-2" />
+                  <Button variant="outline" className="rounded-lg" style={{
+                    height: 'clamp(32px, 2.5vh, 40px)',
+                    padding: '0 clamp(12px, 1.5vw, 20px)',
+                    fontSize: 'clamp(0.75rem, 1vw, 1rem)'
+                  }}>
+                    <Lock style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', marginRight: '8px' }} />
                     Join Private
                   </Button>
                 </DialogTrigger>
@@ -386,20 +390,24 @@ export default function TournamentsPage() {
                 </DialogContent>
               </Dialog>
 
-              <TournamentCreationDialog 
-                isOpen={createDialogOpen} 
-                onClose={() => setCreateDialogOpen(false)} 
+              <TournamentCreationDialog
+                isOpen={createDialogOpen}
+                onClose={() => setCreateDialogOpen(false)}
               />
-              <Button onClick={() => setCreateDialogOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
+              <Button onClick={() => setCreateDialogOpen(true)} className="rounded-lg" style={{
+                height: 'clamp(32px, 2.5vh, 40px)',
+                padding: '0 clamp(12px, 1.5vw, 20px)',
+                fontSize: 'clamp(0.75rem, 1vw, 1rem)'
+              }}>
+                <Plus style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', marginRight: '8px' }} />
                 Create Tournament
               </Button>
             </div>
           </motion.div>
 
           {/* Search and Filter Controls */}
-          <motion.div variants={fadeInUp} className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
+          <motion.div variants={fadeInUp} className="flex items-center justify-between gap-3 md:gap-4">
+            <div className="flex items-center space-x-2 md:space-x-3 lg:space-x-4">
               <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
                 <Input

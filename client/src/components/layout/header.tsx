@@ -26,22 +26,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const [, navigate] = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-muted" style={{
-      backgroundColor: 'rgba(10, 26, 47, 0.98)',
-      height: 'clamp(56px, 4.5vh, 72px)'
-    }}>
-      <div className="w-full h-full" style={{ padding: '0 clamp(16px, 2vw, 48px)' }}>
-        <nav className="flex items-center justify-between h-full max-w-[1920px] mx-auto">
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-muted" style={{ backgroundColor: 'rgba(10, 26, 47, 0.98)' }}>
+      <div className="container mx-auto px-4">
+        <nav className="flex items-center justify-between h-16">
           {/* Left side - Logo and Market Status */}
-          <div className="flex items-center" style={{ gap: 'clamp(12px, 1.5vw, 24px)' }}>
-            <Link href={user ? "/hub" : "/"} className="flex items-center transition-all duration-200 hover:opacity-80" style={{ gap: 'clamp(8px, 0.8vw, 12px)' }}>
-              <div className="rounded-lg flex items-center justify-center bg-primary" style={{
-                width: 'clamp(28px, 2.5vw, 40px)',
-                height: 'clamp(28px, 2.5vw, 40px)'
-              }}>
-                <span className="font-bold text-background" style={{ fontSize: 'clamp(12px, 1.2vw, 18px)' }}>O</span>
+          <div className="flex items-center gap-3">
+            <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
+                <span className="font-bold text-sm text-background">O</span>
               </div>
-              <span className="font-bold text-foreground" style={{ fontSize: 'clamp(18px, 1.8vw, 26px)' }}>ORSATH</span>
+              <span className="text-xl font-bold text-foreground">ORSATH</span>
             </Link>
 
             {/* Market Status Clock */}
@@ -49,31 +43,21 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           </div>
 
           {/* Right side - Clean user info and actions */}
-          <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
+          <div className="flex items-center space-x-3">
             {user ? (
               <>
                 {/* Balance Display - Clickable for balance management */}
                 <Button
                   variant="ghost"
-                  className="flex items-center justify-center hover:bg-yellow-500/10 transition-all rounded-lg"
+                  className="h-10 flex items-center justify-center px-4 hover:bg-yellow-500/10 transition-all border-2"
                   style={{
-                    height: 'clamp(36px, 2.5vw, 48px)',
-                    padding: '0 clamp(12px, 1vw, 20px)',
-                    border: 'clamp(1.5px, 0.15vw, 2.5px) solid #E3B341',
+                    borderColor: '#E3B341',
                     color: '#E3B341'
                   }}
                   onClick={() => setBalanceDialogOpen(true)}
                 >
-                  <DollarSign style={{
-                    width: 'clamp(14px, 1.2vw, 20px)',
-                    height: 'clamp(14px, 1.2vw, 20px)',
-                    marginRight: 'clamp(4px, 0.3vw, 8px)',
-                    color: '#E3B341'
-                  }} />
-                  <span className="font-bold" style={{
-                    color: '#E3B341',
-                    fontSize: 'clamp(14px, 1.1vw, 18px)'
-                  }}>
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  <span className="text-sm font-bold">
                     {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </Button>
@@ -83,40 +67,21 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Button
                     onClick={onChatToggle}
                     variant="ghost"
-                    className="p-0 flex items-center justify-center border border-border/30 hover:bg-muted/50 transition-colors rounded-lg"
-                    style={{
-                      width: 'clamp(36px, 2.5vw, 48px)',
-                      height: 'clamp(36px, 2.5vw, 48px)'
-                    }}
+                    className="h-10 w-10 p-0 flex items-center justify-center border border-border/30 hover:bg-muted/50 transition-colors"
                   >
-                    <MessageSquare style={{
-                      width: 'clamp(18px, 1.3vw, 24px)',
-                      height: 'clamp(18px, 1.3vw, 24px)'
-                    }} />
+                    <MessageSquare className="w-4 h-4" />
                   </Button>
                 )}
 
                 {/* User Menu with integrated balance */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="flex items-center border border-border/30 hover:bg-muted/50 transition-colors rounded-lg" style={{
-                      height: 'clamp(36px, 2.5vw, 48px)',
-                      padding: '0 clamp(10px, 0.8vw, 16px)',
-                      gap: 'clamp(6px, 0.5vw, 10px)'
-                    }}>
-                      <User style={{
-                        width: 'clamp(14px, 1.1vw, 18px)',
-                        height: 'clamp(14px, 1.1vw, 18px)'
-                      }} />
-                      <span className="font-medium hidden sm:inline" style={{
-                        fontSize: 'clamp(12px, 1vw, 16px)'
-                      }}>
+                    <Button variant="ghost" className="h-10 flex items-center space-x-2 px-3 border border-border/30 hover:bg-muted/50 transition-colors">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm font-medium">
                         {user?.username || "User"}
                       </span>
-                      <ChevronDown style={{
-                        width: 'clamp(14px, 1.1vw, 18px)',
-                        height: 'clamp(14px, 1.1vw, 18px)'
-                      }} />
+                      <ChevronDown className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -124,12 +89,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       <>
                         <DropdownMenuSeparator />
                         <Link href="/admin">
-                          <DropdownMenuItem style={{ gap: 'clamp(6px, 0.5vw, 10px)' }}>
-                            <Shield style={{
-                              width: 'clamp(14px, 1.1vw, 18px)',
-                              height: 'clamp(14px, 1.1vw, 18px)'
-                            }} />
-                            <span style={{ fontSize: 'clamp(12px, 1vw, 16px)' }}>Admin</span>
+                          <DropdownMenuItem>
+                            <Shield className="w-4 h-4 mr-2" />
+                            Admin
                           </DropdownMenuItem>
                         </Link>
                         <DropdownMenuSeparator />
@@ -137,12 +99,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     )}
                     <DropdownMenuItem onClick={() => {
                       logoutMutation.mutate();
-                    }} style={{ gap: 'clamp(6px, 0.5vw, 10px)' }}>
-                      <LogOut style={{
-                        width: 'clamp(14px, 1.1vw, 18px)',
-                        height: 'clamp(14px, 1.1vw, 18px)'
-                      }} />
-                      <span style={{ fontSize: 'clamp(12px, 1vw, 16px)' }}>{t('logout')}</span>
+                    }}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      {t('logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -150,28 +109,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
             ) : (
               <>
                 <Link href="/login">
-                  <Button variant="ghost" className="hover:bg-muted/50 rounded-lg flex items-center" style={{
-                    padding: 'clamp(8px, 0.8vw, 12px) clamp(12px, 1vw, 20px)',
-                    fontSize: 'clamp(14px, 1.1vw, 18px)',
-                    gap: 'clamp(6px, 0.5vw, 10px)'
-                  }}>
-                    <LogIn style={{
-                      width: 'clamp(14px, 1.1vw, 18px)',
-                      height: 'clamp(14px, 1.1vw, 18px)'
-                    }} />
+                  <Button variant="ghost" className="px-4 py-2 hover:bg-muted/50">
+                    <LogIn className="w-4 h-4 mr-2" />
                     Log In
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="bg-primary hover:bg-primary/90 rounded-lg flex items-center" style={{
-                    padding: 'clamp(8px, 0.8vw, 12px) clamp(12px, 1vw, 20px)',
-                    fontSize: 'clamp(14px, 1.1vw, 18px)',
-                    gap: 'clamp(6px, 0.5vw, 10px)'
-                  }}>
-                    <UserPlus style={{
-                      width: 'clamp(14px, 1.1vw, 18px)',
-                      height: 'clamp(14px, 1.1vw, 18px)'
-                    }} />
+                  <Button className="bg-primary hover:bg-primary/90 px-4 py-2">
+                    <UserPlus className="w-4 h-4 mr-2" />
                     Sign Up
                   </Button>
                 </Link>

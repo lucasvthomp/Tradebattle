@@ -138,10 +138,10 @@ export default function Hub() {
         }} />
       </div>
 
-      <div className="container mx-auto py-8 relative z-10">
+      <div className="container mx-auto px-4 lg:px-8 relative z-10" style={{ padding: 'clamp(24px, 4vh, 48px) clamp(16px, 2vw, 32px)' }}>
         {/* Hero Header */}
         <motion.div
-          className="mb-10"
+          className="mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -149,34 +149,41 @@ export default function Hub() {
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>
               <motion.div
-                className="flex items-center gap-3 mb-2"
+                className="flex items-center mb-3"
+                style={{ gap: 'clamp(8px, 1vw, 16px)' }}
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Crown className="w-10 h-10" style={{ color: '#E3B341' }} />
-                <h1 className="text-5xl font-black">
+                <Crown style={{ width: 'clamp(32px, 3vw, 56px)', height: 'clamp(32px, 3vw, 56px)', color: '#E3B341' }} />
+                <h1 className="font-black" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
                   {getGreeting()}, <span style={{ color: '#E3B341' }}>{user?.username}</span>!
                 </h1>
               </motion.div>
-              <p className="text-xl flex items-center gap-2" style={{ color: '#8A93A6' }}>
-                <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#28C76F' }} />
+              <p className="flex items-center gap-2" style={{ color: '#8A93A6', fontSize: 'clamp(1rem, 1.5vw, 1.5rem)' }}>
+                <div className="rounded-full animate-pulse" style={{ width: 'clamp(8px, 0.8vw, 12px)', height: 'clamp(8px, 0.8vw, 12px)', backgroundColor: '#28C76F' }} />
                 Ready to compete and win?
               </p>
             </div>
 
             {/* Balance Card */}
-            <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px' }} className="min-w-[280px]">
-              <CardContent className="p-6">
-                <div className="text-sm mb-1" style={{ color: '#8A93A6' }}>Your Balance</div>
-                <div className="flex items-center gap-3">
-                  <DollarSign className="w-8 h-8" style={{ color: '#E3B341' }} />
-                  <span className="text-3xl font-black" style={{ color: '#E3B341' }}>
+            <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px', minWidth: 'clamp(240px, 20vw, 320px)' }}>
+              <CardContent style={{ padding: 'clamp(16px, 2vw, 24px)' }}>
+                <div className="mb-2" style={{ color: '#8A93A6', fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>Your Balance</div>
+                <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 12px)' }}>
+                  <DollarSign style={{ width: 'clamp(24px, 2.5vw, 40px)', height: 'clamp(24px, 2.5vw, 40px)', color: '#E3B341' }} />
+                  <span className="font-black" style={{ color: '#E3B341', fontSize: 'clamp(1.5rem, 3vw, 3rem)' }}>
                     {formatCurrency(Number(user?.siteCash) || 0)}
                   </span>
                 </div>
                 <Link href="/dashboard">
-                  <Button className="w-full mt-4 font-bold" style={{ backgroundColor: '#E3B341', color: '#06121F' }}>
-                    <Zap className="w-4 h-4 mr-2" />
+                  <Button className="w-full font-bold rounded-lg" style={{
+                    backgroundColor: '#E3B341',
+                    color: '#06121F',
+                    marginTop: 'clamp(12px, 1.5vh, 20px)',
+                    fontSize: 'clamp(0.875rem, 1vw, 1.125rem)',
+                    height: 'clamp(36px, 3vh, 44px)'
+                  }}>
+                    <Zap style={{ width: 'clamp(16px, 1.5vw, 20px)', height: 'clamp(16px, 1.5vw, 20px)', marginRight: '8px' }} />
                     Trade Now
                   </Button>
                 </Link>
@@ -187,7 +194,8 @@ export default function Hub() {
 
         {/* Quick Stats */}
         <motion.div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10"
+          className="grid grid-cols-2 lg:grid-cols-4 mb-8"
+          style={{ gap: 'clamp(12px, 1.5vw, 24px)' }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -198,19 +206,19 @@ export default function Hub() {
               whileHover={{ scale: 1.05, y: -5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }} className="transition-all hover:border-[#E3B341]">
-                <CardContent className="p-4">
+              <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }} className="transition-all hover:border-[#E3B341] rounded-xl">
+                <CardContent style={{ padding: 'clamp(12px, 1.5vw, 20px)' }}>
                   <div className="flex items-center justify-between mb-2">
-                    <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                    <stat.icon style={{ width: 'clamp(20px, 2vw, 32px)', height: 'clamp(20px, 2vw, 32px)', color: stat.color }} />
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                     >
-                      <Sparkles className="w-4 h-4 opacity-50" style={{ color: '#E3B341' }} />
+                      <Sparkles style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', opacity: 0.5, color: '#E3B341' }} />
                     </motion.div>
                   </div>
-                  <div className="text-2xl font-black mb-1" style={{ color: '#C9D1E2' }}>{stat.value}</div>
-                  <div className="text-xs" style={{ color: '#8A93A6' }}>{stat.label}</div>
+                  <div className="font-black mb-1" style={{ color: '#C9D1E2', fontSize: 'clamp(1.25rem, 2.5vw, 2.5rem)' }}>{stat.value}</div>
+                  <div style={{ color: '#8A93A6', fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>{stat.label}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -218,7 +226,7 @@ export default function Hub() {
         </motion.div>
 
         {/* Primary Action Cards */}
-        <div className="grid lg:grid-cols-3 gap-6 mb-10">
+        <div className="grid lg:grid-cols-3 mb-8" style={{ gap: 'clamp(16px, 2vw, 24px)' }}>
           {primaryActions.map((action, i) => (
             <motion.div
               key={i}
@@ -249,20 +257,20 @@ export default function Hub() {
                     {action.badge}
                   </Badge>
 
-                  <CardContent className="p-8 relative z-10">
+                  <CardContent className="relative z-10" style={{ padding: 'clamp(20px, 2.5vw, 32px)' }}>
                     <motion.div
                       animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.1, 1] }}
                       transition={{ duration: 4, repeat: Infinity }}
                     >
-                      <action.icon className="w-16 h-16 mb-4" style={{ color: action.borderColor }} />
+                      <action.icon style={{ width: 'clamp(48px, 5vw, 80px)', height: 'clamp(48px, 5vw, 80px)', marginBottom: 'clamp(12px, 1.5vh, 16px)', color: action.borderColor }} />
                     </motion.div>
 
-                    <h3 className="text-3xl font-black mb-3" style={{ color: '#C9D1E2' }}>{action.title}</h3>
-                    <p className="mb-6 text-sm" style={{ color: '#8A93A6' }}>{action.description}</p>
+                    <h3 className="font-black mb-3" style={{ color: '#C9D1E2', fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)' }}>{action.title}</h3>
+                    <p className="mb-5" style={{ color: '#8A93A6', fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>{action.description}</p>
 
-                    <div className="flex items-center gap-2 font-bold group-hover:gap-3 transition-all" style={{ color: action.borderColor }}>
+                    <div className="flex items-center gap-2 font-bold group-hover:gap-3 transition-all" style={{ color: action.borderColor, fontSize: 'clamp(0.875rem, 1vw, 1.125rem)' }}>
                       <span>Let's Go</span>
-                      <ArrowRight className="w-5 h-5" />
+                      <ArrowRight style={{ width: 'clamp(16px, 1.5vw, 24px)', height: 'clamp(16px, 1.5vw, 24px)' }} />
                     </div>
                   </CardContent>
                 </Card>
