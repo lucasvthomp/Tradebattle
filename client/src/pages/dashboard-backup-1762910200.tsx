@@ -154,7 +154,7 @@ export default function Dashboard() {
 
           {/* Change and Percentage */}
           <span
-            className="text-sm flex items-center gap-2 px-3 py-1 rounded-full font-semibold"
+            className="text-sm flex items-center gap-1 px-3 py-1 rounded-full font-semibold"
             style={{
               color: priceChange >= 0 ? '#28C76F' : '#FF4F58',
               backgroundColor: priceChange >= 0 ? 'rgba(40, 199, 111, 0.15)' : 'rgba(255, 79, 88, 0.15)',
@@ -180,7 +180,7 @@ export default function Dashboard() {
                     border: '2px solid #28C76F'
                   }
                 : {
-                    backgroundColor: '#0A1A2F',
+                    backgroundColor: '#142538',
                     color: '#8A93A6',
                     border: '2px solid #2B3A4C'
                   }
@@ -201,7 +201,7 @@ export default function Dashboard() {
                     border: '2px solid #FF4F58'
                   }
                 : {
-                    backgroundColor: '#0A1A2F',
+                    backgroundColor: '#142538',
                     color: '#8A93A6',
                     border: '2px solid #2B3A4C'
                   }
@@ -212,7 +212,7 @@ export default function Dashboard() {
           </div>
 
           {/* Chart Control Icons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <motion.button
               onClick={() => {
                 setChartMode('cursor');
@@ -309,7 +309,7 @@ export default function Dashboard() {
             <SelectTrigger
               className="h-8 w-36 text-xs font-medium rounded-lg"
               style={{
-                backgroundColor: '#0A1A2F',
+                backgroundColor: '#142538',
                 borderColor: '#E3B341',
                 border: '2px solid #E3B341',
                 color: '#E3B341',
@@ -395,7 +395,7 @@ export default function Dashboard() {
 
           {/* Time Range Selector */}
           <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               {['1D', '1W', '1M', '3M', 'YTD', '1Y', '5Y', 'All'].map((range) => (
                 <motion.button
                   key={range}
@@ -428,7 +428,7 @@ export default function Dashboard() {
                 <SelectTrigger className="h-6 text-xs border-none" style={{ backgroundColor: '#2B3A4C', color: '#FFFFFF' }}>
                   <span className="text-xs">Interval: {selectedInterval}</span>
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C' }}>
+                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                   <SelectItem value="1 tick" className="text-xs" style={{ color: '#FFFFFF' }}>1 tick</SelectItem>
                   <SelectItem value="144 ticks" className="text-xs" style={{ color: '#FFFFFF' }}>144 ticks</SelectItem>
                   <SelectItem value="1 second" className="text-xs" style={{ color: '#FFFFFF' }}>1 second</SelectItem>
@@ -479,7 +479,7 @@ export default function Dashboard() {
           {/* Watchlist Table */}
           <div className="overflow-y-auto" style={{ maxHeight: '300px' }}>
             {/* Table Header */}
-            <div className="grid grid-cols-6 gap-2 px-3 py-2 text-xs font-medium border-b" style={{ color: '#8A93A6', borderColor: '#142538' }}>
+            <div className="grid grid-cols-6 gap-1 px-3 py-2 text-xs font-medium border-b" style={{ color: '#8A93A6', borderColor: '#142538' }}>
               <span className="col-span-1">Symbol</span>
               <span className="col-span-1 text-right">Change</span>
               <span className="col-span-1 text-right">%</span>
@@ -495,7 +495,7 @@ export default function Dashboard() {
                 onClick={() => handleWatchlistClick(item)}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
-                className="w-full grid grid-cols-6 gap-2 px-3 py-2.5 text-xs transition-all"
+                className="w-full grid grid-cols-6 gap-1 px-3 py-2.5 text-xs transition-all"
                 style={{
                   background: selectedSymbol === item.symbol
                     ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)'
@@ -541,13 +541,13 @@ export default function Dashboard() {
             </div>
 
             {/* Buy/Sell Toggle */}
-            <div className="flex gap-2">
+            <div className="flex gap-1">
               <Button
                 onClick={() => setOrderSide('buy')}
                 className="flex-1 h-8 text-xs font-medium"
                 style={orderSide === 'buy'
                   ? { backgroundColor: '#28C76F', color: '#000000', border: 'none' }
-                  : { backgroundColor: '#0A1A2F', color: '#8A93A6', border: '1px solid #2B3A4C' }
+                  : { backgroundColor: '#142538', color: '#8A93A6', border: '1px solid #2B3A4C' }
                 }
               >
                 Buy
@@ -557,7 +557,7 @@ export default function Dashboard() {
                 className="flex-1 h-8 text-xs font-medium"
                 style={orderSide === 'sell'
                   ? { backgroundColor: '#FF4F58', color: '#FFFFFF', border: 'none' }
-                  : { backgroundColor: '#0A1A2F', color: '#8A93A6', border: '1px solid #2B3A4C' }
+                  : { backgroundColor: '#142538', color: '#8A93A6', border: '1px solid #2B3A4C' }
                 }
               >
                 Sell
@@ -568,10 +568,10 @@ export default function Dashboard() {
             <div className="space-y-1">
               <label className="text-xs" style={{ color: '#8A93A6' }}>Order type</label>
               <Select value={orderType} onValueChange={setOrderType}>
-                <SelectTrigger className="h-8 text-xs" style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
+                <SelectTrigger className="h-8 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C' }}>
+                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                   <SelectItem value="market" className="text-xs" style={{ color: '#FFFFFF' }}>Market</SelectItem>
                   <SelectItem value="limit" className="text-xs" style={{ color: '#FFFFFF' }}>Limit</SelectItem>
                   <SelectItem value="stop" className="text-xs" style={{ color: '#FFFFFF' }}>Stop</SelectItem>
@@ -582,20 +582,20 @@ export default function Dashboard() {
             {/* Quantity */}
             <div className="space-y-1">
               <label className="text-xs" style={{ color: '#8A93A6' }}>Quantity</label>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1">
                 <Input
                   type="number"
                   min="1"
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}
                   className="h-8 text-xs flex-1"
-                  style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}
+                  style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}
                 />
                 <Button
                   size="sm"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="h-8 w-8 p-0"
-                  style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}
+                  style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}
                 >
                   <Minus className="w-3 h-3" />
                 </Button>
@@ -603,7 +603,7 @@ export default function Dashboard() {
                   size="sm"
                   onClick={() => setQuantity(quantity + 1)}
                   className="h-8 w-8 p-0"
-                  style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}
+                  style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}
                 >
                   <Plus className="w-3 h-3" />
                 </Button>
@@ -619,7 +619,7 @@ export default function Dashboard() {
             {orderType === 'limit' && (
               <div className="space-y-1">
                 <label className="text-xs" style={{ color: '#8A93A6' }}>Limit price</label>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
                   <Input
                     type="number"
                     min="0"
@@ -627,13 +627,13 @@ export default function Dashboard() {
                     value={limitPrice}
                     onChange={(e) => setLimitPrice(parseFloat(e.target.value) || 0)}
                     className="h-8 text-xs flex-1"
-                    style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}
+                    style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}
                   />
                   <Button
                     size="sm"
                     onClick={() => setLimitPrice(Math.max(0.01, limitPrice - 0.01))}
                     className="h-8 w-8 p-0"
-                    style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}
+                    style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}
                   >
                     <Minus className="w-3 h-3" />
                   </Button>
@@ -641,7 +641,7 @@ export default function Dashboard() {
                     size="sm"
                     onClick={() => setLimitPrice(limitPrice + 0.01)}
                     className="h-8 w-8 p-0"
-                    style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}
+                    style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}
                   >
                     <Plus className="w-3 h-3" />
                   </Button>
@@ -657,10 +657,10 @@ export default function Dashboard() {
             <div className="space-y-1">
               <label className="text-xs" style={{ color: '#8A93A6' }}>Time in force</label>
               <Select value={timeInForce} onValueChange={setTimeInForce}>
-                <SelectTrigger className="h-8 text-xs" style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
+                <SelectTrigger className="h-8 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C' }}>
+                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                   <SelectItem value="day" className="text-xs" style={{ color: '#FFFFFF' }}>Good for day</SelectItem>
                   <SelectItem value="gtc" className="text-xs" style={{ color: '#FFFFFF' }}>Good til canceled</SelectItem>
                   <SelectItem value="ioc" className="text-xs" style={{ color: '#FFFFFF' }}>Immediate or cancel</SelectItem>
@@ -672,10 +672,10 @@ export default function Dashboard() {
             <div className="space-y-1">
               <label className="text-xs" style={{ color: '#8A93A6' }}>Trading session</label>
               <Select value={tradingSession} onValueChange={setTradingSession}>
-                <SelectTrigger className="h-8 text-xs" style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
+                <SelectTrigger className="h-8 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C' }}>
+                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
                   <SelectItem value="regular" className="text-xs" style={{ color: '#FFFFFF' }}>Regular market hours</SelectItem>
                   <SelectItem value="extended" className="text-xs" style={{ color: '#FFFFFF' }}>Extended hours</SelectItem>
                 </SelectContent>
@@ -702,7 +702,7 @@ export default function Dashboard() {
             <div className="flex gap-2 pt-2">
               <Button
                 className="flex-1 h-9 text-xs font-medium"
-                style={{ backgroundColor: '#0A1A2F', color: '#FFFFFF', border: '1px solid #2B3A4C' }}
+                style={{ backgroundColor: '#142538', color: '#FFFFFF', border: '1px solid #2B3A4C' }}
               >
                 Cancel
               </Button>
