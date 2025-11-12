@@ -213,7 +213,7 @@ export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Adv
           time: item.date,
           value: parseFloat(item.volume) || 0,
           color: parseFloat(item.close) >= parseFloat(item.open) ?
-            'rgba(40, 199, 111, 0.5)' : 'rgba(255, 45, 45, 0.5)'
+            'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
         }));
 
         // Sort by time
@@ -383,9 +383,28 @@ export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Adv
         secondsVisible: false,
         rightOffset: 5,
         barSpacing: 8,
-        fixLeftEdge: true,
-        fixRightEdge: true,
-        allowShiftVisibleRangeOnWhitespaceReplacement: false,
+        fixLeftEdge: false,
+        fixRightEdge: false,
+        allowShiftVisibleRangeOnWhitespaceReplacement: true,
+        shiftVisibleRangeOnNewBar: false,
+      },
+      handleScroll: {
+        mouseWheel: true,
+        pressedMouseMove: true,
+        horzTouchDrag: true,
+        vertTouchDrag: false,
+      },
+      handleScale: {
+        mouseWheel: true,
+        pinch: true,
+        axisPressedMouseMove: {
+          time: true,
+          price: false,
+        },
+        axisDoubleClickReset: {
+          time: true,
+          price: true,
+        },
       },
       width: chartContainerRef.current.clientWidth,
       height: chartContainerRef.current.clientHeight,
@@ -393,16 +412,16 @@ export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Adv
 
     // Add candlestick series (v5 API)
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#28C76F',
-      downColor: '#FF2D2D',
+      upColor: '#10B981',
+      downColor: '#EF4444',
       borderVisible: false,
-      wickUpColor: '#28C76F',
-      wickDownColor: '#FF2D2D',
+      wickUpColor: '#10B981',
+      wickDownColor: '#EF4444',
     });
 
     // Add volume series (v5 API)
     const volumeSeries = chart.addSeries(HistogramSeries, {
-      color: '#28C76F',
+      color: '#10B981',
       priceFormat: {
         type: 'volume',
       },

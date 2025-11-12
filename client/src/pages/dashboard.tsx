@@ -43,6 +43,7 @@ export default function Dashboard() {
   // Chart controls
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('1D');
   const [selectedInterval, setSelectedInterval] = useState<string>('1 minute');
+  const [candlestickInterval, setCandlestickInterval] = useState<string>('5 minutes');
 
   // Watchlist data (mock for now)
   const watchlistData = [
@@ -113,7 +114,7 @@ export default function Dashboard() {
           <p className="mb-4" style={{ color: '#8A8A8A' }}>
             Join or create a tournament to start trading
           </p>
-          <Button asChild style={{ backgroundColor: '#5AC53A', color: '#000000' }}>
+          <Button asChild style={{ backgroundColor: '#10B981', color: '#000000' }}>
             <a href="/tournaments">Browse Tournaments</a>
           </Button>
         </div>
@@ -140,7 +141,7 @@ export default function Dashboard() {
           {/* Change and Percentage */}
           <span
             className="text-sm flex items-center gap-1"
-            style={{ color: priceChange >= 0 ? '#5AC53A' : '#EB5D2A' }}
+            style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}
           >
             {priceChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
             {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)} ({priceChangePercent >= 0 ? '+' : ''}{priceChangePercent.toFixed(2)}%)
@@ -152,7 +153,7 @@ export default function Dashboard() {
               onClick={() => setOrderSide('buy')}
               className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
               style={orderSide === 'buy'
-                ? { backgroundColor: '#5AC53A', color: '#000000' }
+                ? { backgroundColor: '#10B981', color: '#000000' }
                 : { backgroundColor: '#1A1A1A', color: '#8A8A8A' }
               }
             >
@@ -162,7 +163,7 @@ export default function Dashboard() {
               onClick={() => setOrderSide('sell')}
               className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
               style={orderSide === 'sell'
-                ? { backgroundColor: '#EB5D2A', color: '#FFFFFF' }
+                ? { backgroundColor: '#EF4444', color: '#FFFFFF' }
                 : { backgroundColor: '#1A1A1A', color: '#8A8A8A' }
               }
             >
@@ -191,6 +192,29 @@ export default function Dashboard() {
               <SettingsIcon className="w-4 h-4" style={{ color: '#8A8A8A' }} />
             </button>
           </div>
+
+          {/* Candlestick Interval Dropdown */}
+          <Select value={candlestickInterval} onValueChange={setCandlestickInterval}>
+            <SelectTrigger className="h-7 w-32 text-xs" style={{ backgroundColor: '#1A1A1A', borderColor: '#2A2A2A', color: '#FFFFFF' }}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent style={{ backgroundColor: '#1A1A1A', borderColor: '#2A2A2A' }}>
+              <SelectItem value="1 tick" className="text-xs" style={{ color: '#FFFFFF' }}>1 tick</SelectItem>
+              <SelectItem value="144 ticks" className="text-xs" style={{ color: '#FFFFFF' }}>144 ticks</SelectItem>
+              <SelectItem value="1 second" className="text-xs" style={{ color: '#FFFFFF' }}>1 second</SelectItem>
+              <SelectItem value="5 seconds" className="text-xs" style={{ color: '#FFFFFF' }}>5 seconds</SelectItem>
+              <SelectItem value="30 seconds" className="text-xs" style={{ color: '#FFFFFF' }}>30 seconds</SelectItem>
+              <SelectItem value="1 minute" className="text-xs" style={{ color: '#FFFFFF' }}>1 minute</SelectItem>
+              <SelectItem value="5 minutes" className="text-xs" style={{ color: '#FFFFFF' }}>5 minutes</SelectItem>
+              <SelectItem value="10 minutes" className="text-xs" style={{ color: '#FFFFFF' }}>10 minutes</SelectItem>
+              <SelectItem value="30 minutes" className="text-xs" style={{ color: '#FFFFFF' }}>30 minutes</SelectItem>
+              <SelectItem value="1 hour" className="text-xs" style={{ color: '#FFFFFF' }}>1 hour</SelectItem>
+              <SelectItem value="3 hours" className="text-xs" style={{ color: '#FFFFFF' }}>3 hours</SelectItem>
+              <SelectItem value="12 hours" className="text-xs" style={{ color: '#FFFFFF' }}>12 hours</SelectItem>
+              <SelectItem value="1 day" className="text-xs" style={{ color: '#FFFFFF' }}>1 day</SelectItem>
+              <SelectItem value="1 week" className="text-xs" style={{ color: '#FFFFFF' }}>1 week</SelectItem>
+            </SelectContent>
+          </Select>
 
           {/* OHLCV Stats */}
           <div className="flex items-center gap-3 text-xs" style={{ color: '#8A8A8A' }}>
@@ -287,10 +311,10 @@ export default function Dashboard() {
                 }}
               >
                 <span className="col-span-1 font-medium text-left" style={{ color: '#FFFFFF' }}>{item.symbol}</span>
-                <span className="col-span-1 text-right" style={{ color: item.netChange >= 0 ? '#5AC53A' : '#EB5D2A' }}>
+                <span className="col-span-1 text-right" style={{ color: item.netChange >= 0 ? '#10B981' : '#EF4444' }}>
                   {item.netChange >= 0 ? '+' : ''}{item.netChange.toFixed(2)}
                 </span>
-                <span className="col-span-1 text-right" style={{ color: item.changePercent >= 0 ? '#5AC53A' : '#EB5D2A' }}>
+                <span className="col-span-1 text-right" style={{ color: item.changePercent >= 0 ? '#10B981' : '#EF4444' }}>
                   {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
                 </span>
                 <span className="col-span-1 text-right" style={{ color: '#FFFFFF' }}>${item.lastPrice.toFixed(2)}</span>
@@ -306,7 +330,7 @@ export default function Dashboard() {
           <div className="p-3 space-y-3">
             {/* Account Deficit Warning (conditional) */}
             {!hasEnoughFunds && orderType !== 'limit' && quantity > 0 && (
-              <div className="p-2 rounded text-xs" style={{ backgroundColor: '#2A1A1A', color: '#EB5D2A', border: '1px solid #EB5D2A' }}>
+              <div className="p-2 rounded text-xs" style={{ backgroundColor: '#2A1A1A', color: '#EF4444', border: '1px solid #EF4444' }}>
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span>Your individual account is currently restricted because you have an account deficit. Some actions may not be available right now.</span>
@@ -325,7 +349,7 @@ export default function Dashboard() {
                 onClick={() => setOrderSide('buy')}
                 className="flex-1 h-8 text-xs font-medium"
                 style={orderSide === 'buy'
-                  ? { backgroundColor: '#5AC53A', color: '#000000', border: 'none' }
+                  ? { backgroundColor: '#10B981', color: '#000000', border: 'none' }
                   : { backgroundColor: '#1A1A1A', color: '#8A8A8A', border: '1px solid #2A2A2A' }
                 }
               >
@@ -335,7 +359,7 @@ export default function Dashboard() {
                 onClick={() => setOrderSide('sell')}
                 className="flex-1 h-8 text-xs font-medium"
                 style={orderSide === 'sell'
-                  ? { backgroundColor: '#EB5D2A', color: '#FFFFFF', border: 'none' }
+                  ? { backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none' }
                   : { backgroundColor: '#1A1A1A', color: '#8A8A8A', border: '1px solid #2A2A2A' }
                 }
               >
@@ -388,7 +412,7 @@ export default function Dashboard() {
                 </Button>
               </div>
               {!hasEnoughFunds && quantity > 0 && (
-                <p className="text-xs mt-1" style={{ color: '#EB5D2A' }}>
+                <p className="text-xs mt-1" style={{ color: '#EF4444' }}>
                   You don't have enough buying power to place this order. <a href="#" className="underline">Deposit funds</a>.
                 </p>
               )}
@@ -468,7 +492,7 @@ export default function Dashboard() {
                 <span className="font-semibold" style={{ color: '#FFFFFF' }}>${estimatedCost.toFixed(2)}</span>
               </div>
               {!hasEnoughFunds && quantity > 0 && (
-                <div className="text-xs" style={{ color: '#EB5D2A' }}>Account deficit</div>
+                <div className="text-xs" style={{ color: '#EF4444' }}>Account deficit</div>
               )}
             </div>
 
@@ -489,7 +513,7 @@ export default function Dashboard() {
                 disabled={!hasEnoughFunds || quantity <= 0}
                 className="flex-1 h-9 text-xs font-medium disabled:opacity-50"
                 style={{
-                  backgroundColor: orderSide === 'buy' ? '#5AC53A' : '#EB5D2A',
+                  backgroundColor: orderSide === 'buy' ? '#10B981' : '#EF4444',
                   color: orderSide === 'buy' ? '#000000' : '#FFFFFF',
                   border: 'none'
                 }}
