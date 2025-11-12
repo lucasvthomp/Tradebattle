@@ -144,29 +144,25 @@ export default function Dashboard() {
           boxShadow: '0 4px 20px rgba(16, 185, 129, 0.1)'
         }}>
           {/* Ticker Symbol */}
-          <h1 className="font-bold tracking-tight" style={{ color: '#E3B341', fontSize: 'clamp(1.5rem, 3vw, 2.5rem)' }}>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#E3B341' }}>
             {selectedSymbol}
           </h1>
 
           {/* Current Price */}
-          <span className="font-semibold" style={{
+          <span className="text-xl font-semibold" style={{
             color: '#FFFFFF',
-            textShadow: '0 0 10px rgba(227, 179, 65, 0.3)',
-            fontSize: 'clamp(1.25rem, 2.5vw, 2rem)'
+            textShadow: '0 0 10px rgba(227, 179, 65, 0.3)'
           }}>
             ${selectedPrice.toFixed(2)}
           </span>
 
           {/* Change and Percentage */}
           <span
-            className="flex items-center rounded-full font-semibold"
+            className="flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold"
             style={{
               color: priceChange >= 0 ? '#28C76F' : '#FF4F58',
               backgroundColor: priceChange >= 0 ? 'rgba(40, 199, 111, 0.15)' : 'rgba(255, 79, 88, 0.15)',
-              border: `1px solid ${priceChange >= 0 ? 'rgba(40, 199, 111, 0.3)' : 'rgba(255, 79, 88, 0.3)'}`,
-              fontSize: 'clamp(0.875rem, 1.2vw, 1rem)',
-              gap: 'clamp(4px, 0.5vw, 8px)',
-              padding: 'clamp(4px, 0.5vw, 6px) clamp(8px, 1vw, 16px)'
+              border: `1px solid ${priceChange >= 0 ? 'rgba(40, 199, 111, 0.3)' : 'rgba(255, 79, 88, 0.3)'}`
             }}
           >
             {priceChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
@@ -179,24 +175,18 @@ export default function Dashboard() {
               onClick={() => setOrderSide('buy')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="rounded-xl font-semibold transition-all"
+              className="h-9 px-4 text-sm rounded-xl font-semibold transition-all"
               style={orderSide === 'buy'
                 ? {
                     background: 'linear-gradient(135deg, #28C76F 0%, #22A65D 100%)',
                     color: '#FFFFFF',
                     boxShadow: '0 4px 12px rgba(40, 199, 111, 0.4)',
-                    border: '2px solid #28C76F',
-                    height: 'clamp(28px, 2.5vh, 40px)',
-                    padding: '0 clamp(12px, 1.5vw, 20px)',
-                    fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                    border: '2px solid #28C76F'
                   }
                 : {
                     backgroundColor: '#0A1A2F',
                     color: '#8A93A6',
-                    border: '2px solid #2B3A4C',
-                    height: 'clamp(28px, 2.5vh, 40px)',
-                    padding: '0 clamp(12px, 1.5vw, 20px)',
-                    fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                    border: '2px solid #2B3A4C'
                   }
               }
             >
@@ -206,24 +196,18 @@ export default function Dashboard() {
               onClick={() => setOrderSide('sell')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="rounded-xl font-semibold transition-all"
+              className="h-9 px-4 text-sm rounded-xl font-semibold transition-all"
               style={orderSide === 'sell'
                 ? {
                     background: 'linear-gradient(135deg, #FF4F58 0%, #E53E47 100%)',
                     color: '#FFFFFF',
                     boxShadow: '0 4px 12px rgba(255, 79, 88, 0.4)',
-                    border: '2px solid #FF4F58',
-                    height: 'clamp(28px, 2.5vh, 40px)',
-                    padding: '0 clamp(12px, 1.5vw, 20px)',
-                    fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                    border: '2px solid #FF4F58'
                   }
                 : {
                     backgroundColor: '#0A1A2F',
                     color: '#8A93A6',
-                    border: '2px solid #2B3A4C',
-                    height: 'clamp(28px, 2.5vh, 40px)',
-                    padding: '0 clamp(12px, 1.5vw, 20px)',
-                    fontSize: 'clamp(0.875rem, 1vw, 1rem)'
+                    border: '2px solid #2B3A4C'
                   }
               }
             >
@@ -458,11 +442,10 @@ export default function Dashboard() {
       </div>
 
       {/* RIGHT SIDE: Watchlist + Order Panel */}
-      <div className="flex flex-col backdrop-blur-xl" style={{
+      <div className="w-96 flex flex-col backdrop-blur-xl" style={{
         background: 'linear-gradient(180deg, #1E2D3F 0%, #1A2838 100%)',
         borderLeft: '2px solid rgba(16, 185, 129, 0.15)',
-        boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)',
-        width: 'clamp(320px, 24vw, 480px)'
+        boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)'
       }}>
         {/* TOP HALF: Watchlist Section */}
         <div className="h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '3px solid #10B981', boxShadow: '0 2px 15px rgba(16, 185, 129, 0.3)' }}>
