@@ -581,14 +581,14 @@ export function AdvancedTradingChart({
     }
   }, [selectedSymbol, selectedTimeframe]);
 
-  // Auto-refresh chart data every 1 minute
+  // Auto-refresh chart data every 5 seconds for real-time feel
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       if (selectedSymbol && selectedTimeframe) {
         console.log(`Auto-refreshing chart data for ${selectedSymbol} at ${new Date().toLocaleTimeString()}`);
         updateChart(selectedSymbol, selectedTimeframe);
       }
-    }, 60000); // 60000ms = 1 minute
+    }, 5000); // 5000ms = 5 seconds (REAL-TIME updates)
 
     return () => clearInterval(refreshInterval);
   }, [selectedSymbol, selectedTimeframe]);

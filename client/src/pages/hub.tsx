@@ -214,44 +214,44 @@ export default function Hub() {
         }} />
       </div>
 
-      <div className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
+      <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-8 relative z-10">
         {/* Hero Header */}
         <motion.div
-          className="mb-8"
+          className="mb-6 md:mb-8"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 md:gap-6">
             <div>
               <motion.div
-                className="flex items-center gap-3 mb-3"
+                className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <div className="rounded-2xl p-2" style={{
+                <div className="rounded-xl md:rounded-2xl p-1.5 md:p-2" style={{
                   background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)',
                   boxShadow: '0 0 20px rgba(227, 179, 65, 0.4)'
                 }}>
-                  <Crown className="w-12 h-12" style={{ color: '#06121F' }} />
+                  <Crown className="w-8 h-8 md:w-12 md:h-12" style={{ color: '#06121F' }} />
                 </div>
-                <h1 className="text-5xl font-black">
+                <h1 className="text-2xl md:text-4xl lg:text-5xl font-black">
                   {getGreeting()}, <span style={{ color: '#E3B341' }}>{user?.username}</span>! 👋
                 </h1>
               </motion.div>
-              <p className="flex items-center gap-2 text-lg" style={{ color: '#8A93A6' }}>
+              <p className="flex items-center gap-2 text-sm md:text-base lg:text-lg" style={{ color: '#8A93A6' }}>
                 <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#28C76F' }} />
                 Ready to compete and win? 🚀
               </p>
             </div>
 
             {/* Balance Card */}
-            <motion.div whileHover={{ scale: 1.03, rotate: 2 }} whileTap={{ scale: 0.98 }}>
+            <motion.div whileHover={{ scale: 1.03, rotate: 2 }} whileTap={{ scale: 0.98 }} className="w-full lg:w-auto">
               <Card
-                className="rounded-3xl shadow-2xl relative overflow-hidden border-none"
+                className="rounded-2xl md:rounded-3xl shadow-2xl relative overflow-hidden border-none"
                 style={{
                   background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 50%, #a8822c 100%)',
-                  minWidth: '280px',
+                  minWidth: '100%',
                   boxShadow: '0 10px 40px rgba(227, 179, 65, 0.4), 0 0 30px rgba(227, 179, 65, 0.2)'
                 }}
               >
@@ -263,24 +263,24 @@ export default function Hub() {
                   <DollarSign className="w-24 h-24" style={{ color: '#FFFFFF' }} />
                 </div>
 
-                <CardContent className="p-6 relative z-10">
-                  <div className="mb-3 flex items-center gap-2">
-                    <div className="rounded-xl p-2" style={{
+                <CardContent className="p-4 md:p-6 relative z-10">
+                  <div className="mb-2 md:mb-3 flex items-center gap-2">
+                    <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{
                       backgroundColor: 'rgba(6, 18, 31, 0.3)',
                       backdropFilter: 'blur(10px)'
                     }}>
-                      <Coins className="w-5 h-5" style={{ color: '#06121F' }} />
+                      <Coins className="w-4 h-4 md:w-5 md:h-5" style={{ color: '#06121F' }} />
                     </div>
-                    <div className="text-sm font-bold" style={{ color: '#06121F' }}>Your Balance</div>
+                    <div className="text-xs md:text-sm font-bold" style={{ color: '#06121F' }}>Your Balance</div>
                   </div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="text-5xl font-black" style={{
+                  <div className="flex items-center gap-2 mb-3 md:mb-4">
+                    <span className="text-3xl md:text-4xl lg:text-5xl font-black" style={{
                       color: '#06121F',
                       textShadow: '0 2px 10px rgba(6, 18, 31, 0.3)'
                     }}>
                       {formatCurrency(Number(user?.siteCash) || 0)}
                     </span>
-                    <span className="text-3xl">📈</span>
+                    <span className="text-2xl md:text-3xl">📈</span>
                   </div>
                   <Link href="/dashboard">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -302,7 +302,7 @@ export default function Hub() {
 
         {/* Quick Stats */}
         <motion.div
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -314,37 +314,37 @@ export default function Hub() {
               transition={{ type: "spring", stiffness: 300 }}
             >
               <Card
-                className="transition-all rounded-2xl shadow-xl relative overflow-hidden border-none"
+                className="transition-all rounded-xl md:rounded-2xl shadow-xl relative overflow-hidden border-none"
                 style={{
                   background: stat.gradient,
                   boxShadow: `0 5px 30px rgba(0,0,0,0.4), 0 0 20px ${stat.color}30`
                 }}
               >
                 {/* Background decorative symbol - larger and more prominent */}
-                <div className="absolute -right-2 -bottom-2 text-8xl font-bold opacity-15" style={{ color: stat.color }}>
+                <div className="absolute -right-1 -bottom-1 md:-right-2 md:-bottom-2 text-5xl md:text-8xl font-bold opacity-15" style={{ color: stat.color }}>
                   {stat.decorSymbol}
                 </div>
 
-                <CardContent className="p-5 relative z-10">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="rounded-xl p-2" style={{
+                <CardContent className="p-3 md:p-5 relative z-10">
+                  <div className="flex items-center justify-between mb-2 md:mb-3">
+                    <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{
                       background: `linear-gradient(135deg, ${stat.color}40, ${stat.color}20)`,
                       boxShadow: `0 0 20px ${stat.color}40`
                     }}>
-                      <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
+                      <stat.icon className="w-4 h-4 md:w-6 md:h-6" style={{ color: stat.color }} />
                     </div>
                     <motion.div
                       animate={{ rotate: 360, scale: [1, 1.2, 1] }}
                       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                     >
-                      <Sparkles className="w-5 h-5 opacity-60" style={{ color: stat.color }} />
+                      <Sparkles className="w-4 h-4 md:w-5 md:h-5 opacity-60" style={{ color: stat.color }} />
                     </motion.div>
                   </div>
-                  <div className="text-4xl font-black mb-1" style={{
+                  <div className="text-2xl md:text-3xl lg:text-4xl font-black mb-1" style={{
                     color: '#FFFFFF',
                     textShadow: `0 2px 15px ${stat.color}40`
                   }}>{stat.value}</div>
-                  <div className="text-sm font-semibold" style={{ color: '#A8B5C9' }}>{stat.label}</div>
+                  <div className="text-xs md:text-sm font-semibold" style={{ color: '#A8B5C9' }}>{stat.label}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -352,7 +352,7 @@ export default function Hub() {
         </motion.div>
 
         {/* Primary Action Cards */}
-        <div className="grid lg:grid-cols-3 gap-5 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-6 md:mb-8">
           {primaryActions.map((action, i) => (
             <motion.div
               key={i}
@@ -363,7 +363,7 @@ export default function Hub() {
             >
               <Link href={action.href}>
                 <Card
-                  className="h-full cursor-pointer relative overflow-hidden group rounded-3xl shadow-2xl border-none"
+                  className="h-full cursor-pointer relative overflow-hidden group rounded-2xl md:rounded-3xl shadow-2xl border-none"
                   style={{
                     background: action.gradient,
                     boxShadow: `0 10px 40px rgba(0,0,0,0.4), 0 0 30px ${action.borderColor}35`
@@ -400,10 +400,10 @@ export default function Hub() {
                     {action.badge}
                   </Badge>
 
-                  <CardContent className="p-8 relative z-10">
+                  <CardContent className="p-5 md:p-6 lg:p-8 relative z-10">
                     {/* Main icon with animation */}
                     <motion.div
-                      className="mb-5"
+                      className="mb-4 md:mb-5"
                       animate={{
                         rotate: [0, 5, -5, 0],
                         scale: [1, 1.1, 1],
@@ -411,23 +411,23 @@ export default function Hub() {
                       }}
                       transition={{ duration: 4, repeat: Infinity }}
                     >
-                      <div className="rounded-2xl inline-block p-4" style={{
+                      <div className="rounded-xl md:rounded-2xl inline-block p-3 md:p-4" style={{
                         background: `linear-gradient(135deg, ${action.borderColor}40, ${action.borderColor}20)`,
                         boxShadow: `0 0 30px ${action.borderColor}50`
                       }}>
-                        <action.icon className="w-14 h-14" style={{ color: action.borderColor }} />
+                        <action.icon className="w-10 h-10 md:w-12 md:h-12 lg:w-14 lg:h-14" style={{ color: action.borderColor }} />
                       </div>
                     </motion.div>
 
-                    <h3 className="text-3xl font-black mb-3" style={{
+                    <h3 className="text-xl md:text-2xl lg:text-3xl font-black mb-2 md:mb-3" style={{
                       color: '#FFFFFF',
                       textShadow: `0 2px 15px ${action.borderColor}40`
                     }}>{action.title}</h3>
-                    <p className="text-base mb-6 leading-relaxed" style={{ color: '#B8C5D6' }}>
+                    <p className="text-sm md:text-base mb-4 md:mb-6 leading-relaxed" style={{ color: '#B8C5D6' }}>
                       {action.description}
                     </p>
 
-                    <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all text-base" style={{ color: action.borderColor }}>
+                    <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all text-sm md:text-base" style={{ color: action.borderColor }}>
                       <span>Let's Go</span>
                       <motion.div
                         animate={{ x: [0, 5, 0] }}
@@ -448,12 +448,12 @@ export default function Hub() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="mb-10"
+          className="mb-6 md:mb-10"
           whileHover={{ scale: 1.02 }}
         >
           <Link href="/tournaments">
             <Card
-              className="cursor-pointer group relative overflow-hidden rounded-3xl shadow-2xl border-none"
+              className="cursor-pointer group relative overflow-hidden rounded-2xl md:rounded-3xl shadow-2xl border-none"
               style={{
                 background: 'linear-gradient(135deg, #4a3a1a 0%, #1E2D3F 40%, #2a1f0a 100%)',
                 boxShadow: '0 15px 50px rgba(0,0,0,0.5), 0 0 40px rgba(227, 179, 65, 0.3)'
@@ -475,38 +475,38 @@ export default function Hub() {
               <div className="absolute left-6 top-6 opacity-10 text-5xl">💎</div>
               <div className="absolute right-20 bottom-6 opacity-10 text-4xl">⚡</div>
 
-              <CardContent className="p-8 relative z-10">
-                <div className="grid md:grid-cols-2 gap-8 items-center">
+              <CardContent className="p-4 md:p-6 lg:p-8 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
                   <div>
                     <Badge
-                      className="mb-4 animate-pulse font-bold text-sm border-none shadow-lg"
+                      className="mb-3 md:mb-4 animate-pulse font-bold text-xs md:text-sm border-none shadow-lg"
                       style={{
                         background: 'linear-gradient(135deg, #E3B341, #c99a35)',
                         color: '#06121F'
                       }}
                     >
-                      <Flame className="w-4 h-4 mr-1" />
+                      <Flame className="w-3 h-3 md:w-4 md:h-4 mr-1" />
                       LIVE NOW 🔥
                     </Badge>
-                    <h3 className="text-3xl font-black mb-4 flex items-center gap-3" style={{
+                    <h3 className="text-xl md:text-2xl lg:text-3xl font-black mb-3 md:mb-4 flex items-center gap-2 md:gap-3" style={{
                       color: '#FFFFFF',
                       textShadow: '0 2px 20px rgba(227, 179, 65, 0.5)'
                     }}>
-                      <div className="rounded-xl p-2" style={{
+                      <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{
                         background: 'linear-gradient(135deg, #E3B34140, #E3B34120)',
                         boxShadow: '0 0 20px rgba(227, 179, 65, 0.4)'
                       }}>
-                        <Trophy className="w-8 h-8" style={{ color: '#E3B341' }} />
+                        <Trophy className="w-6 h-6 md:w-8 md:h-8" style={{ color: '#E3B341' }} />
                       </div>
                       {nextTournament?.name || "Weekly Championship"}
                     </h3>
-                    <p className="text-base mb-5" style={{ color: '#B8C5D6' }}>
-                      Prize Pool: <span className="text-3xl font-black" style={{
+                    <p className="text-sm md:text-base mb-4 md:mb-5" style={{ color: '#B8C5D6' }}>
+                      Prize Pool: <span className="text-2xl md:text-3xl font-black" style={{
                         color: '#28C76F',
                         textShadow: '0 2px 15px rgba(40, 199, 111, 0.5)'
                       }}>$7,500 💵</span>
                     </p>
-                    <div className="flex items-center gap-6 text-sm mb-6" style={{ color: '#B8C5D6' }}>
+                    <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm mb-4 md:mb-6" style={{ color: '#B8C5D6' }}>
                       <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{
                         backgroundColor: 'rgba(227, 179, 65, 0.1)',
                         border: '1px solid rgba(227, 179, 65, 0.2)'

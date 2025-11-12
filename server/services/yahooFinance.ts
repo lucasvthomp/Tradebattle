@@ -108,10 +108,10 @@ export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: 
 const cache = new Map<string, { data: any; timestamp: number; ttl: number }>();
 
 const CACHE_TTL = {
-  QUOTE: 5 * 60 * 1000, // 5 minutes
+  QUOTE: 5 * 1000, // 5 seconds - AGGRESSIVE for real-time feel
   HISTORICAL: 30 * 60 * 1000, // 30 minutes - for daily data
-  HISTORICAL_MINUTE: 2 * 60 * 1000, // 2 minutes - for minute data (1D)
-  HISTORICAL_30MIN: 5 * 60 * 1000, // 5 minutes - for 30-minute data (5D)
+  HISTORICAL_MINUTE: 10 * 1000, // 10 seconds - for intraday updates
+  HISTORICAL_30MIN: 30 * 1000, // 30 seconds - for 30-minute data (5D)
   PROFILE: 60 * 60 * 1000, // 1 hour
   SEARCH: 30 * 60 * 1000, // 30 minutes
 };

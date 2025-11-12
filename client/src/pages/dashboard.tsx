@@ -128,11 +128,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row" style={{ backgroundColor: '#06121F' }}>
-      {/* Chart Area - Full width on mobile, flex-1 on desktop */}
-      <div className="flex-1 flex flex-col p-2 md:p-4">
-        {/* Single Horizontal Header Line: All Elements on Same Y-Axis - Responsive wrapping on mobile */}
-        <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-3 px-2 md:px-4 py-2 md:py-3 rounded-2xl backdrop-blur-xl" style={{
+    <div className="min-h-screen flex flex-col [@media(min-aspect-ratio:1/1)]:flex-row" style={{ backgroundColor: '#06121F' }}>
+      {/* Chart Area - Full width on portrait, flex-1 on landscape */}
+      <div className="flex-1 flex flex-col p-2 [@media(min-aspect-ratio:1/1)]:p-4">
+        {/* Single Horizontal Header Line: All Elements on Same Y-Axis - Responsive wrapping on portrait */}
+        <div className="flex flex-wrap items-center gap-2 [@media(min-aspect-ratio:1/1)]:gap-3 mb-3 px-2 [@media(min-aspect-ratio:1/1)]:px-4 py-2 [@media(min-aspect-ratio:1/1)]:py-3 rounded-2xl backdrop-blur-xl" style={{
           background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2838 50%, #1E2D3F 100%)',
           border: '2px solid transparent',
           backgroundImage: 'linear-gradient(#1E2D3F, #1E2D3F), linear-gradient(135deg, #2B3A4C, #3A4A5C)',
@@ -141,12 +141,12 @@ export default function Dashboard() {
           boxShadow: '0 4px 20px rgba(16, 185, 129, 0.1)'
         }}>
           {/* Ticker Symbol */}
-          <h1 className="text-lg md:text-2xl font-bold tracking-tight" style={{ color: '#E3B341' }}>
+          <h1 className="text-lg [@media(min-aspect-ratio:1/1)]:text-2xl font-bold tracking-tight" style={{ color: '#E3B341' }}>
             {selectedSymbol}
           </h1>
 
           {/* Current Price */}
-          <span className="text-base md:text-xl font-semibold" style={{
+          <span className="text-base [@media(min-aspect-ratio:1/1)]:text-xl font-semibold" style={{
             color: '#FFFFFF',
             textShadow: '0 0 10px rgba(227, 179, 65, 0.3)'
           }}>
@@ -167,12 +167,12 @@ export default function Dashboard() {
           </span>
 
           {/* Buy/Sell Toggle Pills */}
-          <div className="flex gap-2 md:gap-3 md:ml-2">
+          <div className="flex gap-2 [@media(min-aspect-ratio:1/1)]:gap-3 [@media(min-aspect-ratio:1/1)]:ml-2">
             <motion.button
               onClick={() => setOrderSide('buy')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-8 md:h-9 px-3 md:px-4 text-xs md:text-sm rounded-xl font-semibold transition-all"
+              className="h-9 [@media(min-aspect-ratio:1/1)]:h-9 px-3 [@media(min-aspect-ratio:1/1)]:px-4 text-xs [@media(min-aspect-ratio:1/1)]:text-sm rounded-xl font-semibold transition-all"
               style={orderSide === 'buy'
                 ? {
                     background: 'linear-gradient(135deg, #28C76F 0%, #22A65D 100%)',
@@ -193,7 +193,7 @@ export default function Dashboard() {
               onClick={() => setOrderSide('sell')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-8 md:h-9 px-3 md:px-4 text-xs md:text-sm rounded-xl font-semibold transition-all"
+              className="h-9 [@media(min-aspect-ratio:1/1)]:h-9 px-3 [@media(min-aspect-ratio:1/1)]:px-4 text-xs [@media(min-aspect-ratio:1/1)]:text-sm rounded-xl font-semibold transition-all"
               style={orderSide === 'sell'
                 ? {
                     background: 'linear-gradient(135deg, #FF4F58 0%, #E53E47 100%)',
@@ -212,8 +212,8 @@ export default function Dashboard() {
             </motion.button>
           </div>
 
-          {/* Chart Control Icons - Hidden on mobile portrait */}
-          <div className="hidden md:flex items-center gap-2">
+          {/* Chart Control Icons - Hidden on portrait screens */}
+          <div className="hidden [@media(min-aspect-ratio:1/1)]:flex items-center gap-2">
             <motion.button
               onClick={() => {
                 setChartMode('cursor');
@@ -305,10 +305,10 @@ export default function Dashboard() {
             </motion.button>
           </div>
 
-          {/* Candlestick Interval Dropdown - Smaller on mobile */}
+          {/* Candlestick Interval Dropdown */}
           <Select value={candlestickInterval} onValueChange={setCandlestickInterval}>
             <SelectTrigger
-              className="h-7 w-24 md:w-32 text-xs md:text-sm font-medium rounded-md"
+              className="h-7 w-24 [@media(min-aspect-ratio:1/1)]:w-32 text-xs [@media(min-aspect-ratio:1/1)]:text-sm font-medium rounded-md"
               style={{
                 backgroundColor: '#0A1A2F',
                 borderColor: '#E3B341',
@@ -337,12 +337,12 @@ export default function Dashboard() {
             </SelectContent>
           </Select>
 
-          {/* Tournament Selector */}
+          {/* Tournament Selector - Full width on portrait */}
           <Select value={selectedTournament?.id?.toString()} onValueChange={(value) => {
             const tournament = activeTournaments.find((t: any) => t.id.toString() === value);
             setSelectedTournament(tournament);
           }}>
-            <SelectTrigger className="w-56 h-10 rounded-xl text-sm font-semibold border-2" style={{
+            <SelectTrigger className="w-full [@media(min-aspect-ratio:1/1)]:w-56 h-10 rounded-xl text-xs [@media(min-aspect-ratio:1/1)]:text-sm font-semibold border-2" style={{
               backgroundColor: '#1A2838',
               borderColor: '#2B3A4C',
               color: '#E3B341'
@@ -438,14 +438,14 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* RIGHT SIDE: Watchlist + Order Panel */}
-      <div className="w-96 flex flex-col backdrop-blur-xl" style={{
+      {/* RIGHT SIDE: Watchlist + Order Panel - Full width on portrait, stacked vertically */}
+      <div className="w-full [@media(min-aspect-ratio:1/1)]:w-96 flex flex-col backdrop-blur-xl" style={{
         background: 'linear-gradient(180deg, #1E2D3F 0%, #1A2838 100%)',
         borderLeft: '2px solid rgba(16, 185, 129, 0.15)',
         boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)'
       }}>
-        {/* TOP HALF: Watchlist Section */}
-        <div className="h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '3px solid #10B981', boxShadow: '0 2px 15px rgba(16, 185, 129, 0.3)' }}>
+        {/* TOP HALF: Watchlist Section - Smaller max height on portrait */}
+        <div className="h-auto max-h-64 [@media(min-aspect-ratio:1/1)]:h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '3px solid #10B981', boxShadow: '0 2px 15px rgba(16, 185, 129, 0.3)' }}>
           <div className="px-3 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
             borderColor: '#2B3A4C',
             background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)',
@@ -515,8 +515,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* BOTTOM HALF: Trade Execution Panel */}
-        <div className="h-1/2 flex flex-col overflow-y-auto">
+        {/* BOTTOM HALF: Trade Execution Panel - Auto height on portrait */}
+        <div className="h-auto [@media(min-aspect-ratio:1/1)]:h-1/2 flex flex-col overflow-y-auto">
           {/* Trade Execution Header */}
           <div className="px-3 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
             borderColor: '#2B3A4C',
@@ -722,17 +722,17 @@ export default function Dashboard() {
               Bid \${(tradePrice > 0 ? tradePrice : selectedPrice - 0.05).toFixed(2)} · Mid \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · Ask \${(tradePrice > 0 ? tradePrice : selectedPrice + 0.05).toFixed(2)} · Last \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · updated 11:59 AM · NYSE
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - Touch-friendly on portrait (44px minimum) */}
             <div className="flex gap-2 pt-2">
               <Button
-                className="flex-1 h-9 text-xs font-medium"
+                className="flex-1 h-12 [@media(min-aspect-ratio:1/1)]:h-9 text-sm [@media(min-aspect-ratio:1/1)]:text-xs font-medium"
                 style={{ backgroundColor: '#0A1A2F', color: '#FFFFFF', border: '1px solid #2B3A4C' }}
               >
                 Cancel
               </Button>
               <Button
                 disabled={!hasEnoughFunds || quantity <= 0 || !tradeSymbol}
-                className="flex-1 h-9 text-xs font-medium disabled:opacity-50"
+                className="flex-1 h-12 [@media(min-aspect-ratio:1/1)]:h-9 text-sm [@media(min-aspect-ratio:1/1)]:text-xs font-medium disabled:opacity-50"
                 style={{
                   backgroundColor: orderSide === 'buy' ? '#28C76F' : '#FF4F58',
                   color: orderSide === 'buy' ? '#000000' : '#FFFFFF',

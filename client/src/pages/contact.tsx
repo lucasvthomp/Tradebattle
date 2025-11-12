@@ -166,16 +166,16 @@ export default function Support() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card">
-        <div className="max-w-5xl mx-auto px-6 py-12">
-          <h1 className="text-4xl font-bold text-foreground mb-3">Support Center</h1>
-          <p className="text-lg text-muted-foreground">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Support Center</h1>
+          <p className="text-base md:text-lg text-muted-foreground">
             Find answers to common questions or contact our support team
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-5xl mx-auto px-6 py-12">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Search */}
         <div className="mb-12">
           <div className="relative">
@@ -189,9 +189,9 @@ export default function Support() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
-          {/* FAQs - 2/3 width */}
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
+          {/* FAQs - 2/3 width on desktop, full width on mobile */}
+          <div className="lg:col-span-2 space-y-4 md:space-y-6">
             <div>
               <h2 className="text-2xl font-bold text-foreground mb-6">Frequently Asked Questions</h2>
 
@@ -228,9 +228,9 @@ export default function Support() {
             </div>
           </div>
 
-          {/* Contact Form - 1/3 width */}
+          {/* Contact Form - 1/3 width on desktop, full width on mobile */}
           <div>
-            <div className="sticky top-24 space-y-6">
+            <div className="lg:sticky lg:top-24 space-y-4 md:space-y-6">
               <Card>
                 <CardHeader>
                   <CardTitle className="text-xl">Contact Support</CardTitle>
