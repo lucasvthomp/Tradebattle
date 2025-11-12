@@ -30,9 +30,6 @@ export default function Dashboard() {
   const [priceChange, setPriceChange] = useState<number>(2.50);
   const [priceChangePercent, setPriceChangePercent] = useState<number>(1.69);
 
-  // OHLCV data
-  const [ohlcv, setOhlcv] = useState({ open: 148.50, high: 151.20, low: 147.80, close: 150.00, volume: 12500000 });
-
   // Order form state
   const [orderSide, setOrderSide] = useState<'buy' | 'sell'>('buy');
   const [orderType, setOrderType] = useState<string>('limit');
