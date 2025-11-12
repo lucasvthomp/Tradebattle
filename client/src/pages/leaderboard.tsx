@@ -75,61 +75,61 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8 px-4">
+      <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(24px, 4vh, 48px) clamp(16px, 2vw, 32px)' }}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <div className="flex items-center gap-3 mb-2">
-            <Trophy className="h-8 w-8" style={{ color: '#E3B341' }} />
-            <h1 className="text-4xl font-bold text-white">Leaderboards</h1>
+          <div className="flex items-center mb-3" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
+            <Trophy style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)', color: '#E3B341' }} />
+            <h1 className="font-bold text-white" style={{ fontSize: 'clamp(1.875rem, 4vw, 3.75rem)' }}>Leaderboards</h1>
           </div>
-          <p className="text-[#8A93A6]">Top performers across all tournaments and categories</p>
+          <p className="text-[#8A93A6]" style={{ fontSize: 'clamp(0.75rem, 1vw, 1.125rem)' }}>Top performers across all tournaments and categories</p>
         </motion.div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-[#1E2D3F] border border-[#2B3A4C]">
+          <TabsList className="grid w-full grid-cols-3 bg-[#1E2D3F] border border-[#2B3A4C] rounded-xl" style={{ height: 'clamp(48px, 4vh, 64px)' }}>
             <TabsTrigger
               value="wagered"
               className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
               style={activeTab === "wagered" ? {} : { color: '#8A93A6 !important' }}
             >
-              <DollarSign className="h-4 w-4 mr-2" style={{ color: activeTab === "wagered" ? undefined : '#8A93A6' }} />
-              <span style={{ color: activeTab === "wagered" ? undefined : '#8A93A6' }}>Total Wagered</span>
+              <DollarSign className="mr-2" style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', color: activeTab === "wagered" ? undefined : '#8A93A6' }} />
+              <span style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)', color: activeTab === "wagered" ? undefined : '#8A93A6' }}>Total Wagered</span>
             </TabsTrigger>
             <TabsTrigger
               value="highwager"
               className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
               style={activeTab === "highwager" ? {} : { color: '#8A93A6 !important' }}
             >
-              <Trophy className="h-4 w-4 mr-2" style={{ color: activeTab === "highwager" ? undefined : '#8A93A6' }} />
-              <span style={{ color: activeTab === "highwager" ? undefined : '#8A93A6' }}>High Stakes</span>
+              <Trophy className="mr-2" style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', color: activeTab === "highwager" ? undefined : '#8A93A6' }} />
+              <span style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)', color: activeTab === "highwager" ? undefined : '#8A93A6' }}>High Stakes</span>
             </TabsTrigger>
             <TabsTrigger
               value="growth"
               className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
               style={activeTab === "growth" ? {} : { color: '#8A93A6 !important' }}
             >
-              <TrendingUp className="h-4 w-4 mr-2" style={{ color: activeTab === "growth" ? undefined : '#8A93A6' }} />
-              <span style={{ color: activeTab === "growth" ? undefined : '#8A93A6' }}>Top Growth</span>
+              <TrendingUp className="mr-2" style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', color: activeTab === "growth" ? undefined : '#8A93A6' }} />
+              <span style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)', color: activeTab === "growth" ? undefined : '#8A93A6' }}>Top Growth</span>
             </TabsTrigger>
           </TabsList>
 
           <AnimatePresence mode="wait">
             {/* Total Wagered Tab */}
             <TabsContent value="wagered" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <DollarSign className="h-5 w-5" style={{ color: '#E3B341' }} />
+              <Card className="rounded-xl">
+                <CardHeader style={{ padding: 'clamp(16px, 2vw, 24px)' }}>
+                  <CardTitle className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 12px)', fontSize: 'clamp(1rem, 1.5vw, 1.5rem)' }}>
+                    <DollarSign style={{ width: 'clamp(16px, 1.5vw, 24px)', height: 'clamp(16px, 1.5vw, 24px)', color: '#E3B341' }} />
                     Top Traders by Total Wagered
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
+                <CardContent style={{ padding: 'clamp(16px, 2vw, 24px)' }}>
+                  <div className="space-y-3">
                     {mockWageredData.map((trader, index) => {
                       const rank = index + 1;
                       return (
@@ -138,22 +138,27 @@ export default function Leaderboard() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="flex items-center justify-between p-4 rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
+                          className="flex items-center justify-between rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
+                          style={{ padding: 'clamp(12px, 1.5vw, 20px)' }}
                         >
-                          <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
+                          <div className="flex items-center" style={{ gap: 'clamp(12px, 1.5vw, 20px)' }}>
+                            <div className={`rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`} style={{
+                              width: 'clamp(32px, 3vw, 56px)',
+                              height: 'clamp(32px, 3vw, 56px)',
+                              fontSize: 'clamp(0.875rem, 1vw, 1.125rem)'
+                            }}>
                               {rank <= 3 ? getRankIcon(rank) : rank}
                             </div>
                             <div>
-                              <div className="font-semibold text-white">{trader.username}</div>
-                              <div className="text-sm text-[#8A93A6]">{trader.tournamentCount} tournaments</div>
+                              <div className="font-semibold text-white" style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1.25rem)' }}>{trader.username}</div>
+                              <div className="text-[#8A93A6]" style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>{trader.tournamentCount} tournaments</div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-bold text-lg" style={{ color: '#E3B341' }}>
+                            <div className="font-bold" style={{ color: '#E3B341', fontSize: 'clamp(1rem, 1.5vw, 1.5rem)' }}>
                               {formatCurrency(trader.totalWagered)}
                             </div>
-                            <div className="text-xs text-[#8A93A6]">Total Wagered</div>
+                            <div className="text-[#8A93A6]" style={{ fontSize: 'clamp(0.625rem, 0.8vw, 0.875rem)' }}>Total Wagered</div>
                           </div>
                         </motion.div>
                       );

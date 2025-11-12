@@ -61,9 +61,12 @@ export function SimplifiedSidebar() {
       {/* Simplified Always-Visible Sidebar */}
       <div
         className={`fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-30 transition-all duration-300 ease-in-out ${
-          expanded ? 'w-64' : 'w-16'
+          expanded ? 'w-56' : 'w-16'
         }`}
-        style={{ backgroundColor: '#0D1F33', borderColor: '#2B3A4C' }}
+        style={{
+          backgroundColor: '#0D1F33',
+          borderColor: '#2B3A4C'
+        }}
         onMouseEnter={() => setExpanded(true)}
         onMouseLeave={() => setExpanded(false)}
       >
@@ -194,7 +197,7 @@ export function SimplifiedSidebar() {
       </div>
 
       {/* Main Content Spacing */}
-      <div className={`transition-all duration-300 ${expanded ? 'ml-64' : 'ml-16'}`} />
+      <div className={`transition-all duration-300 ${expanded ? 'ml-56' : 'ml-16'}`} />
     </>
   );
 }

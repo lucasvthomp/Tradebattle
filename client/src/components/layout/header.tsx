@@ -27,10 +27,10 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-muted" style={{ backgroundColor: 'rgba(10, 26, 47, 0.98)' }}>
-      <div className="container mx-auto">
+      <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           {/* Left side - Logo and Market Status */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
                 <span className="font-bold text-sm text-background">O</span>
@@ -49,15 +49,15 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display - Clickable for balance management */}
                 <Button
                   variant="ghost"
-                  className="h-10 flex items-center justify-center px-4 hover:bg-yellow-500/10 transition-all"
+                  className="h-10 flex items-center justify-center px-4 hover:bg-yellow-500/10 transition-all border-2"
                   style={{
-                    border: '2px solid #E3B341',
+                    borderColor: '#E3B341',
                     color: '#E3B341'
                   }}
                   onClick={() => setBalanceDialogOpen(true)}
                 >
-                  <DollarSign className="w-4 h-4 mr-0.5" style={{ color: '#E3B341' }} />
-                  <span className="text-sm font-bold" style={{ color: '#E3B341' }}>
+                  <DollarSign className="w-4 h-4 mr-1" />
+                  <span className="text-sm font-bold">
                     {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </Button>
