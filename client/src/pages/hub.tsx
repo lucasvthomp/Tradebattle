@@ -133,38 +133,72 @@ export default function Hub() {
       description: "Jump into action with your live portfolio",
       href: "/dashboard",
       icon: BarChart3,
-      bgColor: '#1E2D3F',
+      gradient: 'linear-gradient(135deg, #1a4d2e 0%, #1E2D3F 50%, #0d2619 100%)',
       borderColor: '#28C76F',
       badge: "Live",
       badgeColor: "#28C76F",
+      decorIcon: Rocket,
+      decorColor: '#28C76F',
     },
     {
       title: "Join Tournament",
       description: `${activeTournaments.length} active tournaments waiting`,
       href: "/tournaments",
       icon: Trophy,
-      bgColor: '#1E2D3F',
+      gradient: 'linear-gradient(135deg, #4a3a1a 0%, #1E2D3F 50%, #2d2210 100%)',
       borderColor: '#E3B341',
       badge: "Ongoing",
       badgeColor: "#E3B341",
+      decorIcon: Crown,
+      decorColor: '#E3B341',
     },
     {
       title: "Leaderboard",
       description: "Compete for the top spot globally",
       href: "/leaderboard",
-      icon: Crown,
-      bgColor: '#1E2D3F',
-      borderColor: '#E3B341',
+      icon: Award,
+      gradient: 'linear-gradient(135deg, #1a2d4a 0%, #1E2D3F 50%, #0d1a2d 100%)',
+      borderColor: '#3B82F6',
       badge: "Top 100",
-      badgeColor: "#E3B341",
+      badgeColor: "#3B82F6",
+      decorIcon: Star,
+      decorColor: '#FFD700',
     }
   ];
 
   const quickStats = [
-    { label: "Balance", value: formatCurrency(Number(user?.siteCash) || 0), icon: DollarSign, color: '#E3B341' },
-    { label: "Active Trades", value: "12", icon: Activity, color: '#28C76F' },
-    { label: "Tournaments", value: activeTournaments.length, icon: Trophy, color: '#E3B341' },
-    { label: "Global Rank", value: "#152", icon: Award, color: '#3B82F6' },
+    {
+      label: "Balance",
+      value: formatCurrency(Number(user?.siteCash) || 0),
+      icon: DollarSign,
+      color: '#E3B341',
+      gradient: 'linear-gradient(135deg, #4a3a1a 0%, #2a2415 100%)',
+      decorSymbol: '$'
+    },
+    {
+      label: "Active Trades",
+      value: "12",
+      icon: Activity,
+      color: '#28C76F',
+      gradient: 'linear-gradient(135deg, #1a4d2e 0%, #0f2a1a 100%)',
+      decorSymbol: '↗'
+    },
+    {
+      label: "Tournaments",
+      value: activeTournaments.length,
+      icon: Trophy,
+      color: '#E3B341',
+      gradient: 'linear-gradient(135deg, #3a2f1a 0%, #221a10 100%)',
+      decorSymbol: '🏆'
+    },
+    {
+      label: "Global Rank",
+      value: "#152",
+      icon: Award,
+      color: '#3B82F6',
+      gradient: 'linear-gradient(135deg, #1a2d4a 0%, #0f1a2d 100%)',
+      decorSymbol: '★'
+    },
   ];
 
   return (
@@ -180,7 +214,7 @@ export default function Hub() {
         }} />
       </div>
 
-      <div className="container mx-auto px-4 lg:px-8 relative z-10" style={{ padding: 'clamp(24px, 4vh, 48px) clamp(16px, 2vw, 32px)' }}>
+      <div className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
         {/* Hero Header */}
         <motion.div
           className="mb-8"
@@ -191,46 +225,78 @@ export default function Hub() {
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>
               <motion.div
-                className="flex items-center mb-3"
-                style={{ gap: 'clamp(8px, 1vw, 16px)' }}
+                className="flex items-center gap-3 mb-3"
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Crown style={{ width: 'clamp(32px, 3vw, 56px)', height: 'clamp(32px, 3vw, 56px)', color: '#E3B341' }} />
-                <h1 className="font-black" style={{ fontSize: 'clamp(2rem, 4vw, 3.5rem)' }}>
-                  {getGreeting()}, <span style={{ color: '#E3B341' }}>{user?.username}</span>!
+                <div className="rounded-2xl p-2" style={{
+                  background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)',
+                  boxShadow: '0 0 20px rgba(227, 179, 65, 0.4)'
+                }}>
+                  <Crown className="w-12 h-12" style={{ color: '#06121F' }} />
+                </div>
+                <h1 className="text-5xl font-black">
+                  {getGreeting()}, <span style={{ color: '#E3B341' }}>{user?.username}</span>! 👋
                 </h1>
               </motion.div>
-              <p className="flex items-center gap-2" style={{ color: '#8A93A6', fontSize: 'clamp(1rem, 1.5vw, 1.5rem)' }}>
-                <div className="rounded-full animate-pulse" style={{ width: 'clamp(8px, 0.8vw, 12px)', height: 'clamp(8px, 0.8vw, 12px)', backgroundColor: '#28C76F' }} />
-                Ready to compete and win?
+              <p className="flex items-center gap-2 text-lg" style={{ color: '#8A93A6' }}>
+                <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#28C76F' }} />
+                Ready to compete and win? 🚀
               </p>
             </div>
 
             {/* Balance Card */}
-            <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px', minWidth: 'clamp(240px, 20vw, 320px)' }}>
-              <CardContent style={{ padding: 'clamp(16px, 2vw, 24px)' }}>
-                <div className="mb-2" style={{ color: '#8A93A6', fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>Your Balance</div>
-                <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 12px)' }}>
-                  <DollarSign style={{ width: 'clamp(24px, 2.5vw, 40px)', height: 'clamp(24px, 2.5vw, 40px)', color: '#E3B341' }} />
-                  <span className="font-black" style={{ color: '#E3B341', fontSize: 'clamp(1.5rem, 3vw, 3rem)' }}>
-                    {formatCurrency(Number(user?.siteCash) || 0)}
-                  </span>
+            <motion.div whileHover={{ scale: 1.03, rotate: 2 }} whileTap={{ scale: 0.98 }}>
+              <Card
+                className="rounded-3xl shadow-2xl relative overflow-hidden border-none"
+                style={{
+                  background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 50%, #a8822c 100%)',
+                  minWidth: '280px',
+                  boxShadow: '0 10px 40px rgba(227, 179, 65, 0.4), 0 0 30px rgba(227, 179, 65, 0.2)'
+                }}
+              >
+                {/* Decorative elements */}
+                <div className="absolute -right-6 -top-6 opacity-20">
+                  <div className="text-8xl">💰</div>
                 </div>
-                <Link href="/dashboard">
-                  <Button className="w-full font-bold rounded-lg" style={{
-                    backgroundColor: '#E3B341',
-                    color: '#06121F',
-                    marginTop: 'clamp(12px, 1.5vh, 20px)',
-                    fontSize: 'clamp(0.875rem, 1vw, 1.125rem)',
-                    height: 'clamp(36px, 3vh, 44px)'
-                  }}>
-                    <Zap style={{ width: 'clamp(16px, 1.5vw, 20px)', height: 'clamp(16px, 1.5vw, 20px)', marginRight: '8px' }} />
-                    Trade Now
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                <div className="absolute -left-4 -bottom-4 opacity-20">
+                  <DollarSign className="w-24 h-24" style={{ color: '#FFFFFF' }} />
+                </div>
+
+                <CardContent className="p-6 relative z-10">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div className="rounded-xl p-2" style={{
+                      backgroundColor: 'rgba(6, 18, 31, 0.3)',
+                      backdropFilter: 'blur(10px)'
+                    }}>
+                      <Coins className="w-5 h-5" style={{ color: '#06121F' }} />
+                    </div>
+                    <div className="text-sm font-bold" style={{ color: '#06121F' }}>Your Balance</div>
+                  </div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="text-5xl font-black" style={{
+                      color: '#06121F',
+                      textShadow: '0 2px 10px rgba(6, 18, 31, 0.3)'
+                    }}>
+                      {formatCurrency(Number(user?.siteCash) || 0)}
+                    </span>
+                    <span className="text-3xl">📈</span>
+                  </div>
+                  <Link href="/dashboard">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <Button className="w-full h-12 font-bold text-base rounded-xl shadow-lg border-none" style={{
+                        background: 'linear-gradient(135deg, #06121F 0%, #0a1929 100%)',
+                        color: '#E3B341',
+                        boxShadow: '0 4px 20px rgba(6, 18, 31, 0.6)'
+                      }}>
+                        <Zap className="w-5 h-5 mr-2" />
+                        Trade Now ⚡
+                      </Button>
+                    </motion.div>
+                  </Link>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </motion.div>
 
@@ -245,22 +311,57 @@ export default function Hub() {
           {quickStats.map((stat, i) => (
             <motion.div
               key={i}
-              whileHover={{ scale: 1.05, y: -5 }}
+              whileHover={{ scale: 1.08, y: -8 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }} className="transition-all hover:border-[#E3B341] rounded-xl">
-                <CardContent style={{ padding: 'clamp(12px, 1.5vw, 20px)' }}>
-                  <div className="flex items-center justify-between mb-2">
-                    <stat.icon style={{ width: 'clamp(20px, 2vw, 32px)', height: 'clamp(20px, 2vw, 32px)', color: stat.color }} />
+              <Card
+                className="transition-all rounded-2xl shadow-xl relative overflow-hidden"
+                style={{
+                  background: stat.gradient,
+                  borderColor: stat.color,
+                  borderWidth: '2px',
+                  boxShadow: `0 5px 20px rgba(0,0,0,0.3), 0 0 10px ${stat.color}15`
+                }}
+              >
+                {/* Background decorative symbol */}
+                <div className="absolute right-2 bottom-2 text-6xl font-bold opacity-10" style={{ color: stat.color }}>
+                  {stat.decorSymbol}
+                </div>
+
+                <CardContent className="relative z-10" style={{ padding: 'clamp(14px, 1.8vw, 24px)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="rounded-xl p-2" style={{
+                      backgroundColor: `${stat.color}20`,
+                      boxShadow: `0 0 15px ${stat.color}30`
+                    }}>
+                      <stat.icon style={{
+                        width: 'clamp(20px, 2vw, 28px)',
+                        height: 'clamp(20px, 2vw, 28px)',
+                        color: stat.color
+                      }} />
+                    </div>
                     <motion.div
                       animate={{ rotate: 360 }}
                       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                     >
-                      <Sparkles style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', opacity: 0.5, color: '#E3B341' }} />
+                      <Sparkles style={{
+                        width: 'clamp(14px, 1.3vw, 20px)',
+                        height: 'clamp(14px, 1.3vw, 20px)',
+                        opacity: 0.6,
+                        color: stat.color
+                      }} />
                     </motion.div>
                   </div>
-                  <div className="font-black mb-1" style={{ color: '#C9D1E2', fontSize: 'clamp(1.25rem, 2.5vw, 2.5rem)' }}>{stat.value}</div>
-                  <div style={{ color: '#8A93A6', fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>{stat.label}</div>
+                  <div className="font-black mb-1" style={{
+                    color: '#FFFFFF',
+                    fontSize: 'clamp(1.5rem, 2.8vw, 2.5rem)',
+                    textShadow: '0 2px 8px rgba(0,0,0,0.4)'
+                  }}>{stat.value}</div>
+                  <div style={{
+                    color: '#A8B5C9',
+                    fontSize: 'clamp(0.75rem, 1vw, 0.875rem)',
+                    fontWeight: '600'
+                  }}>{stat.label}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -279,40 +380,88 @@ export default function Hub() {
             >
               <Link href={action.href}>
                 <Card
-                  className="h-full cursor-pointer relative overflow-hidden group"
+                  className="h-full cursor-pointer relative overflow-hidden group rounded-2xl shadow-2xl"
                   style={{
-                    backgroundColor: action.bgColor,
+                    background: action.gradient,
                     borderColor: action.borderColor,
-                    borderWidth: '2px'
+                    borderWidth: '3px',
+                    boxShadow: `0 0 30px rgba(0,0,0,0.3), 0 0 15px ${action.borderColor}25`
                   }}
                 >
+                  {/* Glowing overlay on hover */}
                   <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-10"
+                    className="absolute inset-0 opacity-0 group-hover:opacity-20"
                     style={{ backgroundColor: action.borderColor }}
                     transition={{ duration: 0.3 }}
                   />
 
+                  {/* Decorative icon in background */}
+                  <div className="absolute right-4 bottom-4 opacity-10">
+                    <action.decorIcon style={{
+                      width: 'clamp(80px, 10vw, 140px)',
+                      height: 'clamp(80px, 10vw, 140px)',
+                      color: action.decorColor
+                    }} />
+                  </div>
+
+                  {/* Badge */}
                   <Badge
-                    className="absolute top-4 right-4 animate-pulse font-bold"
-                    style={{ backgroundColor: action.badgeColor, color: '#FFFFFF' }}
+                    className="absolute top-4 right-4 animate-pulse font-bold z-20 shadow-lg"
+                    style={{
+                      backgroundColor: action.badgeColor,
+                      color: '#FFFFFF',
+                      fontSize: 'clamp(0.65rem, 0.8vw, 0.875rem)',
+                      padding: 'clamp(4px, 0.5vw, 8px) clamp(8px, 1vw, 12px)'
+                    }}
                   >
                     {action.badge}
                   </Badge>
 
-                  <CardContent className="relative z-10" style={{ padding: 'clamp(20px, 2.5vw, 32px)' }}>
+                  <CardContent className="relative z-10" style={{ padding: 'clamp(24px, 3vw, 40px)' }}>
+                    {/* Main icon with animation */}
                     <motion.div
-                      animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.1, 1] }}
+                      className="mb-4"
+                      animate={{
+                        rotate: [0, 5, -5, 0],
+                        scale: [1, 1.08, 1],
+                        y: [0, -5, 0]
+                      }}
                       transition={{ duration: 4, repeat: Infinity }}
                     >
-                      <action.icon style={{ width: 'clamp(48px, 5vw, 80px)', height: 'clamp(48px, 5vw, 80px)', marginBottom: 'clamp(12px, 1.5vh, 16px)', color: action.borderColor }} />
+                      <div className="rounded-2xl inline-block p-4" style={{
+                        backgroundColor: `${action.borderColor}20`,
+                        boxShadow: `0 0 20px ${action.borderColor}40`
+                      }}>
+                        <action.icon style={{
+                          width: 'clamp(40px, 4.5vw, 64px)',
+                          height: 'clamp(40px, 4.5vw, 64px)',
+                          color: action.borderColor
+                        }} />
+                      </div>
                     </motion.div>
 
-                    <h3 className="font-black mb-3" style={{ color: '#C9D1E2', fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)' }}>{action.title}</h3>
-                    <p className="mb-5" style={{ color: '#8A93A6', fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>{action.description}</p>
+                    <h3 className="font-black mb-3" style={{
+                      color: '#FFFFFF',
+                      fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)',
+                      textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                    }}>{action.title}</h3>
+                    <p className="mb-6" style={{
+                      color: '#B8C5D6',
+                      fontSize: 'clamp(0.875rem, 1.1vw, 1.125rem)',
+                      lineHeight: '1.6'
+                    }}>{action.description}</p>
 
-                    <div className="flex items-center gap-2 font-bold group-hover:gap-3 transition-all" style={{ color: action.borderColor, fontSize: 'clamp(0.875rem, 1vw, 1.125rem)' }}>
+                    <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all" style={{
+                      color: action.borderColor,
+                      fontSize: 'clamp(0.875rem, 1vw, 1.125rem)'
+                    }}>
                       <span>Let's Go</span>
-                      <ArrowRight style={{ width: 'clamp(16px, 1.5vw, 24px)', height: 'clamp(16px, 1.5vw, 24px)' }} />
+                      <motion.div
+                        animate={{ x: [0, 5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
+                      >
+                        <ArrowRight style={{ width: 'clamp(16px, 1.5vw, 24px)', height: 'clamp(16px, 1.5vw, 24px)' }} />
+                      </motion.div>
                     </div>
                   </CardContent>
                 </Card>
@@ -330,14 +479,29 @@ export default function Hub() {
         >
           <Link href="/tournaments">
             <Card
-              className="cursor-pointer group relative overflow-hidden"
-              style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px' }}
+              className="cursor-pointer group relative overflow-hidden rounded-3xl shadow-2xl"
+              style={{
+                background: 'linear-gradient(135deg, #4a3a1a 0%, #1E2D3F 40%, #2a1f0a 100%)',
+                borderColor: '#E3B341',
+                borderWidth: '3px',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.4), 0 0 20px rgba(227, 179, 65, 0.2)'
+              }}
             >
+              {/* Glowing overlay on hover */}
               <motion.div
-                className="absolute inset-0 opacity-0 group-hover:opacity-10"
+                className="absolute inset-0 opacity-0 group-hover:opacity-15"
                 style={{ backgroundColor: '#E3B341' }}
                 transition={{ duration: 0.3 }}
               />
+
+              {/* Decorative trophy in background */}
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-8">
+                <Trophy style={{
+                  width: 'clamp(150px, 15vw, 280px)',
+                  height: 'clamp(150px, 15vw, 280px)',
+                  color: '#E3B341'
+                }} />
+              </div>
 
               <CardContent className="p-5 relative z-10">
                 <div className="grid md:grid-cols-2 gap-5 items-center">
