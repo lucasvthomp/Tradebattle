@@ -52,6 +52,7 @@ interface AdvancedTradingChartProps {
   candlestickInterval?: string;
   zoomTrigger?: number;
   showIndicators?: boolean;
+  timeRange?: string;
 }
 
 interface Indicator {
@@ -67,7 +68,8 @@ export function AdvancedTradingChart({
   title = "Advanced Chart",
   candlestickInterval = "5 minutes",
   zoomTrigger = 0,
-  showIndicators: showIndicatorsProp = false
+  showIndicators: showIndicatorsProp = false,
+  timeRange = "1D"
 }: AdvancedTradingChartProps) {
   const { user } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,40 @@ export function AdvancedTradingChart({
     { id: 'ema12', name: 'EMA(12)', enabled: false },
     { id: 'ema26', name: 'EMA(26)', enabled: false },
   ]);
+
+  // Convert time range to number of bars to display
+  const getVisibleBarsFromTimeRange = (range: string): number => {
+    // Assuming candlestick interval, calculate how many bars fit in the time range
+    const intervalMinutes = {
+      '1 tick': 1/60,
+      '144 ticks': 144/60,
+      '1 second': 1/60,
+      '5 seconds': 5/60,
+      '30 seconds': 0.5,
+      '1 minute': 1,
+      '5 minutes': 5,
+      '10 minutes': 10,
+      '30 minutes': 30,
+      '1 hour': 60,
+      '3 hours': 180,
+      '12 hours': 720,
+      '1 day': 1440,
+      '1 week': 10080
+    }[candlestickInterval] || 5;
+
+    const rangeMinutes = {
+      '1D': 390,      // 6.5 hours of trading
+      '1W': 1950,     // 5 trading days
+      '1M': 8775,     // ~22 trading days
+      '3M': 26325,    // ~66 trading days
+      'YTD': 87600,   // Year to date (approx)
+      '1Y': 87600,    // ~252 trading days
+      '5Y': 438000,   // ~1260 trading days
+      'All': 1752000  // Max historical data
+    }[range] || 390;
+
+    return Math.ceil(rangeMinutes / intervalMinutes);
+  };
 
   // Update chart when selectedStock prop changes
   useEffect(() => {
@@ -207,7 +243,8 @@ export function AdvancedTradingChart({
   // Fetch and update chart data
   const fetchChartData = async (symbol: string, timeframe: string) => {
     try {
-      const response = await fetch(`/api/historical/${symbol}?timeframe=${timeframe}`);
+      // Always load 1 year of data to allow scrolling
+      const response = await fetch(`/api/historical/${symbol}?timeframe=1Y`);
       const data = await response.json();
 
       if (data.success && data.data) {
@@ -321,7 +358,20 @@ export function AdvancedTradingChart({
 
         setTimeout(() => {
           if (chartRef.current) {
-            chartRef.current.timeScale().fitContent();
+            // Set the visible range based on timeRange
+            const visibleBars = getVisibleBarsFromTimeRange(timeRange);
+            const dataLength = candleData.length;
+
+            if (dataLength > 0) {
+              // Show the most recent N bars
+              const endIndex = dataLength - 1;
+              const startIndex = Math.max(0, endIndex - visibleBars);
+
+              chartRef.current.timeScale().setVisibleRange({
+                from: candleData[startIndex].time as any,
+                to: candleData[endIndex].time as any,
+              });
+            }
           }
         }, 100);
       }
@@ -397,6 +447,8 @@ export function AdvancedTradingChart({
         fixRightEdge: false,
         allowShiftVisibleRangeOnWhitespaceReplacement: true,
         shiftVisibleRangeOnNewBar: false,
+        lockVisibleTimeRangeOnResize: true,
+        rightBarStaysOnScroll: false,
       },
       handleScroll: {
         mouseWheel: true,
@@ -492,8 +544,24 @@ export function AdvancedTradingChart({
   };
 
   const handleResetZoom = () => {
-    if (chartRef.current) {
-      chartRef.current.timeScale().fitContent();
+    if (!chartRef.current || !candlestickSeriesRef.current) return;
+
+    const chart = chartRef.current;
+    const candlestickSeries = candlestickSeriesRef.current;
+    const data = candlestickSeries.data();
+
+    if (data && data.length > 0) {
+      const visibleBars = getVisibleBarsFromTimeRange(timeRange);
+      const dataLength = data.length;
+
+      // Show the most recent N bars
+      const endIndex = dataLength - 1;
+      const startIndex = Math.max(0, endIndex - visibleBars);
+
+      chart.timeScale().setVisibleRange({
+        from: data[startIndex].time as any,
+        to: data[endIndex].time as any,
+      });
     }
   };
 
@@ -544,6 +612,29 @@ export function AdvancedTradingChart({
       setIndicators(prev => prev.map(ind => ({ ...ind, enabled: false })));
     }
   }, [showIndicatorsProp]);
+
+  // Handle time range changes
+  useEffect(() => {
+    if (!chartRef.current || !candlestickSeriesRef.current) return;
+
+    const chart = chartRef.current;
+    const candlestickSeries = candlestickSeriesRef.current;
+    const data = candlestickSeries.data();
+
+    if (data && data.length > 0) {
+      const visibleBars = getVisibleBarsFromTimeRange(timeRange);
+      const dataLength = data.length;
+
+      // Show the most recent N bars
+      const endIndex = dataLength - 1;
+      const startIndex = Math.max(0, endIndex - visibleBars);
+
+      chart.timeScale().setVisibleRange({
+        from: data[startIndex].time as any,
+        to: data[endIndex].time as any,
+      });
+    }
+  }, [timeRange]);
 
   return (
     <div className="h-full flex flex-col bg-background">

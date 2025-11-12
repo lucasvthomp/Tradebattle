@@ -30,10 +30,6 @@ export default function Dashboard() {
   const [priceChange, setPriceChange] = useState<number>(2.50);
   const [priceChangePercent, setPriceChangePercent] = useState<number>(1.69);
 
-  // Trade execution state (independent from chart)
-  const [tradeSymbol, setTradeSymbol] = useState<string>("");
-  const [tradePrice, setTradePrice] = useState<number>(0);
-
   // OHLCV data
   const [ohlcv, setOhlcv] = useState({ open: 148.50, high: 151.20, low: 147.80, close: 150.00, volume: 12500000 });
 
@@ -44,6 +40,10 @@ export default function Dashboard() {
   const [limitPrice, setLimitPrice] = useState<number>(150.00);
   const [timeInForce, setTimeInForce] = useState<string>('day');
   const [tradingSession, setTradingSession] = useState<string>('regular');
+
+  // Independent trade ticker state
+  const [tradeSymbol, setTradeSymbol] = useState<string>('');
+  const [tradePrice, setTradePrice] = useState<number>(0);
 
   // Chart controls
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('1D');
@@ -395,6 +395,7 @@ export default function Dashboard() {
             candlestickInterval={candlestickInterval}
             zoomTrigger={chartZoomTrigger}
             showIndicators={showIndicators}
+            timeRange={selectedTimeRange}
           />
 
           {/* Time Range Selector */}
@@ -460,8 +461,8 @@ export default function Dashboard() {
         boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)'
       }}>
         {/* TOP HALF: Watchlist Section */}
-        <div className="flex-1 flex flex-col border-b" style={{ borderColor: '#2B3A4C' }}>
-          <div className="px-4 py-3 border-b flex items-center justify-between" style={{
+        <div className="h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '3px solid #10B981', boxShadow: '0 2px 15px rgba(16, 185, 129, 0.3)' }}>
+          <div className="px-4 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
             borderColor: '#2B3A4C',
             background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)',
             boxShadow: '0 2px 12px rgba(227, 179, 65, 0.1)'
@@ -481,9 +482,13 @@ export default function Dashboard() {
           </div>
 
           {/* Watchlist Table */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1">
             {/* Table Header */}
-            <div className="grid grid-cols-6 gap-2 px-3 py-2 text-xs font-medium border-b" style={{ color: '#8A93A6', borderColor: '#142538' }}>
+            <div className="grid grid-cols-6 gap-2 px-3 py-2 text-xs font-medium border-b sticky top-[52px] z-10" style={{
+              color: '#8A93A6',
+              borderColor: '#142538',
+              backgroundColor: '#1E2D3F'
+            }}>
               <span className="col-span-1">Symbol</span>
               <span className="col-span-1 text-right">Change</span>
               <span className="col-span-1 text-right">%</span>
@@ -518,7 +523,7 @@ export default function Dashboard() {
                 <span className="col-span-1 text-right font-semibold" style={{ color: item.changePercent >= 0 ? '#28C76F' : '#FF4F58' }}>
                   {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
                 </span>
-                <span className="col-span-1 text-right font-medium" style={{ color: '#C9D1E2' }}>${item.lastPrice.toFixed(2)}</span>
+                <span className="col-span-1 text-right font-medium" style={{ color: '#C9D1E2' }}>\${item.lastPrice.toFixed(2)}</span>
                 <span className="col-span-1 text-right" style={{ color: '#8A93A6' }}>{(item.volume / 1000000).toFixed(1)}M</span>
                 <span className="col-span-1 text-right" style={{ color: '#8A93A6' }}>{(item.avgVolume / 1000000).toFixed(1)}M</span>
               </motion.button>
@@ -526,8 +531,20 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Order Execution Panel */}
-        <div className="flex-1 flex flex-col overflow-y-auto">
+        {/* BOTTOM HALF: Trade Execution Panel */}
+        <div className="h-1/2 flex flex-col overflow-y-auto">
+          {/* Trade Execution Header */}
+          <div className="px-4 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
+            borderColor: '#2B3A4C',
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(227, 179, 65, 0.08) 100%)',
+            boxShadow: '0 2px 12px rgba(16, 185, 129, 0.1)'
+          }}>
+            <h3 className="text-sm font-bold tracking-wide flex items-center gap-2" style={{ color: '#10B981' }}>
+              <span className="text-base">💰</span>
+              TRADE EXECUTION
+            </h3>
+          </div>
+
           <div className="p-3 space-y-3">
             {/* Account Deficit Warning (conditional) */}
             {!hasEnoughFunds && orderType !== 'limit' && quantity > 0 && (
@@ -539,9 +556,28 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Symbol + Price */}
-            <div className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>
-              {selectedSymbol} ${selectedPrice.toFixed(2)}
+            {/* Stock Symbol Input */}
+            <div className="space-y-1">
+              <label className="text-xs font-medium" style={{ color: '#8A93A6' }}>Stock Symbol</label>
+              <Input
+                type="text"
+                placeholder="Enter ticker (e.g., AAPL)"
+                value={tradeSymbol}
+                onChange={(e) => setTradeSymbol(e.target.value.toUpperCase())}
+                className="h-8 text-xs uppercase"
+                style={{
+                  backgroundColor: '#142538',
+                  borderColor: tradeSymbol ? '#E3B341' : '#2B3A4C',
+                  border: `2px solid ${tradeSymbol ? '#E3B341' : '#2B3A4C'}`,
+                  color: '#FFFFFF',
+                  boxShadow: tradeSymbol ? '0 0 10px rgba(227, 179, 65, 0.2)' : 'none'
+                }}
+              />
+              {tradeSymbol && (
+                <div className="text-xs font-medium" style={{ color: '#E3B341' }}>
+                  Ready to trade {tradeSymbol}
+                </div>
+              )}
             </div>
 
             {/* Buy/Sell Toggle */}
@@ -651,8 +687,8 @@ export default function Dashboard() {
                   </Button>
                 </div>
                 <div className="flex items-center gap-2 text-xs" style={{ color: '#8A93A6' }}>
-                  <span>Bid ${(selectedPrice - 0.05).toFixed(2)}</span>
-                  <span>Ask ${(selectedPrice + 0.05).toFixed(2)}</span>
+                  <span>Bid \${(tradePrice > 0 ? tradePrice : selectedPrice - 0.05).toFixed(2)}</span>
+                  <span>Ask \${(tradePrice > 0 ? tradePrice : selectedPrice + 0.05).toFixed(2)}</span>
                 </div>
               </div>
             )}
@@ -690,7 +726,7 @@ export default function Dashboard() {
             <div className="pt-2 space-y-1 border-t" style={{ borderColor: '#142538' }}>
               <div className="flex items-center justify-between text-xs">
                 <span style={{ color: '#8A93A6' }}>Estimated cost</span>
-                <span className="font-semibold" style={{ color: '#FFFFFF' }}>${estimatedCost.toFixed(2)}</span>
+                <span className="font-semibold" style={{ color: '#FFFFFF' }}>\${estimatedCost.toFixed(2)}</span>
               </div>
               {!hasEnoughFunds && quantity > 0 && (
                 <div className="text-xs" style={{ color: '#FF4F58' }}>Account deficit</div>
@@ -699,7 +735,7 @@ export default function Dashboard() {
 
             {/* Quote Line */}
             <div className="text-xs" style={{ color: '#8A93A6' }}>
-              Bid ${(selectedPrice - 0.05).toFixed(2)} · Mid ${selectedPrice.toFixed(2)} · Ask ${(selectedPrice + 0.05).toFixed(2)} · Last ${selectedPrice.toFixed(2)} · updated 11:59 AM · NYSE
+              Bid \${(tradePrice > 0 ? tradePrice : selectedPrice - 0.05).toFixed(2)} · Mid \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · Ask \${(tradePrice > 0 ? tradePrice : selectedPrice + 0.05).toFixed(2)} · Last \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · updated 11:59 AM · NYSE
             </div>
 
             {/* Action Buttons */}
@@ -711,7 +747,7 @@ export default function Dashboard() {
                 Cancel
               </Button>
               <Button
-                disabled={!hasEnoughFunds || quantity <= 0}
+                disabled={!hasEnoughFunds || quantity <= 0 || !tradeSymbol}
                 className="flex-1 h-9 text-xs font-medium disabled:opacity-50"
                 style={{
                   backgroundColor: orderSide === 'buy' ? '#28C76F' : '#FF4F58',
@@ -719,7 +755,7 @@ export default function Dashboard() {
                   border: 'none'
                 }}
               >
-                {orderSide === 'buy' ? 'Buy' : 'Sell'} {selectedSymbol}
+                {orderSide === 'buy' ? 'Buy' : 'Sell'} {tradeSymbol || '...'}
               </Button>
             </div>
           </div>
