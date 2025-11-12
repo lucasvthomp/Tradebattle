@@ -6,7 +6,20 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { TrendingUp, TrendingDown, ChevronDown, Plus, Minus, AlertCircle } from "lucide-react";
+import {
+  TrendingUp,
+  TrendingDown,
+  ChevronDown,
+  Plus,
+  Minus,
+  AlertCircle,
+  MousePointer,
+  TrendingUpIcon,
+  Square,
+  ZoomIn,
+  BarChart3,
+  Settings as SettingsIcon
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -143,7 +156,7 @@ export default function Dashboard() {
         </div>
 
         {/* Second Line: Buy/Sell Toggle + OHLCV */}
-        <div className="flex items-center gap-4 mb-3">
+        <div className="flex items-center gap-4 mb-2">
           {/* Buy/Sell Toggle */}
           <div className="flex gap-1">
             <Button
@@ -178,6 +191,52 @@ export default function Dashboard() {
             <span>C <span style={{ color: '#FFFFFF' }}>{ohlcv.close.toFixed(2)}</span></span>
             <span>V <span style={{ color: '#FFFFFF' }}>{(ohlcv.volume / 1000000).toFixed(2)}M</span></span>
           </div>
+        </div>
+
+        {/* Chart Toolbar Icons */}
+        <div className="flex items-center gap-2 mb-2">
+          <Button
+            size="icon"
+            className="h-7 w-7"
+            style={{ backgroundColor: 'transparent', color: '#8A8A8A', border: 'none' }}
+          >
+            <MousePointer className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            className="h-7 w-7"
+            style={{ backgroundColor: 'transparent', color: '#8A8A8A', border: 'none' }}
+          >
+            <TrendingUpIcon className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            className="h-7 w-7"
+            style={{ backgroundColor: 'transparent', color: '#8A8A8A', border: 'none' }}
+          >
+            <Square className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            className="h-7 w-7"
+            style={{ backgroundColor: 'transparent', color: '#8A8A8A', border: 'none' }}
+          >
+            <ZoomIn className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            className="h-7 w-7"
+            style={{ backgroundColor: 'transparent', color: '#8A8A8A', border: 'none' }}
+          >
+            <BarChart3 className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            className="h-7 w-7"
+            style={{ backgroundColor: 'transparent', color: '#8A8A8A', border: 'none' }}
+          >
+            <SettingsIcon className="h-4 w-4" />
+          </Button>
         </div>
 
         {/* Chart */}
