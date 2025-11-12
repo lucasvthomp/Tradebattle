@@ -131,11 +131,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="h-screen flex" style={{ backgroundColor: '#06121F' }}>
+    <div className="min-h-screen w-full flex" style={{ backgroundColor: '#06121F' }}>
       {/* LEFT SIDE: Chart Area */}
-      <div className="flex-1 flex flex-col" style={{ padding: 'clamp(12px, 1.5vw, 24px)' }}>
+      <div className="flex-1 flex flex-col p-3 md:p-4 lg:p-6 xl:p-8">
         {/* Single Horizontal Header Line: All Elements on Same Y-Axis */}
-        <div className="flex items-center gap-3 mb-3 px-4 py-3 rounded-2xl backdrop-blur-xl" style={{
+        <div className="flex items-center gap-2 md:gap-3 lg:gap-4 mb-2 md:mb-3 lg:mb-4 px-3 md:px-4 lg:px-5 xl:px-6 py-2 md:py-3 lg:py-4 rounded-xl md:rounded-2xl lg:rounded-3xl backdrop-blur-xl" style={{
           background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2838 50%, #1E2D3F 100%)',
           border: '2px solid transparent',
           backgroundImage: 'linear-gradient(#1E2D3F, #1E2D3F), linear-gradient(135deg, #2B3A4C, #3A4A5C)',
@@ -144,12 +144,12 @@ export default function Dashboard() {
           boxShadow: '0 4px 20px rgba(16, 185, 129, 0.1)'
         }}>
           {/* Ticker Symbol */}
-          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#E3B341' }}>
+          <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold tracking-tight" style={{ color: '#E3B341' }}>
             {selectedSymbol}
           </h1>
 
           {/* Current Price */}
-          <span className="text-xl font-semibold" style={{
+          <span className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-semibold" style={{
             color: '#FFFFFF',
             textShadow: '0 0 10px rgba(227, 179, 65, 0.3)'
           }}>
@@ -158,7 +158,7 @@ export default function Dashboard() {
 
           {/* Change and Percentage */}
           <span
-            className="text-sm flex items-center gap-2 px-3 py-1 rounded-full font-semibold"
+            className="text-xs md:text-sm lg:text-base flex items-center gap-2 px-2 md:px-3 lg:px-4 py-1 md:py-1.5 rounded-full font-semibold"
             style={{
               color: priceChange >= 0 ? '#28C76F' : '#FF4F58',
               backgroundColor: priceChange >= 0 ? 'rgba(40, 199, 111, 0.15)' : 'rgba(255, 79, 88, 0.15)',
@@ -170,12 +170,12 @@ export default function Dashboard() {
           </span>
 
           {/* Buy/Sell Toggle Pills */}
-          <div className="flex gap-2 ml-2">
+          <div className="flex gap-2 md:gap-3 ml-2">
             <motion.button
               onClick={() => setOrderSide('buy')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-8 px-4 rounded-xl text-xs font-semibold transition-all"
+              className="h-7 md:h-8 lg:h-9 xl:h-10 px-3 md:px-4 lg:px-5 rounded-lg md:rounded-xl lg:rounded-2xl text-xs md:text-sm lg:text-base font-semibold transition-all"
               style={orderSide === 'buy'
                 ? {
                     background: 'linear-gradient(135deg, #28C76F 0%, #22A65D 100%)',
@@ -196,7 +196,7 @@ export default function Dashboard() {
               onClick={() => setOrderSide('sell')}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-8 px-4 rounded-xl text-xs font-semibold transition-all"
+              className="h-7 md:h-8 lg:h-9 xl:h-10 px-3 md:px-4 lg:px-5 rounded-lg md:rounded-xl lg:rounded-2xl text-xs md:text-sm lg:text-base font-semibold transition-all"
               style={orderSide === 'sell'
                 ? {
                     background: 'linear-gradient(135deg, #FF4F58 0%, #E53E47 100%)',
@@ -216,7 +216,7 @@ export default function Dashboard() {
           </div>
 
           {/* Chart Control Icons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2 lg:gap-2.5">
             <motion.button
               onClick={() => {
                 setChartMode('cursor');
@@ -224,14 +224,14 @@ export default function Dashboard() {
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              className="h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 xl:h-9 xl:w-9 flex items-center justify-center rounded-md md:rounded-lg lg:rounded-xl hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: chartMode === 'cursor' ? '#142538' : 'transparent',
                 boxShadow: chartMode === 'cursor' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
               }}
               title="Cursor tool"
             >
-              <MousePointer className="w-4 h-4" style={{ color: chartMode === 'cursor' ? '#FFFFFF' : '#8A93A6' }} />
+              <MousePointer className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" style={{ color: chartMode === 'cursor' ? '#FFFFFF' : '#8A93A6' }} />
             </motion.button>
             <motion.button
               onClick={() => {
@@ -240,14 +240,14 @@ export default function Dashboard() {
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              className="h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 xl:h-9 xl:w-9 flex items-center justify-center rounded-md md:rounded-lg lg:rounded-xl hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: chartMode === 'draw' ? '#142538' : 'transparent',
                 boxShadow: chartMode === 'draw' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
               }}
               title="Draw tool"
             >
-              <TrendingUpIcon className="w-4 h-4" style={{ color: chartMode === 'draw' ? '#FFFFFF' : '#8A93A6' }} />
+              <TrendingUpIcon className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" style={{ color: chartMode === 'draw' ? '#FFFFFF' : '#8A93A6' }} />
             </motion.button>
             <motion.button
               onClick={() => {
@@ -256,14 +256,14 @@ export default function Dashboard() {
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              className="h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 xl:h-9 xl:w-9 flex items-center justify-center rounded-md md:rounded-lg lg:rounded-xl hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: chartMode === 'shape' ? '#142538' : 'transparent',
                 boxShadow: chartMode === 'shape' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
               }}
               title="Shape tool"
             >
-              <Square className="w-4 h-4" style={{ color: chartMode === 'shape' ? '#FFFFFF' : '#8A93A6' }} />
+              <Square className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" style={{ color: chartMode === 'shape' ? '#FFFFFF' : '#8A93A6' }} />
             </motion.button>
             <motion.button
               onClick={() => {
@@ -272,11 +272,11 @@ export default function Dashboard() {
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              className="h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 xl:h-9 xl:w-9 flex items-center justify-center rounded-md md:rounded-lg lg:rounded-xl hover:bg-[#142538] transition-all"
               style={{ backgroundColor: 'transparent' }}
               title="Zoom in"
             >
-              <ZoomIn className="w-4 h-4" style={{ color: '#8A93A6' }} />
+              <ZoomIn className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" style={{ color: '#8A93A6' }} />
             </motion.button>
             <motion.button
               onClick={() => {
@@ -285,14 +285,14 @@ export default function Dashboard() {
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              className="h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 xl:h-9 xl:w-9 flex items-center justify-center rounded-md md:rounded-lg lg:rounded-xl hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: showIndicators ? '#142538' : 'transparent',
                 boxShadow: showIndicators ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
               }}
               title="Toggle indicators"
             >
-              <BarChart3 className="w-4 h-4" style={{ color: showIndicators ? '#FFFFFF' : '#8A93A6' }} />
+              <BarChart3 className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" style={{ color: showIndicators ? '#FFFFFF' : '#8A93A6' }} />
             </motion.button>
             <motion.button
               onClick={() => {
@@ -300,18 +300,18 @@ export default function Dashboard() {
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
-              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              className="h-6 w-6 md:h-7 md:w-7 lg:h-8 lg:w-8 xl:h-9 xl:w-9 flex items-center justify-center rounded-md md:rounded-lg lg:rounded-xl hover:bg-[#142538] transition-all"
               style={{ backgroundColor: 'transparent' }}
               title="Settings"
             >
-              <SettingsIcon className="w-4 h-4" style={{ color: '#8A93A6' }} />
+              <SettingsIcon className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" style={{ color: '#8A93A6' }} />
             </motion.button>
           </div>
 
           {/* Candlestick Interval Dropdown */}
           <Select value={candlestickInterval} onValueChange={setCandlestickInterval}>
             <SelectTrigger
-              className="h-8 w-36 text-xs font-medium rounded-lg"
+              className="h-7 md:h-8 lg:h-9 xl:h-10 w-32 md:w-36 lg:w-40 text-xs md:text-sm lg:text-base font-medium rounded-md md:rounded-lg lg:rounded-xl"
               style={{
                 backgroundColor: '#0A1A2F',
                 borderColor: '#E3B341',
@@ -341,36 +341,36 @@ export default function Dashboard() {
           </Select>
 
           {/* OHLCV Stats */}
-          <div className="flex items-center gap-2 text-xs">
-            <span className="px-2.5 py-1 rounded-full" style={{
+          <div className="flex items-center gap-1.5 md:gap-2 lg:gap-2.5 text-[10px] md:text-xs lg:text-sm">
+            <span className="px-2 md:px-2.5 lg:px-3 py-0.5 md:py-1 rounded-full" style={{
               backgroundColor: 'rgba(201, 209, 226, 0.1)',
               border: '1px solid rgba(201, 209, 226, 0.2)',
               color: '#8A93A6'
             }}>
               O <span className="font-semibold" style={{ color: '#C9D1E2' }}>{ohlcv.open.toFixed(2)}</span>
             </span>
-            <span className="px-2.5 py-1 rounded-full" style={{
+            <span className="px-2 md:px-2.5 lg:px-3 py-0.5 md:py-1 rounded-full" style={{
               backgroundColor: 'rgba(40, 199, 111, 0.1)',
               border: '1px solid rgba(40, 199, 111, 0.2)',
               color: '#8A93A6'
             }}>
               H <span className="font-semibold" style={{ color: '#28C76F' }}>{ohlcv.high.toFixed(2)}</span>
             </span>
-            <span className="px-2.5 py-1 rounded-full" style={{
+            <span className="px-2 md:px-2.5 lg:px-3 py-0.5 md:py-1 rounded-full" style={{
               backgroundColor: 'rgba(255, 79, 88, 0.1)',
               border: '1px solid rgba(255, 79, 88, 0.2)',
               color: '#8A93A6'
             }}>
               L <span className="font-semibold" style={{ color: '#FF4F58' }}>{ohlcv.low.toFixed(2)}</span>
             </span>
-            <span className="px-2.5 py-1 rounded-full" style={{
+            <span className="px-2 md:px-2.5 lg:px-3 py-0.5 md:py-1 rounded-full" style={{
               backgroundColor: 'rgba(201, 209, 226, 0.1)',
               border: '1px solid rgba(201, 209, 226, 0.2)',
               color: '#8A93A6'
             }}>
               C <span className="font-semibold" style={{ color: '#C9D1E2' }}>{ohlcv.close.toFixed(2)}</span>
             </span>
-            <span className="px-2.5 py-1 rounded-full" style={{
+            <span className="px-2 md:px-2.5 lg:px-3 py-0.5 md:py-1 rounded-full" style={{
               backgroundColor: 'rgba(227, 179, 65, 0.1)',
               border: '1px solid rgba(227, 179, 65, 0.2)',
               color: '#8A93A6'
@@ -381,7 +381,7 @@ export default function Dashboard() {
         </div>
 
         {/* Chart */}
-        <div className="flex-1 relative rounded-xl overflow-hidden" style={{
+        <div className="flex-1 relative rounded-xl md:rounded-2xl lg:rounded-3xl overflow-hidden" style={{
           backgroundColor: '#1E2D3F',
           border: '2px solid transparent',
           backgroundImage: 'linear-gradient(#1E2D3F, #1E2D3F), linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(227, 179, 65, 0.1))',
@@ -399,15 +399,15 @@ export default function Dashboard() {
           />
 
           {/* Time Range Selector */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-2">
-            <div className="flex gap-2">
+          <div className="absolute bottom-2 md:bottom-3 lg:bottom-4 left-2 md:left-3 lg:left-4 flex items-center gap-2 md:gap-3">
+            <div className="flex gap-1.5 md:gap-2">
               {['1D', '1W', '1M', '3M', 'YTD', '1Y', '5Y', 'All'].map((range) => (
                 <motion.button
                   key={range}
                   onClick={() => setSelectedTimeRange(range)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="h-6 px-2 text-xs font-medium rounded-lg transition-all"
+                  className="h-5 md:h-6 lg:h-7 xl:h-8 px-1.5 md:px-2 lg:px-3 text-[10px] md:text-xs lg:text-sm font-medium rounded-md md:rounded-lg lg:rounded-xl transition-all"
                   style={selectedTimeRange === range
                     ? {
                         background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
@@ -459,20 +459,20 @@ export default function Dashboard() {
         background: 'linear-gradient(180deg, #1E2D3F 0%, #1A2838 100%)',
         borderLeft: '2px solid rgba(16, 185, 129, 0.15)',
         boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)',
-        width: 'clamp(300px, 22vw, 420px)'
+        width: 'clamp(320px, 24vw, 480px)'
       }}>
         {/* TOP HALF: Watchlist Section */}
         <div className="h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '3px solid #10B981', boxShadow: '0 2px 15px rgba(16, 185, 129, 0.3)' }}>
-          <div className="px-4 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
+          <div className="px-3 md:px-4 lg:px-5 py-2 md:py-3 lg:py-4 border-b flex items-center justify-between sticky top-0 z-10" style={{
             borderColor: '#2B3A4C',
             background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)',
             boxShadow: '0 2px 12px rgba(227, 179, 65, 0.1)'
           }}>
-            <h3 className="text-sm font-bold tracking-wide flex items-center gap-2" style={{ color: '#E3B341' }}>
-              <span className="text-base">📊</span>
+            <h3 className="text-xs md:text-sm lg:text-base font-bold tracking-wide flex items-center gap-1.5 md:gap-2" style={{ color: '#E3B341' }}>
+              <span className="text-sm md:text-base lg:text-lg">📊</span>
               WATCHLIST
             </h3>
-            <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{
+            <span className="text-[10px] md:text-xs lg:text-sm px-2 md:px-2.5 lg:px-3 py-0.5 md:py-1 rounded-full font-semibold" style={{
               backgroundColor: 'rgba(227, 179, 65, 0.25)',
               color: '#E3B341',
               border: '1px solid rgba(227, 179, 65, 0.4)',
@@ -485,7 +485,7 @@ export default function Dashboard() {
           {/* Watchlist Table */}
           <div className="flex-1">
             {/* Table Header */}
-            <div className="grid grid-cols-6 gap-2 px-3 py-2 text-xs font-medium border-b sticky top-[52px] z-10" style={{
+            <div className="grid grid-cols-6 gap-1.5 md:gap-2 px-2 md:px-3 py-1.5 md:py-2 text-[10px] md:text-xs lg:text-sm font-medium border-b sticky top-[52px] z-10" style={{
               color: '#8A93A6',
               borderColor: '#142538',
               backgroundColor: '#1E2D3F'
@@ -505,7 +505,7 @@ export default function Dashboard() {
                 onClick={() => handleWatchlistClick(item)}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
-                className="w-full grid grid-cols-6 gap-2 px-3 py-2.5 text-xs transition-all"
+                className="w-full grid grid-cols-6 gap-1.5 md:gap-2 px-2 md:px-3 py-2 md:py-2.5 lg:py-3 text-[10px] md:text-xs lg:text-sm transition-all"
                 style={{
                   background: selectedSymbol === item.symbol
                     ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)'
@@ -535,18 +535,18 @@ export default function Dashboard() {
         {/* BOTTOM HALF: Trade Execution Panel */}
         <div className="h-1/2 flex flex-col overflow-y-auto">
           {/* Trade Execution Header */}
-          <div className="px-4 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
+          <div className="px-3 md:px-4 lg:px-5 py-2 md:py-3 lg:py-4 border-b flex items-center justify-between sticky top-0 z-10" style={{
             borderColor: '#2B3A4C',
             background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(227, 179, 65, 0.08) 100%)',
             boxShadow: '0 2px 12px rgba(16, 185, 129, 0.1)'
           }}>
-            <h3 className="text-sm font-bold tracking-wide flex items-center gap-2" style={{ color: '#10B981' }}>
-              <span className="text-base">💰</span>
+            <h3 className="text-xs md:text-sm lg:text-base font-bold tracking-wide flex items-center gap-1.5 md:gap-2" style={{ color: '#10B981' }}>
+              <span className="text-sm md:text-base lg:text-lg">💰</span>
               TRADE EXECUTION
             </h3>
           </div>
 
-          <div className="p-3 space-y-3">
+          <div className="p-2 md:p-3 lg:p-4 space-y-2 md:space-y-3 lg:space-y-4">
             {/* Account Deficit Warning (conditional) */}
             {!hasEnoughFunds && orderType !== 'limit' && quantity > 0 && (
               <div className="p-2 rounded text-xs" style={{ backgroundColor: '#2A1A1A', color: '#FF4F58', border: '1px solid #FF4F58' }}>
@@ -558,14 +558,14 @@ export default function Dashboard() {
             )}
 
             {/* Stock Symbol Input */}
-            <div className="space-y-1">
-              <label className="text-xs font-medium" style={{ color: '#8A93A6' }}>Stock Symbol</label>
+            <div className="space-y-1 md:space-y-1.5">
+              <label className="text-[10px] md:text-xs lg:text-sm font-medium" style={{ color: '#8A93A6' }}>Stock Symbol</label>
               <Input
                 type="text"
                 placeholder="Enter ticker (e.g., AAPL)"
                 value={tradeSymbol}
                 onChange={(e) => setTradeSymbol(e.target.value.toUpperCase())}
-                className="h-8 text-xs uppercase"
+                className="h-7 md:h-8 lg:h-9 text-xs md:text-sm lg:text-base uppercase"
                 style={{
                   backgroundColor: '#142538',
                   borderColor: tradeSymbol ? '#E3B341' : '#2B3A4C',
@@ -575,17 +575,17 @@ export default function Dashboard() {
                 }}
               />
               {tradeSymbol && (
-                <div className="text-xs font-medium" style={{ color: '#E3B341' }}>
+                <div className="text-[10px] md:text-xs lg:text-sm font-medium" style={{ color: '#E3B341' }}>
                   Ready to trade {tradeSymbol}
                 </div>
               )}
             </div>
 
             {/* Buy/Sell Toggle */}
-            <div className="flex gap-2">
+            <div className="flex gap-2 md:gap-3">
               <Button
                 onClick={() => setOrderSide('buy')}
-                className="flex-1 h-8 text-xs font-medium"
+                className="flex-1 h-7 md:h-8 lg:h-9 text-xs md:text-sm lg:text-base font-medium"
                 style={orderSide === 'buy'
                   ? { backgroundColor: '#28C76F', color: '#000000', border: 'none' }
                   : { backgroundColor: '#0A1A2F', color: '#8A93A6', border: '1px solid #2B3A4C' }
@@ -595,7 +595,7 @@ export default function Dashboard() {
               </Button>
               <Button
                 onClick={() => setOrderSide('sell')}
-                className="flex-1 h-8 text-xs font-medium"
+                className="flex-1 h-7 md:h-8 lg:h-9 text-xs md:text-sm lg:text-base font-medium"
                 style={orderSide === 'sell'
                   ? { backgroundColor: '#FF4F58', color: '#FFFFFF', border: 'none' }
                   : { backgroundColor: '#0A1A2F', color: '#8A93A6', border: '1px solid #2B3A4C' }
@@ -606,10 +606,10 @@ export default function Dashboard() {
             </div>
 
             {/* Order Type */}
-            <div className="space-y-1">
-              <label className="text-xs" style={{ color: '#8A93A6' }}>Order type</label>
+            <div className="space-y-1 md:space-y-1.5">
+              <label className="text-[10px] md:text-xs lg:text-sm" style={{ color: '#8A93A6' }}>Order type</label>
               <Select value={orderType} onValueChange={setOrderType}>
-                <SelectTrigger className="h-8 text-xs" style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
+                <SelectTrigger className="h-7 md:h-8 lg:h-9 text-xs md:text-sm lg:text-base" style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent style={{ backgroundColor: '#0A1A2F', borderColor: '#2B3A4C' }}>
