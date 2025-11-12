@@ -302,8 +302,7 @@ export default function Hub() {
 
         {/* Quick Stats */}
         <motion.div
-          className="grid grid-cols-2 lg:grid-cols-4 mb-8"
-          style={{ gap: 'clamp(12px, 1.5vw, 24px)' }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -311,57 +310,41 @@ export default function Hub() {
           {quickStats.map((stat, i) => (
             <motion.div
               key={i}
-              whileHover={{ scale: 1.08, y: -8 }}
+              whileHover={{ scale: 1.08, y: -8, rotate: i % 2 === 0 ? 2 : -2 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
               <Card
-                className="transition-all rounded-2xl shadow-xl relative overflow-hidden"
+                className="transition-all rounded-2xl shadow-xl relative overflow-hidden border-none"
                 style={{
                   background: stat.gradient,
-                  borderColor: stat.color,
-                  borderWidth: '2px',
-                  boxShadow: `0 5px 20px rgba(0,0,0,0.3), 0 0 10px ${stat.color}15`
+                  boxShadow: `0 5px 30px rgba(0,0,0,0.4), 0 0 20px ${stat.color}30`
                 }}
               >
-                {/* Background decorative symbol */}
-                <div className="absolute right-2 bottom-2 text-6xl font-bold opacity-10" style={{ color: stat.color }}>
+                {/* Background decorative symbol - larger and more prominent */}
+                <div className="absolute -right-2 -bottom-2 text-8xl font-bold opacity-15" style={{ color: stat.color }}>
                   {stat.decorSymbol}
                 </div>
 
-                <CardContent className="relative z-10" style={{ padding: 'clamp(14px, 1.8vw, 24px)' }}>
+                <CardContent className="p-5 relative z-10">
                   <div className="flex items-center justify-between mb-3">
                     <div className="rounded-xl p-2" style={{
-                      backgroundColor: `${stat.color}20`,
-                      boxShadow: `0 0 15px ${stat.color}30`
+                      background: `linear-gradient(135deg, ${stat.color}40, ${stat.color}20)`,
+                      boxShadow: `0 0 20px ${stat.color}40`
                     }}>
-                      <stat.icon style={{
-                        width: 'clamp(20px, 2vw, 28px)',
-                        height: 'clamp(20px, 2vw, 28px)',
-                        color: stat.color
-                      }} />
+                      <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
                     </div>
                     <motion.div
-                      animate={{ rotate: 360 }}
+                      animate={{ rotate: 360, scale: [1, 1.2, 1] }}
                       transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
                     >
-                      <Sparkles style={{
-                        width: 'clamp(14px, 1.3vw, 20px)',
-                        height: 'clamp(14px, 1.3vw, 20px)',
-                        opacity: 0.6,
-                        color: stat.color
-                      }} />
+                      <Sparkles className="w-5 h-5 opacity-60" style={{ color: stat.color }} />
                     </motion.div>
                   </div>
-                  <div className="font-black mb-1" style={{
+                  <div className="text-4xl font-black mb-1" style={{
                     color: '#FFFFFF',
-                    fontSize: 'clamp(1.5rem, 2.8vw, 2.5rem)',
-                    textShadow: '0 2px 8px rgba(0,0,0,0.4)'
+                    textShadow: `0 2px 15px ${stat.color}40`
                   }}>{stat.value}</div>
-                  <div style={{
-                    color: '#A8B5C9',
-                    fontSize: 'clamp(0.75rem, 1vw, 0.875rem)',
-                    fontWeight: '600'
-                  }}>{stat.label}</div>
+                  <div className="text-sm font-semibold" style={{ color: '#A8B5C9' }}>{stat.label}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -369,98 +352,88 @@ export default function Hub() {
         </motion.div>
 
         {/* Primary Action Cards */}
-        <div className="grid lg:grid-cols-3 mb-8" style={{ gap: 'clamp(16px, 2vw, 24px)' }}>
+        <div className="grid lg:grid-cols-3 gap-5 mb-8">
           {primaryActions.map((action, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 + i * 0.1 }}
-              whileHover={{ scale: 1.03, y: -5 }}
+              whileHover={{ scale: 1.05, y: -8, rotate: i % 2 === 0 ? 1 : -1 }}
             >
               <Link href={action.href}>
                 <Card
-                  className="h-full cursor-pointer relative overflow-hidden group rounded-2xl shadow-2xl"
+                  className="h-full cursor-pointer relative overflow-hidden group rounded-3xl shadow-2xl border-none"
                   style={{
                     background: action.gradient,
-                    borderColor: action.borderColor,
-                    borderWidth: '3px',
-                    boxShadow: `0 0 30px rgba(0,0,0,0.3), 0 0 15px ${action.borderColor}25`
+                    boxShadow: `0 10px 40px rgba(0,0,0,0.4), 0 0 30px ${action.borderColor}35`
                   }}
                 >
                   {/* Glowing overlay on hover */}
                   <motion.div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-20"
-                    style={{ backgroundColor: action.borderColor }}
+                    className="absolute inset-0 opacity-0 group-hover:opacity-25"
+                    style={{ background: `radial-gradient(circle at 50% 50%, ${action.borderColor}60, transparent)` }}
                     transition={{ duration: 0.3 }}
                   />
 
-                  {/* Decorative icon in background */}
-                  <div className="absolute right-4 bottom-4 opacity-10">
-                    <action.decorIcon style={{
-                      width: 'clamp(80px, 10vw, 140px)',
-                      height: 'clamp(80px, 10vw, 140px)',
-                      color: action.decorColor
-                    }} />
+                  {/* Decorative icon in background - more prominent */}
+                  <div className="absolute right-2 bottom-2 opacity-15">
+                    <action.decorIcon className="w-32 h-32" style={{ color: action.decorColor }} />
+                  </div>
+
+                  {/* Additional decorative elements */}
+                  <div className="absolute left-4 top-4 opacity-10 text-4xl">
+                    {i === 0 && '📊'}
+                    {i === 1 && '🏆'}
+                    {i === 2 && '⭐'}
                   </div>
 
                   {/* Badge */}
                   <Badge
-                    className="absolute top-4 right-4 animate-pulse font-bold z-20 shadow-lg"
+                    className="absolute top-4 right-4 animate-pulse font-bold text-xs z-20 shadow-lg border-none"
                     style={{
-                      backgroundColor: action.badgeColor,
+                      background: `linear-gradient(135deg, ${action.badgeColor}, ${action.badgeColor}cc)`,
                       color: '#FFFFFF',
-                      fontSize: 'clamp(0.65rem, 0.8vw, 0.875rem)',
-                      padding: 'clamp(4px, 0.5vw, 8px) clamp(8px, 1vw, 12px)'
+                      padding: '6px 12px'
                     }}
                   >
                     {action.badge}
                   </Badge>
 
-                  <CardContent className="relative z-10" style={{ padding: 'clamp(24px, 3vw, 40px)' }}>
+                  <CardContent className="p-8 relative z-10">
                     {/* Main icon with animation */}
                     <motion.div
-                      className="mb-4"
+                      className="mb-5"
                       animate={{
                         rotate: [0, 5, -5, 0],
-                        scale: [1, 1.08, 1],
-                        y: [0, -5, 0]
+                        scale: [1, 1.1, 1],
+                        y: [0, -8, 0]
                       }}
                       transition={{ duration: 4, repeat: Infinity }}
                     >
                       <div className="rounded-2xl inline-block p-4" style={{
-                        backgroundColor: `${action.borderColor}20`,
-                        boxShadow: `0 0 20px ${action.borderColor}40`
+                        background: `linear-gradient(135deg, ${action.borderColor}40, ${action.borderColor}20)`,
+                        boxShadow: `0 0 30px ${action.borderColor}50`
                       }}>
-                        <action.icon style={{
-                          width: 'clamp(40px, 4.5vw, 64px)',
-                          height: 'clamp(40px, 4.5vw, 64px)',
-                          color: action.borderColor
-                        }} />
+                        <action.icon className="w-14 h-14" style={{ color: action.borderColor }} />
                       </div>
                     </motion.div>
 
-                    <h3 className="font-black mb-3" style={{
+                    <h3 className="text-3xl font-black mb-3" style={{
                       color: '#FFFFFF',
-                      fontSize: 'clamp(1.5rem, 2.5vw, 2.5rem)',
-                      textShadow: '0 2px 10px rgba(0,0,0,0.5)'
+                      textShadow: `0 2px 15px ${action.borderColor}40`
                     }}>{action.title}</h3>
-                    <p className="mb-6" style={{
-                      color: '#B8C5D6',
-                      fontSize: 'clamp(0.875rem, 1.1vw, 1.125rem)',
-                      lineHeight: '1.6'
-                    }}>{action.description}</p>
+                    <p className="text-base mb-6 leading-relaxed" style={{ color: '#B8C5D6' }}>
+                      {action.description}
+                    </p>
 
-                    <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all" style={{
-                      color: action.borderColor,
-                      fontSize: 'clamp(0.875rem, 1vw, 1.125rem)'
-                    }}>
+                    <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all text-base" style={{ color: action.borderColor }}>
                       <span>Let's Go</span>
                       <motion.div
                         animate={{ x: [0, 5, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        <ArrowRight style={{ width: 'clamp(16px, 1.5vw, 24px)', height: 'clamp(16px, 1.5vw, 24px)' }} />
+                        <ArrowRight className="w-5 h-5" />
                       </motion.div>
                     </div>
                   </CardContent>
@@ -476,58 +449,77 @@ export default function Hub() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
           className="mb-10"
+          whileHover={{ scale: 1.02 }}
         >
           <Link href="/tournaments">
             <Card
-              className="cursor-pointer group relative overflow-hidden rounded-3xl shadow-2xl"
+              className="cursor-pointer group relative overflow-hidden rounded-3xl shadow-2xl border-none"
               style={{
                 background: 'linear-gradient(135deg, #4a3a1a 0%, #1E2D3F 40%, #2a1f0a 100%)',
-                borderColor: '#E3B341',
-                borderWidth: '3px',
-                boxShadow: '0 10px 40px rgba(0,0,0,0.4), 0 0 20px rgba(227, 179, 65, 0.2)'
+                boxShadow: '0 15px 50px rgba(0,0,0,0.5), 0 0 40px rgba(227, 179, 65, 0.3)'
               }}
             >
               {/* Glowing overlay on hover */}
               <motion.div
-                className="absolute inset-0 opacity-0 group-hover:opacity-15"
-                style={{ backgroundColor: '#E3B341' }}
+                className="absolute inset-0 opacity-0 group-hover:opacity-20"
+                style={{ background: 'radial-gradient(circle at 50% 50%, #E3B341, transparent)' }}
                 transition={{ duration: 0.3 }}
               />
 
-              {/* Decorative trophy in background */}
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-8">
-                <Trophy style={{
-                  width: 'clamp(150px, 15vw, 280px)',
-                  height: 'clamp(150px, 15vw, 280px)',
-                  color: '#E3B341'
-                }} />
+              {/* Decorative trophy in background - more prominent */}
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-12">
+                <Trophy className="w-72 h-72" style={{ color: '#E3B341' }} />
               </div>
 
-              <CardContent className="p-5 relative z-10">
-                <div className="grid md:grid-cols-2 gap-5 items-center">
+              {/* Additional decorative elements */}
+              <div className="absolute left-6 top-6 opacity-10 text-5xl">💎</div>
+              <div className="absolute right-20 bottom-6 opacity-10 text-4xl">⚡</div>
+
+              <CardContent className="p-8 relative z-10">
+                <div className="grid md:grid-cols-2 gap-8 items-center">
                   <div>
                     <Badge
-                      className="mb-3 animate-pulse font-bold text-xs"
-                      style={{ backgroundColor: '#E3B341', color: '#06121F' }}
+                      className="mb-4 animate-pulse font-bold text-sm border-none shadow-lg"
+                      style={{
+                        background: 'linear-gradient(135deg, #E3B341, #c99a35)',
+                        color: '#06121F'
+                      }}
                     >
-                      <Flame className="w-3 h-3 mr-1" />
-                      LIVE NOW
+                      <Flame className="w-4 h-4 mr-1" />
+                      LIVE NOW 🔥
                     </Badge>
-                    <h3 className="text-2xl font-black mb-3 flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                      <Trophy className="w-7 h-7" style={{ color: '#E3B341' }} />
+                    <h3 className="text-3xl font-black mb-4 flex items-center gap-3" style={{
+                      color: '#FFFFFF',
+                      textShadow: '0 2px 20px rgba(227, 179, 65, 0.5)'
+                    }}>
+                      <div className="rounded-xl p-2" style={{
+                        background: 'linear-gradient(135deg, #E3B34140, #E3B34120)',
+                        boxShadow: '0 0 20px rgba(227, 179, 65, 0.4)'
+                      }}>
+                        <Trophy className="w-8 h-8" style={{ color: '#E3B341' }} />
+                      </div>
                       {nextTournament?.name || "Weekly Championship"}
                     </h3>
-                    <p className="text-sm mb-4" style={{ color: '#8A93A6' }}>
-                      Prize Pool: <span className="text-2xl font-black" style={{ color: '#28C76F' }}>$7,500</span>
+                    <p className="text-base mb-5" style={{ color: '#B8C5D6' }}>
+                      Prize Pool: <span className="text-3xl font-black" style={{
+                        color: '#28C76F',
+                        textShadow: '0 2px 15px rgba(40, 199, 111, 0.5)'
+                      }}>$7,500 💵</span>
                     </p>
-                    <div className="flex items-center gap-4 text-xs mb-4" style={{ color: '#8A93A6' }}>
-                      <div className="flex items-center gap-1.5">
-                        <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
-                        <span className="font-semibold">248 players</span>
+                    <div className="flex items-center gap-6 text-sm mb-6" style={{ color: '#B8C5D6' }}>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{
+                        backgroundColor: 'rgba(227, 179, 65, 0.1)',
+                        border: '1px solid rgba(227, 179, 65, 0.2)'
+                      }}>
+                        <Users className="w-5 h-5" style={{ color: '#E3B341' }} />
+                        <span className="font-bold">248 players 👥</span>
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <Timer className="w-4 h-4" style={{ color: '#E3B341' }} />
-                        <span className="font-semibold">18h left</span>
+                      <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{
+                        backgroundColor: 'rgba(227, 179, 65, 0.1)',
+                        border: '1px solid rgba(227, 179, 65, 0.2)'
+                      }}>
+                        <Timer className="w-5 h-5" style={{ color: '#E3B341' }} />
+                        <span className="font-bold">18h left ⏰</span>
                       </div>
                     </div>
                     <motion.div
@@ -535,27 +527,46 @@ export default function Hub() {
                       whileTap={{ scale: 0.95 }}
                     >
                       <Button
-                        className="font-bold"
-                        style={{ backgroundColor: '#E3B341', color: '#06121F' }}
+                        className="h-12 text-base font-bold shadow-lg border-none"
+                        style={{
+                          background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)',
+                          color: '#06121F',
+                          boxShadow: '0 4px 20px rgba(227, 179, 65, 0.5)'
+                        }}
                       >
-                        <Zap className="w-4 h-4 mr-2" />
+                        <Zap className="w-5 h-5 mr-2" />
                         Join Tournament Now
-                        <ArrowRight className="w-4 h-4 ml-2" />
+                        <ArrowRight className="w-5 h-5 ml-2" />
                       </Button>
                     </motion.div>
                   </div>
 
                   <div className="relative">
                     <motion.div
-                      className="text-center p-5 rounded-lg"
-                      style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', borderWidth: '1px' }}
-                      animate={{ scale: [1, 1.02, 1] }}
-                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-center p-8 rounded-2xl border-none"
+                      style={{
+                        background: 'linear-gradient(135deg, #1a4d2e 0%, #0d2619 100%)',
+                        boxShadow: '0 10px 30px rgba(40, 199, 111, 0.3), 0 0 20px rgba(40, 199, 111, 0.2)'
+                      }}
+                      animate={{ scale: [1, 1.03, 1], y: [0, -5, 0] }}
+                      transition={{ duration: 3, repeat: Infinity }}
                     >
-                      <Crown className="w-14 h-14 mx-auto mb-3" style={{ color: '#E3B341' }} />
-                      <div className="text-lg font-bold mb-2" style={{ color: '#C9D1E2' }}>First Place Wins</div>
-                      <div className="text-3xl font-black" style={{ color: '#28C76F' }}>$2,500</div>
-                      <p className="text-xs mt-2" style={{ color: '#8A93A6' }}>Top 20 positions paid out</p>
+                      <div className="mb-4 relative">
+                        <motion.div
+                          animate={{ rotate: [0, 10, -10, 0] }}
+                          transition={{ duration: 4, repeat: Infinity }}
+                        >
+                          <Crown className="w-20 h-20 mx-auto" style={{ color: '#E3B341' }} />
+                        </motion.div>
+                        <div className="absolute -right-4 -top-4 text-4xl">👑</div>
+                      </div>
+                      <div className="text-xl font-bold mb-3" style={{ color: '#FFFFFF' }}>First Place Wins</div>
+                      <div className="text-5xl font-black mb-2" style={{
+                        color: '#28C76F',
+                        textShadow: '0 2px 20px rgba(40, 199, 111, 0.6)'
+                      }}>$2,500</div>
+                      <div className="text-3xl mb-3">🎯</div>
+                      <p className="text-sm" style={{ color: '#A8B5C9' }}>Top 20 positions paid out 💰</p>
                     </motion.div>
                   </div>
                 </div>

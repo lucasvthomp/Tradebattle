@@ -6,7 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { Mail, Phone, Clock, HelpCircle, BookOpen, MessageCircle, Shield, Zap, Users, TrendingUp, ChevronRight, Search } from "lucide-react";
+import {
+  Mail, Phone, Clock, HelpCircle, BookOpen, MessageCircle, Shield, Zap,
+  Users, TrendingUp, ChevronRight, Search, AlertCircle, CheckCircle,
+  Video, Headphones, FileText, Trophy, Wallet, Settings, Bug, Lightbulb,
+  TrendingDown, Star, Gift, Lock, Eye
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -142,31 +147,132 @@ export default function Support() {
     }
   ];
 
+  const popularIssues = [
+    {
+      title: "Can't Join Tournament",
+      description: "Tournament entry issues",
+      icon: Trophy,
+      gradient: 'linear-gradient(135deg, #4a3a1a 0%, #2a1f0a 100%)',
+      color: '#E3B341',
+      link: '#faq'
+    },
+    {
+      title: "Trade Not Executing",
+      description: "Stock purchase problems",
+      icon: TrendingDown,
+      gradient: 'linear-gradient(135deg, #4a1a1a 0%, #2a0a0a 100%)',
+      color: '#FF4F58',
+      link: '#faq'
+    },
+    {
+      title: "Balance Not Updating",
+      description: "Portfolio value issues",
+      icon: Wallet,
+      gradient: 'linear-gradient(135deg, #1a4d2e 0%, #0f2a1a 100%)',
+      color: '#28C76F',
+      link: '#faq'
+    },
+    {
+      title: "Account Settings",
+      description: "Profile & preferences",
+      icon: Settings,
+      gradient: 'linear-gradient(135deg, #1a2d4a 0%, #0f1a2d 100%)',
+      color: '#3B82F6',
+      link: '#faq'
+    },
+  ];
+
+  const quickActions = [
+    {
+      title: "Submit Bug Report",
+      description: "Found a glitch? Let us know",
+      icon: Bug,
+      action: 'contact',
+      color: '#FF4F58'
+    },
+    {
+      title: "Feature Request",
+      description: "Suggest new features",
+      icon: Lightbulb,
+      action: 'contact',
+      color: '#FFD700'
+    },
+    {
+      title: "Video Tutorials",
+      description: "Watch how-to guides",
+      icon: Video,
+      action: 'guides',
+      color: '#E3B341'
+    },
+    {
+      title: "Live Support",
+      description: "Chat with our team",
+      icon: Headphones,
+      action: 'contact',
+      color: '#28C76F'
+    },
+  ];
+
   const helpResources = [
     {
       title: "Quick Start Guide",
       description: "Get up and running with your first trades in 5 minutes",
       icon: Zap,
+      gradient: 'linear-gradient(135deg, #4a3a1a 0%, #2a1f0a 100%)',
+      color: '#E3B341',
       items: ["Create account", "Join tournament", "Buy your first stock", "Track performance"]
     },
     {
       title: "Trading Basics",
       description: "Learn fundamental trading concepts and strategies",
       icon: BookOpen,
+      gradient: 'linear-gradient(135deg, #1a4d2e 0%, #0f2a1a 100%)',
+      color: '#28C76F',
       items: ["Stock selection", "Portfolio balance", "Risk management", "Market analysis"]
     },
     {
       title: "Competition Rules",
       description: "Understand tournament formats and scoring",
-      icon: Users,
+      icon: Trophy,
+      gradient: 'linear-gradient(135deg, #3a2f1a 0%, #221a10 100%)',
+      color: '#FFD700',
       items: ["Tournament types", "Scoring system", "Time limits", "Fair play rules"]
     },
     {
       title: "Platform Features",
       description: "Master all ORSATH tools and capabilities",
       icon: TrendingUp,
+      gradient: 'linear-gradient(135deg, #1a2d4a 0%, #0f1a2d 100%)',
+      color: '#3B82F6',
       items: ["Portfolio tracking", "Social features", "Analytics", "Real-time data"]
     }
+  ];
+
+  const videoTutorials = [
+    {
+      title: "Getting Started with ORSATH",
+      duration: "5:30",
+      views: "12.5K",
+      thumbnail: Video
+    },
+    {
+      title: "How to Join & Win Tournaments",
+      duration: "8:15",
+      views: "8.2K",
+      thumbnail: Video
+    },
+    {
+      title: "Advanced Trading Strategies",
+      duration: "12:45",
+      views: "15.3K",
+      thumbnail: Video
+    },
+    {
+      title: "Portfolio Management Tips",
+      duration: "6:20",
+      views: "9.8K",
+      thumbnail: Video
+    },
   ];
 
   const filteredFaqs = faqs.map(category => ({
@@ -179,46 +285,223 @@ export default function Support() {
   })).filter(category => category.questions.length > 0);
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <section className="py-16 bg-card">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#06121F' }}>
+      {/* Animated Background */}
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0" style={{
+          backgroundImage: 'linear-gradient(rgba(227, 179, 65, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(227, 179, 65, 0.1) 1px, transparent 1px)',
+          backgroundSize: '50px 50px'
+        }} />
+      </div>
+
+      {/* Floating Icons */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {[HelpCircle, Trophy, Shield, Star].map((Icon, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{
+              left: `${15 + i * 25}%`,
+              top: `${20 + (i % 2) * 50}%`,
+            }}
+            animate={{
+              y: [-20, 20, -20],
+              rotate: [0, 10, -10, 0],
+              opacity: [0.05, 0.15, 0.05],
+            }}
+            transition={{
+              duration: 5 + i,
+              delay: i * 0.8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            <Icon className="w-16 h-16" style={{ color: i % 2 === 0 ? '#E3B341' : '#28C76F' }} />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Epic Header */}
+      <section className="relative py-20" style={{
+        background: 'linear-gradient(135deg, #1a2d4a 0%, #06121F 50%, #1a4d2e 100%)',
+        boxShadow: '0 10px 40px rgba(0,0,0,0.5)'
+      }}>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="max-w-5xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
             >
-              <h1 className="text-5xl font-bold text-foreground mb-6">Help & Support Center</h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Everything you need to succeed in paper trading competitions. Find answers, learn strategies, and get support.
+              <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full" style={{
+                background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)',
+                boxShadow: '0 0 20px rgba(227, 179, 65, 0.4)'
+              }}>
+                <Shield className="w-5 h-5" style={{ color: '#06121F' }} />
+                <span className="font-bold text-sm" style={{ color: '#06121F' }}>SUPPORT CENTER</span>
+              </div>
+              <h1 className="text-6xl font-black mb-6" style={{
+                background: 'linear-gradient(135deg, #E3B341 0%, #FFD700 50%, #E3B341 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                textShadow: '0 0 30px rgba(227, 179, 65, 0.5)'
+              }}>
+                Player Support HQ 🎮
+              </h1>
+              <p className="text-2xl mb-8" style={{ color: '#B8C5D6' }}>
+                Level up your trading game with instant help, guides, and expert support
               </p>
+
+              {/* Live Status Indicator */}
+              <motion.div
+                className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl"
+                style={{
+                  background: 'rgba(40, 199, 111, 0.1)',
+                  border: '2px solid #28C76F',
+                  boxShadow: '0 0 20px rgba(40, 199, 111, 0.3)'
+                }}
+                animate={{
+                  boxShadow: ['0 0 20px rgba(40, 199, 111, 0.3)', '0 0 30px rgba(40, 199, 111, 0.5)', '0 0 20px rgba(40, 199, 111, 0.3)']
+                }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <motion.div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: '#28C76F' }}
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
+                <span className="font-bold" style={{ color: '#28C76F' }}>Support Team Online</span>
+                <span style={{ color: '#B8C5D6' }}>• Response time: ~2 min</span>
+              </motion.div>
             </motion.div>
           </div>
         </div>
       </section>
 
       {/* Support Content */}
-      <section className="py-16">
+      <section className="py-16 relative z-10">
         <div className="container mx-auto px-4">
           <div className="max-w-7xl mx-auto">
+            {/* Popular Issues - Trending Now */}
+            <motion.div
+              className="mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <AlertCircle className="w-8 h-8" style={{ color: '#E3B341' }} />
+                <h2 className="text-3xl font-black" style={{ color: '#FFFFFF' }}>Trending Issues 🔥</h2>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {popularIssues.map((issue, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    transition={{ type: "spring", stiffness: 300 }}
+                  >
+                    <Card
+                      className="cursor-pointer relative overflow-hidden rounded-2xl shadow-xl border-2"
+                      style={{
+                        background: issue.gradient,
+                        borderColor: issue.color,
+                        boxShadow: `0 5px 20px rgba(0,0,0,0.3), 0 0 10px ${issue.color}20`
+                      }}
+                    >
+                      <div className="absolute -right-2 -top-2 opacity-10">
+                        <issue.icon className="w-20 h-20" style={{ color: issue.color }} />
+                      </div>
+                      <CardContent className="p-5 relative z-10">
+                        <div className="rounded-xl inline-block p-2 mb-3" style={{
+                          backgroundColor: `${issue.color}20`,
+                          boxShadow: `0 0 15px ${issue.color}30`
+                        }}>
+                          <issue.icon className="w-6 h-6" style={{ color: issue.color }} />
+                        </div>
+                        <h3 className="text-lg font-black mb-2" style={{ color: '#FFFFFF' }}>
+                          {issue.title}
+                        </h3>
+                        <p className="text-sm mb-4" style={{ color: '#A8B5C9' }}>
+                          {issue.description}
+                        </p>
+                        <div className="flex items-center gap-2 text-sm font-bold" style={{ color: issue.color }}>
+                          <span>Learn More</span>
+                          <ChevronRight className="w-4 h-4" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Quick Actions */}
+            <motion.div
+              className="mb-12"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <Zap className="w-8 h-8" style={{ color: '#FFD700' }} />
+                <h2 className="text-3xl font-black" style={{ color: '#FFFFFF' }}>Quick Actions ⚡</h2>
+              </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {quickActions.map((action, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <Card
+                      className="cursor-pointer relative overflow-hidden rounded-2xl shadow-lg border"
+                      style={{
+                        backgroundColor: '#1E2D3F',
+                        borderColor: action.color,
+                        borderWidth: '2px'
+                      }}
+                    >
+                      <CardContent className="p-6 text-center">
+                        <div className="rounded-full inline-block p-4 mb-4" style={{
+                          backgroundColor: `${action.color}20`,
+                          boxShadow: `0 0 20px ${action.color}40`
+                        }}>
+                          <action.icon className="w-8 h-8" style={{ color: action.color }} />
+                        </div>
+                        <h3 className="text-lg font-bold mb-2" style={{ color: '#FFFFFF' }}>
+                          {action.title}
+                        </h3>
+                        <p className="text-sm" style={{ color: '#A8B5C9' }}>
+                          {action.description}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
             <Tabs defaultValue="help" className="w-full">
-              <TabsList className="grid w-full grid-cols-4 mb-8">
-                <TabsTrigger value="help" className="flex items-center space-x-2">
+              <TabsList className="grid w-full grid-cols-4 mb-8 rounded-2xl p-2" style={{
+                backgroundColor: '#1E2D3F',
+                border: '2px solid #2B3A4C'
+              }}>
+                <TabsTrigger value="help" className="flex items-center space-x-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#E3B341] data-[state=active]:to-[#c99a35] data-[state=active]:text-[#06121F] rounded-xl font-bold">
                   <HelpCircle className="w-4 h-4" />
                   <span>Help Center</span>
                 </TabsTrigger>
-                <TabsTrigger value="faq" className="flex items-center space-x-2">
+                <TabsTrigger value="faq" className="flex items-center space-x-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#28C76F] data-[state=active]:to-[#20a35a] data-[state=active]:text-[#06121F] rounded-xl font-bold">
                   <BookOpen className="w-4 h-4" />
                   <span>FAQs</span>
                 </TabsTrigger>
-                <TabsTrigger value="guides" className="flex items-center space-x-2">
-                  <Shield className="w-4 h-4" />
-                  <span>Guides</span>
+                <TabsTrigger value="guides" className="flex items-center space-x-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#3B82F6] data-[state=active]:to-[#2563eb] data-[state=active]:text-white rounded-xl font-bold">
+                  <Video className="w-4 h-4" />
+                  <span>Tutorials</span>
                 </TabsTrigger>
-                <TabsTrigger value="contact" className="flex items-center space-x-2">
+                <TabsTrigger value="contact" className="flex items-center space-x-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#FF4F58] data-[state=active]:to-[#d43d44] data-[state=active]:text-white rounded-xl font-bold">
                   <MessageCircle className="w-4 h-4" />
-                  <span>Contact Us</span>
+                  <span>Contact</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -228,27 +511,49 @@ export default function Support() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
                 >
+                  <h3 className="text-2xl font-black mb-6" style={{ color: '#FFFFFF' }}>Knowledge Base 📚</h3>
                   <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {helpResources.map((resource, index) => (
-                      <Card key={index} className="group hover:shadow-lg transition-all duration-300 cursor-pointer border-border">
-                        <CardHeader className="pb-4">
-                          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                            <resource.icon className="w-6 h-6 text-primary" />
+                      <motion.div
+                        key={index}
+                        whileHover={{ scale: 1.05, y: -5 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <Card
+                          className="group cursor-pointer relative overflow-hidden rounded-2xl shadow-xl border-2"
+                          style={{
+                            background: resource.gradient,
+                            borderColor: resource.color,
+                            boxShadow: `0 5px 20px rgba(0,0,0,0.3)`
+                          }}
+                        >
+                          <div className="absolute -right-4 -bottom-4 opacity-10">
+                            <resource.icon className="w-24 h-24" style={{ color: resource.color }} />
                           </div>
-                          <CardTitle className="text-lg font-semibold">{resource.title}</CardTitle>
-                          <p className="text-sm text-muted-foreground">{resource.description}</p>
-                        </CardHeader>
-                        <CardContent>
-                          <ul className="space-y-2">
-                            {resource.items.map((item, itemIndex) => (
-                              <li key={itemIndex} className="flex items-center text-sm text-muted-foreground">
-                                <ChevronRight className="w-3 h-3 mr-2 text-primary" />
-                                {item}
-                              </li>
-                            ))}
-                          </ul>
-                        </CardContent>
-                      </Card>
+                          <CardHeader className="pb-4 relative z-10">
+                            <div className="rounded-2xl inline-block p-3 mb-4" style={{
+                              backgroundColor: `${resource.color}20`,
+                              boxShadow: `0 0 20px ${resource.color}40`
+                            }}>
+                              <resource.icon className="w-8 h-8" style={{ color: resource.color }} />
+                            </div>
+                            <CardTitle className="text-xl font-black mb-2" style={{ color: '#FFFFFF' }}>
+                              {resource.title}
+                            </CardTitle>
+                            <p className="text-sm" style={{ color: '#B8C5D6' }}>{resource.description}</p>
+                          </CardHeader>
+                          <CardContent className="relative z-10">
+                            <ul className="space-y-2">
+                              {resource.items.map((item, itemIndex) => (
+                                <li key={itemIndex} className="flex items-center text-sm font-medium" style={{ color: '#A8B5C9' }}>
+                                  <ChevronRight className="w-4 h-4 mr-2" style={{ color: resource.color }} />
+                                  {item}
+                                </li>
+                              ))}
+                            </ul>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
                     ))}
                   </div>
                 </motion.div>

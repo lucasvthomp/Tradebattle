@@ -73,92 +73,293 @@ export default function Leaderboard() {
     }
   };
 
+  const renderPodium = (data: any[], type: 'wagered' | 'growth') => {
+    const top3 = data.slice(0, 3);
+    const [first, second, third] = top3;
+
+    return (
+      <div className="mb-8 relative">
+        {/* Podium Container */}
+        <div className="flex items-end justify-center gap-6 mb-8 px-8">
+          {/* 2nd Place - Left */}
+          {second && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="flex flex-col items-center"
+              style={{ width: '200px' }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="rounded-2xl p-6 border-none shadow-2xl relative overflow-hidden mb-4"
+                style={{
+                  background: 'linear-gradient(135deg, #C9D1E2 0%, #9aa5b5 100%)',
+                  boxShadow: '0 10px 40px rgba(201, 209, 226, 0.4)'
+                }}
+              >
+                <div className="absolute -right-4 -top-4 text-7xl opacity-20">🥈</div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center" style={{
+                    background: 'rgba(6, 18, 31, 0.3)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <Award className="w-10 h-10" style={{ color: '#06121F' }} />
+                  </div>
+                  <div className="text-2xl font-black mb-2" style={{ color: '#06121F' }}>{second.username}</div>
+                  <div className="text-3xl font-black" style={{ color: '#06121F' }}>
+                    {type === 'wagered' ? formatCurrency(second.totalWagered) : `+${second.percentageChange.toFixed(1)}%`}
+                  </div>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: 140 }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="w-full rounded-t-xl relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(180deg, #C9D1E2 0%, #8895a8 100%)',
+                  boxShadow: '0 -5px 20px rgba(201, 209, 226, 0.3)'
+                }}
+              >
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="text-6xl font-black" style={{ color: 'rgba(6, 18, 31, 0.8)' }}>2</div>
+                  <div className="text-sm font-bold" style={{ color: 'rgba(6, 18, 31, 0.6)' }}>SILVER</div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* 1st Place - Center (Tallest) */}
+          {first && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-col items-center"
+              style={{ width: '220px' }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="rounded-2xl p-8 border-none shadow-2xl relative overflow-hidden mb-4"
+                style={{
+                  background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 50%, #a87d28 100%)',
+                  boxShadow: '0 15px 50px rgba(227, 179, 65, 0.5)'
+                }}
+              >
+                <div className="absolute -right-6 -top-6 text-8xl opacity-20">👑</div>
+                <div className="absolute left-4 bottom-4 text-5xl opacity-15">🏆</div>
+                <div className="relative z-10 text-center">
+                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center" style={{
+                    background: 'rgba(6, 18, 31, 0.3)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <Crown className="w-12 h-12" style={{ color: '#06121F' }} />
+                  </div>
+                  <div className="text-3xl font-black mb-3" style={{ color: '#06121F' }}>{first.username}</div>
+                  <div className="text-4xl font-black" style={{ color: '#06121F' }}>
+                    {type === 'wagered' ? formatCurrency(first.totalWagered) : `+${first.percentageChange.toFixed(1)}%`}
+                  </div>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: 180 }}
+                transition={{ delay: 0.3, duration: 0.6 }}
+                className="w-full rounded-t-xl relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(180deg, #E3B341 0%, #c99a35 50%, #9a7728 100%)',
+                  boxShadow: '0 -5px 30px rgba(227, 179, 65, 0.4)'
+                }}
+              >
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="text-7xl font-black" style={{ color: 'rgba(6, 18, 31, 0.8)' }}>1</div>
+                  <div className="text-base font-bold" style={{ color: 'rgba(6, 18, 31, 0.6)' }}>GOLD</div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {/* 3rd Place - Right */}
+          {third && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-col items-center"
+              style={{ width: '200px' }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="rounded-2xl p-6 border-none shadow-2xl relative overflow-hidden mb-4"
+                style={{
+                  background: 'linear-gradient(135deg, #CD7F32 0%, #a86628 100%)',
+                  boxShadow: '0 10px 40px rgba(205, 127, 50, 0.4)'
+                }}
+              >
+                <div className="absolute -right-4 -top-4 text-7xl opacity-20">🥉</div>
+                <div className="relative z-10 text-center">
+                  <div className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center" style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <Target className="w-10 h-10" style={{ color: '#FFFFFF' }} />
+                  </div>
+                  <div className="text-2xl font-black text-white mb-2">{third.username}</div>
+                  <div className="text-3xl font-black text-white">
+                    {type === 'wagered' ? formatCurrency(third.totalWagered) : `+${third.percentageChange.toFixed(1)}%`}
+                  </div>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ height: 0 }}
+                animate={{ height: 100 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                className="w-full rounded-t-xl relative overflow-hidden"
+                style={{
+                  background: 'linear-gradient(180deg, #CD7F32 0%, #995d24 100%)',
+                  boxShadow: '0 -5px 20px rgba(205, 127, 50, 0.3)'
+                }}
+              >
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="text-6xl font-black text-white opacity-80">3</div>
+                  <div className="text-sm font-bold text-white opacity-60">BRONZE</div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(24px, 4vh, 48px) clamp(16px, 2vw, 32px)' }}>
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#06121F' }}>
+      {/* Floating Background Icons */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute"
+            style={{
+              left: `${(i * 20) % 100}%`,
+              top: `${(i * 30) % 80}%`,
+            }}
+            animate={{
+              y: [-30, 30, -30],
+              rotate: [0, 180, 360],
+              opacity: [0.05, 0.15, 0.05],
+            }}
+            transition={{
+              duration: 10 + i * 2,
+              delay: i * 0.5,
+              repeat: Infinity,
+            }}
+          >
+            <Trophy className="w-20 h-20" style={{ color: '#E3B341' }} />
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          className="mb-10"
         >
-          <div className="flex items-center mb-3" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
-            <Trophy style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)', color: '#E3B341' }} />
-            <h1 className="font-bold text-white" style={{ fontSize: 'clamp(1.875rem, 4vw, 3.75rem)' }}>Leaderboards</h1>
+          <div className="flex items-center gap-4 mb-3">
+            <div className="rounded-2xl p-3" style={{
+              background: 'linear-gradient(135deg, #E3B341, #c99a35)',
+              boxShadow: '0 4px 20px rgba(227, 179, 65, 0.4)'
+            }}>
+              <Trophy className="w-10 h-10" style={{ color: '#06121F' }} />
+            </div>
+            <h1 className="text-6xl font-black text-white">Global Leaderboards 🏆</h1>
           </div>
-          <p className="text-[#8A93A6]" style={{ fontSize: 'clamp(0.75rem, 1vw, 1.125rem)' }}>Top performers across all tournaments and categories</p>
+          <p className="text-xl text-[#8A93A6]">Top performers across all tournaments and categories</p>
         </motion.div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 bg-[#1E2D3F] border border-[#2B3A4C] rounded-xl" style={{ height: 'clamp(48px, 4vh, 64px)' }}>
+          <TabsList className="grid w-full grid-cols-3 h-14 rounded-xl border-none shadow-lg" style={{
+            background: 'linear-gradient(135deg, #1E2D3F 0%, #142538 100%)'
+          }}>
             <TabsTrigger
               value="wagered"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
-              style={activeTab === "wagered" ? {} : { color: '#8A93A6 !important' }}
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F] rounded-lg text-base font-bold"
+              style={activeTab === "wagered" ? {} : { color: '#8A93A6' }}
             >
-              <DollarSign className="mr-2" style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', color: activeTab === "wagered" ? undefined : '#8A93A6' }} />
-              <span style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)', color: activeTab === "wagered" ? undefined : '#8A93A6' }}>Total Wagered</span>
+              <DollarSign className="w-5 h-5 mr-2" style={{ color: activeTab === "wagered" ? undefined : '#8A93A6' }} />
+              Total Wagered
             </TabsTrigger>
             <TabsTrigger
               value="highwager"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
-              style={activeTab === "highwager" ? {} : { color: '#8A93A6 !important' }}
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F] rounded-lg text-base font-bold"
+              style={activeTab === "highwager" ? {} : { color: '#8A93A6' }}
             >
-              <Trophy className="mr-2" style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', color: activeTab === "highwager" ? undefined : '#8A93A6' }} />
-              <span style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)', color: activeTab === "highwager" ? undefined : '#8A93A6' }}>High Stakes</span>
+              <Trophy className="w-5 h-5 mr-2" style={{ color: activeTab === "highwager" ? undefined : '#8A93A6' }} />
+              High Stakes
             </TabsTrigger>
             <TabsTrigger
               value="growth"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F]"
-              style={activeTab === "growth" ? {} : { color: '#8A93A6 !important' }}
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F] rounded-lg text-base font-bold"
+              style={activeTab === "growth" ? {} : { color: '#8A93A6' }}
             >
-              <TrendingUp className="mr-2" style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', color: activeTab === "growth" ? undefined : '#8A93A6' }} />
-              <span style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)', color: activeTab === "growth" ? undefined : '#8A93A6' }}>Top Growth</span>
+              <TrendingUp className="w-5 h-5 mr-2" style={{ color: activeTab === "growth" ? undefined : '#8A93A6' }} />
+              Top Growth
             </TabsTrigger>
           </TabsList>
 
           <AnimatePresence mode="wait">
             {/* Total Wagered Tab */}
-            <TabsContent value="wagered" className="space-y-4">
-              <Card className="rounded-xl">
-                <CardHeader style={{ padding: 'clamp(16px, 2vw, 24px)' }}>
-                  <CardTitle className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 12px)', fontSize: 'clamp(1rem, 1.5vw, 1.5rem)' }}>
-                    <DollarSign style={{ width: 'clamp(16px, 1.5vw, 24px)', height: 'clamp(16px, 1.5vw, 24px)', color: '#E3B341' }} />
-                    Top Traders by Total Wagered
+            <TabsContent value="wagered" className="space-y-6">
+              {/* Podium for Top 3 */}
+              {renderPodium(mockWageredData, 'wagered')}
+
+              {/* Remaining Rankings */}
+              <Card className="rounded-2xl border-none shadow-xl" style={{
+                background: 'linear-gradient(135deg, #1E2D3F 0%, #142538 100%)'
+              }}>
+                <CardHeader className="p-6">
+                  <CardTitle className="flex items-center gap-3 text-2xl">
+                    <DollarSign className="w-7 h-7" style={{ color: '#E3B341' }} />
+                    <span style={{ color: '#FFFFFF' }}>Complete Rankings 📊</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent style={{ padding: 'clamp(16px, 2vw, 24px)' }}>
+                <CardContent className="p-6">
                   <div className="space-y-3">
-                    {mockWageredData.map((trader, index) => {
-                      const rank = index + 1;
+                    {mockWageredData.slice(3).map((trader, index) => {
+                      const rank = index + 4;
                       return (
                         <motion.div
                           key={trader.id}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="flex items-center justify-between rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
-                          style={{ padding: 'clamp(12px, 1.5vw, 20px)' }}
+                          whileHover={{ scale: 1.02, x: 5 }}
+                          className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(30, 45, 63, 0.6), rgba(20, 37, 56, 0.6))',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                          }}
                         >
-                          <div className="flex items-center" style={{ gap: 'clamp(12px, 1.5vw, 20px)' }}>
-                            <div className={`rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`} style={{
-                              width: 'clamp(32px, 3vw, 56px)',
-                              height: 'clamp(32px, 3vw, 56px)',
-                              fontSize: 'clamp(0.875rem, 1vw, 1.125rem)'
-                            }}>
-                              {rank <= 3 ? getRankIcon(rank) : rank}
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#142538] text-[#C9D1E2]">
+                              {rank}
                             </div>
                             <div>
-                              <div className="font-semibold text-white" style={{ fontSize: 'clamp(0.875rem, 1.2vw, 1.25rem)' }}>{trader.username}</div>
-                              <div className="text-[#8A93A6]" style={{ fontSize: 'clamp(0.75rem, 1vw, 1rem)' }}>{trader.tournamentCount} tournaments</div>
+                              <div className="font-bold text-lg text-white">{trader.username}</div>
+                              <div className="text-sm text-[#8A93A6]">{trader.tournamentCount} tournaments</div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-bold" style={{ color: '#E3B341', fontSize: 'clamp(1rem, 1.5vw, 1.5rem)' }}>
+                            <div className="text-2xl font-black" style={{ color: '#E3B341' }}>
                               {formatCurrency(trader.totalWagered)}
                             </div>
-                            <div className="text-[#8A93A6]" style={{ fontSize: 'clamp(0.625rem, 0.8vw, 0.875rem)' }}>Total Wagered</div>
+                            <div className="text-xs text-[#8A93A6]">Total Wagered</div>
                           </div>
                         </motion.div>
                       );
@@ -218,40 +419,51 @@ export default function Leaderboard() {
             </TabsContent>
 
             {/* Top Growth Tab */}
-            <TabsContent value="growth" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" style={{ color: '#E3B341' }} />
-                    Highest Portfolio Growth
+            <TabsContent value="growth" className="space-y-6">
+              {/* Podium for Top 3 */}
+              {renderPodium(mockGrowthData, 'growth')}
+
+              {/* Remaining Rankings */}
+              <Card className="rounded-2xl border-none shadow-xl" style={{
+                background: 'linear-gradient(135deg, #1E2D3F 0%, #142538 100%)'
+              }}>
+                <CardHeader className="p-6">
+                  <CardTitle className="flex items-center gap-3 text-2xl">
+                    <TrendingUp className="w-7 h-7" style={{ color: '#28C76F' }} />
+                    <span style={{ color: '#FFFFFF' }}>Complete Rankings 📈</span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {mockGrowthData.map((participant, index) => {
-                      const rank = index + 1;
+                <CardContent className="p-6">
+                  <div className="space-y-3">
+                    {mockGrowthData.slice(3).map((participant, index) => {
+                      const rank = index + 4;
                       return (
                         <motion.div
                           key={participant.id}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="flex items-center justify-between p-4 rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
+                          whileHover={{ scale: 1.02, x: 5 }}
+                          className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
+                          style={{
+                            background: 'linear-gradient(135deg, rgba(30, 45, 63, 0.6), rgba(20, 37, 56, 0.6))',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                          }}
                         >
                           <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
-                              {rank <= 3 ? getRankIcon(rank) : rank}
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#142538] text-[#C9D1E2]">
+                              {rank}
                             </div>
                             <div>
-                              <div className="font-semibold text-white">{participant.username}</div>
+                              <div className="font-bold text-lg text-white">{participant.username}</div>
                               <div className="text-sm text-[#8A93A6]">
                                 {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
                               </div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-bold text-lg text-[#28C76F]">
-                              +{participant.percentageChange.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}%
+                            <div className="text-2xl font-black text-[#28C76F]">
+                              +{participant.percentageChange.toFixed(1)}%
                             </div>
                             <div className="text-sm text-[#C9D1E2]">{formatCurrency(participant.portfolioValue)}</div>
                           </div>
@@ -269,50 +481,85 @@ export default function Leaderboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8"
+          transition={{ delay: 0.4 }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10"
         >
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-[#142538]">
-                  <DollarSign className="h-6 w-6" style={{ color: '#E3B341' }} />
+          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
+            <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
+              background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)',
+              boxShadow: '0 10px 30px rgba(227, 179, 65, 0.4)'
+            }}>
+              <CardContent className="p-6">
+                <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">💰</div>
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="p-4 rounded-xl" style={{
+                    background: 'rgba(6, 18, 31, 0.3)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <DollarSign className="w-8 h-8" style={{ color: '#06121F' }} />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black" style={{ color: '#06121F' }}>
+                      {formatCurrency(652300)}
+                    </div>
+                    <div className="text-base font-bold" style={{ color: 'rgba(6, 18, 31, 0.7)' }}>
+                      Total Volume
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{formatCurrency(652300)}</div>
-                  <div className="text-sm text-[#8A93A6]">Total Volume</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-[#142538]">
-                  <Trophy className="h-6 w-6" style={{ color: '#E3B341' }} />
+          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
+            <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
+              background: 'linear-gradient(135deg, #28C76F 0%, #1a9a55 100%)',
+              boxShadow: '0 10px 30px rgba(40, 199, 111, 0.4)'
+            }}>
+              <CardContent className="p-6">
+                <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">🏆</div>
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="p-4 rounded-xl" style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <Trophy className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-white">284</div>
+                    <div className="text-base font-bold text-white opacity-80">
+                      Active Tournaments
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">284</div>
-                  <div className="text-sm text-[#8A93A6]">Active Tournaments</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          <Card>
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-lg bg-[#142538]">
-                  <Zap className="h-6 w-6" style={{ color: '#E3B341' }} />
+          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
+            <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
+              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
+              boxShadow: '0 10px 30px rgba(59, 130, 246, 0.4)'
+            }}>
+              <CardContent className="p-6">
+                <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">⚡</div>
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="p-4 rounded-xl" style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    backdropFilter: 'blur(10px)'
+                  }}>
+                    <Zap className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-3xl font-black text-white">1,247</div>
+                    <div className="text-base font-bold text-white opacity-80">
+                      Active Traders
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">1,247</div>
-                  <div className="text-sm text-[#8A93A6]">Active Traders</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
         </motion.div>
       </div>
     </div>
