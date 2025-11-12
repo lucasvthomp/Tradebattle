@@ -44,6 +44,9 @@ export default function Dashboard() {
   const [selectedTimeRange, setSelectedTimeRange] = useState<string>('1D');
   const [selectedInterval, setSelectedInterval] = useState<string>('1 minute');
   const [candlestickInterval, setCandlestickInterval] = useState<string>('5 minutes');
+  const [chartMode, setChartMode] = useState<'cursor' | 'draw' | 'shape'>('cursor');
+  const [chartZoomTrigger, setChartZoomTrigger] = useState(0);
+  const [showIndicators, setShowIndicators] = useState(false);
 
   // Watchlist data (mock for now)
   const watchlistData = [
@@ -114,7 +117,7 @@ export default function Dashboard() {
           <p className="mb-4" style={{ color: '#8A8A8A' }}>
             Join or create a tournament to start trading
           </p>
-          <Button asChild style={{ backgroundColor: '#10B981', color: '#000000' }}>
+          <Button asChild style={{ backgroundColor: '#28C76F', color: '#000000' }}>
             <a href="/tournaments">Browse Tournaments</a>
           </Button>
         </div>
@@ -141,7 +144,7 @@ export default function Dashboard() {
           {/* Change and Percentage */}
           <span
             className="text-sm flex items-center gap-1"
-            style={{ color: priceChange >= 0 ? '#10B981' : '#EF4444' }}
+            style={{ color: priceChange >= 0 ? '#28C76F' : '#FF4F58' }}
           >
             {priceChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
             {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)} ({priceChangePercent >= 0 ? '+' : ''}{priceChangePercent.toFixed(2)}%)
@@ -153,7 +156,7 @@ export default function Dashboard() {
               onClick={() => setOrderSide('buy')}
               className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
               style={orderSide === 'buy'
-                ? { backgroundColor: '#10B981', color: '#000000' }
+                ? { backgroundColor: '#28C76F', color: '#000000' }
                 : { backgroundColor: '#1A1A1A', color: '#8A8A8A' }
               }
             >
@@ -163,7 +166,7 @@ export default function Dashboard() {
               onClick={() => setOrderSide('sell')}
               className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
               style={orderSide === 'sell'
-                ? { backgroundColor: '#EF4444', color: '#FFFFFF' }
+                ? { backgroundColor: '#FF4F58', color: '#FFFFFF' }
                 : { backgroundColor: '#1A1A1A', color: '#8A8A8A' }
               }
             >
@@ -173,22 +176,69 @@ export default function Dashboard() {
 
           {/* Chart Control Icons */}
           <div className="flex items-center gap-1">
-            <button className="h-7 w-7 flex items-center justify-center rounded" style={{ backgroundColor: 'transparent' }}>
-              <MousePointer className="w-4 h-4" style={{ color: '#8A8A8A' }} />
+            <button
+              onClick={() => {
+                setChartMode('cursor');
+                toast({ description: "Cursor tool activated" });
+              }}
+              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#1A1A1A] transition-colors"
+              style={{ backgroundColor: chartMode === 'cursor' ? '#1A1A1A' : 'transparent' }}
+              title="Cursor tool"
+            >
+              <MousePointer className="w-4 h-4" style={{ color: chartMode === 'cursor' ? '#FFFFFF' : '#8A8A8A' }} />
             </button>
-            <button className="h-7 w-7 flex items-center justify-center rounded" style={{ backgroundColor: 'transparent' }}>
-              <TrendingUpIcon className="w-4 h-4" style={{ color: '#8A8A8A' }} />
+            <button
+              onClick={() => {
+                setChartMode('draw');
+                toast({ description: "Draw tool activated - Feature coming soon" });
+              }}
+              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#1A1A1A] transition-colors"
+              style={{ backgroundColor: chartMode === 'draw' ? '#1A1A1A' : 'transparent' }}
+              title="Draw tool"
+            >
+              <TrendingUpIcon className="w-4 h-4" style={{ color: chartMode === 'draw' ? '#FFFFFF' : '#8A8A8A' }} />
             </button>
-            <button className="h-7 w-7 flex items-center justify-center rounded" style={{ backgroundColor: 'transparent' }}>
-              <Square className="w-4 h-4" style={{ color: '#8A8A8A' }} />
+            <button
+              onClick={() => {
+                setChartMode('shape');
+                toast({ description: "Shape tool activated - Feature coming soon" });
+              }}
+              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#1A1A1A] transition-colors"
+              style={{ backgroundColor: chartMode === 'shape' ? '#1A1A1A' : 'transparent' }}
+              title="Shape tool"
+            >
+              <Square className="w-4 h-4" style={{ color: chartMode === 'shape' ? '#FFFFFF' : '#8A8A8A' }} />
             </button>
-            <button className="h-7 w-7 flex items-center justify-center rounded" style={{ backgroundColor: 'transparent' }}>
+            <button
+              onClick={() => {
+                setChartZoomTrigger(prev => prev + 1);
+                toast({ description: "Zooming in..." });
+              }}
+              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#1A1A1A] transition-colors"
+              style={{ backgroundColor: 'transparent' }}
+              title="Zoom in"
+            >
               <ZoomIn className="w-4 h-4" style={{ color: '#8A8A8A' }} />
             </button>
-            <button className="h-7 w-7 flex items-center justify-center rounded" style={{ backgroundColor: 'transparent' }}>
-              <BarChart3 className="w-4 h-4" style={{ color: '#8A8A8A' }} />
+            <button
+              onClick={() => {
+                setShowIndicators(!showIndicators);
+                toast({ description: showIndicators ? "Indicators hidden" : "Indicators visible" });
+              }}
+              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#1A1A1A] transition-colors"
+              style={{ backgroundColor: showIndicators ? '#1A1A1A' : 'transparent' }}
+              title="Toggle indicators"
+            >
+              <BarChart3 className="w-4 h-4" style={{ color: showIndicators ? '#FFFFFF' : '#8A8A8A' }} />
             </button>
-            <button className="h-7 w-7 flex items-center justify-center rounded" style={{ backgroundColor: 'transparent' }}>
+            <button
+              onClick={() => {
+                toast({ description: "Settings - Feature coming soon" });
+              }}
+              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#1A1A1A] transition-colors"
+              style={{ backgroundColor: 'transparent' }}
+              title="Settings"
+            >
               <SettingsIcon className="w-4 h-4" style={{ color: '#8A8A8A' }} />
             </button>
           </div>
@@ -231,6 +281,9 @@ export default function Dashboard() {
           <AdvancedTradingChart
             selectedStock={selectedSymbol}
             tournamentId={selectedTournament?.id}
+            candlestickInterval={candlestickInterval}
+            zoomTrigger={chartZoomTrigger}
+            showIndicators={showIndicators}
           />
 
           {/* Time Range Selector */}
@@ -311,10 +364,10 @@ export default function Dashboard() {
                 }}
               >
                 <span className="col-span-1 font-medium text-left" style={{ color: '#FFFFFF' }}>{item.symbol}</span>
-                <span className="col-span-1 text-right" style={{ color: item.netChange >= 0 ? '#10B981' : '#EF4444' }}>
+                <span className="col-span-1 text-right" style={{ color: item.netChange >= 0 ? '#28C76F' : '#FF4F58' }}>
                   {item.netChange >= 0 ? '+' : ''}{item.netChange.toFixed(2)}
                 </span>
-                <span className="col-span-1 text-right" style={{ color: item.changePercent >= 0 ? '#10B981' : '#EF4444' }}>
+                <span className="col-span-1 text-right" style={{ color: item.changePercent >= 0 ? '#28C76F' : '#FF4F58' }}>
                   {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
                 </span>
                 <span className="col-span-1 text-right" style={{ color: '#FFFFFF' }}>${item.lastPrice.toFixed(2)}</span>
@@ -330,7 +383,7 @@ export default function Dashboard() {
           <div className="p-3 space-y-3">
             {/* Account Deficit Warning (conditional) */}
             {!hasEnoughFunds && orderType !== 'limit' && quantity > 0 && (
-              <div className="p-2 rounded text-xs" style={{ backgroundColor: '#2A1A1A', color: '#EF4444', border: '1px solid #EF4444' }}>
+              <div className="p-2 rounded text-xs" style={{ backgroundColor: '#2A1A1A', color: '#FF4F58', border: '1px solid #FF4F58' }}>
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <span>Your individual account is currently restricted because you have an account deficit. Some actions may not be available right now.</span>
@@ -349,7 +402,7 @@ export default function Dashboard() {
                 onClick={() => setOrderSide('buy')}
                 className="flex-1 h-8 text-xs font-medium"
                 style={orderSide === 'buy'
-                  ? { backgroundColor: '#10B981', color: '#000000', border: 'none' }
+                  ? { backgroundColor: '#28C76F', color: '#000000', border: 'none' }
                   : { backgroundColor: '#1A1A1A', color: '#8A8A8A', border: '1px solid #2A2A2A' }
                 }
               >
@@ -359,7 +412,7 @@ export default function Dashboard() {
                 onClick={() => setOrderSide('sell')}
                 className="flex-1 h-8 text-xs font-medium"
                 style={orderSide === 'sell'
-                  ? { backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none' }
+                  ? { backgroundColor: '#FF4F58', color: '#FFFFFF', border: 'none' }
                   : { backgroundColor: '#1A1A1A', color: '#8A8A8A', border: '1px solid #2A2A2A' }
                 }
               >
@@ -412,7 +465,7 @@ export default function Dashboard() {
                 </Button>
               </div>
               {!hasEnoughFunds && quantity > 0 && (
-                <p className="text-xs mt-1" style={{ color: '#EF4444' }}>
+                <p className="text-xs mt-1" style={{ color: '#FF4F58' }}>
                   You don't have enough buying power to place this order. <a href="#" className="underline">Deposit funds</a>.
                 </p>
               )}
@@ -492,7 +545,7 @@ export default function Dashboard() {
                 <span className="font-semibold" style={{ color: '#FFFFFF' }}>${estimatedCost.toFixed(2)}</span>
               </div>
               {!hasEnoughFunds && quantity > 0 && (
-                <div className="text-xs" style={{ color: '#EF4444' }}>Account deficit</div>
+                <div className="text-xs" style={{ color: '#FF4F58' }}>Account deficit</div>
               )}
             </div>
 
@@ -513,7 +566,7 @@ export default function Dashboard() {
                 disabled={!hasEnoughFunds || quantity <= 0}
                 className="flex-1 h-9 text-xs font-medium disabled:opacity-50"
                 style={{
-                  backgroundColor: orderSide === 'buy' ? '#10B981' : '#EF4444',
+                  backgroundColor: orderSide === 'buy' ? '#28C76F' : '#FF4F58',
                   color: orderSide === 'buy' ? '#000000' : '#FFFFFF',
                   border: 'none'
                 }}

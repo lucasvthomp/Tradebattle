@@ -49,6 +49,9 @@ interface AdvancedTradingChartProps {
   tournamentId?: number;
   selectedStock?: string | null;
   title?: string;
+  candlestickInterval?: string;
+  zoomTrigger?: number;
+  showIndicators?: boolean;
 }
 
 interface Indicator {
@@ -58,7 +61,14 @@ interface Indicator {
   series?: ISeriesApi<any>;
 }
 
-export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Advanced Chart" }: AdvancedTradingChartProps) {
+export function AdvancedTradingChart({
+  tournamentId,
+  selectedStock,
+  title = "Advanced Chart",
+  candlestickInterval = "5 minutes",
+  zoomTrigger = 0,
+  showIndicators: showIndicatorsProp = false
+}: AdvancedTradingChartProps) {
   const { user } = useAuth();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -514,6 +524,26 @@ export function AdvancedTradingChart({ tournamentId, selectedStock, title = "Adv
 
     return () => clearInterval(refreshInterval);
   }, [selectedSymbol, selectedTimeframe]);
+
+  // Handle zoom trigger from parent
+  useEffect(() => {
+    if (zoomTrigger > 0) {
+      handleZoomIn();
+    }
+  }, [zoomTrigger]);
+
+  // Handle show/hide indicators from parent
+  useEffect(() => {
+    if (showIndicatorsProp) {
+      // Enable default indicators
+      setIndicators(prev => prev.map((ind, idx) =>
+        idx < 2 ? { ...ind, enabled: true } : ind
+      ));
+    } else {
+      // Disable all indicators
+      setIndicators(prev => prev.map(ind => ({ ...ind, enabled: false })));
+    }
+  }, [showIndicatorsProp]);
 
   return (
     <div className="h-full flex flex-col bg-background">
