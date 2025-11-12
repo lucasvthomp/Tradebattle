@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { TrendingUp, TrendingDown, ChevronDown, Plus, Minus, AlertCircle, MousePointer, TrendingUpIcon, Square, ZoomIn, BarChart3, Settings as SettingsIcon } from "lucide-react";
+import { motion } from "framer-motion";
 import {
   Select,
   SelectContent,
@@ -130,44 +131,76 @@ export default function Dashboard() {
       {/* LEFT SIDE: Chart Area */}
       <div className="flex-1 flex flex-col p-4">
         {/* Single Horizontal Header Line: All Elements on Same Y-Axis */}
-        <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-3 mb-3 px-4 py-3 rounded-2xl backdrop-blur-xl" style={{
+          background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2838 50%, #1E2D3F 100%)',
+          border: '2px solid transparent',
+          backgroundImage: 'linear-gradient(#1E2D3F, #1E2D3F), linear-gradient(135deg, #2B3A4C, #3A4A5C)',
+          backgroundOrigin: 'border-box',
+          backgroundClip: 'padding-box, border-box',
+          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.1)'
+        }}>
           {/* Ticker Symbol */}
-          <h1 className="text-2xl font-bold" style={{ color: '#FFFFFF' }}>
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#E3B341' }}>
             {selectedSymbol}
           </h1>
 
           {/* Current Price */}
-          <span className="text-xl font-medium" style={{ color: '#FFFFFF' }}>
+          <span className="text-xl font-semibold" style={{
+            color: '#FFFFFF',
+            textShadow: '0 0 10px rgba(227, 179, 65, 0.3)'
+          }}>
             ${selectedPrice.toFixed(2)}
           </span>
 
           {/* Change and Percentage */}
           <span
-            className="text-sm flex items-center gap-1"
-            style={{ color: priceChange >= 0 ? '#28C76F' : '#FF4F58' }}
+            className="text-sm flex items-center gap-1 px-3 py-1 rounded-full font-semibold"
+            style={{
+              color: priceChange >= 0 ? '#28C76F' : '#FF4F58',
+              backgroundColor: priceChange >= 0 ? 'rgba(40, 199, 111, 0.15)' : 'rgba(255, 79, 88, 0.15)',
+              border: `1px solid ${priceChange >= 0 ? 'rgba(40, 199, 111, 0.3)' : 'rgba(255, 79, 88, 0.3)'}`
+            }}
           >
             {priceChange >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
             {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)} ({priceChangePercent >= 0 ? '+' : ''}{priceChangePercent.toFixed(2)}%)
           </span>
 
           {/* Buy/Sell Toggle Pills */}
-          <div className="flex gap-1">
+          <div className="flex gap-2 ml-2">
             <button
               onClick={() => setOrderSide('buy')}
-              className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
+              className="h-8 px-4 rounded-lg text-xs font-semibold transition-all hover:scale-105"
               style={orderSide === 'buy'
-                ? { backgroundColor: '#28C76F', color: '#000000' }
-                : { backgroundColor: '#142538', color: '#8A93A6' }
+                ? {
+                    backgroundColor: '#28C76F',
+                    color: '#FFFFFF',
+                    boxShadow: '0 4px 12px rgba(40, 199, 111, 0.4)',
+                    border: '2px solid #28C76F'
+                  }
+                : {
+                    backgroundColor: '#142538',
+                    color: '#8A93A6',
+                    border: '2px solid #2B3A4C'
+                  }
               }
             >
               Buy
             </button>
             <button
               onClick={() => setOrderSide('sell')}
-              className="h-7 px-3 rounded-full text-xs font-medium transition-colors"
+              className="h-8 px-4 rounded-lg text-xs font-semibold transition-all hover:scale-105"
               style={orderSide === 'sell'
-                ? { backgroundColor: '#FF4F58', color: '#FFFFFF' }
-                : { backgroundColor: '#142538', color: '#8A93A6' }
+                ? {
+                    backgroundColor: '#FF4F58',
+                    color: '#FFFFFF',
+                    boxShadow: '0 4px 12px rgba(255, 79, 88, 0.4)',
+                    border: '2px solid #FF4F58'
+                  }
+                : {
+                    backgroundColor: '#142538',
+                    color: '#8A93A6',
+                    border: '2px solid #2B3A4C'
+                  }
               }
             >
               Sell
@@ -176,108 +209,149 @@ export default function Dashboard() {
 
           {/* Chart Control Icons */}
           <div className="flex items-center gap-1">
-            <button
+            <motion.button
               onClick={() => {
                 setChartMode('cursor');
                 toast({ description: "Cursor tool activated" });
               }}
-              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#142538] transition-colors"
-              style={{ backgroundColor: chartMode === 'cursor' ? '#142538' : 'transparent' }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              style={{
+                backgroundColor: chartMode === 'cursor' ? '#142538' : 'transparent',
+                boxShadow: chartMode === 'cursor' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+              }}
               title="Cursor tool"
             >
               <MousePointer className="w-4 h-4" style={{ color: chartMode === 'cursor' ? '#FFFFFF' : '#8A93A6' }} />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => {
                 setChartMode('draw');
                 toast({ description: "Draw tool activated - Feature coming soon" });
               }}
-              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#142538] transition-colors"
-              style={{ backgroundColor: chartMode === 'draw' ? '#142538' : 'transparent' }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              style={{
+                backgroundColor: chartMode === 'draw' ? '#142538' : 'transparent',
+                boxShadow: chartMode === 'draw' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+              }}
               title="Draw tool"
             >
               <TrendingUpIcon className="w-4 h-4" style={{ color: chartMode === 'draw' ? '#FFFFFF' : '#8A93A6' }} />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => {
                 setChartMode('shape');
                 toast({ description: "Shape tool activated - Feature coming soon" });
               }}
-              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#142538] transition-colors"
-              style={{ backgroundColor: chartMode === 'shape' ? '#142538' : 'transparent' }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              style={{
+                backgroundColor: chartMode === 'shape' ? '#142538' : 'transparent',
+                boxShadow: chartMode === 'shape' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+              }}
               title="Shape tool"
             >
               <Square className="w-4 h-4" style={{ color: chartMode === 'shape' ? '#FFFFFF' : '#8A93A6' }} />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => {
                 setChartZoomTrigger(prev => prev + 1);
                 toast({ description: "Zooming in..." });
               }}
-              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#142538] transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
               style={{ backgroundColor: 'transparent' }}
               title="Zoom in"
             >
               <ZoomIn className="w-4 h-4" style={{ color: '#8A93A6' }} />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => {
                 setShowIndicators(!showIndicators);
                 toast({ description: showIndicators ? "Indicators hidden" : "Indicators visible" });
               }}
-              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#142538] transition-colors"
-              style={{ backgroundColor: showIndicators ? '#142538' : 'transparent' }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
+              style={{
+                backgroundColor: showIndicators ? '#142538' : 'transparent',
+                boxShadow: showIndicators ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+              }}
               title="Toggle indicators"
             >
               <BarChart3 className="w-4 h-4" style={{ color: showIndicators ? '#FFFFFF' : '#8A93A6' }} />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => {
                 toast({ description: "Settings - Feature coming soon" });
               }}
-              className="h-7 w-7 flex items-center justify-center rounded hover:bg-[#142538] transition-colors"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="h-7 w-7 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
               style={{ backgroundColor: 'transparent' }}
               title="Settings"
             >
               <SettingsIcon className="w-4 h-4" style={{ color: '#8A93A6' }} />
-            </button>
+            </motion.button>
           </div>
 
           {/* Candlestick Interval Dropdown */}
           <Select value={candlestickInterval} onValueChange={setCandlestickInterval}>
-            <SelectTrigger className="h-7 w-32 text-xs" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C', color: '#FFFFFF' }}>
+            <SelectTrigger
+              className="h-8 w-36 text-xs font-medium rounded-lg"
+              style={{
+                backgroundColor: '#142538',
+                borderColor: '#E3B341',
+                border: '2px solid #E3B341',
+                color: '#E3B341',
+                boxShadow: '0 0 10px rgba(227, 179, 65, 0.2)'
+              }}
+            >
               <SelectValue />
             </SelectTrigger>
-            <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
-              <SelectItem value="1 tick" className="text-xs" style={{ color: '#FFFFFF' }}>1 tick</SelectItem>
-              <SelectItem value="144 ticks" className="text-xs" style={{ color: '#FFFFFF' }}>144 ticks</SelectItem>
-              <SelectItem value="1 second" className="text-xs" style={{ color: '#FFFFFF' }}>1 second</SelectItem>
-              <SelectItem value="5 seconds" className="text-xs" style={{ color: '#FFFFFF' }}>5 seconds</SelectItem>
-              <SelectItem value="30 seconds" className="text-xs" style={{ color: '#FFFFFF' }}>30 seconds</SelectItem>
-              <SelectItem value="1 minute" className="text-xs" style={{ color: '#FFFFFF' }}>1 minute</SelectItem>
-              <SelectItem value="5 minutes" className="text-xs" style={{ color: '#FFFFFF' }}>5 minutes</SelectItem>
-              <SelectItem value="10 minutes" className="text-xs" style={{ color: '#FFFFFF' }}>10 minutes</SelectItem>
-              <SelectItem value="30 minutes" className="text-xs" style={{ color: '#FFFFFF' }}>30 minutes</SelectItem>
-              <SelectItem value="1 hour" className="text-xs" style={{ color: '#FFFFFF' }}>1 hour</SelectItem>
-              <SelectItem value="3 hours" className="text-xs" style={{ color: '#FFFFFF' }}>3 hours</SelectItem>
-              <SelectItem value="12 hours" className="text-xs" style={{ color: '#FFFFFF' }}>12 hours</SelectItem>
-              <SelectItem value="1 day" className="text-xs" style={{ color: '#FFFFFF' }}>1 day</SelectItem>
-              <SelectItem value="1 week" className="text-xs" style={{ color: '#FFFFFF' }}>1 week</SelectItem>
+            <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', border: '1px solid #2B3A4C' }}>
+              <SelectItem value="1 tick" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>1 tick</SelectItem>
+              <SelectItem value="144 ticks" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>144 ticks</SelectItem>
+              <SelectItem value="1 second" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>1 second</SelectItem>
+              <SelectItem value="5 seconds" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>5 seconds</SelectItem>
+              <SelectItem value="30 seconds" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>30 seconds</SelectItem>
+              <SelectItem value="1 minute" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>1 minute</SelectItem>
+              <SelectItem value="5 minutes" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>5 minutes</SelectItem>
+              <SelectItem value="10 minutes" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>10 minutes</SelectItem>
+              <SelectItem value="30 minutes" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>30 minutes</SelectItem>
+              <SelectItem value="1 hour" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>1 hour</SelectItem>
+              <SelectItem value="3 hours" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>3 hours</SelectItem>
+              <SelectItem value="12 hours" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>12 hours</SelectItem>
+              <SelectItem value="1 day" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>1 day</SelectItem>
+              <SelectItem value="1 week" className="text-xs hover:bg-[#142538]" style={{ color: '#C9D1E2' }}>1 week</SelectItem>
             </SelectContent>
           </Select>
 
           {/* OHLCV Stats */}
-          <div className="flex items-center gap-3 text-xs" style={{ color: '#8A93A6' }}>
-            <span>O <span style={{ color: '#FFFFFF' }}>{ohlcv.open.toFixed(2)}</span></span>
-            <span>H <span style={{ color: '#FFFFFF' }}>{ohlcv.high.toFixed(2)}</span></span>
-            <span>L <span style={{ color: '#FFFFFF' }}>{ohlcv.low.toFixed(2)}</span></span>
-            <span>C <span style={{ color: '#FFFFFF' }}>{ohlcv.close.toFixed(2)}</span></span>
-            <span>V <span style={{ color: '#FFFFFF' }}>{(ohlcv.volume / 1000000).toFixed(2)}M</span></span>
+          <div className="flex items-center gap-3 text-xs px-3 py-1.5 rounded-lg" style={{
+            backgroundColor: '#142538',
+            border: '1px solid #2B3A4C',
+            color: '#8A93A6'
+          }}>
+            <span>O <span className="font-semibold" style={{ color: '#C9D1E2' }}>{ohlcv.open.toFixed(2)}</span></span>
+            <span>H <span className="font-semibold" style={{ color: '#28C76F' }}>{ohlcv.high.toFixed(2)}</span></span>
+            <span>L <span className="font-semibold" style={{ color: '#FF4F58' }}>{ohlcv.low.toFixed(2)}</span></span>
+            <span>C <span className="font-semibold" style={{ color: '#C9D1E2' }}>{ohlcv.close.toFixed(2)}</span></span>
+            <span>V <span className="font-semibold" style={{ color: '#E3B341' }}>{(ohlcv.volume / 1000000).toFixed(2)}M</span></span>
           </div>
         </div>
 
         {/* Chart */}
-        <div className="flex-1 relative" style={{ backgroundColor: '#1E2D3F', border: '1px solid #142538' }}>
+        <div className="flex-1 relative rounded-xl overflow-hidden" style={{
+          backgroundColor: '#1E2D3F',
+          border: '1px solid #2B3A4C',
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.35)'
+        }}>
           <AdvancedTradingChart
             selectedStock={selectedSymbol}
             tournamentId={selectedTournament?.id}
@@ -333,11 +407,21 @@ export default function Dashboard() {
       </div>
 
       {/* RIGHT SIDE: Watchlist + Order Panel */}
-      <div className="w-80 flex flex-col" style={{ backgroundColor: '#1E2D3F', borderLeft: '1px solid #142538' }}>
+      <div className="w-80 flex flex-col" style={{ backgroundColor: '#1E2D3F', borderLeft: '1px solid #2B3A4C' }}>
         {/* Watchlist/Holdings Section */}
-        <div className="border-b" style={{ borderColor: '#142538' }}>
-          <div className="px-3 py-2 border-b" style={{ borderColor: '#142538' }}>
-            <h3 className="text-sm font-semibold" style={{ color: '#FFFFFF' }}>Watchlist</h3>
+        <div className="border-b" style={{ borderColor: '#2B3A4C' }}>
+          <div className="px-4 py-3 border-b flex items-center justify-between" style={{
+            borderColor: '#2B3A4C',
+            backgroundColor: '#142538'
+          }}>
+            <h3 className="text-sm font-bold tracking-wide" style={{ color: '#E3B341' }}>WATCHLIST</h3>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{
+              backgroundColor: 'rgba(227, 179, 65, 0.2)',
+              color: '#E3B341',
+              border: '1px solid rgba(227, 179, 65, 0.3)'
+            }}>
+              {watchlistData.length}
+            </span>
           </div>
 
           {/* Watchlist Table */}
@@ -357,20 +441,24 @@ export default function Dashboard() {
               <button
                 key={item.symbol}
                 onClick={() => handleWatchlistClick(item)}
-                className="w-full grid grid-cols-6 gap-1 px-3 py-2 text-xs hover:bg-opacity-50 transition-colors"
+                className="w-full grid grid-cols-6 gap-1 px-3 py-2.5 text-xs transition-all hover:scale-[1.02]"
                 style={{
                   backgroundColor: selectedSymbol === item.symbol ? '#142538' : 'transparent',
-                  borderBottom: '1px solid #142538'
+                  borderBottom: '1px solid #2B3A4C',
+                  borderLeft: selectedSymbol === item.symbol ? '3px solid #E3B341' : '3px solid transparent',
+                  boxShadow: selectedSymbol === item.symbol ? '0 0 15px rgba(227, 179, 65, 0.15)' : 'none'
                 }}
               >
-                <span className="col-span-1 font-medium text-left" style={{ color: '#FFFFFF' }}>{item.symbol}</span>
-                <span className="col-span-1 text-right" style={{ color: item.netChange >= 0 ? '#28C76F' : '#FF4F58' }}>
+                <span className="col-span-1 font-bold text-left" style={{
+                  color: selectedSymbol === item.symbol ? '#E3B341' : '#FFFFFF'
+                }}>{item.symbol}</span>
+                <span className="col-span-1 text-right font-semibold" style={{ color: item.netChange >= 0 ? '#28C76F' : '#FF4F58' }}>
                   {item.netChange >= 0 ? '+' : ''}{item.netChange.toFixed(2)}
                 </span>
-                <span className="col-span-1 text-right" style={{ color: item.changePercent >= 0 ? '#28C76F' : '#FF4F58' }}>
+                <span className="col-span-1 text-right font-semibold" style={{ color: item.changePercent >= 0 ? '#28C76F' : '#FF4F58' }}>
                   {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
                 </span>
-                <span className="col-span-1 text-right" style={{ color: '#FFFFFF' }}>${item.lastPrice.toFixed(2)}</span>
+                <span className="col-span-1 text-right font-medium" style={{ color: '#C9D1E2' }}>${item.lastPrice.toFixed(2)}</span>
                 <span className="col-span-1 text-right" style={{ color: '#8A93A6' }}>{(item.volume / 1000000).toFixed(1)}M</span>
                 <span className="col-span-1 text-right" style={{ color: '#8A93A6' }}>{(item.avgVolume / 1000000).toFixed(1)}M</span>
               </button>
