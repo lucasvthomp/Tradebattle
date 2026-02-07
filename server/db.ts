@@ -8,10 +8,13 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Separate pool for connect-pg-simple session store
+console.log("DATABASE_URL prefix:", process.env.DATABASE_URL.substring(0, 45) + "...");
+
+// Single pool shared by drizzle and session store
 export const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-// Let drizzle manage its own connection pool from the connection string
-export const db = drizzle(process.env.DATABASE_URL, { schema });
+// Pass the pool directly to drizzle (do NOT use connection string -
+// drizzle's internal pool creation fails with pg-connection-string URL parsing)
+export const db = drizzle(pool, { schema });
