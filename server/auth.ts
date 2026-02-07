@@ -8,6 +8,7 @@ import connectPg from "connect-pg-simple";
 import { pool } from "./db";
 import { storage } from "./storage";
 import { User, LoginUser, RegisterUser } from "@shared/schema";
+import { sql } from "drizzle-orm";
 
 declare global {
   namespace Express {
@@ -131,15 +132,13 @@ export function setupAuth(app: Express) {
       }
 
       // Create user (password will be hashed in storage)
-      const userData: any = {
+      const userData = {
         email,
         username,
         password,
         country: country || null,
         language: language || "English",
         currency: currency || "USD",
-        subscriptionTier: "free",
-        premiumUpgradeDate: null,
       };
 
       console.log("Creating user with data:", { ...userData, password: "[REDACTED]" });
@@ -170,12 +169,13 @@ export function setupAuth(app: Express) {
         });
         console.log("=== Registration Request Completed Successfully ===");
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("=== Registration Error ===");
-      console.error("Error type:", error instanceof Error ? error.constructor.name : typeof error);
-      console.error("Error message:", error instanceof Error ? error.message : String(error));
-      console.error("Error stack:", error instanceof Error ? error.stack : "No stack trace");
-      console.error("Full error object:", error);
+      console.error("Error type:", error?.constructor?.name);
+      console.error("Error message:", error?.message);
+      console.error("Error code:", error?.code);
+      console.error("Error stack:", error?.stack);
+      console.error("Full error:", JSON.stringify(error, Object.getOwnPropertyNames(error || {}), 2));
       res.status(500).json({
         message: "Registration failed",
         error: error instanceof Error ? error.message : "Unknown error"
@@ -198,8 +198,6 @@ export function setupAuth(app: Express) {
           userId: user.userId,
           email: user.email,
           username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
           subscriptionTier: user.subscriptionTier,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
@@ -214,6 +212,30 @@ export function setupAuth(app: Express) {
       if (err) return next(err);
       res.json({ message: "Logged out successfully" });
     });
+  });
+
+  // Diagnostic endpoint to test DB operations
+  app.get("/api/test-db", async (_req, res) => {
+    try {
+      const { db } = await import("./db");
+      const { users } = await import("@shared/schema");
+
+      // Test 1: Simple select
+      const selectResult = await db.select({ count: sql`count(*)` }).from(users);
+
+      res.json({
+        success: true,
+        userCount: selectResult[0]?.count,
+        dbUrl: process.env.DATABASE_URL ? "SET" : "NOT SET",
+      });
+    } catch (error: any) {
+      res.json({
+        success: false,
+        error: error?.message,
+        stack: error?.stack,
+        code: error?.code,
+      });
+    }
   });
 
   // Get current user endpoint
@@ -234,8 +256,6 @@ export function setupAuth(app: Express) {
         userId: freshUser.userId,
         email: freshUser.email,
         username: freshUser.username,
-        firstName: freshUser.firstName,
-        lastName: freshUser.lastName,
         subscriptionTier: freshUser.subscriptionTier,
         siteCash: freshUser.siteCash,
         balance: freshUser.balance,

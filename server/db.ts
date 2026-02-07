@@ -8,7 +8,10 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
+// Separate pool for connect-pg-simple session store
 export const pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
 });
-export const db = drizzle(pool, { schema });
+
+// Let drizzle manage its own connection pool from the connection string
+export const db = drizzle(process.env.DATABASE_URL, { schema });
