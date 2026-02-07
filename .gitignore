@@ -1,4 +1,5 @@
 node_modules
+dist
 .DS_Store
 server/public
 vite.config.ts.*
@@ -9,12 +10,10 @@ vite.config.ts.*
 .env.local
 .env.production
 
-# Cookie files
-*.txt
-
-# Replit-specific
+# Replit
 .replit
 .config
+.local
 
 # Logs
 *.log
@@ -23,7 +22,3 @@ npm-debug.log*
 # OS
 .DS_Store
 Thumbs.db
-# Elastic Beanstalk Files
-.elasticbeanstalk/*
-!.elasticbeanstalk/*.cfg.yml
-!.elasticbeanstalk/*.global.yml

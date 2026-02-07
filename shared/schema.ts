@@ -16,7 +16,7 @@ import { z } from "zod";
 
 
 
-// Session storage table for Replit Auth
+// Session storage table for express-session
 export const sessions = pgTable(
   "sessions",
   {
