@@ -220,6 +220,9 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     }
   };
 
+  // Determine if the form is ready to submit
+  const isFormReady = formData.name.trim() !== "" && formData.agreeToTerms && !createTournamentMutation.isPending;
+
   // Calculate prize pool for preview
   const prizePool = formData.buyInAmount > 0
     ? formData.buyInAmount * formData.maxPlayers * 0.95
@@ -227,7 +230,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#0A1A2F', borderColor: '#E3B341', borderWidth: '2px' }}>
+      <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#0A1A2F', borderColor: '#E3B341', borderWidth: '2px' }}>
         <div className="grid grid-cols-5 gap-0 h-full">
           {/* Left Side - Form (3/5 width) */}
           <div className="col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#142538' }}>
@@ -529,12 +532,15 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             >
               Cancel
             </Button>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <motion.div whileHover={isFormReady ? { scale: 1.02 } : {}} whileTap={isFormReady ? { scale: 0.98 } : {}}>
               <Button
                 onClick={handleSubmit}
                 disabled={createTournamentMutation.isPending || !formData.agreeToTerms}
-                className="h-9 font-bold disabled:opacity-50 transition-all"
-                style={{ backgroundColor: '#E3B341', color: '#06121F', boxShadow: '0 0 20px rgba(227, 179, 65, 0.3)' }}
+                className="h-9 font-bold transition-all"
+                style={isFormReady
+                  ? { backgroundColor: '#28C76F', color: '#FFFFFF', boxShadow: '0 0 20px rgba(40, 199, 111, 0.4)' }
+                  : { backgroundColor: '#1E2D3F', color: '#5A6376', boxShadow: 'none' }
+                }
               >
                 {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
               </Button>
