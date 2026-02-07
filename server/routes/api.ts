@@ -268,13 +268,13 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   console.log('[Tournament Creation] Tournament data:', JSON.stringify(tournamentData, null, 2));
 
-  const tournament = await storage.createTournament(tournamentData, userId);
+  let tournament = await storage.createTournament(tournamentData, userId);
 
   // If scheduled start time is now or in the past, activate the tournament immediately
   const now = new Date();
   if (startTime <= now) {
     console.log('[Tournament Creation] Activating tournament immediately');
-    await storage.updateTournament(tournament.id, {
+    tournament = await storage.updateTournament(tournament.id, {
       status: 'active',
       startedAt: now
     });

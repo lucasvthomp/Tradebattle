@@ -775,9 +775,9 @@ export class DatabaseStorage implements IStorage {
     
     // Filter expired tournaments in JavaScript since SQL interval parsing can be complex
     return results.filter(tournament => {
-      const createdAt = tournament.createdAt ? new Date(tournament.createdAt) : new Date();
+      const startedAt = tournament.startedAt ? new Date(tournament.startedAt) : (tournament.createdAt ? new Date(tournament.createdAt) : new Date());
       const timeframeMs = this.parseTimeframe(tournament.timeframe);
-      const expirationDate = new Date(createdAt.getTime() + timeframeMs);
+      const expirationDate = new Date(startedAt.getTime() + timeframeMs);
       return now > expirationDate;
     });
   }

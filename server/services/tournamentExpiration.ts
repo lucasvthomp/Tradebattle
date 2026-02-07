@@ -55,7 +55,7 @@ export class TournamentExpirationService {
         // Check if tournament has at least 2 players
         const currentPlayers = tournament.currentPlayers || 0;
 
-        if (currentPlayers < 2) {
+        if (currentPlayers < 1) {
           // Cancel tournament due to insufficient players
           console.log(`Cancelling tournament: ${tournament.name} (ID: ${tournament.id}) - insufficient players (${currentPlayers}/2)`);
           await storage.cancelTournament(tournament.id, 'Insufficient players - minimum 2 players required to start');
@@ -68,7 +68,7 @@ export class TournamentExpirationService {
         } else {
           // Start the tournament
           console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached with ${currentPlayers} players`);
-          await storage.updateTournamentStatus(tournament.id, 'active', new Date());
+          await storage.updateTournament(tournament.id, { status: 'active', startedAt: new Date() });
         }
       } else if (tournament.scheduledStartTime) {
         const timeUntilStart = tournament.scheduledStartTime.getTime() - now.getTime();
