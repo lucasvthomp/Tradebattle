@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
-import { Loader2, Eye, EyeOff, ArrowRight, ArrowLeft, Globe, Crown, Check } from "lucide-react";
+import { Loader2, Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Country and language mappings
@@ -123,7 +123,6 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [wantsPremium, setWantsPremium] = useState(false);
 
   // Redirect if already logged in
   if (user) {
@@ -143,7 +142,7 @@ export default function Signup() {
   const t = translations[selectedLanguage as keyof typeof translations] || translations.English;
 
   const handleNext = () => {
-    if (step < 6) setStep(step + 1);
+    if (step < 4) setStep(step + 1);
   };
 
   const handleBack = () => {
@@ -151,14 +150,13 @@ export default function Signup() {
   };
 
   const handleSubmit = () => {
-    registerMutation.mutate({ 
-      email, 
-      password, 
+    registerMutation.mutate({
+      email,
+      password,
       username,
       country: selectedCountry,
       language: selectedLanguage,
       currency: selectedCurrency,
-      wantsPremium 
     }, {
       onSuccess: () => {
         navigate("/dashboard");
@@ -298,48 +296,16 @@ export default function Signup() {
                 )}
               </button>
             </div>
-          </div>
-        );
-
-      case 5:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <Crown className="w-16 h-16 mx-auto text-yellow-500 mb-4" />
-              <h2 className="text-2xl font-bold">{t.upgrade}</h2>
-              <p className="text-muted-foreground mt-2">{t.upgradeDescription}</p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setWantsPremium(false);
-                    handleSubmit();
-                  }}
-                  className="h-12"
-                  disabled={registerMutation.isPending}
-                >
-                  {t.upgradeLater}
-                </Button>
-                <Button
-                  onClick={() => {
-                    setWantsPremium(true);
-                    handleSubmit();
-                  }}
-                  className="h-12 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600"
-                  disabled={registerMutation.isPending}
-                >
-                  <Crown className="w-4 h-4 mr-2" />
-                  {registerMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    t.upgradeNow
-                  )}
-                </Button>
-              </div>
-            </div>
+            <Button
+              onClick={handleSubmit}
+              disabled={!password || password.length < 6 || registerMutation.isPending}
+              className="w-full h-12"
+            >
+              {registerMutation.isPending ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : null}
+              {t.signUp}
+            </Button>
           </div>
         );
 
@@ -375,14 +341,14 @@ export default function Signup() {
         {/* Progress Bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Step {step} of 5</span>
-            <span className="text-sm text-muted-foreground">{Math.round((step / 5) * 100)}%</span>
+            <span className="text-sm text-muted-foreground">Step {step} of 4</span>
+            <span className="text-sm text-muted-foreground">{Math.round((step / 4) * 100)}%</span>
           </div>
           <div className="w-full bg-muted rounded-full h-2">
             <motion.div
               className="bg-primary h-2 rounded-full"
               initial={{ width: "20%" }}
-              animate={{ width: `${(step / 5) * 100}%` }}
+              animate={{ width: `${(step / 4) * 100}%` }}
               transition={{ duration: 0.3 }}
             />
           </div>
@@ -415,7 +381,7 @@ export default function Signup() {
                 {t.back}
               </Button>
 
-              {step < 5 && (
+              {step < 4 && (
                 <Button
                   onClick={handleNext}
                   disabled={!canProceed()}
