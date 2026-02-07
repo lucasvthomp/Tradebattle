@@ -32,12 +32,10 @@ import {
   SortAsc,
   SortDesc,
   Timer,
-  Target,
   Shield,
   Lock,
   Globe,
   Crown,
-  MessageSquare,
   Play
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -755,7 +753,7 @@ function TournamentCard({
 
   // Update countdown every second
   React.useEffect(() => {
-    if (type === "upcoming" && tournament.scheduledStartTime) {
+    if ((type === "upcoming" && tournament.scheduledStartTime) || type === "ongoing") {
       const interval = setInterval(() => {
         forceUpdate();
       }, 1000);
@@ -774,21 +772,50 @@ function TournamentCard({
 
   const TournamentTypeIcon = getTournamentTypeIcon(tournament.tournamentType);
 
+  const parseTimeframe = (timeframe: string): number => {
+    const match = timeframe.match(/(\d+)\s*(minute|minutes|day|days|week|weeks|month|months)/i);
+    if (!match) return 28 * 24 * 60 * 60 * 1000;
+    const value = parseInt(match[1]);
+    const unit = match[2].toLowerCase();
+    switch (unit) {
+      case 'minute': case 'minutes': return value * 60 * 1000;
+      case 'day': case 'days': return value * 24 * 60 * 60 * 1000;
+      case 'week': case 'weeks': return value * 7 * 24 * 60 * 60 * 1000;
+      case 'month': case 'months': return value * 30 * 24 * 60 * 60 * 1000;
+      default: return 28 * 24 * 60 * 60 * 1000;
+    }
+  };
+
   const getTimeRemaining = () => {
     if (type === "upcoming" && tournament.scheduledStartTime) {
       const timeLeft = new Date(tournament.scheduledStartTime).getTime() - Date.now();
       if (timeLeft > 0) {
-        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-        if (hours > 0) {
-          return `Starts in ${hours}h ${minutes}m`;
-        } else {
-          return `Starts in ${minutes}m ${seconds}s`;
-        }
+        if (days > 0) return `Starts in ${days}d ${hours}h`;
+        if (hours > 0) return `Starts in ${hours}h ${minutes}m`;
+        return `Starts in ${minutes}m ${seconds}s`;
       }
       return "Starting soon";
+    }
+    if (type === "ongoing") {
+      const startedAt = tournament.startedAt || tournament.createdAt;
+      if (startedAt && tournament.timeframe) {
+        const endTime = new Date(startedAt).getTime() + parseTimeframe(tournament.timeframe);
+        const timeLeft = endTime - Date.now();
+        if (timeLeft <= 0) return "Ending soon";
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        if (days > 0) return `${days}d ${hours}h remaining`;
+        if (hours > 0) return `${hours}h ${minutes}m remaining`;
+        return `${minutes}m ${seconds}s remaining`;
+      }
     }
     return null;
   };
@@ -961,83 +988,35 @@ function TournamentCard({
             </div>
           </motion.div>
 
-          {/* Tournament Stats - Enhanced */}
+          {/* Tournament Stats - Buy-in and Time Remaining */}
           <div className="space-y-2.5 text-sm bg-gradient-to-br from-muted/40 via-muted/30 to-muted/40 backdrop-blur-sm rounded-lg p-3.5 border border-border/30">
-            <div className="flex justify-between items-center group/stat">
-              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
-                <Users className="w-4 h-4" />
-                <span className="font-medium">Players</span>
-              </div>
-              <span className="font-bold text-foreground">{tournament.currentPlayers}/{tournament.maxPlayers}</span>
-            </div>
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-            <div className="flex justify-between items-center group/stat">
-              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
-                <Clock className="w-4 h-4" />
-                <span className="font-medium">Duration</span>
-              </div>
-              <span className="font-bold text-foreground">{tournament.timeframe}</span>
-            </div>
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
             <div className="flex justify-between items-center group/stat">
               <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
                 <DollarSign className="w-4 h-4" />
                 <span className="font-medium">Buy-in</span>
               </div>
-              <span className="font-bold text-foreground">{formatCurrency(tournament.buyInAmount)}</span>
+              <span className="font-bold text-foreground">{tournament.buyInAmount > 0 ? formatCurrency(tournament.buyInAmount) : "Free"}</span>
             </div>
-            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-            <div className="flex justify-between items-center group/stat">
-              <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
-                <Target className="w-4 h-4" />
-                <span className="font-medium">Starting Balance</span>
-              </div>
-              <span className="font-bold text-foreground">{formatCurrency(tournament.startingBalance)}</span>
-            </div>
+            {getTimeRemaining() && (
+              <>
+                <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                <div className="flex justify-between items-center group/stat">
+                  <div className="flex items-center gap-2 text-muted-foreground transition-colors group-hover/stat:text-foreground">
+                    <Timer className="w-4 h-4" />
+                    <span className="font-medium">Time</span>
+                  </div>
+                  <span className={`font-bold ${
+                    type === "upcoming"
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-yellow-600 dark:text-yellow-400"
+                  }`}>{getTimeRemaining()}</span>
+                </div>
+              </>
+            )}
           </div>
-
-          {/* Time Information */}
-          {type === "upcoming" && (
-            <motion.div
-              animate={{
-                scale: [1, 1.02, 1],
-                boxShadow: [
-                  "0 0 0px rgba(34, 197, 94, 0)",
-                  "0 0 20px rgba(34, 197, 94, 0.3)",
-                  "0 0 0px rgba(34, 197, 94, 0)"
-                ]
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
-              className="text-center p-3.5 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-lg border-2 border-green-500/40 backdrop-blur-sm"
-            >
-              <div className="flex items-center justify-center gap-2">
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                >
-                  <Timer className="w-4 h-4 text-green-600 dark:text-green-400" />
-                </motion.div>
-                <p className="text-sm font-bold text-green-600 dark:text-green-400">
-                  {getTimeRemaining()}
-                </p>
-              </div>
-            </motion.div>
-          )}
 
           {/* Action Buttons */}
           <div className="space-y-2">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                onClick={onOpenChat}
-                className="w-full transition-all duration-300 hover:shadow-lg"
-                variant="outline"
-                size="sm"
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Chat
-              </Button>
-            </motion.div>
-            
             {type === "ongoing" && tournament.isPublic && !isParticipant ? (
               // Show "View" button for ongoing public tournaments where user is not a participant
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>

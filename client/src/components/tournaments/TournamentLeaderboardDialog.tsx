@@ -47,16 +47,32 @@ export function TournamentLeaderboardDialog({
     }
   };
 
+  const parseTimeframe = (timeframe: string): number => {
+    const match = timeframe?.match(/(\d+)\s*(minute|minutes|day|days|week|weeks|month|months)/i);
+    if (!match) return 28 * 24 * 60 * 60 * 1000;
+    const value = parseInt(match[1]);
+    const unit = match[2].toLowerCase();
+    switch (unit) {
+      case 'minute': case 'minutes': return value * 60 * 1000;
+      case 'day': case 'days': return value * 24 * 60 * 60 * 1000;
+      case 'week': case 'weeks': return value * 7 * 24 * 60 * 60 * 1000;
+      case 'month': case 'months': return value * 30 * 24 * 60 * 60 * 1000;
+      default: return 28 * 24 * 60 * 60 * 1000;
+    }
+  };
+
   const getTimeRemaining = () => {
-    if (!tournament?.endTime) return "N/A";
-    
-    const timeLeft = new Date(tournament.endTime).getTime() - Date.now();
+    const startedAt = tournament?.startedAt || tournament?.createdAt;
+    if (!startedAt || !tournament?.timeframe) return "N/A";
+
+    const endTime = new Date(startedAt).getTime() + parseTimeframe(tournament.timeframe);
+    const timeLeft = endTime - Date.now();
     if (timeLeft <= 0) return "Ended";
-    
+
     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (days > 0) return `${days}d ${hours}h remaining`;
     if (hours > 0) return `${hours}h ${minutes}m remaining`;
     return `${minutes}m remaining`;
@@ -148,7 +164,7 @@ export function TournamentLeaderboardDialog({
                             <div className="flex items-center space-x-4">
                               {getRankIcon(position)}
                               <div>
-                                <p className="font-medium">{participant.displayName || participant.firstName || `User ${participant.userId}`}</p>
+                                <p className="font-medium">{participant.firstName || participant.username || `User ${participant.userId}`}</p>
                                 <p className="text-sm text-muted-foreground">
                                   Portfolio: {formatCurrency(portfolioValue)}
                                 </p>
