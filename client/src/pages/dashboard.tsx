@@ -26,9 +26,9 @@ export default function Dashboard() {
   // State management
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [selectedSymbol, setSelectedSymbol] = useState<string>("AAPL");
-  const [selectedPrice, setSelectedPrice] = useState<number>(150.00);
-  const [priceChange, setPriceChange] = useState<number>(2.50);
-  const [priceChangePercent, setPriceChangePercent] = useState<number>(1.69);
+  const [selectedPrice, setSelectedPrice] = useState<number>(0);
+  const [priceChange, setPriceChange] = useState<number>(0);
+  const [priceChangePercent, setPriceChangePercent] = useState<number>(0);
 
   // Order form state
   const [orderSide, setOrderSide] = useState<'buy' | 'sell'>('buy');
@@ -50,14 +50,24 @@ export default function Dashboard() {
   const [chartZoomTrigger, setChartZoomTrigger] = useState(0);
   const [showIndicators, setShowIndicators] = useState(false);
 
-  // Watchlist data (mock for now)
-  const watchlistData = [
-    { symbol: 'AAPL', netChange: 2.50, changePercent: 1.69, lastPrice: 150.00, volume: 12500000, avgVolume: 15000000 },
-    { symbol: 'MSFT', netChange: -1.20, changePercent: -0.35, lastPrice: 340.50, volume: 8200000, avgVolume: 9000000 },
-    { symbol: 'GOOGL', netChange: 5.80, changePercent: 4.12, lastPrice: 146.30, volume: 6500000, avgVolume: 7000000 },
-    { symbol: 'TSLA', netChange: -3.40, changePercent: -1.58, lastPrice: 212.10, volume: 25000000, avgVolume: 22000000 },
-    { symbol: 'NVDA', netChange: 12.60, changePercent: 2.94, lastPrice: 441.20, volume: 18000000, avgVolume: 16000000 },
-  ];
+  // Fetch real watchlist data from Yahoo Finance
+  const { data: popularStocksResponse } = useQuery({
+    queryKey: ["/api/popular"],
+    enabled: !!user,
+    refetchInterval: 30000,
+  });
+
+  const watchlistData = useMemo(() => {
+    const stocks = (popularStocksResponse as any)?.data || [];
+    return stocks.map((stock: any) => ({
+      symbol: stock.symbol,
+      netChange: stock.change || 0,
+      changePercent: stock.percentChange || 0,
+      lastPrice: stock.price || 0,
+      volume: stock.volume || 0,
+      avgVolume: stock.volume || 0,
+    }));
+  }, [popularStocksResponse]);
 
   // Tournament queries
   const { data: tournamentsResponse } = useQuery({
@@ -74,6 +84,38 @@ export default function Dashboard() {
     enabled: !!selectedTournament?.id,
   });
 
+  // Fetch real quote for selected symbol
+  const { data: selectedQuoteResponse } = useQuery({
+    queryKey: ["/api/quote", selectedSymbol],
+    enabled: !!selectedSymbol,
+    refetchInterval: 15000,
+  });
+
+  // Update price state when quote data arrives
+  useEffect(() => {
+    const quoteData = (selectedQuoteResponse as any)?.data;
+    if (quoteData) {
+      setSelectedPrice(quoteData.price || 0);
+      setPriceChange(quoteData.change || 0);
+      setPriceChangePercent(quoteData.percentChange || 0);
+    }
+  }, [selectedQuoteResponse]);
+
+  // Fetch quote for trade symbol (independent from chart symbol)
+  const { data: tradeQuoteResponse } = useQuery({
+    queryKey: ["/api/quote", tradeSymbol],
+    enabled: !!tradeSymbol && tradeSymbol.length >= 1,
+    refetchInterval: 15000,
+  });
+
+  // Update trade price when trade quote arrives
+  useEffect(() => {
+    const quoteData = (tradeQuoteResponse as any)?.data;
+    if (quoteData) {
+      setTradePrice(quoteData.price || 0);
+    }
+  }, [tradeQuoteResponse]);
+
   // Auto-select first tournament
   useEffect(() => {
     if (activeTournaments.length > 0 && !selectedTournament) {
@@ -88,7 +130,60 @@ export default function Dashboard() {
     return 0;
   };
 
-  const estimatedCost = quantity * (orderType === 'limit' ? limitPrice : selectedPrice);
+  // Buy mutation
+  const buyMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedTournament || !tradeSymbol) return;
+      const price = tradePrice > 0 ? tradePrice : selectedPrice;
+      return apiRequest("POST", `/api/tournaments/${selectedTournament.id}/purchase`, {
+        symbol: tradeSymbol,
+        companyName: tradeSymbol,
+        shares: quantity,
+        purchasePrice: price,
+      });
+    },
+    onSuccess: () => {
+      toast({ title: `Bought ${quantity} shares of ${tradeSymbol}` });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments", selectedTournament?.id, "balance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/portfolio/tournament", selectedTournament?.id] });
+      setQuantity(1);
+    },
+    onError: (error: any) => {
+      toast({ title: "Buy failed", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Sell mutation
+  const sellMutation = useMutation({
+    mutationFn: async () => {
+      if (!selectedTournament || !tradeSymbol) return;
+      const price = tradePrice > 0 ? tradePrice : selectedPrice;
+      return apiRequest("POST", `/api/tournaments/${selectedTournament.id}/sell`, {
+        symbol: tradeSymbol,
+        sharesToSell: quantity,
+        currentPrice: price,
+      });
+    },
+    onSuccess: () => {
+      toast({ title: `Sold ${quantity} shares of ${tradeSymbol}` });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments", selectedTournament?.id, "balance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/portfolio/tournament", selectedTournament?.id] });
+      setQuantity(1);
+    },
+    onError: (error: any) => {
+      toast({ title: "Sell failed", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleExecuteTrade = () => {
+    if (orderSide === 'buy') {
+      buyMutation.mutate();
+    } else {
+      sellMutation.mutate();
+    }
+  };
+
+  const estimatedCost = quantity * (orderType === 'limit' ? limitPrice : (tradePrice > 0 ? tradePrice : selectedPrice));
   const buyingPower = getCurrentBalance();
   const hasEnoughFunds = estimatedCost <= buyingPower;
 
@@ -97,7 +192,7 @@ export default function Dashboard() {
     setSelectedPrice(item.lastPrice);
     setPriceChange(item.netChange);
     setPriceChangePercent(item.changePercent);
-    // Don't update limit price - keep trade execution independent
+    setLimitPrice(item.lastPrice);
   };
 
   if (!user) {
@@ -719,7 +814,7 @@ export default function Dashboard() {
 
             {/* Quote Line */}
             <div className="text-xs" style={{ color: '#8A93A6' }}>
-              Bid \${(tradePrice > 0 ? tradePrice : selectedPrice - 0.05).toFixed(2)} · Mid \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · Ask \${(tradePrice > 0 ? tradePrice : selectedPrice + 0.05).toFixed(2)} · Last \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · updated 11:59 AM · NYSE
+              Bid \${(tradePrice > 0 ? tradePrice : selectedPrice - 0.05).toFixed(2)} · Mid \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · Ask \${(tradePrice > 0 ? tradePrice : selectedPrice + 0.05).toFixed(2)} · Last \${(tradePrice > 0 ? tradePrice : selectedPrice).toFixed(2)} · updated {new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })} · NYSE
             </div>
 
             {/* Action Buttons - Touch-friendly on portrait (44px minimum) */}
@@ -731,7 +826,8 @@ export default function Dashboard() {
                 Cancel
               </Button>
               <Button
-                disabled={!hasEnoughFunds || quantity <= 0 || !tradeSymbol}
+                disabled={!hasEnoughFunds || quantity <= 0 || !tradeSymbol || buyMutation.isPending || sellMutation.isPending}
+                onClick={handleExecuteTrade}
                 className="flex-1 h-12 [@media(min-aspect-ratio:1/1)]:h-9 text-sm [@media(min-aspect-ratio:1/1)]:text-xs font-medium disabled:opacity-50"
                 style={{
                   backgroundColor: orderSide === 'buy' ? '#28C76F' : '#FF4F58',
@@ -739,7 +835,7 @@ export default function Dashboard() {
                   border: 'none'
                 }}
               >
-                {orderSide === 'buy' ? 'Buy' : 'Sell'} {tradeSymbol || '...'}
+                {(buyMutation.isPending || sellMutation.isPending) ? 'Executing...' : `${orderSide === 'buy' ? 'Buy' : 'Sell'} ${tradeSymbol || '...'}`}
               </Button>
             </div>
           </div>

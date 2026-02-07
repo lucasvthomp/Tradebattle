@@ -127,6 +127,13 @@ export function AdvancedTradingChart({
     return Math.ceil(rangeMinutes / intervalMinutes);
   };
 
+  // Sync internal timeframe with parent's timeRange prop
+  useEffect(() => {
+    if (timeRange && timeRange !== selectedTimeframe) {
+      setSelectedTimeframe(timeRange);
+    }
+  }, [timeRange]);
+
   // Update chart when selectedStock prop changes
   useEffect(() => {
     if (selectedStock && selectedStock !== selectedSymbol) {
@@ -243,8 +250,7 @@ export function AdvancedTradingChart({
   // Fetch and update chart data
   const fetchChartData = async (symbol: string, timeframe: string) => {
     try {
-      // Always load 1 year of data to allow scrolling
-      const response = await fetch(`/api/historical/${symbol}?timeframe=1Y`);
+      const response = await fetch(`/api/historical/${symbol}?timeframe=${timeframe}`);
       const data = await response.json();
 
       if (data.success && data.data) {
@@ -581,14 +587,13 @@ export function AdvancedTradingChart({
     }
   }, [selectedSymbol, selectedTimeframe]);
 
-  // Auto-refresh chart data every 5 seconds for real-time feel
+  // Auto-refresh chart data every 60 seconds
   useEffect(() => {
     const refreshInterval = setInterval(() => {
       if (selectedSymbol && selectedTimeframe) {
-        console.log(`Auto-refreshing chart data for ${selectedSymbol} at ${new Date().toLocaleTimeString()}`);
         updateChart(selectedSymbol, selectedTimeframe);
       }
-    }, 5000); // 5000ms = 5 seconds (REAL-TIME updates)
+    }, 60000);
 
     return () => clearInterval(refreshInterval);
   }, [selectedSymbol, selectedTimeframe]);
