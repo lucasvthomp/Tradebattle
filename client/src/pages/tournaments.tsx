@@ -36,7 +36,8 @@ import {
   Lock,
   Globe,
   Crown,
-  Play
+  Play,
+  User
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -251,13 +252,19 @@ export default function TournamentsPage() {
 
   // Filter and sort tournaments
   const processedTournaments = {
-    upcoming: allTournaments.filter((t: any) => 
-      t.status === "waiting" && 
+    upcoming: allTournaments.filter((t: any) =>
+      t.status === "waiting" &&
       (filterType === "all" || t.tournamentType === filterType) &&
       (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
     ),
-    ongoing: allTournaments.filter((t: any) => 
-      t.status === "active" && 
+    ongoing: allTournaments.filter((t: any) =>
+      t.status === "active" &&
+      (filterType === "all" || t.tournamentType === filterType) &&
+      (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    ),
+    myTournaments: allTournaments.filter((t: any) =>
+      (t.status === "waiting" || t.status === "active") &&
+      (t.creatorId === user?.id || t.isParticipating) &&
       (filterType === "all" || t.tournamentType === filterType) &&
       (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
     )
@@ -301,6 +308,7 @@ export default function TournamentsPage() {
 
   const sortedUpcoming = sortTournaments(processedTournaments.upcoming);
   const sortedOngoing = sortTournaments(processedTournaments.ongoing);
+  const sortedMyTournaments = sortTournaments(processedTournaments.myTournaments);
 
   if (!user) {
     return (
@@ -442,7 +450,7 @@ export default function TournamentsPage() {
           {/* Tournament Tabs */}
           <motion.div variants={fadeInUp}>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 h-14 bg-muted/50 backdrop-blur-sm">
+              <TabsList className="grid w-full grid-cols-3 h-14 bg-muted/50 backdrop-blur-sm">
                 <TabsTrigger
                   value="upcoming"
                   className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white transition-all duration-300"
@@ -463,26 +471,58 @@ export default function TournamentsPage() {
                     {sortedOngoing.length}
                   </Badge>
                 </TabsTrigger>
+                <TabsTrigger
+                  value="my-tournaments"
+                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-indigo-600 data-[state=active]:text-white transition-all duration-300"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">My Tournaments</span>
+                  <Badge variant="secondary" className="ml-1 bg-background/20 text-inherit border-0">
+                    {sortedMyTournaments.length}
+                  </Badge>
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="upcoming" className="mt-6">
-                <TournamentGrid 
-                  tournaments={sortedUpcoming} 
-                  type="upcoming" 
+                <TournamentGrid
+                  tournaments={sortedUpcoming}
+                  type="upcoming"
                   onManage={(tournament) => {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
                   onOpenChat={(tournamentId) => openTournamentChat(tournamentId)}
                   onJoinTournament={handleJoinTournament}
+                  onViewLeaderboard={(tournament) => {
+                    setSelectedLeaderboardTournament(tournament);
+                    setLeaderboardDialogOpen(true);
+                  }}
                   isJoining={joinTournamentMutation.isPending}
                 />
               </TabsContent>
 
               <TabsContent value="ongoing" className="mt-6">
-                <TournamentGrid 
-                  tournaments={sortedOngoing} 
-                  type="ongoing" 
+                <TournamentGrid
+                  tournaments={sortedOngoing}
+                  type="ongoing"
+                  onManage={(tournament) => {
+                    setSelectedTournament(tournament);
+                    setManagementDialogOpen(true);
+                  }}
+                  onOpenChat={(tournamentId) => openTournamentChat(tournamentId)}
+                  onJoinTournament={handleJoinTournament}
+                  onViewLeaderboard={(tournament) => {
+                    setSelectedLeaderboardTournament(tournament);
+                    setLeaderboardDialogOpen(true);
+                  }}
+                  isJoining={joinTournamentMutation.isPending}
+                />
+              </TabsContent>
+
+              <TabsContent value="my-tournaments" className="mt-6">
+                <TournamentGrid
+                  tournaments={sortedMyTournaments}
+                  type="my-tournaments"
                   onManage={(tournament) => {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
@@ -668,17 +708,17 @@ export default function TournamentsPage() {
 }
 
 // Tournament Grid Component
-function TournamentGrid({ 
-  tournaments, 
-  type, 
+function TournamentGrid({
+  tournaments,
+  type,
   onManage,
   onOpenChat,
   onJoinTournament,
   onViewLeaderboard,
   isJoining
-}: { 
-  tournaments: any[], 
-  type: "upcoming" | "ongoing",
+}: {
+  tournaments: any[],
+  type: "upcoming" | "ongoing" | "my-tournaments",
   onManage: (tournament: any) => void,
   onOpenChat: (tournamentId: number) => void,
   onJoinTournament: (tournament: any) => void,
@@ -690,10 +730,14 @@ function TournamentGrid({
     return (
       <div className="text-center py-12">
         <Trophy className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
-        <h3 className="text-lg font-semibold mb-2">No {type} tournaments</h3>
+        <h3 className="text-lg font-semibold mb-2">
+          {type === "my-tournaments" ? "No tournaments yet" : `No ${type} tournaments`}
+        </h3>
         <p className="text-muted-foreground">
-          {type === "upcoming" 
-            ? "No upcoming tournaments available. Create your own!" 
+          {type === "upcoming"
+            ? "No upcoming tournaments available. Create your own!"
+            : type === "my-tournaments"
+            ? "You haven't joined or created any tournaments yet."
             : "No tournaments are currently running."
           }
         </p>
@@ -709,19 +753,24 @@ function TournamentGrid({
       animate="animate"
     >
       <AnimatePresence mode="popLayout">
-        {tournaments.map((tournament, index) => (
-          <TournamentCard
-            key={tournament.id}
-            tournament={tournament}
-            type={type}
-            index={index}
-            onJoin={() => onJoinTournament(tournament)}
-            isJoining={isJoining}
-            onManage={() => onManage(tournament)}
-            onOpenChat={() => onOpenChat(tournament.id)}
-            onViewLeaderboard={onViewLeaderboard ? () => onViewLeaderboard(tournament) : undefined}
-          />
-        ))}
+        {tournaments.map((tournament, index) => {
+          const cardType: "upcoming" | "ongoing" = type === "my-tournaments"
+            ? (tournament.status === "active" ? "ongoing" : "upcoming")
+            : type;
+          return (
+            <TournamentCard
+              key={tournament.id}
+              tournament={tournament}
+              type={cardType}
+              index={index}
+              onJoin={() => onJoinTournament(tournament)}
+              isJoining={isJoining}
+              onManage={() => onManage(tournament)}
+              onOpenChat={() => onOpenChat(tournament.id)}
+              onViewLeaderboard={onViewLeaderboard ? () => onViewLeaderboard(tournament) : undefined}
+            />
+          );
+        })}
       </AnimatePresence>
     </motion.div>
   );
@@ -1017,40 +1066,38 @@ function TournamentCard({
 
           {/* Action Buttons */}
           <div className="space-y-2">
-            {type === "ongoing" && tournament.isPublic && !isParticipant ? (
-              // Show "View" button for ongoing public tournaments where user is not a participant
+            {type === "ongoing" ? (
+              // Ongoing tournaments always show Leaderboard
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   onClick={onViewLeaderboard}
-                  className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20"
+                  className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-yellow-500/10 to-amber-500/10 hover:from-yellow-500/20 hover:to-amber-500/20"
                   variant="outline"
                   size="sm"
                 >
                   <Trophy className="w-4 h-4 mr-2" />
-                  View Leaderboard
+                  Leaderboard
                 </Button>
               </motion.div>
             ) : isCreator ? (
               <>
-                {type === "upcoming" && (
-                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Button
-                      onClick={async () => {
-                        try {
-                          await apiRequest("POST", `/api/tournaments/${tournament.id}/start-early`);
-                          window.location.reload();
-                        } catch (error: any) {
-                          console.error("Failed to start tournament:", error);
-                        }
-                      }}
-                      className="w-full transition-all duration-300 font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:shadow-green-500/30"
-                      size="sm"
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      Start Tournament
-                    </Button>
-                  </motion.div>
-                )}
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await apiRequest("POST", `/api/tournaments/${tournament.id}/start-early`);
+                        window.location.reload();
+                      } catch (error: any) {
+                        console.error("Failed to start tournament:", error);
+                      }
+                    }}
+                    className="w-full transition-all duration-300 font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:shadow-green-500/30"
+                    size="sm"
+                  >
+                    <Play className="w-4 h-4 mr-2" />
+                    Start Tournament
+                  </Button>
+                </motion.div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Button
                     onClick={onManage}
