@@ -65,6 +65,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   </span>
                 </Button>
 
+                {/* Deposit Button */}
+                <Button
+                  className="h-8 w-8 p-0 rounded-full bg-green-600 hover:bg-green-500 text-white"
+                  onClick={() => navigate("/deposit")}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+
                 {/* Chat Button - only show for authenticated users */}
                 {onChatToggle && (
                   <Button
@@ -161,6 +169,18 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <span className="font-bold">
                     {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
+                </Button>
+
+                {/* Deposit Button */}
+                <Button
+                  className="w-full justify-start h-12 rounded-lg bg-green-600 hover:bg-green-500 text-white"
+                  onClick={() => {
+                    navigate("/deposit");
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  <span className="font-bold">Deposit Funds</span>
                 </Button>
 
                 {/* Chat Button */}

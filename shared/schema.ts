@@ -39,12 +39,12 @@ export const users = pgTable("users", {
   country: varchar("country", { length: 100 }), // User's country
   language: varchar("language", { length: 50 }).default("English"), // User's preferred language
   currency: varchar("currency", { length: 10 }).default("USD"), // User's preferred currency
-  balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Starting balance of $10,000 - DEPRECATED, use siteCash instead
-  siteCash: numeric("site_cash", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Main site balance for tournaments and header display
+  balance: numeric("balance", { precision: 15, scale: 2 }).default("0.00").notNull(), // DEPRECATED, use siteCash instead
+  siteCash: numeric("site_cash", { precision: 15, scale: 2 }).default("0.00").notNull(), // Main site balance (deposited real money)
   subscriptionTier: varchar("subscription_tier", { length: 50 }).default("free").notNull(), // free, administrator
   premiumUpgradeDate: timestamp("premium_upgrade_date"), // Deprecated - kept for data compatibility
-  personalBalance: numeric("personal_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Personal portfolio balance
-  totalDeposited: numeric("total_deposited", { precision: 15, scale: 2 }).default("10000.00").notNull(), // Total amount deposited into personal account
+  personalBalance: numeric("personal_balance", { precision: 15, scale: 2 }).default("0.00").notNull(), // Personal portfolio balance
+  totalDeposited: numeric("total_deposited", { precision: 15, scale: 2 }).default("0.00").notNull(), // Total amount deposited into personal account
   personalPortfolioStartDate: timestamp("personal_portfolio_start_date"), // When user started personal portfolio
   tournamentWins: integer("tournament_wins").default(0).notNull(), // Private counter for tournament wins
   totalTrades: integer("total_trades").default(0).notNull(), // Total number of buy/sell trades made by user
@@ -137,7 +137,7 @@ export const tournaments = pgTable("tournaments", {
   creatorId: integer("creator_id").references(() => users.id).notNull(),
   maxPlayers: integer("max_players").default(10).notNull(),
   currentPlayers: integer("current_players").default(1).notNull(),
-  startingBalance: numeric("starting_balance", { precision: 15, scale: 2 }).default("10000.00").notNull(),
+  startingBalance: numeric("starting_balance", { precision: 15, scale: 2 }).notNull(),
   timeframe: varchar("timeframe").default("4 weeks").notNull(), // Tournament duration
   status: varchar("status").default("waiting"), // waiting, active, completed, cancelled
   cancellationReason: text("cancellation_reason"), // Reason if tournament was cancelled
@@ -157,10 +157,9 @@ export const tournamentParticipants = pgTable("tournament_participants", {
   id: serial("id").primaryKey(),
   tournamentId: integer("tournament_id").references(() => tournaments.id).notNull(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  balance: numeric("balance", { precision: 15, scale: 2 }).default("10000.00").notNull(),
+  balance: numeric("balance", { precision: 15, scale: 2 }).notNull(),
   joinedAt: timestamp("joined_at").defaultNow(),
 }, (table) => ({
-  // Unique constraint: user can only participate in each tournament once
   uniqueUserTournament: unique("unique_user_tournament").on(table.tournamentId, table.userId),
 }));
 
