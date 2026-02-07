@@ -5,6 +5,7 @@ import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 import { storage } from "./storage";
 import { User, LoginUser, RegisterUser } from "@shared/schema";
 
@@ -43,7 +44,7 @@ export function setupAuth(app: Express) {
   // Session configuration
   const PostgresSessionStore = connectPg(session);
   const sessionStore = new PostgresSessionStore({
-    conString: process.env.DATABASE_URL,
+    pool: pool,
     createTableIfMissing: false,
     tableName: "sessions",
   });
