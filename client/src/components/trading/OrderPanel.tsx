@@ -175,108 +175,119 @@ export function OrderPanel({
         </div>
       </div>
 
-      {/* Stock Search */}
+      {/* Stock Search — always visible */}
       <div className="px-3 py-2.5" style={{ borderBottom: "1px solid #2B3A4C" }}>
-        {showSearch ? (
-          <div>
-            <div className="relative">
-              <Search
-                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-                style={{ color: "#8A93A6" }}
-              />
-              <Input
-                autoFocus
-                placeholder="Search symbol or company..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
-                className="h-9 pl-8 pr-8 text-xs"
-                style={{
-                  backgroundColor: "#0A1A2F",
-                  borderColor: "#2B3A4C",
-                  color: "#FFFFFF",
-                }}
-              />
-              <button
-                onClick={() => { setShowSearch(false); setSearchQuery(""); }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2"
-              >
-                <X className="w-3.5 h-3.5" style={{ color: "#8A93A6" }} />
-              </button>
+        <div className="relative">
+          <Search
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+            style={{ color: "#8A93A6" }}
+          />
+          <Input
+            placeholder="Search symbol or company..."
+            value={showSearch ? searchQuery : ""}
+            onFocus={() => setShowSearch(true)}
+            onChange={(e) => { setShowSearch(true); setSearchQuery(e.target.value.toUpperCase()); }}
+            className="h-9 pl-8 pr-8 text-xs"
+            style={{
+              backgroundColor: "#0A1A2F",
+              borderColor: "#2B3A4C",
+              color: "#FFFFFF",
+            }}
+          />
+          {showSearch ? (
+            <button
+              onClick={() => { setShowSearch(false); setSearchQuery(""); }}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2"
+            >
+              <X className="w-3.5 h-3.5" style={{ color: "#8A93A6" }} />
+            </button>
+          ) : (
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+              <span className="text-xs font-bold" style={{ color: "#E3B341" }}>{symbol}</span>
             </div>
+          )}
+        </div>
+      </div>
 
-            {/* Search Results */}
-            {searchQuery.length >= 1 && (
-              <div
-                className="mt-1.5 rounded-lg overflow-hidden max-h-[240px] overflow-y-auto"
-                style={{ backgroundColor: "#0A1A2F", border: "1px solid #2B3A4C" }}
-              >
-                {isSearching ? (
-                  <div className="px-3 py-2 space-y-2">
-                    {[1, 2, 3].map((i) => (
-                      <Skeleton key={i} className="h-4 w-full" />
-                    ))}
-                  </div>
-                ) : searchResults.length > 0 ? (
-                  searchResults.map((result: any) => (
-                    <button
-                      key={result.symbol}
-                      onClick={() => handleSearchSelect(result.symbol)}
-                      className="w-full px-3 py-2.5 text-left text-xs hover:bg-[#142538] flex items-center justify-between transition-colors"
-                      style={{
-                        borderBottom: "1px solid rgba(43, 58, 76, 0.5)",
-                      }}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <span className="font-bold" style={{ color: "#E3B341" }}>
-                          {result.symbol}
-                        </span>
-                        {result.name && (
-                          <span className="ml-2 truncate" style={{ color: "#8A93A6" }}>
-                            {result.name}
-                          </span>
-                        )}
-                      </div>
-                      {result.exchange && (
-                        <span className="text-[10px] ml-2 shrink-0" style={{ color: "#5A6375" }}>
-                          {result.exchange}
+      {/* Search Results — expands to fill remaining space when searching */}
+      {showSearch && searchQuery.length >= 1 ? (
+        <ScrollArea className="flex-1">
+          <div>
+            {isSearching ? (
+              <div className="px-3 py-2 space-y-2">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <Skeleton key={i} className="h-8 w-full" />
+                ))}
+              </div>
+            ) : searchResults.length > 0 ? (
+              searchResults.map((result: any) => (
+                <button
+                  key={result.symbol}
+                  onClick={() => handleSearchSelect(result.symbol)}
+                  className="w-full px-4 py-3 text-left hover:bg-[#142538] flex items-center justify-between transition-colors"
+                  style={{
+                    borderBottom: "1px solid rgba(43, 58, 76, 0.5)",
+                    backgroundColor: result.symbol === symbol ? "#142538" : "transparent",
+                  }}
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold" style={{ color: "#E3B341" }}>
+                        {result.symbol}
+                      </span>
+                      {result.type && (
+                        <span
+                          className="text-[9px] px-1.5 py-0.5 rounded-full"
+                          style={{ backgroundColor: "rgba(138, 147, 166, 0.15)", color: "#8A93A6" }}
+                        >
+                          {result.type}
                         </span>
                       )}
-                    </button>
-                  ))
-                ) : (
-                  <div className="px-3 py-3 text-center">
-                    <span className="text-xs" style={{ color: "#8A93A6" }}>
-                      No stocks found
-                    </span>
+                    </div>
+                    {result.name && (
+                      <div className="text-xs mt-0.5 truncate" style={{ color: "#8A93A6" }}>
+                        {result.name}
+                      </div>
+                    )}
                   </div>
-                )}
+                  <div className="text-right ml-3 shrink-0">
+                    {result.exchange && (
+                      <div className="text-[10px]" style={{ color: "#5A6375" }}>
+                        {result.exchange}
+                      </div>
+                    )}
+                    {result.sector && (
+                      <div className="text-[10px]" style={{ color: "#5A6375" }}>
+                        {result.sector}
+                      </div>
+                    )}
+                  </div>
+                </button>
+              ))
+            ) : (
+              <div className="px-3 py-8 text-center">
+                <span className="text-xs" style={{ color: "#8A93A6" }}>
+                  No stocks found for "{searchQuery}"
+                </span>
               </div>
             )}
           </div>
-        ) : (
-          <button
-            onClick={() => setShowSearch(true)}
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors hover:bg-[#142538]"
-            style={{ backgroundColor: "#0A1A2F", border: "1px solid #2B3A4C" }}
-          >
-            <Search className="w-3.5 h-3.5 shrink-0" style={{ color: "#8A93A6" }} />
-            <div className="flex items-center justify-between flex-1">
-              <div>
-                <span className="text-sm font-bold" style={{ color: "#E3B341" }}>
-                  {symbol}
-                </span>
-                <span className="text-xs ml-2" style={{ color: "#8A93A6" }}>
-                  {companyName}
-                </span>
-              </div>
-              <span className="text-[10px]" style={{ color: "#5A6375" }}>
-                Change
-              </span>
-            </div>
-          </button>
-        )}
-      </div>
-
+        </ScrollArea>
+      ) : showSearch ? (
+        /* Empty search state — show popular stocks hint */
+        <div className="flex-1 flex items-center justify-center px-4">
+          <div className="text-center">
+            <Search className="w-8 h-8 mx-auto mb-2" style={{ color: "#2B3A4C" }} />
+            <p className="text-xs" style={{ color: "#8A93A6" }}>
+              Type a symbol or company name
+            </p>
+            <p className="text-[10px] mt-1" style={{ color: "#5A6375" }}>
+              e.g. AAPL, TSLA, NVDA, Microsoft
+            </p>
+          </div>
+        </div>
+      ) : (
+      <>
       {/* Buy/Sell Tabs */}
       <div className="flex">
         <button
@@ -478,6 +489,8 @@ export function OrderPanel({
           {buttonLabel}
         </Button>
       </div>
+      </>
+      )}
     </div>
   );
 }
