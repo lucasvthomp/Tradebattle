@@ -13,7 +13,6 @@ import { Plus, Minus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { executeOrder, type OrderRequest } from "@/lib/orderEngine";
-import { ReviewOrderDialog } from "./ReviewOrderDialog";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 interface OrderPanelProps {
@@ -30,7 +29,6 @@ interface OrderPanelProps {
 }
 
 type OrderSide = "buy" | "sell";
-type OrderType = "market" | "limit" | "stop" | "stop-limit" | "trailing-stop";
 
 export function OrderPanel({
   symbol,
@@ -49,14 +47,9 @@ export function OrderPanel({
   const { formatCurrency } = useUserPreferences();
 
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
-  const [orderType, setOrderType] = useState<OrderType>("market");
   const [quantity, setQuantity] = useState(1);
-  const [limitPrice, setLimitPrice] = useState("");
-  const [stopPrice, setStopPrice] = useState("");
-  const [trailingAmount, setTrailingAmount] = useState("");
-  const [trailingType, setTrailingType] = useState<"dollars" | "percent">("percent");
-  const [showReview, setShowReview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
   const estimatedTotal = quantity * currentPrice;
 
@@ -64,39 +57,29 @@ export function OrderPanel({
     if (!tournamentId || !symbol || quantity <= 0 || currentPrice <= 0) return false;
     if (orderSide === "buy" && estimatedTotal > availableBuyingPower) return false;
     if (orderSide === "sell" && quantity > ownedShares) return false;
-    if (orderType === "limit" && (!limitPrice || parseFloat(limitPrice) <= 0)) return false;
-    if (orderType === "stop" && (!stopPrice || parseFloat(stopPrice) <= 0)) return false;
-    if (orderType === "stop-limit" && (!limitPrice || !stopPrice || parseFloat(limitPrice) <= 0 || parseFloat(stopPrice) <= 0)) return false;
-    if (orderType === "trailing-stop" && (!trailingAmount || parseFloat(trailingAmount) <= 0)) return false;
     return true;
   })();
 
-  const buildOrder = (): OrderRequest => ({
-    tournamentId: tournamentId!,
-    symbol,
-    companyName,
-    side: orderSide,
-    orderType,
-    quantity,
-    currentMarketPrice: currentPrice,
-    ...(limitPrice && { limitPrice: parseFloat(limitPrice) }),
-    ...(stopPrice && { stopPrice: parseFloat(stopPrice) }),
-    ...(trailingAmount && {
-      trailingAmount: parseFloat(trailingAmount),
-      trailingType,
-    }),
-  });
-
   const handleSubmit = async () => {
+    if (!awaitingConfirm) {
+      setAwaitingConfirm(true);
+      return;
+    }
+
     setIsSubmitting(true);
+    setAwaitingConfirm(false);
     try {
-      const result = await executeOrder(buildOrder());
+      const order: OrderRequest = {
+        tournamentId: tournamentId!,
+        symbol,
+        companyName,
+        side: orderSide,
+        quantity,
+        currentMarketPrice: currentPrice,
+      };
+      const result = await executeOrder(order);
       toast({ title: result.message });
-      setShowReview(false);
       setQuantity(1);
-      setLimitPrice("");
-      setStopPrice("");
-      setTrailingAmount("");
       onOrderExecuted();
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments", tournamentId, "balance"] });
       queryClient.invalidateQueries({ queryKey: ["/api/portfolio/tournament", tournamentId] });
@@ -111,24 +94,21 @@ export function OrderPanel({
     }
   };
 
-  // Order validation warnings (non-blocking)
-  const orderWarning = (() => {
-    if (!limitPrice && !stopPrice) return null;
-    const lp = parseFloat(limitPrice);
-    const sp = parseFloat(stopPrice);
-    if (orderType === "limit" && orderSide === "buy" && lp > 0 && lp > currentPrice) {
-      return "Limit price is above market price — you may overpay.";
-    }
-    if (orderType === "limit" && orderSide === "sell" && lp > 0 && lp < currentPrice) {
-      return "Limit price is below market price — you may undersell.";
-    }
-    if (orderType === "stop" && orderSide === "sell" && sp > 0 && sp > currentPrice) {
-      return "Stop price is above market price — will trigger immediately.";
-    }
-    if (orderType === "stop" && orderSide === "buy" && sp > 0 && sp < currentPrice) {
-      return "Stop price is below market price — will trigger immediately.";
-    }
-    return null;
+  // Reset confirm state when inputs change
+  const handleSideChange = (side: OrderSide) => {
+    setOrderSide(side);
+    setAwaitingConfirm(false);
+  };
+
+  const handleQuantityChange = (newQty: number) => {
+    setQuantity(newQty);
+    setAwaitingConfirm(false);
+  };
+
+  const buttonLabel = (() => {
+    if (isSubmitting) return "Submitting...";
+    if (awaitingConfirm) return `Confirm ${orderSide === "buy" ? "Buy" : "Sell"}`;
+    return `${orderSide === "buy" ? "Buy" : "Sell"} ${symbol}`;
   })();
 
   return (
@@ -172,7 +152,7 @@ export function OrderPanel({
       {/* Buy/Sell Tabs */}
       <div className="flex">
         <button
-          onClick={() => setOrderSide("buy")}
+          onClick={() => handleSideChange("buy")}
           className="flex-1 py-3 text-sm font-bold text-center transition-colors"
           style={{
             backgroundColor: orderSide === "buy" ? "rgba(40, 199, 111, 0.15)" : "transparent",
@@ -180,10 +160,10 @@ export function OrderPanel({
             borderBottom: orderSide === "buy" ? "2px solid #28C76F" : "2px solid transparent",
           }}
         >
-          Buy {symbol}
+          Buy
         </button>
         <button
-          onClick={() => setOrderSide("sell")}
+          onClick={() => handleSideChange("sell")}
           className="flex-1 py-3 text-sm font-bold text-center transition-colors"
           style={{
             backgroundColor: orderSide === "sell" ? "rgba(255, 79, 88, 0.15)" : "transparent",
@@ -191,33 +171,11 @@ export function OrderPanel({
             borderBottom: orderSide === "sell" ? "2px solid #FF4F58" : "2px solid transparent",
           }}
         >
-          Sell {symbol}
+          Sell
         </button>
       </div>
 
       <div className="p-4 space-y-4">
-        {/* Order Type */}
-        <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: "#8A93A6" }}>
-            Order Type
-          </label>
-          <Select value={orderType} onValueChange={(v) => setOrderType(v as OrderType)}>
-            <SelectTrigger
-              className="h-9"
-              style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
-            >
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent style={{ backgroundColor: "#1E2D3F", borderColor: "#2B3A4C" }}>
-              <SelectItem value="market" style={{ color: "#C9D1E2" }}>Market</SelectItem>
-              <SelectItem value="limit" style={{ color: "#C9D1E2" }}>Limit</SelectItem>
-              <SelectItem value="stop" style={{ color: "#C9D1E2" }}>Stop</SelectItem>
-              <SelectItem value="stop-limit" style={{ color: "#C9D1E2" }}>Stop Limit</SelectItem>
-              <SelectItem value="trailing-stop" style={{ color: "#C9D1E2" }}>Trailing Stop</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
         {/* Shares Input */}
         <div>
           <label className="text-xs font-medium mb-1 block" style={{ color: "#8A93A6" }}>
@@ -226,7 +184,7 @@ export function OrderPanel({
           <div className="flex items-center gap-2">
             <Button
               size="sm"
-              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
               className="h-9 w-9 p-0"
               style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
             >
@@ -236,13 +194,13 @@ export function OrderPanel({
               type="number"
               min="1"
               value={quantity}
-              onChange={(e) => setQuantity(Math.max(0, parseInt(e.target.value) || 0))}
+              onChange={(e) => handleQuantityChange(Math.max(0, parseInt(e.target.value) || 0))}
               className="h-9 text-center flex-1"
               style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
             />
             <Button
               size="sm"
-              onClick={() => setQuantity(quantity + 1)}
+              onClick={() => handleQuantityChange(quantity + 1)}
               className="h-9 w-9 p-0"
               style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
             >
@@ -254,85 +212,16 @@ export function OrderPanel({
               You only own {ownedShares} shares
             </p>
           )}
+          {orderSide === "sell" && ownedShares > 0 && (
+            <button
+              onClick={() => handleQuantityChange(ownedShares)}
+              className="text-xs mt-1 underline"
+              style={{ color: "#E3B341" }}
+            >
+              Sell all ({ownedShares} shares)
+            </button>
+          )}
         </div>
-
-        {/* Limit Price (for limit & stop-limit) */}
-        {(orderType === "limit" || orderType === "stop-limit") && (
-          <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: "#8A93A6" }}>
-              Limit Price
-            </label>
-            <Input
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder={`$${currentPrice.toFixed(2)}`}
-              value={limitPrice}
-              onChange={(e) => setLimitPrice(e.target.value)}
-              className="h-9"
-              style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
-            />
-          </div>
-        )}
-
-        {/* Stop Price (for stop & stop-limit) */}
-        {(orderType === "stop" || orderType === "stop-limit") && (
-          <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: "#8A93A6" }}>
-              Stop Price
-            </label>
-            <Input
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder={`$${currentPrice.toFixed(2)}`}
-              value={stopPrice}
-              onChange={(e) => setStopPrice(e.target.value)}
-              className="h-9"
-              style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
-            />
-          </div>
-        )}
-
-        {/* Trailing Stop */}
-        {orderType === "trailing-stop" && (
-          <div>
-            <label className="text-xs font-medium mb-1 block" style={{ color: "#8A93A6" }}>
-              Trail Amount
-            </label>
-            <div className="flex items-center gap-2">
-              <Input
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder={trailingType === "percent" ? "5" : "10.00"}
-                value={trailingAmount}
-                onChange={(e) => setTrailingAmount(e.target.value)}
-                className="h-9 flex-1"
-                style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
-              />
-              <Select value={trailingType} onValueChange={(v) => setTrailingType(v as "dollars" | "percent")}>
-                <SelectTrigger
-                  className="h-9 w-24"
-                  style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#FFFFFF" }}
-                >
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent style={{ backgroundColor: "#1E2D3F", borderColor: "#2B3A4C" }}>
-                  <SelectItem value="percent" style={{ color: "#C9D1E2" }}>%</SelectItem>
-                  <SelectItem value="dollars" style={{ color: "#C9D1E2" }}>$</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        )}
-
-        {/* Order Validation Warning */}
-        {orderWarning && (
-          <p className="text-xs px-2 py-1.5 rounded" style={{ color: "#E3B341", backgroundColor: "rgba(227, 179, 65, 0.1)" }}>
-            {orderWarning}
-          </p>
-        )}
 
         {/* Market Price */}
         <div className="flex items-center justify-between">
@@ -354,30 +243,28 @@ export function OrderPanel({
           </span>
         </div>
 
-        {/* Review Order Button */}
+        {orderSide === "buy" && estimatedTotal > availableBuyingPower && (
+          <p className="text-xs" style={{ color: "#FF4F58" }}>
+            Exceeds buying power by {formatCurrency(estimatedTotal - availableBuyingPower)}
+          </p>
+        )}
+
+        {/* Submit Button */}
         <Button
-          onClick={() => setShowReview(true)}
-          disabled={!canSubmit}
+          onClick={handleSubmit}
+          disabled={!canSubmit || isSubmitting}
           className="w-full h-11 font-bold text-sm disabled:opacity-40"
           style={{
-            backgroundColor: orderSide === "buy" ? "#28C76F" : "#FF4F58",
+            backgroundColor: awaitingConfirm
+              ? (orderSide === "buy" ? "#1fa85c" : "#cc3f47")
+              : (orderSide === "buy" ? "#28C76F" : "#FF4F58"),
             color: orderSide === "buy" ? "#000000" : "#FFFFFF",
-            border: "none",
+            border: awaitingConfirm ? "2px solid #FFFFFF" : "none",
           }}
         >
-          Review Order
+          {buttonLabel}
         </Button>
       </div>
-
-      {/* Review Dialog */}
-      <ReviewOrderDialog
-        open={showReview}
-        onOpenChange={setShowReview}
-        order={canSubmit ? buildOrder() : null}
-        estimatedTotal={estimatedTotal}
-        onConfirm={handleSubmit}
-        isSubmitting={isSubmitting}
-      />
     </div>
   );
 }

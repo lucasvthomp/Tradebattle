@@ -5,9 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TradingViewChart } from "@/components/trading/TradingViewChart";
 import { StockHeader } from "@/components/trading/StockHeader";
-import { KeyStatsGrid } from "@/components/trading/KeyStatsGrid";
 import { AboutSection } from "@/components/trading/AboutSection";
-import { PositionCard } from "@/components/trading/PositionCard";
+import { HoldingsList } from "@/components/trading/HoldingsList";
 import { OrderPanel } from "@/components/trading/OrderPanel";
 import { Watchlist } from "@/components/trading/Watchlist";
 
@@ -155,11 +154,10 @@ export default function Dashboard() {
             style={{ backgroundColor: "#1E2D3F", border: "1px solid #2B3A4C" }}
           >
             <AboutSection symbol={selectedSymbol} />
-            <KeyStatsGrid symbol={selectedSymbol} />
-            <PositionCard
-              symbol={selectedSymbol}
+            <HoldingsList
               tournamentId={selectedTournament?.id}
-              currentPrice={price}
+              selectedSymbol={selectedSymbol}
+              onSelectStock={setSelectedSymbol}
             />
           </div>
         </ScrollArea>
