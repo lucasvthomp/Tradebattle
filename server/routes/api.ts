@@ -43,8 +43,12 @@ router.get('/quote/:symbol', asyncHandler(async (req: any, res: any) => {
       success: true,
       data: quote,
     });
-  } catch (error) {
-    throw new NotFoundError(`Stock quote not found for symbol: ${symbol}`);
+  } catch (error: any) {
+    console.error(`Quote fetch failed for ${symbol}:`, error?.message);
+    res.status(502).json({
+      success: false,
+      error: `Unable to fetch quote for ${symbol}. Yahoo Finance may be temporarily unavailable.`,
+    });
   }
 }));
 
@@ -173,8 +177,12 @@ router.get('/summary/:symbol', asyncHandler(async (req, res) => {
       success: true,
       data: profile,
     });
-  } catch (error) {
-    throw new NotFoundError(`Company profile not found for symbol: ${symbol}`);
+  } catch (error: any) {
+    console.error(`Profile fetch failed for ${symbol}:`, error?.message);
+    res.status(502).json({
+      success: false,
+      error: `Unable to fetch profile for ${symbol}. Yahoo Finance may be temporarily unavailable.`,
+    });
   }
 }));
 

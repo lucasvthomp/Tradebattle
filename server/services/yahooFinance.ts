@@ -1,6 +1,14 @@
 import yahooFinance from 'yahoo-finance2';
 import { StockQuote, HistoricalDataPoint, CompanyProfile, SearchResult } from '../types/finance.js';
 
+// Suppress yahoo-finance2 validation notices and configure for production
+yahooFinance.setGlobalConfig({
+  validation: {
+    logErrors: false,
+    logOptionsErrors: false,
+  },
+});
+
 // Define timeframe options
 export type TimeFrame = '1H' | '1D' | '5D' | '1W' | '1M' | '3M' | '6M' | 'YTD' | '1Y' | '5Y';
 
@@ -290,67 +298,35 @@ export function getAllSectors(): string[] {
 export async function getStockQuote(symbol: string): Promise<StockQuote> {
   const cacheKey = `quote_${symbol}`;
   const cached = getCachedData(cacheKey);
-  
+
   if (cached) {
     return cached;
   }
 
   try {
-    // Fetch both quote and quoteSummary to get sector information
-    const [result, summary] = await Promise.all([
-      yahooFinance.quote(symbol),
-      yahooFinance.quoteSummary(symbol, {
-        modules: ['assetProfile', 'summaryProfile']
-      }).catch(() => null) // Don't fail if summary is not available
-    ]);
-    
+    // Single API call - yahooFinance.quote() returns everything we need for price data
+    const result = await yahooFinance.quote(symbol);
+
     if (!result || !result.regularMarketPrice) {
       throw new Error(`No data found for symbol: ${symbol}`);
     }
 
-    // Get previous trading day's market close price for accurate 1-day change calculation
-    let previousClosePrice = result.regularMarketPreviousClose;
-    let currentPrice = result.regularMarketPrice;
-    
-    // Try to get more accurate historical data for previous close if needed
-    try {
-      // Get the last 3 trading days to ensure we have accurate previous close
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-      
-      const historicalData = await yahooFinance.chart(symbol, {
-        period1: threeDaysAgo,
-        period2: new Date(),
-        interval: '1d' // Daily intervals
-      });
-      
-      if (historicalData && historicalData.quotes && historicalData.quotes.length >= 2) {
-        // Get the second to last quote as the previous trading day's close
-        const previousDayQuote = historicalData.quotes[historicalData.quotes.length - 2];
-        if (previousDayQuote && previousDayQuote.close) {
-          previousClosePrice = previousDayQuote.close;
-        }
-      }
-    } catch (historicalError) {
-      // If historical data fails, use the regular market previous close
-      console.log(`Could not fetch historical data for ${symbol}, using regular market previous close`);
-    }
-
-    // Calculate 1-day change manually using previous trading day's close price
+    const currentPrice = result.regularMarketPrice;
+    const previousClosePrice = result.regularMarketPreviousClose || currentPrice;
     const change = currentPrice - previousClosePrice;
-    const percentChange = ((change / previousClosePrice) * 100);
+    const percentChange = previousClosePrice > 0 ? ((change / previousClosePrice) * 100) : 0;
 
     const quote: StockQuote = {
       symbol: result.symbol || symbol,
       price: currentPrice,
-      change: change,
-      percentChange: percentChange,
+      change,
+      percentChange,
       previousClose: previousClosePrice,
       volume: result.regularMarketVolume || 0,
       marketCap: result.marketCap || 0,
       currency: result.currency || 'USD',
-      sector: summary?.summaryProfile?.sector || summary?.assetProfile?.sector || getSectorFallback(symbol),
-      industry: summary?.summaryProfile?.industry || summary?.assetProfile?.industry || undefined,
+      sector: getSectorFallback(symbol),
+      industry: undefined,
     };
 
     setCachedData(cacheKey, quote, CACHE_TTL.QUOTE);
@@ -668,34 +644,31 @@ export async function getStockPerformance(symbol: string, timeFrame: TimeFrame):
 export async function getCompanyProfile(symbol: string): Promise<CompanyProfile> {
   const cacheKey = `profile_${symbol}`;
   const cached = getCachedData(cacheKey);
-  
+
   if (cached) {
     return cached;
   }
 
   try {
-    const [quoteResult, summaryResult] = await Promise.all([
-      yahooFinance.quote(symbol),
-      yahooFinance.quoteSummary(symbol, { 
-        modules: ['summaryProfile', 'defaultKeyStatistics', 'price'] 
-      }).catch(() => null)
-    ]);
+    // Try quoteSummary first (has description, sector, industry)
+    const summaryResult = await yahooFinance.quoteSummary(symbol, {
+      modules: ['summaryProfile', 'price']
+    });
 
-    if (!quoteResult) {
-      throw new Error(`No data found for symbol: ${symbol}`);
-    }
+    const priceData = summaryResult?.price;
+    const profileData = summaryResult?.summaryProfile;
 
     const profile: CompanyProfile = {
-      name: quoteResult.longName || quoteResult.shortName || symbol,
-      description: summaryResult?.summaryProfile?.longBusinessSummary || 'No description available',
-      sector: summaryResult?.summaryProfile?.sector || 'N/A',
-      industry: summaryResult?.summaryProfile?.industry || 'N/A',
-      marketCap: quoteResult.marketCap || 0,
-      volume: quoteResult.regularMarketVolume || 0,
-      currency: quoteResult.currency || 'USD',
-      exchange: quoteResult.fullExchangeName || 'N/A',
-      website: summaryResult?.summaryProfile?.website || undefined,
-      employees: summaryResult?.summaryProfile?.fullTimeEmployees || undefined,
+      name: priceData?.longName || priceData?.shortName || symbol,
+      description: profileData?.longBusinessSummary || 'No description available',
+      sector: profileData?.sector || getSectorFallback(symbol),
+      industry: profileData?.industry || 'N/A',
+      marketCap: priceData?.marketCap || 0,
+      volume: priceData?.regularMarketVolume || 0,
+      currency: priceData?.currency || 'USD',
+      exchange: priceData?.exchangeName || 'N/A',
+      website: profileData?.website || undefined,
+      employees: profileData?.fullTimeEmployees || undefined,
     };
 
     setCachedData(cacheKey, profile, CACHE_TTL.PROFILE);
