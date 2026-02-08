@@ -52,7 +52,7 @@ const FloatingMoney = () => {
             ease: "easeInOut"
           }}
         >
-          <DollarSign className="w-6 h-6" style={{ color: '#28C76F' }} />
+          <DollarSign className="w-6 h-6" style={{ color: '#10B981' }} />
         </motion.div>
       ))}
     </div>
@@ -62,11 +62,11 @@ const FloatingMoney = () => {
 // Live ticker animation
 const LiveTicker = () => {
   const tickers = [
-    { symbol: "AAPL", change: "+2.4%", color: "text-[#28C76F]" },
-    { symbol: "TSLA", change: "+5.7%", color: "text-[#28C76F]" },
+    { symbol: "AAPL", change: "+2.4%", color: "text-[#10B981]" },
+    { symbol: "TSLA", change: "+5.7%", color: "text-[#10B981]" },
     { symbol: "NVDA", change: "-1.2%", color: "text-[#FF3333]" },
-    { symbol: "MSFT", change: "+3.1%", color: "text-[#28C76F]" },
-    { symbol: "GOOGL", change: "+1.8%", color: "text-[#28C76F]" },
+    { symbol: "MSFT", change: "+3.1%", color: "text-[#10B981]" },
+    { symbol: "GOOGL", change: "+1.8%", color: "text-[#10B981]" },
   ];
 
   return (
@@ -101,7 +101,7 @@ const PrizeCounter = () => {
   return (
     <motion.div
       className="text-5xl md:text-7xl font-black mb-4"
-      style={{ color: '#28C76F' }}
+      style={{ color: '#10B981' }}
       animate={{ scale: [1, 1.05, 1] }}
       transition={{ duration: 2, repeat: Infinity }}
     >
@@ -165,7 +165,7 @@ export default function UnauthenticatedHome() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a1a2f] via-[#162539] to-[#0f1e2e] text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#080C14] via-[#0F172A] to-[#0B1120] text-white overflow-hidden">
       {/* Live Ticker */}
       <LiveTicker />
 
@@ -187,7 +187,7 @@ export default function UnauthenticatedHome() {
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Badge className="px-6 py-2 text-base font-bold" style={{ backgroundColor: '#28C76F', borderColor: '#28C76F' }}>
+                <Badge className="px-6 py-2 text-base font-bold" style={{ backgroundColor: '#10B981', borderColor: '#10B981' }}>
                   <Flame className="w-5 h-5 mr-2 inline animate-pulse" />
                   🔥 2,847 Players Online Now
                 </Badge>
@@ -199,7 +199,7 @@ export default function UnauthenticatedHome() {
                   Trade. Compete.
                 </span>
                 <br />
-                <span className="bg-gradient-to-r from-[#28C76F] to-[#22c55e] bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-[#10B981] to-[#22c55e] bg-clip-text text-transparent">
                   Win Cash.
                 </span>
               </h1>
@@ -218,7 +218,7 @@ export default function UnauthenticatedHome() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Button size="lg" className="text-lg px-10 py-7 font-bold" style={{ backgroundColor: '#28C76F' }}>
+                    <Button size="lg" className="text-lg px-10 py-7 font-bold" style={{ backgroundColor: '#10B981' }}>
                       Start Playing Free
                       <ArrowRight className="ml-2 w-6 h-6" />
                     </Button>
@@ -240,7 +240,7 @@ export default function UnauthenticatedHome() {
               {/* Quick Stats */}
               <div className="flex flex-wrap justify-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" style={{ color: '#28C76F' }} />
+                  <Sparkles className="w-4 h-4" style={{ color: '#10B981' }} />
                   <span>Start with $10,000</span>
                 </div>
                 <div className="flex items-center gap-2">
@@ -267,7 +267,7 @@ export default function UnauthenticatedHome() {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#0f2240] border-[#28C76F]/30 border-2">
+            <Card className="bg-gradient-to-br from-[#111827] to-[#0B1120] border-[#10B981]/30 border-2">
               <CardContent className="p-12">
                 <div className="flex items-center justify-center gap-3 mb-4">
                   <Trophy className="w-10 h-10" style={{ color: '#FFD700' }} />
@@ -280,9 +280,9 @@ export default function UnauthenticatedHome() {
 
                 {/* Next Tournament Countdown */}
                 <div className="flex items-center justify-center gap-4 text-2xl font-mono font-bold">
-                  <Timer className="w-6 h-6" style={{ color: '#28C76F' }} />
+                  <Timer className="w-6 h-6" style={{ color: '#10B981' }} />
                   <span>Next Tournament:</span>
-                  <span style={{ color: '#28C76F' }}>
+                  <span style={{ color: '#10B981' }}>
                     {String(countdown.hours).padStart(2, '0')}:
                     {String(countdown.minutes).padStart(2, '0')}:
                     {String(countdown.seconds).padStart(2, '0')}
@@ -314,7 +314,7 @@ export default function UnauthenticatedHome() {
                   whileHover={{ scale: 1.05, y: -10 }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <Card className="bg-gradient-to-br from-[#1e3a5f] to-[#0f2240] border-[#28C76F]/20">
+                  <Card className="bg-gradient-to-br from-[#111827] to-[#0B1120] border-[#10B981]/20">
                     <CardContent className="p-6 text-center">
                       <div className="text-4xl mb-3">
                         {winner.rank === 1 && "🥇"}
@@ -322,7 +322,7 @@ export default function UnauthenticatedHome() {
                         {winner.rank === 3 && "🥉"}
                       </div>
                       <div className="text-xl font-bold mb-2">{winner.username}</div>
-                      <div className="text-3xl font-black mb-1" style={{ color: '#28C76F' }}>
+                      <div className="text-3xl font-black mb-1" style={{ color: '#10B981' }}>
                         {winner.amount}
                       </div>
                       <div className="text-sm text-gray-400">Just won!</div>
@@ -391,7 +391,7 @@ export default function UnauthenticatedHome() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <Card className="bg-gradient-to-r from-[#28C76F] to-[#22c55e] border-0">
+            <Card className="bg-gradient-to-r from-[#10B981] to-[#22c55e] border-0">
               <CardContent className="p-16">
                 <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">
                   Ready to Win?
@@ -401,7 +401,7 @@ export default function UnauthenticatedHome() {
                 </p>
                 <Link href="/signup">
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button size="lg" className="bg-white text-[#28C76F] hover:bg-gray-100 text-xl px-12 py-8 font-black">
+                    <Button size="lg" className="bg-white text-[#10B981] hover:bg-gray-100 text-xl px-12 py-8 font-black">
                       Create Free Account
                       <Sparkles className="ml-3 w-6 h-6" />
                     </Button>

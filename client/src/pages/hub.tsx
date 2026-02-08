@@ -63,7 +63,7 @@ export default function Hub() {
       description: "Jump into action with your live portfolio",
       href: "/dashboard",
       icon: BarChart3,
-      borderColor: '#28C76F',
+      borderColor: '#10B981',
       badge: "Live",
     },
     {
@@ -79,7 +79,7 @@ export default function Hub() {
       description: "Compete for the top spot globally",
       href: "/leaderboard",
       icon: Award,
-      borderColor: '#3B82F6',
+      borderColor: '#06B6D4',
       badge: "Top 100",
     }
   ];
@@ -95,24 +95,24 @@ export default function Hub() {
       label: "Active Trades",
       value: "--",
       icon: Activity,
-      color: '#28C76F',
+      color: '#10B981',
     },
     {
       label: "Tournaments",
       value: activeTournaments.length,
       icon: Trophy,
-      color: '#E3B341',
+      color: '#8B5CF6',
     },
     {
       label: "Global Rank",
       value: "--",
       icon: Award,
-      color: '#3B82F6',
+      color: '#06B6D4',
     },
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#06121F' }}>
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#080C14' }}>
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-8 relative z-10">
         {/* Hero Header */}
         <motion.div
@@ -125,16 +125,16 @@ export default function Hub() {
             <div>
               <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                 <div className="rounded-xl md:rounded-2xl p-1.5 md:p-2" style={{
-                  backgroundColor: '#E3B341',
+                  background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
                 }}>
-                  <Crown className="w-8 h-8 md:w-12 md:h-12" style={{ color: '#06121F' }} />
+                  <Crown className="w-8 h-8 md:w-12 md:h-12" style={{ color: '#080C14' }} />
                 </div>
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-black" style={{ color: '#C9D1E2' }}>
+                <h1 className="text-2xl md:text-4xl lg:text-5xl font-black" style={{ color: '#F1F5F9' }}>
                   {getGreeting()}, <span style={{ color: '#E3B341' }}>{user?.username}</span>!
                 </h1>
               </div>
-              <p className="flex items-center gap-2 text-sm md:text-base lg:text-lg" style={{ color: '#8A93A6' }}>
-                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#28C76F' }} />
+              <p className="flex items-center gap-2 text-sm md:text-base lg:text-lg" style={{ color: '#94A3B8' }}>
+                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#10B981' }} />
                 Ready to compete and win?
               </p>
             </div>
@@ -144,29 +144,29 @@ export default function Hub() {
               <Card
                 className="rounded-2xl relative overflow-hidden border-none"
                 style={{
-                  background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 50%, #a8822c 100%)',
+                  background: 'linear-gradient(135deg, #F59E0B, #E3B341, #D97706)',
                   minWidth: '100%',
                 }}
               >
                 <CardContent className="p-4 md:p-6 relative z-10">
                   <div className="mb-2 md:mb-3 flex items-center gap-2">
                     <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{
-                      backgroundColor: 'rgba(6, 18, 31, 0.2)',
+                      backgroundColor: 'rgba(8, 12, 20, 0.2)',
                     }}>
-                      <DollarSign className="w-4 h-4 md:w-5 md:h-5" style={{ color: '#06121F' }} />
+                      <DollarSign className="w-4 h-4 md:w-5 md:h-5" style={{ color: '#080C14' }} />
                     </div>
-                    <div className="text-xs md:text-sm font-bold" style={{ color: '#06121F' }}>Your Balance</div>
+                    <div className="text-xs md:text-sm font-bold" style={{ color: '#080C14' }}>Your Balance</div>
                   </div>
                   <div className="mb-3 md:mb-4">
-                    <span className="text-3xl md:text-4xl lg:text-5xl font-black" style={{ color: '#06121F' }}>
+                    <span className="text-3xl md:text-4xl lg:text-5xl font-black" style={{ color: '#080C14' }}>
                       {formatCurrency(Number(user?.siteCash) || 0)}
                     </span>
                   </div>
                   <Link href="/dashboard">
                     <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                       <Button className="w-full h-12 font-bold text-base rounded-xl border-none" style={{
-                        backgroundColor: '#06121F',
-                        color: '#E3B341',
+                        background: 'linear-gradient(135deg, #10B981, #06B6D4)',
+                        color: '#FFFFFF',
                       }}>
                         <Zap className="w-5 h-5 mr-2" />
                         Trade Now
@@ -194,8 +194,8 @@ export default function Hub() {
               <Card
                 className="transition-all rounded-xl md:rounded-2xl relative overflow-hidden border"
                 style={{
-                  backgroundColor: '#1E2D3F',
-                  borderColor: '#2B3A4C',
+                  backgroundColor: '#111827',
+                  borderColor: '#1F2937',
                 }}
               >
                 <CardContent className="p-3 md:p-5 relative z-10">
@@ -209,7 +209,7 @@ export default function Hub() {
                   <div className="text-2xl md:text-3xl lg:text-4xl font-black mb-1" style={{ color: '#FFFFFF' }}>
                     {stat.value}
                   </div>
-                  <div className="text-xs md:text-sm font-semibold" style={{ color: '#8A93A6' }}>{stat.label}</div>
+                  <div className="text-xs md:text-sm font-semibold" style={{ color: '#94A3B8' }}>{stat.label}</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -230,8 +230,8 @@ export default function Hub() {
                 <Card
                   className="h-full cursor-pointer relative overflow-hidden group rounded-2xl border transition-colors"
                   style={{
-                    backgroundColor: '#1E2D3F',
-                    borderColor: '#2B3A4C',
+                    backgroundColor: '#111827',
+                    borderColor: '#1F2937',
                   }}
                 >
                   {/* Badge */}
@@ -258,7 +258,7 @@ export default function Hub() {
                     <h3 className="text-xl md:text-2xl lg:text-3xl font-black mb-2 md:mb-3" style={{ color: '#FFFFFF' }}>
                       {action.title}
                     </h3>
-                    <p className="text-sm md:text-base mb-4 md:mb-6 leading-relaxed" style={{ color: '#8A93A6' }}>
+                    <p className="text-sm md:text-base mb-4 md:mb-6 leading-relaxed" style={{ color: '#94A3B8' }}>
                       {action.description}
                     </p>
 
@@ -284,8 +284,8 @@ export default function Hub() {
             <Card
               className="cursor-pointer group relative overflow-hidden rounded-2xl border transition-colors"
               style={{
-                backgroundColor: '#1E2D3F',
-                borderColor: '#2B3A4C',
+                backgroundColor: '#111827',
+                borderColor: '#1F2937',
               }}
             >
               <CardContent className="p-4 md:p-6 lg:p-8 relative z-10">
@@ -294,8 +294,8 @@ export default function Hub() {
                     <Badge
                       className="mb-3 md:mb-4 font-bold text-xs md:text-sm border-none"
                       style={{
-                        backgroundColor: '#E3B341',
-                        color: '#06121F'
+                        background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
+                        color: '#080C14'
                       }}
                     >
                       {nextTournament ? 'LIVE NOW' : 'TOURNAMENTS'}
@@ -310,12 +310,12 @@ export default function Hub() {
                     </h3>
                     {nextTournament && (
                       <>
-                        <p className="text-sm md:text-base mb-4 md:mb-5" style={{ color: '#8A93A6' }}>
-                          Buy-in: <span className="text-xl md:text-2xl font-black" style={{ color: '#28C76F' }}>
+                        <p className="text-sm md:text-base mb-4 md:mb-5" style={{ color: '#94A3B8' }}>
+                          Buy-in: <span className="text-xl md:text-2xl font-black" style={{ color: '#10B981' }}>
                             {formatCurrency(nextTournament.buyInAmount || 0)}
                           </span>
                         </p>
-                        <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm mb-4 md:mb-6" style={{ color: '#8A93A6' }}>
+                        <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm mb-4 md:mb-6" style={{ color: '#94A3B8' }}>
                           <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{
                             backgroundColor: 'rgba(227, 179, 65, 0.1)',
                             border: '1px solid rgba(227, 179, 65, 0.2)'
@@ -337,8 +337,8 @@ export default function Hub() {
                       <Button
                         className="h-12 text-base font-bold border-none"
                         style={{
-                          backgroundColor: '#E3B341',
-                          color: '#06121F',
+                          background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
+                          color: '#080C14',
                         }}
                       >
                         <Zap className="w-5 h-5 mr-2" />
@@ -352,18 +352,18 @@ export default function Hub() {
                     <div
                       className="text-center p-8 rounded-2xl"
                       style={{
-                        backgroundColor: '#142538',
-                        border: '1px solid #2B3A4C',
+                        backgroundColor: '#0F172A',
+                        border: '1px solid #1F2937',
                       }}
                     >
                       <div className="mb-4">
                         <Crown className="w-16 h-16 mx-auto" style={{ color: '#E3B341' }} />
                       </div>
-                      <div className="text-lg font-bold mb-3" style={{ color: '#C9D1E2' }}>First Place Wins</div>
-                      <div className="text-4xl font-black mb-4" style={{ color: '#28C76F' }}>
+                      <div className="text-lg font-bold mb-3" style={{ color: '#F1F5F9' }}>First Place Wins</div>
+                      <div className="text-4xl font-black mb-4" style={{ color: '#10B981' }}>
                         {nextTournament ? formatCurrency((nextTournament.buyInAmount || 0) * (nextTournament.currentPlayers || 0) * 0.5) : '--'}
                       </div>
-                      <p className="text-sm" style={{ color: '#8A93A6' }}>Top positions paid out</p>
+                      <p className="text-sm" style={{ color: '#94A3B8' }}>Top positions paid out</p>
                     </div>
                   </div>
                 </div>

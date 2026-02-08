@@ -65,7 +65,7 @@ export function PortfolioStatsBar({
   }, [selectedTournament?.endDate]);
 
   return (
-    <div className="w-full border-b border-border/50 px-6 py-3" style={{ backgroundColor: '#142538' }}>
+    <div className="w-full border-b border-border/50 px-6 py-3" style={{ backgroundColor: '#0F172A' }}>
       <div className="flex items-center gap-6">
         {/* Tournament Selector */}
         {activeTournaments.length > 0 && selectedTournament && onTournamentChange && (
@@ -75,12 +75,12 @@ export function PortfolioStatsBar({
               value={selectedTournament?.id?.toString() || ""}
               onValueChange={onTournamentChange}
             >
-              <SelectTrigger className="w-[200px] h-9 border-0" style={{ backgroundColor: '#1E2D3F', color: '#C9D1E2' }}>
+              <SelectTrigger className="w-[200px] h-9 border-0" style={{ backgroundColor: '#111827', color: '#F1F5F9' }}>
                 <SelectValue placeholder="Select tournament" />
               </SelectTrigger>
-              <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+              <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
                 {activeTournaments.map((tournament: any) => (
-                  <SelectItem key={tournament.id} value={tournament.id.toString()} style={{ color: '#C9D1E2' }}>
+                  <SelectItem key={tournament.id} value={tournament.id.toString()} style={{ color: '#F1F5F9' }}>
                     {tournament.name}
                   </SelectItem>
                 ))}
@@ -92,20 +92,20 @@ export function PortfolioStatsBar({
         {/* Total Portfolio Value with Cash/Stock breakdown */}
         <div className="flex items-center gap-3">
           <div className="text-xl font-bold text-white">{formatCurrency(portfolioValue)}</div>
-          <div className="flex flex-col text-xs leading-tight" style={{ color: '#8A93A6' }}>
+          <div className="flex flex-col text-xs leading-tight" style={{ color: '#94A3B8' }}>
             <div>Cash: {formatCurrency(cashBalance)}</div>
             <div>Stock: {formatCurrency(stockHoldingsValue)}</div>
           </div>
         </div>
 
         {/* Today's Return */}
-        <div className={`text-base font-semibold ${isPositive ? 'text-[#28C76F]' : 'text-[#FF4F58]'}`}>
+        <div className={`text-base font-semibold ${isPositive ? 'text-[#10B981]' : 'text-[#EF4444]'}`}>
           {isPositive ? '+' : ''}{formatCurrency(profitLoss)} ({isPositive ? '▲' : '▼'} {Math.abs(profitLossPercent).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%)
         </div>
 
         {/* Time Remaining */}
         {timeRemaining && (
-          <div className="text-base font-medium" style={{ color: '#C9D1E2' }}>
+          <div className="text-base font-medium" style={{ color: '#F1F5F9' }}>
             {timeRemaining}
           </div>
         )}

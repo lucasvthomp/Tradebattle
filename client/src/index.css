@@ -5,59 +5,64 @@
 @tailwind utilities;
 
 :root {
-  /* Navy & Gold Trader Color System */
+  /* Clean Modern Game Color System */
 
-  /* Primary Brand Colors */
-  --background: 211 65% 11%;  /* #0A1A2F - Primary Background */
-  --foreground: 215 12% 78%;  /* Match sidebar text color */
+  /* Primary Background */
+  --background: 222 47% 5%;  /* #080C14 */
+  --foreground: 210 20% 90%;  /* #E2E8F0 */
 
-  /* Card & Panel Hierarchy - Darker & Bluer */
-  --card: 211 35% 18%;  /* #1E2D3F - Card background for visibility */
-  --card-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text (Body) */
-  --popover: 211 35% 18%;
-  --popover-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text in popovers */
+  /* Card & Panel Hierarchy */
+  --card: 222 33% 11%;  /* #111827 */
+  --card-foreground: 215 20% 85%;  /* #CBD5E1 */
+  --popover: 222 33% 11%;
+  --popover-foreground: 215 20% 85%;
 
-  /* Gold Accent - Use sparingly */
-  --primary: 43 71% 57%;  /* #E3B341 - Gold Accent */
-  --primary-foreground: 215 75% 9%;  /* Dark navy text on gold */
+  /* Primary - Gold (for brand/money) */
+  --primary: 43 71% 57%;  /* #E3B341 */
+  --primary-foreground: 222 47% 5%;
 
-  /* Secondary Colors for Structure */
-  --secondary: 211 46% 16%;  /* #142538 - Hover/Focus Overlay */
-  --secondary-foreground: 219 36% 84%;  /* #C9D1E2 - Secondary Text */
+  /* Secondary */
+  --secondary: 220 26% 14%;  /* #1A2030 */
+  --secondary-foreground: 215 20% 85%;
 
-  /* Muted Colors */
-  --muted: 211 27% 23%;  /* #2B3A4C - Card Border/Lines/Dividers */
-  --muted-foreground: 215 12% 78%;  /* Match sidebar text color */
+  /* Muted */
+  --muted: 217 19% 17%;  /* #1F2937 */
+  --muted-foreground: 215 16% 62%;  /* #94A3B8 */
 
-  /* Accent - Gold */
-  --accent: 43 71% 57%;  /* #E3B341 - Gold */
-  --accent-foreground: 215 75% 9%;
+  /* Accent - Cyan (interactive elements) */
+  --accent: 189 94% 43%;  /* #06B6D4 */
+  --accent-foreground: 222 47% 5%;
 
-  /* Destructive - Loss Red */
-  --destructive: 357 100% 65%;  /* #FF4F58 - Error/Loss Red */
+  /* Destructive */
+  --destructive: 0 84% 60%;  /* #EF4444 */
   --destructive-foreground: 0 0% 100%;
 
-  /* Borders & Inputs - Darker & Bluer */
-  --border: 215 30% 28%;  /* #2B3A4C - Visible borders for card definition */
-  --input: 211 35% 18%;  /* #1E2D3F - Input background matching cards */
-  --ring: 43 71% 57%;  /* Gold ring for focus states */
+  /* Borders & Inputs */
+  --border: 217 19% 17%;  /* #1F2937 */
+  --input: 222 40% 8%;  /* #0F172A */
+  --ring: 189 94% 43%;  /* Cyan focus ring */
   --radius: 0.75rem;
 
-  /* Extended Color Palette - Darker & Bluer */
-  --sidebar-bg: 215 65% 11%;  /* #0A1623 - Darker, bluer sidebar */
-  --hover-overlay: 215 55% 13%;  /* #0E1B28 - Darker, bluer hover */
-  --secondary-text: 215 12% 78%;  /* Softer body text, less bright */
-  --disabled-text: 215 8% 48%;  /* Softer disabled text */
-  --neutral-gray: 215 12% 66%;  /* Softer neutral gray */
+  /* Extended Palette */
+  --sidebar-bg: 222 40% 7%;  /* #0B1120 */
+  --hover-overlay: 222 33% 11%;  /* #111827 */
+  --secondary-text: 215 16% 62%;  /* #94A3B8 */
+  --disabled-text: 215 12% 42%;
+  --neutral-gray: 215 14% 58%;
 
   /* Status / Market Colors */
-  --profit-green: 142 69% 47%;  /* #28C76F - Success/Profit */
-  --loss-red: 357 100% 65%;  /* #FF4F58 - Error/Loss */
-  --gold-highlight: 43 71% 57%;  /* #E3B341 - Important tags */
+  --profit-green: 160 84% 39%;  /* #10B981 */
+  --loss-red: 0 84% 60%;  /* #EF4444 */
+  --gold-highlight: 43 71% 57%;  /* #E3B341 */
+
+  /* New accent colors */
+  --cyan: 189 94% 43%;  /* #06B6D4 */
+  --purple: 258 90% 66%;  /* #8B5CF6 */
 
   /* Shadows */
-  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.45);
   --shadow-gold: 0 0 20px rgba(227, 179, 65, 0.2);
+  --shadow-cyan: 0 0 20px rgba(6, 182, 212, 0.2);
 }
 
 /* React Grid Layout Styles */
@@ -110,45 +115,37 @@
 }
 
 .dark {
-  /* Navy & Gold Trader Color System - Dark Mode */
+  /* Clean Modern Game - Dark Mode */
 
-  /* Primary Brand Colors - Darker & Bluer Navy */
-  --background: 215 75% 9%;  /* Darker, bluer primary background */
-  --foreground: 0 0% 100%;  /* White for headings */
+  --background: 222 47% 5%;  /* #080C14 */
+  --foreground: 0 0% 100%;
 
-  /* Card & Panel Hierarchy - Darker & Bluer */
-  --card: 215 50% 18%;  /* Lighter card background for better visibility */
-  --card-foreground: 215 12% 78%;  /* Match sidebar text */
-  --popover: 215 50% 18%;
-  --popover-foreground: 215 12% 78%;  /* Match sidebar text */
+  --card: 222 33% 11%;  /* #111827 */
+  --card-foreground: 215 16% 62%;  /* #94A3B8 */
+  --popover: 222 33% 11%;
+  --popover-foreground: 215 16% 62%;
 
-  /* Gold Accent */
   --primary: 43 71% 57%;  /* #E3B341 */
-  --primary-foreground: 215 75% 9%;  /* Dark navy text on gold */
+  --primary-foreground: 222 47% 5%;
 
-  /* Secondary Colors - Darker & Bluer */
-  --secondary: 215 55% 13%;  /* Darker, bluer hover/focus overlay */
-  --secondary-foreground: 215 12% 78%;  /* Match sidebar text */
+  --secondary: 220 26% 14%;  /* #1A2030 */
+  --secondary-foreground: 215 16% 62%;
 
-  /* Muted Colors - Darker & Bluer */
-  --muted: 215 40% 20%;  /* Darker, bluer borders/dividers */
-  --muted-foreground: 215 12% 78%;  /* Match sidebar text */
+  --muted: 217 19% 17%;  /* #1F2937 */
+  --muted-foreground: 215 16% 62%;
 
-  /* Accent - Gold */
-  --accent: 43 71% 57%;  /* #E3B341 */
-  --accent-foreground: 215 75% 9%;
+  --accent: 189 94% 43%;  /* #06B6D4 */
+  --accent-foreground: 222 47% 5%;
 
-  /* Destructive - Loss Red */
-  --destructive: 357 100% 65%;  /* #FF4F58 */
+  --destructive: 0 84% 60%;  /* #EF4444 */
   --destructive-foreground: 0 0% 100%;
 
-  /* Borders & Inputs - Darker & Bluer */
-  --border: 215 40% 30%;  /* More visible borders for better card definition */
-  --input: 215 50% 15%;  /* Darker, bluer inputs */
-  --ring: 43 71% 57%;  /* Gold */
+  --border: 217 19% 17%;  /* #1F2937 */
+  --input: 222 40% 8%;  /* #0F172A */
+  --ring: 189 94% 43%;  /* Cyan */
 }
 
-/* React Grid Layout Styles */
+/* React Grid Layout Styles (dark) */
 .react-grid-layout {
   position: relative;
 }
@@ -211,13 +208,12 @@
 
 @layer base {
   * {
-    /* Removed universal border - borders only on specific components */
     box-sizing: border-box;
   }
 
   html {
     @apply bg-background;
-    background: #06121F !important;
+    background: #080C14 !important;
     min-height: 100%;
     height: 100%;
     overscroll-behavior: none;
@@ -226,12 +222,12 @@
 
   body {
     @apply bg-background;
-    color: #B8BDC8 !important;
+    color: #94A3B8 !important;
     font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #06121F !important;
+    background: #080C14 !important;
     background-attachment: fixed !important;
     min-height: 100vh;
     height: 100%;
@@ -244,35 +240,35 @@
   }
 
   p, span, div, label, a {
-    color: #B8BDC8;
+    color: #94A3B8;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: #FFFFFF !important;
+    color: #F1F5F9 !important;
   }
 
   /* Prevent white background from showing on overscroll */
   #root {
-    background: #06121F;
+    background: #080C14;
     min-height: 100vh;
   }
 
-  /* Scrollbar styling - Darker & Bluer */
+  /* Scrollbar styling */
   ::-webkit-scrollbar {
     width: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #172535;
+    background: #0F172A;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1F2D3D;
+    background: #1F2937;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #E3B341;
+    background: #06B6D4;
   }
 }
 
@@ -281,9 +277,13 @@
     text-wrap: balance;
   }
 
-  /* Navy & Gold Utilities */
+  /* Glow utilities */
   .gold-glow {
     box-shadow: var(--shadow-gold);
+  }
+
+  .cyan-glow {
+    box-shadow: var(--shadow-cyan);
   }
 
   .card-shadow {
@@ -292,95 +292,174 @@
 
   /* Text Colors */
   .text-secondary {
-    color: #E9EBEE;
+    color: #CBD5E1;
   }
 
   .text-muted {
-    color: #B3B8C2;
+    color: #94A3B8;
   }
 
   .text-disabled {
-    color: #7F8590;
+    color: #64748B;
   }
 
   /* Status Colors */
   .text-profit {
-    color: #28C76F;
+    color: #10B981;
   }
 
   .text-loss {
-    color: #FF4F58;
+    color: #EF4444;
   }
 
   .text-gold {
     color: #E3B341;
   }
 
+  .text-cyan {
+    color: #06B6D4;
+  }
+
+  .text-purple {
+    color: #8B5CF6;
+  }
+
   .bg-profit {
-    background-color: #28C76F;
+    background-color: #10B981;
   }
 
   .bg-loss {
-    background-color: #FF4F58;
+    background-color: #EF4444;
   }
 
   .bg-gold {
     background-color: #E3B341;
   }
 
+  .bg-cyan {
+    background-color: #06B6D4;
+  }
+
+  .bg-purple {
+    background-color: #8B5CF6;
+  }
+
   /* Backgrounds */
   .bg-sidebar {
-    background-color: #0D1F33;
+    background-color: #0B1120;
   }
 
   .bg-hover {
-    background-color: #142538;
+    background-color: #111827;
   }
-  
+
+  /* Gradient button styles */
+  .btn-gradient-primary {
+    background: linear-gradient(135deg, #E3B341, #F59E0B) !important;
+    color: #080C14 !important;
+    font-weight: 600;
+    border: none !important;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-gradient-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-gradient-buy {
+    background: linear-gradient(135deg, #10B981, #06B6D4) !important;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border: none !important;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-gradient-buy:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-gradient-sell {
+    background: linear-gradient(135deg, #EF4444, #F97316) !important;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border: none !important;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-gradient-sell:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-gradient-action {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6) !important;
+    color: #FFFFFF !important;
+    font-weight: 600;
+    border: none !important;
+    transition: opacity 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-gradient-action:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
   /* Enhanced animations */
   .animate-pulse-slow {
-    /* Removed pulse animation to prevent moving gradients */
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
-  
+
   .animate-glow {
-    /* Removed glow animation to prevent moving gradients */
+    animation: glowPulse 2s ease-in-out infinite alternate;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  
+
   .animate-float {
-    /* Removed float animation to prevent moving gradients */
+    animation: float 6s ease-in-out infinite;
   }
-  
+
+  .animate-pop-in {
+    animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg, transparent 0%, rgba(6, 182, 212, 0.08) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
   /* Interactive hover effects */
   .hover-lift {
     transition: transform 0.2s ease;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-1px);
   }
-  
+
   .hover-glow:hover {
-    box-shadow: var(--shadow-neon);
+    box-shadow: 0 0 20px rgba(6, 182, 212, 0.15);
   }
-  
+
   .hover-scale:hover {
     transform: scale(1.02);
   }
-  
+
   /* Navigation styling */
   .nav-link {
     @apply transition-all duration-300 ease-in-out relative;
     position: relative;
   }
-  
+
   .nav-link::after {
     content: '';
     position: absolute;
@@ -388,68 +467,72 @@
     left: 50%;
     width: 0;
     height: 2px;
-    background: var(--gradient-primary);
+    background: linear-gradient(90deg, #06B6D4, #8B5CF6);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(-50%);
   }
-  
+
   .nav-link:hover::after {
     width: 100%;
   }
-  
+
   /* Gaming-themed borders */
   .border-neon {
-    border-color: var(--neon-green);
+    border-color: #06B6D4;
   }
-  
+
   .border-gold {
-    border-color: var(--gold);
+    border-color: #E3B341;
   }
-  
+
+  .border-purple {
+    border-color: #8B5CF6;
+  }
+
   /* Status indicators */
   .status-active {
-    background: var(--gradient-primary);
-    color: hsl(0, 0%, 0%);
+    background: linear-gradient(135deg, #10B981, #06B6D4);
+    color: #FFFFFF;
   }
-  
-  /* Card Styles - Navy & Gold Color Hierarchy */
+
+  /* Card Styles */
   .card {
-    background-color: #1E2D3F !important;
-    border: 1px solid #2B3A4C !important;
+    background-color: #111827 !important;
+    border: 1px solid #1F2937 !important;
     backdrop-filter: blur(12px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .card-inner {
-    background-color: #142538;
-    border: 1px solid rgba(43, 58, 76, 0.3);
+    background-color: #0F172A;
+    border: 1px solid rgba(31, 41, 55, 0.3);
   }
 
   /* All interactive elements should have visible backgrounds */
   button:not([class*="bg-transparent"]) {
-    background-color: #1E2D3F;
+    background-color: #111827;
   }
 
   button[class*="ghost"] {
-    background-color: rgba(30, 45, 63, 0.5) !important;
+    background-color: rgba(17, 24, 39, 0.5) !important;
   }
 
   button[class*="outline"] {
-    background-color: #1E2D3F !important;
-    border: 1px solid #2B3A4C !important;
+    background-color: #111827 !important;
+    border: 1px solid #1F2937 !important;
   }
 
   /* Input & Form Styles */
   input, textarea, select {
-    background-color: #142538 !important;
-    border: 1px solid #2B3A4C !important;
+    background-color: #0F172A !important;
+    border: 1px solid #1F2937 !important;
     @apply text-card-foreground;
   }
 
   input:focus, textarea:focus, select:focus {
-    border-color: #E3B341 !important;
+    border-color: #06B6D4 !important;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(227, 179, 65, 0.15);
+    box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.15);
   }
 
   /* Buttons - minimal borders */
@@ -459,8 +542,8 @@
 
   /* Dialog/Dropdown/Popover backgrounds */
   [role="dialog"], [role="menu"], [role="listbox"], [role="combobox"] {
-    background-color: #1E2D3F !important;
-    border: 1px solid #2B3A4C !important;
+    background-color: #111827 !important;
+    border: 1px solid #1F2937 !important;
   }
 
   /* Ensure all divs inside cards have backgrounds */
@@ -470,81 +553,83 @@
 
   /* Badge backgrounds */
   .badge, [class*="badge"] {
-    background-color: #142538 !important;
-    border: 1px solid #2B3A4C;
+    background-color: #0F172A !important;
+    border: 1px solid #1F2937;
   }
 
   /* Status Colors */
   .status-profit {
-    color: #28C76F;
+    color: #10B981;
   }
 
   .status-loss {
-    color: #FF4F58;
+    color: #EF4444;
   }
-  
-  /* Button Styles - Navy & Gold */
+
+  /* Button Styles */
   .btn-primary {
-    background: #E3B341;
+    background: linear-gradient(135deg, #E3B341, #F59E0B);
     border: none;
-    color: #0A1A2F;
+    color: #080C14;
     font-weight: 600;
-    transition: background-color 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.15s ease;
   }
 
   .btn-primary:hover {
-    background: #d4a136;
+    opacity: 0.9;
+    transform: translateY(-1px);
   }
 
   .btn-secondary {
     background: transparent;
-    border: 2px solid #E3B341;
-    color: #E3B341;
+    border: 2px solid #06B6D4;
+    color: #06B6D4;
     transition: all 0.2s ease;
   }
 
   .btn-secondary:hover {
-    background: rgba(227, 179, 65, 0.1);
-    box-shadow: 0 0 10px rgba(227, 179, 65, 0.2);
+    background: rgba(6, 182, 212, 0.1);
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
   }
 
   .btn-danger {
-    background: #FF4F58;
+    background: linear-gradient(135deg, #EF4444, #F97316);
     border: none;
     color: #FFFFFF;
     font-weight: 600;
-    transition: background-color 0.2s ease;
+    transition: opacity 0.2s ease, transform 0.15s ease;
   }
 
   .btn-danger:hover {
-    background: #ff3b45;
+    opacity: 0.9;
+    transform: translateY(-1px);
   }
-  
+
   /* Interactive card effects */
   .interactive-card {
     @apply transition-colors duration-200;
-    background: #1A2A3D;
+    background: #111827;
     border: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .interactive-card:hover {
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-    background: #1F3448;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    background: #1A2332;
   }
-  
+
   /* Premium text effects */
   .gradient-text {
-    color: #FFFFFF;
+    color: #F1F5F9;
   }
 
   .gradient-text-profit {
-    color: #28C76F;
+    color: #10B981;
     font-weight: 600;
   }
 
   .gradient-text-loss {
-    color: #FF4F58;
+    color: #EF4444;
     font-weight: 600;
   }
 
@@ -567,28 +652,47 @@
     transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
   }
 
-  /* Dark mode specific overrides for footer and other components */
+  /* Dark mode specific overrides */
   .dark .bg-gray-900 {
-    background-color: hsl(240, 10%, 8%);
+    background-color: #080C14;
   }
 
   .dark .text-gray-400 {
-    color: hsl(0, 0%, 65%);
+    color: #94A3B8;
   }
 
   .dark .border-gray-800 {
-    border-color: hsl(240, 6%, 24%);
+    border-color: #1F2937;
   }
 }
 
 /* Keyframe animations */
 @keyframes glow {
   from {
-    text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green);
+    text-shadow: 0 0 10px #06B6D4, 0 0 20px #06B6D4, 0 0 30px #06B6D4;
   }
   to {
-    text-shadow: 0 0 20px var(--neon-green), 0 0 30px var(--neon-green), 0 0 40px var(--neon-green);
+    text-shadow: 0 0 20px #06B6D4, 0 0 30px #06B6D4, 0 0 40px #06B6D4;
   }
+}
+
+@keyframes glowPulse {
+  from {
+    box-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+  }
+  to {
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.5);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes popIn {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes slideUp {
@@ -662,18 +766,18 @@
 /* Hover effects */
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
 }
 
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
 
 /* Loading animations */
 .loading-bar {
   height: 2px;
-  background: linear-gradient(90deg, #000 0%, #666 50%, #000 100%);
+  background: linear-gradient(90deg, #080C14 0%, #06B6D4 50%, #080C14 100%);
   animation: loading 1.5s infinite;
 }
 
@@ -782,44 +886,43 @@ textarea:focus-visible {
   bottom: 0;
   background: radial-gradient(
     circle at 20% 50%,
-    var(--neon-green) 0%,
+    #10B981 0%,
     transparent 50%
   ),
   radial-gradient(
     circle at 80% 20%,
-    var(--gold) 0%,
+    #E3B341 0%,
     transparent 50%
   ),
   radial-gradient(
     circle at 40% 80%,
-    var(--neon-blue) 0%,
+    #06B6D4 0%,
     transparent 50%
   );
-  opacity: 0.1;
-  /* Removed float animation to prevent moving gradients */
+  opacity: 0.07;
   pointer-events: none;
 }
 
-/* Status badge styles - Navy & Gold */
+/* Status badge styles */
 .status-active {
-  background: #28C76F;
+  background: linear-gradient(135deg, #10B981, #06B6D4);
   color: #FFFFFF;
   @apply text-white font-semibold;
 }
 
 .status-inactive {
-  background: #FF4F58;
+  background: #EF4444;
   @apply text-white font-semibold;
 }
 
 .status-waiting {
-  background: #E3B341;
-  color: #0A1A2F;
+  background: linear-gradient(135deg, #E3B341, #F59E0B);
+  color: #080C14;
   @apply font-semibold;
 }
 
 .status-ended {
-  background: #556070;
+  background: #475569;
   color: #FFFFFF;
   @apply text-white font-semibold;
 }
@@ -837,7 +940,7 @@ textarea:focus-visible {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background: linear-gradient(90deg, transparent, rgba(6, 182, 212, 0.08), transparent);
   transition: left 0.5s;
 }
 

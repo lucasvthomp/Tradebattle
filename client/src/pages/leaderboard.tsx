@@ -52,7 +52,7 @@ export default function Leaderboard() {
       case 1:
         return <Crown className="h-5 w-5 text-[#E3B341]" />;
       case 2:
-        return <Award className="h-5 w-5 text-[#C9D1E2]" />;
+        return <Award className="h-5 w-5 text-[#CBD5E1]" />;
       case 3:
         return <Target className="h-5 w-5 text-[#CD7F32]" />;
       default:
@@ -63,13 +63,13 @@ export default function Leaderboard() {
   const getRankStyle = (rank: number) => {
     switch (rank) {
       case 1:
-        return "bg-[#E3B341] text-[#0A1A2F]";
+        return "bg-gradient-to-br from-[#FFD700] via-[#E3B341] to-[#c99a35] text-[#080C14]";
       case 2:
-        return "bg-[#C9D1E2] text-[#0A1A2F]";
+        return "bg-gradient-to-br from-[#CBD5E1] via-[#94A3B8] to-[#64748B] text-[#080C14]";
       case 3:
-        return "bg-[#CD7F32] text-white";
+        return "bg-gradient-to-br from-[#CD7F32] via-[#b3692a] to-[#995d24] text-white";
       default:
-        return "bg-[#142538] text-[#C9D1E2]";
+        return "bg-[#0F172A] text-[#F1F5F9]";
     }
   };
 
@@ -95,18 +95,18 @@ export default function Leaderboard() {
                 whileHover={{ y: -3 }}
                 className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
                 style={{
-                  background: 'linear-gradient(135deg, #C9D1E2 0%, #a8b6c8 50%, #8895a8 100%)',
+                  background: 'linear-gradient(135deg, #CBD5E1 0%, #94A3B8 50%, #64748B 100%)',
                   border: '2px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
                 <div className="relative z-10 text-center">
                   <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(6, 18, 31, 0.3)' }}
+                    style={{ background: 'rgba(8, 12, 20, 0.3)' }}
                   >
-                    <Award className="w-12 h-12" style={{ color: '#06121F' }} />
+                    <Award className="w-12 h-12" style={{ color: '#080C14' }} />
                   </div>
-                  <div className="text-2xl font-black mb-2" style={{ color: '#06121F' }}>{second.username}</div>
-                  <div className="text-3xl font-black" style={{ color: '#06121F' }}>
+                  <div className="text-2xl font-black mb-2" style={{ color: '#080C14' }}>{second.username}</div>
+                  <div className="text-3xl font-black" style={{ color: '#080C14' }}>
                     {type === 'wagered' ? formatCurrency(second.totalWagered) : `+${second.percentageChange.toFixed(1)}%`}
                   </div>
                 </div>
@@ -116,14 +116,14 @@ export default function Leaderboard() {
                 className="w-full rounded-t-2xl relative overflow-hidden"
                 style={{
                   height: 160,
-                  background: 'linear-gradient(180deg, #C9D1E2 0%, #a8b6c8 50%, #8895a8 100%)',
+                  background: 'linear-gradient(180deg, #CBD5E1 0%, #94A3B8 50%, #64748B 100%)',
                   border: '1px solid rgba(255, 255, 255, 0.2)',
                   borderBottom: 'none'
                 }}
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl font-black mb-2" style={{ color: 'rgba(6, 18, 31, 0.9)' }}>2</div>
-                  <div className="text-base font-bold tracking-wider" style={{ color: 'rgba(6, 18, 31, 0.7)' }}>SILVER</div>
+                  <div className="text-7xl font-black mb-2" style={{ color: 'rgba(8, 12, 20, 0.9)' }}>2</div>
+                  <div className="text-base font-bold tracking-wider" style={{ color: 'rgba(8, 12, 20, 0.7)' }}>SILVER</div>
                 </div>
               </div>
             </motion.div>
@@ -148,12 +148,12 @@ export default function Leaderboard() {
               >
                 <div className="relative z-10 text-center">
                   <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(6, 18, 31, 0.3)' }}
+                    style={{ background: 'rgba(8, 12, 20, 0.3)' }}
                   >
-                    <Crown className="w-14 h-14" style={{ color: '#06121F' }} />
+                    <Crown className="w-14 h-14" style={{ color: '#080C14' }} />
                   </div>
-                  <div className="text-3xl font-black mb-3" style={{ color: '#06121F' }}>{first.username}</div>
-                  <div className="text-4xl font-black" style={{ color: '#06121F' }}>
+                  <div className="text-3xl font-black mb-3" style={{ color: '#080C14' }}>{first.username}</div>
+                  <div className="text-4xl font-black" style={{ color: '#080C14' }}>
                     {type === 'wagered' ? formatCurrency(first.totalWagered) : `+${first.percentageChange.toFixed(1)}%`}
                   </div>
                 </div>
@@ -169,8 +169,8 @@ export default function Leaderboard() {
                 }}
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-8xl font-black mb-2" style={{ color: 'rgba(6, 18, 31, 0.9)' }}>1</div>
-                  <div className="text-lg font-bold tracking-widest" style={{ color: 'rgba(6, 18, 31, 0.8)' }}>GOLD</div>
+                  <div className="text-8xl font-black mb-2" style={{ color: 'rgba(8, 12, 20, 0.9)' }}>1</div>
+                  <div className="text-lg font-bold tracking-widest" style={{ color: 'rgba(8, 12, 20, 0.8)' }}>GOLD</div>
                 </div>
               </div>
             </motion.div>
@@ -228,7 +228,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#06121F' }}>
+    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#080C14' }}>
       <div className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
         {/* Header */}
         <motion.div
@@ -240,40 +240,40 @@ export default function Leaderboard() {
             <div className="rounded-2xl p-3" style={{
               backgroundColor: '#E3B341',
             }}>
-              <Trophy className="w-10 h-10" style={{ color: '#06121F' }} />
+              <Trophy className="w-10 h-10" style={{ color: '#080C14' }} />
             </div>
             <h1 className="text-6xl font-black text-white">Global Leaderboards 🏆</h1>
           </div>
-          <p className="text-xl text-[#8A93A6]">Top performers across all tournaments and categories</p>
+          <p className="text-xl text-[#94A3B8]">Top performers across all tournaments and categories</p>
         </motion.div>
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList className="grid w-full grid-cols-3 h-14 rounded-xl border-none shadow-lg" style={{
-            background: 'linear-gradient(135deg, #1E2D3F 0%, #142538 100%)'
+            background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
           }}>
             <TabsTrigger
               value="wagered"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F] rounded-lg text-base font-bold"
-              style={activeTab === "wagered" ? {} : { color: '#8A93A6' }}
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#080C14] rounded-lg text-base font-bold"
+              style={activeTab === "wagered" ? {} : { color: '#94A3B8' }}
             >
-              <DollarSign className="w-5 h-5 mr-2" style={{ color: activeTab === "wagered" ? undefined : '#8A93A6' }} />
+              <DollarSign className="w-5 h-5 mr-2" style={{ color: activeTab === "wagered" ? undefined : '#94A3B8' }} />
               Total Wagered
             </TabsTrigger>
             <TabsTrigger
               value="highwager"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F] rounded-lg text-base font-bold"
-              style={activeTab === "highwager" ? {} : { color: '#8A93A6' }}
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#080C14] rounded-lg text-base font-bold"
+              style={activeTab === "highwager" ? {} : { color: '#94A3B8' }}
             >
-              <Trophy className="w-5 h-5 mr-2" style={{ color: activeTab === "highwager" ? undefined : '#8A93A6' }} />
+              <Trophy className="w-5 h-5 mr-2" style={{ color: activeTab === "highwager" ? undefined : '#94A3B8' }} />
               High Stakes
             </TabsTrigger>
             <TabsTrigger
               value="growth"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#0A1A2F] rounded-lg text-base font-bold"
-              style={activeTab === "growth" ? {} : { color: '#8A93A6' }}
+              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#080C14] rounded-lg text-base font-bold"
+              style={activeTab === "growth" ? {} : { color: '#94A3B8' }}
             >
-              <TrendingUp className="w-5 h-5 mr-2" style={{ color: activeTab === "growth" ? undefined : '#8A93A6' }} />
+              <TrendingUp className="w-5 h-5 mr-2" style={{ color: activeTab === "growth" ? undefined : '#94A3B8' }} />
               Top Growth
             </TabsTrigger>
           </TabsList>
@@ -286,7 +286,7 @@ export default function Leaderboard() {
 
               {/* Remaining Rankings */}
               <Card className="rounded-2xl border-none shadow-xl" style={{
-                background: 'linear-gradient(135deg, #1E2D3F 0%, #142538 100%)'
+                background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
               }}>
                 <CardHeader className="p-6">
                   <CardTitle className="flex items-center gap-3 text-2xl">
@@ -307,24 +307,24 @@ export default function Leaderboard() {
                           whileHover={{ x: 3 }}
                           className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
                           style={{
-                            background: 'linear-gradient(135deg, rgba(30, 45, 63, 0.6), rgba(20, 37, 56, 0.6))',
+                            background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
                             boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
                           }}
                         >
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#142538] text-[#C9D1E2]">
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
                               {rank}
                             </div>
                             <div>
                               <div className="font-bold text-lg text-white">{trader.username}</div>
-                              <div className="text-sm text-[#8A93A6]">{trader.tournamentCount} tournaments</div>
+                              <div className="text-sm text-[#94A3B8]">{trader.tournamentCount} tournaments</div>
                             </div>
                           </div>
                           <div className="text-right">
                             <div className="text-2xl font-black" style={{ color: '#E3B341' }}>
                               {formatCurrency(trader.totalWagered)}
                             </div>
-                            <div className="text-xs text-[#8A93A6]">Total Wagered</div>
+                            <div className="text-xs text-[#94A3B8]">Total Wagered</div>
                           </div>
                         </motion.div>
                       );
@@ -353,7 +353,7 @@ export default function Leaderboard() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          className="flex items-center justify-between p-4 rounded-lg border border-[#2B3A4C] hover:border-[#E3B341] transition-all bg-[#1E2D3F]"
+                          className="flex items-center justify-between p-4 rounded-lg border border-[#1F2937] hover:border-[#E3B341] transition-all bg-[#111827]"
                         >
                           <div className="flex items-center gap-4">
                             <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
@@ -361,9 +361,9 @@ export default function Leaderboard() {
                             </div>
                             <div>
                               <div className="font-semibold text-white">{tournament.name}</div>
-                              <div className="text-sm text-[#8A93A6]">
+                              <div className="text-sm text-[#94A3B8]">
                                 {tournament.currentPlayers}/{tournament.maxPlayers} players •
-                                <span className={tournament.status === 'active' ? 'text-[#28C76F]' : 'text-[#E3B341]'}>
+                                <span className={tournament.status === 'active' ? 'text-[#10B981]' : 'text-[#E3B341]'}>
                                   {' '}{tournament.status}
                                 </span>
                               </div>
@@ -373,7 +373,7 @@ export default function Leaderboard() {
                             <div className="font-bold text-lg" style={{ color: '#E3B341' }}>
                               {formatCurrency(tournament.buyInAmount)}
                             </div>
-                            <div className="text-xs text-[#8A93A6]">Buy-In</div>
+                            <div className="text-xs text-[#94A3B8]">Buy-In</div>
                           </div>
                         </motion.div>
                       );
@@ -390,11 +390,11 @@ export default function Leaderboard() {
 
               {/* Remaining Rankings */}
               <Card className="rounded-2xl border-none shadow-xl" style={{
-                background: 'linear-gradient(135deg, #1E2D3F 0%, #142538 100%)'
+                background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
               }}>
                 <CardHeader className="p-6">
                   <CardTitle className="flex items-center gap-3 text-2xl">
-                    <TrendingUp className="w-7 h-7" style={{ color: '#28C76F' }} />
+                    <TrendingUp className="w-7 h-7" style={{ color: '#10B981' }} />
                     <span style={{ color: '#FFFFFF' }}>Complete Rankings 📈</span>
                   </CardTitle>
                 </CardHeader>
@@ -411,26 +411,26 @@ export default function Leaderboard() {
                           whileHover={{ x: 3 }}
                           className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
                           style={{
-                            background: 'linear-gradient(135deg, rgba(30, 45, 63, 0.6), rgba(20, 37, 56, 0.6))',
+                            background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
                             boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
                           }}
                         >
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#142538] text-[#C9D1E2]">
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
                               {rank}
                             </div>
                             <div>
                               <div className="font-bold text-lg text-white">{participant.username}</div>
-                              <div className="text-sm text-[#8A93A6]">
+                              <div className="text-sm text-[#94A3B8]">
                                 {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
                               </div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="text-2xl font-black text-[#28C76F]">
+                            <div className="text-2xl font-black text-[#10B981]">
                               +{participant.percentageChange.toFixed(1)}%
                             </div>
-                            <div className="text-sm text-[#C9D1E2]">{formatCurrency(participant.portfolioValue)}</div>
+                            <div className="text-sm text-[#F1F5F9]">{formatCurrency(participant.portfolioValue)}</div>
                           </div>
                         </motion.div>
                       );
@@ -457,16 +457,16 @@ export default function Leaderboard() {
                 <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">💰</div>
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="p-4 rounded-xl" style={{
-                    background: 'rgba(6, 18, 31, 0.3)',
+                    background: 'rgba(8, 12, 20, 0.3)',
                     backdropFilter: 'blur(10px)'
                   }}>
-                    <DollarSign className="w-8 h-8" style={{ color: '#06121F' }} />
+                    <DollarSign className="w-8 h-8" style={{ color: '#080C14' }} />
                   </div>
                   <div>
-                    <div className="text-3xl font-black" style={{ color: '#06121F' }}>
+                    <div className="text-3xl font-black" style={{ color: '#080C14' }}>
                       {formatCurrency(652300)}
                     </div>
-                    <div className="text-base font-bold" style={{ color: 'rgba(6, 18, 31, 0.7)' }}>
+                    <div className="text-base font-bold" style={{ color: 'rgba(8, 12, 20, 0.7)' }}>
                       Total Volume
                     </div>
                   </div>
@@ -477,7 +477,7 @@ export default function Leaderboard() {
 
           <motion.div whileHover={{ y: -3 }}>
             <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
-              background: 'linear-gradient(135deg, #28C76F 0%, #1a9a55 100%)'
+              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
             }}>
               <CardContent className="p-6">
                 <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">🏆</div>

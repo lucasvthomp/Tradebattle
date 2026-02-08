@@ -90,7 +90,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }, []);
 
   const getStatusColor = () => {
-    return isMarketOpen ? "bg-[#28C76F]" : "bg-[#FF4F58]";
+    return isMarketOpen ? "bg-[#10B981]" : "bg-[#EF4444]";
   };
 
   const getStatusText = () => {
@@ -119,7 +119,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
         <Clock className="w-3.5 h-3.5 text-muted-foreground" />
         <span className="text-xs font-medium text-muted-foreground">
           Market {isMarketOpen ? (
-            <span className="text-[#28C76F]">Open</span>
+            <span className="text-[#10B981]">Open</span>
           ) : (
             <span className="text-[#FF9F43]">Closed</span>
           )}
@@ -143,13 +143,13 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
               <Clock
                 className={`w-5 h-5 ${
                   isMarketOpen
-                    ? "text-[#28C76F]"
+                    ? "text-[#10B981]"
                     : "text-[#FF9F43]"
                 }`}
               />
               {showCountdown && (
                 <span className={`text-sm font-medium tabular-nums ${
-                  isMarketOpen ? "text-[#28C76F]" : "text-[#FF9F43]"
+                  isMarketOpen ? "text-[#10B981]" : "text-[#FF9F43]"
                 }`}>
                   {formatCountdown(minutesUntilEvent)}
                 </span>
@@ -164,7 +164,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
                 <div>9:30 AM - 4:00 PM ET</div>
                 <div className="pt-2 border-t border-border/50">
                   {isMarketOpen ? (
-                    <span className="text-[#28C76F]">Currently Open - Closes in {timeUntilClose}</span>
+                    <span className="text-[#10B981]">Currently Open - Closes in {timeUntilClose}</span>
                   ) : (
                     <span className="text-[#FF9F43]">Currently Closed - Opens in {timeUntilOpen}</span>
                   )}
@@ -178,7 +178,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }
 
   return (
-    <Card className={`border-0 ${isMarketOpen ? 'bg-[#28C76F]/10' : 'bg-[#FF4F58]/10'}`}>
+    <Card className={`border-0 ${isMarketOpen ? 'bg-[#10B981]/10' : 'bg-[#EF4444]/10'}`}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">

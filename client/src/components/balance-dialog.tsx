@@ -166,41 +166,41 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
   const paymentMethods = {
     deposit: [
       { id: 'crypto', label: 'Cryptocurrency', icon: Bitcoin, color: '#E3B341' },
-      { id: 'card', label: 'Credit/Debit Card', icon: CreditCard, color: '#28C76F' },
+      { id: 'card', label: 'Credit/Debit Card', icon: CreditCard, color: '#10B981' },
       { id: 'cashapp', label: 'Cash App', icon: Smartphone, color: '#00D54B' },
       { id: 'code', label: 'Balance Code', icon: Ticket, color: '#3B82F6' },
     ],
     withdraw: [
       { id: 'crypto', label: 'Cryptocurrency', icon: Bitcoin, color: '#E3B341' },
-      { id: 'card', label: 'Credit/Debit Card', icon: CreditCard, color: '#28C76F' },
+      { id: 'card', label: 'Credit/Debit Card', icon: CreditCard, color: '#10B981' },
       { id: 'cashapp', label: 'Cash App', icon: Smartphone, color: '#00D54B' },
     ],
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]" style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+      <DialogContent className="sm:max-w-[600px]" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+          <DialogTitle className="flex items-center gap-2" style={{ color: '#F1F5F9' }}>
             <Wallet className="w-5 h-5" style={{ color: '#E3B341' }} />
             Manage Balance
           </DialogTitle>
         </DialogHeader>
 
         {/* Current Balance Display */}
-        <div className="p-4 rounded-lg mb-4" style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}>
-          <p className="text-xs mb-1" style={{ color: '#8A93A6' }}>Available Balance</p>
+        <div className="p-4 rounded-lg mb-4" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+          <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Available Balance</p>
           <p className="text-3xl font-bold" style={{ color: '#E3B341' }}>
             {formatCurrency(currentBalance)}
           </p>
         </div>
 
         <Tabs defaultValue="deposit" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6" style={{ backgroundColor: '#1E2D3F' }}>
+          <TabsList className="grid w-full grid-cols-2 mb-6" style={{ backgroundColor: '#111827' }}>
             <TabsTrigger
               value="deposit"
               className="flex items-center gap-2"
-              style={{ color: '#8A93A6' }}
+              style={{ color: '#94A3B8' }}
             >
               <TrendingUp className="w-4 h-4" />
               Deposit
@@ -208,7 +208,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
             <TabsTrigger
               value="withdraw"
               className="flex items-center gap-2"
-              style={{ color: '#8A93A6' }}
+              style={{ color: '#94A3B8' }}
             >
               <TrendingDown className="w-4 h-4" />
               Withdraw
@@ -218,7 +218,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
           <TabsContent value="deposit" className="space-y-4">
             {/* Payment Method Selection */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
+              <Label className="text-sm font-medium" style={{ color: '#F1F5F9' }}>
                 Select Payment Method
               </Label>
               <div className="grid grid-cols-2 gap-3">
@@ -230,15 +230,15 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                       key={method.id}
                       className="p-4 cursor-pointer transition-all hover:scale-[1.02]"
                       style={{
-                        backgroundColor: isSelected ? '#1E2D3F' : '#142538',
-                        borderColor: isSelected ? method.color : '#2B3A4C',
+                        backgroundColor: isSelected ? '#111827' : '#0F172A',
+                        borderColor: isSelected ? method.color : '#1F2937',
                         borderWidth: isSelected ? '2px' : '1px',
                       }}
                       onClick={() => setDepositMethod(method.id as PaymentMethod)}
                     >
                       <div className="flex flex-col items-center gap-2 text-center">
                         <Icon className="w-6 h-6" style={{ color: method.color }} />
-                        <span className="text-xs font-medium" style={{ color: isSelected ? '#C9D1E2' : '#8A93A6' }}>
+                        <span className="text-xs font-medium" style={{ color: isSelected ? '#F1F5F9' : '#94A3B8' }}>
                           {method.label}
                         </span>
                       </div>
@@ -251,11 +251,11 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
             {/* Amount Input */}
             {depositMethod && depositMethod !== 'code' && (
               <div className="space-y-2">
-                <Label htmlFor="deposit-amount" style={{ color: '#C9D1E2' }}>
+                <Label htmlFor="deposit-amount" style={{ color: '#F1F5F9' }}>
                   Amount
                 </Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4" style={{ color: '#8A93A6' }} />
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
                   <Input
                     id="deposit-amount"
                     type="number"
@@ -263,7 +263,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                     value={depositAmount}
                     onChange={(e) => setDepositAmount(e.target.value)}
                     className="pl-10"
-                    style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                     min="1"
                     step="0.01"
                   />
@@ -275,7 +275,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
             {depositMethod === 'code' && (
               <div className="space-y-3">
                 <div className="space-y-2">
-                  <Label htmlFor="balance-code" style={{ color: '#C9D1E2' }}>
+                  <Label htmlFor="balance-code" style={{ color: '#F1F5F9' }}>
                     Balance Code
                   </Label>
                   <Input
@@ -284,9 +284,9 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                     placeholder="Enter your balance code"
                     value={balanceCode}
                     onChange={(e) => setBalanceCode(e.target.value)}
-                    style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                   />
-                  <p className="text-xs" style={{ color: '#8A93A6' }}>
+                  <p className="text-xs" style={{ color: '#94A3B8' }}>
                     Enter the balance code you received to credit your account.
                   </p>
                 </div>
@@ -298,7 +298,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                 onClick={handleDeposit}
                 disabled={depositMutation.isPending || (depositMethod === 'code' ? !balanceCode : !depositAmount)}
                 className="w-full"
-                style={{ backgroundColor: '#28C76F', color: '#FFFFFF' }}
+                style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
               >
                 {depositMutation.isPending ? "Processing..." : `Deposit via ${paymentMethods.deposit.find(m => m.id === depositMethod)?.label}`}
               </Button>
@@ -308,7 +308,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
           <TabsContent value="withdraw" className="space-y-4">
             {/* Payment Method Selection */}
             <div className="space-y-3">
-              <Label className="text-sm font-medium" style={{ color: '#C9D1E2' }}>
+              <Label className="text-sm font-medium" style={{ color: '#F1F5F9' }}>
                 Select Payment Method
               </Label>
               <div className="grid grid-cols-2 gap-3">
@@ -320,15 +320,15 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                       key={method.id}
                       className="p-4 cursor-pointer transition-all hover:scale-[1.02]"
                       style={{
-                        backgroundColor: isSelected ? '#1E2D3F' : '#142538',
-                        borderColor: isSelected ? method.color : '#2B3A4C',
+                        backgroundColor: isSelected ? '#111827' : '#0F172A',
+                        borderColor: isSelected ? method.color : '#1F2937',
                         borderWidth: isSelected ? '2px' : '1px',
                       }}
                       onClick={() => setWithdrawMethod(method.id as PaymentMethod)}
                     >
                       <div className="flex flex-col items-center gap-2 text-center">
                         <Icon className="w-6 h-6" style={{ color: method.color }} />
-                        <span className="text-xs font-medium" style={{ color: isSelected ? '#C9D1E2' : '#8A93A6' }}>
+                        <span className="text-xs font-medium" style={{ color: isSelected ? '#F1F5F9' : '#94A3B8' }}>
                           {method.label}
                         </span>
                       </div>
@@ -341,11 +341,11 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
             {/* Amount Input */}
             {withdrawMethod && (
               <div className="space-y-2">
-                <Label htmlFor="withdraw-amount" style={{ color: '#C9D1E2' }}>
+                <Label htmlFor="withdraw-amount" style={{ color: '#F1F5F9' }}>
                   Amount
                 </Label>
                 <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4" style={{ color: '#8A93A6' }} />
+                  <DollarSign className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
                   <Input
                     id="withdraw-amount"
                     type="number"
@@ -353,13 +353,13 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     className="pl-10"
-                    style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                     min="1"
                     max={currentBalance}
                     step="0.01"
                   />
                 </div>
-                <p className="text-xs" style={{ color: '#8A93A6' }}>
+                <p className="text-xs" style={{ color: '#94A3B8' }}>
                   Available: {formatCurrency(currentBalance)}
                 </p>
               </div>
@@ -370,7 +370,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                 onClick={handleWithdraw}
                 disabled={withdrawMutation.isPending || !withdrawAmount || currentBalance <= 0}
                 className="w-full"
-                style={{ backgroundColor: '#FF4F58', color: '#FFFFFF' }}
+                style={{ backgroundColor: '#EF4444', color: '#FFFFFF' }}
               >
                 {withdrawMutation.isPending ? "Processing..." : `Withdraw via ${paymentMethods.withdraw.find(m => m.id === withdrawMethod)?.label}`}
               </Button>

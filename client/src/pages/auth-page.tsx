@@ -135,7 +135,8 @@ export default function AuthPage() {
 
                       <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full text-white border-0"
+                        style={{ background: 'linear-gradient(135deg, #06B6D4, #3B82F6)' }}
                         disabled={loginMutation.isPending}
                       >
                         {loginMutation.isPending ? (
@@ -219,7 +220,8 @@ export default function AuthPage() {
 
                       <Button
                         type="submit"
-                        className="w-full"
+                        className="w-full text-white border-0"
+                        style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
                         disabled={registerMutation.isPending}
                       >
                         {registerMutation.isPending ? (

@@ -49,7 +49,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
       {/* Header */}
       <div
         className="px-3 py-2.5 flex items-center justify-between"
-        style={{ borderBottom: "1px solid #2B3A4C" }}
+        style={{ borderBottom: "1px solid #1F2937" }}
       >
         <h3 className="text-sm font-bold" style={{ color: "#E3B341" }}>
           Watchlist
@@ -57,7 +57,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
         <span
           className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
           style={{
-            backgroundColor: "rgba(227, 179, 65, 0.15)",
+            backgroundColor: "rgba(6, 182, 212, 0.15)",
             color: "#E3B341",
           }}
         >
@@ -66,11 +66,11 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2" style={{ borderBottom: "1px solid #2B3A4C" }}>
+      <div className="px-3 py-2" style={{ borderBottom: "1px solid #1F2937" }}>
         <div className="relative">
           <Search
             className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-            style={{ color: "#8A93A6" }}
+            style={{ color: "#94A3B8" }}
           />
           <Input
             placeholder="Search stocks..."
@@ -78,8 +78,8 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
             onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
             className="h-8 pl-8 text-xs"
             style={{
-              backgroundColor: "#0A1A2F",
-              borderColor: "#2B3A4C",
+              backgroundColor: "#080C14",
+              borderColor: "#1F2937",
               color: "#FFFFFF",
             }}
           />
@@ -89,7 +89,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
         {searchQuery.length >= 2 && (
           <div
             className="mt-1 rounded-lg overflow-hidden"
-            style={{ backgroundColor: "#0A1A2F", border: "1px solid #2B3A4C" }}
+            style={{ backgroundColor: "#080C14", border: "1px solid #1F2937" }}
           >
             {isSearching ? (
               <div className="px-3 py-2 space-y-2">
@@ -102,20 +102,20 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
                 <button
                   key={result.symbol}
                   onClick={() => handleSearchSelect(result.symbol)}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[#142538] flex items-center justify-between transition-colors"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[#0F172A] flex items-center justify-between transition-colors"
                 >
                   <div>
                     <span className="font-bold" style={{ color: "#FFFFFF" }}>
                       {result.symbol}
                     </span>
                     {result.name && (
-                      <span className="ml-2" style={{ color: "#8A93A6" }}>
+                      <span className="ml-2" style={{ color: "#94A3B8" }}>
                         {result.name}
                       </span>
                     )}
                   </div>
                   {result.exchange && (
-                    <span className="text-[10px]" style={{ color: "#8A93A6" }}>
+                    <span className="text-[10px]" style={{ color: "#94A3B8" }}>
                       {result.exchange}
                     </span>
                   )}
@@ -123,7 +123,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
               ))
             ) : (
               <div className="px-3 py-3 text-center">
-                <span className="text-xs" style={{ color: "#8A93A6" }}>
+                <span className="text-xs" style={{ color: "#94A3B8" }}>
                   No stocks found
                 </span>
               </div>
@@ -140,7 +140,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
               <div
                 key={i}
                 className="px-3 py-2.5 flex items-center justify-between"
-                style={{ borderBottom: "1px solid rgba(43, 58, 76, 0.5)" }}
+                style={{ borderBottom: "1px solid rgba(31, 41, 55, 0.5)" }}
               >
                 <Skeleton className="h-4 w-12" />
                 <div className="flex items-center gap-3">
@@ -152,7 +152,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
           </div>
         ) : watchlistItems.length === 0 ? (
           <div className="px-3 py-6 text-center">
-            <span className="text-xs" style={{ color: "#8A93A6" }}>
+            <span className="text-xs" style={{ color: "#94A3B8" }}>
               No stocks available
             </span>
           </div>
@@ -161,11 +161,11 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
             <button
               key={item.symbol}
               onClick={() => onSymbolSelect(item.symbol)}
-              className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#142538]"
+              className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#0F172A]"
               style={{
-                backgroundColor: selectedSymbol === item.symbol ? "#142538" : "transparent",
+                backgroundColor: selectedSymbol === item.symbol ? "#0F172A" : "transparent",
                 borderLeft: selectedSymbol === item.symbol ? "2px solid #E3B341" : "2px solid transparent",
-                borderBottom: "1px solid rgba(43, 58, 76, 0.5)",
+                borderBottom: "1px solid rgba(31, 41, 55, 0.5)",
               }}
             >
               <span
@@ -175,12 +175,12 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
                 {item.symbol}
               </span>
               <div className="flex items-center gap-3">
-                <span className="font-medium" style={{ color: "#C9D1E2" }}>
+                <span className="font-medium" style={{ color: "#F1F5F9" }}>
                   ${item.price.toFixed(2)}
                 </span>
                 <span
                   className="font-semibold min-w-[60px] text-right"
-                  style={{ color: item.change >= 0 ? "#28C76F" : "#FF4F58" }}
+                  style={{ color: item.change >= 0 ? "#10B981" : "#EF4444" }}
                 >
                   {item.change >= 0 ? "+" : ""}
                   {item.percentChange.toFixed(2)}%

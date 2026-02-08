@@ -64,14 +64,14 @@ export function SimplifiedSidebar() {
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         className="md:hidden fixed left-4 top-20 z-50 w-10 h-10 flex items-center justify-center rounded-lg"
         style={{
-          backgroundColor: '#1E2D3F',
-          border: '2px solid #2B3A4C'
+          backgroundColor: '#111827',
+          border: '2px solid #1F2937'
         }}
       >
         <div className="flex flex-col gap-1">
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#06B6D4' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#06B6D4' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#06B6D4' }}></div>
         </div>
       </button>
 
@@ -91,8 +91,8 @@ export function SimplifiedSidebar() {
           ${expanded ? 'w-56' : 'w-16'}
         `}
         style={{
-          backgroundColor: '#0D1F33',
-          borderColor: '#2B3A4C'
+          backgroundColor: '#0B1120',
+          borderColor: '#1F2937'
         }}
         onMouseEnter={() => !mobileMenuOpen && setExpanded(true)}
         onMouseLeave={() => !mobileMenuOpen && setExpanded(false)}
@@ -110,12 +110,12 @@ export function SimplifiedSidebar() {
               }`}
               style={
                 isActive(item.href)
-                  ? { backgroundColor: 'rgba(227, 179, 65, 0.15)', color: '#E3B341', borderColor: 'rgba(227, 179, 65, 0.3)' }
-                  : { color: '#8A93A6' }
+                  ? { backgroundColor: 'rgba(6, 182, 212, 0.12)', color: '#06B6D4', borderColor: 'rgba(6, 182, 212, 0.3)' }
+                  : { color: '#94A3B8' }
               }
               onMouseEnter={(e) => {
                 if (!isActive(item.href)) {
-                  e.currentTarget.style.backgroundColor = '#142538';
+                  e.currentTarget.style.backgroundColor = '#0F172A';
                   e.currentTarget.style.color = '#FFFFFF';
                 }
               }}
@@ -138,7 +138,7 @@ export function SimplifiedSidebar() {
 
         {/* Separator */}
         {user && (
-          <div className="mx-3 my-3 h-px" style={{ backgroundColor: '#2B3A4C' }} />
+          <div className="mx-3 my-3 h-px" style={{ backgroundColor: '#1F2937' }} />
         )}
 
         {/* User Actions */}
@@ -160,14 +160,14 @@ export function SimplifiedSidebar() {
                 }
                 onMouseEnter={(e) => {
                   if (!isActive(item.href)) {
-                    e.currentTarget.style.backgroundColor = '#142538';
+                    e.currentTarget.style.backgroundColor = '#111827';
                     e.currentTarget.style.color = '#FFFFFF';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive(item.href)) {
                     e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#8A93A6';
+                    e.currentTarget.style.color = '#94A3B8';
                   }
                 }}
               >
@@ -193,14 +193,14 @@ export function SimplifiedSidebar() {
                   : 'p-3 aspect-square'
               }`}
               style={{
-                backgroundColor: '#E3B341',
-                color: '#0A1A2F'
+                background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
+                color: '#080C14'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#d4a136';
+                e.currentTarget.style.opacity = '0.9';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#E3B341';
+                e.currentTarget.style.opacity = '1';
               }}
               size={expanded ? "default" : "icon"}
             >

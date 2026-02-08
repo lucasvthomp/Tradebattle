@@ -32,23 +32,23 @@ export function AboutSection({ symbol }: AboutSectionProps) {
   const displayText = expanded || !isLong ? description : description.slice(0, 250) + "...";
 
   return (
-    <div className="px-4 py-4" style={{ borderBottom: "1px solid #2B3A4C" }}>
-      <h3 className="text-base font-bold mb-2" style={{ color: "#C9D1E2" }}>
+    <div className="px-4 py-4" style={{ borderBottom: "1px solid #1F2937" }}>
+      <h3 className="text-base font-bold mb-2" style={{ color: "#F1F5F9" }}>
         About
       </h3>
       <div className="flex flex-wrap gap-2 mb-2">
         {profile.sector && profile.sector !== "N/A" && (
-          <Badge style={{ backgroundColor: "rgba(227, 179, 65, 0.15)", color: "#E3B341", border: "none" }}>
+          <Badge style={{ backgroundColor: "rgba(6, 182, 212, 0.15)", color: "#E3B341", border: "none" }}>
             {profile.sector}
           </Badge>
         )}
         {profile.industry && profile.industry !== "N/A" && (
-          <Badge style={{ backgroundColor: "rgba(40, 199, 111, 0.15)", color: "#28C76F", border: "none" }}>
+          <Badge style={{ backgroundColor: "rgba(16, 185, 129, 0.15)", color: "#10B981", border: "none" }}>
             {profile.industry}
           </Badge>
         )}
       </div>
-      <p className="text-sm leading-relaxed" style={{ color: "#8A93A6" }}>
+      <p className="text-sm leading-relaxed" style={{ color: "#94A3B8" }}>
         {displayText}
       </p>
       {isLong && (

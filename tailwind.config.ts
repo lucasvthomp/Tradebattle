@@ -139,6 +139,24 @@ export default {
             "box-shadow": "0 0 40px var(--neon-green)",
           },
         },
+        "shimmer": {
+          "0%": {
+            "background-position": "-200% 0",
+          },
+          "100%": {
+            "background-position": "200% 0",
+          },
+        },
+        "pop-in": {
+          "0%": {
+            transform: "scale(0.95)",
+            opacity: "0",
+          },
+          "100%": {
+            transform: "scale(1)",
+            opacity: "1",
+          },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -149,6 +167,8 @@ export default {
         "fade-in": "fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite alternate",
         "pulse-slow": "pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite",
+        "shimmer": "shimmer 2s ease-in-out infinite",
+        "pop-in": "pop-in 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
       },
     },
   },

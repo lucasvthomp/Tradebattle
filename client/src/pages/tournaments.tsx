@@ -385,10 +385,12 @@ export default function TournamentsPage() {
                 isOpen={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
               />
-              <Button onClick={() => setCreateDialogOpen(true)} className="rounded-lg" style={{
+              <Button onClick={() => setCreateDialogOpen(true)} className="rounded-lg border-0" style={{
                 height: 'clamp(32px, 2.5vh, 40px)',
                 padding: '0 clamp(12px, 1.5vw, 20px)',
-                fontSize: 'clamp(0.75rem, 1vw, 1rem)'
+                fontSize: 'clamp(0.75rem, 1vw, 1rem)',
+                background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                color: '#FFFFFF'
               }}>
                 <Plus style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', marginRight: '8px' }} />
                 Create Tournament
@@ -438,7 +440,7 @@ export default function TournamentsPage() {
               <TabsList className="grid w-full grid-cols-3 h-14 bg-muted/50 backdrop-blur-sm">
                 <TabsTrigger
                   value="upcoming"
-                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white transition-all duration-300"
+                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-cyan-500 data-[state=active]:text-white transition-all duration-300"
                 >
                   <Timer className="w-4 h-4" />
                   <span className="hidden sm:inline">Upcoming</span>
@@ -448,7 +450,7 @@ export default function TournamentsPage() {
                 </TabsTrigger>
                 <TabsTrigger
                   value="ongoing"
-                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-yellow-500 data-[state=active]:to-amber-600 data-[state=active]:text-white transition-all duration-300"
+                  className="flex items-center justify-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-amber-500 data-[state=active]:to-orange-500 data-[state=active]:text-white transition-all duration-300"
                 >
                   <Trophy className="w-4 h-4" />
                   <span className="hidden sm:inline">Ongoing</span>
@@ -602,7 +604,7 @@ export default function TournamentsPage() {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Prize Pool:</span>
-                      <span className="font-bold text-green-600">
+                      <span className="font-bold" style={{ color: '#E3B341' }}>
                         {formatCurrency(tournamentToJoin.currentPot || (tournamentToJoin.buyInAmount * tournamentToJoin.currentPlayers))}
                       </span>
                     </div>
@@ -866,13 +868,13 @@ function TournamentCard({
     >
       <Card className={`h-full relative overflow-hidden group transition-all duration-300 border ${
         type === "upcoming"
-          ? "border-green-500/20 hover:border-green-500/40 bg-card"
-          : "border-yellow-500/20 hover:border-yellow-500/40 bg-card"
+          ? "border-emerald-500/20 hover:border-emerald-500/40 bg-card"
+          : "border-amber-500/20 hover:border-amber-500/40 bg-card"
       } hover:shadow-md`}>
         {/* High pot crown indicator */}
         {isHighPot && (
           <div className="absolute top-3 right-3 z-20">
-            <Crown className="w-6 h-6 text-yellow-500" />
+            <Crown className="w-6 h-6" style={{ color: '#E3B341' }} />
           </div>
         )}
 
@@ -882,16 +884,16 @@ function TournamentCard({
               <div className="flex items-center gap-2 mb-1.5">
                 <div className={`p-1.5 rounded-lg ${
                     type === "upcoming"
-                      ? "bg-green-600"
-                      : "bg-yellow-600"
+                      ? "bg-emerald-600"
+                      : "bg-amber-600"
                   }`}
                 >
                   <TournamentTypeIcon className="w-3.5 h-3.5 text-white" />
                 </div>
                 {type === "ongoing" && (
-                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-yellow-500/20 rounded-full border border-yellow-500/30">
-                    <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
-                    <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">LIVE</span>
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-amber-500/20 rounded-full border border-amber-500/30">
+                    <div className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse" />
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">LIVE</span>
                   </div>
                 )}
               </div>
@@ -921,19 +923,15 @@ function TournamentCard({
           {/* Current Pot - Enhanced */}
           <div className={`text-center py-3 rounded-xl border overflow-hidden ${
               type === "upcoming"
-                ? "bg-green-500/5 border-green-500/20"
-                : "bg-yellow-500/5 border-yellow-500/20"
+                ? "bg-emerald-500/5 border-emerald-500/20"
+                : "bg-amber-500/5 border-amber-500/20"
             }`}
           >
             <div className="flex items-center justify-center gap-1.5 mb-1">
-              <DollarSign className={`w-5 h-5 ${
-                isHighPot ? "text-yellow-500" : "text-primary"
-              }`} />
+              <DollarSign className="w-5 h-5" style={{ color: '#E3B341' }} />
               <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Prize Pool</span>
             </div>
-            <div className={`text-2xl font-black mb-1 ${
-              type === "upcoming" ? "text-green-500" : "text-yellow-500"
-            }`}>
+            <div className="text-2xl font-black mb-1" style={{ color: '#E3B341' }}>
               {formatCurrency(currentPot)}
             </div>
             <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground font-medium">
@@ -961,8 +959,8 @@ function TournamentCard({
                   </div>
                   <span className={`font-bold ${
                     type === "upcoming"
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-yellow-600 dark:text-yellow-400"
+                      ? "text-emerald-600 dark:text-emerald-400"
+                      : "text-amber-600 dark:text-amber-400"
                   }`}>{getTimeRemaining()}</span>
                 </div>
               </>
@@ -976,7 +974,7 @@ function TournamentCard({
               <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                 <Button
                   onClick={onViewLeaderboard}
-                  className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-yellow-500/10 to-amber-500/10 hover:from-yellow-500/20 hover:to-amber-500/20"
+                  className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20"
                   variant="outline"
                   size="sm"
                 >
@@ -996,7 +994,8 @@ function TournamentCard({
                         console.error("Failed to start tournament:", error);
                       }
                     }}
-                    className="w-full transition-all duration-300 font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg hover:shadow-xl hover:shadow-green-500/30"
+                    className="w-full transition-all duration-300 font-bold shadow-lg hover:shadow-xl hover:shadow-emerald-500/30 border-0"
+                    style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
                     size="sm"
                   >
                     <Play className="w-4 h-4 mr-2" />
@@ -1020,12 +1019,13 @@ function TournamentCard({
                 <Button
                   onClick={onJoin}
                   disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
-                  className={`w-full transition-all duration-300 font-bold ${
+                  className={`w-full transition-all duration-300 font-bold border-0 ${
                     !(isJoining || tournament.currentPlayers >= tournament.maxPlayers)
-                      ? "bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl hover:shadow-primary/30"
+                      ? "shadow-lg hover:shadow-xl hover:shadow-emerald-500/30"
                       : ""
                   }`}
                   size="sm"
+                  style={!(isJoining || tournament.currentPlayers >= tournament.maxPlayers) ? { background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' } : {}}
                 >
                   {isJoining ? "Joining..." :
                    tournament.currentPlayers >= tournament.maxPlayers ? "Full" :

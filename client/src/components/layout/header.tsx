@@ -27,14 +27,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const [, navigate] = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-muted" style={{ backgroundColor: 'rgba(10, 26, 47, 0.98)' }}>
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-muted" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)' }}>
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-primary">
-                <span className="font-bold text-sm text-background">O</span>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #E3B341, #F59E0B)' }}>
+                <span className="font-bold text-sm" style={{ color: '#080C14' }}>O</span>
               </div>
               <span className="text-xl font-bold text-foreground">ORSATH</span>
             </Link>
@@ -52,9 +52,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display - Clickable for balance management */}
                 <Button
                   variant="ghost"
-                  className="h-10 flex items-center justify-center px-4 hover:bg-yellow-500/10 transition-all border-2"
+                  className="h-10 flex items-center justify-center px-4 hover:bg-cyan-500/10 transition-all border-2"
                   style={{
-                    borderColor: '#E3B341',
+                    borderColor: '#06B6D4',
                     color: '#E3B341'
                   }}
                   onClick={() => setBalanceDialogOpen(true)}
@@ -67,7 +67,8 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
 
                 {/* Deposit Button */}
                 <Button
-                  className="h-8 w-8 p-0 rounded-full bg-green-600 hover:bg-green-500 text-white"
+                  className="h-8 w-8 p-0 rounded-full text-white transition-transform hover:scale-110"
+                  style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)' }}
                   onClick={() => navigate("/deposit")}
                 >
                   <Plus className="w-4 h-4" />
@@ -126,7 +127,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="bg-primary hover:bg-primary/90 px-4 py-2">
+                  <Button className="px-4 py-2 text-white transition-transform hover:scale-105" style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
                     <UserPlus className="w-4 h-4 mr-2" />
                     Sign Up
                   </Button>
@@ -148,16 +149,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
 
       {/* Mobile Menu Panel - show only on portrait */}
       {mobileMenuOpen && (
-        <div className="[@media(min-aspect-ratio:1/1)]:hidden border-t border-border" style={{ backgroundColor: 'rgba(10, 26, 47, 0.98)' }}>
+        <div className="[@media(min-aspect-ratio:1/1)]:hidden border-t border-border" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)' }}>
           <div className="container mx-auto px-4 py-4 space-y-3">
             {user ? (
               <>
                 {/* Balance Display */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start h-12 hover:bg-yellow-500/10 border-2"
+                  className="w-full justify-start h-12 hover:bg-cyan-500/10 border-2"
                   style={{
-                    borderColor: '#E3B341',
+                    borderColor: '#06B6D4',
                     color: '#E3B341'
                   }}
                   onClick={() => {
@@ -173,7 +174,8 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
 
                 {/* Deposit Button */}
                 <Button
-                  className="w-full justify-start h-12 rounded-lg bg-green-600 hover:bg-green-500 text-white"
+                  className="w-full justify-start h-12 rounded-lg text-white"
+                  style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)' }}
                   onClick={() => {
                     navigate("/deposit");
                     setMobileMenuOpen(false);
@@ -247,7 +249,8 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 </Link>
                 <Link href="/signup">
                   <Button
-                    className="w-full justify-start h-12 bg-primary hover:bg-primary/90"
+                    className="w-full justify-start h-12 text-white"
+                    style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <UserPlus className="w-5 h-5 mr-2" />

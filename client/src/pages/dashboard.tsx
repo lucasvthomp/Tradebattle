@@ -87,13 +87,13 @@ export default function Dashboard() {
     return (
       <div
         className="h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#06121F" }}
+        style={{ backgroundColor: "#080C14" }}
       >
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2" style={{ color: "#FFFFFF" }}>
             Please Log In
           </h2>
-          <p style={{ color: "#8A93A6" }}>
+          <p style={{ color: "#94A3B8" }}>
             You need to be logged in to view your trading dashboard.
           </p>
         </div>
@@ -105,16 +105,16 @@ export default function Dashboard() {
     return (
       <div
         className="h-screen flex items-center justify-center"
-        style={{ backgroundColor: "#06121F" }}
+        style={{ backgroundColor: "#080C14" }}
       >
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2" style={{ color: "#FFFFFF" }}>
             No Active Tournaments
           </h3>
-          <p className="mb-4" style={{ color: "#8A93A6" }}>
+          <p className="mb-4" style={{ color: "#94A3B8" }}>
             Join or create a tournament to start trading
           </p>
-          <Button asChild style={{ backgroundColor: "#28C76F", color: "#FFFFFF" }}>
+          <Button asChild style={{ backgroundColor: "#10B981", color: "#FFFFFF" }}>
             <a href="/tournaments">Browse Tournaments</a>
           </Button>
         </div>
@@ -125,7 +125,7 @@ export default function Dashboard() {
   return (
     <div
       className="min-h-screen flex flex-col [@media(min-aspect-ratio:1/1)]:flex-row"
-      style={{ backgroundColor: "#06121F" }}
+      style={{ backgroundColor: "#080C14" }}
     >
       {/* LEFT SIDE: Chart + Info */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
@@ -141,7 +141,7 @@ export default function Dashboard() {
         {/* TradingView Chart */}
         <div
           className="flex-1 min-h-[400px] [@media(min-aspect-ratio:1/1)]:min-h-[500px] mx-2 [@media(min-aspect-ratio:1/1)]:mx-4 rounded-xl overflow-hidden"
-          style={{ border: "1px solid #2B3A4C" }}
+          style={{ border: "1px solid #1F2937" }}
         >
           <TradingViewChart symbol={selectedSymbol} />
         </div>
@@ -150,7 +150,7 @@ export default function Dashboard() {
         <ScrollArea className="max-h-[400px] mx-2 [@media(min-aspect-ratio:1/1)]:mx-4 mt-2 mb-2">
           <div
             className="rounded-xl overflow-hidden"
-            style={{ backgroundColor: "#1E2D3F", border: "1px solid #2B3A4C" }}
+            style={{ backgroundColor: "#111827", border: "1px solid #1F2937" }}
           >
             <AboutSection symbol={selectedSymbol} />
             <HoldingsList
@@ -166,8 +166,8 @@ export default function Dashboard() {
       <div
         className="w-full [@media(min-aspect-ratio:1/1)]:w-96 flex flex-col"
         style={{
-          backgroundColor: "#1E2D3F",
-          borderLeft: "1px solid #2B3A4C",
+          backgroundColor: "#111827",
+          borderLeft: "1px solid #1F2937",
         }}
       >
         <OrderPanel

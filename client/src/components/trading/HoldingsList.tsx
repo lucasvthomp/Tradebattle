@@ -41,12 +41,12 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
     <div className="px-4 py-4">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-base font-bold" style={{ color: "#C9D1E2" }}>
+        <h3 className="text-base font-bold" style={{ color: "#F1F5F9" }}>
           Your Holdings
         </h3>
         <span
           className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
-          style={{ backgroundColor: "rgba(227, 179, 65, 0.15)", color: "#E3B341" }}
+          style={{ backgroundColor: "rgba(6, 182, 212, 0.12)", color: "#06B6D4" }}
         >
           {holdings.length} {holdings.length === 1 ? "position" : "positions"}
         </span>
@@ -56,7 +56,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
       {holdings.length > 0 && (
         <div
           className="flex items-center gap-2 px-2 pb-2 text-[9px] uppercase tracking-wide"
-          style={{ color: "#5A6375", borderBottom: "1px solid #2B3A4C" }}
+          style={{ color: "#64748B", borderBottom: "1px solid #1F2937" }}
         >
           <span className="w-[52px] shrink-0">Symbol</span>
           <span className="w-[32px] shrink-0 text-right">Qty</span>
@@ -85,10 +85,10 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
         </div>
       ) : holdings.length === 0 ? (
         <div className="py-6 text-center">
-          <p className="text-sm" style={{ color: "#8A93A6" }}>
+          <p className="text-sm" style={{ color: "#94A3B8" }}>
             No holdings yet
           </p>
-          <p className="text-xs mt-1" style={{ color: "#5A6375" }}>
+          <p className="text-xs mt-1" style={{ color: "#64748B" }}>
             Search for a stock and buy shares to get started
           </p>
         </div>
@@ -104,16 +104,16 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
                 <button
                   key={holding.symbol}
                   onClick={() => onSelectStock(holding.symbol)}
-                  className="w-full flex items-center gap-2 px-2 py-2 text-left transition-colors hover:bg-[#142538] rounded"
+                  className="w-full flex items-center gap-2 px-2 py-2 text-left transition-colors hover:bg-[#0F172A] rounded"
                   style={{
-                    backgroundColor: isSelected ? "#142538" : "transparent",
-                    borderLeft: isSelected ? "2px solid #E3B341" : "2px solid transparent",
+                    backgroundColor: isSelected ? "#0F172A" : "transparent",
+                    borderLeft: isSelected ? "2px solid #06B6D4" : "2px solid transparent",
                   }}
                 >
                   {/* Symbol */}
                   <span
                     className="w-[52px] shrink-0 text-xs font-bold truncate"
-                    style={{ color: isSelected ? "#E3B341" : "#FFFFFF" }}
+                    style={{ color: isSelected ? "#06B6D4" : "#FFFFFF" }}
                   >
                     {holding.symbol}
                   </span>
@@ -121,7 +121,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
                   {/* Quantity */}
                   <span
                     className="w-[32px] shrink-0 text-xs text-right"
-                    style={{ color: "#C9D1E2" }}
+                    style={{ color: "#F1F5F9" }}
                   >
                     {holding.shares}
                   </span>
@@ -129,7 +129,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
                   {/* Avg Cost */}
                   <span
                     className="flex-1 text-xs text-right"
-                    style={{ color: "#8A93A6" }}
+                    style={{ color: "#94A3B8" }}
                   >
                     {formatCurrency(holding.averagePurchasePrice || 0)}
                   </span>
@@ -145,7 +145,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
                   {/* Per-share delta */}
                   <span
                     className="flex-1 text-xs font-medium text-right"
-                    style={{ color: perShareDelta >= 0 ? "#28C76F" : "#FF4F58" }}
+                    style={{ color: perShareDelta >= 0 ? "#10B981" : "#EF4444" }}
                   >
                     {perShareDelta >= 0 ? "+" : ""}{formatCurrency(perShareDelta)}
                   </span>
@@ -153,7 +153,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
                   {/* Total P&L */}
                   <span
                     className="flex-1 text-xs font-semibold text-right"
-                    style={{ color: isPositive ? "#28C76F" : "#FF4F58" }}
+                    style={{ color: isPositive ? "#10B981" : "#EF4444" }}
                   >
                     {isPositive ? "+" : ""}{formatCurrency(holding.profitLoss || 0)}
                   </span>

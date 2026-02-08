@@ -230,10 +230,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#0A1A2F', borderColor: '#E3B341', borderWidth: '2px' }}>
+      <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#080C14', borderColor: '#E3B341', borderWidth: '2px' }}>
         <div className="grid grid-cols-5 gap-0 h-full">
           {/* Left Side - Form (3/5 width) */}
-          <div className="col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#142538' }}>
+          <div className="col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#0F172A' }}>
             <DialogHeader>
               <div className="flex items-center justify-between mb-3">
                 <DialogTitle className="flex items-center space-x-3">
@@ -244,14 +244,14 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     transition={{ duration: 0.2 }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-yellow-400/30 to-transparent animate-pulse" />
-                    <Trophy className="w-5 h-5 relative z-10" style={{ color: '#06121F' }} />
+                    <Trophy className="w-5 h-5 relative z-10" style={{ color: '#080C14' }} />
                   </motion.div>
                   <div>
-                    <span className="text-lg font-bold" style={{ color: '#C9D1E2' }}>Create Tournament</span>
-                    <p className="text-xs" style={{ color: '#8A93A6' }}>Configure your competition</p>
+                    <span className="text-lg font-bold" style={{ color: '#F1F5F9' }}>Create Tournament</span>
+                    <p className="text-xs" style={{ color: '#94A3B8' }}>Configure your competition</p>
                   </div>
                 </DialogTitle>
-                <Badge className="font-bold" style={{ backgroundColor: '#28C76F', color: '#FFFFFF' }}>
+                <Badge className="font-bold" style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}>
                   <Gift className="w-3 h-3 mr-1" />
                   Free
                 </Badge>
@@ -265,7 +265,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <div className="space-y-1.5">
             <div className="flex items-center space-x-2">
               <Trophy className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
-              <Label htmlFor="tournament-name" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+              <Label htmlFor="tournament-name" className="text-xs font-medium" style={{ color: '#F1F5F9' }}>
                 Tournament Title
               </Label>
               <InfoTooltip content="Choose a unique and descriptive name for your tournament that participants will see when browsing." />
@@ -276,7 +276,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               value={formData.name}
               onChange={(e) => updateField("name", e.target.value)}
               className={`${errors.name ? "border-red-500" : ""} focus:border-yellow-500 transition-all`}
-              style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
             />
             {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
           </div>
@@ -287,7 +287,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             <div className="space-y-1.5">
               <div className="flex items-center space-x-1.5">
                 <Users className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
-                <Label htmlFor="max-players" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+                <Label htmlFor="max-players" className="text-xs font-medium" style={{ color: '#F1F5F9' }}>
                   Players
                 </Label>
                 <InfoTooltip content="Set the maximum number of participants (2-50)." />
@@ -300,7 +300,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 value={formData.maxPlayers}
                 onChange={(e) => updateField("maxPlayers", parseInt(e.target.value) || 2)}
                 className={`${errors.maxPlayers ? "border-red-500" : ""} text-center font-bold`}
-                style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
               />
               {errors.maxPlayers && <p className="text-xs text-red-500">{errors.maxPlayers}</p>}
             </div>
@@ -308,8 +308,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             {/* Starting Cash */}
             <div className="space-y-1.5 col-span-2">
               <div className="flex items-center space-x-1.5">
-                <DollarSign className="w-3.5 h-3.5" style={{ color: '#28C76F' }} />
-                <Label htmlFor="starting-balance" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+                <DollarSign className="w-3.5 h-3.5" style={{ color: '#10B981' }} />
+                <Label htmlFor="starting-balance" className="text-xs font-medium" style={{ color: '#F1F5F9' }}>
                   Starting Cash
                 </Label>
                 <InfoTooltip content="Virtual currency amount each participant starts with." />
@@ -323,7 +323,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 value={formData.startingBalance}
                 onChange={(e) => updateField("startingBalance", parseInt(e.target.value) || 10000)}
                 className={`${errors.startingBalance ? "border-red-500" : ""} font-bold`}
-                style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
               />
               {errors.startingBalance && <p className="text-xs text-red-500">{errors.startingBalance}</p>}
             </div>
@@ -332,15 +332,15 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           {/* Tournament Type */}
           <div className="space-y-1.5">
             <div className="flex items-center space-x-1.5">
-              <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Tournament Type</Label>
+              <Label className="text-xs font-medium" style={{ color: '#F1F5F9' }}>Tournament Type</Label>
               <InfoTooltip content="Stocks: Trade traditional stock markets during market hours. Crypto: Trade cryptocurrencies 24/7." />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Card
                 className={`cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]`}
                 style={{
-                  backgroundColor: formData.tournamentType === "stocks" ? '#1E2D3F' : '#142538',
-                  borderColor: formData.tournamentType === "stocks" ? '#3B82F6' : '#2B3A4C',
+                  backgroundColor: formData.tournamentType === "stocks" ? '#111827' : '#0F172A',
+                  borderColor: formData.tournamentType === "stocks" ? '#3B82F6' : '#1F2937',
                   borderWidth: formData.tournamentType === "stocks" ? '2px' : '1px',
                   boxShadow: formData.tournamentType === "stocks" ? '0 0 20px rgba(59, 130, 246, 0.3)' : 'none'
                 }}
@@ -351,8 +351,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     <TrendingUp className="w-4 h-4" style={{ color: '#3B82F6' }} />
                   </div>
                   <div>
-                    <p className="font-bold text-xs" style={{ color: '#C9D1E2' }}>Stocks</p>
-                    <p className="text-[10px]" style={{ color: '#8A93A6' }}>Market hours</p>
+                    <p className="font-bold text-xs" style={{ color: '#F1F5F9' }}>Stocks</p>
+                    <p className="text-[10px]" style={{ color: '#94A3B8' }}>Market hours</p>
                   </div>
                 </CardContent>
               </Card>
@@ -360,8 +360,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               <Card
                 className={`cursor-pointer transition-all hover:scale-[1.02] active:scale-[0.98]`}
                 style={{
-                  backgroundColor: formData.tournamentType === "crypto" ? '#1E2D3F' : '#142538',
-                  borderColor: formData.tournamentType === "crypto" ? '#E3B341' : '#2B3A4C',
+                  backgroundColor: formData.tournamentType === "crypto" ? '#111827' : '#0F172A',
+                  borderColor: formData.tournamentType === "crypto" ? '#E3B341' : '#1F2937',
                   borderWidth: formData.tournamentType === "crypto" ? '2px' : '1px',
                   boxShadow: formData.tournamentType === "crypto" ? '0 0 20px rgba(227, 179, 65, 0.3)' : 'none'
                 }}
@@ -372,8 +372,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     <Bitcoin className="w-4 h-4" style={{ color: '#E3B341' }} />
                   </div>
                   <div>
-                    <p className="font-bold text-xs" style={{ color: '#C9D1E2' }}>Crypto</p>
-                    <p className="text-[10px]" style={{ color: '#8A93A6' }}>24/7 trading</p>
+                    <p className="font-bold text-xs" style={{ color: '#F1F5F9' }}>Crypto</p>
+                    <p className="text-[10px]" style={{ color: '#94A3B8' }}>24/7 trading</p>
                   </div>
                 </CardContent>
               </Card>
@@ -386,16 +386,16 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             <div className="space-y-1.5">
               <div className="flex items-center space-x-1.5">
                 <Clock className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
-                <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Duration</Label>
+                <Label className="text-xs font-medium" style={{ color: '#F1F5F9' }}>Duration</Label>
                 <InfoTooltip content="How long the tournament will run." />
               </div>
               <Select value={formData.duration} onValueChange={(value) => updateField("duration", value)}>
-                <SelectTrigger className="h-9 text-xs font-medium" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                <SelectTrigger className="h-9 text-xs font-medium" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+                <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
                   {DURATION_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value} className="text-xs" style={{ color: '#C9D1E2' }}>
+                    <SelectItem key={option.value} value={option.value} className="text-xs" style={{ color: '#F1F5F9' }}>
                       {option.label}
                     </SelectItem>
                   ))}
@@ -406,17 +406,17 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             {/* Start Delay */}
             <div className="space-y-1.5">
               <div className="flex items-center space-x-1.5">
-                <Timer className="w-3.5 h-3.5" style={{ color: '#28C76F' }} />
-                <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Start Time</Label>
+                <Timer className="w-3.5 h-3.5" style={{ color: '#10B981' }} />
+                <Label className="text-xs font-medium" style={{ color: '#F1F5F9' }}>Start Time</Label>
                 <InfoTooltip content="When the tournament will begin." />
               </div>
               <Select value={formData.startDelay} onValueChange={(value) => updateField("startDelay", value)}>
-                <SelectTrigger className="h-9 text-xs font-medium" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                <SelectTrigger className="h-9 text-xs font-medium" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#142538', borderColor: '#2B3A4C' }}>
+                <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
                   {START_DELAY_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value} className="text-xs" style={{ color: '#C9D1E2' }}>
+                    <SelectItem key={option.value} value={option.value} className="text-xs" style={{ color: '#F1F5F9' }}>
                       {option.label}
                     </SelectItem>
                   ))}
@@ -428,28 +428,28 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           {/* Privacy Setting */}
           <div className="space-y-1.5">
             <div className="flex items-center space-x-1.5">
-              <Label className="text-xs font-medium" style={{ color: '#C9D1E2' }}>Visibility</Label>
+              <Label className="text-xs font-medium" style={{ color: '#F1F5F9' }}>Visibility</Label>
               <InfoTooltip content="Public: Anyone can find and join. Private: Only people with the join code can participate." />
             </div>
             <div className="flex items-center justify-between p-2.5 rounded-lg transition-all" style={{
-              backgroundColor: '#1E2D3F',
-              borderColor: formData.isPublic ? '#28C76F' : '#E3B341',
+              backgroundColor: '#111827',
+              borderColor: formData.isPublic ? '#10B981' : '#E3B341',
               borderWidth: '2px',
               borderStyle: 'solid'
             }}>
               <div className="flex items-center space-x-2.5">
-                <div className="p-1.5 rounded" style={{ backgroundColor: formData.isPublic ? '#28C76F20' : '#E3B34120' }}>
+                <div className="p-1.5 rounded" style={{ backgroundColor: formData.isPublic ? '#10B98120' : '#E3B34120' }}>
                   {formData.isPublic ? (
-                    <Globe className="w-4 h-4" style={{ color: '#28C76F' }} />
+                    <Globe className="w-4 h-4" style={{ color: '#10B981' }} />
                   ) : (
                     <Shield className="w-4 h-4" style={{ color: '#E3B341' }} />
                   )}
                 </div>
                 <div>
-                  <p className="font-bold text-xs" style={{ color: '#C9D1E2' }}>
+                  <p className="font-bold text-xs" style={{ color: '#F1F5F9' }}>
                     {formData.isPublic ? "Public" : "Private"}
                   </p>
-                  <p className="text-[10px]" style={{ color: '#8A93A6' }}>
+                  <p className="text-[10px]" style={{ color: '#94A3B8' }}>
                     {formData.isPublic ? "Anyone can join" : "Code required"}
                   </p>
                 </div>
@@ -464,8 +464,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           {/* Buy-in Amount */}
           <div className="space-y-1.5">
             <div className="flex items-center space-x-1.5">
-              <DollarSign className="w-3.5 h-3.5" style={{ color: '#28C76F' }} />
-              <Label htmlFor="buy-in-amount" className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+              <DollarSign className="w-3.5 h-3.5" style={{ color: '#10B981' }} />
+              <Label htmlFor="buy-in-amount" className="text-xs font-medium" style={{ color: '#F1F5F9' }}>
                 Buy-in (Optional)
               </Label>
               <InfoTooltip content="Optional entry fee that creates a prize pool. Platform takes a 5% commission." />
@@ -479,14 +479,14 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               onChange={(e) => updateField("buyInAmount", parseFloat(e.target.value) || 0)}
               placeholder="0.00"
               className={`${errors.buyInAmount ? "border-red-500" : ""} font-bold`}
-              style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
             />
             {errors.buyInAmount && (
               <p className="text-xs text-red-500">{errors.buyInAmount}</p>
             )}
             {formData.buyInAmount > 0 && (
-              <div className="p-2 rounded-lg" style={{ backgroundColor: '#28C76F15', borderColor: '#28C76F', borderWidth: '1px', borderStyle: 'solid' }}>
-                <p className="text-[10px] font-medium" style={{ color: '#28C76F' }}>
+              <div className="p-2 rounded-lg" style={{ backgroundColor: '#10B98115', borderColor: '#10B981', borderWidth: '1px', borderStyle: 'solid' }}>
+                <p className="text-[10px] font-medium" style={{ color: '#10B981' }}>
                   💰 Prize Pool: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.95)} • Fee: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.05)}
                 </p>
               </div>
@@ -495,8 +495,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
           {/* Terms of Service */}
           <div className="flex items-start space-x-2.5 p-2.5 rounded-lg" style={{
-            backgroundColor: '#1E2D3F',
-            borderColor: formData.agreeToTerms ? '#28C76F' : '#2B3A4C',
+            backgroundColor: '#111827',
+            borderColor: formData.agreeToTerms ? '#10B981' : '#1F2937',
             borderWidth: '2px',
             borderStyle: 'solid'
           }}>
@@ -510,11 +510,11 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               <Label
                 htmlFor="agree-terms"
                 className="text-[11px] font-medium cursor-pointer"
-                style={{ color: '#C9D1E2' }}
+                style={{ color: '#F1F5F9' }}
               >
                 I agree to the Terms of Service
               </Label>
-              <p className="text-[10px] mt-0.5" style={{ color: '#8A93A6' }}>
+              <p className="text-[10px] mt-0.5" style={{ color: '#94A3B8' }}>
                 Virtual trading only - no real money risk
               </p>
             </div>
@@ -528,7 +528,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               onClick={onClose}
               disabled={createTournamentMutation.isPending}
               className="h-9"
-              style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
             >
               Cancel
             </Button>
@@ -538,8 +538,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 disabled={createTournamentMutation.isPending || !formData.agreeToTerms}
                 className="h-9 font-bold transition-all"
                 style={isFormReady
-                  ? { backgroundColor: '#28C76F', color: '#FFFFFF', boxShadow: '0 0 20px rgba(40, 199, 111, 0.4)' }
-                  : { backgroundColor: '#1E2D3F', color: '#5A6376', boxShadow: 'none' }
+                  ? { backgroundColor: '#10B981', color: '#FFFFFF', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }
+                  : { backgroundColor: '#111827', color: '#64748B', boxShadow: 'none' }
                 }
               >
                 {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
@@ -550,7 +550,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       </div>
 
       {/* Right Side - Live Preview (2/5 width) */}
-      <div className="col-span-2 p-6 overflow-y-auto" style={{ backgroundColor: '#0A1A2F', borderLeft: '2px solid #2B3A4C' }}>
+      <div className="col-span-2 p-6 overflow-y-auto" style={{ backgroundColor: '#080C14', borderLeft: '2px solid #1F2937' }}>
         <div className="sticky top-0">
           <div className="flex items-center space-x-2 mb-4">
             <div className="h-1 flex-1 rounded-full" style={{ backgroundColor: '#E3B341' }} />
@@ -568,7 +568,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             <Card
               className="relative overflow-hidden"
               style={{
-                backgroundColor: '#142538',
+                backgroundColor: '#0F172A',
                 borderColor: formData.tournamentType === 'stocks' ? '#3B82F6' : '#E3B341',
                 borderWidth: '2px',
                 boxShadow: formData.tournamentType === 'stocks'
@@ -609,7 +609,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                       {formData.isPublic ? (
                         <Badge
                           className="text-[10px] font-bold"
-                          style={{ backgroundColor: '#28C76F20', color: '#28C76F', borderColor: '#28C76F', borderWidth: '1px' }}
+                          style={{ backgroundColor: '#10B98120', color: '#10B981', borderColor: '#10B981', borderWidth: '1px' }}
                         >
                           <Globe className="w-2.5 h-2.5 mr-0.5" />
                           PUBLIC
@@ -647,8 +647,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                   transition={{ duration: 2, repeat: Infinity }}
                   className="relative text-center py-3 rounded-xl border-2"
                   style={{
-                    backgroundColor: prizePool > 0 ? '#E3B34120' : '#1E2D3F10',
-                    borderColor: prizePool > 0 ? '#E3B341' : '#2B3A4C'
+                    backgroundColor: prizePool > 0 ? '#E3B34120' : '#11182710',
+                    borderColor: prizePool > 0 ? '#E3B341' : '#1F2937'
                   }}
                 >
                   <div className="relative z-10">
@@ -657,12 +657,12 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                       style={{
                         backgroundImage: prizePool > 0
                           ? 'linear-gradient(90deg, #E3B341 0%, #FFD700 50%, #E3B341 100%)'
-                          : 'linear-gradient(90deg, #8A93A6 0%, #C9D1E2 50%, #8A93A6 100%)'
+                          : 'linear-gradient(90deg, #94A3B8 0%, #F1F5F9 50%, #94A3B8 100%)'
                       }}
                     >
                       {prizePool > 0 ? formatCurrency(prizePool) : formatCurrency(formData.startingBalance)}
                     </motion.div>
-                    <p className="text-[10px] font-medium" style={{ color: '#8A93A6' }}>
+                    <p className="text-[10px] font-medium" style={{ color: '#94A3B8' }}>
                       {prizePool > 0 ? 'Prize Pool' : 'Starting Balance'}
                     </p>
                   </div>
@@ -673,40 +673,40 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     className="p-2 rounded-lg text-center"
-                    style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', borderWidth: '1px' }}
                   >
                     <div className="flex items-center justify-center gap-1 mb-0.5">
                       <Users className="w-3 h-3" style={{ color: '#3B82F6' }} />
-                      <span className="text-sm font-bold" style={{ color: '#C9D1E2' }}>
+                      <span className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
                         {formData.maxPlayers}
                       </span>
                     </div>
-                    <p className="text-[9px]" style={{ color: '#8A93A6' }}>Max Players</p>
+                    <p className="text-[9px]" style={{ color: '#94A3B8' }}>Max Players</p>
                   </motion.div>
 
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     className="p-2 rounded-lg text-center"
-                    style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', borderWidth: '1px' }}
                   >
                     <div className="flex items-center justify-center gap-1 mb-0.5">
-                      <Clock className="w-3 h-3" style={{ color: '#28C76F' }} />
-                      <span className="text-sm font-bold" style={{ color: '#C9D1E2' }}>
+                      <Clock className="w-3 h-3" style={{ color: '#10B981' }} />
+                      <span className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
                         {formData.duration}
                       </span>
                     </div>
-                    <p className="text-[9px]" style={{ color: '#8A93A6' }}>Duration</p>
+                    <p className="text-[9px]" style={{ color: '#94A3B8' }}>Duration</p>
                   </motion.div>
                 </div>
 
                 {/* Start Time Indicator */}
                 <div
                   className="p-2 rounded-lg flex items-center justify-between"
-                  style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', borderWidth: '1px' }}
+                  style={{ backgroundColor: '#111827', borderColor: '#1F2937', borderWidth: '1px' }}
                 >
                   <div className="flex items-center gap-1.5">
                     <Timer className="w-3 h-3" style={{ color: '#E3B341' }} />
-                    <span className="text-xs font-medium" style={{ color: '#C9D1E2' }}>
+                    <span className="text-xs font-medium" style={{ color: '#F1F5F9' }}>
                       {formData.startDelay === 'immediately' ? 'Starts Immediately' : `Starts in ${formData.startDelay}`}
                     </span>
                   </div>
@@ -718,10 +718,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     className="p-2 rounded-lg"
-                    style={{ backgroundColor: '#28C76F20', borderColor: '#28C76F', borderWidth: '1px' }}
+                    style={{ backgroundColor: '#10B98120', borderColor: '#10B981', borderWidth: '1px' }}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold" style={{ color: '#28C76F' }}>
+                      <span className="text-xs font-bold" style={{ color: '#10B981' }}>
                         Buy-in: {formatCurrency(formData.buyInAmount)}
                       </span>
                       <Crown className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
@@ -739,7 +739,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
               className="p-3 rounded-lg"
-              style={{ backgroundColor: '#14253820', borderColor: '#E3B341', borderWidth: '1px' }}
+              style={{ backgroundColor: '#0F172A20', borderColor: '#E3B341', borderWidth: '1px' }}
             >
               <div className="flex items-center gap-2 mb-1">
                 <Trophy className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
@@ -747,7 +747,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                   Tournament Type
                 </span>
               </div>
-              <p className="text-[11px]" style={{ color: '#C9D1E2' }}>
+              <p className="text-[11px]" style={{ color: '#F1F5F9' }}>
                 {formData.tournamentType === 'stocks'
                   ? 'Trade stocks during market hours'
                   : 'Trade cryptocurrencies 24/7'}
@@ -760,7 +760,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
                 className="p-3 rounded-lg"
-                style={{ backgroundColor: '#14253820', borderColor: '#E3B341', borderWidth: '1px' }}
+                style={{ backgroundColor: '#0F172A20', borderColor: '#E3B341', borderWidth: '1px' }}
               >
                 <div className="flex items-center gap-2 mb-1">
                   <Shield className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
@@ -768,7 +768,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     Private Tournament
                   </span>
                 </div>
-                <p className="text-[11px]" style={{ color: '#C9D1E2' }}>
+                <p className="text-[11px]" style={{ color: '#F1F5F9' }}>
                   You'll receive a code to share with participants
                 </p>
               </motion.div>

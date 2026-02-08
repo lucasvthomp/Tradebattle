@@ -16,7 +16,7 @@ export function StockHeader({ symbol, companyName, price, change, percentChange 
       <h1 className="text-2xl md:text-3xl font-bold" style={{ color: "#E3B341" }}>
         {symbol}
       </h1>
-      <span className="text-sm md:text-base" style={{ color: "#8A93A6" }}>
+      <span className="text-sm md:text-base" style={{ color: "#94A3B8" }}>
         {companyName}
       </span>
       <span className="text-2xl md:text-3xl font-bold" style={{ color: "#FFFFFF" }}>
@@ -25,8 +25,8 @@ export function StockHeader({ symbol, companyName, price, change, percentChange 
       <span
         className="flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold"
         style={{
-          color: isPositive ? "#28C76F" : "#FF4F58",
-          backgroundColor: isPositive ? "rgba(40, 199, 111, 0.15)" : "rgba(255, 79, 88, 0.15)",
+          color: isPositive ? "#10B981" : "#EF4444",
+          backgroundColor: isPositive ? "rgba(16, 185, 129, 0.15)" : "rgba(239, 68, 68, 0.15)",
         }}
       >
         {isPositive ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}

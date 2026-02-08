@@ -24,12 +24,12 @@ export function HoldingsWidget({
   const { formatCurrency } = useUserPreferences();
 
   return (
-    <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#1E2D3F' }}>
+    <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#111827' }}>
       {/* Header with Toggle */}
-      <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#2B3A4C', backgroundColor: '#142538' }}>
+      <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#1F2937', backgroundColor: '#0F172A' }}>
         <div className="flex items-center gap-2">
           <Coins className="w-4 h-4" style={{ color: '#E3B341' }} />
-          <span className="text-sm font-semibold" style={{ color: '#C9D1E2' }}>Holdings</span>
+          <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Holdings</span>
         </div>
         {onToggleView && (
           <Button
@@ -37,7 +37,7 @@ export function HoldingsWidget({
             size="sm"
             onClick={onToggleView}
             className="h-6 text-xs"
-            style={{ color: '#8A93A6' }}
+            style={{ color: '#94A3B8' }}
           >
             {showHoldings ? (
               <>
@@ -58,14 +58,14 @@ export function HoldingsWidget({
       <div className="flex-1 overflow-auto p-2">
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <RefreshCw className="w-4 h-4 animate-spin mr-2" style={{ color: '#8A93A6' }} />
-            <span className="text-xs" style={{ color: '#8A93A6' }}>Loading...</span>
+            <RefreshCw className="w-4 h-4 animate-spin mr-2" style={{ color: '#94A3B8' }} />
+            <span className="text-xs" style={{ color: '#94A3B8' }}>Loading...</span>
           </div>
         ) : holdings.length === 0 ? (
           <div className="text-center py-8">
-            <Coins className="w-10 h-10 mx-auto mb-3 opacity-50" style={{ color: '#8A93A6' }} />
-            <h3 className="text-sm font-semibold mb-1" style={{ color: '#C9D1E2' }}>No Holdings</h3>
-            <p className="text-[10px]" style={{ color: '#8A93A6' }}>
+            <Coins className="w-10 h-10 mx-auto mb-3 opacity-50" style={{ color: '#94A3B8' }} />
+            <h3 className="text-sm font-semibold mb-1" style={{ color: '#F1F5F9' }}>No Holdings</h3>
+            <p className="text-[10px]" style={{ color: '#94A3B8' }}>
               Start trading to build your portfolio
             </p>
           </div>
@@ -83,18 +83,18 @@ export function HoldingsWidget({
                 <div
                   key={index}
                   className="p-2 rounded transition-colors"
-                  style={{ backgroundColor: '#142538', border: '1px solid #2B3A4C' }}
+                  style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}
                 >
                   <div className="flex justify-between items-center mb-1">
                     <div className="flex items-baseline gap-2">
                       <div className="font-semibold text-sm" style={{ color: '#E3B341' }}>{holding.symbol}</div>
-                      <div className="text-[10px]" style={{ color: '#8A93A6' }}>{holding.shares.toLocaleString('en-US')} sh</div>
+                      <div className="text-[10px]" style={{ color: '#94A3B8' }}>{holding.shares.toLocaleString('en-US')} sh</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-semibold text-xs" style={{ color: '#C9D1E2' }}>
+                      <div className="font-semibold text-xs" style={{ color: '#F1F5F9' }}>
                         {formatCurrency(holding.currentPrice || 0)}
                       </div>
-                      <div className="text-[10px] font-medium" style={{ color: isPositive ? '#28C76F' : '#FF4F58' }}>
+                      <div className="text-[10px] font-medium" style={{ color: isPositive ? '#10B981' : '#EF4444' }}>
                         {isPositive ? '+' : ''}{gainLossPercent.toFixed(1)}%
                       </div>
                     </div>
@@ -104,7 +104,7 @@ export function HoldingsWidget({
                       size="sm"
                       onClick={() => onChartClick(holding.symbol)}
                       className="text-[10px] px-1.5 py-0.5 h-6 flex-1"
-                      style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2', border: '1px solid #2B3A4C' }}
+                      style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9', border: '1px solid #1F2937' }}
                     >
                       <BarChart3 className="h-3 w-3 mr-0.5" />
                       Chart
@@ -113,7 +113,7 @@ export function HoldingsWidget({
                       size="sm"
                       onClick={() => onSellClick(holding)}
                       className="text-[10px] px-1.5 py-0.5 h-6 flex-1"
-                      style={{ backgroundColor: '#FF4F58', color: '#FFFFFF', border: 'none' }}
+                      style={{ backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none' }}
                     >
                       Sell
                     </Button>
