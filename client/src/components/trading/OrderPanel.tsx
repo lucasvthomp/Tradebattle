@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -9,11 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Minus } from "lucide-react";
+import { Plus, Minus, Search, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { executeOrder, type OrderRequest } from "@/lib/orderEngine";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface OrderPanelProps {
   symbol: string;
@@ -23,6 +25,7 @@ interface OrderPanelProps {
   availableBuyingPower: number;
   ownedShares: number;
   onOrderExecuted: () => void;
+  onSymbolChange: (symbol: string) => void;
   activeTournaments: any[];
   selectedTournament: any;
   onTournamentChange: (tournament: any) => void;
@@ -38,6 +41,7 @@ export function OrderPanel({
   availableBuyingPower,
   ownedShares,
   onOrderExecuted,
+  onSymbolChange,
   activeTournaments,
   selectedTournament,
   onTournamentChange,
@@ -50,6 +54,27 @@ export function OrderPanel({
   const [quantity, setQuantity] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+
+  // Stock search state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
+
+  const { data: searchData, isLoading: isSearching } = useQuery({
+    queryKey: ["/api/search", searchQuery],
+    enabled: searchQuery.length >= 1,
+  });
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 1) return [];
+    const results = (searchData as any)?.data || [];
+    return results.slice(0, 8);
+  }, [searchData, searchQuery]);
+
+  const handleSearchSelect = (sym: string) => {
+    onSymbolChange(sym);
+    setSearchQuery("");
+    setShowSearch(false);
+  };
 
   const estimatedTotal = quantity * currentPrice;
 
@@ -94,7 +119,6 @@ export function OrderPanel({
     }
   };
 
-  // Reset confirm state when inputs change
   const handleSideChange = (side: OrderSide) => {
     setOrderSide(side);
     setAwaitingConfirm(false);
@@ -111,8 +135,10 @@ export function OrderPanel({
     return `${orderSide === "buy" ? "Buy" : "Sell"} ${symbol}`;
   })();
 
+  const maxBuyShares = currentPrice > 0 ? Math.floor(availableBuyingPower / currentPrice) : 0;
+
   return (
-    <div className="flex flex-col" style={{ borderBottom: "1px solid #2B3A4C" }}>
+    <div className="flex flex-col flex-1 min-h-0">
       {/* Tournament Selector + Buying Power */}
       <div className="p-3 space-y-2" style={{ borderBottom: "1px solid #2B3A4C" }}>
         <div>
@@ -147,6 +173,108 @@ export function OrderPanel({
             {formatCurrency(availableBuyingPower)}
           </span>
         </div>
+      </div>
+
+      {/* Stock Search */}
+      <div className="px-3 py-2.5" style={{ borderBottom: "1px solid #2B3A4C" }}>
+        {showSearch ? (
+          <div>
+            <div className="relative">
+              <Search
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+                style={{ color: "#8A93A6" }}
+              />
+              <Input
+                autoFocus
+                placeholder="Search symbol or company..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
+                className="h-9 pl-8 pr-8 text-xs"
+                style={{
+                  backgroundColor: "#0A1A2F",
+                  borderColor: "#2B3A4C",
+                  color: "#FFFFFF",
+                }}
+              />
+              <button
+                onClick={() => { setShowSearch(false); setSearchQuery(""); }}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2"
+              >
+                <X className="w-3.5 h-3.5" style={{ color: "#8A93A6" }} />
+              </button>
+            </div>
+
+            {/* Search Results */}
+            {searchQuery.length >= 1 && (
+              <div
+                className="mt-1.5 rounded-lg overflow-hidden max-h-[240px] overflow-y-auto"
+                style={{ backgroundColor: "#0A1A2F", border: "1px solid #2B3A4C" }}
+              >
+                {isSearching ? (
+                  <div className="px-3 py-2 space-y-2">
+                    {[1, 2, 3].map((i) => (
+                      <Skeleton key={i} className="h-4 w-full" />
+                    ))}
+                  </div>
+                ) : searchResults.length > 0 ? (
+                  searchResults.map((result: any) => (
+                    <button
+                      key={result.symbol}
+                      onClick={() => handleSearchSelect(result.symbol)}
+                      className="w-full px-3 py-2.5 text-left text-xs hover:bg-[#142538] flex items-center justify-between transition-colors"
+                      style={{
+                        borderBottom: "1px solid rgba(43, 58, 76, 0.5)",
+                      }}
+                    >
+                      <div className="flex-1 min-w-0">
+                        <span className="font-bold" style={{ color: "#E3B341" }}>
+                          {result.symbol}
+                        </span>
+                        {result.name && (
+                          <span className="ml-2 truncate" style={{ color: "#8A93A6" }}>
+                            {result.name}
+                          </span>
+                        )}
+                      </div>
+                      {result.exchange && (
+                        <span className="text-[10px] ml-2 shrink-0" style={{ color: "#5A6375" }}>
+                          {result.exchange}
+                        </span>
+                      )}
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-3 py-3 text-center">
+                    <span className="text-xs" style={{ color: "#8A93A6" }}>
+                      No stocks found
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowSearch(true)}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors hover:bg-[#142538]"
+            style={{ backgroundColor: "#0A1A2F", border: "1px solid #2B3A4C" }}
+          >
+            <Search className="w-3.5 h-3.5 shrink-0" style={{ color: "#8A93A6" }} />
+            <div className="flex items-center justify-between flex-1">
+              <div>
+                <span className="text-sm font-bold" style={{ color: "#E3B341" }}>
+                  {symbol}
+                </span>
+                <span className="text-xs ml-2" style={{ color: "#8A93A6" }}>
+                  {companyName}
+                </span>
+              </div>
+              <span className="text-[10px]" style={{ color: "#5A6375" }}>
+                Change
+              </span>
+            </div>
+          </button>
+        )}
       </div>
 
       {/* Buy/Sell Tabs */}
@@ -207,19 +335,76 @@ export function OrderPanel({
               <Plus className="w-4 h-4" />
             </Button>
           </div>
+          {/* Quick select buttons */}
+          <div className="flex gap-1.5 mt-2">
+            {orderSide === "buy" ? (
+              <>
+                {[1, 5, 10, 25].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => handleQuantityChange(n)}
+                    className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
+                    style={{
+                      backgroundColor: quantity === n ? "rgba(40, 199, 111, 0.2)" : "#0A1A2F",
+                      color: quantity === n ? "#28C76F" : "#8A93A6",
+                      border: `1px solid ${quantity === n ? "#28C76F" : "#2B3A4C"}`,
+                    }}
+                  >
+                    {n}
+                  </button>
+                ))}
+                {maxBuyShares > 0 && (
+                  <button
+                    onClick={() => handleQuantityChange(maxBuyShares)}
+                    className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
+                    style={{
+                      backgroundColor: quantity === maxBuyShares ? "rgba(40, 199, 111, 0.2)" : "#0A1A2F",
+                      color: quantity === maxBuyShares ? "#28C76F" : "#E3B341",
+                      border: `1px solid ${quantity === maxBuyShares ? "#28C76F" : "#2B3A4C"}`,
+                    }}
+                  >
+                    Max
+                  </button>
+                )}
+              </>
+            ) : (
+              <>
+                {ownedShares > 0 && (
+                  <>
+                    {[1, Math.ceil(ownedShares / 4), Math.ceil(ownedShares / 2)].filter((n, i, arr) => n > 0 && arr.indexOf(n) === i && n <= ownedShares).map((n) => (
+                      <button
+                        key={n}
+                        onClick={() => handleQuantityChange(n)}
+                        className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
+                        style={{
+                          backgroundColor: quantity === n ? "rgba(255, 79, 88, 0.2)" : "#0A1A2F",
+                          color: quantity === n ? "#FF4F58" : "#8A93A6",
+                          border: `1px solid ${quantity === n ? "#FF4F58" : "#2B3A4C"}`,
+                        }}
+                      >
+                        {n}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => handleQuantityChange(ownedShares)}
+                      className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
+                      style={{
+                        backgroundColor: quantity === ownedShares ? "rgba(255, 79, 88, 0.2)" : "#0A1A2F",
+                        color: quantity === ownedShares ? "#FF4F58" : "#E3B341",
+                        border: `1px solid ${quantity === ownedShares ? "#FF4F58" : "#2B3A4C"}`,
+                      }}
+                    >
+                      All ({ownedShares})
+                    </button>
+                  </>
+                )}
+              </>
+            )}
+          </div>
           {orderSide === "sell" && quantity > ownedShares && (
-            <p className="text-xs mt-1" style={{ color: "#FF4F58" }}>
+            <p className="text-xs mt-1.5" style={{ color: "#FF4F58" }}>
               You only own {ownedShares} shares
             </p>
-          )}
-          {orderSide === "sell" && ownedShares > 0 && (
-            <button
-              onClick={() => handleQuantityChange(ownedShares)}
-              className="text-xs mt-1 underline"
-              style={{ color: "#E3B341" }}
-            >
-              Sell all ({ownedShares} shares)
-            </button>
           )}
         </div>
 
@@ -227,9 +412,19 @@ export function OrderPanel({
         <div className="flex items-center justify-between">
           <span className="text-xs" style={{ color: "#8A93A6" }}>Market Price</span>
           <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
-            ${currentPrice.toFixed(2)}
+            {formatCurrency(currentPrice)}
           </span>
         </div>
+
+        {/* Owned Position */}
+        {ownedShares > 0 && (
+          <div className="flex items-center justify-between">
+            <span className="text-xs" style={{ color: "#8A93A6" }}>You Own</span>
+            <span className="text-sm font-semibold" style={{ color: "#C9D1E2" }}>
+              {ownedShares} shares
+            </span>
+          </div>
+        )}
 
         <Separator style={{ backgroundColor: "#2B3A4C" }} />
 
@@ -239,7 +434,7 @@ export function OrderPanel({
             Estimated {orderSide === "buy" ? "Cost" : "Credit"}
           </span>
           <span className="text-lg font-bold" style={{ color: "#FFFFFF" }}>
-            ${estimatedTotal.toFixed(2)}
+            {formatCurrency(estimatedTotal)}
           </span>
         </div>
 
@@ -247,6 +442,24 @@ export function OrderPanel({
           <p className="text-xs" style={{ color: "#FF4F58" }}>
             Exceeds buying power by {formatCurrency(estimatedTotal - availableBuyingPower)}
           </p>
+        )}
+
+        {/* After-trade balance preview */}
+        {orderSide === "buy" && canSubmit && (
+          <div className="flex items-center justify-between">
+            <span className="text-[10px]" style={{ color: "#5A6375" }}>Remaining Power</span>
+            <span className="text-[10px] font-medium" style={{ color: "#8A93A6" }}>
+              {formatCurrency(availableBuyingPower - estimatedTotal)}
+            </span>
+          </div>
+        )}
+        {orderSide === "sell" && canSubmit && (
+          <div className="flex items-center justify-between">
+            <span className="text-[10px]" style={{ color: "#5A6375" }}>New Balance</span>
+            <span className="text-[10px] font-medium" style={{ color: "#8A93A6" }}>
+              {formatCurrency(availableBuyingPower + estimatedTotal)}
+            </span>
+          </div>
         )}
 
         {/* Submit Button */}

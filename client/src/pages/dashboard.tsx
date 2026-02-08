@@ -8,7 +8,6 @@ import { StockHeader } from "@/components/trading/StockHeader";
 import { AboutSection } from "@/components/trading/AboutSection";
 import { HoldingsList } from "@/components/trading/HoldingsList";
 import { OrderPanel } from "@/components/trading/OrderPanel";
-import { Watchlist } from "@/components/trading/Watchlist";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -163,7 +162,7 @@ export default function Dashboard() {
         </ScrollArea>
       </div>
 
-      {/* RIGHT SIDE: Order Panel + Watchlist */}
+      {/* RIGHT SIDE: Order Panel (full height) */}
       <div
         className="w-full [@media(min-aspect-ratio:1/1)]:w-96 flex flex-col"
         style={{
@@ -179,14 +178,10 @@ export default function Dashboard() {
           availableBuyingPower={buyingPower}
           ownedShares={ownedShares}
           onOrderExecuted={handleOrderExecuted}
+          onSymbolChange={setSelectedSymbol}
           activeTournaments={activeTournaments}
           selectedTournament={selectedTournament}
           onTournamentChange={setSelectedTournament}
-        />
-
-        <Watchlist
-          selectedSymbol={selectedSymbol}
-          onSymbolSelect={setSelectedSymbol}
         />
       </div>
     </div>

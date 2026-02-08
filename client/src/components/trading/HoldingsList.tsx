@@ -28,7 +28,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
   const { data, isLoading } = useQuery({
     queryKey: ["/api/portfolio/tournament", tournamentId],
     enabled: !!tournamentId,
-    refetchInterval: 30000,
+    refetchInterval: 15000,
   });
 
   const holdings: Holding[] = useMemo(() => {
@@ -57,36 +57,49 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
           className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
           style={{ backgroundColor: "rgba(227, 179, 65, 0.15)", color: "#E3B341" }}
         >
-          {holdings.length}
+          {holdings.length} {holdings.length === 1 ? "position" : "positions"}
         </span>
       </div>
 
       {/* Portfolio Summary */}
       {holdings.length > 0 && (
         <div
-          className="rounded-lg p-3 mb-3 grid grid-cols-2 gap-3"
+          className="rounded-lg p-3 mb-3"
           style={{ backgroundColor: "#0A1A2F" }}
         >
-          <div>
-            <div className="text-[10px] uppercase tracking-wide" style={{ color: "#8A93A6" }}>
-              Portfolio Value
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-wide" style={{ color: "#8A93A6" }}>
+                Total Value
+              </div>
+              <div className="text-sm font-bold" style={{ color: "#FFFFFF" }}>
+                {formatCurrency(totals.totalValue)}
+              </div>
             </div>
-            <div className="text-sm font-bold" style={{ color: "#FFFFFF" }}>
-              {formatCurrency(totals.totalValue)}
+            <div>
+              <div className="text-[10px] uppercase tracking-wide" style={{ color: "#8A93A6" }}>
+                Total Cost
+              </div>
+              <div className="text-sm font-bold" style={{ color: "#C9D1E2" }}>
+                {formatCurrency(totals.totalCost)}
+              </div>
             </div>
-          </div>
-          <div>
-            <div className="text-[10px] uppercase tracking-wide" style={{ color: "#8A93A6" }}>
-              Total P&L
-            </div>
-            <div
-              className="text-sm font-bold"
-              style={{ color: totals.totalPL >= 0 ? "#28C76F" : "#FF4F58" }}
-            >
-              {totals.totalPL >= 0 ? "+" : ""}{formatCurrency(totals.totalPL)}{" "}
-              <span className="text-[10px] font-normal">
-                ({totals.totalPL >= 0 ? "+" : ""}{totals.totalPLPercent.toFixed(2)}%)
-              </span>
+            <div>
+              <div className="text-[10px] uppercase tracking-wide" style={{ color: "#8A93A6" }}>
+                Total P&L
+              </div>
+              <div
+                className="text-sm font-bold"
+                style={{ color: totals.totalPL >= 0 ? "#28C76F" : "#FF4F58" }}
+              >
+                {totals.totalPL >= 0 ? "+" : ""}{formatCurrency(totals.totalPL)}
+              </div>
+              <div
+                className="text-[10px]"
+                style={{ color: totals.totalPL >= 0 ? "#28C76F" : "#FF4F58" }}
+              >
+                {totals.totalPL >= 0 ? "+" : ""}{totals.totalPLPercent.toFixed(2)}%
+              </div>
             </div>
           </div>
         </div>
@@ -96,14 +109,15 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
       {isLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center justify-between py-2">
-              <div className="space-y-1">
+            <div key={i} className="rounded-lg p-3" style={{ backgroundColor: "#0A1A2F" }}>
+              <div className="flex items-center justify-between mb-2">
                 <Skeleton className="h-4 w-14" />
-                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-4 w-20" />
               </div>
-              <div className="space-y-1 text-right">
-                <Skeleton className="h-4 w-16 ml-auto" />
-                <Skeleton className="h-3 w-12 ml-auto" />
+              <div className="grid grid-cols-3 gap-2">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />
               </div>
             </div>
           ))}
@@ -114,47 +128,119 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
             No holdings yet
           </p>
           <p className="text-xs mt-1" style={{ color: "#5A6375" }}>
-            Buy stocks using the order panel
+            Search for a stock and buy shares to get started
           </p>
         </div>
       ) : (
-        <ScrollArea className="max-h-[300px]">
-          <div className="space-y-0">
+        <ScrollArea className="max-h-[400px]">
+          <div className="space-y-2">
             {holdings.map((holding) => {
               const isSelected = holding.symbol === selectedSymbol;
               const isPositive = (holding.profitLoss || 0) >= 0;
+              const pricePerShareDelta = (holding.currentPrice || 0) - (holding.averagePurchasePrice || 0);
+              const pricePerShareDeltaPercent = holding.averagePurchasePrice > 0
+                ? (pricePerShareDelta / holding.averagePurchasePrice) * 100
+                : 0;
 
               return (
                 <button
                   key={holding.symbol}
                   onClick={() => onSelectStock(holding.symbol)}
-                  className="w-full px-3 py-2.5 flex items-center justify-between text-left transition-colors hover:bg-[#142538] rounded-lg"
+                  className="w-full text-left transition-colors rounded-lg"
                   style={{
-                    backgroundColor: isSelected ? "#142538" : "transparent",
-                    borderLeft: isSelected ? "2px solid #E3B341" : "2px solid transparent",
+                    backgroundColor: isSelected ? "#142538" : "#0A1A2F",
+                    border: isSelected ? "1px solid #E3B341" : "1px solid transparent",
                   }}
                 >
-                  <div>
-                    <div
-                      className="text-sm font-bold"
-                      style={{ color: isSelected ? "#E3B341" : "#FFFFFF" }}
-                    >
-                      {holding.symbol}
+                  {/* Top row: Symbol + Market Value */}
+                  <div className="px-3 pt-2.5 pb-1 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="text-sm font-bold"
+                        style={{ color: isSelected ? "#E3B341" : "#FFFFFF" }}
+                      >
+                        {holding.symbol}
+                      </span>
+                      <span className="text-[10px]" style={{ color: "#5A6375" }}>
+                        {holding.companyName}
+                      </span>
                     </div>
-                    <div className="text-[10px]" style={{ color: "#8A93A6" }}>
-                      {holding.shares} shares @ {formatCurrency(holding.averagePurchasePrice)}
+                    <div className="text-right">
+                      <span className="text-sm font-bold" style={{ color: "#FFFFFF" }}>
+                        {formatCurrency(holding.currentValue || 0)}
+                      </span>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
-                      {formatCurrency(holding.currentValue || 0)}
+
+                  {/* Detail grid */}
+                  <div className="px-3 pb-2.5 grid grid-cols-3 gap-x-3 gap-y-1.5 mt-1">
+                    {/* Shares */}
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wide" style={{ color: "#5A6375" }}>
+                        Shares
+                      </div>
+                      <div className="text-xs font-semibold" style={{ color: "#C9D1E2" }}>
+                        {holding.shares}
+                      </div>
                     </div>
-                    <div
-                      className="text-[10px] font-semibold"
-                      style={{ color: isPositive ? "#28C76F" : "#FF4F58" }}
-                    >
-                      {isPositive ? "+" : ""}{formatCurrency(holding.profitLoss || 0)}{" "}
-                      ({isPositive ? "+" : ""}{(holding.profitLossPercent || 0).toFixed(2)}%)
+
+                    {/* Avg Purchase Price */}
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wide" style={{ color: "#5A6375" }}>
+                        Avg Cost
+                      </div>
+                      <div className="text-xs font-semibold" style={{ color: "#C9D1E2" }}>
+                        {formatCurrency(holding.averagePurchasePrice || 0)}
+                      </div>
+                    </div>
+
+                    {/* Current Price */}
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wide" style={{ color: "#5A6375" }}>
+                        Current
+                      </div>
+                      <div className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
+                        {formatCurrency(holding.currentPrice || 0)}
+                      </div>
+                    </div>
+
+                    {/* Total Cost */}
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wide" style={{ color: "#5A6375" }}>
+                        Cost Basis
+                      </div>
+                      <div className="text-xs font-semibold" style={{ color: "#8A93A6" }}>
+                        {formatCurrency(holding.totalCost || 0)}
+                      </div>
+                    </div>
+
+                    {/* Price Change Per Share (delta since purchase) */}
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wide" style={{ color: "#5A6375" }}>
+                        Per Share +/-
+                      </div>
+                      <div
+                        className="text-xs font-semibold"
+                        style={{ color: pricePerShareDelta >= 0 ? "#28C76F" : "#FF4F58" }}
+                      >
+                        {pricePerShareDelta >= 0 ? "+" : ""}{formatCurrency(pricePerShareDelta)}
+                      </div>
+                    </div>
+
+                    {/* Total P&L */}
+                    <div>
+                      <div className="text-[9px] uppercase tracking-wide" style={{ color: "#5A6375" }}>
+                        Total P&L
+                      </div>
+                      <div
+                        className="text-xs font-bold"
+                        style={{ color: isPositive ? "#28C76F" : "#FF4F58" }}
+                      >
+                        {isPositive ? "+" : ""}{formatCurrency(holding.profitLoss || 0)}{" "}
+                        <span className="font-normal text-[10px]">
+                          ({isPositive ? "+" : ""}{(holding.profitLossPercent || 0).toFixed(2)}%)
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </button>
