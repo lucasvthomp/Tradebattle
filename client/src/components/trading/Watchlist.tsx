@@ -1,0 +1,152 @@
+import { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { Input } from "@/components/ui/input";
+import { Search } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface WatchlistProps {
+  selectedSymbol: string;
+  onSymbolSelect: (symbol: string) => void;
+}
+
+export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const { data: popularData } = useQuery({
+    queryKey: ["/api/popular"],
+    refetchInterval: 30000,
+  });
+
+  const { data: searchData } = useQuery({
+    queryKey: ["/api/search", searchQuery],
+    enabled: searchQuery.length >= 2,
+  });
+
+  const watchlistItems = useMemo(() => {
+    const stocks = (popularData as any)?.data || [];
+    return stocks.map((s: any) => ({
+      symbol: s.symbol,
+      price: s.price || 0,
+      change: s.change || 0,
+      percentChange: s.percentChange || 0,
+    }));
+  }, [popularData]);
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) return [];
+    const results = (searchData as any)?.data || [];
+    return results.slice(0, 6);
+  }, [searchData, searchQuery]);
+
+  const handleSearchSelect = (symbol: string) => {
+    onSymbolSelect(symbol);
+    setSearchQuery("");
+  };
+
+  return (
+    <div className="flex flex-col flex-1 min-h-0">
+      {/* Header */}
+      <div
+        className="px-3 py-2.5 flex items-center justify-between"
+        style={{ borderBottom: "1px solid #2B3A4C" }}
+      >
+        <h3 className="text-sm font-bold" style={{ color: "#E3B341" }}>
+          Watchlist
+        </h3>
+        <span
+          className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+          style={{
+            backgroundColor: "rgba(227, 179, 65, 0.15)",
+            color: "#E3B341",
+          }}
+        >
+          {watchlistItems.length}
+        </span>
+      </div>
+
+      {/* Search */}
+      <div className="px-3 py-2" style={{ borderBottom: "1px solid #2B3A4C" }}>
+        <div className="relative">
+          <Search
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+            style={{ color: "#8A93A6" }}
+          />
+          <Input
+            placeholder="Search stocks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
+            className="h-8 pl-8 text-xs"
+            style={{
+              backgroundColor: "#0A1A2F",
+              borderColor: "#2B3A4C",
+              color: "#FFFFFF",
+            }}
+          />
+        </div>
+
+        {/* Search Results Dropdown */}
+        {searchResults.length > 0 && (
+          <div
+            className="mt-1 rounded-lg overflow-hidden"
+            style={{ backgroundColor: "#0A1A2F", border: "1px solid #2B3A4C" }}
+          >
+            {searchResults.map((result: any) => (
+              <button
+                key={result.symbol}
+                onClick={() => handleSearchSelect(result.symbol)}
+                className="w-full px-3 py-2 text-left text-xs hover:bg-[#142538] flex items-center justify-between transition-colors"
+              >
+                <div>
+                  <span className="font-bold" style={{ color: "#FFFFFF" }}>
+                    {result.symbol}
+                  </span>
+                  <span className="ml-2" style={{ color: "#8A93A6" }}>
+                    {result.name}
+                  </span>
+                </div>
+                <span className="text-[10px]" style={{ color: "#8A93A6" }}>
+                  {result.exchange}
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Stock List */}
+      <ScrollArea className="flex-1">
+        {watchlistItems.map((item: any) => (
+          <button
+            key={item.symbol}
+            onClick={() => onSymbolSelect(item.symbol)}
+            className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#142538]"
+            style={{
+              backgroundColor: selectedSymbol === item.symbol ? "#142538" : "transparent",
+              borderLeft: selectedSymbol === item.symbol ? "2px solid #E3B341" : "2px solid transparent",
+              borderBottom: "1px solid rgba(43, 58, 76, 0.5)",
+            }}
+          >
+            <span
+              className="font-bold"
+              style={{ color: selectedSymbol === item.symbol ? "#E3B341" : "#FFFFFF" }}
+            >
+              {item.symbol}
+            </span>
+            <div className="flex items-center gap-3">
+              <span className="font-medium" style={{ color: "#C9D1E2" }}>
+                ${item.price.toFixed(2)}
+              </span>
+              <span
+                className="font-semibold min-w-[60px] text-right"
+                style={{ color: item.change >= 0 ? "#28C76F" : "#FF4F58" }}
+              >
+                {item.change >= 0 ? "+" : ""}
+                {item.percentChange.toFixed(2)}%
+              </span>
+            </div>
+          </button>
+        ))}
+      </ScrollArea>
+    </div>
+  );
+}

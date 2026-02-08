@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Import widget components
-import { AdvancedTradingChart } from "./widgets/AdvancedTradingChart";
+import { TradingViewChart } from "../trading/TradingViewChart";
 import { PortfolioHoldingsWidget } from "./widgets/PortfolioHoldingsWidget";
 import { StockSearchBar } from "../trading/StockSearchBar";
 import { ShoppingCart } from "lucide-react";
@@ -14,9 +13,9 @@ interface PortfolioGridProps {
 export function PortfolioGrid({ selectedChartStock, onSelectStock }: PortfolioGridProps = {}) {
   return (
     <div className="w-full space-y-6">
-      {/* Portfolio Performance Chart with Summary in Header - Full Width */}
+      {/* Portfolio Performance Chart - Full Width */}
       <div className="w-full min-h-[500px]">
-        <AdvancedTradingChart selectedStock={selectedChartStock || "AAPL"} />
+        <TradingViewChart symbol={selectedChartStock || "AAPL"} />
       </div>
 
       {/* Stock Purchase Search */}

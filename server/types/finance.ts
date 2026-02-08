@@ -55,3 +55,17 @@ export interface ErrorResponse {
   error: string;
   statusCode: number;
 }
+
+export interface KeyStats {
+  trailingPE: number | null;
+  epsTrailingTwelveMonths: number | null;
+  fiftyTwoWeekHigh: number | null;
+  fiftyTwoWeekLow: number | null;
+  dividendYield: number | null;
+  beta: number | null;
+  averageVolume: number | null;
+  regularMarketDayHigh: number | null;
+  regularMarketDayLow: number | null;
+  regularMarketOpen: number | null;
+  marketCap: number | null;
+}

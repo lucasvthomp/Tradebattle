@@ -10,6 +10,7 @@ import {
   TimeFrame
 } from '../services/yahooFinance.js';
 import { getExchangeRate, convertCurrency, getAllExchangeRates } from '../services/exchangeRates.js';
+import { getKeyStats } from '../services/keyStats.js';
 import { 
   asyncHandler, 
   validateSymbol, 
@@ -174,6 +175,28 @@ router.get('/summary/:symbol', asyncHandler(async (req, res) => {
     });
   } catch (error) {
     throw new NotFoundError(`Company profile not found for symbol: ${symbol}`);
+  }
+}));
+
+/**
+ * GET /api/key-stats/:symbol
+ * Get extended key statistics for a stock
+ */
+router.get('/key-stats/:symbol', asyncHandler(async (req: any, res: any) => {
+  const symbol = sanitizeInput(req.params.symbol.toUpperCase());
+
+  if (!validateSymbol(symbol)) {
+    throw new ValidationError('Invalid symbol format');
+  }
+
+  try {
+    const stats = await getKeyStats(symbol);
+    res.json({
+      success: true,
+      data: stats,
+    });
+  } catch (error) {
+    throw new NotFoundError(`Key stats not found for symbol: ${symbol}`);
   }
 }));
 
