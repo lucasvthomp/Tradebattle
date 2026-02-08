@@ -293,7 +293,8 @@ export function getAllSectors(): string[] {
 }
 
 /**
- * Fetch current stock quote data
+ * Fetch quote data using Yahoo Finance v8 chart API (no auth/crumb required).
+ * This bypasses the yahoo-finance2 library which triggers rate limits due to crumb/cookie setup.
  */
 export async function getStockQuote(symbol: string): Promise<StockQuote> {
   const cacheKey = `quote_${symbol}`;
@@ -304,27 +305,37 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
   }
 
   try {
-    // Single API call - yahooFinance.quote() returns everything we need for price data
-    const result = await yahooFinance.quote(symbol);
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+    });
 
-    if (!result || !result.regularMarketPrice) {
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance returned ${response.status}: ${response.statusText}`);
+    }
+
+    const data = await response.json() as any;
+    const result = data?.chart?.result?.[0];
+
+    if (!result || !result.meta?.regularMarketPrice) {
       throw new Error(`No data found for symbol: ${symbol}`);
     }
 
-    const currentPrice = result.regularMarketPrice;
-    const previousClosePrice = result.regularMarketPreviousClose || currentPrice;
+    const meta = result.meta;
+    const currentPrice = meta.regularMarketPrice;
+    const previousClosePrice = meta.chartPreviousClose || currentPrice;
     const change = currentPrice - previousClosePrice;
     const percentChange = previousClosePrice > 0 ? ((change / previousClosePrice) * 100) : 0;
 
     const quote: StockQuote = {
-      symbol: result.symbol || symbol,
+      symbol: meta.symbol || symbol,
       price: currentPrice,
       change,
       percentChange,
       previousClose: previousClosePrice,
-      volume: result.regularMarketVolume || 0,
-      marketCap: result.marketCap || 0,
-      currency: result.currency || 'USD',
+      volume: meta.regularMarketVolume || 0,
+      marketCap: 0,
+      currency: meta.currency || 'USD',
       sector: getSectorFallback(symbol),
       industry: undefined,
     };
@@ -349,45 +360,33 @@ export async function searchStocks(query: string): Promise<SearchResult[]> {
   }
 
   try {
-    const result = await yahooFinance.search(query);
-    
+    // Use direct HTTP for search to avoid library's crumb/cookie rate limits
+    const url = `https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Search API returned ${response.status}`);
+    }
+
+    const result = await response.json() as any;
+
     if (!result || !result.quotes) {
       return [];
     }
 
-    // Enhanced search results with sector information
-    const searchResults: SearchResult[] = await Promise.all(
-      result.quotes
-        .filter(item => item.symbol && item.shortname)
-        .slice(0, 10) // Limit to top 10 results
-        .map(async item => {
-          // Try to get sector information from quoteSummary
-          let sector = item.sector;
-          let industry = item.industry;
-          
-          if (!sector) {
-            try {
-              const summary = await yahooFinance.quoteSummary(item.symbol!, {
-                modules: ['assetProfile', 'summaryProfile']
-              });
-              sector = summary?.summaryProfile?.sector || summary?.assetProfile?.sector;
-              industry = summary?.summaryProfile?.industry || summary?.assetProfile?.industry;
-            } catch (error) {
-              // If we can't get sector info, use fallback
-              sector = getSectorFallback(item.symbol!);
-            }
-          }
-          
-          return {
-            symbol: item.symbol!,
-            name: item.shortname || item.longname || item.symbol!,
-            exchange: item.exchange || 'N/A',
-            type: item.typeDisp || 'Stock',
-            sector: sector || getSectorFallback(item.symbol!),
-            industry: industry || undefined,
-          };
-        })
-    );
+    const searchResults: SearchResult[] = result.quotes
+      .filter((item: any) => item.symbol && (item.shortname || item.longname))
+      .slice(0, 10)
+      .map((item: any) => ({
+        symbol: item.symbol,
+        name: item.shortname || item.longname || item.symbol,
+        exchange: item.exchange || 'N/A',
+        type: item.typeDisp || 'Stock',
+        sector: item.sector || getSectorFallback(item.symbol),
+        industry: item.industry || undefined,
+      }));
 
     setCachedData(cacheKey, searchResults, CACHE_TTL.SEARCH);
     return searchResults;
@@ -639,7 +638,8 @@ export async function getStockPerformance(symbol: string, timeFrame: TimeFrame):
 }
 
 /**
- * Get detailed company information
+ * Get detailed company information.
+ * Uses yahoo-finance2 library with retry, falling back to chart API for basic info.
  */
 export async function getCompanyProfile(symbol: string): Promise<CompanyProfile> {
   const cacheKey = `profile_${symbol}`;
@@ -649,8 +649,8 @@ export async function getCompanyProfile(symbol: string): Promise<CompanyProfile>
     return cached;
   }
 
+  // Try yahoo-finance2 library first (has description, sector, industry)
   try {
-    // Try quoteSummary first (has description, sector, industry)
     const summaryResult = await yahooFinance.quoteSummary(symbol, {
       modules: ['summaryProfile', 'price']
     });
@@ -674,8 +674,41 @@ export async function getCompanyProfile(symbol: string): Promise<CompanyProfile>
     setCachedData(cacheKey, profile, CACHE_TTL.PROFILE);
     return profile;
   } catch (error) {
-    console.error(`Error fetching profile for ${symbol}:`, error);
-    throw new Error(`Failed to fetch profile for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.log(`yahoo-finance2 quoteSummary failed for ${symbol}, falling back to chart API`);
+  }
+
+  // Fallback: use v8 chart API for basic company info (name, exchange, currency)
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance returned ${response.status}`);
+    }
+
+    const data = await response.json() as any;
+    const meta = data?.chart?.result?.[0]?.meta;
+
+    const profile: CompanyProfile = {
+      name: meta?.longName || meta?.shortName || symbol,
+      description: 'No description available',
+      sector: getSectorFallback(symbol),
+      industry: 'N/A',
+      marketCap: 0,
+      volume: meta?.regularMarketVolume || 0,
+      currency: meta?.currency || 'USD',
+      exchange: meta?.fullExchangeName || meta?.exchangeName || 'N/A',
+      website: undefined,
+      employees: undefined,
+    };
+
+    setCachedData(cacheKey, profile, CACHE_TTL.PROFILE);
+    return profile;
+  } catch (fallbackError) {
+    console.error(`All profile fetches failed for ${symbol}:`, fallbackError);
+    throw new Error(`Failed to fetch profile for ${symbol}`);
   }
 }
 
