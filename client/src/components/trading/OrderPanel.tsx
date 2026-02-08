@@ -111,8 +111,64 @@ export function OrderPanel({
     }
   };
 
+  // Order validation warnings (non-blocking)
+  const orderWarning = (() => {
+    if (!limitPrice && !stopPrice) return null;
+    const lp = parseFloat(limitPrice);
+    const sp = parseFloat(stopPrice);
+    if (orderType === "limit" && orderSide === "buy" && lp > 0 && lp > currentPrice) {
+      return "Limit price is above market price — you may overpay.";
+    }
+    if (orderType === "limit" && orderSide === "sell" && lp > 0 && lp < currentPrice) {
+      return "Limit price is below market price — you may undersell.";
+    }
+    if (orderType === "stop" && orderSide === "sell" && sp > 0 && sp > currentPrice) {
+      return "Stop price is above market price — will trigger immediately.";
+    }
+    if (orderType === "stop" && orderSide === "buy" && sp > 0 && sp < currentPrice) {
+      return "Stop price is below market price — will trigger immediately.";
+    }
+    return null;
+  })();
+
   return (
     <div className="flex flex-col" style={{ borderBottom: "1px solid #2B3A4C" }}>
+      {/* Tournament Selector + Buying Power */}
+      <div className="p-3 space-y-2" style={{ borderBottom: "1px solid #2B3A4C" }}>
+        <div>
+          <label className="text-xs font-medium mb-1 block" style={{ color: "#8A93A6" }}>
+            Tournament
+          </label>
+          <Select
+            value={selectedTournament?.id?.toString() || ""}
+            onValueChange={(value) => {
+              const t = activeTournaments.find((t: any) => t.id.toString() === value);
+              if (t) onTournamentChange(t);
+            }}
+          >
+            <SelectTrigger
+              className="h-9"
+              style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#E3B341" }}
+            >
+              <SelectValue placeholder="Select Tournament" />
+            </SelectTrigger>
+            <SelectContent style={{ backgroundColor: "#1E2D3F", borderColor: "#2B3A4C" }}>
+              {activeTournaments.map((t: any) => (
+                <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#C9D1E2" }}>
+                  {t.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-xs" style={{ color: "#8A93A6" }}>Buying Power</span>
+          <span className="text-sm font-semibold" style={{ color: "#E3B341" }}>
+            {formatCurrency(availableBuyingPower)}
+          </span>
+        </div>
+      </div>
+
       {/* Buy/Sell Tabs */}
       <div className="flex">
         <button
@@ -271,6 +327,13 @@ export function OrderPanel({
           </div>
         )}
 
+        {/* Order Validation Warning */}
+        {orderWarning && (
+          <p className="text-xs px-2 py-1.5 rounded" style={{ color: "#E3B341", backgroundColor: "rgba(227, 179, 65, 0.1)" }}>
+            {orderWarning}
+          </p>
+        )}
+
         {/* Market Price */}
         <div className="flex items-center justify-between">
           <span className="text-xs" style={{ color: "#8A93A6" }}>Market Price</span>
@@ -304,42 +367,6 @@ export function OrderPanel({
         >
           Review Order
         </Button>
-
-        {/* Tournament Selector */}
-        <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: "#8A93A6" }}>
-            Tournament
-          </label>
-          <Select
-            value={selectedTournament?.id?.toString() || ""}
-            onValueChange={(value) => {
-              const t = activeTournaments.find((t: any) => t.id.toString() === value);
-              if (t) onTournamentChange(t);
-            }}
-          >
-            <SelectTrigger
-              className="h-9"
-              style={{ backgroundColor: "#0A1A2F", borderColor: "#2B3A4C", color: "#E3B341" }}
-            >
-              <SelectValue placeholder="Select Tournament" />
-            </SelectTrigger>
-            <SelectContent style={{ backgroundColor: "#1E2D3F", borderColor: "#2B3A4C" }}>
-              {activeTournaments.map((t: any) => (
-                <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#C9D1E2" }}>
-                  {t.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Buying Power */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs" style={{ color: "#8A93A6" }}>Buying Power</span>
-          <span className="text-sm font-semibold" style={{ color: "#E3B341" }}>
-            {formatCurrency(availableBuyingPower)}
-          </span>
-        </div>
       </div>
 
       {/* Review Dialog */}

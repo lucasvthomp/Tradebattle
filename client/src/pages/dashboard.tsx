@@ -67,16 +67,10 @@ export default function Dashboard() {
   const change = quote?.change || 0;
   const percentChange = quote?.percentChange || 0;
   const companyName = (profileResponse as any)?.data?.name || selectedSymbol;
-  const buyingPower =
-    (balanceResponse as any)?.balance ||
-    (balanceResponse as any)?.data?.balance ||
-    0;
+  const buyingPower = (balanceResponse as any)?.data?.balance || 0;
 
   const ownedShares = useMemo(() => {
-    const holdings =
-      (portfolioResponse as any)?.data ||
-      (portfolioResponse as any)?.holdings ||
-      [];
+    const holdings = (portfolioResponse as any)?.data || [];
     if (!Array.isArray(holdings)) return 0;
     const pos = holdings.find((h: any) => h.symbol === selectedSymbol);
     return pos?.shares || 0;

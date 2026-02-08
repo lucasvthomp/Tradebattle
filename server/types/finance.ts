@@ -63,6 +63,7 @@ export interface KeyStats {
   fiftyTwoWeekLow: number | null;
   dividendYield: number | null;
   beta: number | null;
+  regularMarketVolume: number | null;
   averageVolume: number | null;
   regularMarketDayHigh: number | null;
   regularMarketDayLow: number | null;

@@ -44,7 +44,7 @@ export function KeyStatsGrid({ symbol }: KeyStatsGridProps) {
     { label: "52-Week High", value: stats ? formatPrice(stats.fiftyTwoWeekHigh) : null },
     { label: "52-Week Low", value: stats ? formatPrice(stats.fiftyTwoWeekLow) : null },
     { label: "Dividend Yield", value: stats ? formatPercent(stats.dividendYield) : null },
-    { label: "Volume", value: stats ? formatNumber(stats.regularMarketDayHigh !== null ? (data as any)?.data?.averageVolume : null) : null },
+    { label: "Volume", value: stats ? formatNumber(stats.regularMarketVolume) : null },
     { label: "Avg Volume", value: stats ? formatNumber(stats.averageVolume) : null },
     { label: "Beta", value: stats ? formatDecimal(stats.beta) : null },
     { label: "Open", value: stats ? formatPrice(stats.regularMarketOpen) : null },

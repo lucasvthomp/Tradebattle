@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface WatchlistProps {
   selectedSymbol: string;
@@ -12,12 +13,12 @@ interface WatchlistProps {
 export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: popularData } = useQuery({
+  const { data: popularData, isLoading: isLoadingPopular } = useQuery({
     queryKey: ["/api/popular"],
     refetchInterval: 30000,
   });
 
-  const { data: searchData } = useQuery({
+  const { data: searchData, isLoading: isSearching } = useQuery({
     queryKey: ["/api/search", searchQuery],
     enabled: searchQuery.length >= 2,
   });
@@ -85,67 +86,109 @@ export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
         </div>
 
         {/* Search Results Dropdown */}
-        {searchResults.length > 0 && (
+        {searchQuery.length >= 2 && (
           <div
             className="mt-1 rounded-lg overflow-hidden"
             style={{ backgroundColor: "#0A1A2F", border: "1px solid #2B3A4C" }}
           >
-            {searchResults.map((result: any) => (
-              <button
-                key={result.symbol}
-                onClick={() => handleSearchSelect(result.symbol)}
-                className="w-full px-3 py-2 text-left text-xs hover:bg-[#142538] flex items-center justify-between transition-colors"
-              >
-                <div>
-                  <span className="font-bold" style={{ color: "#FFFFFF" }}>
-                    {result.symbol}
-                  </span>
-                  <span className="ml-2" style={{ color: "#8A93A6" }}>
-                    {result.name}
-                  </span>
-                </div>
-                <span className="text-[10px]" style={{ color: "#8A93A6" }}>
-                  {result.exchange}
+            {isSearching ? (
+              <div className="px-3 py-2 space-y-2">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-4 w-full" />
+                ))}
+              </div>
+            ) : searchResults.length > 0 ? (
+              searchResults.map((result: any) => (
+                <button
+                  key={result.symbol}
+                  onClick={() => handleSearchSelect(result.symbol)}
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[#142538] flex items-center justify-between transition-colors"
+                >
+                  <div>
+                    <span className="font-bold" style={{ color: "#FFFFFF" }}>
+                      {result.symbol}
+                    </span>
+                    {result.name && (
+                      <span className="ml-2" style={{ color: "#8A93A6" }}>
+                        {result.name}
+                      </span>
+                    )}
+                  </div>
+                  {result.exchange && (
+                    <span className="text-[10px]" style={{ color: "#8A93A6" }}>
+                      {result.exchange}
+                    </span>
+                  )}
+                </button>
+              ))
+            ) : (
+              <div className="px-3 py-3 text-center">
+                <span className="text-xs" style={{ color: "#8A93A6" }}>
+                  No stocks found
                 </span>
-              </button>
-            ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
       {/* Stock List */}
       <ScrollArea className="flex-1">
-        {watchlistItems.map((item: any) => (
-          <button
-            key={item.symbol}
-            onClick={() => onSymbolSelect(item.symbol)}
-            className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#142538]"
-            style={{
-              backgroundColor: selectedSymbol === item.symbol ? "#142538" : "transparent",
-              borderLeft: selectedSymbol === item.symbol ? "2px solid #E3B341" : "2px solid transparent",
-              borderBottom: "1px solid rgba(43, 58, 76, 0.5)",
-            }}
-          >
-            <span
-              className="font-bold"
-              style={{ color: selectedSymbol === item.symbol ? "#E3B341" : "#FFFFFF" }}
-            >
-              {item.symbol}
-            </span>
-            <div className="flex items-center gap-3">
-              <span className="font-medium" style={{ color: "#C9D1E2" }}>
-                ${item.price.toFixed(2)}
-              </span>
-              <span
-                className="font-semibold min-w-[60px] text-right"
-                style={{ color: item.change >= 0 ? "#28C76F" : "#FF4F58" }}
+        {isLoadingPopular ? (
+          <div className="space-y-0">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="px-3 py-2.5 flex items-center justify-between"
+                style={{ borderBottom: "1px solid rgba(43, 58, 76, 0.5)" }}
               >
-                {item.change >= 0 ? "+" : ""}
-                {item.percentChange.toFixed(2)}%
+                <Skeleton className="h-4 w-12" />
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-4 w-14" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : watchlistItems.length === 0 ? (
+          <div className="px-3 py-6 text-center">
+            <span className="text-xs" style={{ color: "#8A93A6" }}>
+              No stocks available
+            </span>
+          </div>
+        ) : (
+          watchlistItems.map((item: any) => (
+            <button
+              key={item.symbol}
+              onClick={() => onSymbolSelect(item.symbol)}
+              className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#142538]"
+              style={{
+                backgroundColor: selectedSymbol === item.symbol ? "#142538" : "transparent",
+                borderLeft: selectedSymbol === item.symbol ? "2px solid #E3B341" : "2px solid transparent",
+                borderBottom: "1px solid rgba(43, 58, 76, 0.5)",
+              }}
+            >
+              <span
+                className="font-bold"
+                style={{ color: selectedSymbol === item.symbol ? "#E3B341" : "#FFFFFF" }}
+              >
+                {item.symbol}
               </span>
-            </div>
-          </button>
-        ))}
+              <div className="flex items-center gap-3">
+                <span className="font-medium" style={{ color: "#C9D1E2" }}>
+                  ${item.price.toFixed(2)}
+                </span>
+                <span
+                  className="font-semibold min-w-[60px] text-right"
+                  style={{ color: item.change >= 0 ? "#28C76F" : "#FF4F58" }}
+                >
+                  {item.change >= 0 ? "+" : ""}
+                  {item.percentChange.toFixed(2)}%
+                </span>
+              </div>
+            </button>
+          ))
+        )}
       </ScrollArea>
     </div>
   );

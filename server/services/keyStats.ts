@@ -35,11 +35,12 @@ export async function getKeyStats(symbol: string): Promise<KeyStats> {
 
     const stats: KeyStats = {
       trailingPE: (quote as any).trailingPE ?? summaryDetail?.trailingPE ?? null,
-      epsTrailingTwelveMonths: (quote as any).epsTrailingTwelveMonths ?? null,
+      epsTrailingTwelveMonths: (quote as any).epsTrailingTwelveMonths ?? (summaryDetail as any)?.epsTrailingTwelveMonths ?? null,
       fiftyTwoWeekHigh: (quote as any).fiftyTwoWeekHigh ?? summaryDetail?.fiftyTwoWeekHigh ?? null,
       fiftyTwoWeekLow: (quote as any).fiftyTwoWeekLow ?? summaryDetail?.fiftyTwoWeekLow ?? null,
       dividendYield: summaryDetail?.dividendYield ?? (quote as any).dividendYield ?? null,
       beta: keyStats?.beta ?? null,
+      regularMarketVolume: (quote as any).regularMarketVolume ?? null,
       averageVolume: (quote as any).averageDailyVolume10Day ?? summaryDetail?.averageVolume10days ?? null,
       regularMarketDayHigh: (quote as any).regularMarketDayHigh ?? null,
       regularMarketDayLow: (quote as any).regularMarketDayLow ?? null,
