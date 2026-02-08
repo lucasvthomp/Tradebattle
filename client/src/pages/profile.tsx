@@ -300,7 +300,7 @@ export default function Profile() {
               <CardContent className="p-6 relative z-10">
                 <div className="flex items-center space-x-4">
                   <motion.div
-                    whileHover={{ scale: 1.05, rotate: 5 }}
+                    whileHover={{ scale: 1.02 }}
                     transition={{ duration: 0.2 }}
                     className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden relative"
                     style={{ borderColor: '#E3B341', borderWidth: '3px', borderStyle: 'solid' }}
@@ -433,12 +433,7 @@ export default function Profile() {
                       <CardContent className="p-4 relative z-10">
                         <div className="flex items-center justify-between mb-2">
                           <DollarSign className="w-5 h-5" style={{ color: '#E3B341' }} />
-                          <motion.div
-                            animate={{ rotate: [0, 360] }}
-                            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                          >
-                            <TrendingUp className="w-4 h-4" style={{ color: '#28C76F' }} />
-                          </motion.div>
+                          <TrendingUp className="w-4 h-4" style={{ color: '#28C76F' }} />
                         </div>
                         <p className="text-sm font-medium" style={{ color: '#8A93A6' }}>Total Wagered</p>
                         <p className="text-xl font-bold mt-1" style={{ color: '#E3B341' }}>
@@ -459,12 +454,7 @@ export default function Profile() {
                       <CardContent className="p-4 relative z-10">
                         <div className="flex items-center justify-between mb-2">
                           <Trophy className="w-5 h-5" style={{ color: '#E3B341' }} />
-                          <motion.div
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 2, repeat: Infinity }}
-                          >
-                            <Crown className="w-4 h-4" style={{ color: '#E3B341' }} />
-                          </motion.div>
+                          <Crown className="w-4 h-4" style={{ color: '#E3B341' }} />
                         </div>
                         <p className="text-sm font-medium" style={{ color: '#8A93A6' }}>Tournament Wins</p>
                         <p className="text-xl font-bold mt-1" style={{ color: '#28C76F' }}>

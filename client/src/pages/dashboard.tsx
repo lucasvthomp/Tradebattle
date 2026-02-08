@@ -227,13 +227,9 @@ export default function Dashboard() {
       {/* Chart Area - Full width on portrait, flex-1 on landscape */}
       <div className="flex-1 flex flex-col p-2 [@media(min-aspect-ratio:1/1)]:p-4">
         {/* Single Horizontal Header Line: All Elements on Same Y-Axis - Responsive wrapping on portrait */}
-        <div className="flex flex-wrap items-center gap-2 [@media(min-aspect-ratio:1/1)]:gap-3 mb-3 px-2 [@media(min-aspect-ratio:1/1)]:px-4 py-2 [@media(min-aspect-ratio:1/1)]:py-3 rounded-2xl backdrop-blur-xl" style={{
-          background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2838 50%, #1E2D3F 100%)',
-          border: '2px solid transparent',
-          backgroundImage: 'linear-gradient(#1E2D3F, #1E2D3F), linear-gradient(135deg, #2B3A4C, #3A4A5C)',
-          backgroundOrigin: 'border-box',
-          backgroundClip: 'padding-box, border-box',
-          boxShadow: '0 4px 20px rgba(16, 185, 129, 0.1)'
+        <div className="flex flex-wrap items-center gap-2 [@media(min-aspect-ratio:1/1)]:gap-3 mb-3 px-2 [@media(min-aspect-ratio:1/1)]:px-4 py-2 [@media(min-aspect-ratio:1/1)]:py-3 rounded-2xl" style={{
+          backgroundColor: '#1E2D3F',
+          border: '1px solid #2B3A4C',
         }}>
           {/* Ticker Symbol */}
           <h1 className="text-lg [@media(min-aspect-ratio:1/1)]:text-2xl font-bold tracking-tight" style={{ color: '#E3B341' }}>
@@ -243,7 +239,6 @@ export default function Dashboard() {
           {/* Current Price */}
           <span className="text-base [@media(min-aspect-ratio:1/1)]:text-xl font-semibold" style={{
             color: '#FFFFFF',
-            textShadow: '0 0 10px rgba(227, 179, 65, 0.3)'
           }}>
             ${selectedPrice.toFixed(2)}
           </span>
@@ -265,14 +260,13 @@ export default function Dashboard() {
           <div className="flex gap-2 [@media(min-aspect-ratio:1/1)]:gap-3 [@media(min-aspect-ratio:1/1)]:ml-2">
             <motion.button
               onClick={() => setOrderSide('buy')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="h-9 [@media(min-aspect-ratio:1/1)]:h-9 px-3 [@media(min-aspect-ratio:1/1)]:px-4 text-xs [@media(min-aspect-ratio:1/1)]:text-sm rounded-xl font-semibold transition-all"
               style={orderSide === 'buy'
                 ? {
-                    background: 'linear-gradient(135deg, #28C76F 0%, #22A65D 100%)',
+                    backgroundColor: '#28C76F',
                     color: '#FFFFFF',
-                    boxShadow: '0 4px 12px rgba(40, 199, 111, 0.4)',
                     border: '2px solid #28C76F'
                   }
                 : {
@@ -286,14 +280,13 @@ export default function Dashboard() {
             </motion.button>
             <motion.button
               onClick={() => setOrderSide('sell')}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               className="h-9 [@media(min-aspect-ratio:1/1)]:h-9 px-3 [@media(min-aspect-ratio:1/1)]:px-4 text-xs [@media(min-aspect-ratio:1/1)]:text-sm rounded-xl font-semibold transition-all"
               style={orderSide === 'sell'
                 ? {
-                    background: 'linear-gradient(135deg, #FF4F58 0%, #E53E47 100%)',
+                    backgroundColor: '#FF4F58',
                     color: '#FFFFFF',
-                    boxShadow: '0 4px 12px rgba(255, 79, 88, 0.4)',
                     border: '2px solid #FF4F58'
                   }
                 : {
@@ -314,12 +307,12 @@ export default function Dashboard() {
                 setChartMode('cursor');
                 toast({ description: "Cursor tool activated" });
               }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
               className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: chartMode === 'cursor' ? '#142538' : 'transparent',
-                boxShadow: chartMode === 'cursor' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+                boxShadow: 'none'
               }}
               title="Cursor tool"
             >
@@ -330,12 +323,12 @@ export default function Dashboard() {
                 setChartMode('draw');
                 toast({ description: "Draw tool activated - Feature coming soon" });
               }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
               className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: chartMode === 'draw' ? '#142538' : 'transparent',
-                boxShadow: chartMode === 'draw' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+                boxShadow: 'none'
               }}
               title="Draw tool"
             >
@@ -346,12 +339,12 @@ export default function Dashboard() {
                 setChartMode('shape');
                 toast({ description: "Shape tool activated - Feature coming soon" });
               }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
               className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: chartMode === 'shape' ? '#142538' : 'transparent',
-                boxShadow: chartMode === 'shape' ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+                boxShadow: 'none'
               }}
               title="Shape tool"
             >
@@ -362,8 +355,8 @@ export default function Dashboard() {
                 setChartZoomTrigger(prev => prev + 1);
                 toast({ description: "Zooming in..." });
               }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
               className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-[#142538] transition-all"
               style={{ backgroundColor: 'transparent' }}
               title="Zoom in"
@@ -375,12 +368,12 @@ export default function Dashboard() {
                 setShowIndicators(!showIndicators);
                 toast({ description: showIndicators ? "Indicators hidden" : "Indicators visible" });
               }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
               className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-[#142538] transition-all"
               style={{
                 backgroundColor: showIndicators ? '#142538' : 'transparent',
-                boxShadow: showIndicators ? '0 0 15px rgba(16, 185, 129, 0.4)' : 'none'
+                boxShadow: 'none'
               }}
               title="Toggle indicators"
             >
@@ -390,8 +383,8 @@ export default function Dashboard() {
               onClick={() => {
                 toast({ description: "Settings - Feature coming soon" });
               }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.98 }}
               className="h-6 w-6 flex items-center justify-center rounded-md hover:bg-[#142538] transition-all"
               style={{ backgroundColor: 'transparent' }}
               title="Settings"
@@ -406,10 +399,8 @@ export default function Dashboard() {
               className="h-7 w-24 [@media(min-aspect-ratio:1/1)]:w-32 text-xs [@media(min-aspect-ratio:1/1)]:text-sm font-medium rounded-md"
               style={{
                 backgroundColor: '#0A1A2F',
-                borderColor: '#E3B341',
-                border: '2px solid #E3B341',
+                border: '1px solid #2B3A4C',
                 color: '#E3B341',
-                boxShadow: '0 0 10px rgba(227, 179, 65, 0.2)'
               }}
             >
               <SelectValue />
@@ -462,11 +453,7 @@ export default function Dashboard() {
         {/* Chart */}
         <div className="flex-1 relative rounded-2xl overflow-hidden" style={{
           backgroundColor: '#1E2D3F',
-          border: '2px solid transparent',
-          backgroundImage: 'linear-gradient(#1E2D3F, #1E2D3F), linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(227, 179, 65, 0.1))',
-          backgroundOrigin: 'border-box',
-          backgroundClip: 'padding-box, border-box',
-          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)'
+          border: '1px solid #2B3A4C',
         }}>
           <AdvancedTradingChart
             selectedStock={selectedSymbol}
@@ -489,10 +476,9 @@ export default function Dashboard() {
                   className="h-5 px-1.5 text-[10px] font-medium rounded-md transition-all"
                   style={selectedTimeRange === range
                     ? {
-                        background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
+                        backgroundColor: '#10B981',
                         color: '#FFFFFF',
                         border: 'none',
-                        boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)'
                       }
                     : {
                         backgroundColor: 'transparent',
@@ -534,27 +520,24 @@ export default function Dashboard() {
       </div>
 
       {/* RIGHT SIDE: Watchlist + Order Panel - Full width on portrait, stacked vertically */}
-      <div className="w-full [@media(min-aspect-ratio:1/1)]:w-96 flex flex-col backdrop-blur-xl" style={{
-        background: 'linear-gradient(180deg, #1E2D3F 0%, #1A2838 100%)',
-        borderLeft: '2px solid rgba(16, 185, 129, 0.15)',
-        boxShadow: '-4px 0 20px rgba(0, 0, 0, 0.2)'
+      <div className="w-full [@media(min-aspect-ratio:1/1)]:w-96 flex flex-col" style={{
+        backgroundColor: '#1E2D3F',
+        borderLeft: '1px solid #2B3A4C',
       }}>
         {/* TOP HALF: Watchlist Section - Smaller max height on portrait */}
-        <div className="h-auto max-h-64 [@media(min-aspect-ratio:1/1)]:h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '3px solid #10B981', boxShadow: '0 2px 15px rgba(16, 185, 129, 0.3)' }}>
+        <div className="h-auto max-h-64 [@media(min-aspect-ratio:1/1)]:h-1/2 flex flex-col overflow-y-auto" style={{ borderBottom: '1px solid #2B3A4C' }}>
           <div className="px-3 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
             borderColor: '#2B3A4C',
-            background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(16, 185, 129, 0.08) 100%)',
-            boxShadow: '0 2px 12px rgba(227, 179, 65, 0.1)'
+            backgroundColor: '#1E2D3F',
           }}>
             <h3 className="text-sm font-bold tracking-wide flex items-center gap-1.5" style={{ color: '#E3B341' }}>
               <span className="text-sm">📊</span>
               WATCHLIST
             </h3>
             <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold" style={{
-              backgroundColor: 'rgba(227, 179, 65, 0.25)',
+              backgroundColor: 'rgba(227, 179, 65, 0.15)',
               color: '#E3B341',
-              border: '1px solid rgba(227, 179, 65, 0.4)',
-              boxShadow: '0 2px 8px rgba(227, 179, 65, 0.2)'
+              border: '1px solid rgba(227, 179, 65, 0.3)',
             }}>
               {watchlistData.length}
             </span>
@@ -581,16 +564,11 @@ export default function Dashboard() {
               <motion.button
                 key={item.symbol}
                 onClick={() => handleWatchlistClick(item)}
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.99 }}
-                className="w-full grid grid-cols-6 gap-1.5 px-2 py-2 text-[10px] transition-all"
+                className="w-full grid grid-cols-6 gap-1.5 px-2 py-2 text-[10px] transition-all hover:bg-[#142538]"
                 style={{
-                  background: selectedSymbol === item.symbol
-                    ? 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.05) 100%)'
-                    : 'transparent',
+                  backgroundColor: selectedSymbol === item.symbol ? '#142538' : 'transparent',
                   borderBottom: '1px solid #2B3A4C',
-                  borderLeft: selectedSymbol === item.symbol ? '3px solid #10B981' : '3px solid transparent',
-                  boxShadow: selectedSymbol === item.symbol ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'none'
+                  borderLeft: selectedSymbol === item.symbol ? '2px solid #10B981' : '2px solid transparent',
                 }}
               >
                 <span className="col-span-1 font-bold text-left" style={{
@@ -615,8 +593,7 @@ export default function Dashboard() {
           {/* Trade Execution Header */}
           <div className="px-3 py-3 border-b flex items-center justify-between sticky top-0 z-10" style={{
             borderColor: '#2B3A4C',
-            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(227, 179, 65, 0.08) 100%)',
-            boxShadow: '0 2px 12px rgba(16, 185, 129, 0.1)'
+            backgroundColor: '#1E2D3F',
           }}>
             <h3 className="text-sm font-bold tracking-wide flex items-center gap-1.5" style={{ color: '#10B981' }}>
               <span className="text-sm">💰</span>
@@ -646,10 +623,8 @@ export default function Dashboard() {
                 className="h-7 text-sm uppercase"
                 style={{
                   backgroundColor: '#142538',
-                  borderColor: tradeSymbol ? '#E3B341' : '#2B3A4C',
-                  border: `2px solid ${tradeSymbol ? '#E3B341' : '#2B3A4C'}`,
+                  border: `1px solid ${tradeSymbol ? '#E3B341' : '#2B3A4C'}`,
                   color: '#FFFFFF',
-                  boxShadow: tradeSymbol ? '0 0 10px rgba(227, 179, 65, 0.2)' : 'none'
                 }}
               />
               {tradeSymbol && (

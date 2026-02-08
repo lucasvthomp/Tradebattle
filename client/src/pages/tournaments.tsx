@@ -64,20 +64,18 @@ const staggerChildren = {
 };
 
 const cardVariants = {
-  initial: { opacity: 0, y: 30, scale: 0.95 },
+  initial: { opacity: 0, y: 15 },
   animate: {
     opacity: 1,
     y: 0,
-    scale: 1,
     transition: {
-      duration: 0.5,
+      duration: 0.3,
       ease: [0.4, 0, 0.2, 1]
     }
   },
   exit: {
     opacity: 0,
-    scale: 0.9,
-    transition: { duration: 0.3 }
+    transition: { duration: 0.2 }
   }
 };
 
@@ -336,23 +334,10 @@ export default function TournamentsPage() {
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center mb-3" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
-                <motion.div
-                  animate={{
-                    rotate: [0, 5, -5, 0],
-                    scale: [1, 1.05, 1]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <div className="relative">
-                    <Trophy className="text-primary relative z-10" style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)' }} />
-                    <div className="absolute inset-0 bg-primary/30 blur-xl animate-pulse" />
-                  </div>
-                </motion.div>
-                <h1 className="font-black bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient" style={{ fontSize: 'clamp(1.5rem, 4vw, 3.75rem)' }}>
+                <div>
+                  <Trophy className="text-primary" style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)' }} />
+                </div>
+                <h1 className="font-black text-primary" style={{ fontSize: 'clamp(1.5rem, 4vw, 3.75rem)' }}>
                   Tournaments
                 </h1>
               </div>
@@ -874,80 +859,40 @@ function TournamentCard({
       variants={cardVariants}
       custom={index}
       whileHover={{
-        y: -8,
-        scale: 1.02,
-        transition: { duration: 0.3, ease: "easeOut" }
+        y: -2,
+        transition: { duration: 0.2, ease: "easeOut" }
       }}
       className="h-full"
     >
-      <Card className={`h-full relative overflow-hidden group backdrop-blur-sm transition-all duration-500 border-2 ${
-        isHighPot
-          ? type === "upcoming"
-            ? "border-green-500/50 hover:border-green-400 bg-gradient-to-br from-card via-green-500/5 to-emerald-500/10 shadow-lg shadow-green-500/20 hover:shadow-2xl hover:shadow-green-400/30"
-            : "border-yellow-500/50 hover:border-yellow-400 bg-gradient-to-br from-card via-yellow-500/5 to-amber-500/10 shadow-lg shadow-yellow-500/20 hover:shadow-2xl hover:shadow-yellow-400/30"
-          : type === "upcoming"
-            ? "border-green-500/30 hover:border-green-500/60 bg-gradient-to-br from-card/95 via-card/90 to-green-500/5 hover:shadow-xl hover:shadow-green-500/10"
-            : "border-yellow-500/30 hover:border-yellow-500/60 bg-gradient-to-br from-card/95 via-card/90 to-yellow-500/5 hover:shadow-xl hover:shadow-yellow-500/10"
-      }`}>
+      <Card className={`h-full relative overflow-hidden group transition-all duration-300 border ${
+        type === "upcoming"
+          ? "border-green-500/20 hover:border-green-500/40 bg-card"
+          : "border-yellow-500/20 hover:border-yellow-500/40 bg-card"
+      } hover:shadow-md`}>
         {/* High pot crown indicator */}
         {isHighPot && (
           <div className="absolute top-3 right-3 z-20">
-            <motion.div
-              animate={{
-                rotate: [0, 10, -10, 0],
-                scale: [1, 1.1, 1]
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            >
-              <Crown className="w-6 h-6 text-yellow-500 drop-shadow-[0_0_8px_rgba(234,179,8,0.6)]" />
-            </motion.div>
+            <Crown className="w-6 h-6 text-yellow-500" />
           </div>
         )}
-
-        {/* Animated gradient overlay */}
-        <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ${
-          type === "upcoming"
-            ? "bg-gradient-to-br from-green-500/10 via-transparent to-emerald-500/10"
-            : "bg-gradient-to-br from-yellow-500/10 via-transparent to-amber-500/10"
-        }`} />
-
-        {/* Shimmer effect on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-          <div className={`absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ${
-            type === "upcoming"
-              ? "bg-gradient-to-r from-transparent via-green-400/10 to-transparent"
-              : "bg-gradient-to-r from-transparent via-yellow-400/10 to-transparent"
-          }`} />
-        </div>
 
         <CardHeader className="pb-2 relative z-10">
           <div className="flex items-start justify-between mb-2">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1.5">
-                <motion.div
-                  whileHover={{ rotate: 360, scale: 1.1 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  className={`p-1.5 rounded-lg shadow-lg ${
+                <div className={`p-1.5 rounded-lg ${
                     type === "upcoming"
-                      ? "bg-gradient-to-br from-green-500 to-emerald-600 shadow-green-500/30"
-                      : "bg-gradient-to-br from-yellow-500 to-amber-600 shadow-yellow-500/30"
+                      ? "bg-green-600"
+                      : "bg-yellow-600"
                   }`}
                 >
                   <TournamentTypeIcon className="w-3.5 h-3.5 text-white" />
-                </motion.div>
+                </div>
                 {type === "ongoing" && (
-                  <motion.div
-                    animate={{ opacity: [1, 0.6, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="flex items-center gap-1 px-1.5 py-0.5 bg-yellow-500/20 rounded-full border border-yellow-500/30"
-                  >
-                    <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full shadow-[0_0_8px_rgba(234,179,8,0.8)]" />
+                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-yellow-500/20 rounded-full border border-yellow-500/30">
+                    <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full" />
                     <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">LIVE</span>
-                  </motion.div>
+                  </div>
                 )}
               </div>
               <CardTitle className="text-lg font-bold text-foreground mb-1.5 truncate group-hover:text-primary transition-colors duration-300">
@@ -974,68 +919,28 @@ function TournamentCard({
         
         <CardContent className="space-y-2.5 relative z-10">
           {/* Current Pot - Enhanced */}
-          <motion.div
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.3 }}
-            className={`relative text-center py-3 rounded-xl border-2 overflow-hidden backdrop-blur-sm ${
-              isHighPot
-                ? type === "upcoming"
-                  ? "bg-gradient-to-br from-green-500/20 via-emerald-500/15 to-green-600/20 border-green-400/50 shadow-lg shadow-green-500/20"
-                  : "bg-gradient-to-br from-yellow-500/20 via-amber-500/15 to-yellow-600/20 border-yellow-400/50 shadow-lg shadow-yellow-500/20"
-                : type === "upcoming"
-                  ? "bg-gradient-to-br from-green-500/10 via-emerald-500/5 to-green-600/10 border-green-500/30"
-                  : "bg-gradient-to-br from-yellow-500/10 via-amber-500/5 to-yellow-600/10 border-yellow-500/30"
+          <div className={`text-center py-3 rounded-xl border overflow-hidden ${
+              type === "upcoming"
+                ? "bg-green-500/5 border-green-500/20"
+                : "bg-yellow-500/5 border-yellow-500/20"
             }`}
           >
-            {/* Animated background pattern */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse" />
+            <div className="flex items-center justify-center gap-1.5 mb-1">
+              <DollarSign className={`w-5 h-5 ${
+                isHighPot ? "text-yellow-500" : "text-primary"
+              }`} />
+              <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Prize Pool</span>
             </div>
-
-            <div className="relative z-10">
-              <div className="flex items-center justify-center gap-1.5 mb-1">
-                <motion.div
-                  animate={{
-                    rotate: [0, 360],
-                    scale: [1, 1.2, 1]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <DollarSign className={`w-5 h-5 ${
-                    isHighPot ? "text-yellow-500" : "text-primary"
-                  }`} />
-                </motion.div>
-                <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Prize Pool</span>
-              </div>
-              <motion.div
-                animate={isHighPot ? {
-                  textShadow: [
-                    "0 0 20px rgba(234, 179, 8, 0.3)",
-                    "0 0 30px rgba(234, 179, 8, 0.5)",
-                    "0 0 20px rgba(234, 179, 8, 0.3)"
-                  ]
-                } : {}}
-                transition={{ duration: 2, repeat: Infinity }}
-                className={`text-2xl font-black bg-gradient-to-r ${
-                  isHighPot
-                    ? "from-yellow-400 via-yellow-500 to-yellow-600"
-                    : type === "upcoming"
-                      ? "from-green-500 via-emerald-500 to-green-600"
-                      : "from-yellow-400 via-amber-500 to-yellow-600"
-                } bg-clip-text text-transparent mb-1 drop-shadow-lg`}
-              >
-                {formatCurrency(currentPot)}
-              </motion.div>
-              <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground font-medium">
-                <Users className="w-3 h-3" />
-                <span>{tournament.currentPlayers} player{tournament.currentPlayers !== 1 ? 's' : ''} joined</span>
-              </div>
+            <div className={`text-2xl font-black mb-1 ${
+              type === "upcoming" ? "text-green-500" : "text-yellow-500"
+            }`}>
+              {formatCurrency(currentPot)}
             </div>
-          </motion.div>
+            <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground font-medium">
+              <Users className="w-3 h-3" />
+              <span>{tournament.currentPlayers} player{tournament.currentPlayers !== 1 ? 's' : ''} joined</span>
+            </div>
+          </div>
 
           {/* Tournament Stats - Buy-in and Time Remaining */}
           <div className="space-y-2.5 text-sm bg-gradient-to-br from-muted/40 via-muted/30 to-muted/40 backdrop-blur-sm rounded-lg p-3.5 border border-border/30">
@@ -1068,7 +973,7 @@ function TournamentCard({
           <div className="space-y-2">
             {type === "ongoing" ? (
               // Ongoing tournaments always show Leaderboard
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                 <Button
                   onClick={onViewLeaderboard}
                   className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-yellow-500/10 to-amber-500/10 hover:from-yellow-500/20 hover:to-amber-500/20"
@@ -1081,7 +986,7 @@ function TournamentCard({
               </motion.div>
             ) : isCreator ? (
               <>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                   <Button
                     onClick={async () => {
                       try {
@@ -1098,7 +1003,7 @@ function TournamentCard({
                     Start Tournament
                   </Button>
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                   <Button
                     onClick={onManage}
                     className="w-full transition-all duration-300 hover:shadow-lg bg-gradient-to-r from-primary/10 to-purple-500/10 hover:from-primary/20 hover:to-purple-500/20"
@@ -1111,7 +1016,7 @@ function TournamentCard({
                 </motion.div>
               </>
             ) : type === "upcoming" ? (
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
                 <Button
                   onClick={onJoin}
                   disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}

@@ -79,13 +79,6 @@ export default function Leaderboard() {
 
     return (
       <div className="mb-12 relative">
-        {/* Spotlight effect */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 -z-10">
-          <div className="w-full h-full rounded-full opacity-20" style={{
-            background: 'radial-gradient(circle, #E3B341 0%, transparent 70%)',
-            filter: 'blur(60px)'
-          }} />
-        </div>
 
         {/* Podium Container */}
         <div className="flex items-end justify-center gap-8 mb-8 px-8">
@@ -99,94 +92,40 @@ export default function Leaderboard() {
               style={{ width: '220px' }}
             >
               <motion.div
-                whileHover={{ scale: 1.08, y: -8 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -3 }}
                 className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, #C9D1E2 0%, #a8b6c8 50%, #8895a8 100%)',
-                  boxShadow: '0 15px 50px rgba(201, 209, 226, 0.5), 0 0 30px rgba(201, 209, 226, 0.3)',
-                  border: '3px solid rgba(255, 255, 255, 0.5)'
+                  border: '2px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
-                {/* Decorative elements */}
-                <div className="absolute -right-6 -top-6 text-8xl opacity-15">🥈</div>
-                <div className="absolute left-2 bottom-2 text-4xl opacity-10">⭐</div>
-
-                {/* Shine effect */}
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%)',
-                  }}
-                  animate={{
-                    x: ['-200%', '200%'],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    repeatDelay: 2
-                  }}
-                />
-
                 <div className="relative z-10 text-center">
-                  <motion.div
-                    className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{
-                      background: 'rgba(6, 18, 31, 0.4)',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)'
-                    }}
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
+                    style={{ background: 'rgba(6, 18, 31, 0.3)' }}
                   >
                     <Award className="w-12 h-12" style={{ color: '#06121F' }} />
-                  </motion.div>
-                  <div className="text-2xl font-black mb-2" style={{
-                    color: '#06121F',
-                    textShadow: '0 2px 10px rgba(0,0,0,0.2)'
-                  }}>{second.username}</div>
-                  <div className="text-3xl font-black" style={{
-                    color: '#06121F',
-                    textShadow: '0 2px 10px rgba(0,0,0,0.2)'
-                  }}>
+                  </div>
+                  <div className="text-2xl font-black mb-2" style={{ color: '#06121F' }}>{second.username}</div>
+                  <div className="text-3xl font-black" style={{ color: '#06121F' }}>
                     {type === 'wagered' ? formatCurrency(second.totalWagered) : `+${second.percentageChange.toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
 
-              {/* Enhanced Pedestal */}
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 160, opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
+              <div
                 className="w-full rounded-t-2xl relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(180deg, #C9D1E2 0%, #a8b6c8 30%, #8895a8 100%)',
-                  boxShadow: '0 -10px 40px rgba(201, 209, 226, 0.4), inset 0 2px 20px rgba(255,255,255,0.3)',
-                  border: '2px solid rgba(255, 255, 255, 0.3)',
+                  height: 160,
+                  background: 'linear-gradient(180deg, #C9D1E2 0%, #a8b6c8 50%, #8895a8 100%)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
                   borderBottom: 'none'
                 }}
               >
-                {/* Decorative lines on pedestal */}
-                <div className="absolute inset-0 opacity-30">
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-white"></div>
-                  <div className="absolute top-8 left-0 right-0 h-px bg-white opacity-50"></div>
-                  <div className="absolute top-16 left-0 right-0 h-px bg-white opacity-50"></div>
-                </div>
-
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <motion.div
-                    className="text-7xl font-black mb-2"
-                    style={{ color: 'rgba(6, 18, 31, 0.9)', textShadow: '0 4px 10px rgba(0,0,0,0.3)' }}
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >2</motion.div>
-                  <div className="text-base font-bold tracking-wider" style={{
-                    color: 'rgba(6, 18, 31, 0.7)',
-                    textShadow: '0 2px 5px rgba(0,0,0,0.2)'
-                  }}>SILVER</div>
+                  <div className="text-7xl font-black mb-2" style={{ color: 'rgba(6, 18, 31, 0.9)' }}>2</div>
+                  <div className="text-base font-bold tracking-wider" style={{ color: 'rgba(6, 18, 31, 0.7)' }}>SILVER</div>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           )}
 
@@ -200,162 +139,40 @@ export default function Leaderboard() {
               style={{ width: '240px' }}
             >
               <motion.div
-                whileHover={{ scale: 1.08, y: -10 }}
-                whileTap={{ scale: 0.95 }}
-                animate={{
-                  y: [0, -15, 0],
-                  boxShadow: [
-                    '0 20px 60px rgba(227, 179, 65, 0.5), 0 0 40px rgba(227, 179, 65, 0.3)',
-                    '0 25px 70px rgba(227, 179, 65, 0.6), 0 0 50px rgba(227, 179, 65, 0.4)',
-                    '0 20px 60px rgba(227, 179, 65, 0.5), 0 0 40px rgba(227, 179, 65, 0.3)'
-                  ]
-                }}
-                transition={{
-                  y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-                  boxShadow: { duration: 4, repeat: Infinity, ease: "easeInOut" }
-                }}
-                className="rounded-3xl p-8 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
+                whileHover={{ y: -3 }}
+                className="rounded-3xl p-8 shadow-lg relative overflow-hidden mb-4 cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, #FFD700 0%, #E3B341 30%, #c99a35 60%, #a87d28 100%)',
-                  border: '4px solid rgba(255, 215, 0, 0.6)'
+                  border: '2px solid rgba(255, 215, 0, 0.4)'
                 }}
               >
-                {/* Decorative elements */}
-                <div className="absolute -right-8 -top-8 text-9xl opacity-20">👑</div>
-                <div className="absolute left-3 bottom-3 text-6xl opacity-15">🏆</div>
-                <div className="absolute right-3 bottom-3 text-3xl opacity-10">⭐</div>
-
-                {/* Enhanced shine effect */}
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.4) 50%, transparent 60%)',
-                  }}
-                  animate={{
-                    x: ['-200%', '200%'],
-                  }}
-                  transition={{
-                    duration: 2.5,
-                    repeat: Infinity,
-                    repeatDelay: 1.5
-                  }}
-                />
-
-                {/* Particles/sparkles */}
-                {[...Array(3)].map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="absolute text-2xl"
-                    style={{
-                      left: `${20 + i * 30}%`,
-                      top: `${10 + i * 25}%`,
-                    }}
-                    animate={{
-                      y: [-10, -20, -10],
-                      opacity: [0.3, 0.7, 0.3],
-                      scale: [0.8, 1.2, 0.8]
-                    }}
-                    transition={{
-                      duration: 2 + i * 0.5,
-                      delay: i * 0.3,
-                      repeat: Infinity
-                    }}
-                  >
-                    ✨
-                  </motion.div>
-                ))}
-
                 <div className="relative z-10 text-center">
-                  <motion.div
-                    className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{
-                      background: 'rgba(6, 18, 31, 0.4)',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 0 30px rgba(0, 0, 0, 0.4)'
-                    }}
-                    animate={{
-                      rotate: [0, 360],
-                      scale: [1, 1.05, 1]
-                    }}
-                    transition={{
-                      rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                      scale: { duration: 2, repeat: Infinity }
-                    }}
+                  <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
+                    style={{ background: 'rgba(6, 18, 31, 0.3)' }}
                   >
                     <Crown className="w-14 h-14" style={{ color: '#06121F' }} />
-                  </motion.div>
-                  <div className="text-3xl font-black mb-3" style={{
-                    color: '#06121F',
-                    textShadow: '0 3px 15px rgba(0,0,0,0.3)'
-                  }}>{first.username}</div>
-                  <div className="text-4xl font-black" style={{
-                    color: '#06121F',
-                    textShadow: '0 3px 15px rgba(0,0,0,0.3)'
-                  }}>
+                  </div>
+                  <div className="text-3xl font-black mb-3" style={{ color: '#06121F' }}>{first.username}</div>
+                  <div className="text-4xl font-black" style={{ color: '#06121F' }}>
                     {type === 'wagered' ? formatCurrency(first.totalWagered) : `+${first.percentageChange.toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
 
-              {/* Enhanced Gold Pedestal */}
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 200, opacity: 1 }}
-                transition={{ delay: 0.4, duration: 1, type: "spring" }}
+              <div
                 className="w-full rounded-t-2xl relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(180deg, #FFD700 0%, #E3B341 20%, #c99a35 50%, #9a7728 100%)',
-                  boxShadow: '0 -15px 50px rgba(227, 179, 65, 0.5), inset 0 3px 30px rgba(255,215,0,0.4)',
-                  border: '3px solid rgba(255, 215, 0, 0.5)',
+                  height: 200,
+                  background: 'linear-gradient(180deg, #FFD700 0%, #E3B341 30%, #c99a35 60%, #9a7728 100%)',
+                  border: '1px solid rgba(255, 215, 0, 0.3)',
                   borderBottom: 'none'
                 }}
               >
-                {/* Decorative lines on pedestal */}
-                <div className="absolute inset-0 opacity-40">
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent"></div>
-                  <div className="absolute top-10 left-0 right-0 h-px bg-white opacity-60"></div>
-                  <div className="absolute top-20 left-0 right-0 h-px bg-white opacity-60"></div>
-                  <div className="absolute top-30 left-0 right-0 h-px bg-white opacity-60"></div>
-                </div>
-
-                {/* Animated glow */}
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: 'radial-gradient(circle at center, rgba(255,215,0,0.3) 0%, transparent 70%)'
-                  }}
-                  animate={{
-                    opacity: [0.3, 0.6, 0.3]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity
-                  }}
-                />
-
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <motion.div
-                    className="text-8xl font-black mb-2"
-                    style={{
-                      color: 'rgba(6, 18, 31, 0.9)',
-                      textShadow: '0 5px 15px rgba(0,0,0,0.4)'
-                    }}
-                    animate={{
-                      scale: [1, 1.08, 1],
-                      textShadow: [
-                        '0 5px 15px rgba(0,0,0,0.4)',
-                        '0 8px 20px rgba(0,0,0,0.5)',
-                        '0 5px 15px rgba(0,0,0,0.4)'
-                      ]
-                    }}
-                    transition={{ duration: 2.5, repeat: Infinity }}
-                  >1</motion.div>
-                  <div className="text-lg font-bold tracking-widest" style={{
-                    color: 'rgba(6, 18, 31, 0.8)',
-                    textShadow: '0 3px 8px rgba(0,0,0,0.3)'
-                  }}>GOLD</div>
+                  <div className="text-8xl font-black mb-2" style={{ color: 'rgba(6, 18, 31, 0.9)' }}>1</div>
+                  <div className="text-lg font-bold tracking-widest" style={{ color: 'rgba(6, 18, 31, 0.8)' }}>GOLD</div>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           )}
 
@@ -369,91 +186,40 @@ export default function Leaderboard() {
               style={{ width: '220px' }}
             >
               <motion.div
-                whileHover={{ scale: 1.08, y: -8 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ y: -3 }}
                 className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, #CD7F32 0%, #b3692a 50%, #995d24 100%)',
-                  boxShadow: '0 15px 50px rgba(205, 127, 50, 0.5), 0 0 30px rgba(205, 127, 50, 0.3)',
-                  border: '3px solid rgba(205, 127, 50, 0.6)'
+                  border: '2px solid rgba(205, 127, 50, 0.4)'
                 }}
               >
-                {/* Decorative elements */}
-                <div className="absolute -right-6 -top-6 text-8xl opacity-15">🥉</div>
-                <div className="absolute left-2 bottom-2 text-4xl opacity-10">🎖️</div>
-
-                {/* Shine effect */}
-                <motion.div
-                  className="absolute inset-0"
-                  style={{
-                    background: 'linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.2) 50%, transparent 60%)',
-                  }}
-                  animate={{
-                    x: ['-200%', '200%'],
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    repeatDelay: 2
-                  }}
-                />
-
                 <div className="relative z-10 text-center">
-                  <motion.div
-                    className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.25)',
-                      backdropFilter: 'blur(10px)',
-                      boxShadow: '0 0 20px rgba(0, 0, 0, 0.3)'
-                    }}
-                    animate={{ rotate: [0, 360] }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
+                    style={{ background: 'rgba(255, 255, 255, 0.2)' }}
                   >
                     <Target className="w-12 h-12 text-white" />
-                  </motion.div>
-                  <div className="text-2xl font-black text-white mb-2" style={{
-                    textShadow: '0 2px 10px rgba(0,0,0,0.4)'
-                  }}>{third.username}</div>
-                  <div className="text-3xl font-black text-white" style={{
-                    textShadow: '0 2px 10px rgba(0,0,0,0.4)'
-                  }}>
+                  </div>
+                  <div className="text-2xl font-black text-white mb-2">{third.username}</div>
+                  <div className="text-3xl font-black text-white">
                     {type === 'wagered' ? formatCurrency(third.totalWagered) : `+${third.percentageChange.toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
 
-              {/* Enhanced Bronze Pedestal */}
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 130, opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.8, type: "spring" }}
+              <div
                 className="w-full rounded-t-2xl relative overflow-hidden"
                 style={{
-                  background: 'linear-gradient(180deg, #CD7F32 0%, #b3692a 30%, #995d24 100%)',
-                  boxShadow: '0 -10px 40px rgba(205, 127, 50, 0.4), inset 0 2px 20px rgba(255,255,255,0.2)',
-                  border: '2px solid rgba(205, 127, 50, 0.4)',
+                  height: 130,
+                  background: 'linear-gradient(180deg, #CD7F32 0%, #b3692a 50%, #995d24 100%)',
+                  border: '1px solid rgba(205, 127, 50, 0.3)',
                   borderBottom: 'none'
                 }}
               >
-                {/* Decorative lines on pedestal */}
-                <div className="absolute inset-0 opacity-25">
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-white"></div>
-                  <div className="absolute top-6 left-0 right-0 h-px bg-white opacity-50"></div>
-                  <div className="absolute top-12 left-0 right-0 h-px bg-white opacity-50"></div>
-                </div>
-
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <motion.div
-                    className="text-7xl font-black text-white mb-2"
-                    style={{ textShadow: '0 4px 10px rgba(0,0,0,0.4)' }}
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >3</motion.div>
-                  <div className="text-base font-bold tracking-wider text-white opacity-90" style={{
-                    textShadow: '0 2px 5px rgba(0,0,0,0.3)'
-                  }}>BRONZE</div>
+                  <div className="text-7xl font-black text-white mb-2">3</div>
+                  <div className="text-base font-bold tracking-wider text-white opacity-90">BRONZE</div>
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
           )}
         </div>
@@ -463,32 +229,6 @@ export default function Leaderboard() {
 
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#06121F' }}>
-      {/* Floating Background Icons */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-10">
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute"
-            style={{
-              left: `${(i * 20) % 100}%`,
-              top: `${(i * 30) % 80}%`,
-            }}
-            animate={{
-              y: [-30, 30, -30],
-              rotate: [0, 180, 360],
-              opacity: [0.05, 0.15, 0.05],
-            }}
-            transition={{
-              duration: 10 + i * 2,
-              delay: i * 0.5,
-              repeat: Infinity,
-            }}
-          >
-            <Trophy className="w-20 h-20" style={{ color: '#E3B341' }} />
-          </motion.div>
-        ))}
-      </div>
-
       <div className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
         {/* Header */}
         <motion.div
@@ -498,8 +238,7 @@ export default function Leaderboard() {
         >
           <div className="flex items-center gap-4 mb-3">
             <div className="rounded-2xl p-3" style={{
-              background: 'linear-gradient(135deg, #E3B341, #c99a35)',
-              boxShadow: '0 4px 20px rgba(227, 179, 65, 0.4)'
+              backgroundColor: '#E3B341',
             }}>
               <Trophy className="w-10 h-10" style={{ color: '#06121F' }} />
             </div>
@@ -565,7 +304,7 @@ export default function Leaderboard() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          whileHover={{ scale: 1.02, x: 5 }}
+                          whileHover={{ x: 3 }}
                           className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
                           style={{
                             background: 'linear-gradient(135deg, rgba(30, 45, 63, 0.6), rgba(20, 37, 56, 0.6))',
@@ -669,7 +408,7 @@ export default function Leaderboard() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: index * 0.05 }}
-                          whileHover={{ scale: 1.02, x: 5 }}
+                          whileHover={{ x: 3 }}
                           className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
                           style={{
                             background: 'linear-gradient(135deg, rgba(30, 45, 63, 0.6), rgba(20, 37, 56, 0.6))',
@@ -710,10 +449,9 @@ export default function Leaderboard() {
           transition={{ delay: 0.4 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10"
         >
-          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
+          <motion.div whileHover={{ y: -3 }}>
             <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
-              background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)',
-              boxShadow: '0 10px 30px rgba(227, 179, 65, 0.4)'
+              background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)'
             }}>
               <CardContent className="p-6">
                 <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">💰</div>
@@ -737,10 +475,9 @@ export default function Leaderboard() {
             </Card>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
+          <motion.div whileHover={{ y: -3 }}>
             <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
-              background: 'linear-gradient(135deg, #28C76F 0%, #1a9a55 100%)',
-              boxShadow: '0 10px 30px rgba(40, 199, 111, 0.4)'
+              background: 'linear-gradient(135deg, #28C76F 0%, #1a9a55 100%)'
             }}>
               <CardContent className="p-6">
                 <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">🏆</div>
@@ -762,10 +499,9 @@ export default function Leaderboard() {
             </Card>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.05, y: -5 }}>
+          <motion.div whileHover={{ y: -3 }}>
             <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
-              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)',
-              boxShadow: '0 10px 30px rgba(59, 130, 246, 0.4)'
+              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)'
             }}>
               <CardContent className="p-6">
                 <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">⚡</div>
