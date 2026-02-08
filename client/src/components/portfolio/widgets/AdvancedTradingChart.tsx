@@ -20,7 +20,6 @@ import { TrendingUp, RefreshCw, Search, Settings, Plus, Minus, Maximize2, BarCha
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   createChart,
   ColorType,
@@ -81,7 +80,7 @@ export function AdvancedTradingChart({
 
   const [selectedSymbol, setSelectedSymbol] = useState<string>(selectedStock || "NVDA");
   const [searchQuery, setSearchQuery] = useState<string>(selectedStock || "NVDA");
-  const [selectedTimeframe, setSelectedTimeframe] = useState<string>("1M");
+  const [selectedTimeframe, setSelectedTimeframe] = useState<string>(timeRange || "1D");
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -120,8 +119,7 @@ export function AdvancedTradingChart({
       '3M': 26325,    // ~66 trading days
       'YTD': 87600,   // Year to date (approx)
       '1Y': 87600,    // ~252 trading days
-      '5Y': 438000,   // ~1260 trading days
-      'All': 1752000  // Max historical data
+      '5Y': 438000    // ~1260 trading days
     }[range] || 390;
 
     return Math.ceil(rangeMinutes / intervalMinutes);
@@ -254,33 +252,34 @@ export function AdvancedTradingChart({
       const data = await response.json();
 
       if (data.success && data.data) {
-        const candleData = data.data.map((item: any) => ({
-          time: item.date,
-          open: parseFloat(item.open) || 0,
-          high: parseFloat(item.high) || 0,
-          low: parseFloat(item.low) || 0,
-          close: parseFloat(item.close) || 0,
-        }));
+        // Normalize date to Unix timestamp for consistency
+        const normalizeTime = (date: any): number => {
+          if (typeof date === 'number') return date;
+          return Math.floor(new Date(date).getTime() / 1000);
+        };
 
-        const volumeData = data.data.map((item: any) => ({
-          time: item.date,
-          value: parseFloat(item.volume) || 0,
-          color: parseFloat(item.close) >= parseFloat(item.open) ?
-            'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
-        }));
+        const candleData = data.data
+          .map((item: any) => ({
+            time: normalizeTime(item.date) as any,
+            open: parseFloat(item.open) || 0,
+            high: parseFloat(item.high) || 0,
+            low: parseFloat(item.low) || 0,
+            close: parseFloat(item.close) || 0,
+          }))
+          .filter((item: any) => !isNaN(item.time) && item.time > 0);
 
-        // Sort by time
-        candleData.sort((a: any, b: any) => {
-          const timeA = new Date(a.time).getTime() / 1000;
-          const timeB = new Date(b.time).getTime() / 1000;
-          return timeA - timeB;
-        });
+        const volumeData = data.data
+          .map((item: any) => ({
+            time: normalizeTime(item.date) as any,
+            value: parseFloat(item.volume) || 0,
+            color: parseFloat(item.close) >= parseFloat(item.open) ?
+              'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'
+          }))
+          .filter((item: any) => !isNaN(item.time) && item.time > 0);
 
-        volumeData.sort((a: any, b: any) => {
-          const timeA = new Date(a.time).getTime() / 1000;
-          const timeB = new Date(b.time).getTime() / 1000;
-          return timeA - timeB;
-        });
+        // Sort by time ascending
+        candleData.sort((a: any, b: any) => a.time - b.time);
+        volumeData.sort((a: any, b: any) => a.time - b.time);
 
         return { candleData, volumeData, rawData: data.data };
       }
@@ -310,7 +309,7 @@ export function AdvancedTradingChart({
 
       let indicatorData: any[] = [];
       const priceData = rawData.map(d => ({
-        time: d.date,
+        time: (typeof d.date === 'number' ? d.date : Math.floor(new Date(d.date).getTime() / 1000)) as any,
         close: parseFloat(d.close)
       }));
 
@@ -474,8 +473,8 @@ export function AdvancedTradingChart({
           price: true,
         },
       },
-      width: chartContainerRef.current.clientWidth,
-      height: chartContainerRef.current.clientHeight,
+      width: chartContainerRef.current.clientWidth || 800,
+      height: Math.max(chartContainerRef.current.clientHeight, 400),
     });
 
     // Add candlestick series (v5 API)
@@ -507,6 +506,17 @@ export function AdvancedTradingChart({
     candlestickSeriesRef.current = candlestickSeries;
     volumeSeriesRef.current = volumeSeries;
 
+    // Use ResizeObserver to handle container resize (including initial layout)
+    const resizeObserver = new ResizeObserver((entries) => {
+      if (chartRef.current && chartContainerRef.current) {
+        const { width, height } = entries[0].contentRect;
+        if (width > 0 && height > 0) {
+          chartRef.current.applyOptions({ width, height });
+        }
+      }
+    });
+    resizeObserver.observe(chartContainerRef.current);
+
     const handleResize = () => {
       if (chartRef.current && chartContainerRef.current) {
         chartRef.current.applyOptions({
@@ -517,7 +527,10 @@ export function AdvancedTradingChart({
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
+    };
   };
 
   // Zoom controls
@@ -680,24 +693,6 @@ export function AdvancedTradingChart({
               </div>
             )}
           </div>
-
-          {/* Timeframe Selector */}
-          <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-            <SelectTrigger className="w-20 h-8 text-xs">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="1H">1H</SelectItem>
-              <SelectItem value="1D">1D</SelectItem>
-              <SelectItem value="1W">1W</SelectItem>
-              <SelectItem value="1M">1M</SelectItem>
-              <SelectItem value="3M">3M</SelectItem>
-              <SelectItem value="6M">6M</SelectItem>
-              <SelectItem value="YTD">YTD</SelectItem>
-              <SelectItem value="1Y">1Y</SelectItem>
-              <SelectItem value="5Y">5Y</SelectItem>
-            </SelectContent>
-          </Select>
 
           {/* Indicators Menu */}
           <DropdownMenu>

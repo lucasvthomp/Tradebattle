@@ -98,6 +98,7 @@ export default function Dashboard() {
       setSelectedPrice(quoteData.price || 0);
       setPriceChange(quoteData.change || 0);
       setPriceChangePercent(quoteData.percentChange || 0);
+      setLimitPrice(quoteData.price || 0);
     }
   }, [selectedQuoteResponse]);
 
@@ -467,7 +468,7 @@ export default function Dashboard() {
           {/* Time Range Selector */}
           <div className="absolute bottom-2 left-2 flex items-center gap-3">
             <div className="flex gap-1.5">
-              {['1D', '1W', '1M', '3M', 'YTD', '1Y', '5Y', 'All'].map((range) => (
+              {['1D', '1W', '1M', '3M', 'YTD', '1Y', '5Y'].map((range) => (
                 <motion.button
                   key={range}
                   onClick={() => setSelectedTimeRange(range)}
