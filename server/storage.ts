@@ -140,6 +140,11 @@ export interface IStorage {
   getChatMessages(tournamentId?: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 
+  // Leaderboard & stats operations
+  getAllTournamentParticipants(): Promise<any[]>;
+  calculatePortfolioValue(userId: number, tournamentId: number): Promise<number>;
+  getUserTradingStreak(userId: number): Promise<number>;
+  getUserTournamentCount(userId: number): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1031,6 +1036,94 @@ export class DatabaseStorage implements IStorage {
   async createChatMessage(message: InsertChatMessage): Promise<ChatMessage> {
     const result = await db.insert(chatMessages).values(message).returning();
     return result[0];
+  }
+
+  // Leaderboard & stats operations
+  async getAllTournamentParticipants(): Promise<any[]> {
+    const results = await db
+      .select({
+        id: tournamentParticipants.id,
+        tournamentId: tournamentParticipants.tournamentId,
+        userId: tournamentParticipants.userId,
+        balance: tournamentParticipants.balance,
+        username: users.username,
+        tournamentName: tournaments.name,
+        buyInAmount: tournaments.buyInAmount,
+        startingBalance: tournaments.startingBalance,
+      })
+      .from(tournamentParticipants)
+      .innerJoin(users, eq(tournamentParticipants.userId, users.id))
+      .innerJoin(tournaments, eq(tournamentParticipants.tournamentId, tournaments.id));
+
+    return results.map(r => ({
+      ...r,
+      balance: parseFloat(r.balance as string) || 0,
+      buyInAmount: Number(r.buyInAmount) || 0,
+      startingBalance: parseFloat(r.startingBalance as string) || 10000,
+    }));
+  }
+
+  async calculatePortfolioValue(userId: number, tournamentId: number): Promise<number> {
+    const balance = await this.getTournamentBalance(tournamentId, userId);
+    const purchases = await this.getTournamentStockPurchases(tournamentId, userId);
+
+    let stockValue = 0;
+    for (const purchase of purchases) {
+      stockValue += Number(purchase.shares) * Number(purchase.purchasePrice);
+    }
+
+    return balance + stockValue;
+  }
+
+  async getUserTradingStreak(userId: number): Promise<number> {
+    const result = await db
+      .select({
+        tradeDay: sql<string>`DATE(${tradeHistory.tradeDate})`,
+      })
+      .from(tradeHistory)
+      .where(eq(tradeHistory.userId, userId))
+      .groupBy(sql`DATE(${tradeHistory.tradeDate})`)
+      .orderBy(desc(sql`DATE(${tradeHistory.tradeDate})`));
+
+    if (result.length === 0) return 0;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const firstTradeDay = new Date(result[0].tradeDay);
+    firstTradeDay.setHours(0, 0, 0, 0);
+
+    // Streak must start from today or yesterday
+    if (firstTradeDay.getTime() !== today.getTime() && firstTradeDay.getTime() !== yesterday.getTime()) {
+      return 0;
+    }
+
+    let streak = 1;
+    for (let i = 1; i < result.length; i++) {
+      const currentDay = new Date(result[i - 1].tradeDay);
+      const prevDay = new Date(result[i].tradeDay);
+      currentDay.setHours(0, 0, 0, 0);
+      prevDay.setHours(0, 0, 0, 0);
+
+      const diffMs = currentDay.getTime() - prevDay.getTime();
+      if (diffMs === 86400000) { // exactly 1 day apart
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  }
+
+  async getUserTournamentCount(userId: number): Promise<number> {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(tournamentParticipants)
+      .where(eq(tournamentParticipants.userId, userId));
+    return Number(result[0].count) || 0;
   }
 
   async transferBalance(senderId: number, recipientId: number, amount: number): Promise<void> {

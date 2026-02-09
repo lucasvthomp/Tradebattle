@@ -1407,6 +1407,31 @@ router.get('/leaderboard/most-growth', requireAuth, asyncHandler(async (req, res
 }));
 
 /**
+ * GET /api/leaderboard/most-active
+ * Get leaderboard by total trade count
+ */
+router.get('/leaderboard/most-active', requireAuth, asyncHandler(async (req, res) => {
+  const allUsers = await storage.getAllUsers();
+
+  const rankings = allUsers
+    .filter(u => (u.totalTrades || 0) > 0)
+    .sort((a, b) => (b.totalTrades || 0) - (a.totalTrades || 0))
+    .slice(0, 50)
+    .map(u => ({
+      userId: u.id,
+      username: u.username,
+      totalTrades: u.totalTrades || 0,
+    }));
+
+  res.json({
+    success: true,
+    data: {
+      rankings
+    }
+  });
+}));
+
+/**
  * GET /api/admin/users
  * Get all users for admin management
  */
@@ -1654,6 +1679,8 @@ router.get('/users/public', asyncHandler(async (req, res) => {
       // Get achievement count (this will automatically ensure Welcome achievement exists)
       const achievements = await storage.getUserAchievements(user.id);
       const achievementCount = achievements.length;
+      const tournamentCount = await storage.getUserTournamentCount(user.id);
+      const tradingStreak = await storage.getUserTradingStreak(user.id);
 
       return {
         id: user.id,
@@ -1662,11 +1689,11 @@ router.get('/users/public', asyncHandler(async (req, res) => {
         createdAt: user.createdAt,
         totalTrades: user.totalTrades || 0,
         achievementCount: achievementCount,
-        // Don't include sensitive information like email, password, balances, etc.
+        tournamentCount,
+        tradingStreak,
       };
     } catch (error) {
-      // If achievement fetch fails for one user, still return user data without achievement count
-      console.error(`Failed to fetch achievements for user ${user.id}:`, error);
+      console.error(`Failed to fetch data for user ${user.id}:`, error);
       return {
         id: user.id,
         username: user.username,
@@ -1674,6 +1701,8 @@ router.get('/users/public', asyncHandler(async (req, res) => {
         createdAt: user.createdAt,
         totalTrades: user.totalTrades || 0,
         achievementCount: 0,
+        tournamentCount: 0,
+        tradingStreak: 0,
       };
     }
   }));
@@ -1704,6 +1733,8 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   
   // Get total trade count from trade history
   const totalTrades = await storage.getUserTradeCount(targetUserId);
+  const tournamentCount = await storage.getUserTournamentCount(targetUserId);
+  const tradingStreak = await storage.getUserTradingStreak(targetUserId);
 
   // Return only public information
   const publicUser = {
@@ -1712,7 +1743,8 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
     subscriptionTier: targetUser.subscriptionTier,
     createdAt: targetUser.createdAt,
     totalTrades: totalTrades,
-    // Don't include sensitive information like email, password, balances, etc.
+    tournamentCount,
+    tradingStreak,
   };
   
   res.json({

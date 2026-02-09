@@ -192,7 +192,7 @@ export function OrderPanel({
         <div
           className="px-3 py-3 flex items-center gap-2"
           style={{
-            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(249, 115, 22, 0.10))',
+            background: 'linear-gradient(135deg, #2D1215, #2A1510)',
             borderBottom: '1px solid rgba(239, 68, 68, 0.3)',
           }}
         >
