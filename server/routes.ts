@@ -349,6 +349,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
+      if (user.depositFrozen) {
+        return res.status(403).json({ message: "Your deposits have been frozen. Please contact support." });
+      }
+
       // Calculate new balance
       const currentBalance = parseFloat(user.balance.toString());
       const newBalance = currentBalance + amount;
@@ -397,6 +401,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
+      }
+
+      if (user.withdrawalFrozen) {
+        return res.status(403).json({ message: "Your withdrawals have been frozen. Please contact support." });
       }
 
       const currentBalance = parseFloat(user.siteCash?.toString() || '0');

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -10,18 +11,17 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { UserManagementDialog } from "@/components/admin/UserManagementDialog";
-import { 
-  Shield, 
-  Users, 
-  Crown, 
-  Calendar, 
+import {
+  Shield,
+  Users,
+  Crown,
+  Calendar,
   Mail,
   AlertCircle,
   Settings,
   Trash2,
   MoreHorizontal,
   Eye,
-  Edit,
   UserPlus,
   Server,
   Activity,
@@ -32,7 +32,12 @@ import {
   Trophy,
   GamepadIcon,
   DollarSign,
-  RefreshCw
+  RefreshCw,
+  Search,
+  Filter,
+  BarChart3,
+  TrendingUp,
+  Ban
 } from "lucide-react";
 import {
   AlertDialog,
@@ -51,14 +56,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Tabs,
   TabsContent,
@@ -101,9 +98,11 @@ export default function Admin() {
 
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [userManagementOpen, setUserManagementOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("users");
+  const [activeTab, setActiveTab] = useState("overview");
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [endTournamentOpen, setEndTournamentOpen] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
+  const [userFilter, setUserFilter] = useState("all");
 
   // Check if user is admin (based on subscription tier or username)
   const isAdmin = user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS';
@@ -124,15 +123,24 @@ export default function Admin() {
   const { data: allUsers = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery<any[]>({
     queryKey: ["/api/admin/users"],
     enabled: isAdmin,
-    staleTime: 0, // Always refetch for fresh balance data
-    gcTime: 0, // Don't cache balance data (renamed from cacheTime in v5)
+    staleTime: 0,
+    gcTime: 0,
   });
+
+  // Fetch admin stats
+  const { data: statsData, isLoading: statsLoading } = useQuery<any>({
+    queryKey: ["/api/admin/stats"],
+    enabled: isAdmin,
+    refetchInterval: 30000,
+  });
+
+  const adminStats = statsData?.data || {};
 
   // Fetch system status
   const { data: systemStatus = {}, isLoading: systemLoading } = useQuery<any>({
     queryKey: ["/api/system/status"],
     enabled: isAdmin,
-    refetchInterval: 15000, // Refresh every 15 seconds to show Yahoo Finance updates
+    refetchInterval: 15000,
   });
 
   // Fetch all tournaments
@@ -143,6 +151,23 @@ export default function Admin() {
 
   // Extract tournaments from the response data
   const allTournaments = Array.isArray(tournamentData) ? tournamentData : (tournamentData as any)?.data || [];
+
+  // Filter users based on search and filter
+  const filteredUsers = allUsers.filter((u: any) => {
+    const matchesSearch = !userSearch ||
+      u.username?.toLowerCase().includes(userSearch.toLowerCase()) ||
+      u.email?.toLowerCase().includes(userSearch.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    switch (userFilter) {
+      case "banned": return u.banned;
+      case "withdrawal_frozen": return u.withdrawalFrozen;
+      case "deposit_frozen": return u.depositFrozen;
+      case "tournament_restricted": return u.tournamentRestricted;
+      default: return true;
+    }
+  });
 
   // Delete user mutation
   const deleteMutation = useMutation({
@@ -178,8 +203,6 @@ export default function Admin() {
     },
   });
 
-
-
   // Handle delete confirmation
   const handleDeleteConfirm = () => {
     if (deleteState.userEmail) {
@@ -205,11 +228,11 @@ export default function Admin() {
     const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
     const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-    
-    const timeDisplay = isActive 
+
+    const timeDisplay = isActive
       ? `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes}m remaining`
       : 'Tournament ended';
-    
+
     toast({
       title: `Tournament: ${tournament.name}`,
       description: `Code: ${tournament.code} | ${tournament.memberCount} participants | ${timeDisplay} | Starting Balance: $${tournament.startingBalance}`,
@@ -223,9 +246,9 @@ export default function Admin() {
         credentials: 'include',
       });
       const data = await response.json();
-      
+
       if (data.success) {
-        const participantNames = data.data.map((p: any) => `${p.firstName} ${p.lastName}`).join(', ');
+        const participantNames = data.data.map((p: any) => p.username).join(', ');
         toast({
           title: `${tournament.name} Participants (${tournament.memberCount})`,
           description: participantNames || 'No participants yet',
@@ -254,19 +277,18 @@ export default function Admin() {
 
   const confirmDeleteTournament = async () => {
     if (!selectedTournament) return;
-    
+
     try {
       const response = await apiRequest('DELETE', `/api/admin/tournaments/${selectedTournament.id}`);
       const data = await response.json();
-      
+
       if (data.success) {
         toast({
           title: "Tournament Deleted",
           description: data.message,
           variant: "default",
         });
-        
-        // Refresh the tournaments list
+
         queryClient.invalidateQueries({ queryKey: ["/api/admin/tournaments"] });
         setEndTournamentOpen(false);
         setSelectedTournament(null);
@@ -290,7 +312,7 @@ export default function Admin() {
   if (authLoading || usersLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#E3B341' }}></div>
       </div>
     );
   }
@@ -310,148 +332,252 @@ export default function Admin() {
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center">
-          <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
-          <p className="text-gray-600">Comprehensive user management and system administration</p>
+          <h1 className="text-4xl font-bold mb-4" style={{ color: '#C9D1E2' }}>Admin Dashboard</h1>
+          <p style={{ color: '#8A93A6' }}>Comprehensive site management and diagnostics</p>
         </motion.div>
 
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="users">User Management</TabsTrigger>
-              <TabsTrigger value="tournaments">Tournament Management</TabsTrigger>
-              <TabsTrigger value="system">System Status</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="users">Users</TabsTrigger>
+              <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
+              <TabsTrigger value="system">System</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="users" className="space-y-6">
-              {/* User Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card>
+            {/* ===== TAB 1: OVERVIEW ===== */}
+            <TabsContent value="overview" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                    <Users className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Users</CardTitle>
+                    <Users className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{allUsers.length || 0}</div>
-                    <p className="text-xs text-gray-500">Registered accounts</p>
+                    <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>{adminStats.totalUsers || allUsers.length || 0}</div>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Registered accounts</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Admin Users</CardTitle>
-                    <Crown className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Site Cash</CardTitle>
+                    <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {allUsers?.filter((u: any) => u.subscriptionTier === 'administrator').length || 0}
+                    <div className="text-2xl font-bold" style={{ color: '#28C76F' }}>
+                      ${(adminStats.totalSiteCash || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
-                    <p className="text-xs text-gray-500">System administrators</p>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Across all users</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                    <Activity className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Wagered</CardTitle>
+                    <TrendingUp className="h-4 w-4" style={{ color: '#E3B341' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {allUsers.length || 0}
+                    <div className="text-2xl font-bold" style={{ color: '#E3B341' }}>
+                      ${(adminStats.activeWagered || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
-                    <p className="text-xs text-gray-500">Platform users</p>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>In active tournament pots</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Administrators</CardTitle>
-                    <Crown className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Tournaments</CardTitle>
+                    <Trophy className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {allUsers.filter((u: any) => u.subscriptionTier === 'administrator').length || 0}
-                    </div>
-                    <p className="text-xs text-gray-500">Admin accounts</p>
+                    <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>{adminStats.activeTournaments || 0}</div>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Currently running</p>
+                  </CardContent>
+                </Card>
+
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Trades Today</CardTitle>
+                    <BarChart3 className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>{adminStats.tradesToday || 0}</div>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Buy/sell actions today</p>
+                  </CardContent>
+                </Card>
+
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Flagged Users</CardTitle>
+                    <AlertTriangle className="h-4 w-4" style={{ color: '#FF4F58' }} />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold" style={{ color: '#FF4F58' }}>{adminStats.flaggedUsers || 0}</div>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Banned / frozen / restricted</p>
                   </CardContent>
                 </Card>
               </div>
 
+              {/* Active Tournaments Quick View */}
+              {allTournaments.length > 0 && (
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                      <Trophy className="h-5 w-5" style={{ color: '#E3B341' }} />
+                      Active Tournaments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {allTournaments.filter((t: any) => new Date(t.endsAt) > new Date()).slice(0, 5).map((tournament: any) => {
+                        const timeLeft = new Date(tournament.endsAt).getTime() - Date.now();
+                        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        return (
+                          <div key={tournament.id} className="flex items-center justify-between p-3 rounded-lg" style={{ background: '#06121F' }}>
+                            <div>
+                              <div className="font-medium" style={{ color: '#C9D1E2' }}>{tournament.name}</div>
+                              <div className="text-xs" style={{ color: '#8A93A6' }}>Code: {tournament.code}</div>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm">
+                              <span style={{ color: '#8A93A6' }}>
+                                Buy-in: ${parseFloat(tournament.buyInAmount || 0).toFixed(2)}
+                              </span>
+                              <span style={{ color: '#E3B341' }}>
+                                Pot: ${parseFloat(tournament.currentPot || 0).toFixed(2)}
+                              </span>
+                              <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                                <Users className="h-3 w-3 mr-1" />
+                                {tournament.memberCount}
+                              </Badge>
+                              <span style={{ color: '#28C76F' }}>
+                                {days > 0 ? `${days}d ` : ''}{hours}h left
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* ===== TAB 2: USERS ===== */}
+            <TabsContent value="users" className="space-y-6">
+              {/* Search & Filter Bar */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#8A93A6' }} />
+                  <Input
+                    placeholder="Search by username or email..."
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    className="pl-10"
+                    style={{ background: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                  />
+                </div>
+                <Select value={userFilter} onValueChange={setUserFilter}>
+                  <SelectTrigger className="w-[200px]" style={{ background: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                    <Filter className="h-4 w-4 mr-2" />
+                    <SelectValue placeholder="Filter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Users</SelectItem>
+                    <SelectItem value="banned">Banned</SelectItem>
+                    <SelectItem value="withdrawal_frozen">Withdrawal Frozen</SelectItem>
+                    <SelectItem value="deposit_frozen">Deposit Frozen</SelectItem>
+                    <SelectItem value="tournament_restricted">Tournament Restricted</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               {/* Users Table */}
-              <Card>
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Users className="h-5 w-5" />
-                    User Management
+                    User Management ({filteredUsers.length})
                   </CardTitle>
-                  <CardDescription>
-                    Manage user accounts and permissions
+                  <CardDescription style={{ color: '#8A93A6' }}>
+                    Manage user accounts, restrictions, and permissions
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Table>
                     <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-24">User ID</TableHead>
-                        <TableHead className="w-32">Username</TableHead>
-                        <TableHead className="w-64">Email</TableHead>
-                        <TableHead className="w-24">Balance</TableHead>
-                        <TableHead className="w-28">Created</TableHead>
-                        <TableHead className="w-20">Role</TableHead>
-                        <TableHead className="w-20">Actions</TableHead>
+                      <TableRow style={{ borderColor: '#2B3A4C' }}>
+                        <TableHead className="w-16" style={{ color: '#8A93A6' }}>ID</TableHead>
+                        <TableHead className="w-32" style={{ color: '#8A93A6' }}>Username</TableHead>
+                        <TableHead className="w-48" style={{ color: '#8A93A6' }}>Email</TableHead>
+                        <TableHead className="w-24" style={{ color: '#8A93A6' }}>Site Cash</TableHead>
+                        <TableHead className="w-40" style={{ color: '#8A93A6' }}>Status</TableHead>
+                        <TableHead className="w-16" style={{ color: '#8A93A6' }}>Trades</TableHead>
+                        <TableHead className="w-16" style={{ color: '#8A93A6' }}>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {usersLoading ? (
                         <TableRow>
                           <TableCell colSpan={7} className="text-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                            <p className="mt-2 text-sm text-muted-foreground">Loading users...</p>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }}></div>
+                            <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading users...</p>
                           </TableCell>
                         </TableRow>
-                      ) : allUsers.map((user: any) => (
-                        <TableRow key={user.id}>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              {user.subscriptionTier === 'administrator' && (
-                                <Crown className="h-4 w-4 text-yellow-500" />
-                              )}
-                              <span className="font-mono text-sm">{user.id}</span>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="font-medium">{user.username}</div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="text-sm" title={user.email}>
-                              {user.email}
-                            </div>
-                          </TableCell>
+                      ) : filteredUsers.map((u: any) => (
+                        <TableRow key={u.id} style={{ borderColor: '#2B3A4C' }}>
                           <TableCell>
                             <div className="flex items-center gap-1">
-                              <DollarSign className="h-3 w-3 text-green-600" />
-                              <span className="font-mono text-sm">
-                                ${parseFloat(user.siteCash || "0").toLocaleString()}
-                              </span>
+                              {u.subscriptionTier === 'administrator' && (
+                                <Crown className="h-3 w-3" style={{ color: '#E3B341' }} />
+                              )}
+                              <span className="font-mono text-sm" style={{ color: '#C9D1E2' }}>{u.id}</span>
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="text-sm text-muted-foreground">
-                              {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
+                            <div className="font-medium" style={{ color: '#C9D1E2' }}>{u.username}</div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-sm truncate max-w-[180px]" style={{ color: '#8A93A6' }} title={u.email}>
+                              {u.email}
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge variant={user.subscriptionTier === 'administrator' ? 'default' : 'secondary'}>
-                              {user.subscriptionTier === 'administrator' ? 'Admin' : 'User'}
-                            </Badge>
+                            <span className="font-mono text-sm" style={{ color: '#28C76F' }}>
+                              ${parseFloat(u.siteCash || "0").toLocaleString()}
+                            </span>
                           </TableCell>
                           <TableCell>
-                            <Button 
-                              variant="ghost" 
+                            <div className="flex flex-wrap gap-1">
+                              {u.banned && (
+                                <Badge variant="destructive" className="text-xs px-1.5 py-0">Banned</Badge>
+                              )}
+                              {u.withdrawalFrozen && (
+                                <Badge className="text-xs px-1.5 py-0" style={{ background: '#FF8C00', color: '#fff' }}>W-Frozen</Badge>
+                              )}
+                              {u.depositFrozen && (
+                                <Badge className="text-xs px-1.5 py-0" style={{ background: '#FF8C00', color: '#fff' }}>D-Frozen</Badge>
+                              )}
+                              {u.tournamentRestricted && (
+                                <Badge className="text-xs px-1.5 py-0" style={{ background: '#E3B341', color: '#000' }}>T-Restricted</Badge>
+                              )}
+                              {!u.banned && !u.withdrawalFrozen && !u.depositFrozen && !u.tournamentRestricted && (
+                                <Badge variant="outline" className="text-xs px-1.5 py-0" style={{ borderColor: '#28C76F', color: '#28C76F' }}>Active</Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="font-mono text-sm" style={{ color: '#C9D1E2' }}>{u.totalTrades || 0}</span>
+                          </TableCell>
+                          <TableCell>
+                            <Button
+                              variant="ghost"
                               size="sm"
-                              onClick={() => handleManageUser(user)}
+                              onClick={() => handleManageUser(u)}
                             >
-                              <Settings className="h-4 w-4" />
+                              <Settings className="h-4 w-4" style={{ color: '#8A93A6' }} />
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -462,68 +588,69 @@ export default function Admin() {
               </Card>
             </TabsContent>
 
+            {/* ===== TAB 3: TOURNAMENTS ===== */}
             <TabsContent value="tournaments" className="space-y-6">
               {/* Tournament Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Card>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Tournaments</CardTitle>
-                    <Trophy className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Tournaments</CardTitle>
+                    <Trophy className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{allTournaments.length || 0}</div>
-                    <p className="text-xs text-gray-500">Active competitions</p>
+                    <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>{allTournaments.length || 0}</div>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Active competitions</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Players</CardTitle>
-                    <GamepadIcon className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Players</CardTitle>
+                    <GamepadIcon className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
+                    <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
                       {allTournaments.reduce((total: number, tournament: any) => total + (tournament.memberCount || 0), 0) || 0}
                     </div>
-                    <p className="text-xs text-gray-500">Tournament participants</p>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Tournament participants</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Avg. Players</CardTitle>
-                    <Users className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Pot Value</CardTitle>
+                    <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
-                      {allTournaments.length ? Math.round((allTournaments.reduce((total: number, tournament: any) => total + (tournament.memberCount || 0), 0) || 0) / allTournaments.length) : 0}
+                    <div className="text-2xl font-bold" style={{ color: '#28C76F' }}>
+                      ${allTournaments.reduce((total: number, t: any) => total + parseFloat(t.currentPot || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </div>
-                    <p className="text-xs text-gray-500">Players per tournament</p>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Combined tournament pots</p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Tournaments</CardTitle>
-                    <Activity className="h-4 w-4 text-gray-500" />
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Tournaments</CardTitle>
+                    <Activity className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">
+                    <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
                       {allTournaments.filter((t: any) => new Date(t.endsAt) > new Date()).length || 0}
                     </div>
-                    <p className="text-xs text-gray-500">Still running</p>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Still running</p>
                   </CardContent>
                 </Card>
               </div>
 
               {/* Tournaments Table */}
-              <Card>
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5" />
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                    <Trophy className="h-5 w-5" style={{ color: '#E3B341' }} />
                     Tournament Management
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription style={{ color: '#8A93A6' }}>
                     Manage active tournaments and competitions
                   </CardDescription>
                 </CardHeader>
@@ -531,65 +658,68 @@ export default function Admin() {
                   <div className="space-y-4">
                     {tournamentsLoading ? (
                       <div className="text-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                        <p className="mt-2 text-sm text-gray-600">Loading tournaments...</p>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }}></div>
+                        <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading tournaments...</p>
                       </div>
                     ) : (
-                      <div className="rounded-lg border">
-                        <div className="grid grid-cols-6 gap-4 p-4 border-b bg-gray-50 dark:bg-gray-800 font-semibold">
-                          <div>Tournament ID</div>
+                      <div className="rounded-lg" style={{ border: '1px solid #2B3A4C' }}>
+                        <div className="grid grid-cols-8 gap-3 p-3 font-semibold text-sm" style={{ borderBottom: '1px solid #2B3A4C', color: '#8A93A6' }}>
+                          <div>ID</div>
                           <div>Name</div>
                           <div>Members</div>
+                          <div>Buy-In</div>
+                          <div>Pot</div>
                           <div>Time Left</div>
                           <div>Status</div>
                           <div>Actions</div>
                         </div>
-                        <div className="divide-y">
-                          {allTournaments?.map((tournament) => {
+                        <div className="divide-y" style={{ borderColor: '#2B3A4C' }}>
+                          {allTournaments?.map((tournament: any) => {
                             const timeLeft = new Date(tournament.endsAt).getTime() - new Date().getTime();
                             const isActive = timeLeft > 0;
                             const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                             const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                            
+
                             return (
-                              <div key={tournament.id} className="grid grid-cols-6 gap-4 p-4 items-center">
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary">
-                                    <Trophy className="h-3 w-3 mr-1" />
-                                    {tournament.id}
-                                  </Badge>
+                              <div key={tournament.id} className="grid grid-cols-8 gap-3 p-3 items-center text-sm" style={{ borderColor: '#2B3A4C' }}>
+                                <div>
+                                  <span className="font-mono" style={{ color: '#C9D1E2' }}>{tournament.id}</span>
                                 </div>
                                 <div>
-                                  <div className="font-medium">{tournament.name}</div>
-                                  <div className="text-sm text-gray-500">Code: {tournament.code}</div>
+                                  <div className="font-medium" style={{ color: '#C9D1E2' }}>{tournament.name}</div>
+                                  <div className="text-xs" style={{ color: '#8A93A6' }}>Code: {tournament.code}</div>
                                 </div>
                                 <div>
-                                  <Badge variant="outline" className="text-blue-600">
+                                  <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                                     <Users className="h-3 w-3 mr-1" />
                                     {tournament.memberCount}
                                   </Badge>
                                 </div>
                                 <div>
+                                  <span style={{ color: '#C9D1E2' }}>${parseFloat(tournament.buyInAmount || 0).toFixed(2)}</span>
+                                </div>
+                                <div>
+                                  <span style={{ color: '#E3B341' }}>${parseFloat(tournament.currentPot || 0).toFixed(2)}</span>
+                                </div>
+                                <div>
                                   {isActive ? (
-                                    <div className="text-sm">
-                                      <div className="font-medium">
+                                    <div>
+                                      <div className="font-medium" style={{ color: '#28C76F' }}>
                                         {days > 0 ? `${days}d ` : ''}
                                         {hours > 0 ? `${hours}h ` : ''}
                                         {minutes}m
                                       </div>
-                                      <div className="text-gray-500">remaining</div>
                                     </div>
                                   ) : (
-                                    <div className="text-sm text-gray-500">
-                                      <div className="font-medium">Ended</div>
-                                      <div>{new Date(tournament.endsAt).toLocaleDateString()}</div>
-                                    </div>
+                                    <span style={{ color: '#8A93A6' }}>Ended</span>
                                   )}
                                 </div>
                                 <div>
-                                  <Badge variant="outline" className={isActive ? "text-green-600" : "text-red-600"}>
-                                    <Clock className="h-3 w-3 mr-1" />
+                                  <Badge variant="outline" style={{
+                                    borderColor: isActive ? '#28C76F' : '#FF4F58',
+                                    color: isActive ? '#28C76F' : '#FF4F58'
+                                  }}>
                                     {isActive ? 'Active' : 'Ended'}
                                   </Badge>
                                 </div>
@@ -597,7 +727,7 @@ export default function Admin() {
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                       <Button variant="ghost" size="sm">
-                                        <MoreHorizontal className="h-4 w-4" />
+                                        <MoreHorizontal className="h-4 w-4" style={{ color: '#8A93A6' }} />
                                       </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
@@ -631,70 +761,79 @@ export default function Admin() {
               </Card>
             </TabsContent>
 
+            {/* ===== TAB 4: SYSTEM ===== */}
             <TabsContent value="system" className="space-y-6">
-              {/* System Status */}
-              <Card>
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Server className="h-5 w-5" />
                     System Status
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription style={{ color: '#8A93A6' }}>
                     Monitor system health and performance metrics
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {systemLoading ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-                      <p className="mt-2 text-sm text-gray-600">Loading system status...</p>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }}></div>
+                      <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading system status...</p>
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-4">
-                        <h3 className="font-semibold">Database</h3>
+                        <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>Database</h3>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Status</span>
-                            <Badge variant="outline" className={(systemStatus as any)?.database?.connected ? "text-green-600" : "text-red-600"}>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Status</span>
+                            <Badge variant="outline" style={{
+                              borderColor: (systemStatus as any)?.database?.connected ? '#28C76F' : '#FF4F58',
+                              color: (systemStatus as any)?.database?.connected ? '#28C76F' : '#FF4F58'
+                            }}>
                               <Database className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.database?.connected ? "Connected" : "Disconnected"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Type</span>
-                            <Badge variant="outline">{(systemStatus as any)?.database?.type || "PostgreSQL"}</Badge>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Type</span>
+                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.type || "PostgreSQL"}</Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Tables</span>
-                            <Badge variant="outline">{(systemStatus as any)?.database?.tableCount || "0"}</Badge>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Tables</span>
+                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.tableCount || "0"}</Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Connections</span>
-                            <Badge variant="outline">{(systemStatus as any)?.database?.activeConnections || "0"}</Badge>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Connections</span>
+                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.activeConnections || "0"}</Badge>
                           </div>
                         </div>
                       </div>
                       <div className="space-y-4">
-                        <h3 className="font-semibold">API Services</h3>
+                        <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>API Services</h3>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Yahoo Finance</span>
-                            <Badge variant="outline" className={(systemStatus as any)?.apis?.yahooFinance?.status ? "text-green-600" : "text-red-600"}>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Yahoo Finance</span>
+                            <Badge variant="outline" style={{
+                              borderColor: (systemStatus as any)?.apis?.yahooFinance?.status ? '#28C76F' : '#FF4F58',
+                              color: (systemStatus as any)?.apis?.yahooFinance?.status ? '#28C76F' : '#FF4F58'
+                            }}>
                               <Globe className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.apis?.yahooFinance?.status ? "Active" : "Inactive"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Cache</span>
-                            <Badge variant="outline" className={(systemStatus as any)?.apis?.cache?.enabled ? "text-green-600" : "text-red-600"}>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Cache</span>
+                            <Badge variant="outline" style={{
+                              borderColor: (systemStatus as any)?.apis?.cache?.enabled ? '#28C76F' : '#FF4F58',
+                              color: (systemStatus as any)?.apis?.cache?.enabled ? '#28C76F' : '#FF4F58'
+                            }}>
                               <Settings className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.apis?.cache?.enabled ? "Enabled" : "Disabled"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Active Users</span>
-                            <Badge variant="outline" className="text-blue-600">
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Active Users</span>
+                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                               <Users className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.activeUsers || "0"}
                             </Badge>
@@ -702,34 +841,40 @@ export default function Admin() {
                         </div>
                       </div>
                       <div className="space-y-4">
-                        <h3 className="font-semibold">System Health</h3>
+                        <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>System Health</h3>
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Uptime</span>
-                            <Badge variant="outline" className="text-green-600">
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Uptime</span>
+                            <Badge variant="outline" style={{ borderColor: '#28C76F', color: '#28C76F' }}>
                               <Clock className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.uptime || "0m"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Error Rate</span>
-                            <Badge variant="outline" className={((systemStatus as any)?.system?.errorRate || 0) > 5 ? "text-red-600" : "text-green-600"}>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Error Rate</span>
+                            <Badge variant="outline" style={{
+                              borderColor: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#28C76F',
+                              color: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#28C76F'
+                            }}>
                               <AlertTriangle className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.errorRate || "0"}%
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Response Time</span>
-                            <Badge variant="outline" className={((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? "text-red-600" : "text-green-600"}>
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Response Time</span>
+                            <Badge variant="outline" style={{
+                              borderColor: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#28C76F',
+                              color: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#28C76F'
+                            }}>
                               <Activity className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.avgResponseTime || "0"}ms
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-sm">Total Requests</span>
-                            <Badge variant="outline" className="text-blue-600">
+                            <span className="text-sm" style={{ color: '#8A93A6' }}>Total Requests</span>
+                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                               <Activity className="h-3 w-3 mr-1" />
-                              {systemStatus?.system?.totalRequests || "0"}
+                              {(systemStatus as any)?.system?.totalRequests || "0"}
                             </Badge>
                           </div>
                         </div>
@@ -740,47 +885,47 @@ export default function Admin() {
               </Card>
 
               {/* IT Administration */}
-              <Card>
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Settings className="h-5 w-5" />
                     IT Administration
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription style={{ color: '#8A93A6' }}>
                     System configuration and administrative tools
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-4">
-                      <h3 className="font-semibold">Quick Actions</h3>
+                      <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>Quick Actions</h3>
                       <div className="space-y-2">
-                        <Button variant="outline" className="w-full justify-start">
+                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <Database className="h-4 w-4 mr-2" />
                           Database Backup
                         </Button>
-                        <Button variant="outline" className="w-full justify-start">
+                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <Settings className="h-4 w-4 mr-2" />
                           Clear Cache
                         </Button>
-                        <Button variant="outline" className="w-full justify-start">
+                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <Activity className="h-4 w-4 mr-2" />
                           System Restart
                         </Button>
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="font-semibold">Monitoring</h3>
+                      <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>Monitoring</h3>
                       <div className="space-y-2">
-                        <Button variant="outline" className="w-full justify-start">
+                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <Eye className="h-4 w-4 mr-2" />
                           View Logs
                         </Button>
-                        <Button variant="outline" className="w-full justify-start">
+                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <AlertTriangle className="h-4 w-4 mr-2" />
                           Error Reports
                         </Button>
-                        <Button variant="outline" className="w-full justify-start">
+                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <Activity className="h-4 w-4 mr-2" />
                           Performance Metrics
                         </Button>
@@ -793,8 +938,6 @@ export default function Admin() {
 
           </Tabs>
         </motion.div>
-
-
 
         {/* Delete Tournament Confirmation Dialog */}
         <AlertDialog open={endTournamentOpen} onOpenChange={setEndTournamentOpen}>

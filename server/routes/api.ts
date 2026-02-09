@@ -271,6 +271,9 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
   }
 
   const user = await storage.getUser(userId);
+  if (user?.tournamentRestricted) {
+    throw new ValidationError('Your account is restricted from creating or joining tournaments.');
+  }
   console.log('[Tournament Creation] User:', userId, 'Balance:', user?.siteCash);
 
   if (!name || !startingBalance) {
@@ -485,9 +488,14 @@ router.delete('/tournaments/:id/participants/:participantId', requireAuth, async
 router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req, res) => {
   const code = sanitizeInput(req.params.code.toUpperCase());
   const userId = req.user.id;
-  
+
   if (!userId) {
     throw new ValidationError('User not authenticated');
+  }
+
+  const joinUser = await storage.getUser(userId);
+  if (joinUser?.tournamentRestricted) {
+    throw new ValidationError('Your account is restricted from creating or joining tournaments.');
   }
 
   const tournament = await storage.getTournamentByCode(code);
@@ -532,9 +540,14 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
 router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
   const userId = req.user.id;
-  
+
   if (!userId) {
     throw new ValidationError('User not authenticated');
+  }
+
+  const joinUser = await storage.getUser(userId);
+  if (joinUser?.tournamentRestricted) {
+    throw new ValidationError('Your account is restricted from creating or joining tournaments.');
   }
 
   const tournament = await storage.getTournamentById(tournamentId);
@@ -1556,6 +1569,125 @@ router.patch('/admin/users/:userId/ban', requireAuth, asyncHandler(async (req, r
   
   await storage.banUser(targetUserId);
   res.json({ success: true, message: 'User banned successfully' });
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/unban
+ * Unban a user (admin only)
+ */
+router.patch('/admin/users/:userId/unban', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  await storage.unbanUser(targetUserId);
+  await storage.createAdminLog({
+    adminUserId: userId,
+    targetUserId,
+    action: 'user_unbanned',
+    oldValue: 'banned',
+    newValue: 'unbanned',
+    notes: `Admin unbanned user ${targetUserId}`
+  });
+  res.json({ success: true, message: 'User unbanned successfully' });
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/freeze-withdrawal
+ * Toggle withdrawal freeze (admin only)
+ */
+router.patch('/admin/users/:userId/freeze-withdrawal', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+  const { frozen } = req.body;
+
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  await storage.toggleWithdrawalFrozen(targetUserId, frozen);
+  await storage.createAdminLog({
+    adminUserId: userId,
+    targetUserId,
+    action: 'withdrawal_freeze_toggle',
+    oldValue: (!frozen).toString(),
+    newValue: frozen.toString(),
+    notes: `Admin ${frozen ? 'froze' : 'unfroze'} withdrawals for user ${targetUserId}`
+  });
+  res.json({ success: true, message: `Withdrawals ${frozen ? 'frozen' : 'unfrozen'} successfully` });
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/freeze-deposit
+ * Toggle deposit freeze (admin only)
+ */
+router.patch('/admin/users/:userId/freeze-deposit', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+  const { frozen } = req.body;
+
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  await storage.toggleDepositFrozen(targetUserId, frozen);
+  await storage.createAdminLog({
+    adminUserId: userId,
+    targetUserId,
+    action: 'deposit_freeze_toggle',
+    oldValue: (!frozen).toString(),
+    newValue: frozen.toString(),
+    notes: `Admin ${frozen ? 'froze' : 'unfroze'} deposits for user ${targetUserId}`
+  });
+  res.json({ success: true, message: `Deposits ${frozen ? 'frozen' : 'unfrozen'} successfully` });
+}));
+
+/**
+ * PATCH /api/admin/users/:userId/restrict-tournament
+ * Toggle tournament restriction (admin only)
+ */
+router.patch('/admin/users/:userId/restrict-tournament', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+  const { restricted } = req.body;
+
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  await storage.toggleTournamentRestricted(targetUserId, restricted);
+  await storage.createAdminLog({
+    adminUserId: userId,
+    targetUserId,
+    action: 'tournament_restriction_toggle',
+    oldValue: (!restricted).toString(),
+    newValue: restricted.toString(),
+    notes: `Admin ${restricted ? 'restricted' : 'unrestricted'} tournament access for user ${targetUserId}`
+  });
+  res.json({ success: true, message: `Tournament access ${restricted ? 'restricted' : 'restored'} successfully` });
+}));
+
+/**
+ * GET /api/admin/stats
+ * Get aggregated site diagnostics (admin only)
+ */
+router.get('/admin/stats', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  const stats = await storage.getAdminStats();
+  res.json({ success: true, data: stats });
 }));
 
 /**

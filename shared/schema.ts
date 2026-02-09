@@ -50,6 +50,9 @@ export const users = pgTable("users", {
   totalTrades: integer("total_trades").default(0).notNull(), // Total number of buy/sell trades made by user
   adminNote: text("admin_note").default(""), // Admin notes for user management
   banned: boolean("banned").default(false), // User banned status
+  withdrawalFrozen: boolean("withdrawal_frozen").default(false), // Freeze withdrawals
+  depositFrozen: boolean("deposit_frozen").default(false), // Freeze deposits
+  tournamentRestricted: boolean("tournament_restricted").default(false), // Restrict tournament access
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

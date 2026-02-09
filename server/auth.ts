@@ -62,6 +62,9 @@ export function setupAuth(app: Express) {
         if (!user || !(await comparePasswords(password, user.password))) {
           return done(null, false, { message: "Invalid username or password" });
         }
+        if (user.banned) {
+          return done(null, false, { message: "Your account has been suspended." });
+        }
         return done(null, user);
       } catch (err) {
         return done(err);
@@ -175,6 +178,10 @@ function sanitizeUser(user: User) {
     subscriptionTier: user.subscriptionTier,
     siteCash: user.siteCash,
     balance: user.balance,
+    banned: user.banned,
+    withdrawalFrozen: user.withdrawalFrozen,
+    depositFrozen: user.depositFrozen,
+    tournamentRestricted: user.tournamentRestricted,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

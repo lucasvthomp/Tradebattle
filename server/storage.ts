@@ -141,6 +141,20 @@ export interface IStorage {
   getChatMessages(tournamentId?: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
 
+  // Admin restriction operations
+  unbanUser(userId: number): Promise<void>;
+  toggleWithdrawalFrozen(userId: number, frozen: boolean): Promise<void>;
+  toggleDepositFrozen(userId: number, frozen: boolean): Promise<void>;
+  toggleTournamentRestricted(userId: number, restricted: boolean): Promise<void>;
+  getAdminStats(): Promise<{
+    totalUsers: number;
+    totalSiteCash: number;
+    activeWagered: number;
+    activeTournaments: number;
+    tradesToday: number;
+    flaggedUsers: number;
+  }>;
+
   // Leaderboard & stats operations
   getAllTournamentParticipants(): Promise<any[]>;
   calculatePortfolioValue(userId: number, tournamentId: number): Promise<number>;
@@ -1031,6 +1045,72 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ banned: true })
       .where(eq(users.id, userId));
+  }
+
+  async unbanUser(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ banned: false })
+      .where(eq(users.id, userId));
+  }
+
+  async toggleWithdrawalFrozen(userId: number, frozen: boolean): Promise<void> {
+    await db
+      .update(users)
+      .set({ withdrawalFrozen: frozen })
+      .where(eq(users.id, userId));
+  }
+
+  async toggleDepositFrozen(userId: number, frozen: boolean): Promise<void> {
+    await db
+      .update(users)
+      .set({ depositFrozen: frozen })
+      .where(eq(users.id, userId));
+  }
+
+  async toggleTournamentRestricted(userId: number, restricted: boolean): Promise<void> {
+    await db
+      .update(users)
+      .set({ tournamentRestricted: restricted })
+      .where(eq(users.id, userId));
+  }
+
+  async getAdminStats(): Promise<{
+    totalUsers: number;
+    totalSiteCash: number;
+    activeWagered: number;
+    activeTournaments: number;
+    tradesToday: number;
+    flaggedUsers: number;
+  }> {
+    // Total users and total site cash
+    const userStats = await db.select({
+      totalUsers: sql<number>`count(*)`,
+      totalSiteCash: sql<number>`COALESCE(SUM(CAST(${users.siteCash} AS numeric)), 0)`,
+      flaggedUsers: sql<number>`SUM(CASE WHEN ${users.banned} = true OR ${users.withdrawalFrozen} = true OR ${users.depositFrozen} = true OR ${users.tournamentRestricted} = true THEN 1 ELSE 0 END)`,
+    }).from(users);
+
+    // Active wagered (sum of currentPot for active tournaments)
+    const tournamentStats = await db.select({
+      activeWagered: sql<number>`COALESCE(SUM(CAST(${tournaments.currentPot} AS numeric)), 0)`,
+      activeTournaments: sql<number>`count(*)`,
+    }).from(tournaments).where(eq(tournaments.status, 'active'));
+
+    // Trades today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tradeStats = await db.select({
+      tradesToday: sql<number>`count(*)`,
+    }).from(tradeHistory).where(sql`${tradeHistory.tradeDate} >= ${today}`);
+
+    return {
+      totalUsers: Number(userStats[0]?.totalUsers) || 0,
+      totalSiteCash: Number(userStats[0]?.totalSiteCash) || 0,
+      activeWagered: Number(tournamentStats[0]?.activeWagered) || 0,
+      activeTournaments: Number(tournamentStats[0]?.activeTournaments) || 0,
+      tradesToday: Number(tradeStats[0]?.tradesToday) || 0,
+      flaggedUsers: Number(userStats[0]?.flaggedUsers) || 0,
+    };
   }
 
   // Chat operations
