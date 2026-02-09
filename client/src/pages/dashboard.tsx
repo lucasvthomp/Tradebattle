@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { TradingViewChart } from "@/components/trading/TradingViewChart";
 import { StockHeader } from "@/components/trading/StockHeader";
-import { AboutSection } from "@/components/trading/AboutSection";
+import { PortfolioSummaryBar } from "@/components/trading/PortfolioSummaryBar";
 import { HoldingsList } from "@/components/trading/HoldingsList";
 import { OrderPanel } from "@/components/trading/OrderPanel";
 
@@ -152,7 +152,11 @@ export default function Dashboard() {
             className="rounded-xl overflow-hidden"
             style={{ backgroundColor: "#111827", border: "1px solid #1F2937" }}
           >
-            <AboutSection symbol={selectedSymbol} />
+            <PortfolioSummaryBar
+              cash={buyingPower}
+              holdings={(portfolioResponse as any)?.data || []}
+              startingBalance={selectedTournament?.startingBalance || 0}
+            />
             <HoldingsList
               tournamentId={selectedTournament?.id}
               selectedSymbol={selectedSymbol}

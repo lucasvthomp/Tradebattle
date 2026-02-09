@@ -62,7 +62,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
           <span className="w-[32px] shrink-0 text-right">Qty</span>
           <span className="flex-1 text-right">Avg Cost</span>
           <span className="flex-1 text-right">Current</span>
-          <span className="flex-1 text-right">+/-</span>
+          <span className="flex-1 text-right">%</span>
           <span className="flex-1 text-right">P&L</span>
           <span className="flex-1 text-right">Value</span>
         </div>
@@ -98,7 +98,9 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
             {holdings.map((holding) => {
               const isSelected = holding.symbol === selectedSymbol;
               const isPositive = (holding.profitLoss || 0) >= 0;
-              const perShareDelta = (holding.currentPrice || 0) - (holding.averagePurchasePrice || 0);
+              const changePercent = (holding.averagePurchasePrice || 0) > 0
+                ? ((holding.currentPrice - holding.averagePurchasePrice) / holding.averagePurchasePrice) * 100
+                : 0;
 
               return (
                 <button
@@ -142,12 +144,12 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
                     {formatCurrency(holding.currentPrice || 0)}
                   </span>
 
-                  {/* Per-share delta */}
+                  {/* % Change */}
                   <span
                     className="flex-1 text-xs font-medium text-right"
-                    style={{ color: perShareDelta >= 0 ? "#10B981" : "#EF4444" }}
+                    style={{ color: changePercent >= 0 ? "#10B981" : "#EF4444" }}
                   >
-                    {perShareDelta >= 0 ? "+" : ""}{formatCurrency(perShareDelta)}
+                    {changePercent >= 0 ? "+" : ""}{changePercent.toFixed(1)}%
                   </span>
 
                   {/* Total P&L */}
