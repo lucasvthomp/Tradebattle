@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -6,10 +6,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Users, 
-  Clock, 
-  DollarSign, 
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Users,
+  Clock,
+  DollarSign,
   Target,
   Shield,
   Play,
@@ -17,12 +18,12 @@ import {
   UserX,
   AlertTriangle,
   Crown,
-  MessageSquare
+  MessageSquare,
+  Settings
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { ChatSystem } from "@/components/chat/ChatSystem";
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -33,40 +34,32 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+const TournamentChat = React.lazy(() => import("@/components/chat/TournamentChat"));
+
 interface TournamentManagementDialogProps {
   tournament: any;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export function TournamentManagementDialog({ 
-  tournament, 
-  isOpen, 
-  onClose 
+export function TournamentManagementDialog({
+  tournament,
+  isOpen,
+  onClose
 }: TournamentManagementDialogProps) {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
   const { toast } = useToast();
-  
+
   const [kickDialogOpen, setKickDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState("manage");
 
   const isCreator = user?.id === tournament?.creatorId;
   const isPrivate = !tournament?.isPublic;
   const hasStarted = tournament?.status === 'active';
   const isWaiting = tournament?.status === 'waiting';
-
-  // Debug logging
-  console.log('Tournament Management Dialog - Tournament data:', {
-    id: tournament?.id,
-    name: tournament?.name,
-    code: tournament?.code,
-    isPublic: tournament?.isPublic,
-    isPrivate,
-    isCreator
-  });
 
   // Kick participant mutation
   const kickParticipantMutation = useMutation({
@@ -149,7 +142,7 @@ export function TournamentManagementDialog({
       const startTime = new Date(tournament.scheduledStartTime);
       const now = new Date();
       const timeDiff = startTime.getTime() - now.getTime();
-      
+
       if (timeDiff > 0) {
         const hours = Math.floor(timeDiff / (1000 * 60 * 60));
         const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
@@ -171,195 +164,202 @@ export function TournamentManagementDialog({
             </DialogTitle>
           </DialogHeader>
 
-          <div className="space-y-6">
-            {/* Tournament Status */}
-            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-              <div className="flex items-center space-x-4">
-                <Badge variant={hasStarted ? "default" : isWaiting ? "secondary" : "outline"}>
-                  {tournament.status}
-                </Badge>
-                <span className="text-sm text-muted-foreground">
-                  {getStartTime()}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                {isPrivate && <Shield className="w-4 h-4 text-blue-500" />}
-                <span className="text-sm font-medium">
-                  {isPrivate ? "Private" : "Public"} Tournament
-                </span>
-              </div>
-            </div>
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="manage" className="flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Manage
+              </TabsTrigger>
+              <TabsTrigger value="chat" className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Chat
+              </TabsTrigger>
+            </TabsList>
 
-            {/* Tournament Info */}
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-muted-foreground" />
-                <span>{tournament.currentPlayers}/{tournament.maxPlayers} players</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-muted-foreground" />
-                <span>{tournament.timeframe}</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <DollarSign className="w-4 h-4 text-muted-foreground" />
-                <span>{formatCurrency(tournament.startingBalance)} starting</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Target className="w-4 h-4 text-muted-foreground" />
-                <span>{formatCurrency(tournament.currentPlayers * tournament.buyInAmount)} pot</span>
-              </div>
-              {/* Show tournament code for private tournaments */}
-              {isPrivate && (
-                <>
-                  <div className="flex items-center space-x-2 col-span-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <Shield className="w-4 h-4 text-blue-600" />
-                    <div className="flex-1">
-                      <span className="font-medium text-blue-800 dark:text-blue-200">Join Code: </span>
-                      <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-900 dark:text-blue-100 font-mono text-sm">
-                        {tournament.code || 'CODE_NOT_FOUND'}
-                      </code>
-                      {!tournament.code && (
-                        <div className="text-xs text-red-600 mt-1">
-                          Debug: Tournament data missing code field
+            <TabsContent value="manage" className="mt-4">
+              <div className="space-y-6">
+                {/* Tournament Status */}
+                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div className="flex items-center space-x-4">
+                    <Badge variant={hasStarted ? "default" : isWaiting ? "secondary" : "outline"}>
+                      {tournament.status}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {getStartTime()}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {isPrivate && <Shield className="w-4 h-4 text-blue-500" />}
+                    <span className="text-sm font-medium">
+                      {isPrivate ? "Private" : "Public"} Tournament
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tournament Info */}
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                    <span>{tournament.currentPlayers}/{tournament.maxPlayers} players</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span>{tournament.timeframe}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span>{formatCurrency(tournament.startingBalance)} starting</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-4 h-4 text-muted-foreground" />
+                    <span>{formatCurrency(tournament.currentPlayers * tournament.buyInAmount)} pot</span>
+                  </div>
+                  {/* Show tournament code for private tournaments */}
+                  {isPrivate && (
+                    <>
+                      <div className="flex items-center space-x-2 col-span-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <Shield className="w-4 h-4 text-blue-600" />
+                        <div className="flex-1">
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Join Code: </span>
+                          <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-900 dark:text-blue-100 font-mono text-sm">
+                            {tournament.code || 'CODE_NOT_FOUND'}
+                          </code>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-blue-600 border-blue-300 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-700 dark:hover:bg-blue-900"
+                          onClick={() => {
+                            if (tournament.code) {
+                              navigator.clipboard.writeText(tournament.code);
+                              toast({
+                                title: "Copied!",
+                                description: "Tournament code copied to clipboard",
+                              });
+                            } else {
+                              toast({
+                                title: "Error",
+                                description: "No tournament code available to copy",
+                                variant: "destructive",
+                              });
+                            }
+                          }}
+                        >
+                          Copy
+                        </Button>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                <Separator />
+
+                {/* Creator Powers */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold">Creator Actions</h3>
+
+                  {/* Tournament Powers - Available for all creators */}
+                  {isWaiting && (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Start Tournament Early</p>
+                          <p className="text-sm text-muted-foreground">Begin the tournament immediately</p>
+                        </div>
+                        <Button
+                          onClick={() => startEarlyMutation.mutate()}
+                          disabled={startEarlyMutation.isPending}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          {startEarlyMutation.isPending ? "Starting..." : "Start Now"}
+                        </Button>
+                      </div>
+
+                      {isPrivate && (
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="font-medium">Cancel Tournament</p>
+                            <p className="text-sm text-muted-foreground">Delete the tournament before it starts</p>
+                          </div>
+                          <Button
+                            onClick={() => setCancelDialogOpen(true)}
+                            disabled={hasStarted}
+                            variant="destructive"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Cancel Tournament
+                          </Button>
                         </div>
                       )}
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-blue-600 border-blue-300 hover:bg-blue-100 dark:text-blue-400 dark:border-blue-700 dark:hover:bg-blue-900"
-                      onClick={() => {
-                        if (tournament.code) {
-                          navigator.clipboard.writeText(tournament.code);
-                          toast({
-                            title: "Copied!",
-                            description: "Tournament code copied to clipboard",
-                          });
-                        } else {
-                          toast({
-                            title: "Error",
-                            description: "No tournament code available to copy",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                    >
-                      Copy
-                    </Button>
-                  </div>
-                </>
-              )}
-            </div>
+                  )}
 
-            <Separator />
-
-            {/* Creator Powers */}
-            <div className="space-y-4">
-              <h3 className="font-semibold">Creator Actions</h3>
-              
-              {/* Tournament Chat */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium">Tournament Chat</p>
-                  <p className="text-sm text-muted-foreground">Chat with tournament participants</p>
-                </div>
-                <Button
-                  onClick={() => setChatOpen(true)}
-                  variant="outline"
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Open Chat
-                </Button>
-              </div>
-              
-              {/* Tournament Powers - Available for all creators */}
-              {isWaiting && (
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                  {/* Participant Management (Private only) */}
+                  {isPrivate && isWaiting && (
                     <div>
-                      <p className="font-medium">Start Tournament Early</p>
-                      <p className="text-sm text-muted-foreground">Begin the tournament immediately</p>
-                    </div>
-                    <Button
-                      onClick={() => startEarlyMutation.mutate()}
-                      disabled={startEarlyMutation.isPending}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      <Play className="w-4 h-4 mr-2" />
-                      {startEarlyMutation.isPending ? "Starting..." : "Start Now"}
-                    </Button>
-                  </div>
-
-                  {isPrivate && (
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium">Cancel Tournament</p>
-                        <p className="text-sm text-muted-foreground">Delete the tournament before it starts</p>
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="font-medium">Manage Participants</p>
+                        <Badge variant="outline">{tournament.currentPlayers} participants</Badge>
                       </div>
-                      <Button
-                        onClick={() => setCancelDialogOpen(true)}
-                        disabled={hasStarted}
-                        variant="destructive"
-                      >
-                        <X className="w-4 h-4 mr-2" />
-                        Cancel Tournament
-                      </Button>
+
+                      <div className="space-y-2 max-h-40 overflow-auto">
+                        {tournament.participants?.map((participant: any) => (
+                          <div key={participant.id} className="flex items-center justify-between p-2 border rounded">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-medium">{participant.displayName || participant.username}</span>
+                              {participant.id === tournament.creatorId && (
+                                <Crown className="w-4 h-4 text-yellow-500" />
+                              )}
+                            </div>
+                            {participant.id !== tournament.creatorId && (
+                              <Button
+                                onClick={() => {
+                                  setSelectedParticipant(participant);
+                                  setKickDialogOpen(true);
+                                }}
+                                size="sm"
+                                variant="outline"
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <UserX className="w-3 h-3 mr-1" />
+                                Kick
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tournament Started Notice */}
+                  {hasStarted && (
+                    <div className="flex items-center space-x-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
+                      <AlertTriangle className="w-5 h-5 text-blue-600" />
+                      <div>
+                        <p className="font-medium text-blue-800 dark:text-blue-200">Tournament in Progress</p>
+                        <p className="text-sm text-blue-600 dark:text-blue-300">
+                          Management options are limited once a tournament has started
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
-              )}
+              </div>
+            </TabsContent>
 
-              {/* Participant Management (Private only) */}
-              {isPrivate && isWaiting && (
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="font-medium">Manage Participants</p>
-                    <Badge variant="outline">{tournament.currentPlayers} participants</Badge>
+            <TabsContent value="chat" className="mt-4">
+              {activeTab === "chat" && (
+                <Suspense fallback={
+                  <div className="flex items-center justify-center h-[400px]" style={{ backgroundColor: '#0F172A' }}>
+                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#E3B341', borderTopColor: 'transparent' }} />
                   </div>
-                  
-                  <div className="space-y-2 max-h-40 overflow-auto">
-                    {tournament.participants?.map((participant: any) => (
-                      <div key={participant.id} className="flex items-center justify-between p-2 border rounded">
-                        <div className="flex items-center space-x-2">
-                          <span className="font-medium">{participant.displayName || participant.username}</span>
-                          {participant.id === tournament.creatorId && (
-                            <Crown className="w-4 h-4 text-yellow-500" />
-                          )}
-                        </div>
-                        {participant.id !== tournament.creatorId && (
-                          <Button
-                            onClick={() => {
-                              setSelectedParticipant(participant);
-                              setKickDialogOpen(true);
-                            }}
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700"
-                          >
-                            <UserX className="w-3 h-3 mr-1" />
-                            Kick
-                          </Button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
+                }>
+                  <TournamentChat tournamentId={tournament.id} />
+                </Suspense>
               )}
-
-              {/* Tournament Started Notice */}
-              {hasStarted && (
-                <div className="flex items-center space-x-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
-                  <AlertTriangle className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-blue-800 dark:text-blue-200">Tournament in Progress</p>
-                    <p className="text-sm text-blue-600 dark:text-blue-300">
-                      Management options are limited once a tournament has started
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+            </TabsContent>
+          </Tabs>
         </DialogContent>
       </Dialog>
 
@@ -369,7 +369,7 @@ export function TournamentManagementDialog({
           <AlertDialogHeader>
             <AlertDialogTitle>Remove Participant</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove "{selectedParticipant?.displayName || selectedParticipant?.username}" from this tournament? 
+              Are you sure you want to remove "{selectedParticipant?.displayName || selectedParticipant?.username}" from this tournament?
               They will need to rejoin using the tournament code.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -407,13 +407,6 @@ export function TournamentManagementDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
-      {/* Tournament-specific Chat System */}
-      <ChatSystem
-        tournamentId={tournament.id}
-        isOpen={chatOpen}
-        onToggle={() => setChatOpen(!chatOpen)}
-      />
     </>
   );
 }

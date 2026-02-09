@@ -1,9 +1,11 @@
+import React, { Suspense } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useChatContext } from "@/contexts/ChatContext";
 import Header from "./header";
 import { SimplifiedSidebar } from "./simplified-sidebar";
-import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { PageTransition } from "@/components/ui/page-transition";
+
+const ChatSidebar = React.lazy(() => import("@/components/chat/ChatSidebar"));
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,10 +39,12 @@ export default function Layout({ children }: LayoutProps) {
           {/* Chat Sidebar - fixed position, independent of page scroll - Hidden on mobile portrait */}
           {user && chatOpen && (
             <div className="hidden md:block fixed right-0 top-16 w-80 h-[calc(100vh-4rem)] z-40">
-              <ChatSidebar
-                isOpen={chatOpen}
-                onToggle={toggleChat}
-              />
+              <Suspense fallback={null}>
+                <ChatSidebar
+                  isOpen={chatOpen}
+                  onToggle={toggleChat}
+                />
+              </Suspense>
             </div>
           )}
         </div>

@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -21,12 +19,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Send, MessageSquare, X, User, Trophy, Users, DollarSign, UserCircle } from "lucide-react";
+import { Send, MessageSquare, X, DollarSign, UserCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
-import { useChatContext } from "@/contexts/ChatContext";
 import { apiRequest } from "@/lib/queryClient";
 import { useLocation } from "wouter";
 
@@ -38,22 +35,91 @@ interface ChatMessage {
   createdAt: string;
 }
 
-interface Tournament {
-  id: number;
-  name: string;
-  status: string;
-  isParticipating?: boolean;
-}
-
 interface ChatSidebarProps {
   isOpen: boolean;
   onToggle: () => void;
 }
 
+const formatTimestamp = (timestamp: string) => {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
+
+  if (diffInHours < 24) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else {
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  }
+};
+
+const ChatMessageItem = React.memo(function ChatMessageItem({
+  message,
+  isCurrentUser,
+  onViewProfile,
+  onSendTip,
+}: {
+  message: ChatMessage;
+  isCurrentUser: boolean;
+  onViewProfile: (userId: number) => void;
+  onSendTip: (user: { id: number; username: string }) => void;
+}) {
+  return (
+    <div className="flex space-x-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <div className="cursor-pointer">
+            <Avatar className="w-8 h-8" style={{ border: '2px solid #1F2937' }}>
+              <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#111827', color: '#E3B341' }}>
+                {message.username.slice(0, 2).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+          <DropdownMenuItem
+            onClick={() => onViewProfile(message.userId)}
+            className="cursor-pointer"
+            style={{ color: '#F1F5F9' }}
+          >
+            <UserCircle className="w-4 h-4 mr-2" style={{ color: '#E3B341' }} />
+            View Full Profile
+          </DropdownMenuItem>
+          {!isCurrentUser && (
+            <DropdownMenuItem
+              onClick={() => onSendTip({ id: message.userId, username: message.username })}
+              className="cursor-pointer"
+              style={{ color: '#F1F5F9' }}
+            >
+              <DollarSign className="w-4 h-4 mr-2" style={{ color: '#10B981' }} />
+              Send Tip
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center space-x-1.5 mb-0.5">
+          <span className="text-xs font-semibold" style={{ color: '#F1F5F9' }}>
+            {message.username}
+          </span>
+          {isCurrentUser && (
+            <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
+          )}
+          <span className="text-[10px]" style={{ color: '#94A3B8' }}>
+            {formatTimestamp(message.createdAt)}
+          </span>
+        </div>
+        <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+          <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>{message.message}</p>
+        </div>
+      </div>
+    </div>
+  );
+});
+
 export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const { user } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
-  const { selectedChatRoom, setSelectedChatRoom } = useChatContext();
   const [newMessage, setNewMessage] = useState("");
   const [tipDialogOpen, setTipDialogOpen] = useState(false);
   const [tipAmount, setTipAmount] = useState("");
@@ -62,53 +128,31 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
 
-  // Use selectedChatRoom from context
-  const selectedChat = selectedChatRoom;
-
-  // Fetch user's tournaments for chat selection
-  const { data: userTournamentsResponse } = useQuery<{data: Tournament[]}>({
-    queryKey: ['/api/tournaments'],
-    enabled: !!user && isOpen,
-  });
-
-  const userTournaments = userTournamentsResponse?.data?.filter(t => 
-    t.status === "active" || t.status === "waiting"
-  ) || [];
-
-  // Determine current chat endpoint
-  const isGlobalChat = selectedChat === "global";
-  const tournamentId = isGlobalChat ? undefined : parseInt(selectedChat);
-
-  // Fetch chat messages with optimized polling
+  // Fetch global chat messages
   const { data: chatResponse, isLoading } = useQuery({
-    queryKey: ['/api/chat', selectedChat],
+    queryKey: ['/api/chat/global'],
     queryFn: async () => {
-      const endpoint = isGlobalChat 
-        ? '/api/chat/global' 
-        : `/api/chat/tournament/${tournamentId}`;
-      const response = await apiRequest("GET", endpoint);
+      const response = await apiRequest("GET", '/api/chat/global');
       return response.json();
     },
-    refetchInterval: 1500, // Faster refresh - every 1.5 seconds
+    refetchInterval: 3000,
     enabled: isOpen && !!user,
-    staleTime: 500, // Consider data stale after 0.5 seconds
-    gcTime: 2000, // Garbage collect after 2 seconds
+    staleTime: 1000,
+    gcTime: 5000,
   });
 
-  const messages: ChatMessage[] = chatResponse?.data || [];
+  const allMessages: ChatMessage[] = chatResponse?.data || [];
+  const messages = allMessages.slice(-100);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
-    mutationFn: async (messageData: { message: string; tournamentId?: number }) => {
-      const endpoint = isGlobalChat
-        ? '/api/chat/global'
-        : `/api/chat/tournament/${tournamentId}`;
-      const response = await apiRequest("POST", endpoint, messageData);
+    mutationFn: async (messageData: { message: string }) => {
+      const response = await apiRequest("POST", '/api/chat/global', messageData);
       return response.json();
     },
     onSuccess: () => {
       setNewMessage("");
-      queryClient.invalidateQueries({ queryKey: ['/api/chat', selectedChat] });
+      queryClient.invalidateQueries({ queryKey: ['/api/chat/global'] });
     }
   });
 
@@ -134,8 +178,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     if (!newMessage.trim() || !user) return;
 
     sendMessageMutation.mutate({
-      message: newMessage.trim(),
-      tournamentId: isGlobalChat ? undefined : tournamentId
+      message: newMessage.trim()
     });
   };
 
@@ -157,48 +200,6 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     }
   }, [messages]);
 
-  const formatTimestamp = (timestamp: string) => {
-    const date = new Date(timestamp);
-    const now = new Date();
-    const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-
-    if (diffInHours < 24) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
-  };
-
-  const getCurrentChatInfo = () => {
-    if (isGlobalChat) {
-      return {
-        name: "Global Chat",
-        description: "Chat with all platform users",
-        icon: <MessageSquare className="w-4 h-4" />,
-        color: "bg-blue-500"
-      };
-    }
-
-    const tournament = userTournaments.find(t => t.id === tournamentId);
-    if (tournament) {
-      return {
-        name: tournament.name,
-        description: "Tournament chat",
-        icon: <Trophy className="w-4 h-4" />,
-        color: "bg-orange-500"
-      };
-    }
-
-    return {
-      name: "Tournament Chat",
-      description: "Tournament discussion",
-      icon: <Trophy className="w-4 h-4" />,
-      color: "bg-orange-500"
-    };
-  };
-
-  const chatInfo = getCurrentChatInfo();
-
   return (
     <motion.div
       initial={{ x: "100%" }}
@@ -208,53 +209,23 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       className="h-full w-full backdrop-blur-md shadow-xl flex flex-col overflow-hidden"
       style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#0F172A', borderLeft: '2px solid #1F2937' }}
     >
-            {/* Compact Header with Chat Selector */}
+            {/* Header */}
             <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #1F2937', backgroundColor: '#080C14' }}>
-              <div className="flex items-center flex-1">
-                {/* Compact Chat Selector */}
-                <Select value={selectedChat} onValueChange={setSelectedChatRoom}>
-                  <SelectTrigger className="w-full h-8 text-sm" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
-                    <SelectItem value="global" style={{ color: '#F1F5F9' }}>
-                      <div className="flex items-center space-x-2">
-                        <span>Global Chat</span>
-                      </div>
-                    </SelectItem>
-                    {userTournaments.map((tournament) => (
-                      <SelectItem key={tournament.id} value={tournament.id.toString()} style={{ color: '#F1F5F9' }}>
-                        <div className="flex items-center space-x-2">
-                          <Trophy className="w-3 h-3" style={{ color: '#E3B341' }} />
-                          <span className="truncate max-w-[180px]">{tournament.name}</span>
-                          <Badge variant="secondary" className="text-xs shrink-0" style={{ backgroundColor: '#1F2937', color: '#F1F5F9' }}>
-                            {tournament.status}
-                          </Badge>
-                        </div>
-                      </SelectItem>
-                    ))}
-                    {userTournaments.length === 0 && (
-                      <SelectItem value="no-tournaments" disabled style={{ color: '#94A3B8' }}>
-                        <div className="flex items-center space-x-2">
-                          <Trophy className="w-3 h-3" style={{ color: '#94A3B8' }} />
-                          <span>No tournaments</span>
-                        </div>
-                      </SelectItem>
-                    )}
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center space-x-2">
+                <MessageSquare className="w-4 h-4" style={{ color: '#E3B341' }} />
+                <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Global Chat</span>
               </div>
               <Button
                 onClick={onToggle}
                 variant="ghost"
                 size="sm"
-                className="h-8 w-8 p-0 ml-2 hover:bg-background/60"
+                className="h-8 w-8 p-0 hover:bg-background/60"
               >
                 <X className="w-4 h-4" />
               </Button>
             </div>
 
-            {/* Messages Area - Semi-transparent */}
+            {/* Messages Area */}
             <div className="flex-1 overflow-hidden">
               <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(8, 12, 20, 0.5)' }}>
                 <div className="space-y-2">
@@ -266,79 +237,34 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   <div className="text-center py-8">
                     <MessageSquare className="w-10 h-10 mx-auto mb-3" style={{ color: '#94A3B8', opacity: 0.5 }} />
                     <p className="text-sm" style={{ color: '#94A3B8' }}>
-                      {isGlobalChat ? "No messages yet. Start the conversation!" : "No tournament messages yet."}
+                      No messages yet. Start the conversation!
                     </p>
                   </div>
                 ) : (
                   messages.map((message) => (
-                    <div key={message.id} className="flex space-x-2">
-                      {/* Clickable Avatar with Dropdown */}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <div className="cursor-pointer">
-                            <Avatar className="w-8 h-8" style={{ border: '2px solid #1F2937' }}>
-                              <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#111827', color: '#E3B341' }}>
-                                {message.username.slice(0, 2).toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                          </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
-                          <DropdownMenuItem
-                            onClick={() => navigate(`/people/${message.userId}`)}
-                            className="cursor-pointer"
-                            style={{ color: '#F1F5F9' }}
-                          >
-                            <UserCircle className="w-4 h-4 mr-2" style={{ color: '#E3B341' }} />
-                            View Full Profile
-                          </DropdownMenuItem>
-                          {message.userId !== user?.id && (
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setSelectedUser({ id: message.userId, username: message.username });
-                                setTipDialogOpen(true);
-                              }}
-                              className="cursor-pointer"
-                              style={{ color: '#F1F5F9' }}
-                            >
-                              <DollarSign className="w-4 h-4 mr-2" style={{ color: '#10B981' }} />
-                              Send Tip
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-
-                      {/* Message Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-1.5 mb-0.5">
-                          <span className="text-xs font-semibold" style={{ color: '#F1F5F9' }}>
-                            {message.username}
-                          </span>
-                          {message.userId === user?.id && (
-                            <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
-                          )}
-                          <span className="text-[10px]" style={{ color: '#94A3B8' }}>
-                            {formatTimestamp(message.createdAt)}
-                          </span>
-                        </div>
-                        <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-                          <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>{message.message}</p>
-                        </div>
-                      </div>
-                    </div>
+                    <ChatMessageItem
+                      key={message.id}
+                      message={message}
+                      isCurrentUser={message.userId === user?.id}
+                      onViewProfile={(userId) => navigate(`/people/${userId}`)}
+                      onSendTip={(tipUser) => {
+                        setSelectedUser(tipUser);
+                        setTipDialogOpen(true);
+                      }}
+                    />
                   ))
                 )}
                 </div>
               </ScrollArea>
             </div>
 
-            {/* Message Input - Semi-transparent */}
+            {/* Message Input */}
             <div className="p-3" style={{ borderTop: '1px solid #1F2937', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
               <form onSubmit={handleSendMessage} className="flex space-x-2">
                 <Input
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder={`Message ${isGlobalChat ? 'everyone' : 'tournament'}...`}
+                  placeholder="Message everyone..."
                   className="flex-1 text-sm h-9"
                   style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                   maxLength={500}
@@ -423,3 +349,5 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     </motion.div>
   );
 }
+
+export default ChatSidebar;

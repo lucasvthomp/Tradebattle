@@ -46,8 +46,6 @@ import { TournamentManagementDialog } from "@/components/tournaments/TournamentM
 import { BuyInIncentiveBox } from "@/components/ui/buy-in-incentive-box";
 import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
 import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
-import { useChatContext } from "@/contexts/ChatContext";
-
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -116,8 +114,6 @@ export default function TournamentsPage() {
   const { user } = useAuth();
   const { formatCurrency, t } = useUserPreferences();
   const { toast } = useToast();
-  const { openTournamentChat } = useChatContext();
-
   // State management
   const [activeTab, setActiveTab] = useState("upcoming");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -478,7 +474,7 @@ export default function TournamentsPage() {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
-                  onOpenChat={(tournamentId) => openTournamentChat(tournamentId)}
+
                   onJoinTournament={handleJoinTournament}
                   onViewLeaderboard={(tournament) => {
                     setSelectedLeaderboardTournament(tournament);
@@ -496,7 +492,7 @@ export default function TournamentsPage() {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
-                  onOpenChat={(tournamentId) => openTournamentChat(tournamentId)}
+
                   onJoinTournament={handleJoinTournament}
                   onViewLeaderboard={(tournament) => {
                     setSelectedLeaderboardTournament(tournament);
@@ -514,7 +510,7 @@ export default function TournamentsPage() {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
                   }}
-                  onOpenChat={(tournamentId) => openTournamentChat(tournamentId)}
+
                   onJoinTournament={handleJoinTournament}
                   onViewLeaderboard={(tournament) => {
                     setSelectedLeaderboardTournament(tournament);
@@ -699,7 +695,6 @@ function TournamentGrid({
   tournaments,
   type,
   onManage,
-  onOpenChat,
   onJoinTournament,
   onViewLeaderboard,
   isJoining
@@ -707,7 +702,6 @@ function TournamentGrid({
   tournaments: any[],
   type: "upcoming" | "ongoing" | "my-tournaments",
   onManage: (tournament: any) => void,
-  onOpenChat: (tournamentId: number) => void,
   onJoinTournament: (tournament: any) => void,
   onViewLeaderboard?: (tournament: any) => void,
   isJoining: boolean
@@ -753,7 +747,6 @@ function TournamentGrid({
               onJoin={() => onJoinTournament(tournament)}
               isJoining={isJoining}
               onManage={() => onManage(tournament)}
-              onOpenChat={() => onOpenChat(tournament.id)}
               onViewLeaderboard={onViewLeaderboard ? () => onViewLeaderboard(tournament) : undefined}
             />
           );
@@ -771,7 +764,6 @@ function TournamentCard({
   onJoin,
   isJoining,
   onManage,
-  onOpenChat,
   onViewLeaderboard
 }: {
   tournament: any,
@@ -780,7 +772,6 @@ function TournamentCard({
   onJoin: () => void,
   isJoining: boolean,
   onManage: () => void,
-  onOpenChat: () => void,
   onViewLeaderboard?: () => void
 }) {
   const { formatCurrency } = useUserPreferences();

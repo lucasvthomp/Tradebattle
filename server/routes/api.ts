@@ -23,6 +23,7 @@ import { db } from '../db.js';
 import { tournaments, tournamentParticipants, tradeHistory } from '../../shared/schema.js';
 import { eq, sql } from 'drizzle-orm';
 import { requireAuth } from '../auth.js';
+import { containsProfanity } from '../utils/profanityFilter.js';
 
 const router = Router();
 
@@ -2031,6 +2032,10 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError('Message is required');
   }
 
+  if (containsProfanity(message)) {
+    return res.status(400).json({ message: "Message contains inappropriate language" });
+  }
+
   const user = await storage.getUser(userId);
   if (!user) {
     throw new ValidationError('User not found');
@@ -2042,49 +2047,6 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
     profilePicture: user.profilePicture || null,
     message: message.trim(),
     tournamentId: null
-  });
-
-  res.json({
-    success: true,
-    data: chatMessage
-  });
-}));
-
-/**
- * GET /api/chat/global
- * Get global chat messages
- */
-router.get('/chat/global', requireAuth, asyncHandler(async (req, res) => {
-  const messages = await storage.getChatMessages(null); // null for global chat
-  res.json({
-    success: true,
-    data: messages
-  });
-}));
-
-/**
- * POST /api/chat/global
- * Send message to global chat
- */
-router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
-  const userId = req.user.id;
-  const { message } = req.body;
-
-  if (!message || !message.trim()) {
-    throw new ValidationError('Message is required');
-  }
-
-  const user = await storage.getUser(userId);
-  if (!user) {
-    throw new ValidationError('User not found');
-  }
-
-  const chatMessage = await storage.createChatMessage({
-    userId,
-    username: user.username,
-    profilePicture: user.profilePicture || null,
-    message: message.trim(),
-    tournamentId: null // null for global chat
   });
 
   res.json({
@@ -2126,6 +2088,10 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
 
   if (!message || !message.trim()) {
     throw new ValidationError('Message is required');
+  }
+
+  if (containsProfanity(message)) {
+    return res.status(400).json({ message: "Message contains inappropriate language" });
   }
 
   const user = await storage.getUser(userId);
