@@ -412,26 +412,26 @@ export default function Leaderboard() {
           }}>
             <TabsTrigger
               value="highwager"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#080C14] rounded-lg text-base font-bold"
+              className="data-[state=active]:bg-[#15803D] data-[state=active]:text-white rounded-lg text-base font-bold"
               style={activeTab === "highwager" ? {} : { color: '#94A3B8' }}
             >
-              <Trophy className="w-5 h-5 mr-2" style={{ color: activeTab === "highwager" ? undefined : '#94A3B8' }} />
+              <Trophy className="w-5 h-5 mr-2" style={{ color: activeTab === "highwager" ? '#FFFFFF' : '#94A3B8' }} />
               High Stakes
             </TabsTrigger>
             <TabsTrigger
               value="growth"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#080C14] rounded-lg text-base font-bold"
+              className="data-[state=active]:bg-[#15803D] data-[state=active]:text-white rounded-lg text-base font-bold"
               style={activeTab === "growth" ? {} : { color: '#94A3B8' }}
             >
-              <TrendingUp className="w-5 h-5 mr-2" style={{ color: activeTab === "growth" ? undefined : '#94A3B8' }} />
+              <TrendingUp className="w-5 h-5 mr-2" style={{ color: activeTab === "growth" ? '#FFFFFF' : '#94A3B8' }} />
               Top Growth
             </TabsTrigger>
             <TabsTrigger
               value="active"
-              className="data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#080C14] rounded-lg text-base font-bold"
+              className="data-[state=active]:bg-[#15803D] data-[state=active]:text-white rounded-lg text-base font-bold"
               style={activeTab === "active" ? {} : { color: '#94A3B8' }}
             >
-              <Activity className="w-5 h-5 mr-2" style={{ color: activeTab === "active" ? undefined : '#94A3B8' }} />
+              <Activity className="w-5 h-5 mr-2" style={{ color: activeTab === "active" ? '#FFFFFF' : '#94A3B8' }} />
               Most Active
             </TabsTrigger>
           </TabsList>

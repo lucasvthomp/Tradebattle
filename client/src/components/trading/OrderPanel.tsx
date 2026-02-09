@@ -190,10 +190,10 @@ export function OrderPanel({
       {/* Market Closed Banner */}
       {tradingBlocked && (
         <div
-          className="px-3 py-3 flex items-center gap-2"
+          className="px-4 py-4 flex items-center gap-3"
           style={{
-            background: 'linear-gradient(135deg, #2D1215, #2A1510)',
-            borderBottom: '1px solid rgba(239, 68, 68, 0.3)',
+            backgroundColor: '#2D1215',
+            borderBottom: '1px solid #5C2327',
           }}
         >
           <Clock className="w-4 h-4 shrink-0" style={{ color: '#EF4444' }} />
