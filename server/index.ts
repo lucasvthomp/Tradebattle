@@ -4,6 +4,56 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { tournamentScheduler } from "./services/tournamentScheduler";
 import { db } from "./db";
+import { pool } from "./db";
+
+async function runMigrations() {
+  const client = await pool.connect();
+  try {
+    // Add missing columns to users table
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS user_id INTEGER UNIQUE;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS admin_note TEXT DEFAULT '';
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS banned BOOLEAN DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS withdrawal_frozen BOOLEAN DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS deposit_frozen BOOLEAN DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS tournament_restricted BOOLEAN DEFAULT false;
+    `);
+
+    // Create admin_logs table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS admin_logs (
+        id SERIAL PRIMARY KEY,
+        admin_user_id INTEGER NOT NULL REFERENCES users(id),
+        target_user_id INTEGER NOT NULL REFERENCES users(id),
+        action VARCHAR NOT NULL,
+        old_value TEXT,
+        new_value TEXT,
+        notes TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    // Create chat_messages table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS chat_messages (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL,
+        username VARCHAR(15) NOT NULL,
+        profile_picture TEXT,
+        message TEXT NOT NULL,
+        tournament_id INTEGER,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    log('Database migrations completed successfully');
+  } catch (error) {
+    log('Migration error: ' + (error as Error).message);
+    throw error;
+  } finally {
+    client.release();
+  }
+}
 
 const app = express();
 app.use(express.json({ limit: '50mb' })); // Increase limit for profile pictures
@@ -40,6 +90,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Run database migrations before starting the server
+  await runMigrations();
+
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
