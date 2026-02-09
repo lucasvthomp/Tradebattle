@@ -283,6 +283,13 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
   // The buy-in deduction will be handled by the storage layer
 
   const startTime = scheduledStartTime ? new Date(scheduledStartTime) : new Date();
+
+  // Enforce minimum 5-minute start delay
+  const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000);
+  if (startTime < fiveMinutesFromNow) {
+    throw new ValidationError('Tournament must start at least 5 minutes from now');
+  }
+
   console.log('[Tournament Creation] Start time:', startTime);
 
   const tournamentData = {
@@ -901,6 +908,14 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
     throw new ValidationError('Cannot trade in completed tournaments');
   }
 
+  // Check if market is open for stock tournaments
+  if (tournament && tournament.tournamentType !== 'crypto') {
+    const { isMarketOpen } = await import('../../shared/marketHours');
+    if (!isMarketOpen()) {
+      throw new ValidationError('Stock market is closed. Trading is available Mon-Fri 9:30 AM - 4:00 PM ET.');
+    }
+  }
+
   // Get user's tournament stock purchases for this symbol
   const allPurchases = await storage.getTournamentStockPurchases(tournamentId, userId);
   const symbolPurchases = allPurchases.filter(p => p.symbol === symbol);
@@ -998,6 +1013,14 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   const tournament = tournaments.find(t => t.id === tournamentId);
   if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
+  }
+
+  // Check if market is open for stock tournaments
+  if (tournament && tournament.tournamentType !== 'crypto') {
+    const { isMarketOpen } = await import('../../shared/marketHours');
+    if (!isMarketOpen()) {
+      throw new ValidationError('Stock market is closed. Trading is available Mon-Fri 9:30 AM - 4:00 PM ET.');
+    }
   }
 
   // Check if user has enough balance

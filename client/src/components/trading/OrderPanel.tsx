@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
@@ -9,13 +9,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Minus, Search, X } from "lucide-react";
+import { Plus, Minus, Search, X, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { executeOrder, type OrderRequest } from "@/lib/orderEngine";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { isMarketOpen } from "@shared/marketHours";
 
 interface OrderPanelProps {
   symbol: string;
@@ -55,6 +56,16 @@ export function OrderPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
+  // Market hours state
+  const [marketOpen, setMarketOpen] = useState(isMarketOpen());
+  const isCryptoTournament = selectedTournament?.tournamentType === 'crypto';
+  const tradingBlocked = !marketOpen && !isCryptoTournament;
+
+  useEffect(() => {
+    const interval = setInterval(() => setMarketOpen(isMarketOpen()), 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Stock search state
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -79,6 +90,7 @@ export function OrderPanel({
   const estimatedTotal = quantity * currentPrice;
 
   const canSubmit = (() => {
+    if (tradingBlocked) return false;
     if (!tournamentId || !symbol || quantity <= 0 || currentPrice <= 0) return false;
     if (orderSide === "buy" && estimatedTotal > availableBuyingPower) return false;
     if (orderSide === "sell" && quantity > ownedShares) return false;
@@ -174,6 +186,25 @@ export function OrderPanel({
           </span>
         </div>
       </div>
+
+      {/* Market Closed Banner */}
+      {tradingBlocked && (
+        <div
+          className="px-3 py-3 flex items-center gap-2"
+          style={{
+            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(249, 115, 22, 0.10))',
+            borderBottom: '1px solid rgba(239, 68, 68, 0.3)',
+          }}
+        >
+          <Clock className="w-4 h-4 shrink-0" style={{ color: '#EF4444' }} />
+          <div>
+            <div className="text-xs font-bold" style={{ color: '#EF4444' }}>Market Closed</div>
+            <div className="text-[10px]" style={{ color: '#94A3B8' }}>
+              Mon-Fri 9:30 AM - 4:00 PM ET
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stock Search — always visible */}
       <div className="px-3 py-2.5" style={{ borderBottom: "1px solid #1F2937" }}>

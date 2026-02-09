@@ -5,47 +5,35 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, TrendingUp, DollarSign, Crown, Target, Zap, Award } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
-
-// Placeholder data for testing
-const mockWageredData = [
-  { id: 1, username: "TradeMaster", totalWagered: 125000, tournamentCount: 42 },
-  { id: 2, username: "WallStreetWolf", totalWagered: 98500, tournamentCount: 38 },
-  { id: 3, username: "BullRun2024", totalWagered: 87200, tournamentCount: 35 },
-  { id: 4, username: "DiamondHands", totalWagered: 76300, tournamentCount: 31 },
-  { id: 5, username: "QuantKing", totalWagered: 65400, tournamentCount: 28 },
-  { id: 6, username: "AlphaSeeker", totalWagered: 54200, tournamentCount: 24 },
-  { id: 7, username: "MarketMaven", totalWagered: 48900, tournamentCount: 22 },
-  { id: 8, username: "RiskTaker", totalWagered: 43100, tournamentCount: 19 },
-  { id: 9, username: "GoldRush", totalWagered: 38700, tournamentCount: 17 },
-  { id: 10, username: "TechBull", totalWagered: 35200, tournamentCount: 15 },
-];
-
-const mockHighWagerTournaments = [
-  { id: 1, name: "Elite Traders Championship", buyInAmount: 25000, currentPlayers: 48, maxPlayers: 50, status: "active" },
-  { id: 2, name: "High Stakes Spring Classic", buyInAmount: 20000, currentPlayers: 42, maxPlayers: 100, status: "active" },
-  { id: 3, name: "Pro League Finals", buyInAmount: 15000, currentPlayers: 35, maxPlayers: 75, status: "waiting" },
-  { id: 4, name: "Diamond Tier Showdown", buyInAmount: 12500, currentPlayers: 28, maxPlayers: 50, status: "active" },
-  { id: 5, name: "Master Class Tournament", buyInAmount: 10000, currentPlayers: 45, maxPlayers: 60, status: "active" },
-  { id: 6, name: "Premium Traders League", buyInAmount: 8500, currentPlayers: 33, maxPlayers: 40, status: "waiting" },
-  { id: 7, name: "Gold Standard Series", buyInAmount: 7500, currentPlayers: 29, maxPlayers: 50, status: "active" },
-  { id: 8, name: "Platinum Championship", buyInAmount: 6000, currentPlayers: 22, maxPlayers: 30, status: "active" },
-];
-
-const mockGrowthData = [
-  { id: 1, username: "MoonShot", portfolioValue: 287500, startingBalance: 100000, percentageChange: 187.5, tournamentName: "Spring Growth Rally" },
-  { id: 2, username: "VolatilityVince", portfolioValue: 245000, startingBalance: 100000, percentageChange: 145.0, tournamentName: "Tech Stocks Frenzy" },
-  { id: 3, username: "GrowthGuru", portfolioValue: 198000, startingBalance: 100000, percentageChange: 98.0, tournamentName: "High Volatility Week" },
-  { id: 4, username: "RocketTrader", portfolioValue: 176500, startingBalance: 100000, percentageChange: 76.5, tournamentName: "Momentum Masters" },
-  { id: 5, username: "SmartMoney", portfolioValue: 165000, startingBalance: 100000, percentageChange: 65.0, tournamentName: "Value Investing Cup" },
-  { id: 6, username: "TrendFollower", portfolioValue: 152000, startingBalance: 100000, percentageChange: 52.0, tournamentName: "Bull Market Sprint" },
-  { id: 7, username: "SwingKing", portfolioValue: 143500, startingBalance: 100000, percentageChange: 43.5, tournamentName: "Swing Trading Pro" },
-  { id: 8, username: "DayTraderPro", portfolioValue: 135200, startingBalance: 100000, percentageChange: 35.2, tournamentName: "Day Trading Finals" },
-];
+import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Leaderboard() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
   const [activeTab, setActiveTab] = useState("wagered");
+
+  // Fetch real data from API
+  const { data: wageredData, isLoading: loadingWagered } = useQuery({
+    queryKey: ['/api/leaderboard/total-wagered'],
+  });
+  const { data: highWagerData, isLoading: loadingHighWager } = useQuery({
+    queryKey: ['/api/leaderboard/highest-wager'],
+  });
+  const { data: growthData, isLoading: loadingGrowth } = useQuery({
+    queryKey: ['/api/leaderboard/most-growth'],
+  });
+  const { data: tournamentsData } = useQuery({
+    queryKey: ['/api/tournaments'],
+  });
+
+  const wageredRankings = (wageredData as any)?.data?.rankings || [];
+  const highWagerRankings = (highWagerData as any)?.data?.rankings || [];
+  const growthRankings = (growthData as any)?.data?.rankings || [];
+
+  const activeTournamentCount = ((tournamentsData as any)?.data || []).filter((t: any) => t.status === 'active').length;
+  const totalVolume = wageredRankings.reduce((sum: number, r: any) => sum + (r.totalWagered || 0), 0);
+  const activeTraders = wageredRankings.length;
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
@@ -73,9 +61,34 @@ export default function Leaderboard() {
     }
   };
 
+  const LoadingSkeleton = () => (
+    <div className="space-y-4 p-6">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4">
+          <Skeleton className="w-12 h-12 rounded-full" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+          <Skeleton className="h-6 w-20" />
+        </div>
+      ))}
+    </div>
+  );
+
+  const EmptyState = ({ message }: { message: string }) => (
+    <div className="text-center py-16">
+      <Trophy className="w-12 h-12 mx-auto mb-4" style={{ color: '#1F2937' }} />
+      <p className="text-lg font-semibold" style={{ color: '#94A3B8' }}>{message}</p>
+      <p className="text-sm mt-2" style={{ color: '#64748B' }}>Join tournaments and start trading to appear here!</p>
+    </div>
+  );
+
   const renderPodium = (data: any[], type: 'wagered' | 'growth') => {
     const top3 = data.slice(0, 3);
     const [first, second, third] = top3;
+
+    if (!first) return <EmptyState message="No rankings yet" />;
 
     return (
       <div className="mb-12 relative">
@@ -107,7 +120,7 @@ export default function Leaderboard() {
                   </div>
                   <div className="text-2xl font-black mb-2" style={{ color: '#080C14' }}>{second.username}</div>
                   <div className="text-3xl font-black" style={{ color: '#080C14' }}>
-                    {type === 'wagered' ? formatCurrency(second.totalWagered) : `+${second.percentageChange.toFixed(1)}%`}
+                    {type === 'wagered' ? formatCurrency(second.totalWagered) : `+${(second.percentageChange || 0).toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
@@ -154,7 +167,7 @@ export default function Leaderboard() {
                   </div>
                   <div className="text-3xl font-black mb-3" style={{ color: '#080C14' }}>{first.username}</div>
                   <div className="text-4xl font-black" style={{ color: '#080C14' }}>
-                    {type === 'wagered' ? formatCurrency(first.totalWagered) : `+${first.percentageChange.toFixed(1)}%`}
+                    {type === 'wagered' ? formatCurrency(first.totalWagered) : `+${(first.percentageChange || 0).toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
@@ -201,7 +214,7 @@ export default function Leaderboard() {
                   </div>
                   <div className="text-2xl font-black text-white mb-2">{third.username}</div>
                   <div className="text-3xl font-black text-white">
-                    {type === 'wagered' ? formatCurrency(third.totalWagered) : `+${third.percentageChange.toFixed(1)}%`}
+                    {type === 'wagered' ? formatCurrency(third.totalWagered) : `+${(third.percentageChange || 0).toFixed(1)}%`}
                   </div>
                 </div>
               </motion.div>
@@ -242,7 +255,7 @@ export default function Leaderboard() {
             }}>
               <Trophy className="w-10 h-10" style={{ color: '#080C14' }} />
             </div>
-            <h1 className="text-6xl font-black text-white">Global Leaderboards 🏆</h1>
+            <h1 className="text-6xl font-black text-white">Global Leaderboards</h1>
           </div>
           <p className="text-xl text-[#94A3B8]">Top performers across all tournaments and categories</p>
         </motion.div>
@@ -281,163 +294,183 @@ export default function Leaderboard() {
           <AnimatePresence mode="wait">
             {/* Total Wagered Tab */}
             <TabsContent value="wagered" className="space-y-6">
-              {/* Podium for Top 3 */}
-              {renderPodium(mockWageredData, 'wagered')}
+              {loadingWagered ? <LoadingSkeleton /> : wageredRankings.length === 0 ? (
+                <EmptyState message="No wagering data yet" />
+              ) : (
+                <>
+                  {/* Podium for Top 3 */}
+                  {renderPodium(wageredRankings, 'wagered')}
 
-              {/* Remaining Rankings */}
-              <Card className="rounded-2xl border-none shadow-xl" style={{
-                background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
-              }}>
-                <CardHeader className="p-6">
-                  <CardTitle className="flex items-center gap-3 text-2xl">
-                    <DollarSign className="w-7 h-7" style={{ color: '#E3B341' }} />
-                    <span style={{ color: '#FFFFFF' }}>Complete Rankings 📊</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-3">
-                    {mockWageredData.slice(3).map((trader, index) => {
-                      const rank = index + 4;
-                      return (
-                        <motion.div
-                          key={trader.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                          whileHover={{ x: 3 }}
-                          className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
-                          style={{
-                            background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
-                            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-                          }}
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
-                              {rank}
-                            </div>
-                            <div>
-                              <div className="font-bold text-lg text-white">{trader.username}</div>
-                              <div className="text-sm text-[#94A3B8]">{trader.tournamentCount} tournaments</div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-black" style={{ color: '#E3B341' }}>
-                              {formatCurrency(trader.totalWagered)}
-                            </div>
-                            <div className="text-xs text-[#94A3B8]">Total Wagered</div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+                  {/* Remaining Rankings */}
+                  {wageredRankings.length > 3 && (
+                    <Card className="rounded-2xl border-none shadow-xl" style={{
+                      background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
+                    }}>
+                      <CardHeader className="p-6">
+                        <CardTitle className="flex items-center gap-3 text-2xl">
+                          <DollarSign className="w-7 h-7" style={{ color: '#E3B341' }} />
+                          <span style={{ color: '#FFFFFF' }}>Complete Rankings</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <div className="space-y-3">
+                          {wageredRankings.slice(3).map((trader: any, index: number) => {
+                            const rank = index + 4;
+                            return (
+                              <motion.div
+                                key={trader.userId || index}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 }}
+                                whileHover={{ x: 3 }}
+                                className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
+                                style={{
+                                  background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
+                                  boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                                }}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
+                                    {rank}
+                                  </div>
+                                  <div>
+                                    <div className="font-bold text-lg text-white">{trader.username}</div>
+                                    <div className="text-sm text-[#94A3B8]">{trader.tournamentCount} tournaments</div>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-2xl font-black" style={{ color: '#E3B341' }}>
+                                    {formatCurrency(trader.totalWagered)}
+                                  </div>
+                                  <div className="text-xs text-[#94A3B8]">Total Wagered</div>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              )}
             </TabsContent>
 
             {/* High Wager Tournaments Tab */}
             <TabsContent value="highwager" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Trophy className="h-5 w-5" style={{ color: '#E3B341' }} />
-                    Highest Buy-In Tournaments
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {mockHighWagerTournaments.map((tournament, index) => {
-                      const rank = index + 1;
-                      return (
-                        <motion.div
-                          key={tournament.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                          className="flex items-center justify-between p-4 rounded-lg border border-[#1F2937] hover:border-[#E3B341] transition-all bg-[#111827]"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
-                              {rank <= 3 ? getRankIcon(rank) : rank}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-white">{tournament.name}</div>
-                              <div className="text-sm text-[#94A3B8]">
-                                {tournament.currentPlayers}/{tournament.maxPlayers} players •
-                                <span className={tournament.status === 'active' ? 'text-[#10B981]' : 'text-[#E3B341]'}>
-                                  {' '}{tournament.status}
-                                </span>
+              {loadingHighWager ? <LoadingSkeleton /> : highWagerRankings.length === 0 ? (
+                <EmptyState message="No high-stakes tournaments yet" />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Trophy className="h-5 w-5" style={{ color: '#E3B341' }} />
+                      Highest Buy-In Tournaments
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {highWagerRankings.map((tournament: any, index: number) => {
+                        const rank = index + 1;
+                        return (
+                          <motion.div
+                            key={tournament.id || index}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="flex items-center justify-between p-4 rounded-lg border border-[#1F2937] hover:border-[#E3B341] transition-all bg-[#111827]"
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
+                                {rank <= 3 ? getRankIcon(rank) : rank}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-white">{tournament.name}</div>
+                                <div className="text-sm text-[#94A3B8]">
+                                  {tournament.currentPlayers}/{tournament.maxPlayers} players •
+                                  <span className={tournament.status === 'active' ? 'text-[#10B981]' : 'text-[#E3B341]'}>
+                                    {' '}{tournament.status}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-bold text-lg" style={{ color: '#E3B341' }}>
-                              {formatCurrency(tournament.buyInAmount)}
+                            <div className="text-right">
+                              <div className="font-bold text-lg" style={{ color: '#E3B341' }}>
+                                {formatCurrency(tournament.buyInAmount)}
+                              </div>
+                              <div className="text-xs text-[#94A3B8]">Buy-In</div>
                             </div>
-                            <div className="text-xs text-[#94A3B8]">Buy-In</div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             {/* Top Growth Tab */}
             <TabsContent value="growth" className="space-y-6">
-              {/* Podium for Top 3 */}
-              {renderPodium(mockGrowthData, 'growth')}
+              {loadingGrowth ? <LoadingSkeleton /> : growthRankings.length === 0 ? (
+                <EmptyState message="No growth data yet" />
+              ) : (
+                <>
+                  {/* Podium for Top 3 */}
+                  {renderPodium(growthRankings, 'growth')}
 
-              {/* Remaining Rankings */}
-              <Card className="rounded-2xl border-none shadow-xl" style={{
-                background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
-              }}>
-                <CardHeader className="p-6">
-                  <CardTitle className="flex items-center gap-3 text-2xl">
-                    <TrendingUp className="w-7 h-7" style={{ color: '#10B981' }} />
-                    <span style={{ color: '#FFFFFF' }}>Complete Rankings 📈</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6">
-                  <div className="space-y-3">
-                    {mockGrowthData.slice(3).map((participant, index) => {
-                      const rank = index + 4;
-                      return (
-                        <motion.div
-                          key={participant.id}
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: index * 0.05 }}
-                          whileHover={{ x: 3 }}
-                          className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
-                          style={{
-                            background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
-                            boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-                          }}
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
-                              {rank}
-                            </div>
-                            <div>
-                              <div className="font-bold text-lg text-white">{participant.username}</div>
-                              <div className="text-sm text-[#94A3B8]">
-                                {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-black text-[#10B981]">
-                              +{participant.percentageChange.toFixed(1)}%
-                            </div>
-                            <div className="text-sm text-[#F1F5F9]">{formatCurrency(participant.portfolioValue)}</div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+                  {/* Remaining Rankings */}
+                  {growthRankings.length > 3 && (
+                    <Card className="rounded-2xl border-none shadow-xl" style={{
+                      background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
+                    }}>
+                      <CardHeader className="p-6">
+                        <CardTitle className="flex items-center gap-3 text-2xl">
+                          <TrendingUp className="w-7 h-7" style={{ color: '#10B981' }} />
+                          <span style={{ color: '#FFFFFF' }}>Complete Rankings</span>
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-6">
+                        <div className="space-y-3">
+                          {growthRankings.slice(3).map((participant: any, index: number) => {
+                            const rank = index + 4;
+                            return (
+                              <motion.div
+                                key={participant.id || index}
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 }}
+                                whileHover={{ x: 3 }}
+                                className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
+                                style={{
+                                  background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
+                                  boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                                }}
+                              >
+                                <div className="flex items-center gap-4">
+                                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
+                                    {rank}
+                                  </div>
+                                  <div>
+                                    <div className="font-bold text-lg text-white">{participant.username}</div>
+                                    <div className="text-sm text-[#94A3B8]">
+                                      {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <div className="text-2xl font-black text-[#10B981]">
+                                    +{(participant.percentageChange || 0).toFixed(1)}%
+                                  </div>
+                                  <div className="text-sm text-[#F1F5F9]">{formatCurrency(participant.portfolioValue)}</div>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              )}
             </TabsContent>
           </AnimatePresence>
         </Tabs>
@@ -454,7 +487,6 @@ export default function Leaderboard() {
               background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)'
             }}>
               <CardContent className="p-6">
-                <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">💰</div>
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="p-4 rounded-xl" style={{
                     background: 'rgba(8, 12, 20, 0.3)',
@@ -464,7 +496,7 @@ export default function Leaderboard() {
                   </div>
                   <div>
                     <div className="text-3xl font-black" style={{ color: '#080C14' }}>
-                      {formatCurrency(652300)}
+                      {formatCurrency(totalVolume)}
                     </div>
                     <div className="text-base font-bold" style={{ color: 'rgba(8, 12, 20, 0.7)' }}>
                       Total Volume
@@ -480,7 +512,6 @@ export default function Leaderboard() {
               background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
             }}>
               <CardContent className="p-6">
-                <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">🏆</div>
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="p-4 rounded-xl" style={{
                     background: 'rgba(255, 255, 255, 0.2)',
@@ -489,7 +520,7 @@ export default function Leaderboard() {
                     <Trophy className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <div className="text-3xl font-black text-white">284</div>
+                    <div className="text-3xl font-black text-white">{activeTournamentCount}</div>
                     <div className="text-base font-bold text-white opacity-80">
                       Active Tournaments
                     </div>
@@ -504,7 +535,6 @@ export default function Leaderboard() {
               background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)'
             }}>
               <CardContent className="p-6">
-                <div className="absolute -right-4 -bottom-4 text-8xl opacity-10">⚡</div>
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="p-4 rounded-xl" style={{
                     background: 'rgba(255, 255, 255, 0.2)',
@@ -513,7 +543,7 @@ export default function Leaderboard() {
                     <Zap className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <div className="text-3xl font-black text-white">1,247</div>
+                    <div className="text-3xl font-black text-white">{activeTraders.toLocaleString()}</div>
                     <div className="text-base font-bold text-white opacity-80">
                       Active Traders
                     </div>

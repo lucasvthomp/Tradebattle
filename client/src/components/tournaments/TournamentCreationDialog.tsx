@@ -62,8 +62,6 @@ const DURATION_OPTIONS = [
 ];
 
 const START_DELAY_OPTIONS = [
-  { value: "immediately", label: "Start Immediately" },
-  { value: "1 minute", label: "1 Minute" },
   { value: "5 minutes", label: "5 Minutes" },
   { value: "10 minutes", label: "10 Minutes" },
   { value: "30 minutes", label: "30 Minutes" },
@@ -102,7 +100,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     tournamentType: "stocks", // 3. Stock or Crypto tournament
     startingBalance: 10000, // 4. Starting Fake Cash amount
     duration: "1 week", // 5. Duration of the tournament
-    startDelay: "immediately", // 6. In how many minutes, hours, or days the tournament will start
+    startDelay: "5 minutes", // 6. In how many minutes, hours, or days the tournament will start
     isPublic: true, // 7. Private or Public
     buyInAmount: 0, // Buy-in amount
     agreeToTerms: false // Terms of service agreement

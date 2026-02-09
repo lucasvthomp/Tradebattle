@@ -42,8 +42,22 @@ export default function Hub() {
     queryKey: ['/api/tournaments'],
   });
 
+  // Fetch personal leaderboard for global rank
+  const { data: personalLeaderboard } = useQuery({
+    queryKey: ['/api/leaderboard/most-growth'],
+  });
+
   const activeTournaments = tournamentsData?.data?.filter((t: any) => t.status === 'active') || [];
   const nextTournament = activeTournaments[0];
+
+  // Calculate active trades count from user's active tournaments
+  const userTournaments = tournamentsData?.data?.filter((t: any) =>
+    t.status === 'active' && t.participants?.some((p: any) => p.userId === user?.id)
+  ) || [];
+  const activeTradesCount = userTournaments.length;
+
+  // Get global rank
+  const globalRank = (personalLeaderboard as any)?.data?.yourRank || null;
 
   const getTimeRemaining = () => {
     if (!nextTournament?.endTime) return "--";
@@ -93,7 +107,7 @@ export default function Hub() {
     },
     {
       label: "Active Trades",
-      value: "--",
+      value: activeTradesCount,
       icon: Activity,
       color: '#10B981',
     },
@@ -105,7 +119,7 @@ export default function Hub() {
     },
     {
       label: "Global Rank",
-      value: "--",
+      value: globalRank ? `#${globalRank}` : "--",
       icon: Award,
       color: '#06B6D4',
     },
