@@ -305,25 +305,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to get all users (only for userId 0 or 1)
-  app.get("/api/admin/users", requireAuth, async (req: any, res) => {
-    try {
-      const userId = req.user.userId;
-      
-      // Check if user is admin (userId 0, 1, or 2)
-      if (userId !== 0 && userId !== 1 && userId !== 2) {
-        return res.status(403).json({ message: "Access denied. Admin privileges required." });
-      }
-      
-      const allUsers = await storage.getAllUsers();
-      res.json(allUsers);
-    } catch (error) {
-      console.error("Error fetching all users:", error);
-      res.status(500).json({ message: "Failed to fetch users" });
-    }
-  });
-
-
   // Balance management endpoints
   app.post("/api/balance/deposit", requireAuth, async (req: any, res) => {
     try {
@@ -548,14 +529,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin endpoint to get user logs
   app.get("/api/admin/logs/:userId", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.userId;
+      const adminUserId = req.user.id;
       const targetUserId = parseInt(req.params.userId);
-      
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+
+      // Check if user is admin
+      const adminUser = await storage.getUser(adminUserId);
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.subscriptionTier !== 'admin')) {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
-      
+
       const logs = await storage.getAdminLogs(targetUserId);
       res.json(logs);
     } catch (error) {
@@ -564,16 +546,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin endpoint to delete a user (only for userId 0 or 1)
+  // Admin endpoint to delete a user
   app.delete("/api/admin/users/:userEmail", requireAuth, async (req: any, res) => {
     try {
-      const adminUserId = req.user.userId;
+      const adminUserId = req.user.id;
       const targetUserEmail = req.params.userEmail;
-      
+
       console.log(`Admin userId ${adminUserId} attempting to delete user ${targetUserEmail}`);
-      
-      // Check if user is admin (userId 0, 1, or 2)
-      if (adminUserId !== 0 && adminUserId !== 1 && adminUserId !== 2) {
+
+      // Check if user is admin
+      const adminUser = await storage.getUser(adminUserId);
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.subscriptionTier !== 'admin')) {
         console.log(`Access denied: User ${adminUserId} is not an admin`);
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
