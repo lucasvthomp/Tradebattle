@@ -798,6 +798,26 @@ router.get('/tournaments/:id/purchases', requireAuth, asyncHandler(async (req, r
 }));
 
 /**
+ * GET /api/tournaments/:id/trades
+ * Get current user's trade history for a tournament
+ */
+router.get('/tournaments/:id/trades', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  const trades = await storage.getUserTournamentTrades(userId, tournamentId);
+
+  res.json({
+    success: true,
+    data: trades,
+  });
+}));
+
+/**
  * GET /api/portfolio/tournament/:id
  * Get tournament portfolio for user
  */

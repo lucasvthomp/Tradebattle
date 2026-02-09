@@ -17,6 +17,7 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { isMarketOpen } from "@shared/marketHours";
+import { TradeHistory } from "./TradeHistory";
 
 interface OrderPanelProps {
   symbol: string;
@@ -120,6 +121,7 @@ export function OrderPanel({
       onOrderExecuted();
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments", tournamentId, "balance"] });
       queryClient.invalidateQueries({ queryKey: ["/api/portfolio/tournament", tournamentId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments", tournamentId, "trades"] });
     } catch (error: any) {
       toast({
         title: `${orderSide === "buy" ? "Buy" : "Sell"} failed`,
@@ -522,6 +524,9 @@ export function OrderPanel({
       </div>
       </>
       )}
+
+      {/* Trade History */}
+      {!showSearch && <TradeHistory tournamentId={tournamentId} />}
     </div>
   );
 }
