@@ -3,21 +3,17 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { Loader2, Eye, EyeOff } from "lucide-react";
-import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 export default function Login() {
   const [, navigate] = useLocation();
   const { loginMutation, user } = useAuth();
-  const { t } = useUserPreferences();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Redirect if already logged in
   if (user) {
     navigate("/dashboard");
     return null;
@@ -26,100 +22,96 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     loginMutation.mutate({ username, password }, {
-      onSuccess: () => {
-        navigate("/dashboard");
-      }
+      onSuccess: () => navigate("/dashboard"),
     });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: '#080C14' }}>
+      <div className="max-w-md w-full space-y-6">
+        {/* Header */}
         <div className="text-center">
-          <div className="flex justify-center">
-            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">O</span>
+          <div className="flex justify-center mb-4">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#E3B341' }}>
+              <span className="font-bold text-2xl" style={{ color: '#080C14' }}>O</span>
             </div>
           </div>
-          <h2 className="mt-6 text-3xl font-bold text-foreground">
-            {t('signIn')} ORSATH
-          </h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {t('signInDescription')}
-          </p>
+          <h1 className="text-3xl font-bold" style={{ color: '#F1F5F9' }}>Welcome back to ORSATH</h1>
+          <p className="mt-2 text-sm" style={{ color: '#94A3B8' }}>Sign in to continue trading</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center">{t('welcomeBack')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <Label htmlFor="username">{t('username')}</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={t('enterUsername')}
-                  className="mt-1"
-                />
-              </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-xl" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+          <div className="space-y-1.5">
+            <Label htmlFor="username" style={{ color: '#F1F5F9' }}>Username</Label>
+            <Input
+              id="username"
+              type="text"
+              required
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}
+            />
+          </div>
 
-              <div>
-                <Label htmlFor="password">{t('password')}</Label>
-                <div className="relative mt-1">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder={t('enterPassword')}
-                    className="pr-10"
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 flex items-center pr-3"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <Button
-                type="submit"
-                disabled={loginMutation.isPending}
-                className="w-full bg-black text-white hover:bg-neutral-800"
+          <div className="space-y-1.5">
+            <Label htmlFor="password" style={{ color: '#F1F5F9' }}>Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter your password"
+                className="pr-10"
+                style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
+                onClick={() => setShowPassword(!showPassword)}
               >
-                {loginMutation.isPending ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {t('loggingIn')}
-                  </>
+                {showPassword ? (
+                  <EyeOff className="h-4 w-4" style={{ color: '#94A3B8' }} />
                 ) : (
-                  t('logIn')
+                  <Eye className="h-4 w-4" style={{ color: '#94A3B8' }} />
                 )}
-              </Button>
+              </button>
+            </div>
+          </div>
 
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">
-                  {t('dontHaveAccount')}{" "}
-                  <Link href="/signup" className="font-medium text-primary hover:underline">
-                    {t('signUp')}
-                  </Link>
-                </p>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+          <Button
+            type="submit"
+            disabled={loginMutation.isPending}
+            className="w-full h-11 font-semibold"
+            style={{ backgroundColor: '#E3B341', color: '#080C14' }}
+          >
+            {loginMutation.isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Signing in...
+              </>
+            ) : (
+              "Sign In"
+            )}
+          </Button>
+
+          {loginMutation.isError && (
+            <p className="text-xs text-center" style={{ color: '#EF4444' }}>
+              {(loginMutation.error as any)?.message || "Login failed"}
+            </p>
+          )}
+        </form>
+
+        {/* Sign Up Link */}
+        <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
+          Don't have an account?{" "}
+          <Link href="/signup" className="hover:underline" style={{ color: '#E3B341' }}>
+            Create one
+          </Link>
+        </p>
       </div>
     </div>
   );
