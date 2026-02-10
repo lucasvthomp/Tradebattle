@@ -189,6 +189,7 @@ function sanitizeUser(user: User) {
     language: user.language,
     currency: user.currency,
     subscriptionTier: user.subscriptionTier,
+    profilePicture: user.profilePicture,
     siteCash: user.siteCash,
     balance: user.balance,
     banned: user.banned,
