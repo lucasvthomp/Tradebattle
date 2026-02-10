@@ -1,23 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
-import { Loader2, Eye, EyeOff, ArrowRight, ArrowLeft } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Loader2, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
 
 // Country and language mappings
 const countries = {
-  // North America
   "United States": { language: "English", currency: "USD", code: "US" },
   "Canada": { language: "English", currency: "CAD", code: "CA" },
   "Mexico": { language: "Spanish", currency: "MXN", code: "MX" },
-  
-  // Central America
   "Guatemala": { language: "Spanish", currency: "GTQ", code: "GT" },
   "Belize": { language: "English", currency: "BZD", code: "BZ" },
   "El Salvador": { language: "Spanish", currency: "USD", code: "SV" },
@@ -25,8 +20,6 @@ const countries = {
   "Nicaragua": { language: "Spanish", currency: "NIO", code: "NI" },
   "Costa Rica": { language: "Spanish", currency: "CRC", code: "CR" },
   "Panama": { language: "Spanish", currency: "PAB", code: "PA" },
-  
-  // South America
   "Colombia": { language: "Spanish", currency: "COP", code: "CO" },
   "Venezuela": { language: "Spanish", currency: "VES", code: "VE" },
   "Guyana": { language: "English", currency: "GYD", code: "GY" },
@@ -42,80 +35,9 @@ const countries = {
   "Uruguay": { language: "Spanish", currency: "UYU", code: "UY" },
 };
 
-const languages = ["English", "Spanish", "Portuguese", "French", "Dutch"];
-const currencies = ["USD", "CAD", "MXN", "GTQ", "BZD", "HNL", "NIO", "CRC", "PAB", "COP", "VES", "GYD", "SRD", "EUR", "BRL", "PEN", "BOB", "PYG", "CLP", "ARS", "UYU"];
-
-// Translations
-const translations = {
-  English: {
-    welcome: "Welcome!",
-    country: "What country are you located in?",
-    language: "Language",
-    currency: "Currency",
-    next: "Next",
-    back: "Back",
-    username: "Choose a username",
-    usernameDescription: "3-20 characters, letters, numbers, and max 1 underscore",
-    usernamePlaceholder: "Enter your username",
-    email: "What's your email address?",
-    emailPlaceholder: "Enter your email",
-    password: "Create a password",
-    passwordPlaceholder: "Enter a secure password",
-    upgrade: "Upgrade to Premium?",
-    upgradeDescription: "Get premium features for a better trading experience",
-    upgradeLater: "Maybe Later",
-    upgradeNow: "Upgrade Now",
-    signUp: "Create Account",
-    subtitle: "Start your paper trading competition journey"
-  },
-  Spanish: {
-    welcome: "¡Bienvenido!",
-    country: "¿En qué país te encuentras?",
-    language: "Idioma",
-    currency: "Moneda",
-    next: "Siguiente",
-    back: "Atrás",
-    username: "Elige un nombre de usuario",
-    usernameDescription: "3-20 caracteres, letras, números y máx. 1 guión bajo",
-    usernamePlaceholder: "Ingresa tu nombre de usuario",
-    email: "¿Cuál es tu dirección de correo?",
-    emailPlaceholder: "Ingresa tu correo",
-    password: "Crea una contraseña",
-    passwordPlaceholder: "Ingresa una contraseña segura",
-    upgrade: "¿Actualizar a Premium?",
-    upgradeDescription: "Obtén funciones premium para una mejor experiencia",
-    upgradeLater: "Tal vez después",
-    upgradeNow: "Actualizar ahora",
-    signUp: "Crear cuenta",
-    subtitle: "Comienza tu viaje de competencias de trading"
-  },
-  Portuguese: {
-    welcome: "Bem-vindo!",
-    country: "Em que país você está localizado?",
-    language: "Idioma",
-    currency: "Moeda",
-    next: "Próximo",
-    back: "Voltar",
-    username: "Escolha um nome de usuário",
-    usernameDescription: "3-20 caracteres, letras, números e máx. 1 sublinhado",
-    usernamePlaceholder: "Digite seu nome de usuário",
-    email: "Qual é o seu endereço de email?",
-    emailPlaceholder: "Digite seu email",
-    password: "Crie uma senha",
-    passwordPlaceholder: "Digite uma senha segura",
-    upgrade: "Atualizar para Premium?",
-    upgradeDescription: "Obtenha recursos premium para uma melhor experiência",
-    upgradeLater: "Talvez depois",
-    upgradeNow: "Atualizar agora",
-    signUp: "Criar conta",
-    subtitle: "Comece sua jornada de competições de trading"
-  }
-};
-
 export default function Signup() {
   const [, navigate] = useLocation();
   const { registerMutation, user } = useAuth();
-  const [step, setStep] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
@@ -123,14 +45,34 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState<{ checking: boolean; available: boolean | null; reason?: string }>({ checking: false, available: null });
 
-  // Redirect if already logged in
   if (user) {
     navigate("/dashboard");
     return null;
   }
 
-  // Update language and currency when country changes
+  // Debounced username check
+  useEffect(() => {
+    if (!username || username.length < 3) {
+      setUsernameStatus({ checking: false, available: null });
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setUsernameStatus({ checking: true, available: null });
+      try {
+        const res = await fetch(`/api/username/check/${encodeURIComponent(username)}`);
+        const data = await res.json();
+        setUsernameStatus({ checking: false, available: data.available, reason: data.reason });
+      } catch {
+        setUsernameStatus({ checking: false, available: null });
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [username]);
+
   useEffect(() => {
     if (selectedCountry && countries[selectedCountry as keyof typeof countries]) {
       const countryData = countries[selectedCountry as keyof typeof countries];
@@ -139,17 +81,8 @@ export default function Signup() {
     }
   }, [selectedCountry]);
 
-  const t = translations[selectedLanguage as keyof typeof translations] || translations.English;
-
-  const handleNext = () => {
-    if (step < 4) setStep(step + 1);
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
     registerMutation.mutate({
       email,
       password,
@@ -158,253 +91,155 @@ export default function Signup() {
       language: selectedLanguage,
       currency: selectedCurrency,
     }, {
-      onSuccess: () => {
-        navigate("/dashboard");
-      }
+      onSuccess: () => navigate("/dashboard"),
     });
   };
 
-  const renderStep = () => {
-    switch (step) {
-      case 1:
-        return (
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h1 className="text-4xl font-bold">
-                <span className="text-blue-500">Welcome!</span>{" "}
-                <span className="text-green-500">Bem-vindo!</span>{" "}
-                <span className="text-red-500">¡Bienvenido!</span>
-              </h1>
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-500 via-green-500 to-red-500 mx-auto rounded-full"></div>
-            </div>
+  const passwordValid = password.length >= 6 && /[A-Z]/.test(password) && /[0-9]/.test(password);
+  const usernameValid = username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
+  const formValid = usernameValid && usernameStatus.available === true && email && passwordValid && selectedCountry;
 
-            <div className="space-y-4">
-              <Label className="text-lg font-medium">{t.country}</Label>
-              <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                <SelectTrigger className="w-full h-12">
-                  <SelectValue placeholder="Select your country" />
-                </SelectTrigger>
-                <SelectContent>
-                  <div className="px-2 py-1 text-xs font-medium text-muted-foreground">North America</div>
-                  {Object.keys(countries).slice(0, 3).map((country) => (
-                    <SelectItem key={country} value={country}>{country}</SelectItem>
-                  ))}
-                  <div className="px-2 py-1 text-xs font-medium text-muted-foreground">Central America</div>
-                  {Object.keys(countries).slice(3, 10).map((country) => (
-                    <SelectItem key={country} value={country}>{country}</SelectItem>
-                  ))}
-                  <div className="px-2 py-1 text-xs font-medium text-muted-foreground">South America</div>
-                  {Object.keys(countries).slice(10).map((country) => (
-                    <SelectItem key={country} value={country}>{country}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-sm font-medium">{t.language}</Label>
-                  <Select value={selectedLanguage} onValueChange={setSelectedLanguage}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {languages.map((lang) => (
-                        <SelectItem key={lang} value={lang}>{lang}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium">{t.currency}</Label>
-                  <Select value={selectedCurrency} onValueChange={setSelectedCurrency}>
-                    <SelectTrigger className="h-12">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {currencies.map((curr) => (
-                        <SelectItem key={curr} value={curr}>{curr}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+  return (
+    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: '#080C14' }}>
+      <div className="max-w-md w-full space-y-6">
+        {/* Header */}
+        <div className="text-center">
+          <div className="flex justify-center mb-4">
+            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#E3B341' }}>
+              <span className="font-bold text-2xl" style={{ color: '#080C14' }}>O</span>
             </div>
           </div>
-        );
+          <h1 className="text-3xl font-bold" style={{ color: '#F1F5F9' }}>Join ORSATH</h1>
+          <p className="mt-2 text-sm" style={{ color: '#94A3B8' }}>Start your paper trading competition journey</p>
+        </div>
 
-      case 2:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold">{t.username}</h2>
-              <p className="text-sm text-muted-foreground mt-2">{t.usernameDescription}</p>
-            </div>
-            <div>
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder={t.usernamePlaceholder}
-                className="h-12 text-center"
-                pattern="[a-zA-Z0-9_]{3,20}"
-                maxLength={20}
-              />
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold">{t.email}</h2>
-            </div>
-            <div>
-              <Input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t.emailPlaceholder}
-                className="h-12 text-center"
-              />
-            </div>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <h2 className="text-2xl font-bold">{t.password}</h2>
-              <p className="text-sm text-muted-foreground mt-2">Min 6 characters, at least 1 capital letter and 1 number</p>
-            </div>
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-xl" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+          {/* Username */}
+          <div className="space-y-1.5">
+            <Label htmlFor="username" style={{ color: '#F1F5F9' }}>Username</Label>
             <div className="relative">
               <Input
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Choose a username"
+                maxLength={20}
+                className="pr-10"
+                style={{
+                  backgroundColor: '#0F172A',
+                  color: '#F1F5F9',
+                  borderColor: usernameStatus.available === true ? '#10B981' : usernameStatus.available === false ? '#EF4444' : '#1F2937',
+                }}
+              />
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                {usernameStatus.checking && <Loader2 className="h-4 w-4 animate-spin" style={{ color: '#94A3B8' }} />}
+                {usernameStatus.available === true && <CheckCircle className="h-4 w-4" style={{ color: '#10B981' }} />}
+                {usernameStatus.available === false && <XCircle className="h-4 w-4" style={{ color: '#EF4444' }} />}
+              </div>
+            </div>
+            {usernameStatus.available === false && usernameStatus.reason && (
+              <p className="text-xs" style={{ color: '#EF4444' }}>{usernameStatus.reason}</p>
+            )}
+            {username && username.length < 3 && (
+              <p className="text-xs" style={{ color: '#EF4444' }}>Username must be at least 3 characters</p>
+            )}
+            {usernameStatus.available === true && (
+              <p className="text-xs" style={{ color: '#10B981' }}>Username is available</p>
+            )}
+          </div>
+
+          {/* Email */}
+          <div className="space-y-1.5">
+            <Label htmlFor="email" style={{ color: '#F1F5F9' }}>Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}
+            />
+          </div>
+
+          {/* Password */}
+          <div className="space-y-1.5">
+            <Label htmlFor="password" style={{ color: '#F1F5F9' }}>Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder={t.passwordPlaceholder}
-                className="h-12 text-center pr-12"
+                placeholder="Min 6 chars, 1 uppercase, 1 number"
+                className="pr-10"
+                style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff className="h-5 w-5 text-muted-foreground" />
+                  <EyeOff className="h-4 w-4" style={{ color: '#94A3B8' }} />
                 ) : (
-                  <Eye className="h-5 w-5 text-muted-foreground" />
+                  <Eye className="h-4 w-4" style={{ color: '#94A3B8' }} />
                 )}
               </button>
             </div>
-            <Button
-              onClick={handleSubmit}
-              disabled={!password || password.length < 6 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || registerMutation.isPending}
-              className="w-full h-12"
-            >
-              {registerMutation.isPending ? (
+            {password && !passwordValid && (
+              <p className="text-xs" style={{ color: '#EF4444' }}>
+                {password.length < 6 ? "At least 6 characters" : !/[A-Z]/.test(password) ? "Needs an uppercase letter" : "Needs a number"}
+              </p>
+            )}
+          </div>
+
+          {/* Country */}
+          <div className="space-y-1.5">
+            <Label style={{ color: '#F1F5F9' }}>Country</Label>
+            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+              <SelectTrigger style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}>
+                <SelectValue placeholder="Select your country" />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(countries).map((country) => (
+                  <SelectItem key={country} value={country}>{country}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Submit */}
+          <Button
+            type="submit"
+            disabled={!formValid || registerMutation.isPending}
+            className="w-full h-11 font-semibold mt-2"
+            style={{ backgroundColor: '#E3B341', color: '#080C14' }}
+          >
+            {registerMutation.isPending ? (
+              <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : null}
-              {t.signUp}
-            </Button>
-          </div>
-        );
+                Creating account...
+              </>
+            ) : (
+              "Create Account"
+            )}
+          </Button>
 
-      default:
-        return null;
-    }
-  };
-
-  const canProceed = () => {
-    switch (step) {
-      case 1: return selectedCountry !== "";
-      case 2: return username !== "" && username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
-      case 3: return email !== "";
-      case 4: return password !== "";
-      default: return true;
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4">
-      <div className="max-w-lg w-full">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">O</span>
-            </div>
-          </div>
-          <h1 className="text-2xl font-bold text-foreground">Join ORSATH</h1>
-          <p className="text-muted-foreground mt-1">{t.subtitle}</p>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-muted-foreground">Step {step} of 4</span>
-            <span className="text-sm text-muted-foreground">{Math.round((step / 4) * 100)}%</span>
-          </div>
-          <div className="w-full bg-muted rounded-full h-2">
-            <motion.div
-              className="bg-primary h-2 rounded-full"
-              initial={{ width: "20%" }}
-              animate={{ width: `${(step / 4) * 100}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-        </div>
-
-        {/* Main Card */}
-        <Card className="border-2 shadow-lg">
-          <CardContent className="p-8">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-              >
-                {renderStep()}
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between mt-8">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={step === 1}
-                className="flex items-center"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                {t.back}
-              </Button>
-
-              {step < 4 && (
-                <Button
-                  onClick={handleNext}
-                  disabled={!canProceed()}
-                  className="flex items-center"
-                >
-                  {t.next}
-                  <ArrowRight className="w-4 h-4 ml-2" />
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+          {registerMutation.isError && (
+            <p className="text-xs text-center" style={{ color: '#EF4444' }}>
+              {(registerMutation.error as any)?.message || "Registration failed"}
+            </p>
+          )}
+        </form>
 
         {/* Sign In Link */}
-        <div className="text-center mt-6">
-          <p className="text-sm text-muted-foreground">
-            Already have an account?{" "}
-            <Link href="/login" className="text-primary hover:underline">
-              Sign in
-            </Link>
-          </p>
-        </div>
+        <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
+          Already have an account?{" "}
+          <Link href="/login" className="hover:underline" style={{ color: '#E3B341' }}>
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   );
