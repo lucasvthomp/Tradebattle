@@ -26,8 +26,8 @@ export function TipDialog({ open, onOpenChange, recipientUserId, recipientUserna
 
   const tipMutation = useMutation({
     mutationFn: async (tipAmount: number) => {
-      const response = await apiRequest("POST", "/api/users/tip", {
-        recipientUserId,
+      const response = await apiRequest("POST", "/api/tips", {
+        recipientId: recipientUserId,
         amount: tipAmount
       });
       return response.json();
