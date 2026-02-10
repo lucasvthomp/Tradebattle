@@ -9,7 +9,7 @@ import {
   Trophy, 
   Users, 
   Phone,
-  ShoppingBag,
+  Gift,
   Gift,
   Settings,
   Archive,
@@ -36,7 +36,7 @@ export function SimplifiedSidebar() {
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
       { href: "/events", label: t('events'), icon: Calendar },
-      { href: "/shop", label: t('shop'), icon: ShoppingBag },
+      { href: "/shop", label: "Rewards", icon: Gift },
       { href: "/contact", label: t('support'), icon: Phone },
     ] : [
       { href: "/contact", label: t('support'), icon: Phone },
