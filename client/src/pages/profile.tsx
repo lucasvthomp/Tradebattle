@@ -201,7 +201,7 @@ export default function Profile() {
   // Balance management mutations
   const addMoneyMutation = useMutation({
     mutationFn: async (amount: number) => {
-      return await apiRequest('POST', '/api/balance/add', { amount });
+      return await apiRequest('POST', '/api/balance/deposit', { amount });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
@@ -673,7 +673,7 @@ export default function Profile() {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="text-sm text-muted-foreground">Current Account Balance</p>
-                          <p className="text-2xl font-bold text-foreground">{formatCurrency(Number(user?.balance || 0))}</p>
+                          <p className="text-2xl font-bold text-foreground">{formatCurrency(Number(user?.siteCash || 0))}</p>
                         </div>
                         <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
                           <DollarSign className="w-6 h-6 text-primary" />
