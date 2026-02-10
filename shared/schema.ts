@@ -32,7 +32,7 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").unique(), // New field for admin identification (Lucas=0, Murilo=1)
   email: varchar("email", { length: 255 }).unique().notNull(),
-  username: varchar("username", { length: 15 }).unique().notNull(), // 3-15 characters, letters/numbers/underscores only
+  username: varchar("username", { length: 20 }).unique().notNull(), // 3-20 characters, letters/numbers, max 1 underscore
   profilePicture: text("profile_picture"), // Base64 encoded profile picture or URL
   lastUsernameChange: timestamp("last_username_change"), // Track when username was last changed (for 2-week restriction)
   password: varchar("password", { length: 255 }).notNull(), // hashed password
@@ -329,8 +329,8 @@ export const insertUserAchievementSchema = createInsertSchema(userAchievements).
 // Username validation schema
 export const usernameSchema = z.string()
   .min(3, "Username must be at least 3 characters")
-  .max(15, "Username must be no more than 15 characters")
-  .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores");
+  .max(20, "Username must be no more than 20 characters")
+  .regex(/^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/, "Username can only contain letters, numbers, and at most one underscore");
 
 // User schemas for new authentication system
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -354,7 +354,10 @@ export const loginSchema = z.object({
 export const registrationSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   username: usernameSchema,
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string()
+    .min(6, "Password must be at least 6 characters")
+    .regex(/[A-Z]/, "Password must contain at least one capital letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
   country: z.string().optional(),
   language: z.string().default("English"),
   currency: z.string().default("USD"),
@@ -363,11 +366,13 @@ export const registrationSchema = z.object({
 export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   username: usernameSchema,
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string()
+    .min(6, "Password must be at least 6 characters")
+    .regex(/[A-Z]/, "Password must contain at least one capital letter")
+    .regex(/[0-9]/, "Password must contain at least one number"),
   country: z.string().optional(),
   language: z.string().default("English"),
   currency: z.string().default("USD"),
-
 });
 
 export type User = typeof users.$inferSelect;

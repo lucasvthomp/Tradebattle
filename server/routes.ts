@@ -7,6 +7,7 @@ import { insertContactSchema, insertWatchlistSchema, insertStockPurchaseSchema, 
 import apiRoutes from "./routes/api.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import { trackRequest, getSystemStatus } from "./services/systemMonitor.js";
+import { containsProfanity } from "./utils/profanityFilter.js";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -30,11 +31,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const validatedData = z.object({
         email: z.string().email(),
-        username: z.string().min(3, "Username must be at least 3 characters").max(15, "Username must be at most 15 characters").regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores").optional()
+        username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be at most 20 characters").regex(/^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/, "Username can only contain letters, numbers, and at most one underscore").optional()
       }).parse(req.body);
-      
+
+      if (validatedData.username && containsProfanity(validatedData.username)) {
+        return res.status(400).json({ message: "Username contains inappropriate language" });
+      }
+
       console.log("Validated data:", validatedData);
-      
+
       const updatedUser = await storage.updateUser(userId, validatedData);
       console.log("Updated user:", updatedUser);
       

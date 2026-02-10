@@ -7,6 +7,7 @@ import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
 import { User } from "@shared/schema";
+import { containsProfanity } from "./utils/profanityFilter.js";
 
 declare global {
   namespace Express {
@@ -91,12 +92,24 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ message: "Email, username, and password are required" });
       }
 
-      if (username.length < 3 || username.length > 15 || !/^[a-zA-Z0-9_]+$/.test(username)) {
-        return res.status(400).json({ message: "Username must be 3-15 characters, letters/numbers/underscores only" });
+      if (username.length < 3 || username.length > 20 || !/^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username)) {
+        return res.status(400).json({ message: "Username must be 3-20 characters, letters/numbers, and at most one underscore" });
+      }
+
+      if (containsProfanity(username)) {
+        return res.status(400).json({ message: "Username contains inappropriate language" });
       }
 
       if (password.length < 6) {
         return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+
+      if (!/[A-Z]/.test(password)) {
+        return res.status(400).json({ message: "Password must contain at least one capital letter" });
+      }
+
+      if (!/[0-9]/.test(password)) {
+        return res.status(400).json({ message: "Password must contain at least one number" });
       }
 
       const existingEmail = await storage.getUserByEmail(email);

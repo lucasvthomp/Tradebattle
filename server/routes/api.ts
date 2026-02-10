@@ -1500,11 +1500,20 @@ router.patch('/admin/users/:userId/username', requireAuth, asyncHandler(async (r
     return res.status(403).json({ error: 'Admin access required' });
   }
   
-  if (!username || username.trim().length < 3) {
-    return res.status(400).json({ error: 'Username must be at least 3 characters' });
+  const trimmedUsername = username?.trim();
+  if (!trimmedUsername || trimmedUsername.length < 3 || trimmedUsername.length > 20) {
+    return res.status(400).json({ error: 'Username must be 3-20 characters' });
   }
-  
-  await storage.updateUserUsername(targetUserId, username.trim());
+
+  if (!/^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(trimmedUsername)) {
+    return res.status(400).json({ error: 'Username can only contain letters, numbers, and at most one underscore' });
+  }
+
+  if (containsProfanity(trimmedUsername)) {
+    return res.status(400).json({ error: 'Username contains inappropriate language' });
+  }
+
+  await storage.updateUserUsername(targetUserId, trimmedUsername);
   res.json({ success: true, message: 'Username updated successfully' });
 }));
 

@@ -55,7 +55,7 @@ const translations = {
     next: "Next",
     back: "Back",
     username: "Choose a username",
-    usernameDescription: "3-15 characters, letters, numbers, and underscores only",
+    usernameDescription: "3-20 characters, letters, numbers, and max 1 underscore",
     usernamePlaceholder: "Enter your username",
     email: "What's your email address?",
     emailPlaceholder: "Enter your email",
@@ -76,7 +76,7 @@ const translations = {
     next: "Siguiente",
     back: "Atrás",
     username: "Elige un nombre de usuario",
-    usernameDescription: "3-15 caracteres, letras, números y guiones bajos solamente",
+    usernameDescription: "3-20 caracteres, letras, números y máx. 1 guión bajo",
     usernamePlaceholder: "Ingresa tu nombre de usuario",
     email: "¿Cuál es tu dirección de correo?",
     emailPlaceholder: "Ingresa tu correo",
@@ -97,7 +97,7 @@ const translations = {
     next: "Próximo",
     back: "Voltar",
     username: "Escolha um nome de usuário",
-    usernameDescription: "3-15 caracteres, letras, números e sublinhados apenas",
+    usernameDescription: "3-20 caracteres, letras, números e máx. 1 sublinhado",
     usernamePlaceholder: "Digite seu nome de usuário",
     email: "Qual é o seu endereço de email?",
     emailPlaceholder: "Digite seu email",
@@ -245,8 +245,8 @@ export default function Signup() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder={t.usernamePlaceholder}
                 className="h-12 text-center"
-                pattern="[a-zA-Z0-9_]{3,15}"
-                maxLength={15}
+                pattern="[a-zA-Z0-9_]{3,20}"
+                maxLength={20}
               />
             </div>
           </div>
@@ -275,6 +275,7 @@ export default function Signup() {
           <div className="space-y-6">
             <div className="text-center">
               <h2 className="text-2xl font-bold">{t.password}</h2>
+              <p className="text-sm text-muted-foreground mt-2">Min 6 characters, at least 1 capital letter and 1 number</p>
             </div>
             <div className="relative">
               <Input
@@ -298,7 +299,7 @@ export default function Signup() {
             </div>
             <Button
               onClick={handleSubmit}
-              disabled={!password || password.length < 6 || registerMutation.isPending}
+              disabled={!password || password.length < 6 || !/[A-Z]/.test(password) || !/[0-9]/.test(password) || registerMutation.isPending}
               className="w-full h-12"
             >
               {registerMutation.isPending ? (
@@ -317,7 +318,7 @@ export default function Signup() {
   const canProceed = () => {
     switch (step) {
       case 1: return selectedCountry !== "";
-      case 2: return username !== "" && username.length >= 3 && username.length <= 15 && /^[a-zA-Z0-9_]+$/.test(username);
+      case 2: return username !== "" && username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
       case 3: return email !== "";
       case 4: return password !== "";
       default: return true;
