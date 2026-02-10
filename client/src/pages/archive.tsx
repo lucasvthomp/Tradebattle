@@ -54,9 +54,6 @@ export default function ArchivePage() {
           <Archive className="w-8 h-8" />
           Archive
         </h1>
-        <p className="text-muted-foreground">
-          View your completed tournaments
-        </p>
       </div>
 
       <div className="mt-6">
