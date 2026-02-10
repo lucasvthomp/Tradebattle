@@ -221,7 +221,6 @@ export default function People() {
           {/* Header */}
           <motion.div className="mb-6 lg:mb-8" variants={fadeInUp}>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2" style={{ color: '#F1F5F9' }}>People</h1>
-            <p className="text-sm sm:text-base" style={{ color: '#94A3B8' }}>Discover and connect with traders in our community</p>
           </motion.div>
 
           {/* Error State */}
@@ -366,17 +365,6 @@ export default function People() {
                         </div>
                       </div>
 
-                      {/* Member info */}
-                      <div className="flex items-center justify-between text-xs mb-4" style={{ color: '#94A3B8' }}>
-                        <div className="flex items-center space-x-1">
-                          <Calendar className="w-3 h-3" style={{ color: '#E3B341' }} />
-                          <span>Member since {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Trophy className="w-3 h-3" style={{ color: '#E3B341' }} />
-                          <span>{person.tournamentCount || 0} tournaments</span>
-                        </div>
-                      </div>
 
                       <Button
                         className="w-full"
