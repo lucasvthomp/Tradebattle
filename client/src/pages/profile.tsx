@@ -46,6 +46,65 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ProfilePictureUpload } from "@/components/profile/ProfilePictureUpload";
 
+function TransactionHistory({ userId, formatCurrency }: { userId: number; formatCurrency: (n: number) => string }) {
+  const { data: transactions, isLoading } = useQuery({
+    queryKey: ['/api/user/transactions'],
+    queryFn: async () => {
+      const res = await fetch('/api/user/transactions', { credentials: 'include' });
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-center">
+          <p className="text-muted-foreground">Loading transactions...</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const txns = Array.isArray(transactions) ? transactions : [];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center space-x-2">
+          <CreditCard className="w-5 h-5" />
+          <span>Transaction History</span>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {txns.length === 0 ? (
+          <div className="text-center py-8">
+            <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-30 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">No transactions yet</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {txns.map((tx: any, i: number) => (
+              <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                <div>
+                  <p className="text-sm font-medium text-foreground">{tx.action?.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}</p>
+                  <p className="text-xs text-muted-foreground">{tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : ''}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-medium" style={{ color: tx.newValue > tx.oldValue ? '#10B981' : '#EF4444' }}>
+                    {tx.newValue > tx.oldValue ? '+' : ''}{formatCurrency(Number(tx.newValue) - Number(tx.oldValue))}
+                  </p>
+                  <p className="text-xs text-muted-foreground">Balance: {formatCurrency(Number(tx.newValue))}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -288,22 +347,17 @@ export default function Profile() {
           {/* Header */}
           <motion.div className="mb-8" variants={fadeInUp}>
             <h1 className="text-3xl font-bold text-foreground mb-2">My Account</h1>
-            <p className="text-muted-foreground">Manage your public profile and account settings</p>
           </motion.div>
 
           {/* User Overview Card */}
           <motion.div variants={fadeInUp}>
-            <Card className="mb-8 border-0 shadow-lg relative overflow-hidden" style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', borderWidth: '2px' }}>
-              {/* Decorative gradient background */}
-              <div className="absolute inset-0 opacity-5" style={{ background: 'linear-gradient(135deg, #E3B341 0%, transparent 100%)' }} />
+            <Card className="mb-8 shadow-lg" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
 
               <CardContent className="p-6 relative z-10">
                 <div className="flex items-center space-x-4">
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    transition={{ duration: 0.2 }}
+                  <div
                     className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden relative"
-                    style={{ borderColor: '#E3B341', borderWidth: '3px', borderStyle: 'solid' }}
+                    style={{ border: '2px solid #1F2937' }}
                   >
                     {user.profilePicture ? (
                       <img
@@ -318,7 +372,7 @@ export default function Profile() {
                     )}
                     {/* Online status indicator */}
                     <div className="absolute bottom-1 right-1 w-4 h-4 rounded-full" style={{ backgroundColor: '#10B981', borderColor: '#0F172A', borderWidth: '2px', borderStyle: 'solid' }} />
-                  </motion.div>
+                  </div>
 
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
@@ -332,17 +386,13 @@ export default function Profile() {
                     </div>
                     <p className="text-sm mb-2" style={{ color: '#94A3B8' }}>{user.email}</p>
                     <div className="flex items-center flex-wrap gap-2">
-                      <Badge style={{ backgroundColor: '#10B98120', color: '#10B981', borderColor: '#10B981', borderWidth: '1px' }}>
+                      <Badge variant="secondary" className="text-xs">
                         <Calendar className="w-3 h-3 mr-1" />
                         {joinDate}
                       </Badge>
-                      <Badge style={{ backgroundColor: '#3B82F620', color: '#3B82F6', borderColor: '#3B82F6', borderWidth: '1px' }}>
+                      <Badge variant="secondary" className="text-xs">
                         <Globe className="w-3 h-3 mr-1" />
                         {currency} • {language}
-                      </Badge>
-                      <Badge style={{ backgroundColor: '#E3B34120', color: '#E3B341', borderColor: '#E3B341', borderWidth: '1px' }}>
-                        <Star className="w-3 h-3 mr-1" />
-                        Level 1
                       </Badge>
                     </div>
                   </div>
@@ -350,18 +400,11 @@ export default function Profile() {
                   <div className="flex flex-col gap-2">
                     <Button
                       variant="outline"
+                      size="sm"
                       onClick={() => document.getElementById('profile-picture-input')?.click()}
-                      style={{ borderColor: '#E3B341', color: '#E3B341' }}
                     >
                       <Camera className="w-4 h-4 mr-2" />
                       Change Photo
-                    </Button>
-                    <Button
-                      variant="outline"
-                      style={{ borderColor: '#3B82F6', color: '#3B82F6' }}
-                    >
-                      <Users className="w-4 h-4 mr-2" />
-                      View Public Profile
                     </Button>
                   </div>
                   <input
@@ -378,11 +421,11 @@ export default function Profile() {
 
           {/* Main Content */}
           <motion.div variants={fadeInUp}>
-            <Tabs defaultValue="overview" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="overview" className="flex items-center space-x-2">
-                  <Trophy className="w-4 h-4" />
-                  <span>Overview</span>
+            <Tabs defaultValue="account" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-4 gap-1">
+                <TabsTrigger value="transactions" className="flex items-center space-x-2">
+                  <CreditCard className="w-4 h-4" />
+                  <span>Transactions</span>
                 </TabsTrigger>
                 <TabsTrigger value="account" className="flex items-center space-x-2">
                   <Settings className="w-4 h-4" />
@@ -398,202 +441,9 @@ export default function Profile() {
                 </TabsTrigger>
               </TabsList>
 
-              {/* Overview Tab */}
-              <TabsContent value="overview" className="space-y-6">
-                {/* Stats Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {/* Member Since */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                  >
-                    <Card className="border-0 shadow-lg" style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', borderWidth: '2px' }}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <Calendar className="w-5 h-5" style={{ color: '#E3B341' }} />
-                          <Badge style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}>Active</Badge>
-                        </div>
-                        <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>Member Since</p>
-                        <p className="text-xl font-bold mt-1" style={{ color: '#F1F5F9' }}>
-                          {joinDate}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-
-                  {/* Total Wagered */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <Card className="border-0 shadow-lg relative overflow-hidden" style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', borderWidth: '2px' }}>
-                      <div className="absolute inset-0 opacity-10" style={{ background: 'linear-gradient(135deg, #E3B341 0%, transparent 100%)' }} />
-                      <CardContent className="p-4 relative z-10">
-                        <div className="flex items-center justify-between mb-2">
-                          <DollarSign className="w-5 h-5" style={{ color: '#E3B341' }} />
-                          <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
-                        </div>
-                        <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>Total Wagered</p>
-                        <p className="text-xl font-bold mt-1" style={{ color: '#E3B341' }}>
-                          {formatCurrency(0)} {/* TODO: Connect to actual data */}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-
-                  {/* Tournament Wins */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    <Card className="border-0 shadow-lg relative overflow-hidden" style={{ backgroundColor: '#0F172A', borderColor: '#10B981', borderWidth: '2px' }}>
-                      <div className="absolute inset-0 opacity-10" style={{ background: 'linear-gradient(135deg, #10B981 0%, transparent 100%)' }} />
-                      <CardContent className="p-4 relative z-10">
-                        <div className="flex items-center justify-between mb-2">
-                          <Trophy className="w-5 h-5" style={{ color: '#E3B341' }} />
-                          <Crown className="w-4 h-4" style={{ color: '#E3B341' }} />
-                        </div>
-                        <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>Tournament Wins</p>
-                        <p className="text-xl font-bold mt-1" style={{ color: '#10B981' }}>
-                          0 {/* TODO: Connect to actual data */}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-
-                  {/* Total Trades */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <Card className="border-0 shadow-lg" style={{ backgroundColor: '#0F172A', borderColor: '#3B82F6', borderWidth: '2px' }}>
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <Target className="w-5 h-5" style={{ color: '#3B82F6' }} />
-                          <Badge style={{ backgroundColor: '#3B82F620', color: '#3B82F6', borderColor: '#3B82F6', borderWidth: '1px' }}>
-                            Active
-                          </Badge>
-                        </div>
-                        <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>Total Trades</p>
-                        <p className="text-xl font-bold mt-1" style={{ color: '#F1F5F9' }}>
-                          0 {/* TODO: Connect to actual data */}
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                </div>
-
-                {/* Recent Activity Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                >
-                  <Card className="border-0 shadow-lg" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937', borderWidth: '2px' }}>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="flex items-center space-x-2" style={{ color: '#F1F5F9' }}>
-                            <TrendingUp className="w-5 h-5" style={{ color: '#E3B341' }} />
-                            <span>Recent Trades</span>
-                          </CardTitle>
-                          <CardDescription style={{ color: '#94A3B8' }}>
-                            Your latest trading activity
-                          </CardDescription>
-                        </div>
-                        <Button variant="outline" size="sm" style={{ borderColor: '#E3B341', color: '#E3B341' }}>
-                          View All
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {/* Empty state for now */}
-                        <div className="text-center py-8">
-                          <TrendingUp className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: '#94A3B8' }} />
-                          <p className="text-sm font-medium" style={{ color: '#94A3B8' }}>No recent trades</p>
-                          <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>
-                            Start trading to see your activity here
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                {/* Achievements Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                >
-                  <Card className="border-0 shadow-lg" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937', borderWidth: '2px' }}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center space-x-2" style={{ color: '#F1F5F9' }}>
-                        <Award className="w-5 h-5" style={{ color: '#E3B341' }} />
-                        <span>Achievements</span>
-                      </CardTitle>
-                      <CardDescription style={{ color: '#94A3B8' }}>
-                        Unlock badges and rewards
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {/* First Trade Badge */}
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="p-3 rounded-lg text-center cursor-pointer"
-                          style={{ backgroundColor: '#111827', borderColor: '#1F2937', borderWidth: '1px' }}
-                        >
-                          <div className="w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#94A3B820' }}>
-                            <Target className="w-6 h-6" style={{ color: '#94A3B8' }} />
-                          </div>
-                          <p className="text-xs font-medium" style={{ color: '#94A3B8' }}>First Trade</p>
-                        </motion.div>
-
-                        {/* First Win Badge */}
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="p-3 rounded-lg text-center cursor-pointer"
-                          style={{ backgroundColor: '#111827', borderColor: '#1F2937', borderWidth: '1px' }}
-                        >
-                          <div className="w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#94A3B820' }}>
-                            <Trophy className="w-6 h-6" style={{ color: '#94A3B8' }} />
-                          </div>
-                          <p className="text-xs font-medium" style={{ color: '#94A3B8' }}>First Win</p>
-                        </motion.div>
-
-                        {/* High Roller Badge */}
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="p-3 rounded-lg text-center cursor-pointer"
-                          style={{ backgroundColor: '#111827', borderColor: '#1F2937', borderWidth: '1px' }}
-                        >
-                          <div className="w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#94A3B820' }}>
-                            <DollarSign className="w-6 h-6" style={{ color: '#94A3B8' }} />
-                          </div>
-                          <p className="text-xs font-medium" style={{ color: '#94A3B8' }}>High Roller</p>
-                        </motion.div>
-
-                        {/* Social Trader Badge */}
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="p-3 rounded-lg text-center cursor-pointer"
-                          style={{ backgroundColor: '#111827', borderColor: '#1F2937', borderWidth: '1px' }}
-                        >
-                          <div className="w-12 h-12 mx-auto mb-2 rounded-full flex items-center justify-center" style={{ backgroundColor: '#94A3B820' }}>
-                            <Users className="w-6 h-6" style={{ color: '#94A3B8' }} />
-                          </div>
-                          <p className="text-xs font-medium" style={{ color: '#94A3B8' }}>Social Trader</p>
-                        </motion.div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+              {/* Transactions Tab */}
+              <TabsContent value="transactions" className="space-y-6">
+                <TransactionHistory userId={user.id} formatCurrency={formatCurrency} />
               </TabsContent>
 
               <TabsContent value="account" className="space-y-6">
