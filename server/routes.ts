@@ -46,6 +46,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User transaction history (real money only)
+  app.get('/api/user/transactions', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const logs = await storage.getAdminLogs(userId);
+      const moneyActions = ['balance_deposit', 'balance_withdrawal', 'tip_sent', 'tip_received', 'code_redemption', 'admin_balance_change'];
+      const filtered = (logs || []).filter((log: any) => moneyActions.includes(log.action));
+      res.json(filtered);
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      res.status(500).json([]);
+    }
+  });
+
   // User profile routes (protected)
   app.put('/api/user/profile', requireAuth, async (req: any, res) => {
     try {
