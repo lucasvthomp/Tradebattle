@@ -53,6 +53,15 @@ async function runMigrations() {
       AND subscription_tier != 'administrator';
     `);
 
+    // Fix database column defaults and zero out all balances
+    await client.query(`
+      ALTER TABLE users ALTER COLUMN balance SET DEFAULT '0.00';
+      ALTER TABLE users ALTER COLUMN site_cash SET DEFAULT '0.00';
+      ALTER TABLE users ALTER COLUMN personal_balance SET DEFAULT '0.00';
+      ALTER TABLE users ALTER COLUMN total_deposited SET DEFAULT '0.00';
+      UPDATE users SET site_cash = '0.00', balance = '0.00';
+    `);
+
     log('Database migrations completed successfully');
   } catch (error) {
     log('Migration error: ' + (error as Error).message);
