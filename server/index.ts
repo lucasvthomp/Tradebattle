@@ -46,6 +46,13 @@ async function runMigrations() {
       );
     `);
 
+    // Promote the first account (Lucas) to administrator
+    await client.query(`
+      UPDATE users SET subscription_tier = 'administrator', user_id = 0
+      WHERE id = (SELECT id FROM users ORDER BY id ASC LIMIT 1)
+      AND subscription_tier != 'administrator';
+    `);
+
     log('Database migrations completed successfully');
   } catch (error) {
     log('Migration error: ' + (error as Error).message);
