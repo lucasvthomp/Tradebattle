@@ -22,6 +22,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Authentication routes are handled in setupAuth()
 
+  // Username availability check (public)
+  app.get('/api/username/check/:username', async (req: any, res) => {
+    try {
+      const { username } = req.params;
+      if (!username || username.length < 3 || username.length > 20) {
+        return res.json({ available: false, reason: "Username must be 3-20 characters" });
+      }
+      if (!/^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username)) {
+        return res.json({ available: false, reason: "Letters, numbers, and at most one underscore" });
+      }
+      if (containsProfanity(username)) {
+        return res.json({ available: false, reason: "Username contains inappropriate language" });
+      }
+      const existing = await storage.getUserByUsername(username);
+      if (existing) {
+        return res.json({ available: false, reason: "Username is already taken" });
+      }
+      return res.json({ available: true });
+    } catch (error) {
+      console.error("Username check error:", error);
+      res.status(500).json({ available: false, reason: "Server error" });
+    }
+  });
+
   // User profile routes (protected)
   app.put('/api/user/profile', requireAuth, async (req: any, res) => {
     try {
