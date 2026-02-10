@@ -340,12 +340,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Calculate new balance
-      const currentBalance = parseFloat(user.balance.toString());
+      const currentBalance = parseFloat(user.siteCash?.toString() || '0');
       const newBalance = currentBalance + amount;
 
       // Update user balance
-      await storage.updateUser(userId, { 
-        balance: newBalance.toString() 
+      await storage.updateUser(userId, {
+        siteCash: newBalance.toString()
       });
 
       // Log the transaction
@@ -493,12 +493,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Apply the reward based on type
       if (codeData.type === 'balance' && codeData.amount) {
-        const currentBalance = parseFloat(user.balance.toString());
+        const currentBalance = parseFloat(user.siteCash?.toString() || '0');
         const newBalance = currentBalance + codeData.amount;
 
         // Update user balance
-        await storage.updateUser(userId, { 
-          balance: newBalance.toString() 
+        await storage.updateUser(userId, {
+          siteCash: newBalance.toString()
         });
 
         // Log the code redemption
