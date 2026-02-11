@@ -21,6 +21,7 @@ import {
   ArrowRightLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -39,6 +40,7 @@ const staggerChildren = {
 export default function People() {
   const { userId: profileUserId } = useParams<{ userId: string }>();
   const { user } = useAuth();
+  const { t } = useUserPreferences();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [filterBy, setFilterBy] = useState("all");
@@ -131,7 +133,7 @@ export default function People() {
                 className="flex items-center"
               >
                 <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
-                Back to People
+                {t('backToPeople')}
               </Button>
             </motion.div>
 
@@ -167,7 +169,7 @@ export default function People() {
                       <div className="flex flex-wrap items-center gap-2 mb-6">
                         <Badge style={{ backgroundColor: '#0F172A', color: '#F1F5F9', border: '1px solid #1F2937' }}>
                           <Calendar className="w-3 h-3 mr-1" style={{ color: '#E3B341' }} />
-                          Member since {profileData?.createdAt ? new Date(profileData.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
+                          {t('memberSince')} {profileData?.createdAt ? new Date(profileData.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
                         </Badge>
                       </div>
 
@@ -181,7 +183,7 @@ export default function People() {
                         >
                           <div className="flex items-center space-x-2 mb-1">
                             <Activity className="w-4 h-4" style={{ color: '#E3B341' }} />
-                            <p className="text-xs" style={{ color: '#94A3B8' }}>Total Trades</p>
+                            <p className="text-xs" style={{ color: '#94A3B8' }}>{t('totalTrades')}</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: '#F1F5F9' }}>{profileData?.totalTrades || 0}</p>
                         </motion.div>
@@ -194,7 +196,7 @@ export default function People() {
                         >
                           <div className="flex items-center space-x-2 mb-1">
                             <Flame className="w-4 h-4" style={{ color: '#EF4444' }} />
-                            <p className="text-xs" style={{ color: '#94A3B8' }}>Trading Streak</p>
+                            <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tradingStreak')}</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: '#E3B341' }}>{profileData?.tradingStreak || 0}d</p>
                         </motion.div>
@@ -207,7 +209,7 @@ export default function People() {
                         >
                           <div className="flex items-center space-x-2 mb-1">
                             <Trophy className="w-4 h-4" style={{ color: '#E3B341' }} />
-                            <p className="text-xs" style={{ color: '#94A3B8' }}>Tournaments Joined</p>
+                            <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tournamentsJoined')}</p>
                           </div>
                           <p className="text-2xl font-black" style={{ color: '#10B981' }}>{profileData?.tournamentCount || 0}</p>
                         </motion.div>
@@ -224,7 +226,7 @@ export default function People() {
                 <CardHeader className="pb-3">
                   <CardTitle className="text-lg flex items-center gap-2" style={{ color: '#F1F5F9' }}>
                     <ArrowRightLeft className="w-5 h-5" style={{ color: '#E3B341' }} />
-                    Recent Trades
+                    {t('recentTrades')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -234,7 +236,7 @@ export default function People() {
                       return (
                         <div className="text-center py-6">
                           <ArrowRightLeft className="w-8 h-8 mx-auto mb-2" style={{ color: '#94A3B8', opacity: 0.5 }} />
-                          <p className="text-sm" style={{ color: '#94A3B8' }}>No trades yet</p>
+                          <p className="text-sm" style={{ color: '#94A3B8' }}>{t('noTradesYet')}</p>
                         </div>
                       );
                     }
@@ -256,7 +258,7 @@ export default function People() {
                               </div>
                               <div>
                                 <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>
-                                  {trade.action === 'buy' ? 'Bought' : 'Sold'} {trade.symbol}
+                                  {trade.action === 'buy' ? t('bought') : t('sold')} {trade.symbol}
                                 </p>
                                 <p className="text-xs" style={{ color: '#94A3B8' }}>
                                   {trade.shares} shares @ ${parseFloat(trade.price).toFixed(2)}
@@ -297,7 +299,7 @@ export default function People() {
         >
           {/* Header */}
           <motion.div className="mb-6 lg:mb-8" variants={fadeInUp}>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2" style={{ color: '#F1F5F9' }}>People</h1>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2" style={{ color: '#F1F5F9' }}>{t('people')}</h1>
           </motion.div>
 
           {/* Error State */}
@@ -305,12 +307,12 @@ export default function People() {
             <motion.div variants={fadeInUp} className="mb-6">
               <Card style={{ backgroundColor: '#111827', borderColor: '#FF3333', borderWidth: '2px' }}>
                 <CardContent className="p-6 text-center">
-                  <h3 className="text-lg font-bold mb-2" style={{ color: '#FF3333' }}>Error Loading Users</h3>
+                  <h3 className="text-lg font-bold mb-2" style={{ color: '#FF3333' }}>{t('errorLoadingUsers')}</h3>
                   <p style={{ color: '#94A3B8' }} className="mb-4">
                     {(usersError as Error)?.message || 'Unable to load user data. Please try again.'}
                   </p>
                   <Button onClick={() => window.location.reload()} style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
-                    Reload Page
+                    {t('reloadPage')}
                   </Button>
                 </CardContent>
               </Card>
@@ -323,7 +325,7 @@ export default function People() {
               <div className="relative flex-1 max-w-md">
                 <Search className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
                 <Input
-                  placeholder="Search by name or username..."
+                  placeholder={t('searchByName')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10"
@@ -338,10 +340,10 @@ export default function People() {
                 className="px-3 py-2 rounded-md"
                 style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9', border: '1px solid #1F2937' }}
               >
-                <option value="newest">Newest Members</option>
-                <option value="oldest">Oldest Members</option>
-                <option value="trades">Most Trades</option>
-                <option value="name">Alphabetical</option>
+                <option value="newest">{t('newestMembers')}</option>
+                <option value="oldest">{t('oldestMembers')}</option>
+                <option value="trades">{t('mostTrades')}</option>
+                <option value="name">{t('alphabetical')}</option>
               </select>
 
               {/* Filter By */}
@@ -351,16 +353,16 @@ export default function People() {
                 className="px-3 py-2 rounded-md"
                 style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9', border: '1px solid #1F2937' }}
               >
-                <option value="all">All Members</option>
-                <option value="administrator">Administrators</option>
+                <option value="all">{t('allMembers')}</option>
+                <option value="administrator">{t('administrators')}</option>
               </select>
             </div>
 
             {/* Results Count */}
             <div className="text-sm" style={{ color: '#94A3B8' }}>
-              Showing {filteredAndSortedUsers.length} {filteredAndSortedUsers.length === 1 ? 'person' : 'people'}
-              {searchQuery && ` matching "${searchQuery}"`}
-              {filterBy !== "all" && ` (${filterBy} only)`}
+              {t('showing')} {filteredAndSortedUsers.length} {filteredAndSortedUsers.length === 1 ? t('personUnit') : t('peopleUnit')}
+              {searchQuery && ` ${t('matching')} "${searchQuery}"`}
+              {filterBy !== "all" && ` (${filterBy})`}
             </div>
           </motion.div>
 
@@ -371,9 +373,9 @@ export default function People() {
                 <div className="col-span-full text-center py-12">
                   <div className="max-w-md mx-auto">
                     <Users className="w-12 h-12 mx-auto mb-4" style={{ color: '#EF4444' }} />
-                    <p className="text-lg mb-2" style={{ color: '#F1F5F9' }}>Failed to load people</p>
+                    <p className="text-lg mb-2" style={{ color: '#F1F5F9' }}>{t('errorLoadingUsers')}</p>
                     <p className="text-sm mb-4" style={{ color: '#94A3B8' }}>
-                      There was an error loading the user list. Please try again.
+                      {t('tryAgain')}
                     </p>
                     <Button
                       onClick={() => window.location.reload()}
@@ -402,7 +404,7 @@ export default function People() {
               ) : filteredAndSortedUsers.length === 0 ? (
                 <div className="col-span-full text-center py-12">
                   <Users className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8' }} />
-                  <p className="text-lg" style={{ color: '#94A3B8' }}>No people found</p>
+                  <p className="text-lg" style={{ color: '#94A3B8' }}>{t('noPeopleFound')}</p>
                 </div>
               ) : (
                 filteredAndSortedUsers.map((person: any) => (
@@ -419,7 +421,7 @@ export default function People() {
                             {person.username}
                           </h3>
                           <p className="text-xs" style={{ color: '#94A3B8' }}>
-                            Member since {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
+                            {t('memberSince')} {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
                           </p>
                         </div>
                       </div>
@@ -428,17 +430,17 @@ export default function People() {
                       <div className="grid grid-cols-3 gap-2 mb-4">
                         <div className="text-center p-2 rounded" style={{ backgroundColor: '#0F172A' }}>
                           <p className="text-sm font-bold" style={{ color: '#F1F5F9' }}>{person.totalTrades || 0}</p>
-                          <p className="text-xs" style={{ color: '#94A3B8' }}>Trades</p>
+                          <p className="text-xs" style={{ color: '#94A3B8' }}>{t('totalTrades')}</p>
                         </div>
                         <div className="text-center p-2 rounded" style={{ backgroundColor: '#0F172A' }}>
                           <p className="text-sm font-bold" style={{ color: '#F1F5F9' }}>{person.tradingStreak || 0}d</p>
-                          <p className="text-xs" style={{ color: '#94A3B8' }}>Streak</p>
+                          <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tradingStreak')}</p>
                         </div>
                         <div className="text-center p-2 rounded" style={{ backgroundColor: '#0F172A' }}>
                           <p className="text-sm font-bold" style={{ color: '#10B981' }}>
                             {person.tournamentCount || 0}
                           </p>
-                          <p className="text-xs" style={{ color: '#94A3B8' }}>Tournaments</p>
+                          <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tournaments')}</p>
                         </div>
                       </div>
 
@@ -449,7 +451,7 @@ export default function People() {
                         onClick={() => window.location.href = `/people/${person.id}`}
                         style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', color: '#E3B341' }}
                       >
-                        View Profile
+                        {t('viewProfile')}
                       </Button>
                     </CardContent>
                   </Card>
