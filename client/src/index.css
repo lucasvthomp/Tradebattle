@@ -12,7 +12,7 @@
   --foreground: 210 20% 90%;  /* #E2E8F0 */
 
   /* Card & Panel Hierarchy */
-  --card: 222 33% 11%;  /* #111827 */
+  --card: 220 30% 13%;  /* #18212F - slightly lighter for contrast */
   --card-foreground: 215 20% 85%;  /* #CBD5E1 */
   --popover: 222 33% 11%;
   --popover-foreground: 215 20% 85%;
@@ -120,7 +120,7 @@
   --background: 222 47% 5%;  /* #080C14 */
   --foreground: 0 0% 100%;
 
-  --card: 222 33% 11%;  /* #111827 */
+  --card: 220 30% 13%;  /* #18212F - slightly lighter for contrast */
   --card-foreground: 215 16% 62%;  /* #94A3B8 */
   --popover: 222 33% 11%;
   --popover-foreground: 215 16% 62%;
@@ -223,7 +223,7 @@
   body {
     @apply bg-background;
     color: #94A3B8 !important;
-    font-family: 'Inter', 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -244,13 +244,25 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    color: #F1F5F9 !important;
+    color: #F1F5F9;
   }
 
   /* Prevent white background from showing on overscroll */
   #root {
     background: #080C14;
     min-height: 100vh;
+    position: relative;
+  }
+
+  #root::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(227, 179, 65, 0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(40, 199, 111, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   /* Scrollbar styling */
@@ -497,10 +509,8 @@
 
   /* Card Styles */
   .card {
-    background-color: #111827 !important;
-    border: 1px solid #1F2937 !important;
     backdrop-filter: blur(12px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
   }
 
   .card-inner {
@@ -508,42 +518,25 @@
     border: 1px solid rgba(31, 41, 55, 0.3);
   }
 
-  /* All interactive elements should have visible backgrounds */
-  button:not([class*="bg-transparent"]) {
-    background-color: #111827;
-  }
-
-  button[class*="ghost"] {
-    background-color: rgba(17, 24, 39, 0.5) !important;
-  }
-
-  button[class*="outline"] {
-    background-color: #111827 !important;
-    border: 1px solid #1F2937 !important;
-  }
+  /* Button defaults handled by shadcn/ui CVA variants */
 
   /* Input & Form Styles */
   input, textarea, select {
-    background-color: #0F172A !important;
-    border: 1px solid #1F2937 !important;
+    background-color: #0F172A;
+    border: 1px solid #1F2937;
     @apply text-card-foreground;
   }
 
   input:focus, textarea:focus, select:focus {
-    border-color: #06B6D4 !important;
+    border-color: #E3B341;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.15);
-  }
-
-  /* Buttons - minimal borders */
-  button {
-    border: none;
+    box-shadow: 0 0 0 2px rgba(227, 179, 65, 0.15);
   }
 
   /* Dialog/Dropdown/Popover backgrounds */
   [role="dialog"], [role="menu"], [role="listbox"], [role="combobox"] {
-    background-color: #111827 !important;
-    border: 1px solid #1F2937 !important;
+    background-color: #111827;
+    border: 1px solid #1F2937;
   }
 
   /* Ensure all divs inside cards have backgrounds */
@@ -553,7 +546,7 @@
 
   /* Badge backgrounds */
   .badge, [class*="badge"] {
-    background-color: #0F172A !important;
+    background-color: #0F172A;
     border: 1px solid #1F2937;
   }
 
@@ -647,10 +640,7 @@
     }
   }
 
-  /* Ensure proper transitions for all elements */
-  * {
-    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, border-color 0.3s ease-in-out;
-  }
+  /* Transitions applied per-component, not globally */
 
   /* Dark mode specific overrides */
   .dark .bg-gray-900 {
@@ -788,8 +778,10 @@
 
 /* Typography improvements */
 h1, h2, h3, h4, h5, h6 {
-  font-weight: 600;
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  font-weight: 700;
   line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -956,4 +948,52 @@ textarea:focus-visible {
 .overlay-blur {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
+}
+
+/* Card accent variants - colored left border */
+.card-accent-gold {
+  border-left: 3px solid #E3B341;
+}
+.card-accent-green {
+  border-left: 3px solid #28C76F;
+}
+.card-accent-blue {
+  border-left: 3px solid #3B82F6;
+}
+
+/* Card gradient backgrounds for featured cards */
+.card-gradient-gold {
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, #2a2415 100%);
+  border: 1px solid rgba(227, 179, 65, 0.2);
+}
+.card-gradient-green {
+  background: linear-gradient(135deg, hsl(var(--card)) 0%, #152a1e 100%);
+  border: 1px solid rgba(40, 199, 111, 0.2);
+}
+
+/* Elevated card */
+.card-elevated {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+/* Subtle dot-grid background for pages */
+.page-grid-bg {
+  background-image: radial-gradient(circle, rgba(227, 179, 65, 0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Active sidebar indicator */
+.sidebar-active-indicator {
+  position: relative;
+}
+.sidebar-active-indicator::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 25%;
+  bottom: 25%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: #E3B341;
+  box-shadow: 0 0 8px rgba(227, 179, 65, 0.4);
 }
