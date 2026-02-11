@@ -2,11 +2,8 @@ import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { TradingViewChart } from "@/components/trading/TradingViewChart";
-import { PortfolioSummaryBar } from "@/components/trading/PortfolioSummaryBar";
-import { HoldingsList } from "@/components/trading/HoldingsList";
-import { OrderPanel } from "@/components/trading/OrderPanel";
+import { TradingSidebar } from "@/components/trading/TradingSidebar";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -61,8 +58,6 @@ export default function Dashboard() {
   // Derived values
   const quote = (quoteResponse as any)?.data;
   const price = quote?.price || 0;
-  const change = quote?.change || 0;
-  const percentChange = quote?.percentChange || 0;
   const companyName = (profileResponse as any)?.data?.name || selectedSymbol;
   const buyingPower = (balanceResponse as any)?.data?.balance || 0;
 
@@ -123,59 +118,35 @@ export default function Dashboard() {
 
   return (
     <div
-      className="min-h-screen flex flex-col [@media(min-aspect-ratio:1/1)]:flex-row"
+      className="h-screen flex flex-col [@media(min-aspect-ratio:1/1)]:flex-row"
       style={{ backgroundColor: "#080C14" }}
     >
-      {/* LEFT SIDE: Chart + Info */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        {/* TradingView Chart */}
-        <div
-          className="flex-1 min-h-[350px] [@media(min-aspect-ratio:1/1)]:min-h-[450px] mx-1 [@media(min-aspect-ratio:1/1)]:mx-2 rounded-lg overflow-hidden"
-          style={{ border: "1px solid #1F2937" }}
-        >
-          <TradingViewChart symbol={selectedSymbol} />
-        </div>
-
-        {/* Info Section (scrollable) */}
-        <ScrollArea className="max-h-[350px] mx-1 [@media(min-aspect-ratio:1/1)]:mx-2 mt-1 mb-1">
-          <div
-            className="rounded-xl overflow-hidden"
-            style={{ backgroundColor: "#111827", border: "1px solid #1F2937" }}
-          >
-            <PortfolioSummaryBar
-              cash={buyingPower}
-              holdings={(portfolioResponse as any)?.data || []}
-              startingBalance={selectedTournament?.startingBalance || 0}
-            />
-            <HoldingsList
-              tournamentId={selectedTournament?.id}
-              selectedSymbol={selectedSymbol}
-              onSelectStock={setSelectedSymbol}
-            />
-          </div>
-        </ScrollArea>
+      {/* LEFT: Chart fills ~5/7 of width */}
+      <div className="flex-1 min-w-0 min-h-[350px] [@media(min-aspect-ratio:1/1)]:min-h-0 h-full">
+        <TradingViewChart symbol={selectedSymbol} />
       </div>
 
-      {/* RIGHT SIDE: Order Panel (full height) */}
+      {/* RIGHT: Unified Sidebar ~2/7 of width */}
       <div
-        className="w-full [@media(min-aspect-ratio:1/1)]:w-96 flex flex-col"
+        className="w-full [@media(min-aspect-ratio:1/1)]:w-[380px] [@media(min-aspect-ratio:1/1)]:max-w-[380px] [@media(min-aspect-ratio:1/1)]:min-w-[300px] flex flex-col h-[60vh] [@media(min-aspect-ratio:1/1)]:h-full"
         style={{
           backgroundColor: "#111827",
           borderLeft: "1px solid #1F2937",
         }}
       >
-        <OrderPanel
-          symbol={selectedSymbol}
-          companyName={companyName}
-          currentPrice={price}
-          tournamentId={selectedTournament?.id}
-          availableBuyingPower={buyingPower}
-          ownedShares={ownedShares}
-          onOrderExecuted={handleOrderExecuted}
+        <TradingSidebar
+          selectedSymbol={selectedSymbol}
           onSymbolChange={setSelectedSymbol}
-          activeTournaments={activeTournaments}
           selectedTournament={selectedTournament}
           onTournamentChange={setSelectedTournament}
+          activeTournaments={activeTournaments}
+          buyingPower={buyingPower}
+          portfolioData={portfolioResponse}
+          companyName={companyName}
+          currentPrice={price}
+          ownedShares={ownedShares}
+          onOrderExecuted={handleOrderExecuted}
+          startingBalance={selectedTournament?.startingBalance || 0}
         />
       </div>
     </div>
