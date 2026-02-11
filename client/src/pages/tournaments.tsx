@@ -337,7 +337,6 @@ export default function TournamentsPage() {
                   Tournaments
                 </h1>
               </div>
-              <p className="text-muted-foreground font-medium" style={{ fontSize: 'clamp(0.75rem, 1vw, 1.125rem)' }}>Join competitions and test your trading skills against the world</p>
             </div>
             <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
               <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
