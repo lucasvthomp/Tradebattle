@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
-import { Loader2, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, Eye, EyeOff, CheckCircle, XCircle, ArrowRight, ArrowLeft, User, Lock, Globe, Rocket, Check } from "lucide-react";
 
 // Country and language mappings
 const countries = {
@@ -35,9 +35,17 @@ const countries = {
   "Uruguay": { language: "Spanish", currency: "UYU", code: "UY" },
 };
 
+const steps = [
+  { icon: User, label: "Identity", title: "Let's get started", subtitle: "Choose your username and email" },
+  { icon: Lock, label: "Security", title: "Secure your account", subtitle: "Create a strong password" },
+  { icon: Globe, label: "Location", title: "Where are you from?", subtitle: "Select your country" },
+  { icon: Rocket, label: "Launch", title: "You're all set!", subtitle: "Review and create your account" },
+];
+
 export default function Signup() {
   const [, navigate] = useLocation();
   const { registerMutation, user } = useAuth();
+  const [step, setStep] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
@@ -81,8 +89,8 @@ export default function Signup() {
     }
   }, [selectedCountry]);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
     registerMutation.mutate({
       email,
       password,
@@ -95,148 +103,323 @@ export default function Signup() {
     });
   };
 
-  const passwordValid = password.length >= 6 && /[A-Z]/.test(password) && /[0-9]/.test(password);
+  // Password validation
+  const hasMinLength = password.length >= 6;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const passwordValid = hasMinLength && hasUppercase && hasNumber;
+
   const usernameValid = username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
-  const formValid = usernameValid && usernameStatus.available === true && email && passwordValid && selectedCountry;
+  const emailValid = email.includes("@") && email.includes(".");
+
+  // Step validation
+  const canProceed = () => {
+    switch (step) {
+      case 1: return usernameValid && usernameStatus.available === true && emailValid;
+      case 2: return passwordValid;
+      case 3: return !!selectedCountry;
+      case 4: return true;
+      default: return false;
+    }
+  };
+
+  const nextStep = () => {
+    if (step < 4 && canProceed()) setStep(step + 1);
+  };
+
+  const prevStep = () => {
+    if (step > 1) setStep(step - 1);
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4" style={{ backgroundColor: '#080C14' }}>
-      <div className="max-w-md w-full space-y-6">
-        {/* Header */}
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden" style={{ backgroundColor: '#080C14' }}>
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #E3B341 0%, transparent 70%)' }} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#E3B341 1px, transparent 1px), linear-gradient(90deg, #E3B341 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+      </div>
+
+      <div className="max-w-md w-full space-y-6 relative z-10">
+        {/* Logo */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-14 h-14 rounded-xl flex items-center justify-center" style={{ backgroundColor: '#E3B341' }}>
-              <span className="font-bold text-2xl" style={{ color: '#080C14' }}>O</span>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#E3B341', boxShadow: '0 0 40px rgba(227, 179, 65, 0.3)' }}>
+              <span className="font-black text-3xl" style={{ color: '#080C14' }}>O</span>
             </div>
           </div>
-          <h1 className="text-3xl font-bold" style={{ color: '#F1F5F9' }}>Join ORSATH</h1>
-          <p className="mt-2 text-sm" style={{ color: '#94A3B8' }}>Start your paper trading competition journey</p>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4 p-6 rounded-xl" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-          {/* Username */}
-          <div className="space-y-1.5">
-            <Label htmlFor="username" style={{ color: '#F1F5F9' }}>Username</Label>
-            <div className="relative">
-              <Input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Choose a username"
-                maxLength={20}
-                className="pr-10"
-                style={{
-                  backgroundColor: '#0F172A',
-                  color: '#F1F5F9',
-                  borderColor: usernameStatus.available === true ? '#10B981' : usernameStatus.available === false ? '#EF4444' : '#1F2937',
-                }}
-              />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                {usernameStatus.checking && <Loader2 className="h-4 w-4 animate-spin" style={{ color: '#94A3B8' }} />}
-                {usernameStatus.available === true && <CheckCircle className="h-4 w-4" style={{ color: '#10B981' }} />}
-                {usernameStatus.available === false && <XCircle className="h-4 w-4" style={{ color: '#EF4444' }} />}
+        {/* Progress Indicator */}
+        <div className="flex items-center justify-center gap-2 px-4">
+          {steps.map((s, i) => {
+            const StepIcon = s.icon;
+            const stepNum = i + 1;
+            const isActive = stepNum === step;
+            const isCompleted = stepNum < step;
+            return (
+              <div key={i} className="flex items-center">
+                {i > 0 && (
+                  <div className="w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#E3B341' : '#1F2937' }} />
+                )}
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
+                  style={{
+                    backgroundColor: isActive ? '#E3B341' : isCompleted ? '#E3B34130' : '#111827',
+                    border: `2px solid ${isActive ? '#E3B341' : isCompleted ? '#E3B341' : '#1F2937'}`,
+                  }}
+                >
+                  {isCompleted ? (
+                    <Check className="w-4 h-4" style={{ color: '#E3B341' }} />
+                  ) : (
+                    <StepIcon className="w-4 h-4" style={{ color: isActive ? '#080C14' : '#94A3B8' }} />
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Step Title */}
+        <div className="text-center">
+          <h1 className="text-2xl font-black" style={{ color: '#F1F5F9' }}>{steps[step - 1].title}</h1>
+          <p className="mt-1 text-sm" style={{ color: '#94A3B8' }}>{steps[step - 1].subtitle}</p>
+        </div>
+
+        {/* Form Card */}
+        <div className="p-6 rounded-2xl relative" style={{ backgroundColor: '#111827', border: '1px solid #1F2937', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5)' }}>
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
+
+          {/* Step 1: Username & Email */}
+          {step === 1 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Username</Label>
+                <div className="relative">
+                  <Input
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Choose a unique username"
+                    maxLength={20}
+                    className="pr-10 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                    style={{
+                      backgroundColor: '#0F172A',
+                      color: '#F1F5F9',
+                      borderColor: usernameStatus.available === true ? '#10B981' : usernameStatus.available === false ? '#EF4444' : '#1F2937',
+                      fontSize: '15px',
+                    }}
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    {usernameStatus.checking && <Loader2 className="h-4 w-4 animate-spin" style={{ color: '#94A3B8' }} />}
+                    {usernameStatus.available === true && <CheckCircle className="h-4 w-4" style={{ color: '#10B981' }} />}
+                    {usernameStatus.available === false && <XCircle className="h-4 w-4" style={{ color: '#EF4444' }} />}
+                  </div>
+                </div>
+                {usernameStatus.available === false && usernameStatus.reason && (
+                  <p className="text-xs" style={{ color: '#EF4444' }}>{usernameStatus.reason}</p>
+                )}
+                {username && username.length < 3 && (
+                  <p className="text-xs" style={{ color: '#EF4444' }}>Username must be at least 3 characters</p>
+                )}
+                {usernameStatus.available === true && (
+                  <p className="text-xs" style={{ color: '#10B981' }}>Username is available!</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                  style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937', fontSize: '15px' }}
+                />
               </div>
             </div>
-            {usernameStatus.available === false && usernameStatus.reason && (
-              <p className="text-xs" style={{ color: '#EF4444' }}>{usernameStatus.reason}</p>
-            )}
-            {username && username.length < 3 && (
-              <p className="text-xs" style={{ color: '#EF4444' }}>Username must be at least 3 characters</p>
-            )}
-            {usernameStatus.available === true && (
-              <p className="text-xs" style={{ color: '#10B981' }}>Username is available</p>
-            )}
-          </div>
+          )}
 
-          {/* Email */}
-          <div className="space-y-1.5">
-            <Label htmlFor="email" style={{ color: '#F1F5F9' }}>Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
-              style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}
-            />
-          </div>
+          {/* Step 2: Password */}
+          {step === 2 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Password</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Create a strong password"
+                    className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                    style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937', fontSize: '15px' }}
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 flex items-center pr-4"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" style={{ color: '#94A3B8' }} />
+                    ) : (
+                      <Eye className="h-5 w-5" style={{ color: '#94A3B8' }} />
+                    )}
+                  </button>
+                </div>
+              </div>
 
-          {/* Password */}
-          <div className="space-y-1.5">
-            <Label htmlFor="password" style={{ color: '#F1F5F9' }}>Password</Label>
-            <div className="relative">
-              <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min 6 chars, 1 uppercase, 1 number"
-                className="pr-10"
-                style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}
-              />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-3"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-4 w-4" style={{ color: '#94A3B8' }} />
-                ) : (
-                  <Eye className="h-4 w-4" style={{ color: '#94A3B8' }} />
-                )}
-              </button>
-            </div>
-            {password && !passwordValid && (
-              <p className="text-xs" style={{ color: '#EF4444' }}>
-                {password.length < 6 ? "At least 6 characters" : !/[A-Z]/.test(password) ? "Needs an uppercase letter" : "Needs a number"}
-              </p>
-            )}
-          </div>
+              {/* Password Strength Bar */}
+              <div className="space-y-2">
+                <div className="flex gap-1">
+                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasMinLength ? '#10B981' : '#1F2937' }} />
+                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasUppercase ? '#10B981' : '#1F2937' }} />
+                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasNumber ? '#10B981' : '#1F2937' }} />
+                </div>
+                <p className="text-xs font-medium" style={{ color: passwordValid ? '#10B981' : '#94A3B8' }}>
+                  {passwordValid ? 'Strong password!' : 'Password strength'}
+                </p>
+              </div>
 
-          {/* Country */}
-          <div className="space-y-1.5">
-            <Label style={{ color: '#F1F5F9' }}>Country</Label>
-            <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-              <SelectTrigger style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}>
-                <SelectValue placeholder="Select your country" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.keys(countries).map((country) => (
-                  <SelectItem key={country} value={country}>{country}</SelectItem>
+              {/* Requirements Checklist */}
+              <div className="space-y-2 p-3 rounded-xl" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+                {[
+                  { met: hasMinLength, text: "At least 6 characters" },
+                  { met: hasUppercase, text: "One uppercase letter" },
+                  { met: hasNumber, text: "One number" },
+                ].map((req, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: req.met ? '#10B98130' : '#1F2937' }}>
+                      {req.met ? (
+                        <Check className="w-3 h-3" style={{ color: '#10B981' }} />
+                      ) : (
+                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#94A3B8' }} />
+                      )}
+                    </div>
+                    <span className="text-xs transition-colors duration-300" style={{ color: req.met ? '#10B981' : '#94A3B8' }}>{req.text}</span>
+                  </div>
                 ))}
-              </SelectContent>
-            </Select>
-          </div>
+              </div>
+            </div>
+          )}
 
-          {/* Submit */}
-          <Button
-            type="submit"
-            disabled={!formValid || registerMutation.isPending}
-            className="w-full h-11 font-semibold mt-2"
-            style={{ backgroundColor: '#E3B341', color: '#080C14' }}
-          >
-            {registerMutation.isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Creating account...
-              </>
+          {/* Step 3: Country */}
+          {step === 3 && (
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Country</Label>
+                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                  <SelectTrigger className="h-12 rounded-xl" style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}>
+                    <SelectValue placeholder="Select your country" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(countries).map((country) => (
+                      <SelectItem key={country} value={country}>{country}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedCountry && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+                    <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Language</p>
+                    <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedLanguage}</p>
+                  </div>
+                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+                    <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Currency</p>
+                    <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedCurrency}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step 4: Review */}
+          {step === 4 && (
+            <div className="space-y-4">
+              <div className="space-y-3">
+                {[
+                  { label: "Username", value: username, color: '#E3B341' },
+                  { label: "Email", value: email, color: '#3B82F6' },
+                  { label: "Country", value: selectedCountry, color: '#10B981' },
+                  { label: "Language", value: selectedLanguage, color: '#94A3B8' },
+                  { label: "Currency", value: selectedCurrency, color: '#94A3B8' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+                    <span className="text-xs" style={{ color: '#94A3B8' }}>{item.label}</span>
+                    <span className="text-sm font-semibold" style={{ color: item.color }}>{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Navigation Buttons */}
+          <div className="flex justify-between items-center mt-6">
+            {step > 1 ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={prevStep}
+                className="h-11 rounded-xl px-5"
+                style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
             ) : (
-              "Create Account"
+              <div />
             )}
-          </Button>
+
+            {step < 4 ? (
+              <Button
+                type="button"
+                onClick={nextStep}
+                disabled={!canProceed()}
+                className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
+                style={{ backgroundColor: canProceed() ? '#E3B341' : '#1F2937', color: canProceed() ? '#080C14' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(227, 179, 65, 0.3)' : 'none' }}
+              >
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                onClick={() => handleSubmit()}
+                disabled={registerMutation.isPending}
+                className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
+                style={{ backgroundColor: '#10B981', color: '#FFFFFF', boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)' }}
+              >
+                {registerMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <Rocket className="w-4 h-4 mr-2" />
+                    Create Account
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
 
           {registerMutation.isError && (
-            <p className="text-xs text-center" style={{ color: '#EF4444' }}>
-              {(registerMutation.error as any)?.message || "Registration failed"}
-            </p>
+            <div className="mt-4 p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
+              <p className="text-sm font-medium" style={{ color: '#EF4444' }}>
+                {(registerMutation.error as any)?.message || "Registration failed"}
+              </p>
+            </div>
           )}
-        </form>
+        </div>
 
         {/* Sign In Link */}
         <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
           Already have an account?{" "}
-          <Link href="/login" className="hover:underline" style={{ color: '#E3B341' }}>
+          <Link href="/login" className="font-semibold hover:underline transition-colors" style={{ color: '#E3B341' }}>
             Sign in
           </Link>
         </p>
