@@ -27,12 +27,6 @@ export default function Deposit() {
             Back
           </Button>
           <h1 className="text-3xl font-bold text-foreground">Deposit Funds</h1>
-          <p className="text-muted-foreground mt-2">
-            Add money to your ORSATH account. Current balance:{" "}
-            <span className="font-bold" style={{ color: '#E3B341' }}>
-              ${(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-            </span>
-          </p>
         </div>
 
         {/* Payment Options */}
