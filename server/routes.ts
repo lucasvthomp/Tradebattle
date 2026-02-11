@@ -2,12 +2,16 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 
 import { storage } from "./storage";
-import { setupAuth, requireAuth } from "./auth";
+import { db } from "./db";
+import { users } from "@shared/schema";
+import { eq } from "drizzle-orm";
+import { setupAuth, requireAuth, hashPassword } from "./auth";
 import { insertContactSchema, insertWatchlistSchema, insertStockPurchaseSchema, registerSchema, loginSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
 import { errorHandler } from "./utils/errorHandler.js";
 import { trackRequest, getSystemStatus } from "./services/systemMonitor.js";
 import { containsProfanity } from "./utils/profanityFilter.js";
+import { generateToken, sendVerificationEmail, sendPasswordResetEmail } from "./services/email.js";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -692,6 +696,406 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching system status:", error);
       res.status(500).json({ message: "Failed to fetch system status" });
+    }
+  });
+
+  // ── Email Verification ───────────────────────────────────────────
+  app.post("/api/auth/resend-verification", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      if (user.emailVerified) return res.status(400).json({ message: "Email is already verified" });
+
+      const token = generateToken();
+      const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      await storage.setVerificationToken(userId, token, expiry);
+      await sendVerificationEmail(user.email, token);
+
+      res.json({ success: true, message: "Verification email sent" });
+    } catch (error) {
+      console.error("Error resending verification:", error);
+      res.status(500).json({ message: "Failed to send verification email" });
+    }
+  });
+
+  app.get("/api/auth/verify-email", async (req, res) => {
+    try {
+      const token = req.query.token as string;
+      if (!token) return res.status(400).json({ message: "Missing verification token" });
+
+      const user = await storage.getUserByVerificationToken(token);
+      if (!user) return res.status(400).json({ message: "Invalid or expired verification token" });
+
+      if (user.verificationTokenExpiry && new Date(user.verificationTokenExpiry) < new Date()) {
+        return res.status(400).json({ message: "Verification token has expired. Please request a new one." });
+      }
+
+      await storage.verifyUserEmail(user.id);
+
+      // Create notification for the user
+      await storage.createNotification({
+        userId: user.id,
+        type: 'achievement',
+        title: 'Email Verified',
+        message: 'Your email address has been successfully verified.',
+      });
+
+      // Redirect to app with success message
+      res.redirect("/?verified=true");
+    } catch (error) {
+      console.error("Error verifying email:", error);
+      res.status(500).json({ message: "Failed to verify email" });
+    }
+  });
+
+  // ── Password Reset ─────────────────────────────────────────────
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) return res.status(400).json({ message: "Email is required" });
+
+      const user = await storage.getUserByEmail(email);
+      // Always return success to prevent email enumeration
+      if (!user) {
+        return res.json({ success: true, message: "If an account with that email exists, a password reset link has been sent." });
+      }
+
+      const token = generateToken();
+      const expiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+      await storage.setPasswordResetToken(user.id, token, expiry);
+      await sendPasswordResetEmail(user.email, token);
+
+      res.json({ success: true, message: "If an account with that email exists, a password reset link has been sent." });
+    } catch (error) {
+      console.error("Error sending password reset:", error);
+      res.status(500).json({ message: "Failed to process password reset request" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      if (!token || !newPassword) return res.status(400).json({ message: "Token and new password are required" });
+
+      if (newPassword.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters" });
+      if (!/[A-Z]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one capital letter" });
+      if (!/[0-9]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one number" });
+
+      const user = await storage.getUserByResetToken(token);
+      if (!user) return res.status(400).json({ message: "Invalid or expired reset token" });
+
+      if (user.passwordResetExpiry && new Date(user.passwordResetExpiry) < new Date()) {
+        return res.status(400).json({ message: "Reset token has expired. Please request a new one." });
+      }
+
+      const hashedPassword = await hashPassword(newPassword);
+      await storage.updateUserPassword(user.id, hashedPassword);
+      await storage.clearPasswordResetToken(user.id);
+
+      // Create notification
+      await storage.createNotification({
+        userId: user.id,
+        type: 'achievement',
+        title: 'Password Changed',
+        message: 'Your password has been successfully reset.',
+      });
+
+      res.json({ success: true, message: "Password has been reset successfully. You can now log in with your new password." });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  // ── Change Password (authenticated) ────────────────────────────
+  app.post("/api/auth/change-password", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { currentPassword, newPassword } = req.body;
+
+      if (!currentPassword || !newPassword) return res.status(400).json({ message: "Current password and new password are required" });
+      if (newPassword.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters" });
+      if (!/[A-Z]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one capital letter" });
+      if (!/[0-9]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one number" });
+
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      // Verify current password
+      const { scrypt, timingSafeEqual } = await import("crypto");
+      const { promisify } = await import("util");
+      const scryptAsync = promisify(scrypt);
+
+      if (user.password.includes(".")) {
+        const [hashed, salt] = user.password.split(".");
+        if (!hashed || !salt) return res.status(400).json({ message: "Invalid current password" });
+        const hashedBuf = Buffer.from(hashed, "hex");
+        const suppliedBuf = (await scryptAsync(currentPassword, salt, 64)) as Buffer;
+        if (!timingSafeEqual(hashedBuf, suppliedBuf)) {
+          return res.status(400).json({ message: "Current password is incorrect" });
+        }
+      } else {
+        if (currentPassword !== user.password) {
+          return res.status(400).json({ message: "Current password is incorrect" });
+        }
+      }
+
+      const newHashedPassword = await hashPassword(newPassword);
+      await storage.updateUserPassword(userId, newHashedPassword);
+
+      res.json({ success: true, message: "Password changed successfully" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Failed to change password" });
+    }
+  });
+
+  // ── Notification Routes ────────────────────────────────────────
+  app.get("/api/notifications", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const notifs = await storage.getUserNotifications(userId);
+      const unreadCount = await storage.getUnreadNotificationCount(userId);
+      res.json({ success: true, data: notifs, unreadCount });
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.patch("/api/notifications/:id/read", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const notificationId = parseInt(req.params.id);
+      if (isNaN(notificationId)) return res.status(400).json({ message: "Invalid notification ID" });
+
+      await storage.markNotificationRead(notificationId, userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking notification read:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
+  app.patch("/api/notifications/read-all", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      await storage.markAllNotificationsRead(userId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking all notifications read:", error);
+      res.status(500).json({ message: "Failed to mark notifications as read" });
+    }
+  });
+
+  // ── Transaction History ────────────────────────────────────────
+  app.get("/api/transactions", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const type = req.query.type as string | undefined;
+      const limit = parseInt(req.query.limit as string) || 50;
+      const txns = await storage.getUserTransactions(userId, limit, type);
+      res.json({ success: true, data: txns });
+    } catch (error) {
+      console.error("Error fetching transactions:", error);
+      res.status(500).json({ message: "Failed to fetch transactions" });
+    }
+  });
+
+  // ── Admin Transaction + Revenue Endpoints ──────────────────────
+  app.get("/api/admin/transactions", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      const limit = parseInt(req.query.limit as string) || 100;
+      const txns = await storage.getRecentTransactions(limit);
+      res.json({ success: true, data: txns });
+    } catch (error) {
+      console.error("Error fetching admin transactions:", error);
+      res.status(500).json({ message: "Failed to fetch transactions" });
+    }
+  });
+
+  app.get("/api/admin/revenue-stats", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+      const stats = await storage.getTransactionStats();
+      res.json({ success: true, data: stats });
+    } catch (error) {
+      console.error("Error fetching revenue stats:", error);
+      res.status(500).json({ message: "Failed to fetch revenue stats" });
+    }
+  });
+
+  // ── 2FA Routes ─────────────────────────────────────────────────
+  app.post("/api/auth/2fa/setup", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      if (user.twoFactorEnabled) return res.status(400).json({ message: "2FA is already enabled" });
+
+      // Dynamic import for otpauth
+      const { TOTP, Secret } = await import("otpauth");
+
+      const secret = new Secret({ size: 20 });
+      const totp = new TOTP({
+        issuer: "ORSATH",
+        label: user.email,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret,
+      });
+
+      // Store the secret temporarily (not enabled until verified)
+      await db
+        .update(users)
+        .set({ twoFactorSecret: secret.base32 })
+        .where(eq(users.id, userId));
+
+      const otpauthUrl = totp.toString();
+
+      res.json({
+        success: true,
+        secret: secret.base32,
+        otpauthUrl,
+      });
+    } catch (error) {
+      console.error("Error setting up 2FA:", error);
+      res.status(500).json({ message: "Failed to setup 2FA" });
+    }
+  });
+
+  app.post("/api/auth/2fa/verify", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { code } = req.body;
+      if (!code) return res.status(400).json({ message: "Verification code is required" });
+
+      const user = await storage.getUser(userId);
+      if (!user || !user.twoFactorSecret) return res.status(400).json({ message: "2FA setup not initiated" });
+
+      const { TOTP, Secret } = await import("otpauth");
+      const totp = new TOTP({
+        issuer: "ORSATH",
+        label: user.email,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret: Secret.fromBase32(user.twoFactorSecret),
+      });
+
+      const delta = totp.validate({ token: code, window: 1 });
+      if (delta === null) return res.status(400).json({ message: "Invalid verification code" });
+
+      await db
+        .update(users)
+        .set({ twoFactorEnabled: true })
+        .where(eq(users.id, userId));
+
+      await storage.createNotification({
+        userId,
+        type: 'achievement',
+        title: 'Two-Factor Authentication Enabled',
+        message: 'Your account is now protected with 2FA.',
+      });
+
+      res.json({ success: true, message: "2FA has been enabled" });
+    } catch (error) {
+      console.error("Error verifying 2FA:", error);
+      res.status(500).json({ message: "Failed to verify 2FA" });
+    }
+  });
+
+  app.post("/api/auth/2fa/disable", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { code } = req.body;
+      if (!code) return res.status(400).json({ message: "Verification code is required" });
+
+      const user = await storage.getUser(userId);
+      if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
+        return res.status(400).json({ message: "2FA is not enabled" });
+      }
+
+      const { TOTP, Secret } = await import("otpauth");
+      const totp = new TOTP({
+        issuer: "ORSATH",
+        label: user.email,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret: Secret.fromBase32(user.twoFactorSecret),
+      });
+
+      const delta = totp.validate({ token: code, window: 1 });
+      if (delta === null) return res.status(400).json({ message: "Invalid verification code" });
+
+      await db
+        .update(users)
+        .set({ twoFactorEnabled: false, twoFactorSecret: null })
+        .where(eq(users.id, userId));
+
+      res.json({ success: true, message: "2FA has been disabled" });
+    } catch (error) {
+      console.error("Error disabling 2FA:", error);
+      res.status(500).json({ message: "Failed to disable 2FA" });
+    }
+  });
+
+  // 2FA login verification (called after initial login when 2FA is enabled)
+  app.post("/api/auth/2fa/login-verify", async (req, res) => {
+    try {
+      const { userId, code } = req.body;
+      if (!userId || !code) return res.status(400).json({ message: "User ID and code are required" });
+
+      const user = await storage.getUser(userId);
+      if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
+        return res.status(400).json({ message: "2FA is not enabled for this account" });
+      }
+
+      const { TOTP, Secret } = await import("otpauth");
+      const totp = new TOTP({
+        issuer: "ORSATH",
+        label: user.email,
+        algorithm: "SHA1",
+        digits: 6,
+        period: 30,
+        secret: Secret.fromBase32(user.twoFactorSecret),
+      });
+
+      const delta = totp.validate({ token: code, window: 1 });
+      if (delta === null) return res.status(400).json({ message: "Invalid verification code" });
+
+      // Log the user in via passport session
+      (req as any).login(user, (err: any) => {
+        if (err) return res.status(500).json({ message: "Login failed" });
+        res.json({
+          success: true,
+          user: {
+            id: user.id,
+            userId: user.userId,
+            email: user.email,
+            username: user.username,
+            subscriptionTier: user.subscriptionTier,
+            siteCash: user.siteCash,
+            emailVerified: user.emailVerified,
+            twoFactorEnabled: user.twoFactorEnabled,
+          }
+        });
+      });
+    } catch (error) {
+      console.error("Error verifying 2FA login:", error);
+      res.status(500).json({ message: "Failed to verify 2FA" });
     }
   });
 

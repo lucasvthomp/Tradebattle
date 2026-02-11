@@ -2,16 +2,18 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
-import createMemoryStore from "memorystore";
+import connectPgSimple from "connect-pg-simple";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
 import { storage } from "./storage";
-import { User } from "@shared/schema";
+import { pool } from "./db";
+import { User as SchemaUser } from "@shared/schema";
 import { containsProfanity } from "./utils/profanityFilter.js";
+import { generateToken, sendVerificationEmail } from "./services/email.js";
 
 declare global {
   namespace Express {
-    interface User extends User {}
+    interface User extends SchemaUser {}
   }
 }
 
@@ -34,8 +36,13 @@ async function comparePasswords(supplied: string, stored: string): Promise<boole
   return timingSafeEqual(hashedBuf, suppliedBuf);
 }
 
+// Track failed login attempts for account lockout
+const failedLoginAttempts = new Map<string, { count: number; lockedUntil: number }>();
+const MAX_FAILED_ATTEMPTS = 5;
+const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
 export function setupAuth(app: Express) {
-  const MemoryStore = createMemoryStore(session);
+  const PgStore = connectPgSimple(session);
 
   app.set("trust proxy", 1);
   app.use(
@@ -43,7 +50,12 @@ export function setupAuth(app: Express) {
       secret: process.env.SESSION_SECRET || "tradebattle-secret-change-me",
       resave: false,
       saveUninitialized: false,
-      store: new MemoryStore({ checkPeriod: 86400000 }), // prune expired entries every 24h
+      store: new PgStore({
+        pool: pool,
+        tableName: 'sessions',
+        createTableIfMissing: true,
+        pruneSessionInterval: 60 * 15, // Prune expired sessions every 15 minutes
+      }),
       cookie: {
         secure: process.env.NODE_ENV === "production",
         httpOnly: true,
@@ -55,17 +67,35 @@ export function setupAuth(app: Express) {
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Local strategy: authenticate by username + password
+  // Local strategy: authenticate by username + password with account lockout
   passport.use(
     new LocalStrategy(async (username, password, done) => {
       try {
+        // Check for account lockout
+        const lockoutKey = username.toLowerCase();
+        const lockoutInfo = failedLoginAttempts.get(lockoutKey);
+        if (lockoutInfo && lockoutInfo.lockedUntil > Date.now()) {
+          const minutesLeft = Math.ceil((lockoutInfo.lockedUntil - Date.now()) / 60000);
+          return done(null, false, { message: `Account temporarily locked. Try again in ${minutesLeft} minutes.` });
+        }
+
         const user = await storage.getUserByUsername(username);
         if (!user || !(await comparePasswords(password, user.password))) {
+          // Track failed attempt
+          const current = failedLoginAttempts.get(lockoutKey) || { count: 0, lockedUntil: 0 };
+          current.count += 1;
+          if (current.count >= MAX_FAILED_ATTEMPTS) {
+            current.lockedUntil = Date.now() + LOCKOUT_DURATION_MS;
+            current.count = 0;
+          }
+          failedLoginAttempts.set(lockoutKey, current);
           return done(null, false, { message: "Invalid username or password" });
         }
         if (user.banned) {
           return done(null, false, { message: "Your account has been suspended." });
         }
+        // Clear failed attempts on successful login
+        failedLoginAttempts.delete(lockoutKey);
         return done(null, user);
       } catch (err) {
         return done(err);
@@ -131,6 +161,17 @@ export function setupAuth(app: Express) {
         currency: currency || "USD",
       });
 
+      // Send verification email (non-blocking)
+      try {
+        const token = generateToken();
+        const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        await storage.setVerificationToken(user.id, token, expiry);
+        await sendVerificationEmail(email, token);
+      } catch (emailError) {
+        console.error("Failed to send verification email:", emailError);
+        // Don't block registration if email fails
+      }
+
       req.login(user, (err) => {
         if (err) return next(err);
         res.status(201).json(sanitizeUser(user));
@@ -143,9 +184,18 @@ export function setupAuth(app: Express) {
 
   // ── Login ─────────────────────────────────────────────────────────
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err: any, user: User | false, info: any) => {
+    passport.authenticate("local", (err: any, user: SchemaUser | false, info: any) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: info?.message || "Login failed" });
+
+      // If 2FA is enabled, don't log in yet — require 2FA verification
+      if (user.twoFactorEnabled) {
+        return res.json({
+          requires2FA: true,
+          userId: user.id,
+          message: "Two-factor authentication required",
+        });
+      }
 
       req.login(user, (err) => {
         if (err) return next(err);
@@ -179,7 +229,7 @@ export function setupAuth(app: Express) {
 }
 
 // Strip sensitive fields before sending to client
-function sanitizeUser(user: User) {
+function sanitizeUser(user: SchemaUser) {
   return {
     id: user.id,
     userId: user.userId,
@@ -196,6 +246,8 @@ function sanitizeUser(user: User) {
     withdrawalFrozen: user.withdrawalFrozen,
     depositFrozen: user.depositFrozen,
     tournamentRestricted: user.tournamentRestricted,
+    emailVerified: user.emailVerified,
+    twoFactorEnabled: user.twoFactorEnabled,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

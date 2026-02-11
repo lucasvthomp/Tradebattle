@@ -53,11 +53,44 @@ export const users = pgTable("users", {
   withdrawalFrozen: boolean("withdrawal_frozen").default(false), // Freeze withdrawals
   depositFrozen: boolean("deposit_frozen").default(false), // Freeze deposits
   tournamentRestricted: boolean("tournament_restricted").default(false), // Restrict tournament access
+  emailVerified: boolean("email_verified").default(false).notNull(),
+  verificationToken: varchar("verification_token", { length: 255 }),
+  verificationTokenExpiry: timestamp("verification_token_expiry"),
+  passwordResetToken: varchar("password_reset_token", { length: 255 }),
+  passwordResetExpiry: timestamp("password_reset_expiry"),
+  twoFactorSecret: varchar("two_factor_secret", { length: 255 }),
+  twoFactorEnabled: boolean("two_factor_enabled").default(false).notNull(),
+  failedLoginAttempts: integer("failed_login_attempts").default(0).notNull(),
+  lockedUntil: timestamp("locked_until"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Notifications table
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // 'tournament_start', 'tournament_end', 'deposit', 'withdrawal', 'tournament_join', 'achievement', 'tip'
+  title: varchar("title", { length: 255 }).notNull(),
+  message: text("message").notNull(),
+  read: boolean("read").default(false).notNull(),
+  metadata: jsonb("metadata"), // Optional JSON payload (e.g., tournamentId, amount)
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
+// Transactions table for full audit trail
+export const transactions = pgTable("transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // 'deposit', 'withdrawal', 'buy_in', 'payout', 'tip_sent', 'tip_received', 'code_redemption'
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(),
+  balanceBefore: numeric("balance_before", { precision: 15, scale: 2 }).notNull(),
+  balanceAfter: numeric("balance_after", { precision: 15, scale: 2 }).notNull(),
+  status: varchar("status", { length: 20 }).default("completed").notNull(), // 'pending', 'completed', 'failed'
+  description: text("description"),
+  referenceId: varchar("reference_id", { length: 255 }), // e.g., tournament ID, stripe intent ID
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
 
 // User watchlist table
 export const watchlist = pgTable("watchlist", {
@@ -342,6 +375,25 @@ export const insertUserAchievementSchema = createInsertSchema(userAchievements).
   achievementDescription: true,
 });
 
+export const insertNotificationSchema = createInsertSchema(notifications).pick({
+  userId: true,
+  type: true,
+  title: true,
+  message: true,
+  metadata: true,
+});
+
+export const insertTransactionSchema = createInsertSchema(transactions).pick({
+  userId: true,
+  type: true,
+  amount: true,
+  balanceBefore: true,
+  balanceAfter: true,
+  status: true,
+  description: true,
+  referenceId: true,
+});
+
 // Type exports
 // Username validation schema
 export const usernameSchema = z.string()
@@ -420,6 +472,11 @@ export type PortfolioHistory = typeof portfolioHistory.$inferSelect;
 export type InsertPortfolioHistory = z.infer<typeof insertPortfolioHistorySchema>;
 export type Friendship = typeof friendships.$inferSelect;
 export type InsertFriendship = z.infer<typeof insertFriendshipSchema>;
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Transaction = typeof transactions.$inferSelect;
+export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 
 // Export chat schema
 export * from "./chatSchema";

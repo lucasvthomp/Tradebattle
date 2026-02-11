@@ -152,6 +152,28 @@ export default function Admin() {
   // Extract tournaments from the response data
   const allTournaments = Array.isArray(tournamentData) ? tournamentData : (tournamentData as any)?.data || [];
 
+  // Fetch admin revenue stats
+  const { data: revenueData, isLoading: revenueLoading } = useQuery<any>({
+    queryKey: ["/api/admin/revenue-stats"],
+    enabled: isAdmin && activeTab === "revenue",
+  });
+
+  const revenueStats = revenueData?.data || {};
+
+  // Fetch admin transactions
+  const [txPage] = useState(1);
+  const { data: adminTxData, isLoading: adminTxLoading } = useQuery<any>({
+    queryKey: ["/api/admin/transactions", txPage],
+    queryFn: async () => {
+      const res = await fetch(`/api/admin/transactions?limit=50&offset=${(txPage - 1) * 50}`, { credentials: "include" });
+      if (!res.ok) return { data: [], total: 0 };
+      return res.json();
+    },
+    enabled: isAdmin && activeTab === "transactions",
+  });
+
+  const adminTransactions = adminTxData?.data || [];
+
   // Filter users based on search and filter
   const filteredUsers = allUsers.filter((u: any) => {
     const matchesSearch = !userSearch ||
@@ -339,10 +361,12 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
+              <TabsTrigger value="revenue">Revenue</TabsTrigger>
+              <TabsTrigger value="transactions">Transactions</TabsTrigger>
               <TabsTrigger value="system">System</TabsTrigger>
             </TabsList>
 
@@ -761,7 +785,186 @@ export default function Admin() {
               </Card>
             </TabsContent>
 
-            {/* ===== TAB 4: SYSTEM ===== */}
+            {/* ===== TAB 4: REVENUE ===== */}
+            <TabsContent value="revenue" className="space-y-6">
+              {revenueLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }}></div>
+                  <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading revenue data...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Deposits</CardTitle>
+                        <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold" style={{ color: '#28C76F' }}>
+                          ${(revenueStats.totalDeposits || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Withdrawals</CardTitle>
+                        <DollarSign className="h-4 w-4" style={{ color: '#FF4F58' }} />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold" style={{ color: '#FF4F58' }}>
+                          ${(revenueStats.totalWithdrawals || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Net Revenue</CardTitle>
+                        <TrendingUp className="h-4 w-4" style={{ color: '#E3B341' }} />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold" style={{ color: '#E3B341' }}>
+                          ${(revenueStats.netRevenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Transactions</CardTitle>
+                        <BarChart3 className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
+                          {revenueStats.totalTransactions || 0}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Breakdown by type */}
+                  {revenueStats.byType && (
+                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                          <BarChart3 className="h-5 w-5" style={{ color: '#E3B341' }} />
+                          Breakdown by Type
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Table>
+                          <TableHeader>
+                            <TableRow style={{ borderColor: '#2B3A4C' }}>
+                              <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
+                              <TableHead className="text-right" style={{ color: '#8A93A6' }}>Count</TableHead>
+                              <TableHead className="text-right" style={{ color: '#8A93A6' }}>Total Amount</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {revenueStats.byType.map((row: any) => (
+                              <TableRow key={row.type} style={{ borderColor: '#2B3A4C' }}>
+                                <TableCell>
+                                  <span className="font-medium capitalize" style={{ color: '#C9D1E2' }}>
+                                    {(row.type || "unknown").replace(/_/g, " ")}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <span style={{ color: '#C9D1E2' }}>{row.count}</span>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <span className="font-mono" style={{ color: '#E3B341' }}>
+                                    ${parseFloat(row.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                  </span>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </CardContent>
+                    </Card>
+                  )}
+                </>
+              )}
+            </TabsContent>
+
+            {/* ===== TAB 5: TRANSACTIONS ===== */}
+            <TabsContent value="transactions" className="space-y-6">
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                    <DollarSign className="h-5 w-5" style={{ color: '#E3B341' }} />
+                    All Transactions
+                  </CardTitle>
+                  <CardDescription style={{ color: '#8A93A6' }}>
+                    Full transaction log across all users
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {adminTxLoading ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }}></div>
+                      <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading transactions...</p>
+                    </div>
+                  ) : adminTransactions.length === 0 ? (
+                    <div className="text-center py-12">
+                      <DollarSign className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8A93A6' }} />
+                      <p className="text-sm" style={{ color: '#8A93A6' }}>No transactions recorded yet</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow style={{ borderColor: '#2B3A4C' }}>
+                          <TableHead style={{ color: '#8A93A6' }}>ID</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>User</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
+                          <TableHead className="text-right" style={{ color: '#8A93A6' }}>Amount</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Status</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Date</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {adminTransactions.map((tx: any) => (
+                          <TableRow key={tx.id} style={{ borderColor: '#2B3A4C' }}>
+                            <TableCell>
+                              <span className="font-mono text-sm" style={{ color: '#C9D1E2' }}>{tx.id}</span>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm" style={{ color: '#C9D1E2' }}>{tx.userId}</span>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm capitalize" style={{ color: '#C9D1E2' }}>
+                                {(tx.type || "").replace(/_/g, " ")}
+                              </span>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <span className="font-mono text-sm" style={{
+                                color: ["deposit", "payout", "tip_received"].includes(tx.type) ? '#28C76F' : '#FF4F58'
+                              }}>
+                                ${parseFloat(tx.amount || 0).toFixed(2)}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="text-xs" style={{
+                                borderColor: tx.status === "completed" ? '#28C76F' : tx.status === "pending" ? '#E3B341' : '#FF4F58',
+                                color: tx.status === "completed" ? '#28C76F' : tx.status === "pending" ? '#E3B341' : '#FF4F58',
+                              }}>
+                                {tx.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm" style={{ color: '#8A93A6' }}>
+                                {new Date(tx.createdAt).toLocaleDateString()}
+                              </span>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* ===== TAB 6: SYSTEM ===== */}
             <TabsContent value="system" className="space-y-6">
               <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                 <CardHeader>

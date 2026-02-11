@@ -14,6 +14,8 @@ import {
   userAchievements,
   portfolioHistory,
   chatMessages,
+  notifications,
+  transactions,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -42,6 +44,10 @@ import {
   type InsertChatMessage,
   friendships,
   type Friendship,
+  type Notification,
+  type InsertNotification,
+  type Transaction,
+  type InsertTransaction,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -175,6 +181,31 @@ export interface IStorage {
   getFriendship(userId1: number, userId2: number): Promise<Friendship | undefined>;
   getFriendIds(userId: number): Promise<number[]>;
   getTournamentParticipantUserIds(tournamentId: number): Promise<number[]>;
+
+  // Email verification operations
+  setVerificationToken(userId: number, token: string, expiry: Date): Promise<void>;
+  getUserByVerificationToken(token: string): Promise<User | undefined>;
+  verifyUserEmail(userId: number): Promise<void>;
+
+  // Password reset operations
+  setPasswordResetToken(userId: number, token: string, expiry: Date): Promise<void>;
+  getUserByResetToken(token: string): Promise<User | undefined>;
+  updateUserPassword(userId: number, hashedPassword: string): Promise<void>;
+  clearPasswordResetToken(userId: number): Promise<void>;
+
+  // Notification operations
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  getUserNotifications(userId: number, limit?: number): Promise<Notification[]>;
+  getUnreadNotificationCount(userId: number): Promise<number>;
+  markNotificationRead(notificationId: number, userId: number): Promise<void>;
+  markAllNotificationsRead(userId: number): Promise<void>;
+
+  // Transaction operations
+  createTransaction(transaction: InsertTransaction): Promise<Transaction>;
+  getUserTransactions(userId: number, limit?: number, type?: string): Promise<Transaction[]>;
+  getRecentTransactions(limit?: number): Promise<Transaction[]>;
+  getTransactionStats(): Promise<{ totalDeposits: number; totalWithdrawals: number; totalBuyIns: number; totalPayouts: number }>;
+
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1470,6 +1501,137 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ siteCash: (recipientBalance + amount).toString() })
       .where(eq(users.id, recipientId));
+  }
+
+  // Email verification operations
+  async setVerificationToken(userId: number, token: string, expiry: Date): Promise<void> {
+    await db
+      .update(users)
+      .set({ verificationToken: token, verificationTokenExpiry: expiry })
+      .where(eq(users.id, userId));
+  }
+
+  async getUserByVerificationToken(token: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.verificationToken, token));
+    return result[0];
+  }
+
+  async verifyUserEmail(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ emailVerified: true, verificationToken: null, verificationTokenExpiry: null })
+      .where(eq(users.id, userId));
+  }
+
+  // Password reset operations
+  async setPasswordResetToken(userId: number, token: string, expiry: Date): Promise<void> {
+    await db
+      .update(users)
+      .set({ passwordResetToken: token, passwordResetExpiry: expiry })
+      .where(eq(users.id, userId));
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    const result = await db.select().from(users).where(eq(users.passwordResetToken, token));
+    return result[0];
+  }
+
+  async updateUserPassword(userId: number, hashedPassword: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ password: hashedPassword, updatedAt: new Date() })
+      .where(eq(users.id, userId));
+  }
+
+  async clearPasswordResetToken(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ passwordResetToken: null, passwordResetExpiry: null })
+      .where(eq(users.id, userId));
+  }
+
+  // Notification operations
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const result = await db.insert(notifications).values(notification).returning();
+    return result[0];
+  }
+
+  async getUserNotifications(userId: number, limit: number = 50): Promise<Notification[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt))
+      .limit(limit);
+  }
+
+  async getUnreadNotificationCount(userId: number): Promise<number> {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(notifications)
+      .where(and(eq(notifications.userId, userId), eq(notifications.read, false)));
+    return Number(result[0].count) || 0;
+  }
+
+  async markNotificationRead(notificationId: number, userId: number): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ read: true })
+      .where(and(eq(notifications.id, notificationId), eq(notifications.userId, userId)));
+  }
+
+  async markAllNotificationsRead(userId: number): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ read: true })
+      .where(and(eq(notifications.userId, userId), eq(notifications.read, false)));
+  }
+
+  // Transaction operations
+  async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
+    const result = await db.insert(transactions).values(transaction).returning();
+    return result[0];
+  }
+
+  async getUserTransactions(userId: number, limit: number = 50, type?: string): Promise<Transaction[]> {
+    if (type) {
+      return await db
+        .select()
+        .from(transactions)
+        .where(and(eq(transactions.userId, userId), eq(transactions.type, type)))
+        .orderBy(desc(transactions.createdAt))
+        .limit(limit);
+    }
+    return await db
+      .select()
+      .from(transactions)
+      .where(eq(transactions.userId, userId))
+      .orderBy(desc(transactions.createdAt))
+      .limit(limit);
+  }
+
+  async getRecentTransactions(limit: number = 100): Promise<Transaction[]> {
+    return await db
+      .select()
+      .from(transactions)
+      .orderBy(desc(transactions.createdAt))
+      .limit(limit);
+  }
+
+  async getTransactionStats(): Promise<{ totalDeposits: number; totalWithdrawals: number; totalBuyIns: number; totalPayouts: number }> {
+    const result = await db.select({
+      totalDeposits: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'deposit' THEN CAST(${transactions.amount} AS numeric) ELSE 0 END), 0)`,
+      totalWithdrawals: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'withdrawal' THEN CAST(${transactions.amount} AS numeric) ELSE 0 END), 0)`,
+      totalBuyIns: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'buy_in' THEN CAST(${transactions.amount} AS numeric) ELSE 0 END), 0)`,
+      totalPayouts: sql<number>`COALESCE(SUM(CASE WHEN ${transactions.type} = 'payout' THEN CAST(${transactions.amount} AS numeric) ELSE 0 END), 0)`,
+    }).from(transactions);
+
+    return {
+      totalDeposits: Number(result[0]?.totalDeposits) || 0,
+      totalWithdrawals: Number(result[0]?.totalWithdrawals) || 0,
+      totalBuyIns: Number(result[0]?.totalBuyIns) || 0,
+      totalPayouts: Number(result[0]?.totalPayouts) || 0,
+    };
   }
 }
 

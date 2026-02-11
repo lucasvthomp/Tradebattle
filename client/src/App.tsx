@@ -35,6 +35,9 @@ import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
 import Archive from "@/pages/archive";
 import ArchiveDetail from "@/pages/archive-detail";
+import ForgotPassword from "@/pages/forgot-password";
+import ResetPassword from "@/pages/reset-password";
+import Transactions from "@/pages/transactions";
 import Layout from "@/components/layout/layout";
 import Footer from "@/components/layout/footer";
 
@@ -78,6 +81,8 @@ function Router() {
               <Route path="/terms" component={Terms} />
               <Route path="/login" component={Login} />
               <Route path="/signup" component={Signup} />
+              <Route path="/forgot-password" component={ForgotPassword} />
+              <Route path="/reset-password" component={ResetPassword} />
             </>
           ) : (
             <>
@@ -103,6 +108,9 @@ function Router() {
               <Route path="/admin" component={Admin} />
               <Route path="/archive" component={Archive} />
               <Route path="/archive/:id" component={ArchiveDetail} />
+              <Route path="/transactions" component={Transactions} />
+              <Route path="/forgot-password" component={ForgotPassword} />
+              <Route path="/reset-password" component={ResetPassword} />
             </>
           )}
           <Route component={NotFound} />

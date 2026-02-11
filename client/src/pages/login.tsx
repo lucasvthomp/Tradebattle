@@ -1,18 +1,26 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
-import { Loader2, Eye, EyeOff, TrendingUp, Trophy, Users } from "lucide-react";
+import { Loader2, Eye, EyeOff, TrendingUp, Trophy, Users, ShieldCheck } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Login() {
   const [, navigate] = useLocation();
+  const searchString = useSearch();
+  const is2FA = new URLSearchParams(searchString).get("2fa") === "true";
   const { loginMutation, user } = useAuth();
+  const queryClient = useQueryClient();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [twoFACode, setTwoFACode] = useState("");
+  const [twoFALoading, setTwoFALoading] = useState(false);
+  const [twoFAError, setTwoFAError] = useState("");
 
   if (user) {
     navigate("/dashboard");
@@ -24,6 +32,34 @@ export default function Login() {
     loginMutation.mutate({ username, password }, {
       onSuccess: () => navigate("/dashboard"),
     });
+  };
+
+  const handle2FASubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTwoFALoading(true);
+    setTwoFAError("");
+    try {
+      const pending = sessionStorage.getItem("pending2FA");
+      if (!pending) {
+        setTwoFAError("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
+      const { userId } = JSON.parse(pending);
+      const res = await apiRequest("POST", "/api/auth/2fa/login-verify", {
+        userId,
+        code: twoFACode,
+      });
+      const userData = await res.json();
+      sessionStorage.removeItem("pending2FA");
+      queryClient.setQueryData(["/api/user"], userData);
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      navigate("/dashboard");
+    } catch (err: any) {
+      setTwoFAError(err.message || "Invalid code");
+    } finally {
+      setTwoFALoading(false);
+    }
   };
 
   return (
@@ -63,74 +99,141 @@ export default function Login() {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#111827', border: '1px solid #1F2937', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
+        {is2FA ? (
+          <form onSubmit={handle2FASubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#111827', border: '1px solid #1F2937', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
 
-          <div className="space-y-2">
-            <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Username</Label>
-            <Input
-              id="username"
-              type="text"
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your username"
-              className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-              style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937', fontSize: '15px' }}
-            />
-          </div>
+            <div className="text-center space-y-2">
+              <ShieldCheck className="w-10 h-10 mx-auto" style={{ color: '#E3B341' }} />
+              <h2 className="text-lg font-bold" style={{ color: '#F1F5F9' }}>Two-Factor Authentication</h2>
+              <p className="text-sm" style={{ color: '#94A3B8' }}>Enter the 6-digit code from your authenticator app</p>
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Password</Label>
-            <div className="relative">
+            <div className="space-y-2">
+              <Label htmlFor="2fa-code" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Verification Code</Label>
               <Input
-                id="password"
-                type={showPassword ? "text" : "password"}
+                id="2fa-code"
+                type="text"
                 required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                maxLength={6}
+                value={twoFACode}
+                onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
+                placeholder="000000"
+                className="h-12 rounded-xl text-center text-2xl tracking-[0.5em] font-mono transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937' }}
+              />
+            </div>
+
+            {twoFAError && (
+              <div className="p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
+                <p className="text-sm font-medium" style={{ color: '#EF4444' }}>{twoFAError}</p>
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              disabled={twoFALoading || twoFACode.length !== 6}
+              className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
+              style={{ backgroundColor: '#E3B341', color: '#080C14', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
+            >
+              {twoFALoading ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Verifying...
+                </>
+              ) : (
+                "Verify & Sign In"
+              )}
+            </Button>
+
+            <button
+              type="button"
+              className="w-full text-sm text-center transition-colors hover:underline"
+              style={{ color: '#94A3B8' }}
+              onClick={() => {
+                sessionStorage.removeItem("pending2FA");
+                navigate("/login");
+              }}
+            >
+              Back to login
+            </button>
+          </form>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#111827', border: '1px solid #1F2937', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
+
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Username</Label>
+              <Input
+                id="username"
+                type="text"
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your username"
+                className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
                 style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937', fontSize: '15px' }}
               />
-              <button
-                type="button"
-                className="absolute inset-y-0 right-0 flex items-center pr-4 transition-opacity hover:opacity-80"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff className="h-5 w-5" style={{ color: '#94A3B8' }} />
-                ) : (
-                  <Eye className="h-5 w-5" style={{ color: '#94A3B8' }} />
-                )}
-              </button>
             </div>
-          </div>
 
-          <Button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
-            style={{ backgroundColor: '#E3B341', color: '#080C14', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
-          >
-            {loginMutation.isPending ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Signing in...
-              </>
-            ) : (
-              "Sign In"
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                  style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937', fontSize: '15px' }}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 flex items-center pr-4 transition-opacity hover:opacity-80"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" style={{ color: '#94A3B8' }} />
+                  ) : (
+                    <Eye className="h-5 w-5" style={{ color: '#94A3B8' }} />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loginMutation.isPending}
+              className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
+              style={{ backgroundColor: '#E3B341', color: '#080C14', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
+            >
+              {loginMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+
+            {loginMutation.isError && (
+              <div className="p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
+                <p className="text-sm font-medium" style={{ color: '#EF4444' }}>
+                  {(loginMutation.error as any)?.message || "Login failed. Please check your credentials."}
+                </p>
+              </div>
             )}
-          </Button>
 
-          {loginMutation.isError && (
-            <div className="p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
-              <p className="text-sm font-medium" style={{ color: '#EF4444' }}>
-                {(loginMutation.error as any)?.message || "Login failed. Please check your credentials."}
-              </p>
+            <div className="text-center">
+              <Link href="/forgot-password" className="text-sm transition-colors hover:underline" style={{ color: '#94A3B8' }}>
+                Forgot your password?
+              </Link>
             </div>
-          )}
-        </form>
+          </form>
+        )}
 
         {/* Sign Up Link */}
         <p className="text-center text-sm" style={{ color: '#94A3B8' }}>

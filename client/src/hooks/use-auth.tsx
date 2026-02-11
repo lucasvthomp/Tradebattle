@@ -49,12 +49,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await apiRequest("POST", "/api/login", credentials);
       return await res.json();
     },
-    onSuccess: (user: User) => {
-      queryClient.setQueryData(["/api/user"], user);
+    onSuccess: (data: any) => {
+      if (data.requires2FA) {
+        // Store userId temporarily and redirect to 2FA verification
+        sessionStorage.setItem("pending2FA", JSON.stringify({ userId: data.userId }));
+        navigate("/login?2fa=true");
+        toast({
+          title: "Two-Factor Authentication",
+          description: "Please enter your 2FA code to continue.",
+        });
+        return;
+      }
+      queryClient.setQueryData(["/api/user"], data);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Welcome back!",
-        description: `Good to see you again, ${user.username || user.email}`,
+        description: `Good to see you again, ${data.username || data.email}`,
       });
       navigate("/dashboard");
     },

@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus, Menu, X } from "lucide-react";
+import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 interface HeaderProps {
   chatOpen?: boolean;
   onChatToggle?: () => void;
@@ -65,6 +66,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   </span>
                   <Plus className="w-3.5 h-3.5 ml-1.5" style={{ color: '#10B981' }} />
                 </Button>
+
+                {/* Notifications Bell */}
+                <NotificationDropdown />
 
                 {/* Chat Button - only show for authenticated users */}
                 {onChatToggle && (

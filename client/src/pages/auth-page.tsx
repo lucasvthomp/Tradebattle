@@ -144,6 +144,16 @@ export default function AuthPage() {
                         ) : null}
                         Sign In
                       </Button>
+
+                      <div className="text-center">
+                        <button
+                          type="button"
+                          className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                          onClick={() => navigate("/forgot-password")}
+                        >
+                          Forgot your password?
+                        </button>
+                      </div>
                     </form>
                   </CardContent>
                 </Card>

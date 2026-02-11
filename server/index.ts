@@ -1,5 +1,7 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { tournamentScheduler } from "./services/tournamentScheduler";
@@ -62,6 +64,49 @@ async function runMigrations() {
       UPDATE users SET site_cash = '0.00', balance = '0.00';
     `);
 
+    // Add email verification, password reset, and 2FA columns
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT false NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS verification_token_expiry TIMESTAMP;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_expiry TIMESTAMP;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_secret VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS two_factor_enabled BOOLEAN DEFAULT false NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER DEFAULT 0 NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP;
+    `);
+
+    // Create notifications table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        type VARCHAR(50) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        read BOOLEAN DEFAULT false NOT NULL,
+        metadata JSONB,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Create transactions table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS transactions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        type VARCHAR(50) NOT NULL,
+        amount NUMERIC(15, 2) NOT NULL,
+        balance_before NUMERIC(15, 2) NOT NULL,
+        balance_after NUMERIC(15, 2) NOT NULL,
+        status VARCHAR(20) DEFAULT 'completed' NOT NULL,
+        description TEXT,
+        reference_id VARCHAR(255),
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
     log('Database migrations completed successfully');
   } catch (error) {
     log('Migration error: ' + (error as Error).message);
@@ -72,6 +117,51 @@ async function runMigrations() {
 }
 
 const app = express();
+
+// Security headers via helmet (configured for compatibility with Vite dev server)
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP to avoid conflicts with Vite/inline scripts
+  crossOriginEmbedderPolicy: false,
+}));
+
+// General rate limiter: 100 requests per minute per IP
+const generalLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later." },
+});
+
+// Strict rate limiter for auth endpoints: 5 per minute
+const authLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many login attempts, please try again later." },
+});
+
+// Trade rate limiter: 10 per minute
+const tradeLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many trade requests, please slow down." },
+});
+
+// Apply general rate limiter to all API routes
+app.use('/api', generalLimiter);
+
+// Apply stricter limits to auth endpoints
+app.use('/api/login', authLimiter);
+app.use('/api/register', authLimiter);
+
+// Apply trade limiter to trading endpoints
+app.use('/api/tournaments/:id/purchase', tradeLimiter);
+app.use('/api/tournaments/:id/sell', tradeLimiter);
+
 app.use(express.json({ limit: '50mb' })); // Increase limit for profile pictures
 app.use(express.urlencoded({ extended: false }));
 

@@ -119,6 +119,196 @@ const staggerChildren = {
   }
 };
 
+function ChangePasswordSection() {
+  const { toast } = useToast();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
+      return await apiRequest('POST', '/api/auth/change-password', data);
+    },
+    onSuccess: () => {
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      toast({ title: "Password Changed", description: "Your password has been updated successfully." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Failed to change password", variant: "destructive" });
+    },
+  });
+
+  const handleSubmit = () => {
+    if (newPassword !== confirmPassword) {
+      toast({ title: "Error", description: "New passwords don't match", variant: "destructive" });
+      return;
+    }
+    changePasswordMutation.mutate({ currentPassword, newPassword });
+  };
+
+  return (
+    <div>
+      <h4 className="font-medium text-foreground mb-2">Change Password</h4>
+      <div className="space-y-3">
+        <Input type="password" placeholder="Current password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+        <Input type="password" placeholder="New password (min 6 chars, 1 uppercase, 1 number)" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+        <Input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+        <Button
+          variant="outline"
+          onClick={handleSubmit}
+          disabled={!currentPassword || !newPassword || !confirmPassword || changePasswordMutation.isPending}
+        >
+          {changePasswordMutation.isPending ? "Updating..." : "Update Password"}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+function TwoFactorSection({ user }: { user: any }) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [setupData, setSetupData] = useState<{ secret: string; otpauthUrl: string } | null>(null);
+  const [verifyCode, setVerifyCode] = useState("");
+  const [disableCode, setDisableCode] = useState("");
+  const [showDisable, setShowDisable] = useState(false);
+
+  const setupMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest('POST', '/api/auth/2fa/setup');
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      setSetupData(data);
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const verifyMutation = useMutation({
+    mutationFn: async (code: string) => {
+      return await apiRequest('POST', '/api/auth/2fa/verify', { code });
+    },
+    onSuccess: () => {
+      setSetupData(null);
+      setVerifyCode("");
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({ title: "2FA Enabled", description: "Two-factor authentication is now active on your account." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Invalid code", variant: "destructive" });
+    },
+  });
+
+  const disableMutation = useMutation({
+    mutationFn: async (code: string) => {
+      return await apiRequest('POST', '/api/auth/2fa/disable', { code });
+    },
+    onSuccess: () => {
+      setShowDisable(false);
+      setDisableCode("");
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({ title: "2FA Disabled", description: "Two-factor authentication has been removed." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Error", description: error.message || "Invalid code", variant: "destructive" });
+    },
+  });
+
+  if (user?.twoFactorEnabled) {
+    return (
+      <div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
+            <p className="text-sm" style={{ color: '#10B981' }}>2FA is enabled on your account</p>
+          </div>
+          <Button variant="outline" onClick={() => setShowDisable(!showDisable)}>
+            Disable 2FA
+          </Button>
+        </div>
+        {showDisable && (
+          <div className="mt-3 space-y-2">
+            <p className="text-sm text-muted-foreground">Enter your authenticator code to disable 2FA:</p>
+            <div className="flex gap-2">
+              <Input
+                placeholder="6-digit code"
+                value={disableCode}
+                onChange={e => setDisableCode(e.target.value)}
+                maxLength={6}
+              />
+              <Button
+                onClick={() => disableMutation.mutate(disableCode)}
+                disabled={disableCode.length !== 6 || disableMutation.isPending}
+                variant="destructive"
+              >
+                {disableMutation.isPending ? "..." : "Confirm"}
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
+          <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
+        </div>
+        {!setupData && (
+          <Button variant="outline" onClick={() => setupMutation.mutate()} disabled={setupMutation.isPending}>
+            {setupMutation.isPending ? "Setting up..." : "Enable 2FA"}
+          </Button>
+        )}
+      </div>
+      {setupData && (
+        <div className="mt-4 space-y-4 p-4 rounded-lg" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+          <div>
+            <h5 className="font-medium text-foreground mb-2">Step 1: Scan QR Code</h5>
+            <p className="text-sm text-muted-foreground mb-3">
+              Scan this code with your authenticator app (Google Authenticator, Authy, etc.)
+            </p>
+            <div className="bg-white p-4 rounded-lg inline-block">
+              <img
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(setupData.otpauthUrl)}`}
+                alt="2FA QR Code"
+                width={200}
+                height={200}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Or enter this key manually: <code className="px-1 py-0.5 rounded text-xs" style={{ backgroundColor: '#1F2937', color: '#E3B341' }}>{setupData.secret}</code>
+            </p>
+          </div>
+          <div>
+            <h5 className="font-medium text-foreground mb-2">Step 2: Enter Verification Code</h5>
+            <div className="flex gap-2">
+              <Input
+                placeholder="6-digit code from your app"
+                value={verifyCode}
+                onChange={e => setVerifyCode(e.target.value)}
+                maxLength={6}
+              />
+              <Button
+                onClick={() => verifyMutation.mutate(verifyCode)}
+                disabled={verifyCode.length !== 6 || verifyMutation.isPending}
+              >
+                {verifyMutation.isPending ? "Verifying..." : "Verify & Enable"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const profileSchema = z.object({
   email: z.string().email("Invalid email address"),
 
@@ -750,43 +940,42 @@ export default function Profile() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Change Password</h4>
-                        <div className="space-y-3">
-                          <Input type="password" placeholder="Current password" />
-                          <Input type="password" placeholder="New password" />
-                          <Input type="password" placeholder="Confirm new password" />
-                          <Button variant="outline">Update Password</Button>
-                        </div>
-                      </div>
-
-                      <Separator />
-
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
-                          <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
-                        </div>
-                        <Button variant="outline">Enable 2FA</Button>
-                      </div>
-
-                      <Separator />
-
-                      <div>
-                        <h4 className="font-medium text-foreground mb-2">Active Sessions</h4>
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between p-3 bg-muted rounded">
-                            <div>
-                              <p className="text-sm font-medium text-foreground">Current Session</p>
-                              <p className="text-xs text-muted-foreground">Chrome on macOS • New York, NY</p>
-                            </div>
-                            <Badge variant="secondary">Active</Badge>
+                      {/* Email Verification Status */}
+                      <div className="flex items-center justify-between p-4 rounded-lg" style={{ backgroundColor: user?.emailVerified ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)', border: `1px solid ${user?.emailVerified ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}` }}>
+                        <div className="flex items-center gap-3">
+                          <Mail className="w-5 h-5" style={{ color: user?.emailVerified ? '#10B981' : '#EF4444' }} />
+                          <div>
+                            <h4 className="font-medium text-foreground">Email Verification</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {user?.emailVerified ? 'Your email is verified' : 'Please verify your email to access all features'}
+                            </p>
                           </div>
                         </div>
-                        <Button variant="outline" className="mt-3">
-                          Sign Out All Other Sessions
-                        </Button>
+                        {!user?.emailVerified && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                await apiRequest('POST', '/api/auth/resend-verification');
+                                toast({ title: 'Verification email sent', description: 'Check your inbox for the verification link.' });
+                              } catch (err: any) {
+                                toast({ title: 'Error', description: err.message, variant: 'destructive' });
+                              }
+                            }}
+                          >
+                            Resend Verification
+                          </Button>
+                        )}
                       </div>
+
+                      <Separator />
+
+                      <ChangePasswordSection />
+
+                      <Separator />
+
+                      <TwoFactorSection user={user} />
 
                       <Separator />
 
