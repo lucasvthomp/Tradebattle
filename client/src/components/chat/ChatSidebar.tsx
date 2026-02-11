@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,16 +52,72 @@ const formatTimestamp = (timestamp: string) => {
   }
 };
 
+// Parse @mentions in message text and return React elements
+function renderMessageWithMentions(
+  text: string,
+  users: { id: number; username: string }[],
+  navigate: (path: string) => void
+): React.ReactNode {
+  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = mentionRegex.exec(text)) !== null) {
+    // Add text before the mention
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    const mentionedUsername = match[1];
+    const mentionedUser = users.find(
+      (u) => u.username.toLowerCase() === mentionedUsername.toLowerCase()
+    );
+
+    if (mentionedUser) {
+      parts.push(
+        <span
+          key={`mention-${match.index}`}
+          className="font-semibold cursor-pointer hover:underline"
+          style={{ color: '#E3B341' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/people/${mentionedUser.id}`);
+          }}
+        >
+          @{mentionedUser.username}
+        </span>
+      );
+    } else {
+      // Not a real user, render as plain text
+      parts.push(match[0]);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
 const ChatMessageItem = React.memo(function ChatMessageItem({
   message,
   isCurrentUser,
   onViewProfile,
   onSendTip,
+  users,
+  navigate,
 }: {
   message: ChatMessage;
   isCurrentUser: boolean;
   onViewProfile: (userId: number) => void;
   onSendTip: (user: { id: number; username: string }) => void;
+  users: { id: number; username: string }[];
+  navigate: (path: string) => void;
 }) {
   return (
     <div className="flex space-x-2">
@@ -110,7 +166,9 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
           </span>
         </div>
         <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-          <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>{message.message}</p>
+          <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>
+            {renderMessageWithMentions(message.message, users, navigate)}
+          </p>
         </div>
       </div>
     </div>
@@ -125,8 +183,14 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const [tipAmount, setTipAmount] = useState("");
   const [selectedUser, setSelectedUser] = useState<{ id: number; username: string } | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
+
+  // Mention autocomplete state
+  const [showMentions, setShowMentions] = useState(false);
+  const [mentionQuery, setMentionQuery] = useState("");
+  const [mentionIndex, setMentionIndex] = useState(0);
 
   // Fetch global chat messages
   const { data: chatResponse, isLoading } = useQuery({
@@ -141,8 +205,28 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     gcTime: 5000,
   });
 
+  // Fetch users for mention autocomplete
+  const { data: usersResponse } = useQuery({
+    queryKey: ['/api/users/public'],
+    enabled: isOpen && !!user,
+    staleTime: 60000,
+  });
+
+  const allUsers: { id: number; username: string }[] = useMemo(() => {
+    const raw = (usersResponse as any)?.data || [];
+    return raw.map((u: any) => ({ id: u.id, username: u.username }));
+  }, [usersResponse]);
+
   const allMessages: ChatMessage[] = chatResponse?.data || [];
   const messages = allMessages.slice(-100);
+
+  // Filtered mention suggestions
+  const mentionSuggestions = useMemo(() => {
+    if (!mentionQuery) return allUsers.slice(0, 5);
+    return allUsers
+      .filter((u) => u.username.toLowerCase().includes(mentionQuery.toLowerCase()) && u.id !== user?.id)
+      .slice(0, 5);
+  }, [mentionQuery, allUsers, user?.id]);
 
   // Send message mutation
   const sendMessageMutation = useMutation({
@@ -180,6 +264,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     sendMessageMutation.mutate({
       message: newMessage.trim()
     });
+    setShowMentions(false);
   };
 
   const handleSendTip = () => {
@@ -189,6 +274,66 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       amount: parseFloat(tipAmount)
     });
   };
+
+  // Handle input change for mention detection
+  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setNewMessage(value);
+
+    // Check if user is typing a mention
+    const cursorPos = e.target.selectionStart || value.length;
+    const textUpToCursor = value.slice(0, cursorPos);
+    const lastAtIndex = textUpToCursor.lastIndexOf('@');
+
+    if (lastAtIndex !== -1) {
+      const charBeforeAt = lastAtIndex > 0 ? textUpToCursor[lastAtIndex - 1] : ' ';
+      // Only trigger if @ is at start or after a space
+      if (lastAtIndex === 0 || charBeforeAt === ' ') {
+        const query = textUpToCursor.slice(lastAtIndex + 1);
+        // Only show if no space in the query (still typing the username)
+        if (!query.includes(' ')) {
+          setMentionQuery(query);
+          setShowMentions(true);
+          setMentionIndex(0);
+          return;
+        }
+      }
+    }
+    setShowMentions(false);
+  }, []);
+
+  // Insert mention into message
+  const insertMention = useCallback((username: string) => {
+    const cursorPos = inputRef.current?.selectionStart || newMessage.length;
+    const textUpToCursor = newMessage.slice(0, cursorPos);
+    const lastAtIndex = textUpToCursor.lastIndexOf('@');
+
+    if (lastAtIndex !== -1) {
+      const before = newMessage.slice(0, lastAtIndex);
+      const after = newMessage.slice(cursorPos);
+      setNewMessage(`${before}@${username} ${after}`);
+    }
+    setShowMentions(false);
+    inputRef.current?.focus();
+  }, [newMessage]);
+
+  // Handle keyboard navigation in mention dropdown
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (!showMentions || mentionSuggestions.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setMentionIndex((prev) => (prev + 1) % mentionSuggestions.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setMentionIndex((prev) => (prev - 1 + mentionSuggestions.length) % mentionSuggestions.length);
+    } else if (e.key === 'Enter' && showMentions) {
+      e.preventDefault();
+      insertMention(mentionSuggestions[mentionIndex].username);
+    } else if (e.key === 'Escape') {
+      setShowMentions(false);
+    }
+  }, [showMentions, mentionSuggestions, mentionIndex, insertMention]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -251,6 +396,8 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                         setSelectedUser(tipUser);
                         setTipDialogOpen(true);
                       }}
+                      users={allUsers}
+                      navigate={navigate}
                     />
                   ))
                 )}
@@ -259,12 +406,45 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             </div>
 
             {/* Message Input */}
-            <div className="p-3" style={{ borderTop: '1px solid #1F2937', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
+            <div className="p-3 relative" style={{ borderTop: '1px solid #1F2937', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
+              {/* Mention Autocomplete Dropdown */}
+              {showMentions && mentionSuggestions.length > 0 && (
+                <div
+                  className="absolute bottom-full left-3 right-3 mb-1 rounded-md overflow-hidden shadow-lg z-50"
+                  style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}
+                >
+                  {mentionSuggestions.map((u, i) => (
+                    <div
+                      key={u.id}
+                      className="flex items-center space-x-2 px-3 py-2 cursor-pointer text-xs"
+                      style={{
+                        backgroundColor: i === mentionIndex ? '#1F2937' : 'transparent',
+                        color: '#F1F5F9',
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        insertMention(u.username);
+                      }}
+                      onMouseEnter={() => setMentionIndex(i)}
+                    >
+                      <Avatar className="w-5 h-5" style={{ border: '1px solid #1F2937' }}>
+                        <AvatarFallback className="text-[8px] font-semibold" style={{ backgroundColor: '#0F172A', color: '#E3B341' }}>
+                          {u.username.slice(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium" style={{ color: '#E3B341' }}>@{u.username}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <form onSubmit={handleSendMessage} className="flex space-x-2">
                 <Input
+                  ref={inputRef}
                   value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Message everyone..."
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Message everyone... (@ to mention)"
                   className="flex-1 text-sm h-9"
                   style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                   maxLength={500}
