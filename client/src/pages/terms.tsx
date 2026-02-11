@@ -86,7 +86,7 @@ export default function Terms() {
               <h2 className="text-2xl font-bold mb-4 text-foreground">5. DESCRIPTION OF SERVICES; SKILL-BASED NATURE</h2>
               <p className="mb-2"><strong>5.1. Simulation Only.</strong> All trading activity on the Platform is simulated. No orders are routed to any broker; no real securities transactions occur.</p>
               <p className="mb-2"><strong>5.2. Skill-Based Competitions.</strong> Tournament outcomes are based on skill (e.g., asset selection, timing, risk management) and not chance. Rankings are determined by the highest final Virtual Portfolio value per Platform calculations at the end of the Tournament.</p>
-              <p className="mb-2"><strong>5.3. Market Data.</strong> We utilize real-time/near-real-time market data (e.g., from Yahoo Finance). Data may be delayed, interrupted, or inaccurate. See Section 10.</p>
+              <p className="mb-2"><strong>5.3. Market Data.</strong> We utilize real-time/near-real-time market data (e.g., from TradingView/Yahoo Finance). Data may be delayed, interrupted, or inaccurate. See Section 10.</p>
               <p className="mb-4"><strong>5.4. No Advice.</strong> Content on the Platform (including user chat, commentary, rankings, statistics, or educational materials) is for informational/educational purposes only and does not constitute investment, legal, accounting, or tax advice.</p>
             </section>
 

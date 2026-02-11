@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { PerformanceChart } from "./widgets/PerformanceChart";
+import { TradingViewChart } from "../trading/TradingViewChart";
 import { PortfolioHoldingsWidget } from "./widgets/PortfolioHoldingsWidget";
 import { StockSearchBar } from "../trading/StockSearchBar";
 import { ShoppingCart } from "lucide-react";
@@ -15,7 +15,7 @@ export function PortfolioGrid({ selectedChartStock, onSelectStock }: PortfolioGr
     <div className="w-full space-y-6">
       {/* Portfolio Performance Chart - Full Width */}
       <div className="w-full min-h-[500px]">
-        <PerformanceChart selectedStock={selectedChartStock || "AAPL"} />
+        <TradingViewChart symbol={selectedChartStock || "AAPL"} />
       </div>
 
       {/* Stock Purchase Search */}

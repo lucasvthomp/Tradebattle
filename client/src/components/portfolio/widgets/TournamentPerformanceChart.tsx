@@ -3,7 +3,7 @@
  * =====================================
  * 
  * Features:
- * - Professional price charts using Lightweight Charts library
+ * - Professional price charts using TradingView's Lightweight Charts
  * - Tournament-specific data integration
  * - Dark theme optimized styling
  * - Responsive design with timeframe dropdown

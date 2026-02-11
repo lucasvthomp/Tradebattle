@@ -1,9 +1,9 @@
 /*
- * LIGHTWEIGHT CHARTS COMPONENT
- * ============================
- *
+ * TRADINGVIEW LIGHTWEIGHT CHARTS COMPONENT
+ * =======================================
+ * 
  * Features:
- * - Professional price charts using Lightweight Charts library
+ * - Professional price charts using TradingView's Lightweight Charts
  * - Integrates with portfolio holdings and Yahoo Finance API
  * - Dark theme optimized styling
  * - Manual data mode for custom testing/development
@@ -155,7 +155,7 @@ export function PerformanceChart({ selectedStock }: PerformanceChartProps = {}) 
     }
   };
 
-  // Initialize chart
+  // Initialize TradingView chart
   const initializeChart = () => {
     if (!chartContainerRef.current) return;
 
