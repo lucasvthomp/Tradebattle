@@ -178,8 +178,7 @@ export function SimplifiedSidebar() {
         />
       </div>
 
-      {/* Main Content Spacing - Only on desktop */}
-      <div className={`hidden md:block transition-all duration-300 ${expanded ? 'ml-56' : 'ml-16'}`} />
+      {/* Main Content Spacing handled by layout.tsx md:ml-16 */}
     </>
   );
 }
