@@ -377,8 +377,67 @@ export const translations = {
     stockPurchased: "Bought stock",
     sharesUnit: "shares",
     sellPosition: "Sell stock",
+
+    // Chat & Social
+    globalChat: "Global Chat",
+    noMessagesYet: "No messages yet. Start the conversation!",
+    messageEveryone: "Message everyone...",
+    viewFullProfile: "View Full Profile",
+    sendTip: "Send Tip",
+    sendTipTo: "Send Tip to",
+    tipDescription: "Send a tip from your balance to support this user.",
+    enterAmount: "Enter amount",
+    yourBalance: "Your balance",
+    sending: "Sending...",
+
+    // People
+    searchByName: "Search by name or username...",
+    newestMembers: "Newest Members",
+    oldestMembers: "Oldest Members",
+    mostTrades: "Most Trades",
+    alphabetical: "Alphabetical",
+    allMembers: "All Members",
+    administrators: "Administrators",
+    viewProfile: "View Profile",
+    backToPeople: "Back to People",
+    memberSince: "Member since",
+    totalTrades: "Total Trades",
+    tradingStreak: "Trading Streak",
+    tournamentsJoined: "Tournaments Joined",
+    noPeopleFound: "No people found",
+    errorLoadingUsers: "Error Loading Users",
+    reloadPage: "Reload Page",
+    showing: "Showing",
+    personUnit: "person",
+    peopleUnit: "people",
+    matching: "matching",
+
+    // Trades
+    recentTrades: "Recent Trades",
+    noTradesYet: "No trades yet",
+    bought: "Bought",
+    sold: "Sold",
+    sharesAt: "shares @",
+
+    // Archive
+    searchTournaments: "Search tournaments...",
+    noMatchingTournaments: "No matching tournaments",
+    noCompletedTournaments: "No completed tournaments yet",
+    backToArchive: "Back to Archive",
+    startingCash: "Starting Cash",
+    duration: "Duration",
+    ended: "Ended",
+    finalLeaderboard: "Final Leaderboard",
+    noParticipantsRecorded: "No participants recorded",
+    tournamentNotFound: "Tournament not found",
+    goBack: "Go Back",
+    players: "Players",
+
+    // Rewards
+    rewards: "Rewards",
+    comingSoon: "Coming Soon",
   },
-  
+
   Portuguese: {
     // Navigation
     dashboard: "Painel",
@@ -753,8 +812,67 @@ export const translations = {
     stockPurchased: "Ação comprada",
     sharesUnit: "ações",
     sellPosition: "Vender ação",
+
+    // Chat & Social
+    globalChat: "Chat Global",
+    noMessagesYet: "Nenhuma mensagem ainda. Comece a conversa!",
+    messageEveryone: "Mensagem para todos...",
+    viewFullProfile: "Ver Perfil Completo",
+    sendTip: "Enviar Gorjeta",
+    sendTipTo: "Enviar Gorjeta para",
+    tipDescription: "Envie uma gorjeta do seu saldo para apoiar este usuário.",
+    enterAmount: "Digite o valor",
+    yourBalance: "Seu saldo",
+    sending: "Enviando...",
+
+    // People
+    searchByName: "Buscar por nome ou usuário...",
+    newestMembers: "Membros Recentes",
+    oldestMembers: "Membros Antigos",
+    mostTrades: "Mais Negociações",
+    alphabetical: "Alfabético",
+    allMembers: "Todos os Membros",
+    administrators: "Administradores",
+    viewProfile: "Ver Perfil",
+    backToPeople: "Voltar para Pessoas",
+    memberSince: "Membro desde",
+    totalTrades: "Total de Negociações",
+    tradingStreak: "Sequência de Negociação",
+    tournamentsJoined: "Torneios Participados",
+    noPeopleFound: "Nenhuma pessoa encontrada",
+    errorLoadingUsers: "Erro ao Carregar Usuários",
+    reloadPage: "Recarregar Página",
+    showing: "Mostrando",
+    personUnit: "pessoa",
+    peopleUnit: "pessoas",
+    matching: "correspondendo a",
+
+    // Trades
+    recentTrades: "Negociações Recentes",
+    noTradesYet: "Nenhuma negociação ainda",
+    bought: "Comprou",
+    sold: "Vendeu",
+    sharesAt: "ações @",
+
+    // Archive
+    searchTournaments: "Buscar torneios...",
+    noMatchingTournaments: "Nenhum torneio encontrado",
+    noCompletedTournaments: "Nenhum torneio concluído ainda",
+    backToArchive: "Voltar ao Arquivo",
+    startingCash: "Capital Inicial",
+    duration: "Duração",
+    ended: "Encerrado",
+    finalLeaderboard: "Classificação Final",
+    noParticipantsRecorded: "Nenhum participante registrado",
+    tournamentNotFound: "Torneio não encontrado",
+    goBack: "Voltar",
+    players: "Jogadores",
+
+    // Rewards
+    rewards: "Recompensas",
+    comingSoon: "Em Breve",
   },
-  
+
   Spanish: {
     // Navigation
     dashboard: "Panel",
@@ -1129,6 +1247,65 @@ export const translations = {
     stockPurchased: "Acción comprada",
     sharesUnit: "acciones",
     sellPosition: "Vender acción",
+
+    // Chat & Social
+    globalChat: "Chat Global",
+    noMessagesYet: "No hay mensajes aún. ¡Comienza la conversación!",
+    messageEveryone: "Mensaje a todos...",
+    viewFullProfile: "Ver Perfil Completo",
+    sendTip: "Enviar Propina",
+    sendTipTo: "Enviar Propina a",
+    tipDescription: "Envía una propina de tu saldo para apoyar a este usuario.",
+    enterAmount: "Ingresa el monto",
+    yourBalance: "Tu saldo",
+    sending: "Enviando...",
+
+    // People
+    searchByName: "Buscar por nombre o usuario...",
+    newestMembers: "Miembros Recientes",
+    oldestMembers: "Miembros Antiguos",
+    mostTrades: "Más Operaciones",
+    alphabetical: "Alfabético",
+    allMembers: "Todos los Miembros",
+    administrators: "Administradores",
+    viewProfile: "Ver Perfil",
+    backToPeople: "Volver a Personas",
+    memberSince: "Miembro desde",
+    totalTrades: "Total de Operaciones",
+    tradingStreak: "Racha de Trading",
+    tournamentsJoined: "Torneos Unidos",
+    noPeopleFound: "No se encontraron personas",
+    errorLoadingUsers: "Error al Cargar Usuarios",
+    reloadPage: "Recargar Página",
+    showing: "Mostrando",
+    personUnit: "persona",
+    peopleUnit: "personas",
+    matching: "coincidiendo con",
+
+    // Trades
+    recentTrades: "Operaciones Recientes",
+    noTradesYet: "Sin operaciones aún",
+    bought: "Compró",
+    sold: "Vendió",
+    sharesAt: "acciones @",
+
+    // Archive
+    searchTournaments: "Buscar torneos...",
+    noMatchingTournaments: "No se encontraron torneos",
+    noCompletedTournaments: "No hay torneos completados aún",
+    backToArchive: "Volver al Archivo",
+    startingCash: "Capital Inicial",
+    duration: "Duración",
+    ended: "Terminado",
+    finalLeaderboard: "Clasificación Final",
+    noParticipantsRecorded: "Sin participantes registrados",
+    tournamentNotFound: "Torneo no encontrado",
+    goBack: "Volver",
+    players: "Jugadores",
+
+    // Rewards
+    rewards: "Recompensas",
+    comingSoon: "Próximamente",
   },
 };
 
