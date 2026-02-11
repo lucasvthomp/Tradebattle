@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useParams } from "wouter";
+import { useParams, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,8 @@ const staggerChildren = {
 
 export default function People() {
   const { userId: profileUserId } = useParams<{ userId: string }>();
+  const [, navigate] = useLocation();
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t } = useUserPreferences();
   const [searchQuery, setSearchQuery] = useState("");
@@ -311,7 +313,7 @@ export default function People() {
                   <p style={{ color: '#94A3B8' }} className="mb-4">
                     {(usersError as Error)?.message || 'Unable to load user data. Please try again.'}
                   </p>
-                  <Button onClick={() => window.location.reload()} style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
+                  <Button onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/users/public'] })} style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
                     {t('reloadPage')}
                   </Button>
                 </CardContent>
@@ -378,7 +380,7 @@ export default function People() {
                       {t('tryAgain')}
                     </p>
                     <Button
-                      onClick={() => window.location.reload()}
+                      onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/users/public'] })}
                       style={{ backgroundColor: '#E3B341', color: '#080C14' }}
                     >
                       Retry
@@ -448,7 +450,7 @@ export default function People() {
                       <Button
                         className="w-full"
                         variant="outline"
-                        onClick={() => window.location.href = `/people/${person.id}`}
+                        onClick={() => navigate(`/people/${person.id}`)}
                         style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', color: '#E3B341' }}
                       >
                         {t('viewProfile')}
