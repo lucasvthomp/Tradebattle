@@ -358,7 +358,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #1F2937', backgroundColor: '#080C14' }}>
               <div className="flex items-center space-x-2">
                 <MessageSquare className="w-4 h-4" style={{ color: '#E3B341' }} />
-                <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Global Chat</span>
+                <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{t('globalChat')}</span>
               </div>
               <Button
                 onClick={onToggle}
@@ -382,7 +382,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   <div className="text-center py-8">
                     <MessageSquare className="w-10 h-10 mx-auto mb-3" style={{ color: '#94A3B8', opacity: 0.5 }} />
                     <p className="text-sm" style={{ color: '#94A3B8' }}>
-                      No messages yet. Start the conversation!
+                      {t('noMessagesYet')}
                     </p>
                   </div>
                 ) : (
@@ -444,7 +444,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   value={newMessage}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
-                  placeholder="Message everyone... (@ to mention)"
+                  placeholder={t('messageEveryone')}
                   className="flex-1 text-sm h-9"
                   style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                   maxLength={500}
@@ -474,7 +474,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 <DollarSign className="w-5 h-5" style={{ color: '#080C14' }} />
               </div>
               <div>
-                <DialogTitle style={{ color: '#F1F5F9' }}>Send Tip to {selectedUser?.username}</DialogTitle>
+                <DialogTitle style={{ color: '#F1F5F9' }}>{t('sendTipTo')} {selectedUser?.username}</DialogTitle>
                 <DialogDescription style={{ color: '#94A3B8' }}>
                   Send a tip from your balance to support this user.
                 </DialogDescription>
@@ -483,11 +483,11 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="tip-amount" style={{ color: '#F1F5F9' }}>Amount</Label>
+              <Label htmlFor="tip-amount" style={{ color: '#F1F5F9' }}>{t('amount')}</Label>
               <Input
                 id="tip-amount"
                 type="number"
-                placeholder="Enter amount"
+                placeholder={t('enterAmount')}
                 value={tipAmount}
                 onChange={(e) => setTipAmount(e.target.value)}
                 min="0.01"
@@ -495,7 +495,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
               />
               <p className="text-xs" style={{ color: '#94A3B8' }}>
-                Your balance: ${(Number(user?.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                {t('yourBalance')}: ${(Number(user?.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </p>
             </div>
           </div>
@@ -509,7 +509,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
               }}
               style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={handleSendTip}
@@ -521,7 +521,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
               }
               style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
             >
-              {sendTipMutation.isPending ? "Sending..." : "Send Tip"}
+              {sendTipMutation.isPending ? t('sending') : t('sendTip')}
             </Button>
           </DialogFooter>
         </DialogContent>
