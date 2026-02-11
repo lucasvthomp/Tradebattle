@@ -27,16 +27,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const [, navigate] = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md border-b border-muted" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)' }}>
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)', borderBottom: '1px solid rgba(227, 179, 65, 0.1)', boxShadow: '0 1px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(227, 179, 65, 0.05)' }}>
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #E3B341, #F59E0B)' }}>
-                <span className="font-bold text-sm" style={{ color: '#080C14' }}>O</span>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #E3B341, #c99a35)', boxShadow: '0 0 16px rgba(227, 179, 65, 0.2)' }}>
+                <span className="font-black text-sm" style={{ color: '#080C14' }}>O</span>
               </div>
-              <span className="text-xl font-bold text-foreground">ORSATH</span>
+              <span className="text-xl font-display font-bold text-foreground tracking-tight">ORSATH</span>
             </Link>
 
             {/* Market Status Clock - hide on mobile portrait */}
@@ -52,9 +52,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display - Clickable for balance management */}
                 <Button
                   variant="ghost"
-                  className="h-10 flex items-center justify-center px-4 hover:bg-cyan-500/10 transition-all border-2"
+                  className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2"
                   style={{
-                    borderColor: '#06B6D4',
+                    borderColor: 'rgba(227, 179, 65, 0.4)',
                     color: '#E3B341'
                   }}
                   onClick={() => setBalanceDialogOpen(true)}
@@ -148,9 +148,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start h-12 hover:bg-cyan-500/10 border-2"
+                  className="w-full justify-start h-12 hover:bg-primary/10 border-2"
                   style={{
-                    borderColor: '#06B6D4',
+                    borderColor: 'rgba(227, 179, 65, 0.4)',
                     color: '#E3B341'
                   }}
                   onClick={() => {
