@@ -15,7 +15,10 @@ import {
   ChevronRight,
   Search,
   Activity,
-  Flame
+  Flame,
+  TrendingUp,
+  TrendingDown,
+  ArrowRightLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -57,6 +60,18 @@ export default function People() {
     enabled: !!profileUserId,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+
+  // Fetch recent trades for profile view
+  const { data: tradesResponse } = useQuery({
+    queryKey: ['/api/users', profileUserId, 'trades'],
+    queryFn: async () => {
+      const res = await fetch(`/api/users/${profileUserId}/trades`);
+      if (!res.ok) return { data: [] };
+      return res.json();
+    },
+    enabled: !!profileUserId,
+    staleTime: 30000,
   });
 
   // Filter and sort users
@@ -199,6 +214,68 @@ export default function People() {
                       </div>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Recent Trades */}
+            <motion.div variants={fadeInUp}>
+              <Card style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center gap-2" style={{ color: '#F1F5F9' }}>
+                    <ArrowRightLeft className="w-5 h-5" style={{ color: '#E3B341' }} />
+                    Recent Trades
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {(() => {
+                    const trades = (tradesResponse as any)?.data || [];
+                    if (trades.length === 0) {
+                      return (
+                        <div className="text-center py-6">
+                          <ArrowRightLeft className="w-8 h-8 mx-auto mb-2" style={{ color: '#94A3B8', opacity: 0.5 }} />
+                          <p className="text-sm" style={{ color: '#94A3B8' }}>No trades yet</p>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div className="space-y-2">
+                        {trades.map((trade: any) => (
+                          <div
+                            key={trade.id}
+                            className="flex items-center justify-between p-3 rounded-lg"
+                            style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="p-1.5 rounded" style={{ backgroundColor: trade.action === 'buy' ? '#10B98120' : '#EF444420' }}>
+                                {trade.action === 'buy' ? (
+                                  <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
+                                ) : (
+                                  <TrendingDown className="w-4 h-4" style={{ color: '#EF4444' }} />
+                                )}
+                              </div>
+                              <div>
+                                <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>
+                                  {trade.action === 'buy' ? 'Bought' : 'Sold'} {trade.symbol}
+                                </p>
+                                <p className="text-xs" style={{ color: '#94A3B8' }}>
+                                  {trade.shares} shares @ ${parseFloat(trade.price).toFixed(2)}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-bold" style={{ color: trade.action === 'buy' ? '#EF4444' : '#10B981' }}>
+                                {trade.action === 'buy' ? '-' : '+'}${parseFloat(trade.totalValue || (trade.shares * trade.price)).toFixed(2)}
+                              </p>
+                              <p className="text-xs" style={{ color: '#94A3B8' }}>
+                                {trade.tradeDate ? new Date(trade.tradeDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })()}
                 </CardContent>
               </Card>
             </motion.div>
