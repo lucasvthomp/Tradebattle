@@ -20,6 +20,21 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
+// Stagger container for orchestrated child animations
+const staggerContainer = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const fadeUpItem = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
+};
+
 export default function Hub() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
@@ -79,6 +94,8 @@ export default function Hub() {
       icon: BarChart3,
       borderColor: '#10B981',
       badge: "Live",
+      gradient: 'linear-gradient(160deg, #111827 0%, #0d1f1a 100%)',
+      glowColor: 'rgba(16, 185, 129, 0.15)',
     },
     {
       title: "Join Tournament",
@@ -87,6 +104,8 @@ export default function Hub() {
       icon: Trophy,
       borderColor: '#E3B341',
       badge: "Ongoing",
+      gradient: 'linear-gradient(160deg, #111827 0%, #1a1810 100%)',
+      glowColor: 'rgba(227, 179, 65, 0.15)',
     },
     {
       title: "Leaderboard",
@@ -95,6 +114,8 @@ export default function Hub() {
       icon: Award,
       borderColor: '#06B6D4',
       badge: "Top 100",
+      gradient: 'linear-gradient(160deg, #111827 0%, #0d1820 100%)',
+      glowColor: 'rgba(6, 182, 212, 0.15)',
     }
   ];
 
@@ -104,36 +125,61 @@ export default function Hub() {
       value: formatCurrency(Number(user?.siteCash) || 0),
       icon: DollarSign,
       color: '#E3B341',
+      gradient: 'linear-gradient(160deg, #111827 0%, #1a1710 100%)',
     },
     {
       label: "Active Trades",
       value: activeTradesCount,
       icon: Activity,
       color: '#10B981',
+      gradient: 'linear-gradient(160deg, #111827 0%, #0d1f1a 100%)',
     },
     {
       label: "Tournaments",
       value: activeTournaments.length,
       icon: Trophy,
       color: '#8B5CF6',
+      gradient: 'linear-gradient(160deg, #111827 0%, #15102a 100%)',
     },
     {
       label: "Global Rank",
       value: globalRank ? `#${globalRank}` : "--",
       icon: Award,
       color: '#06B6D4',
+      gradient: 'linear-gradient(160deg, #111827 0%, #0d1820 100%)',
     },
   ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#080C14' }}>
+    <motion.div
+      className="min-h-screen relative overflow-hidden page-grid-bg"
+      style={{ backgroundColor: '#080C14' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Ambient gradient orb behind hero */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '-20%',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '800px',
+          height: '600px',
+          background: 'radial-gradient(ellipse at center, rgba(227, 179, 65, 0.06) 0%, rgba(6, 182, 212, 0.03) 40%, transparent 70%)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-8 relative z-10">
         {/* Hero Header */}
         <motion.div
-          className="mb-6 md:mb-8"
-          initial={{ opacity: 0, y: -15 }}
+          className="mb-8 md:mb-10"
+          initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
         >
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 md:gap-6">
             <div>
@@ -143,23 +189,36 @@ export default function Hub() {
                 }}>
                   <Crown className="w-8 h-8 md:w-12 md:h-12" style={{ color: '#080C14' }} />
                 </div>
-                <h1 className="text-2xl md:text-4xl lg:text-5xl font-black" style={{ color: '#F1F5F9' }}>
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black font-display tracking-tight" style={{ color: '#F1F5F9' }}>
                   {getGreeting()}, <span style={{ color: '#E3B341' }}>{user?.username}</span>!
                 </h1>
               </div>
-              <p className="flex items-center gap-2 text-sm md:text-base lg:text-lg" style={{ color: '#94A3B8' }}>
+              <motion.p
+                className="flex items-center gap-2 text-sm md:text-base lg:text-lg"
+                style={{ color: '#94A3B8' }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
                 <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: '#10B981' }} />
-                Ready to compete and win?
-              </p>
+                Your trading arena awaits
+              </motion.p>
             </div>
 
             {/* Balance Card */}
-            <motion.div whileHover={{ y: -3 }} className="w-full lg:w-auto">
+            <motion.div
+              whileHover={{ y: -3, scale: 1.01 }}
+              className="w-full lg:w-auto"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+            >
               <Card
                 className="rounded-2xl relative overflow-hidden border-none"
                 style={{
                   background: 'linear-gradient(135deg, #F59E0B, #E3B341, #D97706)',
                   minWidth: '100%',
+                  boxShadow: '0 0 60px rgba(227, 179, 65, 0.2), 0 0 120px rgba(227, 179, 65, 0.05)',
                 }}
               >
                 <CardContent className="p-4 md:p-6 relative z-10">
@@ -196,20 +255,23 @@ export default function Hub() {
         {/* Quick Stats */}
         <motion.div
           className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8"
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
         >
           {quickStats.map((stat, i) => (
             <motion.div
               key={i}
-              whileHover={{ y: -3 }}
+              variants={fadeUpItem}
+              whileHover={{ y: -4 }}
             >
               <Card
                 className="transition-all rounded-xl md:rounded-2xl relative overflow-hidden border"
                 style={{
-                  backgroundColor: '#111827',
+                  background: stat.gradient,
                   borderColor: '#1F2937',
+                  borderTopWidth: '2px',
+                  borderTopColor: stat.color,
                 }}
               >
                 <CardContent className="p-3 md:p-5 relative z-10">
@@ -235,17 +297,25 @@ export default function Hub() {
           {primaryActions.map((action, i) => (
             <motion.div
               key={i}
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + i * 0.1 }}
-              whileHover={{ y: -3 }}
+              transition={{ delay: 0.3 + i * 0.1, duration: 0.5, ease: "easeOut" }}
+              whileHover={{ y: -4 }}
             >
               <Link href={action.href}>
                 <Card
-                  className="h-full cursor-pointer relative overflow-hidden group rounded-2xl border transition-colors"
+                  className="h-full cursor-pointer relative overflow-hidden group rounded-2xl border transition-all duration-300"
                   style={{
-                    backgroundColor: '#111827',
+                    background: action.gradient,
                     borderColor: '#1F2937',
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 40px ${action.glowColor}`;
+                    (e.currentTarget as HTMLElement).style.borderColor = `${action.borderColor}40`;
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.boxShadow = 'none';
+                    (e.currentTarget as HTMLElement).style.borderColor = '#1F2937';
                   }}
                 >
                   {/* Badge */}
@@ -262,10 +332,14 @@ export default function Hub() {
 
                   <CardContent className="p-5 md:p-6 lg:p-8 relative z-10">
                     <div className="mb-4 md:mb-5">
-                      <div className="rounded-xl md:rounded-2xl inline-block p-3 md:p-4" style={{
-                        backgroundColor: `${action.borderColor}20`,
-                      }}>
-                        <action.icon className="w-10 h-10 md:w-12 md:h-12" style={{ color: action.borderColor }} />
+                      <div
+                        className="rounded-xl md:rounded-2xl inline-block p-3.5 md:p-5"
+                        style={{
+                          backgroundColor: `${action.borderColor}15`,
+                          border: `1px solid ${action.borderColor}25`,
+                        }}
+                      >
+                        <action.icon className="w-10 h-10 md:w-14 md:h-14" style={{ color: action.borderColor }} />
                       </div>
                     </div>
 
@@ -289,19 +363,42 @@ export default function Hub() {
 
         {/* Featured Tournament */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
           className="mb-6 md:mb-10"
         >
           <Link href="/tournaments">
             <Card
-              className="cursor-pointer group relative overflow-hidden rounded-2xl border transition-colors"
+              className="cursor-pointer group relative overflow-hidden rounded-2xl border transition-all duration-300"
               style={{
                 backgroundColor: '#111827',
                 borderColor: '#1F2937',
+                boxShadow: '0 0 40px rgba(227, 179, 65, 0.05)',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 50px rgba(227, 179, 65, 0.1), 0 0 100px rgba(227, 179, 65, 0.03)';
+                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(227, 179, 65, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(227, 179, 65, 0.05)';
+                (e.currentTarget as HTMLElement).style.borderColor = '#1F2937';
               }}
             >
+              {/* Subtle gold gradient bleed at top edge */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '2px',
+                  background: 'linear-gradient(90deg, transparent, #E3B341, transparent)',
+                  opacity: 0.6,
+                  zIndex: 5,
+                }}
+              />
+
               <CardContent className="p-4 md:p-6 lg:p-8 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
                   <div>
@@ -364,20 +461,48 @@ export default function Hub() {
 
                   <div className="relative">
                     <div
-                      className="text-center p-8 rounded-2xl"
+                      className="text-center p-8 rounded-2xl relative overflow-hidden"
                       style={{
                         backgroundColor: '#0F172A',
-                        border: '1px solid #1F2937',
+                        border: '1px solid rgba(227, 179, 65, 0.15)',
                       }}
                     >
-                      <div className="mb-4">
+                      {/* Prize section ambient glow */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '200px',
+                          height: '200px',
+                          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                      <div className="mb-4 relative z-10">
                         <Crown className="w-16 h-16 mx-auto" style={{ color: '#E3B341' }} />
                       </div>
-                      <div className="text-lg font-bold mb-3" style={{ color: '#F1F5F9' }}>First Place Wins</div>
-                      <div className="text-4xl font-black mb-4" style={{ color: '#10B981' }}>
+                      <div className="text-lg font-bold mb-3 relative z-10" style={{ color: '#F1F5F9' }}>First Place Wins</div>
+                      <motion.div
+                        className="text-4xl md:text-5xl font-black mb-4 relative z-10"
+                        style={{ color: '#10B981' }}
+                        animate={{
+                          textShadow: [
+                            '0 0 20px rgba(16, 185, 129, 0)',
+                            '0 0 20px rgba(16, 185, 129, 0.3)',
+                            '0 0 20px rgba(16, 185, 129, 0)',
+                          ],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        }}
+                      >
                         {nextTournament ? formatCurrency((nextTournament.buyInAmount || 0) * (nextTournament.currentPlayers || 0) * 0.5) : '--'}
-                      </div>
-                      <p className="text-sm" style={{ color: '#94A3B8' }}>Top positions paid out</p>
+                      </motion.div>
+                      <p className="text-sm relative z-10" style={{ color: '#94A3B8' }}>Top positions paid out</p>
                     </div>
                   </div>
                 </div>
@@ -386,6 +511,6 @@ export default function Hub() {
           </Link>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
