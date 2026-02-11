@@ -106,8 +106,13 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Run database migrations before starting the server
-  await runMigrations();
+  // Run database migrations before starting the server (non-fatal)
+  try {
+    await runMigrations();
+  } catch (error) {
+    log('WARNING: Database migrations failed, server will start without them.');
+    log('Migration error: ' + (error as Error).message);
+  }
 
   const server = await registerRoutes(app);
 
