@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { TradingViewChart } from "@/components/trading/TradingViewChart";
+import { PerformanceChart } from "@/components/portfolio/widgets/PerformanceChart";
 import { PortfolioSummaryBar } from "@/components/trading/PortfolioSummaryBar";
 import { HoldingsList } from "@/components/trading/HoldingsList";
 import { OrderPanel } from "@/components/trading/OrderPanel";
@@ -128,12 +128,12 @@ export default function Dashboard() {
     >
       {/* LEFT SIDE: Chart + Info */}
       <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-        {/* TradingView Chart */}
+        {/* Price Chart */}
         <div
           className="flex-1 min-h-[350px] [@media(min-aspect-ratio:1/1)]:min-h-[450px] mx-1 [@media(min-aspect-ratio:1/1)]:mx-2 rounded-lg overflow-hidden"
           style={{ border: "1px solid #1F2937" }}
         >
-          <TradingViewChart symbol={selectedSymbol} />
+          <PerformanceChart selectedStock={selectedSymbol} />
         </div>
 
         {/* Info Section (scrollable) */}
