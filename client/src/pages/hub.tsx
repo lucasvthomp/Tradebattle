@@ -102,7 +102,39 @@ function LiveMarketTicker({ stocks }: { stocks: any[] }) {
 function TopTradersSpotlight({ rankings, yourRank, formatCurrency }: { rankings: any[]; yourRank: number | null; formatCurrency: (n: number) => string }) {
   const medalColors = ['#E3B341', '#C0C0C0', '#CD7F32'];
 
-  if (!rankings || rankings.length === 0) return null;
+  if (!rankings || rankings.length === 0) {
+    return (
+      <motion.div
+        className="mb-6 md:mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <div className="rounded-lg p-1.5" style={{ backgroundColor: '#E3B34120' }}>
+            <Crown className="w-5 h-5" style={{ color: '#E3B341' }} />
+          </div>
+          <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
+            Top Traders
+          </h2>
+        </div>
+        <Card className="rounded-xl border" style={{ background: '#111827', borderColor: '#1F2937' }}>
+          <CardContent className="p-6 text-center">
+            <Trophy className="w-10 h-10 mx-auto mb-3" style={{ color: '#E3B34140' }} />
+            <p className="text-sm font-semibold" style={{ color: '#64748B' }}>
+              Join a tournament to see who's on top!
+            </p>
+            <Link href="/tournaments">
+              <Button className="mt-3 h-9 text-sm font-bold rounded-lg border-none" style={{ background: 'linear-gradient(135deg, #E3B341, #F59E0B)', color: '#080C14' }}>
+                Browse Tournaments
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -231,7 +263,39 @@ function LiveTournamentFeed({ tournaments, formatCurrency }: { tournaments: any[
     })
     .slice(0, 4);
 
-  if (sorted.length === 0) return null;
+  if (sorted.length === 0) {
+    return (
+      <motion.div
+        className="mb-6 md:mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <div className="rounded-lg p-1.5" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
+            <Swords className="w-5 h-5" style={{ color: '#EF4444' }} />
+          </div>
+          <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
+            Live Tournaments
+          </h2>
+        </div>
+        <Card className="rounded-xl border" style={{ background: '#111827', borderColor: '#1F2937' }}>
+          <CardContent className="p-6 text-center">
+            <Swords className="w-10 h-10 mx-auto mb-3" style={{ color: '#E3B34140' }} />
+            <p className="text-sm font-semibold" style={{ color: '#64748B' }}>
+              No active tournaments right now — be the first to create one!
+            </p>
+            <Link href="/tournaments">
+              <Button className="mt-3 h-9 text-sm font-bold rounded-lg border-none" style={{ background: 'linear-gradient(135deg, #E3B341, #F59E0B)', color: '#080C14' }}>
+                Create Tournament
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -449,12 +513,12 @@ function YourStatsBanner({ user, globalRank }: { user: any; globalRank: number |
 
 // ─── Trending Stocks Bar ───────────────────────────────────────
 function TrendingStocksBar({ stocks }: { stocks: any[] }) {
-  if (!stocks || stocks.length < 4) return null;
+  if (!stocks || stocks.length === 0) return null;
 
   // Sort by absolute % change, take top 4 movers
   const topMovers = [...stocks]
     .sort((a: any, b: any) => Math.abs(b.percentChange || b.changesPercentage || 0) - Math.abs(a.percentChange || a.changesPercentage || 0))
-    .slice(0, 4);
+    .slice(0, Math.min(4, stocks.length));
 
   return (
     <motion.div
@@ -654,14 +718,12 @@ export default function Hub() {
   ) || [];
   const activeTradesCount = userTournaments.length;
 
-  const globalRank = (growthLeaderboard as any)?.data?.yourRank || null;
-  const topRankings = (growthLeaderboard as any)?.data?.rankings || [];
+  const globalRank = (growthLeaderboard as any)?.data?.yourRank ?? null;
+  const topRankings = (growthLeaderboard as any)?.data?.rankings ?? [];
 
-  const allPublicTournaments = (publicTournaments as any)?.data || (publicTournaments as any) || [];
-  const tournamentList = Array.isArray(allPublicTournaments) ? allPublicTournaments : [];
+  const tournamentList = (publicTournaments as any)?.data ?? [];
 
-  const stocks = (popularStocks as any)?.data || (popularStocks as any) || [];
-  const stockList = Array.isArray(stocks) ? stocks : [];
+  const stockList = (popularStocks as any)?.data ?? [];
 
   const getTimeRemaining = () => {
     const nextTournament = activeTournaments[0];
