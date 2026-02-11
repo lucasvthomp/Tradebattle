@@ -63,15 +63,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <span className="text-sm font-bold">
                     {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
-                </Button>
-
-                {/* Deposit Button */}
-                <Button
-                  className="h-8 w-8 p-0 rounded-full text-white transition-transform hover:scale-110"
-                  style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)' }}
-                  onClick={() => navigate("/deposit")}
-                >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5 ml-1.5" style={{ color: '#10B981' }} />
                 </Button>
 
                 {/* Chat Button - only show for authenticated users */}
