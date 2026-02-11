@@ -11,10 +11,10 @@ export default function Footer() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded-sm flex items-center justify-center">
-                  <span className="text-primary-foreground font-bold text-sm">O</span>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #E3B341, #c99a35)', boxShadow: '0 0 12px rgba(227, 179, 65, 0.15)' }}>
+                  <span className="text-primary-foreground font-black text-sm">O</span>
                 </div>
-                <span className="text-xl font-bold text-foreground">{t('brandName')}</span>
+                <span className="text-xl font-display font-bold text-foreground tracking-tight">{t('brandName')}</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 {t('tagline')}
