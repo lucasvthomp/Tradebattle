@@ -60,6 +60,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Recent trades for a user (public profile)
+  app.get('/api/users/:userId/trades', async (req: any, res) => {
+    try {
+      const targetUserId = parseInt(req.params.userId);
+      if (isNaN(targetUserId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      const trades = await storage.getUserTradeHistory(targetUserId, 10);
+      res.json({ data: trades || [] });
+    } catch (error) {
+      console.error("Error fetching user trades:", error);
+      res.json({ data: [] });
+    }
+  });
+
   // User profile routes (protected)
   app.put('/api/user/profile', requireAuth, async (req: any, res) => {
     try {
