@@ -23,7 +23,7 @@ import { db } from '../db.js';
 import { tournaments, tournamentParticipants, tradeHistory } from '../../shared/schema.js';
 import { eq, sql } from 'drizzle-orm';
 import { requireAuth } from '../auth.js';
-import { containsProfanity } from '../utils/profanityFilter.js';
+import { containsProfanity, censorProfanity } from '../utils/profanityFilter.js';
 
 const router = Router();
 
@@ -593,11 +593,19 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
 router.get('/tournaments', requireAuth, asyncHandler(async (req: any, res: any) => {
   const userId = req.user.id;
 
-  const tournaments = await storage.getUserTournaments(userId);
+  const userTournaments = await storage.getUserTournaments(userId);
+
+  // Attach participant previews to each tournament
+  const tournamentsWithPreviews = await Promise.all(
+    userTournaments.map(async (tournament: any) => {
+      const participantPreviews = await storage.getTournamentParticipantPreviews(tournament.id);
+      return { ...tournament, participantPreviews };
+    })
+  );
 
   res.json({
     success: true,
-    data: tournaments,
+    data: tournamentsWithPreviews,
   });
 }));
 
@@ -610,9 +618,17 @@ router.get('/tournaments/public', requireAuth, asyncHandler(async (req, res) => 
 
   const publicTournaments = await storage.getPublicTournaments();
 
+  // Attach participant previews to each tournament
+  const tournamentsWithPreviews = await Promise.all(
+    publicTournaments.map(async (tournament: any) => {
+      const participantPreviews = await storage.getTournamentParticipantPreviews(tournament.id);
+      return { ...tournament, participantPreviews };
+    })
+  );
+
   res.json({
     success: true,
-    data: publicTournaments,
+    data: tournamentsWithPreviews,
   });
 }));
 
@@ -2041,9 +2057,7 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
     throw new ValidationError('Message is required');
   }
 
-  if (containsProfanity(message)) {
-    return res.status(400).json({ message: "Message contains inappropriate language" });
-  }
+  const censoredMessage = censorProfanity(message.trim());
 
   const user = await storage.getUser(userId);
   if (!user) {
@@ -2054,7 +2068,7 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
     userId,
     username: user.username,
     profilePicture: user.profilePicture || null,
-    message: message.trim(),
+    message: censoredMessage,
     tournamentId: null
   });
 
@@ -2099,9 +2113,7 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
     throw new ValidationError('Message is required');
   }
 
-  if (containsProfanity(message)) {
-    return res.status(400).json({ message: "Message contains inappropriate language" });
-  }
+  const censoredMessage = censorProfanity(message.trim());
 
   const user = await storage.getUser(userId);
   if (!user) {
@@ -2112,7 +2124,7 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
     userId,
     username: user.username,
     profilePicture: user.profilePicture || null,
-    message: message.trim(),
+    message: censoredMessage,
     tournamentId
   });
 

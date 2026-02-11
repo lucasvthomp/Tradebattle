@@ -39,6 +39,33 @@ function normalize(text: string): string {
   return normalized;
 }
 
+export function censorProfanity(text: string): string {
+  // Split preserving whitespace tokens
+  const tokens = text.split(/(\s+)/);
+  return tokens.map(token => {
+    // Skip whitespace tokens
+    if (/^\s+$/.test(token)) return token;
+
+    const normalized = normalize(token);
+    const cleaned = normalized.replace(/[^a-z]/g, "");
+    if (!cleaned) return token;
+
+    // Layer 1: Exact word match
+    if (PROFANITY_LIST.includes(cleaned)) {
+      return "####";
+    }
+
+    // Layer 2: Substring match (e.g., "fuckyou" contains "fuck")
+    for (const profanity of PROFANITY_LIST) {
+      if (cleaned.includes(profanity)) {
+        return "####";
+      }
+    }
+
+    return token;
+  }).join("");
+}
+
 export function containsProfanity(text: string): boolean {
   const normalized = normalize(text);
   const words = normalized.split(/\s+/);

@@ -582,6 +582,7 @@ export class DatabaseStorage implements IStorage {
             ...participant,
             username: user[0]?.username || `User ${participant.userId}`,
             email: user[0]?.email || '',
+            profilePicture: user[0]?.profilePicture || null,
             stockPurchases: stockPurchases || []
           };
         })
@@ -593,6 +594,25 @@ export class DatabaseStorage implements IStorage {
       // Return empty array if there's an error
       return [];
     }
+  }
+
+  async getTournamentParticipantPreviews(tournamentId: number, limit: number = 6): Promise<{ userId: number; username: string; profilePicture: string | null }[]> {
+    const results = await db
+      .select({
+        userId: tournamentParticipants.userId,
+        username: users.username,
+        profilePicture: users.profilePicture,
+      })
+      .from(tournamentParticipants)
+      .innerJoin(users, eq(tournamentParticipants.userId, users.id))
+      .where(eq(tournamentParticipants.tournamentId, tournamentId))
+      .limit(limit);
+
+    return results.map(r => ({
+      userId: r.userId,
+      username: r.username,
+      profilePicture: r.profilePicture || null,
+    }));
   }
 
   // Tournament trading operations

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Send, MessageSquare, X, DollarSign, UserCircle } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -31,8 +31,17 @@ interface ChatMessage {
   id: number;
   userId: number;
   username: string;
+  profilePicture?: string | null;
   message: string;
   createdAt: string;
+}
+
+interface MessageGroup {
+  userId: number;
+  username: string;
+  profilePicture?: string | null;
+  firstMessageTimestamp: string;
+  messages: ChatMessage[];
 }
 
 interface ChatSidebarProps {
@@ -104,36 +113,43 @@ function renderMessageWithMentions(
   return parts.length > 0 ? parts : text;
 }
 
-const ChatMessageItem = React.memo(function ChatMessageItem({
-  message,
+// Group messages component - renders a group of consecutive messages from the same user
+const ChatMessageGroup = React.memo(function ChatMessageGroup({
+  group,
   isCurrentUser,
   onViewProfile,
   onSendTip,
   users,
   navigate,
+  shiftHeld,
 }: {
-  message: ChatMessage;
+  group: MessageGroup;
   isCurrentUser: boolean;
   onViewProfile: (userId: number) => void;
   onSendTip: (user: { id: number; username: string }) => void;
   users: { id: number; username: string }[];
   navigate: (path: string) => void;
+  shiftHeld: boolean;
 }) {
   return (
     <div className="flex space-x-2">
+      {/* Avatar - self-start so it doesn't stretch */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="cursor-pointer">
-            <Avatar className="w-8 h-8" style={{ border: '2px solid #1F2937' }}>
+          <div className="cursor-pointer self-start">
+            <Avatar className="w-9 h-9" style={{ border: '2px solid #1F2937' }}>
+              {group.profilePicture && (
+                <AvatarImage src={group.profilePicture} className="object-cover" />
+              )}
               <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#111827', color: '#E3B341' }}>
-                {message.username.slice(0, 2).toUpperCase()}
+                {group.username.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
           <DropdownMenuItem
-            onClick={() => onViewProfile(message.userId)}
+            onClick={() => onViewProfile(group.userId)}
             className="cursor-pointer"
             style={{ color: '#F1F5F9' }}
           >
@@ -142,7 +158,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
           </DropdownMenuItem>
           {!isCurrentUser && (
             <DropdownMenuItem
-              onClick={() => onSendTip({ id: message.userId, username: message.username })}
+              onClick={() => onSendTip({ id: group.userId, username: group.username })}
               className="cursor-pointer"
               style={{ color: '#F1F5F9' }}
             >
@@ -153,23 +169,40 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center space-x-1.5 mb-0.5">
-          <span className="text-xs font-semibold" style={{ color: '#F1F5F9' }}>
-            {message.username}
-          </span>
-          {isCurrentUser && (
-            <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
-          )}
-          <span className="text-[10px]" style={{ color: '#94A3B8' }}>
-            {formatTimestamp(message.createdAt)}
-          </span>
-        </div>
-        <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-          <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>
-            {renderMessageWithMentions(message.message, users, navigate)}
-          </p>
-        </div>
+      <div className="flex-1 min-w-0 space-y-0.5">
+        {group.messages.map((msg, idx) => {
+          const isFirst = idx === 0;
+          return (
+            <div key={msg.id}>
+              {isFirst && (
+                <div className="flex items-center space-x-1.5 mb-0.5">
+                  <span className="text-xs font-semibold" style={{ color: '#F1F5F9' }}>
+                    {group.username}
+                  </span>
+                  {isCurrentUser && (
+                    <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
+                  )}
+                  <span className="text-[10px]" style={{ color: '#94A3B8' }}>
+                    {formatTimestamp(msg.createdAt)}
+                  </span>
+                </div>
+              )}
+              <div className="group/msg flex items-center gap-1.5">
+                <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+                  <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>
+                    {renderMessageWithMentions(msg.message, users, navigate)}
+                  </p>
+                </div>
+                {/* Shift-hover timestamp for subsequent messages */}
+                {!isFirst && shiftHeld && (
+                  <span className="text-[10px] opacity-0 group-hover/msg:opacity-100 transition-opacity whitespace-nowrap" style={{ color: '#94A3B8' }}>
+                    {formatTimestamp(msg.createdAt)}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -191,6 +224,19 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const [showMentions, setShowMentions] = useState(false);
   const [mentionQuery, setMentionQuery] = useState("");
   const [mentionIndex, setMentionIndex] = useState(0);
+
+  // Shift key tracking for timestamp visibility
+  const [shiftHeld, setShiftHeld] = useState(false);
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Shift') setShiftHeld(true); };
+    const onKeyUp = (e: KeyboardEvent) => { if (e.key === 'Shift') setShiftHeld(false); };
+    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
+    return () => {
+      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keyup', onKeyUp);
+    };
+  }, []);
 
   // Fetch global chat messages
   const { data: chatResponse, isLoading } = useQuery({
@@ -219,6 +265,32 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
   const allMessages: ChatMessage[] = chatResponse?.data || [];
   const messages = allMessages.slice(-100);
+
+  // Group consecutive messages from the same user within 10 minutes
+  const messageGroups: MessageGroup[] = useMemo(() => {
+    const groups: MessageGroup[] = [];
+    const TEN_MINUTES = 10 * 60 * 1000;
+
+    for (const msg of messages) {
+      const lastGroup = groups[groups.length - 1];
+      if (
+        lastGroup &&
+        lastGroup.userId === msg.userId &&
+        new Date(msg.createdAt).getTime() - new Date(lastGroup.firstMessageTimestamp).getTime() < TEN_MINUTES
+      ) {
+        lastGroup.messages.push(msg);
+      } else {
+        groups.push({
+          userId: msg.userId,
+          username: msg.username,
+          profilePicture: msg.profilePicture,
+          firstMessageTimestamp: msg.createdAt,
+          messages: [msg],
+        });
+      }
+    }
+    return groups;
+  }, [messages]);
 
   // Filtered mention suggestions
   const mentionSuggestions = useMemo(() => {
@@ -373,7 +445,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             {/* Messages Area */}
             <div className="flex-1 overflow-hidden">
               <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(8, 12, 20, 0.5)' }}>
-                <div className="space-y-2">
+                <div className="space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
                     <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#E3B341', borderTopColor: 'transparent' }} />
@@ -386,11 +458,11 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                     </p>
                   </div>
                 ) : (
-                  messages.map((message) => (
-                    <ChatMessageItem
-                      key={message.id}
-                      message={message}
-                      isCurrentUser={message.userId === user?.id}
+                  messageGroups.map((group) => (
+                    <ChatMessageGroup
+                      key={`group-${group.messages[0].id}`}
+                      group={group}
+                      isCurrentUser={group.userId === user?.id}
                       onViewProfile={(userId) => navigate(`/people/${userId}`)}
                       onSendTip={(tipUser) => {
                         setSelectedUser(tipUser);
@@ -398,6 +470,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       }}
                       users={allUsers}
                       navigate={navigate}
+                      shiftHeld={shiftHeld}
                     />
                   ))
                 )}
