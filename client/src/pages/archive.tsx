@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Archive, Search, Trophy, Users, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 interface Participant {
   userId: number;
@@ -28,6 +29,7 @@ interface ArchivedTournament {
 
 export default function ArchivePage() {
   const { user } = useAuth();
+  const { t } = useUserPreferences();
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: archivedTournaments, isLoading } = useQuery({
@@ -49,7 +51,7 @@ export default function ArchivePage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: '#F1F5F9' }}>
           <Archive className="w-6 h-6" style={{ color: '#E3B341' }} />
-          Archive
+          {t('archive')}
         </h1>
       </div>
 
@@ -57,7 +59,7 @@ export default function ArchivePage() {
       <div className="relative mb-6">
         <Search className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
         <Input
-          placeholder="Search tournaments..."
+          placeholder={t('searchTournaments')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
@@ -74,7 +76,7 @@ export default function ArchivePage() {
         <div className="text-center py-12">
           <Trophy className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8', opacity: 0.5 }} />
           <p style={{ color: '#94A3B8' }}>
-            {searchQuery ? "No matching tournaments" : "No completed tournaments yet"}
+            {searchQuery ? t('noMatchingTournaments') : t('noCompletedTournaments')}
           </p>
         </div>
       ) : (
