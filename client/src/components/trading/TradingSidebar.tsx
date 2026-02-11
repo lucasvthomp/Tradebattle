@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
   Select,
   SelectContent,
@@ -9,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Minus, Search, X, Clock, ArrowLeft } from "lucide-react";
+import { Plus, Search, X, Clock, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { executeOrder, type OrderRequest } from "@/lib/orderEngine";
@@ -36,6 +35,8 @@ interface TradingSidebarProps {
 
 type ActiveView = "positions" | "history" | "trade";
 type OrderSide = "buy" | "sell";
+type OrderType = "market" | "limit" | "stop_market" | "stop_limit";
+type BuyInMode = "shares" | "dollars";
 
 export function TradingSidebar({
   selectedSymbol,
@@ -59,7 +60,12 @@ export function TradingSidebar({
 
   // Order form state
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
+  const [orderType, setOrderType] = useState<OrderType>("market");
+  const [buyInMode, setBuyInMode] = useState<BuyInMode>("shares");
   const [quantity, setQuantity] = useState(1);
+  const [dollarAmount, setDollarAmount] = useState(0);
+  const [limitPrice, setLimitPrice] = useState(0);
+  const [stopPrice, setStopPrice] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
@@ -111,16 +117,23 @@ export function TradingSidebar({
     );
   };
 
-  // Order logic
-  const estimatedTotal = quantity * currentPrice;
-  const maxBuyShares = currentPrice > 0 ? Math.floor(buyingPower / currentPrice) : 0;
+  // Bid/Ask spread (simulated ~0.02% spread from market price)
+  const spread = currentPrice * 0.0001;
+  const bidPrice = currentPrice > 0 ? currentPrice - spread : 0;
+  const askPrice = currentPrice > 0 ? currentPrice + spread : 0;
+
+  // Order logic — compute effective quantity and total
+  const effectiveQuantity = buyInMode === "dollars" && currentPrice > 0
+    ? Math.floor(dollarAmount / currentPrice)
+    : quantity;
+  const estimatedTotal = effectiveQuantity * currentPrice;
 
   const canSubmit = (() => {
     if (tradingBlocked) return false;
-    if (!selectedTournament?.id || !selectedSymbol || quantity <= 0 || currentPrice <= 0)
-      return false;
+    if (!selectedTournament?.id || !selectedSymbol || currentPrice <= 0) return false;
+    if (effectiveQuantity <= 0) return false;
     if (orderSide === "buy" && estimatedTotal > buyingPower) return false;
-    if (orderSide === "sell" && quantity > ownedShares) return false;
+    if (orderSide === "sell" && effectiveQuantity > ownedShares) return false;
     return true;
   })();
 
@@ -138,12 +151,13 @@ export function TradingSidebar({
         symbol: selectedSymbol,
         companyName,
         side: orderSide,
-        quantity,
+        quantity: effectiveQuantity,
         currentMarketPrice: currentPrice,
       };
       const result = await executeOrder(order);
       toast({ title: result.message });
       setQuantity(1);
+      setDollarAmount(0);
       onOrderExecuted();
       queryClient.invalidateQueries({
         queryKey: ["/api/tournaments", selectedTournament.id, "balance"],
@@ -170,11 +184,8 @@ export function TradingSidebar({
   const handleSideChange = (side: OrderSide) => {
     setOrderSide(side);
     setAwaitingConfirm(false);
-  };
-
-  const handleQuantityChange = (newQty: number) => {
-    setQuantity(newQty);
-    setAwaitingConfirm(false);
+    setOrderType("market");
+    setBuyInMode("shares");
   };
 
   const handleSearchSelect = (sym: string) => {
@@ -187,13 +198,16 @@ export function TradingSidebar({
     onSymbolChange(symbol);
     setActiveView("trade");
     setQuantity(1);
+    setDollarAmount(0);
     setAwaitingConfirm(false);
+    setOrderType("market");
+    setBuyInMode("shares");
   };
 
   const buttonLabel = (() => {
     if (isSubmitting) return "Submitting...";
-    if (awaitingConfirm) return `Confirm ${orderSide === "buy" ? "Buy" : "Sell"}`;
-    return `${orderSide === "buy" ? "Buy" : "Sell"} ${selectedSymbol}`;
+    if (awaitingConfirm) return `Confirm ${orderSide === "buy" ? "Buy" : "Short"}`;
+    return `${orderSide === "buy" ? "Buy" : "Short"} ${selectedSymbol}`;
   })();
 
   return (
@@ -432,12 +446,12 @@ export function TradingSidebar({
           <TradeHistory tournamentId={selectedTournament?.id} />
         )}
 
-        {/* TRADE VIEW */}
+        {/* TRADE VIEW — Robinhood Legend style */}
         {activeView === "trade" && (
           <div>
-            {/* Back button + symbol header */}
+            {/* Back button */}
             <div
-              className="flex items-center gap-2 px-3 py-2.5 shrink-0"
+              className="flex items-center px-3 py-2 shrink-0"
               style={{ borderBottom: "1px solid #1F2937" }}
             >
               <button
@@ -446,30 +460,34 @@ export function TradingSidebar({
               >
                 <ArrowLeft className="w-4 h-4" style={{ color: "#94A3B8" }} />
               </button>
+            </div>
+
+            {/* Ticker + Price Header */}
+            <div className="px-4 pt-3 pb-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold" style={{ color: "#06B6D4" }}>
+                <span className="text-lg font-bold" style={{ color: "#FFFFFF" }}>
                   {selectedSymbol}
                 </span>
-                <span className="text-xs" style={{ color: "#94A3B8" }}>
-                  {companyName !== selectedSymbol ? companyName : ""}
-                </span>
+                {companyName !== selectedSymbol && (
+                  <span className="text-xs truncate" style={{ color: "#64748B" }}>
+                    {companyName}
+                  </span>
+                )}
               </div>
-              <div className="ml-auto text-right">
-                <span className="text-sm font-bold" style={{ color: "#FFFFFF" }}>
-                  {formatCurrency(currentPrice)}
-                </span>
+              <div className="text-2xl font-bold mt-0.5" style={{ color: "#FFFFFF" }}>
+                {formatCurrency(currentPrice)}
               </div>
             </div>
 
             {/* Stock Search */}
-            <div className="px-3 py-2" style={{ borderBottom: "1px solid #1F2937" }}>
+            <div className="px-4 pb-2">
               <div className="relative">
                 <Search
                   className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
                   style={{ color: "#94A3B8" }}
                 />
                 <Input
-                  placeholder="Search symbol or company..."
+                  placeholder="Search symbol..."
                   value={showSearch ? searchQuery : ""}
                   onFocus={() => setShowSearch(true)}
                   onChange={(e) => {
@@ -511,7 +529,7 @@ export function TradingSidebar({
                     <button
                       key={result.symbol}
                       onClick={() => handleSearchSelect(result.symbol)}
-                      className="w-full px-3 py-2 text-left hover:bg-[#0F172A] flex items-center justify-between transition-colors"
+                      className="w-full px-4 py-2.5 text-left hover:bg-[#0F172A] flex items-center justify-between transition-colors"
                       style={{
                         borderBottom: "1px solid rgba(31, 41, 55, 0.5)",
                         backgroundColor:
@@ -536,10 +554,7 @@ export function TradingSidebar({
                           )}
                         </div>
                         {result.name && (
-                          <div
-                            className="text-[10px] mt-0.5 truncate"
-                            style={{ color: "#94A3B8" }}
-                          >
+                          <div className="text-[10px] mt-0.5 truncate" style={{ color: "#94A3B8" }}>
                             {result.name}
                           </div>
                         )}
@@ -563,258 +578,244 @@ export function TradingSidebar({
               </div>
             ) : (
               <>
-                {/* Buy/Sell Tabs */}
-                <div className="flex">
+                {/* Buy / Short Tabs */}
+                <div className="flex mx-4 rounded-lg overflow-hidden" style={{ border: "1px solid #1F2937" }}>
                   <button
                     onClick={() => handleSideChange("buy")}
-                    className="flex-1 py-2.5 text-sm font-bold text-center transition-colors"
+                    className="flex-1 py-2 text-sm font-semibold text-center transition-colors"
                     style={{
-                      background:
-                        orderSide === "buy"
-                          ? "linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(6, 182, 212, 0.2))"
-                          : "transparent",
-                      color: orderSide === "buy" ? "#10B981" : "#94A3B8",
-                      borderBottom:
-                        orderSide === "buy" ? "2px solid #10B981" : "2px solid transparent",
+                      backgroundColor: orderSide === "buy" ? "#10B981" : "transparent",
+                      color: orderSide === "buy" ? "#000000" : "#94A3B8",
                     }}
                   >
                     Buy
                   </button>
                   <button
                     onClick={() => handleSideChange("sell")}
-                    className="flex-1 py-2.5 text-sm font-bold text-center transition-colors"
+                    className="flex-1 py-2 text-sm font-semibold text-center transition-colors"
                     style={{
-                      background:
-                        orderSide === "sell"
-                          ? "linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(249, 115, 22, 0.2))"
-                          : "transparent",
-                      color: orderSide === "sell" ? "#EF4444" : "#94A3B8",
-                      borderBottom:
-                        orderSide === "sell" ? "2px solid #EF4444" : "2px solid transparent",
+                      backgroundColor: orderSide === "sell" ? "#EF4444" : "transparent",
+                      color: orderSide === "sell" ? "#FFFFFF" : "#94A3B8",
                     }}
                   >
-                    Sell
+                    Short
                   </button>
                 </div>
 
-                <div className="p-3 space-y-3">
-                  {/* Shares Input */}
-                  <div>
-                    <label
-                      className="text-xs font-medium mb-1 block"
-                      style={{ color: "#94A3B8" }}
-                    >
-                      Shares
-                    </label>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
-                        className="h-8 w-8 p-0"
-                        style={{
-                          backgroundColor: "#080C14",
-                          borderColor: "#1F2937",
-                          color: "#FFFFFF",
-                        }}
+                {/* Order Form — Robinhood Legend rows */}
+                <div className="px-4 pt-4 space-y-0">
+                  {/* Order Type Row */}
+                  <div
+                    className="flex items-center justify-between py-3"
+                    style={{ borderBottom: "1px solid #1F2937" }}
+                  >
+                    <span className="text-sm" style={{ color: "#F1F5F9" }}>Order Type</span>
+                    <Select value={orderType} onValueChange={(v) => { setOrderType(v as OrderType); setAwaitingConfirm(false); }}>
+                      <SelectTrigger
+                        className="w-auto h-auto p-0 border-0 bg-transparent gap-1"
+                        style={{ color: "#10B981" }}
                       >
-                        <Minus className="w-3.5 h-3.5" />
-                      </Button>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent style={{ backgroundColor: "#111827", borderColor: "#1F2937" }}>
+                        <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
+                        <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
+                        <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
+                        <SelectItem value="stop_limit" style={{ color: "#F1F5F9" }}>Stop Limit</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Limit Price Row (only for limit / stop limit) */}
+                  {(orderType === "limit" || orderType === "stop_limit") && (
+                    <div
+                      className="flex items-center justify-between py-3"
+                      style={{ borderBottom: "1px solid #1F2937" }}
+                    >
+                      <span className="text-sm" style={{ color: "#F1F5F9" }}>Limit Price</span>
                       <Input
                         type="number"
-                        min="1"
-                        value={quantity}
-                        onChange={(e) =>
-                          handleQuantityChange(Math.max(0, parseInt(e.target.value) || 0))
-                        }
-                        className="h-8 text-center flex-1"
-                        style={{
-                          backgroundColor: "#080C14",
-                          borderColor: "#1F2937",
-                          color: "#FFFFFF",
-                        }}
+                        min="0"
+                        step="0.01"
+                        value={limitPrice || ""}
+                        onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
+                        placeholder="0.00"
+                        className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                        style={{ color: "#10B981" }}
                       />
-                      <Button
-                        size="sm"
-                        onClick={() => handleQuantityChange(quantity + 1)}
-                        className="h-8 w-8 p-0"
-                        style={{
-                          backgroundColor: "#080C14",
-                          borderColor: "#1F2937",
-                          color: "#FFFFFF",
-                        }}
+                    </div>
+                  )}
+
+                  {/* Stop Price Row (only for stop market / stop limit) */}
+                  {(orderType === "stop_market" || orderType === "stop_limit") && (
+                    <div
+                      className="flex items-center justify-between py-3"
+                      style={{ borderBottom: "1px solid #1F2937" }}
+                    >
+                      <span className="text-sm" style={{ color: "#F1F5F9" }}>Stop Price</span>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={stopPrice || ""}
+                        onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
+                        placeholder="0.00"
+                        className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                        style={{ color: "#10B981" }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Buy In Row */}
+                  <div
+                    className="flex items-center justify-between py-3"
+                    style={{ borderBottom: "1px solid #1F2937" }}
+                  >
+                    <span className="text-sm" style={{ color: "#F1F5F9" }}>
+                      {orderSide === "buy" ? "Buy In" : "Short In"}
+                    </span>
+                    <Select value={buyInMode} onValueChange={(v) => { setBuyInMode(v as BuyInMode); setAwaitingConfirm(false); }}>
+                      <SelectTrigger
+                        className="w-auto h-auto p-0 border-0 bg-transparent gap-1"
+                        style={{ color: "#10B981" }}
                       >
-                        <Plus className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent style={{ backgroundColor: "#111827", borderColor: "#1F2937" }}>
+                        <SelectItem value="shares" style={{ color: "#F1F5F9" }}>Shares</SelectItem>
+                        <SelectItem value="dollars" style={{ color: "#F1F5F9" }}>Dollars</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
 
-                    {/* Quick select buttons */}
-                    <div className="flex gap-1.5 mt-2">
-                      {orderSide === "buy" ? (
-                        <>
-                          {[1, 5, 10, 25].map((n) => (
-                            <button
-                              key={n}
-                              onClick={() => handleQuantityChange(n)}
-                              className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
-                              style={{
-                                backgroundColor:
-                                  quantity === n ? "rgba(16, 185, 129, 0.2)" : "#080C14",
-                                color: quantity === n ? "#10B981" : "#94A3B8",
-                                border: `1px solid ${quantity === n ? "#10B981" : "#1F2937"}`,
-                              }}
-                            >
-                              {n}
-                            </button>
-                          ))}
-                          {maxBuyShares > 0 && (
-                            <button
-                              onClick={() => handleQuantityChange(maxBuyShares)}
-                              className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
-                              style={{
-                                backgroundColor:
-                                  quantity === maxBuyShares
-                                    ? "rgba(16, 185, 129, 0.2)"
-                                    : "#080C14",
-                                color: quantity === maxBuyShares ? "#10B981" : "#E3B341",
-                                border: `1px solid ${quantity === maxBuyShares ? "#10B981" : "#1F2937"}`,
-                              }}
-                            >
-                              Max
-                            </button>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          {ownedShares > 0 && (
-                            <>
-                              {[1, Math.ceil(ownedShares / 4), Math.ceil(ownedShares / 2)]
-                                .filter(
-                                  (n, i, arr) =>
-                                    n > 0 && arr.indexOf(n) === i && n <= ownedShares
-                                )
-                                .map((n) => (
-                                  <button
-                                    key={n}
-                                    onClick={() => handleQuantityChange(n)}
-                                    className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
-                                    style={{
-                                      backgroundColor:
-                                        quantity === n ? "rgba(239, 68, 68, 0.2)" : "#080C14",
-                                      color: quantity === n ? "#EF4444" : "#94A3B8",
-                                      border: `1px solid ${quantity === n ? "#EF4444" : "#1F2937"}`,
-                                    }}
-                                  >
-                                    {n}
-                                  </button>
-                                ))}
-                              <button
-                                onClick={() => handleQuantityChange(ownedShares)}
-                                className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
-                                style={{
-                                  backgroundColor:
-                                    quantity === ownedShares
-                                      ? "rgba(239, 68, 68, 0.2)"
-                                      : "#080C14",
-                                  color: quantity === ownedShares ? "#EF4444" : "#E3B341",
-                                  border: `1px solid ${quantity === ownedShares ? "#EF4444" : "#1F2937"}`,
-                                }}
-                              >
-                                All ({ownedShares})
-                              </button>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </div>
-
-                    {orderSide === "sell" && quantity > ownedShares && (
-                      <p className="text-xs mt-1.5" style={{ color: "#EF4444" }}>
-                        You only own {ownedShares} shares
-                      </p>
+                  {/* Quantity Row */}
+                  <div
+                    className="flex items-center justify-between py-3"
+                    style={{ borderBottom: "1px solid #1F2937" }}
+                  >
+                    <span className="text-sm" style={{ color: "#F1F5F9" }}>
+                      {buyInMode === "shares" ? "Shares" : "Amount"}
+                    </span>
+                    {buyInMode === "shares" ? (
+                      <Input
+                        type="number"
+                        min="0"
+                        value={quantity || ""}
+                        onChange={(e) => { setQuantity(Math.max(0, parseInt(e.target.value) || 0)); setAwaitingConfirm(false); }}
+                        placeholder="0"
+                        className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                        style={{ color: "#FFFFFF" }}
+                      />
+                    ) : (
+                      <div className="flex items-center">
+                        <span className="text-sm mr-0.5" style={{ color: "#64748B" }}>$</span>
+                        <Input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={dollarAmount || ""}
+                          onChange={(e) => { setDollarAmount(Math.max(0, parseFloat(e.target.value) || 0)); setAwaitingConfirm(false); }}
+                          placeholder="0.00"
+                          className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                          style={{ color: "#FFFFFF" }}
+                        />
+                      </div>
                     )}
                   </div>
 
-                  {/* Market Price */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs" style={{ color: "#94A3B8" }}>
-                      Market Price
-                    </span>
-                    <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
-                      {formatCurrency(currentPrice)}
-                    </span>
-                  </div>
-
-                  {/* Owned Position */}
-                  {ownedShares > 0 && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs" style={{ color: "#94A3B8" }}>
-                        You Own
+                  {/* Dollars mode: show estimated shares */}
+                  {buyInMode === "dollars" && effectiveQuantity > 0 && (
+                    <div className="flex items-center justify-between py-2">
+                      <span className="text-[11px]" style={{ color: "#64748B" }}>
+                        Est. Shares
                       </span>
-                      <span className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>
-                        {ownedShares} shares
+                      <span className="text-[11px] font-medium" style={{ color: "#94A3B8" }}>
+                        {effectiveQuantity}
                       </span>
                     </div>
                   )}
 
-                  <Separator style={{ backgroundColor: "#1F2937" }} />
+                  {/* Market Price + Bid/Ask */}
+                  <div className="pt-3 pb-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm" style={{ color: "#F1F5F9" }}>Market Price</span>
+                      <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
+                        {formatCurrency(currentPrice)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[11px]" style={{ color: "#64748B" }}>Bid</span>
+                      <span className="text-[11px]" style={{ color: "#94A3B8" }}>
+                        {formatCurrency(bidPrice)}
+                      </span>
+                    </div>
+                    <div
+                      className="flex items-center justify-between mt-0.5 pb-3"
+                      style={{ borderBottom: "1px solid #1F2937" }}
+                    >
+                      <span className="text-[11px]" style={{ color: "#64748B" }}>Ask</span>
+                      <span className="text-[11px]" style={{ color: "#94A3B8" }}>
+                        {formatCurrency(askPrice)}
+                      </span>
+                    </div>
+                  </div>
 
-                  {/* Estimated Cost / Credit */}
-                  <div className="flex items-center justify-between">
+                  {/* Estimated Cost */}
+                  <div className="flex items-center justify-between py-3">
                     <span className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>
-                      Est. {orderSide === "buy" ? "Cost" : "Credit"}
+                      Estimated {orderSide === "buy" ? "Cost" : "Credit"}
                     </span>
-                    <span className="text-lg font-bold" style={{ color: "#FFFFFF" }}>
+                    <span className="text-sm font-bold" style={{ color: "#FFFFFF" }}>
                       {formatCurrency(estimatedTotal)}
                     </span>
                   </div>
 
                   {orderSide === "buy" && estimatedTotal > buyingPower && (
-                    <p className="text-xs" style={{ color: "#EF4444" }}>
+                    <p className="text-xs pb-1" style={{ color: "#EF4444" }}>
                       Exceeds buying power by {formatCurrency(estimatedTotal - buyingPower)}
                     </p>
                   )}
-
-                  {/* After-trade balance preview */}
-                  {orderSide === "buy" && canSubmit && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px]" style={{ color: "#64748B" }}>
-                        Remaining Power
-                      </span>
-                      <span className="text-[10px] font-medium" style={{ color: "#94A3B8" }}>
-                        {formatCurrency(buyingPower - estimatedTotal)}
-                      </span>
-                    </div>
-                  )}
-                  {orderSide === "sell" && canSubmit && (
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px]" style={{ color: "#64748B" }}>
-                        New Balance
-                      </span>
-                      <span className="text-[10px] font-medium" style={{ color: "#94A3B8" }}>
-                        {formatCurrency(buyingPower + estimatedTotal)}
-                      </span>
-                    </div>
+                  {orderSide === "sell" && effectiveQuantity > ownedShares && ownedShares > 0 && (
+                    <p className="text-xs pb-1" style={{ color: "#EF4444" }}>
+                      You only own {ownedShares} shares
+                    </p>
                   )}
 
-                  {/* Submit Button */}
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!canSubmit || isSubmitting}
-                    className="w-full h-10 font-bold text-sm disabled:opacity-40"
-                    style={{
-                      background: awaitingConfirm
-                        ? orderSide === "buy"
-                          ? "linear-gradient(135deg, #0d9668, #0591a3)"
-                          : "linear-gradient(135deg, #c53030, #c05621)"
-                        : orderSide === "buy"
-                          ? "linear-gradient(135deg, #10B981, #06B6D4)"
-                          : "linear-gradient(135deg, #EF4444, #F97316)",
-                      color: orderSide === "buy" ? "#000000" : "#FFFFFF",
-                      border: awaitingConfirm ? "2px solid #FFFFFF" : "none",
-                    }}
-                  >
-                    {buttonLabel}
-                  </Button>
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 pt-2 pb-4">
+                    <Button
+                      onClick={() => {
+                        setAwaitingConfirm(false);
+                        setActiveView("positions");
+                      }}
+                      className="flex-1 h-10 font-semibold text-sm"
+                      style={{
+                        backgroundColor: "transparent",
+                        border: "1px solid #1F2937",
+                        color: "#94A3B8",
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={!canSubmit || isSubmitting}
+                      className="flex-1 h-10 font-bold text-sm disabled:opacity-40"
+                      style={{
+                        background: awaitingConfirm
+                          ? orderSide === "buy"
+                            ? "linear-gradient(135deg, #0d9668, #0591a3)"
+                            : "linear-gradient(135deg, #c53030, #c05621)"
+                          : orderSide === "buy"
+                            ? "linear-gradient(135deg, #10B981, #06B6D4)"
+                            : "linear-gradient(135deg, #EF4444, #F97316)",
+                        color: orderSide === "buy" ? "#000000" : "#FFFFFF",
+                        border: awaitingConfirm ? "2px solid #FFFFFF" : "none",
+                      }}
+                    >
+                      {buttonLabel}
+                    </Button>
+                  </div>
                 </div>
               </>
             )}
