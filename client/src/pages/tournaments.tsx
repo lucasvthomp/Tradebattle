@@ -24,8 +24,7 @@ import {
   Shield,
   Lock,
   Crown,
-  Play,
-  Eye
+  Play
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -118,7 +117,7 @@ export default function TournamentsPage() {
   const { formatCurrency, t } = useUserPreferences();
   const { toast } = useToast();
 
-  const [activeTab, setActiveTab] = useState("active");
+  const [activeTab, setActiveTab] = useState("upcoming");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [joinCodeDialogOpen, setJoinCodeDialogOpen] = useState(false);
   const [managementDialogOpen, setManagementDialogOpen] = useState(false);
@@ -127,6 +126,9 @@ export default function TournamentsPage() {
   const [sortBy, setSortBy] = useState("starting-soon");
   const [filterType, setFilterType] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showMyTournaments, setShowMyTournaments] = useState(false);
+  const [showJoinable, setShowJoinable] = useState(false);
+  const [showWithFriends, setShowWithFriends] = useState(false);
 
   const [joinConfirmationOpen, setJoinConfirmationOpen] = useState(false);
   const [tournamentToJoin, setTournamentToJoin] = useState<any>(null);
@@ -150,8 +152,14 @@ export default function TournamentsPage() {
   // Fetch archived tournaments (for Past and History tabs)
   const { data: archivedTournaments } = useQuery<{data: any[]}>({
     queryKey: ['/api/tournaments/archived'],
-    enabled: activeTab === 'past' || activeTab === 'history',
+    enabled: false, // archived tournaments not shown in new 2-tab layout
   });
+
+  // Fetch friends for "With Friends" filter
+  const { data: friendsData } = useQuery<{data: any[]}>({
+    queryKey: ['/api/friends'],
+  });
+  const friendIds = useMemo(() => (friendsData?.data || []).map((f: any) => f.userId), [friendsData]);
 
   const tournamentsLoading = publicLoading || userLoading;
 
@@ -224,33 +232,37 @@ export default function TournamentsPage() {
     return Array.from(tournamentMap.values());
   }, [publicTournaments, userTournaments, user?.id]);
 
-  // Active tab: combined waiting + active, sorted by priority
-  const activeTournaments = useMemo(() => {
-    const filtered = allTournaments.filter((t: any) =>
-      (t.status === "waiting" || t.status === "active") &&
+  // Apply checkbox filters helper
+  const applyCheckboxFilters = (tournaments: any[]) => {
+    let filtered = tournaments;
+    if (showMyTournaments) {
+      filtered = filtered.filter((t: any) =>
+        t.creatorId === user?.id || t.participantUserIds?.includes(user?.id)
+      );
+    }
+    if (showJoinable) {
+      filtered = filtered.filter((t: any) =>
+        t.currentPlayers < t.maxPlayers && !t.participantUserIds?.includes(user?.id)
+      );
+    }
+    if (showWithFriends) {
+      filtered = filtered.filter((t: any) =>
+        t.participantUserIds?.some((id: number) => friendIds.includes(id))
+      );
+    }
+    return filtered;
+  };
+
+  // Upcoming tab: waiting tournaments
+  const upcomingTournaments = useMemo(() => {
+    let filtered = allTournaments.filter((t: any) =>
+      t.status === "waiting" &&
       (filterType === "all" || t.tournamentType === filterType) &&
       (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
+    filtered = applyCheckboxFilters(filtered);
 
     return [...filtered].sort((a, b) => {
-      const aIsParticipating = a.creatorId === user?.id || a.isParticipating;
-      const bIsParticipating = b.creatorId === user?.id || b.isParticipating;
-      const aIsActive = a.status === "active";
-      const bIsActive = b.status === "active";
-
-      // Priority 1: Active tournaments user IS participating in
-      const aPriority = aIsActive && aIsParticipating ? 0
-        : !aIsActive && (aIsParticipating || !aIsActive) ? 1  // Waiting/joinable
-        : aIsActive && !aIsParticipating ? 2
-        : 3;
-      const bPriority = bIsActive && bIsParticipating ? 0
-        : !bIsActive && (bIsParticipating || !bIsActive) ? 1
-        : bIsActive && !bIsParticipating ? 2
-        : 3;
-
-      if (aPriority !== bPriority) return aPriority - bPriority;
-
-      // Within same priority, sort by selected criteria
       switch (sortBy) {
         case "starting-soon":
           return new Date(a.scheduledStartTime || a.createdAt).getTime() - new Date(b.scheduledStartTime || b.createdAt).getTime();
@@ -264,18 +276,37 @@ export default function TournamentsPage() {
           return 0;
       }
     });
-  }, [allTournaments, filterType, searchQuery, sortBy, user?.id]);
+  }, [allTournaments, filterType, searchQuery, sortBy, user?.id, showMyTournaments, showJoinable, showWithFriends, friendIds]);
 
-  // Past tab: completed/cancelled tournaments
-  const pastTournaments = useMemo(() => {
-    return (archivedTournaments?.data || []).filter((t: any) =>
+  // Live tab: active tournaments
+  const liveTournaments = useMemo(() => {
+    let filtered = allTournaments.filter((t: any) =>
+      t.status === "active" &&
       (filterType === "all" || t.tournamentType === filterType) &&
       (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
     );
-  }, [archivedTournaments, filterType, searchQuery]);
+    filtered = applyCheckboxFilters(filtered);
 
-  // History tab: user's personal participation history (same data, different perspective)
-  const historyTournaments = pastTournaments;
+    return [...filtered].sort((a, b) => {
+      const aIsParticipating = a.creatorId === user?.id || a.participantUserIds?.includes(user?.id);
+      const bIsParticipating = b.creatorId === user?.id || b.participantUserIds?.includes(user?.id);
+      if (aIsParticipating && !bIsParticipating) return -1;
+      if (!aIsParticipating && bIsParticipating) return 1;
+
+      switch (sortBy) {
+        case "starting-soon":
+          return new Date(a.startedAt || a.createdAt).getTime() - new Date(b.startedAt || b.createdAt).getTime();
+        case "pot-high-low":
+          return (b.currentPlayers * b.buyInAmount) - (a.currentPlayers * a.buyInAmount);
+        case "pot-low-high":
+          return (a.currentPlayers * a.buyInAmount) - (b.currentPlayers * b.buyInAmount);
+        case "most-recent":
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        default:
+          return 0;
+      }
+    });
+  }, [allTournaments, filterType, searchQuery, sortBy, user?.id, showMyTournaments, showJoinable, showWithFriends, friendIds]);
 
   if (!user) {
     return (
@@ -290,9 +321,8 @@ export default function TournamentsPage() {
 
   const getTabCount = () => {
     switch (activeTab) {
-      case 'active': return activeTournaments.length;
-      case 'past': return pastTournaments.length;
-      case 'history': return historyTournaments.length;
+      case 'upcoming': return upcomingTournaments.length;
+      case 'live': return liveTournaments.length;
       default: return 0;
     }
   };
@@ -398,6 +428,36 @@ export default function TournamentsPage() {
                   <SelectItem value="crypto">Crypto Only</SelectItem>
                 </SelectContent>
               </Select>
+              <div className="flex items-center space-x-1">
+                <Checkbox
+                  id="my-tournaments"
+                  checked={showMyTournaments}
+                  onCheckedChange={(checked) => setShowMyTournaments(checked === true)}
+                />
+                <label htmlFor="my-tournaments" className="text-xs cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                  My Tournaments
+                </label>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Checkbox
+                  id="joinable"
+                  checked={showJoinable}
+                  onCheckedChange={(checked) => setShowJoinable(checked === true)}
+                />
+                <label htmlFor="joinable" className="text-xs cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                  Joinable
+                </label>
+              </div>
+              <div className="flex items-center space-x-1">
+                <Checkbox
+                  id="with-friends"
+                  checked={showWithFriends}
+                  onCheckedChange={(checked) => setShowWithFriends(checked === true)}
+                />
+                <label htmlFor="with-friends" className="text-xs cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                  With Friends
+                </label>
+              </div>
             </div>
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-48" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
@@ -416,57 +476,47 @@ export default function TournamentsPage() {
           <motion.div variants={fadeInUp}>
             <div className="flex items-center gap-2 p-1 rounded-xl" style={{ backgroundColor: '#111827' }}>
               <button
-                onClick={() => setActiveTab('active')}
+                onClick={() => setActiveTab('upcoming')}
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
-                style={activeTab === 'active'
+                style={activeTab === 'upcoming'
                   ? { background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }
-                  : { backgroundColor: 'transparent', color: '#94A3B8' }
+                  : { backgroundColor: 'transparent', color: '#FFFFFF' }
                 }
               >
                 <Trophy className="w-4 h-4" />
-                <span>Active</span>
+                <span>Upcoming</span>
                 <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'active' ? 'rgba(255,255,255,0.2)' : '#1F2937',
-                  color: activeTab === 'active' ? '#FFFFFF' : '#94A3B8',
+                  backgroundColor: activeTab === 'upcoming' ? 'rgba(255,255,255,0.2)' : '#1F2937',
+                  color: '#FFFFFF',
                 }}>
-                  {activeTournaments.length}
+                  {upcomingTournaments.length}
                 </span>
               </button>
               <button
-                onClick={() => setActiveTab('past')}
+                onClick={() => setActiveTab('live')}
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
-                style={activeTab === 'past'
-                  ? { background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: '#FFFFFF' }
-                  : { backgroundColor: 'transparent', color: '#94A3B8' }
-                }
-              >
-                <Eye className="w-4 h-4" />
-                <span>Past</span>
-                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'past' ? 'rgba(255,255,255,0.2)' : '#1F2937',
-                  color: activeTab === 'past' ? '#FFFFFF' : '#94A3B8',
-                }}>
-                  {pastTournaments.length}
-                </span>
-              </button>
-              <button
-                onClick={() => setActiveTab('history')}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
-                style={activeTab === 'history'
+                style={activeTab === 'live'
                   ? { background: 'linear-gradient(135deg, #F59E0B, #EF4444)', color: '#FFFFFF' }
-                  : { backgroundColor: 'transparent', color: '#94A3B8' }
+                  : { backgroundColor: 'transparent', color: '#FFFFFF' }
                 }
               >
-                <Clock className="w-4 h-4" />
+                <Play className="w-4 h-4" />
+                <span>Live</span>
+                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
+                  backgroundColor: activeTab === 'live' ? 'rgba(255,255,255,0.2)' : '#1F2937',
+                  color: '#FFFFFF',
+                }}>
+                  {liveTournaments.length}
+                </span>
               </button>
             </div>
 
             {/* Tab Content */}
             <div className="mt-6">
-              {activeTab === 'active' && (
+              {activeTab === 'upcoming' && (
                 <TournamentList
-                  tournaments={activeTournaments}
-                  type="active"
+                  tournaments={upcomingTournaments}
+                  type="upcoming"
                   onManage={(tournament) => {
                     setSelectedTournament(tournament);
                     setManagementDialogOpen(true);
@@ -479,30 +529,20 @@ export default function TournamentsPage() {
                   isJoining={joinTournamentMutation.isPending}
                 />
               )}
-              {activeTab === 'past' && (
+              {activeTab === 'live' && (
                 <TournamentList
-                  tournaments={pastTournaments}
-                  type="past"
-                  onManage={() => {}}
-                  onJoinTournament={() => {}}
+                  tournaments={liveTournaments}
+                  type="live"
+                  onManage={(tournament) => {
+                    setSelectedTournament(tournament);
+                    setManagementDialogOpen(true);
+                  }}
+                  onJoinTournament={handleJoinTournament}
                   onViewLeaderboard={(tournament) => {
                     setSelectedLeaderboardTournament(tournament);
                     setLeaderboardDialogOpen(true);
                   }}
-                  isJoining={false}
-                />
-              )}
-              {activeTab === 'history' && (
-                <TournamentList
-                  tournaments={historyTournaments}
-                  type="history"
-                  onManage={() => {}}
-                  onJoinTournament={() => {}}
-                  onViewLeaderboard={(tournament) => {
-                    setSelectedLeaderboardTournament(tournament);
-                    setLeaderboardDialogOpen(true);
-                  }}
-                  isJoining={false}
+                  isJoining={joinTournamentMutation.isPending}
                 />
               )}
             </div>
@@ -681,7 +721,7 @@ function TournamentList({
   isJoining
 }: {
   tournaments: any[];
-  type: "active" | "past" | "history";
+  type: "upcoming" | "live";
   onManage: (tournament: any) => void;
   onJoinTournament: (tournament: any) => void;
   onViewLeaderboard: (tournament: any) => void;
@@ -692,14 +732,12 @@ function TournamentList({
       <div className="text-center py-12">
         <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#94A3B8', opacity: 0.3 }} />
         <h3 className="text-lg font-semibold mb-2" style={{ color: '#F1F5F9' }}>
-          {type === "active" ? "No active tournaments" : type === "past" ? "No past tournaments" : "No tournament history"}
+          {type === "upcoming" ? "No upcoming tournaments" : "No live tournaments"}
         </h3>
         <p style={{ color: '#94A3B8' }}>
-          {type === "active"
-            ? "No tournaments are currently running. Create your own!"
-            : type === "past"
-            ? "No completed tournaments found."
-            : "You haven't participated in any tournaments yet."
+          {type === "upcoming"
+            ? "No tournaments are waiting to start. Create your own!"
+            : "No tournaments are currently live."
           }
         </p>
       </div>
@@ -743,7 +781,7 @@ function HorizontalTournamentCard({
 }: {
   tournament: any;
   index: number;
-  type: "active" | "past" | "history";
+  type: "upcoming" | "live";
   onJoin: () => void;
   isJoining: boolean;
   onManage: () => void;
@@ -803,20 +841,6 @@ function HorizontalTournamentCard({
   };
 
   const getActionButton = () => {
-    if (type === "past" || type === "history") {
-      return (
-        <Button
-          onClick={onViewLeaderboard}
-          className="border-0 whitespace-nowrap"
-          size="sm"
-          style={{ backgroundColor: '#1F2937', color: '#F1F5F9' }}
-        >
-          <Trophy className="w-3.5 h-3.5 mr-1.5" />
-          Results
-        </Button>
-      );
-    }
-
     if (isLive) {
       return (
         <Button

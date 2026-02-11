@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,7 +20,11 @@ import {
   Flame,
   TrendingUp,
   TrendingDown,
-  ArrowRightLeft
+  ArrowRightLeft,
+  UserPlus,
+  UserCheck,
+  UserX,
+  Clock as ClockIcon
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -43,6 +49,7 @@ export default function People() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t } = useUserPreferences();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [filterBy, setFilterBy] = useState("all");
@@ -76,6 +83,76 @@ export default function People() {
     },
     enabled: !!profileUserId,
     staleTime: 30000,
+  });
+
+  // Fetch friend status for profile view
+  const { data: friendStatusData } = useQuery({
+    queryKey: ['/api/friends/status', profileUserId],
+    queryFn: async () => {
+      const res = await fetch(`/api/friends/status/${profileUserId}`);
+      if (!res.ok) return { data: { status: 'none' } };
+      return res.json();
+    },
+    enabled: !!profileUserId && !!user && String(user.id) !== profileUserId,
+  });
+
+  const friendStatus = (friendStatusData as any)?.data;
+
+  // Friend mutations
+  const sendFriendRequestMutation = useMutation({
+    mutationFn: async (addresseeId: number) => {
+      const res = await apiRequest("POST", "/api/friends/request", { addresseeId });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      toast({ title: "Friend request sent!" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const acceptFriendRequestMutation = useMutation({
+    mutationFn: async (friendshipId: number) => {
+      const res = await apiRequest("POST", `/api/friends/${friendshipId}/accept`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      toast({ title: "Friend request accepted!" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const declineFriendRequestMutation = useMutation({
+    mutationFn: async (friendshipId: number) => {
+      const res = await apiRequest("POST", `/api/friends/${friendshipId}/decline`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      toast({ title: "Friend request declined" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const removeFriendMutation = useMutation({
+    mutationFn: async (friendshipId: number) => {
+      const res = await apiRequest("DELETE", `/api/friends/${friendshipId}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      toast({ title: "Friend removed" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
   });
 
   // Filter and sort users
@@ -174,6 +251,69 @@ export default function People() {
                           {t('memberSince')} {profileData?.createdAt ? new Date(profileData.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
                         </Badge>
                       </div>
+
+                      {/* Friend Button */}
+                      {user && String(user.id) !== profileUserId && (
+                        <div className="mb-6">
+                          {friendStatus?.status === 'none' && (
+                            <Button
+                              onClick={() => sendFriendRequestMutation.mutate(parseInt(profileUserId!))}
+                              disabled={sendFriendRequestMutation.isPending}
+                              className="border-0"
+                              style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
+                            >
+                              <UserPlus className="w-4 h-4 mr-2" />
+                              {sendFriendRequestMutation.isPending ? "Sending..." : "Add Friend"}
+                            </Button>
+                          )}
+                          {friendStatus?.status === 'pending_sent' && (
+                            <Button disabled className="border-0" style={{ backgroundColor: '#1F2937', color: '#94A3B8' }}>
+                              <ClockIcon className="w-4 h-4 mr-2" />
+                              Request Sent
+                            </Button>
+                          )}
+                          {friendStatus?.status === 'pending_received' && (
+                            <div className="flex gap-2">
+                              <Button
+                                onClick={() => acceptFriendRequestMutation.mutate(friendStatus.friendshipId)}
+                                disabled={acceptFriendRequestMutation.isPending}
+                                className="border-0"
+                                style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
+                              >
+                                <UserCheck className="w-4 h-4 mr-2" />
+                                Accept
+                              </Button>
+                              <Button
+                                onClick={() => declineFriendRequestMutation.mutate(friendStatus.friendshipId)}
+                                disabled={declineFriendRequestMutation.isPending}
+                                variant="outline"
+                                className="border-0"
+                                style={{ backgroundColor: '#1F2937', color: '#EF4444' }}
+                              >
+                                <UserX className="w-4 h-4 mr-2" />
+                                Decline
+                              </Button>
+                            </div>
+                          )}
+                          {friendStatus?.status === 'accepted' && (
+                            <div className="flex items-center gap-3">
+                              <Badge style={{ backgroundColor: '#10B98120', color: '#10B981', border: '1px solid #10B98140' }}>
+                                <UserCheck className="w-3 h-3 mr-1" />
+                                Friends
+                              </Badge>
+                              <Button
+                                onClick={() => removeFriendMutation.mutate(friendStatus.friendshipId)}
+                                disabled={removeFriendMutation.isPending}
+                                variant="ghost"
+                                size="sm"
+                                style={{ color: '#94A3B8' }}
+                              >
+                                Remove Friend
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      )}
 
                       {/* Stats Grid - 3 real stats only */}
                       <div className="grid grid-cols-3 gap-4">

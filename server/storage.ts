@@ -40,6 +40,8 @@ import {
   type InsertPortfolioHistory,
   type ChatMessage,
   type InsertChatMessage,
+  friendships,
+  type Friendship,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -161,6 +163,18 @@ export interface IStorage {
   calculatePortfolioValue(userId: number, tournamentId: number): Promise<number>;
   getUserTradingStreak(userId: number): Promise<number>;
   getUserTournamentCount(userId: number): Promise<number>;
+
+  // Friendship operations
+  sendFriendRequest(requesterId: number, addresseeId: number): Promise<Friendship>;
+  acceptFriendRequest(friendshipId: number, userId: number): Promise<Friendship>;
+  declineFriendRequest(friendshipId: number, userId: number): Promise<Friendship>;
+  removeFriend(friendshipId: number, userId: number): Promise<void>;
+  getFriends(userId: number): Promise<any[]>;
+  getPendingFriendRequests(userId: number): Promise<any[]>;
+  getSentFriendRequests(userId: number): Promise<any[]>;
+  getFriendship(userId1: number, userId2: number): Promise<Friendship | undefined>;
+  getFriendIds(userId: number): Promise<number[]>;
+  getTournamentParticipantUserIds(tournamentId: number): Promise<number[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1244,6 +1258,194 @@ export class DatabaseStorage implements IStorage {
       .from(tournamentParticipants)
       .where(eq(tournamentParticipants.userId, userId));
     return Number(result[0].count) || 0;
+  }
+
+  // Friendship operations
+  async sendFriendRequest(requesterId: number, addresseeId: number): Promise<Friendship> {
+    if (requesterId === addresseeId) {
+      throw new Error('Cannot send friend request to yourself');
+    }
+
+    // Check if friendship already exists in either direction
+    const existing = await db
+      .select()
+      .from(friendships)
+      .where(
+        or(
+          and(eq(friendships.requesterId, requesterId), eq(friendships.addresseeId, addresseeId)),
+          and(eq(friendships.requesterId, addresseeId), eq(friendships.addresseeId, requesterId))
+        )
+      )
+      .limit(1);
+
+    if (existing.length > 0) {
+      throw new Error('A friendship or request already exists between these users');
+    }
+
+    const result = await db.insert(friendships).values({
+      requesterId,
+      addresseeId,
+      status: 'pending',
+    }).returning();
+    return result[0];
+  }
+
+  async acceptFriendRequest(friendshipId: number, userId: number): Promise<Friendship> {
+    const friendship = await db.select().from(friendships).where(eq(friendships.id, friendshipId)).limit(1);
+    if (!friendship[0]) throw new Error('Friend request not found');
+    if (friendship[0].addresseeId !== userId) throw new Error('Only the addressee can accept a friend request');
+    if (friendship[0].status !== 'pending') throw new Error('Friend request is not pending');
+
+    const result = await db
+      .update(friendships)
+      .set({ status: 'accepted', updatedAt: new Date() })
+      .where(eq(friendships.id, friendshipId))
+      .returning();
+    return result[0];
+  }
+
+  async declineFriendRequest(friendshipId: number, userId: number): Promise<Friendship> {
+    const friendship = await db.select().from(friendships).where(eq(friendships.id, friendshipId)).limit(1);
+    if (!friendship[0]) throw new Error('Friend request not found');
+    if (friendship[0].addresseeId !== userId) throw new Error('Only the addressee can decline a friend request');
+    if (friendship[0].status !== 'pending') throw new Error('Friend request is not pending');
+
+    const result = await db
+      .update(friendships)
+      .set({ status: 'declined', updatedAt: new Date() })
+      .where(eq(friendships.id, friendshipId))
+      .returning();
+    return result[0];
+  }
+
+  async removeFriend(friendshipId: number, userId: number): Promise<void> {
+    const friendship = await db.select().from(friendships).where(eq(friendships.id, friendshipId)).limit(1);
+    if (!friendship[0]) throw new Error('Friendship not found');
+    if (friendship[0].requesterId !== userId && friendship[0].addresseeId !== userId) {
+      throw new Error('You are not part of this friendship');
+    }
+    await db.delete(friendships).where(eq(friendships.id, friendshipId));
+  }
+
+  async getFriends(userId: number): Promise<any[]> {
+    const results = await db
+      .select()
+      .from(friendships)
+      .where(
+        and(
+          eq(friendships.status, 'accepted'),
+          or(
+            eq(friendships.requesterId, userId),
+            eq(friendships.addresseeId, userId)
+          )
+        )
+      );
+
+    const friends = await Promise.all(
+      results.map(async (f) => {
+        const friendId = f.requesterId === userId ? f.addresseeId : f.requesterId;
+        const friendUser = await db.select().from(users).where(eq(users.id, friendId)).limit(1);
+        return {
+          friendshipId: f.id,
+          userId: friendId,
+          username: friendUser[0]?.username || 'Unknown',
+          profilePicture: friendUser[0]?.profilePicture || null,
+          since: f.updatedAt,
+        };
+      })
+    );
+    return friends;
+  }
+
+  async getPendingFriendRequests(userId: number): Promise<any[]> {
+    const results = await db
+      .select()
+      .from(friendships)
+      .where(
+        and(
+          eq(friendships.addresseeId, userId),
+          eq(friendships.status, 'pending')
+        )
+      );
+
+    const requests = await Promise.all(
+      results.map(async (f) => {
+        const requesterUser = await db.select().from(users).where(eq(users.id, f.requesterId)).limit(1);
+        return {
+          friendshipId: f.id,
+          userId: f.requesterId,
+          username: requesterUser[0]?.username || 'Unknown',
+          profilePicture: requesterUser[0]?.profilePicture || null,
+          createdAt: f.createdAt,
+        };
+      })
+    );
+    return requests;
+  }
+
+  async getSentFriendRequests(userId: number): Promise<any[]> {
+    const results = await db
+      .select()
+      .from(friendships)
+      .where(
+        and(
+          eq(friendships.requesterId, userId),
+          eq(friendships.status, 'pending')
+        )
+      );
+
+    const requests = await Promise.all(
+      results.map(async (f) => {
+        const addresseeUser = await db.select().from(users).where(eq(users.id, f.addresseeId)).limit(1);
+        return {
+          friendshipId: f.id,
+          userId: f.addresseeId,
+          username: addresseeUser[0]?.username || 'Unknown',
+          profilePicture: addresseeUser[0]?.profilePicture || null,
+          createdAt: f.createdAt,
+        };
+      })
+    );
+    return requests;
+  }
+
+  async getFriendship(userId1: number, userId2: number): Promise<Friendship | undefined> {
+    const result = await db
+      .select()
+      .from(friendships)
+      .where(
+        or(
+          and(eq(friendships.requesterId, userId1), eq(friendships.addresseeId, userId2)),
+          and(eq(friendships.requesterId, userId2), eq(friendships.addresseeId, userId1))
+        )
+      )
+      .limit(1);
+    return result[0];
+  }
+
+  async getFriendIds(userId: number): Promise<number[]> {
+    const results = await db
+      .select()
+      .from(friendships)
+      .where(
+        and(
+          eq(friendships.status, 'accepted'),
+          or(
+            eq(friendships.requesterId, userId),
+            eq(friendships.addresseeId, userId)
+          )
+        )
+      );
+
+    return results.map(f => f.requesterId === userId ? f.addresseeId : f.requesterId);
+  }
+
+  async getTournamentParticipantUserIds(tournamentId: number): Promise<number[]> {
+    const results = await db
+      .select({ userId: tournamentParticipants.userId })
+      .from(tournamentParticipants)
+      .where(eq(tournamentParticipants.tournamentId, tournamentId));
+    return results.map(r => r.userId);
   }
 
   async transferBalance(senderId: number, recipientId: number, amount: number): Promise<void> {

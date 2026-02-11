@@ -209,6 +209,18 @@ export const tournamentCreatorRewards = pgTable("tournament_creator_rewards", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Friendships table for friend system
+export const friendships = pgTable("friendships", {
+  id: serial("id").primaryKey(),
+  requesterId: integer("requester_id").references(() => users.id).notNull(),
+  addresseeId: integer("addressee_id").references(() => users.id).notNull(),
+  status: varchar("status", { length: 20 }).default("pending").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueFriendship: unique("unique_friendship").on(table.requesterId, table.addresseeId),
+}));
+
 // Zod schemas for validation
 export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
   symbol: true,
@@ -289,6 +301,11 @@ export const insertPortfolioHistorySchema = createInsertSchema(portfolioHistory)
   totalValue: true,
   cashBalance: true,
   stockValue: true,
+});
+
+export const insertFriendshipSchema = createInsertSchema(friendships).pick({
+  requesterId: true,
+  addresseeId: true,
 });
 
 // Trade history table for tracking all trading actions (buy/sell)
@@ -401,6 +418,8 @@ export type UserAchievement = typeof userAchievements.$inferSelect;
 export type InsertUserAchievement = z.infer<typeof insertUserAchievementSchema>;
 export type PortfolioHistory = typeof portfolioHistory.$inferSelect;
 export type InsertPortfolioHistory = z.infer<typeof insertPortfolioHistorySchema>;
+export type Friendship = typeof friendships.$inferSelect;
+export type InsertFriendship = z.infer<typeof insertFriendshipSchema>;
 
 // Export chat schema
 export * from "./chatSchema";

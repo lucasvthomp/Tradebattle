@@ -599,7 +599,8 @@ router.get('/tournaments', requireAuth, asyncHandler(async (req: any, res: any) 
   const tournamentsWithPreviews = await Promise.all(
     userTournaments.map(async (tournament: any) => {
       const participantPreviews = await storage.getTournamentParticipantPreviews(tournament.id);
-      return { ...tournament, participantPreviews };
+      const participantUserIds = await storage.getTournamentParticipantUserIds(tournament.id);
+      return { ...tournament, participantPreviews, participantUserIds };
     })
   );
 
@@ -618,11 +619,12 @@ router.get('/tournaments/public', requireAuth, asyncHandler(async (req, res) => 
 
   const publicTournaments = await storage.getPublicTournaments();
 
-  // Attach participant previews to each tournament
+  // Attach participant previews and user IDs to each tournament
   const tournamentsWithPreviews = await Promise.all(
     publicTournaments.map(async (tournament: any) => {
       const participantPreviews = await storage.getTournamentParticipantPreviews(tournament.id);
-      return { ...tournament, participantPreviews };
+      const participantUserIds = await storage.getTournamentParticipantUserIds(tournament.id);
+      return { ...tournament, participantPreviews, participantUserIds };
     })
   );
 
@@ -2259,6 +2261,134 @@ router.post('/tips', requireAuth, asyncHandler(async (req, res) => {
     success: true,
     message: `Successfully sent ${tipAmount} to ${recipient.username}`
   });
+}));
+
+// ============ Friend System Endpoints ============
+
+/**
+ * POST /api/friends/request
+ * Send a friend request
+ */
+router.post('/friends/request', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { addresseeId } = req.body;
+
+  if (!addresseeId) {
+    throw new ValidationError('Addressee ID is required');
+  }
+
+  const friendship = await storage.sendFriendRequest(userId, parseInt(addresseeId));
+  res.json({ success: true, data: friendship });
+}));
+
+/**
+ * POST /api/friends/:id/accept
+ * Accept a friend request
+ */
+router.post('/friends/:id/accept', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const friendshipId = parseInt(req.params.id);
+
+  if (isNaN(friendshipId)) {
+    throw new ValidationError('Invalid friendship ID');
+  }
+
+  const friendship = await storage.acceptFriendRequest(friendshipId, userId);
+  res.json({ success: true, data: friendship });
+}));
+
+/**
+ * POST /api/friends/:id/decline
+ * Decline a friend request
+ */
+router.post('/friends/:id/decline', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const friendshipId = parseInt(req.params.id);
+
+  if (isNaN(friendshipId)) {
+    throw new ValidationError('Invalid friendship ID');
+  }
+
+  const friendship = await storage.declineFriendRequest(friendshipId, userId);
+  res.json({ success: true, data: friendship });
+}));
+
+/**
+ * DELETE /api/friends/:id
+ * Remove a friend or cancel a friend request
+ */
+router.delete('/friends/:id', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const friendshipId = parseInt(req.params.id);
+
+  if (isNaN(friendshipId)) {
+    throw new ValidationError('Invalid friendship ID');
+  }
+
+  await storage.removeFriend(friendshipId, userId);
+  res.json({ success: true, message: 'Friend removed successfully' });
+}));
+
+/**
+ * GET /api/friends
+ * Get accepted friends list
+ */
+router.get('/friends', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const friends = await storage.getFriends(userId);
+  res.json({ success: true, data: friends });
+}));
+
+/**
+ * GET /api/friends/pending
+ * Get incoming pending friend requests
+ */
+router.get('/friends/pending', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const requests = await storage.getPendingFriendRequests(userId);
+  res.json({ success: true, data: requests });
+}));
+
+/**
+ * GET /api/friends/sent
+ * Get outgoing sent friend requests
+ */
+router.get('/friends/sent', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const requests = await storage.getSentFriendRequests(userId);
+  res.json({ success: true, data: requests });
+}));
+
+/**
+ * GET /api/friends/status/:userId
+ * Get friendship status with a specific user
+ */
+router.get('/friends/status/:userId', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const targetUserId = parseInt(req.params.userId);
+
+  if (isNaN(targetUserId)) {
+    throw new ValidationError('Invalid user ID');
+  }
+
+  const friendship = await storage.getFriendship(userId, targetUserId);
+
+  if (!friendship) {
+    return res.json({ success: true, data: { status: 'none' } });
+  }
+
+  if (friendship.status === 'accepted') {
+    return res.json({ success: true, data: { status: 'accepted', friendshipId: friendship.id } });
+  }
+
+  if (friendship.status === 'pending') {
+    if (friendship.requesterId === userId) {
+      return res.json({ success: true, data: { status: 'pending_sent', friendshipId: friendship.id } });
+    }
+    return res.json({ success: true, data: { status: 'pending_received', friendshipId: friendship.id } });
+  }
+
+  return res.json({ success: true, data: { status: 'none' } });
 }));
 
 export default router;
