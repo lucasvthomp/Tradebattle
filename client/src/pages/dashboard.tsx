@@ -128,7 +128,7 @@ export default function Dashboard() {
 
       {/* RIGHT: Unified Sidebar ~2/7 of width */}
       <div
-        className="w-full [@media(min-aspect-ratio:1/1)]:w-[380px] [@media(min-aspect-ratio:1/1)]:max-w-[380px] [@media(min-aspect-ratio:1/1)]:min-w-[300px] flex flex-col h-[60vh] [@media(min-aspect-ratio:1/1)]:h-full"
+        className="w-full [@media(min-aspect-ratio:1/1)]:w-[265px] [@media(min-aspect-ratio:1/1)]:max-w-[265px] [@media(min-aspect-ratio:1/1)]:min-w-[220px] flex flex-col h-[60vh] [@media(min-aspect-ratio:1/1)]:h-full"
         style={{
           backgroundColor: "#111827",
           borderLeft: "1px solid #1F2937",
