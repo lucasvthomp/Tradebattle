@@ -78,12 +78,6 @@ export default function About() {
           >
             About ORSATH
           </motion.h1>
-          <motion.p 
-            className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto"
-            variants={fadeInUp}
-          >
-            Founded by three high school juniors with a passion for qualitative investment research, ORSATH represents the next generation of financial analysis.
-          </motion.p>
         </div>
       </motion.section>
 
@@ -97,9 +91,6 @@ export default function About() {
         <div className="max-w-6xl mx-auto">
           <motion.div className="text-center mb-12" variants={fadeInUp}>
             <h2 className="text-3xl font-bold mb-6 text-black">Our Mission</h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              To democratize access to institutional-quality investment research by focusing on the qualitative factors that drive market success. We believe that understanding the human elements behind financial decisions is key to superior investment outcomes.
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -136,9 +127,6 @@ export default function About() {
         <div className="max-w-6xl mx-auto">
           <motion.div className="text-center mb-16" variants={fadeInUp}>
             <h2 className="text-3xl font-bold mb-6 text-black">Meet the Founders</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Three ambitious students combining traditional investment principles with modern analytical techniques.
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -183,9 +171,6 @@ export default function About() {
         <div className="max-w-6xl mx-auto">
           <motion.div className="text-center mb-12" variants={fadeInUp}>
             <h2 className="text-3xl font-bold mb-6">Our Impact</h2>
-            <p className="text-xl text-gray-300">
-              Building the future of investment research, one analysis at a time.
-            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-4 gap-8 text-center">
