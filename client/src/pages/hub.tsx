@@ -230,6 +230,7 @@ function TopTradersSpotlight({ rankings, yourRank, formatCurrency }: { rankings:
         </div>
       )}
     </motion.div>
+    </div>
   );
 }
 
@@ -430,6 +431,7 @@ function LiveTournamentFeed({ tournaments, formatCurrency }: { tournaments: any[
         })}
       </div>
     </motion.div>
+    </div>
   );
 }
 
@@ -508,6 +510,7 @@ function YourStatsBanner({ user, globalRank }: { user: any; globalRank: number |
         </CardContent>
       </Card>
     </motion.div>
+    </div>
   );
 }
 
@@ -599,6 +602,7 @@ function TrendingStocksBar({ stocks }: { stocks: any[] }) {
         })}
       </div>
     </motion.div>
+    </div>
   );
 }
 
@@ -669,6 +673,7 @@ function BottomCTA() {
         </Card>
       </motion.div>
     </motion.div>
+    </div>
   );
 }
 
@@ -805,6 +810,7 @@ export default function Hub() {
 
   // ─── RENDER ───────────────────────────────────────────────
   return (
+    <div style={{ overflowX: 'hidden', width: '100%' }}>
     <motion.div
       className="relative page-grid-bg"
       initial={{ opacity: 0 }}
@@ -1020,5 +1026,6 @@ export default function Hub() {
         <BottomCTA />
       </div>
     </motion.div>
+    </div>
   );
 }
