@@ -812,7 +812,7 @@ export default function Hub() {
   return (
     <div style={{ overflowX: 'hidden', width: '100%' }}>
     <motion.div
-      className="relative page-grid-bg"
+      className="relative page-grid-bg w-full overflow-x-hidden"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
