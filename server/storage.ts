@@ -114,7 +114,8 @@ export interface IStorage {
   recordTrade(trade: InsertTradeHistory): Promise<TradeHistory>;
   getUserTradeCount(userId: number): Promise<number>;
   getUserTournamentTrades(userId: number, tournamentId: number, limit?: number): Promise<TradeHistory[]>;
-  
+  getUserTradeHistory(userId: number, limit?: number): Promise<TradeHistory[]>;
+
   // Achievement operations
   getUserAchievements(userId: number): Promise<UserAchievement[]>;
   awardAchievement(achievement: InsertUserAchievement): Promise<UserAchievement>;
@@ -703,6 +704,15 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(tradeHistory)
       .where(and(eq(tradeHistory.userId, userId), eq(tradeHistory.tournamentId, tournamentId)))
+      .orderBy(desc(tradeHistory.tradeDate))
+      .limit(limit);
+  }
+
+  async getUserTradeHistory(userId: number, limit: number = 10): Promise<TradeHistory[]> {
+    return await db
+      .select()
+      .from(tradeHistory)
+      .where(eq(tradeHistory.userId, userId))
       .orderBy(desc(tradeHistory.tradeDate))
       .limit(limit);
   }
