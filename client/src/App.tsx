@@ -58,7 +58,7 @@ function Router() {
   }
 
   // Hide footer on dashboard and portfolio pages (dashboard route)
-  const shouldShowFooter = !['/', '/dashboard', '/portfolio'].includes(location) || !user;
+  const shouldShowFooter = !['/dashboard', '/portfolio'].includes(location) || !user;
 
   return (
     <>
@@ -81,8 +81,8 @@ function Router() {
             </>
           ) : (
             <>
-              {/* Authenticated users: root redirects to dashboard, hub accessible via logo */}
-              <Route path="/" component={Dashboard} />
+              {/* Authenticated users: root shows hub greeting, dashboard via sidebar */}
+              <Route path="/" component={Hub} />
               <Route path="/hub" component={Hub} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/portfolio" component={Dashboard} />
