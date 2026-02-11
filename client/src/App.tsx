@@ -34,6 +34,7 @@ import Signup from "@/pages/signup";
 import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
 import Archive from "@/pages/archive";
+import ArchiveDetail from "@/pages/archive-detail";
 import Layout from "@/components/layout/layout";
 import Footer from "@/components/layout/footer";
 
@@ -101,6 +102,7 @@ function Router() {
               <Route path="/profile" component={Profile} />
               <Route path="/admin" component={Admin} />
               <Route path="/archive" component={Archive} />
+              <Route path="/archive/:id" component={ArchiveDetail} />
             </>
           )}
           <Route component={NotFound} />
