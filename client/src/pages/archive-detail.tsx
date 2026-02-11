@@ -16,9 +16,11 @@ import {
   Archive,
 } from "lucide-react";
 import { format } from "date-fns";
+import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 export default function ArchiveDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useUserPreferences();
 
   const { data: tournament, isLoading } = useQuery({
     queryKey: ['/api/tournaments/archived', id],
@@ -45,9 +47,9 @@ export default function ArchiveDetailPage() {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080C14' }}>
         <div className="text-center">
           <Archive className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8' }} />
-          <p className="text-lg mb-4" style={{ color: '#F1F5F9' }}>Tournament not found</p>
+          <p className="text-lg mb-4" style={{ color: '#F1F5F9' }}>{t('tournamentNotFound')}</p>
           <Button onClick={() => window.history.back()} variant="outline">
-            Go Back
+            {t('goBack')}
           </Button>
         </div>
       </div>
@@ -72,7 +74,7 @@ export default function ArchiveDetailPage() {
         className="mb-4 flex items-center"
       >
         <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
-        Back to Archive
+        {t('backToArchive')}
       </Button>
 
       {/* Tournament Header */}
@@ -94,7 +96,7 @@ export default function ArchiveDetailPage() {
             <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
-                <span className="text-xs" style={{ color: '#94A3B8' }}>Players</span>
+                <span className="text-xs" style={{ color: '#94A3B8' }}>{t('players')}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: '#F1F5F9' }}>
                 {tournament.currentPlayers}/{tournament.maxPlayers}
@@ -104,7 +106,7 @@ export default function ArchiveDetailPage() {
             <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-4 h-4" style={{ color: '#10B981' }} />
-                <span className="text-xs" style={{ color: '#94A3B8' }}>Starting Cash</span>
+                <span className="text-xs" style={{ color: '#94A3B8' }}>{t('startingCash')}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: '#F1F5F9' }}>
                 ${tournament.startingBalance?.toLocaleString()}
@@ -114,7 +116,7 @@ export default function ArchiveDetailPage() {
             <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="w-4 h-4" style={{ color: '#06B6D4' }} />
-                <span className="text-xs" style={{ color: '#94A3B8' }}>Duration</span>
+                <span className="text-xs" style={{ color: '#94A3B8' }}>{t('duration')}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: '#F1F5F9' }}>
                 {tournament.timeframe}
@@ -124,7 +126,7 @@ export default function ArchiveDetailPage() {
             <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Calendar className="w-4 h-4" style={{ color: '#94A3B8' }} />
-                <span className="text-xs" style={{ color: '#94A3B8' }}>Ended</span>
+                <span className="text-xs" style={{ color: '#94A3B8' }}>{t('ended')}</span>
               </div>
               <p className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
                 {tournament.endedAt ? format(new Date(tournament.endedAt), 'MMM d, yyyy') : 'N/A'}
@@ -139,14 +141,14 @@ export default function ArchiveDetailPage() {
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2" style={{ color: '#F1F5F9' }}>
             <Trophy className="w-5 h-5" style={{ color: '#E3B341' }} />
-            Final Leaderboard
+            {t('finalLeaderboard')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {!tournament.participants || tournament.participants.length === 0 ? (
             <div className="text-center py-6">
               <Users className="w-8 h-8 mx-auto mb-2" style={{ color: '#94A3B8', opacity: 0.5 }} />
-              <p className="text-sm" style={{ color: '#94A3B8' }}>No participants recorded</p>
+              <p className="text-sm" style={{ color: '#94A3B8' }}>{t('noParticipantsRecorded')}</p>
             </div>
           ) : (
             <div className="space-y-2">
