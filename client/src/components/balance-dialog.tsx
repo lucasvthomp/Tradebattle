@@ -261,10 +261,15 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                     type="number"
                     placeholder="0.00"
                     value={depositAmount}
-                    onChange={(e) => setDepositAmount(e.target.value)}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      if (e.target.value === '') { setDepositAmount(''); return; }
+                      if (!isNaN(val)) setDepositAmount(String(Math.min(10000, Math.max(0.01, val))));
+                    }}
                     className="pl-10"
                     style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
-                    min="1"
+                    min="0.01"
+                    max="10000"
                     step="0.01"
                   />
                 </div>
@@ -351,10 +356,14 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
                     type="number"
                     placeholder="0.00"
                     value={withdrawAmount}
-                    onChange={(e) => setWithdrawAmount(e.target.value)}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value);
+                      if (e.target.value === '') { setWithdrawAmount(''); return; }
+                      if (!isNaN(val)) setWithdrawAmount(String(Math.min(currentBalance, Math.max(0.01, val))));
+                    }}
                     className="pl-10"
                     style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
-                    min="1"
+                    min="0.01"
                     max={currentBalance}
                     step="0.01"
                   />
