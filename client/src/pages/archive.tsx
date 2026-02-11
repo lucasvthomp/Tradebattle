@@ -1,10 +1,9 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Trophy, Users, TrendingUp, Archive, Crown, Medal, Award } from "lucide-react";
-import { format } from "date-fns";
+import { Archive, Search, Trophy, Users, Crown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
-import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
 interface Participant {
   userId: number;
@@ -27,137 +26,98 @@ interface ArchivedTournament {
   participants: Participant[];
 }
 
-
-
 export default function ArchivePage() {
   const { user } = useAuth();
-  const { formatCurrency } = useUserPreferences();
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const { data: archivedTournaments, isLoading: tournamentsLoading } = useQuery({
+  const { data: archivedTournaments, isLoading } = useQuery({
     queryKey: ['/api/tournaments/archived'],
     queryFn: async () => {
       const res = await fetch('/api/tournaments/archived');
-      if (!res.ok) {
-        throw new Error('Failed to fetch archived tournaments');
-      }
+      if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
       return data.data as ArchivedTournament[];
     }
   });
 
-
+  const filtered = (archivedTournaments || []).filter((t) =>
+    !searchQuery || t.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div className="container mx-auto p-4 max-w-7xl">
+    <div className="container mx-auto p-4 max-w-4xl">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-          <Archive className="w-8 h-8" />
+        <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: '#F1F5F9' }}>
+          <Archive className="w-6 h-6" style={{ color: '#E3B341' }} />
           Archive
         </h1>
       </div>
 
-      <div className="mt-6">
-          <div className="grid gap-4">
-        {tournamentsLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-            <p className="mt-2 text-muted-foreground">Loading archived tournaments...</p>
-          </div>
-        ) : archivedTournaments?.length === 0 ? (
-          <Card>
-            <CardContent className="py-8 text-center">
-              <Trophy className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">No Completed Tournaments</h3>
-              <p className="text-muted-foreground">
-                You haven't participated in any completed tournaments yet.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          archivedTournaments?.map((tournament) => (
-            <Card key={tournament.id} className="hover:shadow-md transition-shadow">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-xl">{tournament.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">Tournament ID: {tournament.id}</p>
-                  </div>
-                  <Badge variant="secondary" className="bg-green-100 text-green-800">
-                    Completed
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-6">
-                  <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-muted-foreground" />
-                    <span>{tournament.currentPlayers}/{tournament.maxPlayers} players</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-muted-foreground" />
-                    <span>Duration: {tournament.timeframe}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span>Started: {format(new Date(tournament.createdAt), 'MMM d, yyyy')}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="w-4 h-4 text-muted-foreground" />
-                    <span>Ended: {format(new Date(tournament.endedAt), 'MMM d, yyyy')}</span>
-                  </div>
-                </div>
-                
-                {/* Final Results */}
-                <div className="border-t pt-4">
-                  <h4 className="font-semibold mb-3 flex items-center gap-2">
-                    <Trophy className="w-4 h-4" />
-                    Final Results
-                  </h4>
-                  <div className="space-y-2">
-                    {tournament.participants?.map((participant, index) => {
-                      const getPositionIcon = (position: number) => {
-                        switch (position) {
-                          case 1: return <Crown className="w-4 h-4 text-yellow-500" />;
-                          case 2: return <Medal className="w-4 h-4 text-gray-400" />;
-                          case 3: return <Award className="w-4 h-4 text-amber-600" />;
-                          default: return null;
-                        }
-                      };
-                      
-                      const getPositionBadge = (position: number) => {
-                        switch (position) {
-                          case 1: return "bg-yellow-100 text-yellow-800";
-                          case 2: return "bg-gray-100 text-gray-800";
-                          case 3: return "bg-amber-100 text-amber-800";
-                          default: return "bg-blue-100 text-blue-800";
-                        }
-                      };
-                      
-                      return (
-                        <div key={participant.userId} className="flex items-center justify-between p-2 rounded-lg bg-muted/50">
-                          <div className="flex items-center gap-3">
-                            <Badge variant="secondary" className={`${getPositionBadge(participant.position)} min-w-[3rem] justify-center`}>
-                              #{participant.position}
-                            </Badge>
-                            <div className="flex items-center gap-2">
-                              {getPositionIcon(participant.position)}
-                              <span className="font-medium">{participant.name}</span>
-                            </div>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-semibold">${participant.portfolioValue?.toLocaleString() || 0}</div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-          </div>
+      {/* Search */}
+      <div className="relative mb-6">
+        <Search className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
+        <Input
+          placeholder="Search tournaments..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10"
+          style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
+        />
       </div>
+
+      {/* List */}
+      {isLoading ? (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }} />
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12">
+          <Trophy className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8', opacity: 0.5 }} />
+          <p style={{ color: '#94A3B8' }}>
+            {searchQuery ? "No matching tournaments" : "No completed tournaments yet"}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {filtered.map((tournament) => {
+            const winner = tournament.participants?.find((p) => p.position === 1);
+            return (
+              <a
+                key={tournament.id}
+                href={`/archive/${tournament.id}`}
+                className="flex items-center justify-between p-4 rounded-lg transition-colors hover:border-[#E3B341]"
+                style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="text-sm font-semibold truncate" style={{ color: '#F1F5F9' }}>
+                      {tournament.name}
+                    </h3>
+                    <Badge variant="secondary" className="text-[10px] shrink-0" style={{ backgroundColor: '#10B98120', color: '#10B981' }}>
+                      Completed
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs" style={{ color: '#94A3B8' }}>
+                    <span className="flex items-center gap-1">
+                      <Users className="w-3 h-3" />
+                      {tournament.currentPlayers}/{tournament.maxPlayers}
+                    </span>
+                    <span>
+                      {tournament.endedAt ? new Date(tournament.endedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
+                    </span>
+                    {winner && (
+                      <span className="flex items-center gap-1" style={{ color: '#E3B341' }}>
+                        <Crown className="w-3 h-3" />
+                        {winner.name}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
