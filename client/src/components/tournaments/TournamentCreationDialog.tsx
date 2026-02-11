@@ -299,7 +299,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 min="2"
                 max="50"
                 value={formData.maxPlayers}
-                onChange={(e) => updateField("maxPlayers", parseInt(e.target.value) || 2)}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 2;
+                  updateField("maxPlayers", Math.min(50, Math.max(2, val)));
+                }}
                 className={`${errors.maxPlayers ? "border-red-500" : ""} text-center font-bold`}
                 style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
               />
@@ -322,7 +325,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 max="1000000"
                 step="1000"
                 value={formData.startingBalance}
-                onChange={(e) => updateField("startingBalance", parseInt(e.target.value) || 10000)}
+                onChange={(e) => {
+                  const val = parseInt(e.target.value) || 10000;
+                  updateField("startingBalance", Math.min(1000000, Math.max(1000, val)));
+                }}
                 className={`${errors.startingBalance ? "border-red-500" : ""} font-bold`}
                 style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
               />
@@ -487,7 +493,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               min="0"
               step="0.01"
               value={formData.buyInAmount}
-              onChange={(e) => updateField("buyInAmount", parseFloat(e.target.value) || 0)}
+              onChange={(e) => {
+                const val = parseFloat(e.target.value) || 0;
+                updateField("buyInAmount", Math.min(10000, Math.max(0, val)));
+              }}
               placeholder="0.00"
               className={`${errors.buyInAmount ? "border-red-500" : ""} font-bold`}
               style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
