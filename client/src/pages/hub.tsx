@@ -806,8 +806,7 @@ export default function Hub() {
   // ─── RENDER ───────────────────────────────────────────────
   return (
     <motion.div
-      className="min-h-screen relative overflow-hidden page-grid-bg"
-      style={{ backgroundColor: '#080C14' }}
+      className="relative page-grid-bg"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
