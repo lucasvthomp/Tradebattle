@@ -14,21 +14,20 @@ import {
   Timer,
   Users,
   Activity,
-  TrendingUp,
-  TrendingDown,
-  Flame,
-  Rocket,
-  Swords,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
-// ─── Animation Variants ────────────────────────────────────────
+// Stagger container for orchestrated child animations
 const staggerContainer = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.1 } },
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
 };
 
 const fadeUpItem = {
@@ -36,645 +35,6 @@ const fadeUpItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
-// ─── Live Market Ticker ────────────────────────────────────────
-function LiveMarketTicker({ stocks }: { stocks: any[] }) {
-  if (!stocks || stocks.length === 0) {
-    return (
-      <div
-        className="w-full overflow-hidden py-3 mb-6"
-        style={{
-          backgroundColor: 'rgba(8, 12, 20, 0.6)',
-          borderBottom: '1px solid rgba(227, 179, 65, 0.15)',
-        }}
-      >
-        <div className="flex gap-8 px-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="flex items-center gap-2">
-              <div className="h-4 w-12 rounded bg-gray-800 animate-pulse" />
-              <div className="h-4 w-16 rounded bg-gray-800 animate-pulse" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  const tripled = [...stocks, ...stocks, ...stocks];
-
-  return (
-    <div
-      className="w-full overflow-hidden py-3 mb-6"
-      style={{
-        backgroundColor: 'rgba(8, 12, 20, 0.6)',
-        borderBottom: '1px solid rgba(227, 179, 65, 0.15)',
-      }}
-    >
-      <motion.div
-        className="flex gap-8 whitespace-nowrap"
-        animate={{ x: ["0%", "-33.33%"] }}
-        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-      >
-        {tripled.map((stock: any, i: number) => {
-          const isPositive = (stock.percentChange || stock.changesPercentage || 0) >= 0;
-          const pctChange = stock.percentChange || stock.changesPercentage || 0;
-          const price = stock.price || 0;
-          return (
-            <div key={i} className="flex items-center gap-2 px-2 shrink-0">
-              <span className="font-bold text-sm" style={{ color: '#F1F5F9' }}>
-                {stock.symbol}
-              </span>
-              <span className="text-sm" style={{ color: '#94A3B8' }}>
-                ${typeof price === 'number' ? price.toFixed(2) : price}
-              </span>
-              <span className="flex items-center gap-0.5 text-xs font-semibold" style={{ color: isPositive ? '#10B981' : '#EF4444' }}>
-                {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                {isPositive ? '+' : ''}{typeof pctChange === 'number' ? pctChange.toFixed(2) : pctChange}%
-              </span>
-            </div>
-          );
-        })}
-      </motion.div>
-    </div>
-  );
-}
-
-// ─── Top Traders Spotlight ─────────────────────────────────────
-function TopTradersSpotlight({ rankings, yourRank, formatCurrency }: { rankings: any[]; yourRank: number | null; formatCurrency: (n: number) => string }) {
-  const medalColors = ['#E3B341', '#C0C0C0', '#CD7F32'];
-
-  if (!rankings || rankings.length === 0) {
-    return (
-      <motion.div
-        className="mb-6 md:mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <div className="rounded-lg p-1.5" style={{ backgroundColor: '#E3B34120' }}>
-            <Crown className="w-5 h-5" style={{ color: '#E3B341' }} />
-          </div>
-          <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
-            Top Traders
-          </h2>
-        </div>
-        <Card className="rounded-xl border" style={{ background: '#111827', borderColor: '#1F2937' }}>
-          <CardContent className="p-6 text-center">
-            <Trophy className="w-10 h-10 mx-auto mb-3" style={{ color: '#E3B34140' }} />
-            <p className="text-sm font-semibold" style={{ color: '#64748B' }}>
-              Join a tournament to see who's on top!
-            </p>
-            <Link href="/tournaments">
-              <Button className="mt-3 h-9 text-sm font-bold rounded-lg border-none" style={{ background: 'linear-gradient(135deg, #E3B341, #F59E0B)', color: '#080C14' }}>
-                Browse Tournaments
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div
-      className="mb-6 md:mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Section Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg p-1.5" style={{ backgroundColor: '#E3B34120' }}>
-            <Crown className="w-5 h-5" style={{ color: '#E3B341' }} />
-          </div>
-          <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
-            Top Traders
-          </h2>
-        </div>
-        <Link href="/leaderboard">
-          <span className="text-sm font-semibold flex items-center gap-1" style={{ color: '#E3B341' }}>
-            View All <ArrowRight className="w-4 h-4" />
-          </span>
-        </Link>
-      </div>
-
-      {/* Trader Cards */}
-      <motion.div
-        className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide"
-        variants={staggerContainer}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-      >
-        {rankings.slice(0, 5).map((trader: any, i: number) => (
-          <motion.div key={i} variants={fadeUpItem} whileHover={{ y: -4 }} className="shrink-0">
-            <Card
-              className="rounded-xl border overflow-hidden transition-all duration-300"
-              style={{
-                background: i === 0
-                  ? 'linear-gradient(160deg, #1a1810 0%, #111827 100%)'
-                  : 'linear-gradient(160deg, #111827 0%, #0f1520 100%)',
-                borderColor: i < 3 ? `${medalColors[i]}40` : '#1F2937',
-                boxShadow: i === 0 ? '0 4px 24px rgba(227, 179, 65, 0.15)' : undefined,
-                minWidth: '160px',
-                width: '180px',
-              }}
-            >
-              <CardContent className="p-4">
-                {/* Rank Badge */}
-                <div className="flex items-center justify-between mb-3">
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center font-black text-sm"
-                    style={{
-                      backgroundColor: i < 3 ? `${medalColors[i]}20` : '#1F293740',
-                      color: i < 3 ? medalColors[i] : '#94A3B8',
-                      border: i < 3 ? `1px solid ${medalColors[i]}40` : undefined,
-                    }}
-                  >
-                    {i === 0 ? <Crown className="w-4 h-4" /> : `#${i + 1}`}
-                  </div>
-                  {i === 0 && (
-                    <Badge className="text-[10px] font-bold border-none" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
-                      LEADER
-                    </Badge>
-                  )}
-                </div>
-
-                {/* Username */}
-                <div className="text-sm font-bold mb-1 truncate" style={{ color: '#F1F5F9' }}>
-                  {trader.username || 'Trader'}
-                </div>
-
-                {/* Growth */}
-                <div className="text-lg font-black" style={{ color: '#10B981' }}>
-                  +{(trader.percentageChange || 0).toFixed(1)}%
-                </div>
-
-                {/* Tournament */}
-                <div className="text-[11px] mt-1 truncate" style={{ color: '#64748B' }}>
-                  {trader.tournamentName || 'Tournament'}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
-
-      {/* Your Rank */}
-      {yourRank && (
-        <div className="mt-3 text-sm font-semibold" style={{ color: '#94A3B8' }}>
-          You're ranked <span style={{ color: '#E3B341' }}>#{yourRank}</span> globally
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-// ─── Live Tournament Feed ──────────────────────────────────────
-function LiveTournamentFeed({ tournaments, formatCurrency }: { tournaments: any[]; formatCurrency: (n: number) => string }) {
-  const [, setTick] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => setTick(t => t + 1), 10000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const getCountdown = (endTime: string) => {
-    const diff = new Date(endTime).getTime() - Date.now();
-    if (diff <= 0) return "Ended";
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(hours / 24);
-    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    if (days > 0) return `${days}d ${hours % 24}h`;
-    if (hours > 0) return `${hours}h ${mins}m`;
-    return `${mins}m`;
-  };
-
-  // Sort: active first, then waiting
-  const sorted = [...tournaments]
-    .filter((t: any) => t.status === 'active' || t.status === 'waiting')
-    .sort((a: any, b: any) => {
-      if (a.status === 'active' && b.status !== 'active') return -1;
-      if (b.status === 'active' && a.status !== 'active') return 1;
-      return 0;
-    })
-    .slice(0, 4);
-
-  if (sorted.length === 0) {
-    return (
-      <motion.div
-        className="mb-6 md:mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <div className="rounded-lg p-1.5" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
-            <Swords className="w-5 h-5" style={{ color: '#EF4444' }} />
-          </div>
-          <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
-            Live Tournaments
-          </h2>
-        </div>
-        <Card className="rounded-xl border" style={{ background: '#111827', borderColor: '#1F2937' }}>
-          <CardContent className="p-6 text-center">
-            <Swords className="w-10 h-10 mx-auto mb-3" style={{ color: '#E3B34140' }} />
-            <p className="text-sm font-semibold" style={{ color: '#64748B' }}>
-              No active tournaments right now — be the first to create one!
-            </p>
-            <Link href="/tournaments">
-              <Button className="mt-3 h-9 text-sm font-bold rounded-lg border-none" style={{ background: 'linear-gradient(135deg, #E3B341, #F59E0B)', color: '#080C14' }}>
-                Create Tournament
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </motion.div>
-    );
-  }
-
-  return (
-    <motion.div
-      className="mb-6 md:mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Section Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg p-1.5" style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
-            <Swords className="w-5 h-5" style={{ color: '#EF4444' }} />
-          </div>
-          <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
-            Live Tournaments
-          </h2>
-          <span className="flex items-center gap-1.5 ml-2">
-            <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: '#EF4444' }} />
-            <span className="text-xs font-bold" style={{ color: '#EF4444' }}>LIVE</span>
-          </span>
-        </div>
-        <Link href="/tournaments">
-          <span className="text-sm font-semibold flex items-center gap-1" style={{ color: '#E3B341' }}>
-            Browse All <ArrowRight className="w-4 h-4" />
-          </span>
-        </Link>
-      </div>
-
-      {/* Tournament Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-        {sorted.map((tournament: any, i: number) => {
-          const isActive = tournament.status === 'active';
-          const pot = (tournament.currentPlayers || 0) * (tournament.buyInAmount || 0);
-          const playerPct = tournament.maxPlayers ? ((tournament.currentPlayers || 0) / tournament.maxPlayers) * 100 : 0;
-
-          return (
-            <motion.div key={tournament.id || i} variants={fadeUpItem} whileHover={{ y: -3 }}>
-              <Link href="/tournaments">
-                <Card
-                  className="cursor-pointer rounded-xl border overflow-hidden transition-all duration-300"
-                  style={{
-                    background: isActive
-                      ? 'linear-gradient(160deg, #111827 0%, #0d1a15 100%)'
-                      : 'linear-gradient(160deg, #111827 0%, #1a1710 100%)',
-                    borderColor: '#1F2937',
-                  }}
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <div>
-                        <div className="font-bold text-sm md:text-base mb-1 truncate" style={{ color: '#F1F5F9', maxWidth: '180px' }}>
-                          {tournament.name}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            className="text-[10px] font-bold border-none"
-                            style={{
-                              backgroundColor: isActive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(227, 179, 65, 0.2)',
-                              color: isActive ? '#10B981' : '#E3B341',
-                            }}
-                          >
-                            {isActive ? '● LIVE' : '◷ STARTING SOON'}
-                          </Badge>
-                          {tournament.tournamentType && (
-                            <Badge
-                              className="text-[10px] font-bold border-none"
-                              style={{
-                                backgroundColor: tournament.tournamentType === 'crypto' ? 'rgba(249, 115, 22, 0.2)' : 'rgba(59, 130, 246, 0.2)',
-                                color: tournament.tournamentType === 'crypto' ? '#F97316' : '#3B82F6',
-                              }}
-                            >
-                              {tournament.tournamentType === 'crypto' ? 'CRYPTO' : 'STOCKS'}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-                      {pot > 0 && (
-                        <div className="text-right">
-                          <div className="text-[11px] font-semibold" style={{ color: '#64748B' }}>Prize Pot</div>
-                          <div className="text-base font-black" style={{ color: '#10B981' }}>
-                            {formatCurrency(pot)}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Stats Row */}
-                    <div className="flex items-center gap-4 text-xs" style={{ color: '#94A3B8' }}>
-                      <div className="flex items-center gap-1">
-                        <Users className="w-3.5 h-3.5" />
-                        <span className="font-semibold">{tournament.currentPlayers || 0}/{tournament.maxPlayers || '∞'}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Timer className="w-3.5 h-3.5" />
-                        <span className="font-semibold">
-                          {isActive && tournament.endTime
-                            ? `${getCountdown(tournament.endTime)} left`
-                            : tournament.scheduledStartTime
-                              ? `Starts in ${getCountdown(tournament.scheduledStartTime)}`
-                              : tournament.timeframe || '--'}
-                        </span>
-                      </div>
-                      {tournament.buyInAmount > 0 && (
-                        <div className="flex items-center gap-1">
-                          <DollarSign className="w-3.5 h-3.5" />
-                          <span className="font-semibold">{formatCurrency(tournament.buyInAmount)} entry</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Player Fill Bar */}
-                    {tournament.maxPlayers && (
-                      <div className="mt-3 h-1.5 rounded-full overflow-hidden" style={{ backgroundColor: '#1F2937' }}>
-                        <div
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{
-                            width: `${Math.min(playerPct, 100)}%`,
-                            background: isActive
-                              ? 'linear-gradient(90deg, #10B981, #06B6D4)'
-                              : 'linear-gradient(90deg, #E3B341, #F59E0B)',
-                          }}
-                        />
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Your Stats Banner ─────────────────────────────────────────
-function YourStatsBanner({ user, globalRank }: { user: any; globalRank: number | null }) {
-  const stats = [
-    {
-      label: "Tournaments Won",
-      value: user?.tournamentWins || 0,
-      icon: Trophy,
-      color: '#E3B341',
-    },
-    {
-      label: "Trades Executed",
-      value: user?.totalTrades || 0,
-      icon: Activity,
-      color: '#10B981',
-    },
-    {
-      label: "Global Ranking",
-      value: globalRank ? `#${globalRank}` : "Unranked",
-      icon: Award,
-      color: '#06B6D4',
-    },
-  ];
-
-  return (
-    <motion.div
-      className="mb-6 md:mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      <Card
-        className="rounded-2xl border overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, #0d1520 0%, #111827 50%, #151210 100%)',
-          borderColor: '#1F2937',
-        }}
-      >
-        <CardContent className="p-5 md:p-8">
-          <div className="flex items-center gap-2 mb-5">
-            <div className="rounded-lg p-1.5" style={{ backgroundColor: '#E3B34120' }}>
-              <Flame className="w-5 h-5" style={{ color: '#E3B341' }} />
-            </div>
-            <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
-              Your Journey
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={i}
-                className="text-center md:text-left"
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.1 * i, duration: 0.4 }}
-              >
-                <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
-                  <div className="rounded-xl p-2" style={{ backgroundColor: `${stat.color}15` }}>
-                    <stat.icon className="w-6 h-6" style={{ color: stat.color }} />
-                  </div>
-                </div>
-                <div className="text-3xl md:text-4xl font-black mb-1" style={{ color: '#FFFFFF' }}>
-                  {stat.value}
-                </div>
-                <div className="text-xs md:text-sm font-semibold" style={{ color: '#64748B' }}>
-                  {stat.label}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </motion.div>
-  );
-}
-
-// ─── Trending Stocks Bar ───────────────────────────────────────
-function TrendingStocksBar({ stocks }: { stocks: any[] }) {
-  if (!stocks || stocks.length === 0) return null;
-
-  // Sort by absolute % change, take top 4 movers
-  const topMovers = [...stocks]
-    .sort((a: any, b: any) => Math.abs(b.percentChange || b.changesPercentage || 0) - Math.abs(a.percentChange || a.changesPercentage || 0))
-    .slice(0, Math.min(4, stocks.length));
-
-  return (
-    <motion.div
-      className="mb-6 md:mb-8"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <div className="rounded-lg p-1.5" style={{ backgroundColor: 'rgba(16, 185, 129, 0.15)' }}>
-            <TrendingUp className="w-5 h-5" style={{ color: '#10B981' }} />
-          </div>
-          <h2 className="text-lg md:text-xl font-black font-display" style={{ color: '#F1F5F9' }}>
-            Top Movers
-          </h2>
-        </div>
-        <Link href="/dashboard">
-          <span className="text-sm font-semibold flex items-center gap-1" style={{ color: '#10B981' }}>
-            Trade Now <ArrowRight className="w-4 h-4" />
-          </span>
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {topMovers.map((stock: any, i: number) => {
-          const pctChange = stock.percentChange || stock.changesPercentage || 0;
-          const isPositive = pctChange >= 0;
-          const price = stock.price || 0;
-
-          return (
-            <motion.div key={i} whileHover={{ y: -3 }}>
-              <Link href="/dashboard">
-                <Card
-                  className="cursor-pointer rounded-xl border transition-all duration-300 overflow-hidden"
-                  style={{
-                    background: isPositive
-                      ? 'linear-gradient(160deg, #111827 0%, #0d1a15 100%)'
-                      : 'linear-gradient(160deg, #111827 0%, #1a0d0d 100%)',
-                    borderColor: '#1F2937',
-                  }}
-                >
-                  <CardContent className="p-3 md:p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-bold text-sm" style={{ color: '#F1F5F9' }}>{stock.symbol}</span>
-                      {isPositive ? (
-                        <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
-                      ) : (
-                        <TrendingDown className="w-4 h-4" style={{ color: '#EF4444' }} />
-                      )}
-                    </div>
-                    <div className="text-base md:text-lg font-black mb-1" style={{ color: '#F1F5F9' }}>
-                      ${typeof price === 'number' ? price.toFixed(2) : price}
-                    </div>
-                    <div
-                      className="text-xs font-bold"
-                      style={{ color: isPositive ? '#10B981' : '#EF4444' }}
-                    >
-                      {isPositive ? '+' : ''}{typeof pctChange === 'number' ? pctChange.toFixed(2) : pctChange}%
-                    </div>
-
-                    {/* Mini bar */}
-                    <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ backgroundColor: '#1F2937' }}>
-                      <div
-                        className="h-full rounded-full"
-                        style={{
-                          width: `${Math.min(Math.abs(pctChange) * 10, 100)}%`,
-                          backgroundColor: isPositive ? '#10B981' : '#EF4444',
-                        }}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </motion.div>
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}
-
-// ─── Bottom CTA ────────────────────────────────────────────────
-function BottomCTA() {
-  return (
-    <motion.div
-      className="mb-6 md:mb-10"
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
-      <motion.div whileHover={{ scale: 1.01 }} transition={{ type: 'spring', stiffness: 300 }}>
-        <Card
-          className="rounded-2xl border-none overflow-hidden relative"
-          style={{
-            background: 'linear-gradient(135deg, #E3B341 0%, #D4A030 50%, #c99a35 100%)',
-            boxShadow: '0 8px 40px rgba(227, 179, 65, 0.25)',
-          }}
-        >
-          {/* Decorative bg icons */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <Trophy className="absolute top-4 right-8 w-24 h-24 opacity-[0.08]" style={{ color: '#080C14' }} />
-            <Rocket className="absolute bottom-4 left-8 w-20 h-20 opacity-[0.08]" style={{ color: '#080C14' }} />
-          </div>
-
-          <CardContent className="p-6 md:p-10 relative z-10 text-center">
-            <h2 className="text-2xl md:text-4xl font-black font-display mb-3" style={{ color: '#080C14' }}>
-              Ready to Dominate?
-            </h2>
-            <p className="text-sm md:text-base mb-6 max-w-md mx-auto" style={{ color: 'rgba(8, 12, 20, 0.7)' }}>
-              Join a tournament, outsmart the competition, and claim your spot at the top.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <Link href="/tournaments">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                  <Button
-                    className="h-12 px-8 text-base font-bold rounded-xl border-none"
-                    style={{
-                      backgroundColor: '#080C14',
-                      color: '#E3B341',
-                    }}
-                  >
-                    <Swords className="w-5 h-5 mr-2" />
-                    Enter Tournament
-                  </Button>
-                </motion.div>
-              </Link>
-              <Link href="/dashboard">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
-                  <Button
-                    variant="outline"
-                    className="h-12 px-8 text-base font-bold rounded-xl"
-                    style={{
-                      borderColor: '#080C14',
-                      color: '#080C14',
-                      backgroundColor: 'transparent',
-                    }}
-                  >
-                    <BarChart3 className="w-5 h-5 mr-2" />
-                    Start Trading
-                  </Button>
-                </motion.div>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ─── MAIN HUB COMPONENT ───────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════
 export default function Hub() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
@@ -692,41 +52,29 @@ export default function Hub() {
     return "Good Evening";
   };
 
-  // ─── Data Queries ──────────────────────────────────────────
+  // Fetch tournaments
   const { data: tournamentsData } = useQuery({
     queryKey: ['/api/tournaments'],
   });
 
-  const { data: publicTournaments } = useQuery({
-    queryKey: ['/api/tournaments/public'],
-  });
-
-  const { data: growthLeaderboard } = useQuery({
+  // Fetch personal leaderboard for global rank
+  const { data: personalLeaderboard } = useQuery({
     queryKey: ['/api/leaderboard/most-growth'],
   });
 
-  const { data: popularStocks } = useQuery({
-    queryKey: ['/api/popular'],
-    refetchInterval: 60000,
-  });
-
-  // ─── Derived Data ─────────────────────────────────────────
   const activeTournaments = tournamentsData?.data?.filter((t: any) => t.status === 'active') || [];
+  const nextTournament = activeTournaments[0];
 
+  // Calculate active trades count from user's active tournaments
   const userTournaments = tournamentsData?.data?.filter((t: any) =>
     t.status === 'active' && t.participants?.some((p: any) => p.userId === user?.id)
   ) || [];
   const activeTradesCount = userTournaments.length;
 
-  const globalRank = (growthLeaderboard as any)?.data?.yourRank ?? null;
-  const topRankings = (growthLeaderboard as any)?.data?.rankings ?? [];
-
-  const tournamentList = (publicTournaments as any)?.data ?? [];
-
-  const stockList = (popularStocks as any)?.data ?? [];
+  // Get global rank
+  const globalRank = (personalLeaderboard as any)?.data?.yourRank || null;
 
   const getTimeRemaining = () => {
-    const nextTournament = activeTournaments[0];
     if (!nextTournament?.endTime) return "--";
     const end = new Date(nextTournament.endTime).getTime();
     const now = Date.now();
@@ -738,7 +86,6 @@ export default function Hub() {
     return `${hours}h`;
   };
 
-  // ─── Static Data ──────────────────────────────────────────
   const primaryActions = [
     {
       title: "Trade Now",
@@ -803,15 +150,15 @@ export default function Hub() {
     },
   ];
 
-  // ─── RENDER ───────────────────────────────────────────────
   return (
     <motion.div
-      className="relative page-grid-bg w-full overflow-x-hidden"
+      className="min-h-screen relative overflow-hidden page-grid-bg"
+      style={{ backgroundColor: '#080C14' }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Ambient gradient orb */}
+      {/* Ambient gradient orb behind hero */}
       <div
         style={{
           position: 'absolute',
@@ -826,13 +173,8 @@ export default function Hub() {
         }}
       />
 
-      {/* ═══ Section 1: Live Market Ticker ═══ */}
-      <div className="relative z-10">
-        <LiveMarketTicker stocks={stockList} />
-      </div>
-
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-8 relative z-10">
-        {/* ═══ Section 2: Hero Header + Balance Card ═══ */}
+        {/* Hero Header */}
         <motion.div
           className="mb-8 md:mb-10"
           initial={{ opacity: 0, y: -20 }}
@@ -881,7 +223,9 @@ export default function Hub() {
               >
                 <CardContent className="p-4 md:p-6 relative z-10">
                   <div className="mb-2 md:mb-3 flex items-center gap-2">
-                    <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{ backgroundColor: 'rgba(8, 12, 20, 0.2)' }}>
+                    <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{
+                      backgroundColor: 'rgba(8, 12, 20, 0.2)',
+                    }}>
                       <DollarSign className="w-4 h-4 md:w-5 md:h-5" style={{ color: '#080C14' }} />
                     </div>
                     <div className="text-xs md:text-sm font-bold" style={{ color: '#080C14' }}>Your Balance</div>
@@ -908,7 +252,7 @@ export default function Hub() {
           </div>
         </motion.div>
 
-        {/* ═══ Section 3: Quick Stats ═══ */}
+        {/* Quick Stats */}
         <motion.div
           className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8"
           variants={staggerContainer}
@@ -916,7 +260,11 @@ export default function Hub() {
           animate="visible"
         >
           {quickStats.map((stat, i) => (
-            <motion.div key={i} variants={fadeUpItem} whileHover={{ y: -4 }}>
+            <motion.div
+              key={i}
+              variants={fadeUpItem}
+              whileHover={{ y: -4 }}
+            >
               <Card
                 className="transition-all rounded-xl md:rounded-2xl relative overflow-hidden border"
                 style={{
@@ -928,7 +276,9 @@ export default function Hub() {
               >
                 <CardContent className="p-3 md:p-5 relative z-10">
                   <div className="flex items-center justify-between mb-2 md:mb-3">
-                    <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{ backgroundColor: `${stat.color}20` }}>
+                    <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{
+                      backgroundColor: `${stat.color}20`,
+                    }}>
                       <stat.icon className="w-4 h-4 md:w-6 md:h-6" style={{ color: stat.color }} />
                     </div>
                   </div>
@@ -942,7 +292,7 @@ export default function Hub() {
           ))}
         </motion.div>
 
-        {/* ═══ Section 4: Primary Action Cards ═══ */}
+        {/* Primary Action Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5 mb-6 md:mb-8">
           {primaryActions.map((action, i) => (
             <motion.div
@@ -955,7 +305,10 @@ export default function Hub() {
               <Link href={action.href}>
                 <Card
                   className="h-full cursor-pointer relative overflow-hidden group rounded-2xl border transition-all duration-300"
-                  style={{ background: action.gradient, borderColor: '#1F2937' }}
+                  style={{
+                    background: action.gradient,
+                    borderColor: '#1F2937',
+                  }}
                   onMouseEnter={(e) => {
                     (e.currentTarget as HTMLElement).style.boxShadow = `0 8px 40px ${action.glowColor}`;
                     (e.currentTarget as HTMLElement).style.borderColor = `${action.borderColor}40`;
@@ -965,27 +318,38 @@ export default function Hub() {
                     (e.currentTarget as HTMLElement).style.borderColor = '#1F2937';
                   }}
                 >
+                  {/* Badge */}
                   <Badge
                     className="absolute top-4 right-4 font-bold text-xs z-20 border-none"
-                    style={{ backgroundColor: action.borderColor, color: '#FFFFFF', padding: '4px 10px' }}
+                    style={{
+                      backgroundColor: action.borderColor,
+                      color: '#FFFFFF',
+                      padding: '4px 10px'
+                    }}
                   >
                     {action.badge}
                   </Badge>
+
                   <CardContent className="p-5 md:p-6 lg:p-8 relative z-10">
                     <div className="mb-4 md:mb-5">
                       <div
                         className="rounded-xl md:rounded-2xl inline-block p-3.5 md:p-5"
-                        style={{ backgroundColor: `${action.borderColor}15`, border: `1px solid ${action.borderColor}25` }}
+                        style={{
+                          backgroundColor: `${action.borderColor}15`,
+                          border: `1px solid ${action.borderColor}25`,
+                        }}
                       >
                         <action.icon className="w-10 h-10 md:w-14 md:h-14" style={{ color: action.borderColor }} />
                       </div>
                     </div>
+
                     <h3 className="text-xl md:text-2xl lg:text-3xl font-black mb-2 md:mb-3" style={{ color: '#FFFFFF' }}>
                       {action.title}
                     </h3>
                     <p className="text-sm md:text-base mb-4 md:mb-6 leading-relaxed" style={{ color: '#94A3B8' }}>
                       {action.description}
                     </p>
+
                     <div className="flex items-center gap-2 font-bold group-hover:gap-4 transition-all text-sm md:text-base" style={{ color: action.borderColor }}>
                       <span>Let's Go</span>
                       <ArrowRight className="w-5 h-5" />
@@ -997,27 +361,155 @@ export default function Hub() {
           ))}
         </div>
 
-        {/* ═══ Section 5: Top Traders Spotlight ═══ */}
-        <TopTradersSpotlight
-          rankings={topRankings}
-          yourRank={globalRank}
-          formatCurrency={formatCurrency}
-        />
+        {/* Featured Tournament */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
+          className="mb-6 md:mb-10"
+        >
+          <Link href="/tournaments">
+            <Card
+              className="cursor-pointer group relative overflow-hidden rounded-2xl border transition-all duration-300"
+              style={{
+                backgroundColor: '#111827',
+                borderColor: '#1F2937',
+                boxShadow: '0 0 40px rgba(227, 179, 65, 0.05)',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 50px rgba(227, 179, 65, 0.1), 0 0 100px rgba(227, 179, 65, 0.03)';
+                (e.currentTarget as HTMLElement).style.borderColor = 'rgba(227, 179, 65, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.boxShadow = '0 0 40px rgba(227, 179, 65, 0.05)';
+                (e.currentTarget as HTMLElement).style.borderColor = '#1F2937';
+              }}
+            >
+              {/* Subtle gold gradient bleed at top edge */}
+              <div
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '2px',
+                  background: 'linear-gradient(90deg, transparent, #E3B341, transparent)',
+                  opacity: 0.6,
+                  zIndex: 5,
+                }}
+              />
 
-        {/* ═══ Section 6: Live Tournaments Feed ═══ */}
-        <LiveTournamentFeed
-          tournaments={tournamentList}
-          formatCurrency={formatCurrency}
-        />
+              <CardContent className="p-4 md:p-6 lg:p-8 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 items-center">
+                  <div>
+                    <Badge
+                      className="mb-3 md:mb-4 font-bold text-xs md:text-sm border-none"
+                      style={{
+                        background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
+                        color: '#080C14'
+                      }}
+                    >
+                      {nextTournament ? 'LIVE NOW' : 'TOURNAMENTS'}
+                    </Badge>
+                    <h3 className="text-xl md:text-2xl lg:text-3xl font-black mb-3 md:mb-4 flex items-center gap-2 md:gap-3" style={{ color: '#FFFFFF' }}>
+                      <div className="rounded-lg md:rounded-xl p-1.5 md:p-2" style={{
+                        backgroundColor: '#E3B34120',
+                      }}>
+                        <Trophy className="w-6 h-6 md:w-8 md:h-8" style={{ color: '#E3B341' }} />
+                      </div>
+                      {nextTournament?.name || "No Active Tournaments"}
+                    </h3>
+                    {nextTournament && (
+                      <>
+                        <p className="text-sm md:text-base mb-4 md:mb-5" style={{ color: '#94A3B8' }}>
+                          Buy-in: <span className="text-xl md:text-2xl font-black" style={{ color: '#10B981' }}>
+                            {formatCurrency(nextTournament.buyInAmount || 0)}
+                          </span>
+                        </p>
+                        <div className="flex flex-wrap items-center gap-3 md:gap-6 text-xs md:text-sm mb-4 md:mb-6" style={{ color: '#94A3B8' }}>
+                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{
+                            backgroundColor: 'rgba(227, 179, 65, 0.1)',
+                            border: '1px solid rgba(227, 179, 65, 0.2)'
+                          }}>
+                            <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
+                            <span className="font-bold">{nextTournament.currentPlayers || 0} players</span>
+                          </div>
+                          <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{
+                            backgroundColor: 'rgba(227, 179, 65, 0.1)',
+                            border: '1px solid rgba(227, 179, 65, 0.2)'
+                          }}>
+                            <Timer className="w-4 h-4" style={{ color: '#E3B341' }} />
+                            <span className="font-bold">{getTimeRemaining()} left</span>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                      <Button
+                        className="h-12 text-base font-bold border-none"
+                        style={{
+                          background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
+                          color: '#080C14',
+                        }}
+                      >
+                        <Zap className="w-5 h-5 mr-2" />
+                        {nextTournament ? 'Join Tournament Now' : 'Browse Tournaments'}
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    </motion.div>
+                  </div>
 
-        {/* ═══ Section 7: Your Stats Banner ═══ */}
-        <YourStatsBanner user={user} globalRank={globalRank} />
-
-        {/* ═══ Section 8: Trending Stocks Bar ═══ */}
-        <TrendingStocksBar stocks={stockList} />
-
-        {/* ═══ Section 9: Bottom CTA ═══ */}
-        <BottomCTA />
+                  <div className="relative">
+                    <div
+                      className="text-center p-8 rounded-2xl relative overflow-hidden"
+                      style={{
+                        backgroundColor: '#0F172A',
+                        border: '1px solid rgba(227, 179, 65, 0.15)',
+                      }}
+                    >
+                      {/* Prize section ambient glow */}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: '50%',
+                          left: '50%',
+                          transform: 'translate(-50%, -50%)',
+                          width: '200px',
+                          height: '200px',
+                          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 70%)',
+                          pointerEvents: 'none',
+                        }}
+                      />
+                      <div className="mb-4 relative z-10">
+                        <Crown className="w-16 h-16 mx-auto" style={{ color: '#E3B341' }} />
+                      </div>
+                      <div className="text-lg font-bold mb-3 relative z-10" style={{ color: '#F1F5F9' }}>First Place Wins</div>
+                      <motion.div
+                        className="text-4xl md:text-5xl font-black mb-4 relative z-10"
+                        style={{ color: '#10B981' }}
+                        animate={{
+                          textShadow: [
+                            '0 0 20px rgba(16, 185, 129, 0)',
+                            '0 0 20px rgba(16, 185, 129, 0.3)',
+                            '0 0 20px rgba(16, 185, 129, 0)',
+                          ],
+                        }}
+                        transition={{
+                          duration: 3,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                        }}
+                      >
+                        {nextTournament ? formatCurrency((nextTournament.buyInAmount || 0) * (nextTournament.currentPlayers || 0) * 0.5) : '--'}
+                      </motion.div>
+                      <p className="text-sm relative z-10" style={{ color: '#94A3B8' }}>Top positions paid out</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </motion.div>
       </div>
     </motion.div>
   );
