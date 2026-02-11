@@ -140,14 +140,14 @@ export default function Dashboard() {
 
         {/* TradingView Chart */}
         <div
-          className="flex-1 min-h-[400px] [@media(min-aspect-ratio:1/1)]:min-h-[500px] mx-2 [@media(min-aspect-ratio:1/1)]:mx-4 rounded-xl overflow-hidden"
+          className="flex-1 min-h-[350px] [@media(min-aspect-ratio:1/1)]:min-h-[450px] mx-1 [@media(min-aspect-ratio:1/1)]:mx-2 rounded-lg overflow-hidden"
           style={{ border: "1px solid #1F2937" }}
         >
           <TradingViewChart symbol={selectedSymbol} />
         </div>
 
         {/* Info Section (scrollable) */}
-        <ScrollArea className="max-h-[400px] mx-2 [@media(min-aspect-ratio:1/1)]:mx-4 mt-2 mb-2">
+        <ScrollArea className="max-h-[350px] mx-1 [@media(min-aspect-ratio:1/1)]:mx-2 mt-1 mb-1">
           <div
             className="rounded-xl overflow-hidden"
             style={{ backgroundColor: "#111827", border: "1px solid #1F2937" }}
