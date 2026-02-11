@@ -72,6 +72,7 @@ const START_DELAY_OPTIONS = [
   { value: "1 day", label: "1 Day" },
   { value: "3 days", label: "3 Days" },
   { value: "1 week", label: "1 Week" },
+  { value: "custom", label: "Custom Date/Time" },
 ];
 
 // Info tooltip component
@@ -103,10 +104,12 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     startDelay: "5 minutes", // 6. In how many minutes, hours, or days the tournament will start
     isPublic: true, // 7. Private or Public
     buyInAmount: 0, // Buy-in amount
-    agreeToTerms: false // Terms of service agreement
+    agreeToTerms: false, // Terms of service agreement
+    customStartTime: "" // Custom datetime for "custom" start delay
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [step, setStep] = useState(1); // 1 = form, 2 = terms/confirmation
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
@@ -117,20 +120,22 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         tournamentType: data.tournamentType,
         startingBalance: data.startingBalance,
         duration: data.duration,
-        scheduledStartTime: new Date(Date.now() + (
-          data.startDelay === 'immediately' ? 0 :
-          data.startDelay === '1 minute' ? 1 * 60 * 1000 :
-          data.startDelay === '5 minutes' ? 5 * 60 * 1000 :
-          data.startDelay === '10 minutes' ? 10 * 60 * 1000 :
-          data.startDelay === '30 minutes' ? 30 * 60 * 1000 :
-          data.startDelay === '1 hour' ? 60 * 60 * 1000 :
-          data.startDelay === '2 hours' ? 2 * 60 * 60 * 1000 :
-          data.startDelay === '6 hours' ? 6 * 60 * 60 * 1000 :
-          data.startDelay === '12 hours' ? 12 * 60 * 60 * 1000 :
-          data.startDelay === '1 day' ? 24 * 60 * 60 * 1000 :
-          data.startDelay === '3 days' ? 3 * 24 * 60 * 60 * 1000 :
-          7 * 24 * 60 * 60 * 1000 // 1 week default
-        )).toISOString(),
+        scheduledStartTime: data.startDelay === 'custom' && data.customStartTime
+          ? new Date(data.customStartTime).toISOString()
+          : new Date(Date.now() + (
+            data.startDelay === 'immediately' ? 0 :
+            data.startDelay === '1 minute' ? 1 * 60 * 1000 :
+            data.startDelay === '5 minutes' ? 5 * 60 * 1000 :
+            data.startDelay === '10 minutes' ? 10 * 60 * 1000 :
+            data.startDelay === '30 minutes' ? 30 * 60 * 1000 :
+            data.startDelay === '1 hour' ? 60 * 60 * 1000 :
+            data.startDelay === '2 hours' ? 2 * 60 * 60 * 1000 :
+            data.startDelay === '6 hours' ? 6 * 60 * 60 * 1000 :
+            data.startDelay === '12 hours' ? 12 * 60 * 60 * 1000 :
+            data.startDelay === '1 day' ? 24 * 60 * 60 * 1000 :
+            data.startDelay === '3 days' ? 3 * 24 * 60 * 60 * 1000 :
+            7 * 24 * 60 * 60 * 1000
+          )).toISOString(),
         buyInAmount: data.buyInAmount,
         tradingRestriction: 'none',
         isPublic: data.isPublic
@@ -148,9 +153,11 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         startDelay: "immediately",
         isPublic: true,
         buyInAmount: 0,
-        agreeToTerms: false
+        agreeToTerms: false,
+        customStartTime: ""
       });
       setErrors({});
+      setStep(1);
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       toast({
         title: "Success",
@@ -197,10 +204,6 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       }
     }
 
-    if (!formData.agreeToTerms) {
-      newErrors.agreeToTerms = "You must agree to the terms of service";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -219,7 +222,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
   };
 
   // Determine if the form is ready to submit
-  const isFormReady = formData.name.trim() !== "" && formData.agreeToTerms && !createTournamentMutation.isPending;
+  const isFormReady = formData.name.trim() !== "" && !createTournamentMutation.isPending;
 
   // Calculate prize pool for preview
   const prizePool = formData.buyInAmount > 0
@@ -420,6 +423,16 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                   ))}
                 </SelectContent>
               </Select>
+              {formData.startDelay === 'custom' && (
+                <Input
+                  type="datetime-local"
+                  value={formData.customStartTime}
+                  onChange={(e) => updateField("customStartTime", e.target.value)}
+                  min={new Date(Date.now() + 5 * 60 * 1000).toISOString().slice(0, 16)}
+                  className="h-9 text-xs mt-1.5"
+                  style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
+                />
+              )}
             </div>
           </div>
 
@@ -491,59 +504,87 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             )}
           </div>
 
-          {/* Terms of Service */}
-          <div className="flex items-start space-x-2.5 p-2.5 rounded-lg" style={{
-            backgroundColor: '#111827',
-            borderColor: formData.agreeToTerms ? '#10B981' : '#1F2937',
-            borderWidth: '2px',
-            borderStyle: 'solid'
-          }}>
-            <Checkbox
-              id="agree-terms"
-              checked={formData.agreeToTerms}
-              onCheckedChange={(checked) => updateField("agreeToTerms", checked)}
-              className="mt-0.5"
-            />
-            <div className="flex-1">
-              <Label
-                htmlFor="agree-terms"
-                className="text-[11px] font-medium cursor-pointer"
-                style={{ color: '#F1F5F9' }}
-              >
-                I agree to the Terms of Service
-              </Label>
-              <p className="text-[10px] mt-0.5" style={{ color: '#94A3B8' }}>
-                Virtual trading only - no real money risk
-              </p>
-            </div>
-          </div>
-          {errors.agreeToTerms && <p className="text-xs text-red-500 mt-1">{errors.agreeToTerms}</p>}
-
-          {/* Submit Buttons */}
-          <div className="flex justify-end space-x-2.5 pt-1">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={createTournamentMutation.isPending}
-              className="h-9"
-              style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
-            >
-              Cancel
-            </Button>
-            <motion.div whileHover={isFormReady ? { scale: 1.02 } : {}} whileTap={isFormReady ? { scale: 0.98 } : {}}>
+          {step === 1 ? (
+            /* Step 1: Next Button */
+            <div className="flex justify-end space-x-2.5 pt-1">
               <Button
-                onClick={handleSubmit}
-                disabled={createTournamentMutation.isPending || !formData.agreeToTerms}
-                className="h-9 font-bold transition-all"
-                style={isFormReady
-                  ? { backgroundColor: '#10B981', color: '#FFFFFF', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }
-                  : { backgroundColor: '#111827', color: '#64748B', boxShadow: 'none' }
-                }
+                variant="outline"
+                onClick={onClose}
+                className="h-9"
+                style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
               >
-                {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
+                Cancel
               </Button>
-            </motion.div>
-          </div>
+              <Button
+                onClick={() => {
+                  if (!formData.name.trim()) {
+                    setErrors({ name: "Tournament name is required" });
+                    return;
+                  }
+                  setStep(2);
+                }}
+                className="h-9 font-bold"
+                style={{ backgroundColor: '#E3B341', color: '#080C14' }}
+              >
+                Next
+              </Button>
+            </div>
+          ) : (
+            /* Step 2: Terms & Conditions + Create */
+            <div className="space-y-3">
+              <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+                <h4 className="text-xs font-bold mb-2" style={{ color: '#F1F5F9' }}>Terms & Conditions</h4>
+                <ul className="text-[10px] space-y-1" style={{ color: '#94A3B8' }}>
+                  <li>• This is a virtual paper trading tournament — no real money is at risk during trading.</li>
+                  <li>• Buy-in amounts are deducted from your site cash balance upon joining.</li>
+                  <li>• Tournament results are final. Winners receive payouts to their site cash.</li>
+                  <li>• Manipulation, exploits, or unfair practices will result in disqualification.</li>
+                </ul>
+              </div>
+
+              <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+                <h4 className="text-xs font-bold mb-2" style={{ color: '#F1F5F9' }}>Your Powers as Tournament Owner</h4>
+                <ul className="text-[10px] space-y-1" style={{ color: '#94A3B8' }}>
+                  {formData.isPublic ? (
+                    <>
+                      <li>• You can cancel the tournament before it starts.</li>
+                      <li>• You earn a 5% creator reward from the prize pool.</li>
+                      <li>• You cannot remove participants from public tournaments.</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>• You can cancel the tournament at any time.</li>
+                      <li>• You can start the tournament early once enough players join.</li>
+                      <li>• You control who gets the join code to enter.</li>
+                      <li>• You earn a 5% creator reward from the prize pool.</li>
+                    </>
+                  )}
+                  {formData.buyInAmount === 0 && (
+                    <li>• This is a free tournament — no buy-in required from participants.</li>
+                  )}
+                </ul>
+              </div>
+
+              <div className="flex justify-between pt-1">
+                <Button
+                  variant="outline"
+                  onClick={() => setStep(1)}
+                  className="h-9"
+                  style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
+                >
+                  Back
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={createTournamentMutation.isPending}
+                  className="h-9 font-bold"
+                  style={{ backgroundColor: '#10B981', color: '#FFFFFF', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }}
+                >
+                  {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
