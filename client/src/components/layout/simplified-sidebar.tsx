@@ -4,19 +4,15 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import {
-  Home,
   BarChart3,
-  Briefcase,
   Trophy,
   Users,
   Phone,
-  Gift,
   Gift,
   Settings,
   Archive,
   Shield,
   Calendar,
-  Target,
   Swords
 } from "lucide-react";
 import { useState } from "react";
