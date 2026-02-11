@@ -109,7 +109,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const [step, setStep] = useState(1); // 1 = form, 2 = terms/confirmation
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
@@ -157,7 +157,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         customStartTime: ""
       });
       setErrors({});
-      setStep(1);
+      setConfirmOpen(false);
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       toast({
         title: "Success",
@@ -230,6 +230,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     : 0;
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#080C14', borderColor: '#E3B341', borderWidth: '2px' }}>
         <div className="grid grid-cols-5 gap-0 h-full">
@@ -513,9 +514,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             )}
           </div>
 
-          {step === 1 ? (
-            /* Step 1: Next Button */
-            <div className="flex justify-end space-x-2.5 pt-1">
+          <div className="flex justify-end space-x-2.5 pt-1">
               <Button
                 variant="outline"
                 onClick={onClose}
@@ -530,7 +529,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     setErrors({ name: "Tournament name is required" });
                     return;
                   }
-                  setStep(2);
+                  setConfirmOpen(true);
                 }}
                 className="h-9 font-bold"
                 style={{ backgroundColor: '#E3B341', color: '#080C14' }}
@@ -538,62 +537,6 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 Next
               </Button>
             </div>
-          ) : (
-            /* Step 2: Terms & Conditions + Create */
-            <div className="space-y-3">
-              <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
-                <h4 className="text-xs font-bold mb-2" style={{ color: '#F1F5F9' }}>Terms & Conditions</h4>
-                <ul className="text-[10px] space-y-1" style={{ color: '#94A3B8' }}>
-                  <li>• This is a virtual paper trading tournament — no real money is at risk during trading.</li>
-                  <li>• Buy-in amounts are deducted from your site cash balance upon joining.</li>
-                  <li>• Tournament results are final. Winners receive payouts to their site cash.</li>
-                  <li>• Manipulation, exploits, or unfair practices will result in disqualification.</li>
-                </ul>
-              </div>
-
-              <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
-                <h4 className="text-xs font-bold mb-2" style={{ color: '#F1F5F9' }}>Your Powers as Tournament Owner</h4>
-                <ul className="text-[10px] space-y-1" style={{ color: '#94A3B8' }}>
-                  {formData.isPublic ? (
-                    <>
-                      <li>• You can cancel the tournament before it starts.</li>
-                      <li>• You earn a 5% creator reward from the prize pool.</li>
-                      <li>• You cannot remove participants from public tournaments.</li>
-                    </>
-                  ) : (
-                    <>
-                      <li>• You can cancel the tournament at any time.</li>
-                      <li>• You can start the tournament early once enough players join.</li>
-                      <li>• You control who gets the join code to enter.</li>
-                      <li>• You earn a 5% creator reward from the prize pool.</li>
-                    </>
-                  )}
-                  {formData.buyInAmount === 0 && (
-                    <li>• This is a free tournament — no buy-in required from participants.</li>
-                  )}
-                </ul>
-              </div>
-
-              <div className="flex justify-between pt-1">
-                <Button
-                  variant="outline"
-                  onClick={() => setStep(1)}
-                  className="h-9"
-                  style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
-                >
-                  Back
-                </Button>
-                <Button
-                  onClick={handleSubmit}
-                  disabled={createTournamentMutation.isPending}
-                  className="h-9 font-bold"
-                  style={{ backgroundColor: '#10B981', color: '#FFFFFF', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }}
-                >
-                  {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
@@ -827,5 +770,111 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     </div>
       </DialogContent>
     </Dialog>
+
+    {/* Confirmation Dialog (Step 2) */}
+    <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <DialogContent className="max-w-lg p-0" style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', borderWidth: '2px' }}>
+        <div className="p-6 space-y-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-3">
+              <div className="p-2 rounded-lg" style={{ backgroundColor: '#E3B341' }}>
+                <Trophy className="w-5 h-5" style={{ color: '#080C14' }} />
+              </div>
+              <div>
+                <span className="text-lg font-bold" style={{ color: '#F1F5F9' }}>Confirm Tournament</span>
+                <p className="text-xs" style={{ color: '#94A3B8' }}>Review terms before creating</p>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Tournament Summary */}
+          <div className="p-3 rounded-lg" style={{ backgroundColor: '#080C14', border: '1px solid #1F2937' }}>
+            <h4 className="text-xs font-bold mb-2" style={{ color: '#E3B341' }}>Tournament Summary</h4>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div>
+                <span style={{ color: '#94A3B8' }}>Name: </span>
+                <span style={{ color: '#F1F5F9' }}>{formData.name || 'Untitled'}</span>
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Type: </span>
+                <span style={{ color: '#F1F5F9' }}>{formData.tournamentType === 'stocks' ? 'Stocks' : 'Crypto'}</span>
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Players: </span>
+                <span style={{ color: '#F1F5F9' }}>{formData.maxPlayers}</span>
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Duration: </span>
+                <span style={{ color: '#F1F5F9' }}>{formData.duration}</span>
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Balance: </span>
+                <span style={{ color: '#F1F5F9' }}>{formatCurrency(formData.startingBalance)}</span>
+              </div>
+              <div>
+                <span style={{ color: '#94A3B8' }}>Buy-in: </span>
+                <span style={{ color: '#F1F5F9' }}>{formData.buyInAmount > 0 ? formatCurrency(formData.buyInAmount) : 'Free'}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Terms & Conditions */}
+          <div className="p-3 rounded-lg" style={{ backgroundColor: '#080C14', border: '1px solid #1F2937' }}>
+            <h4 className="text-xs font-bold mb-2" style={{ color: '#F1F5F9' }}>Terms & Conditions</h4>
+            <ul className="text-[10px] space-y-1" style={{ color: '#94A3B8' }}>
+              <li>• This is a virtual paper trading tournament — no real money is at risk during trading.</li>
+              <li>• Buy-in amounts are deducted from your site cash balance upon joining.</li>
+              <li>• Tournament results are final. Winners receive payouts to their site cash.</li>
+              <li>• Manipulation, exploits, or unfair practices will result in disqualification.</li>
+            </ul>
+          </div>
+
+          {/* Owner Powers */}
+          <div className="p-3 rounded-lg" style={{ backgroundColor: '#080C14', border: '1px solid #1F2937' }}>
+            <h4 className="text-xs font-bold mb-2" style={{ color: '#F1F5F9' }}>Your Powers as Tournament Owner</h4>
+            <ul className="text-[10px] space-y-1" style={{ color: '#94A3B8' }}>
+              {formData.isPublic ? (
+                <>
+                  <li>• You can cancel the tournament before it starts.</li>
+                  <li>• You earn a 5% creator reward from the prize pool.</li>
+                  <li>• You cannot remove participants from public tournaments.</li>
+                </>
+              ) : (
+                <>
+                  <li>• You can cancel the tournament at any time.</li>
+                  <li>• You can start the tournament early once enough players join.</li>
+                  <li>• You control who gets the join code to enter.</li>
+                  <li>• You earn a 5% creator reward from the prize pool.</li>
+                </>
+              )}
+              {formData.buyInAmount === 0 && (
+                <li>• This is a free tournament — no buy-in required from participants.</li>
+              )}
+            </ul>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-between pt-1">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmOpen(false)}
+              className="h-9"
+              style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
+            >
+              Back
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={createTournamentMutation.isPending}
+              className="h-9 font-bold"
+              style={{ backgroundColor: '#10B981', color: '#FFFFFF', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' }}
+            >
+              {createTournamentMutation.isPending ? "Creating..." : "Create Tournament"}
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
