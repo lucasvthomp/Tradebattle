@@ -117,9 +117,6 @@ export default function Withdraw() {
                 <Minus className="w-8 h-8 mr-3 text-red-500" />
                 Withdraw Funds
               </h1>
-              <p className="text-muted-foreground mt-1">
-                Withdraw funds from your account balance
-              </p>
             </div>
           </div>
         </motion.div>
