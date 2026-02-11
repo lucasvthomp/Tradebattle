@@ -2,12 +2,13 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
-import { 
-  Home, 
-  BarChart3, 
-  Briefcase, 
-  Trophy, 
-  Users, 
+import { motion } from "framer-motion";
+import {
+  Home,
+  BarChart3,
+  Briefcase,
+  Trophy,
+  Users,
   Phone,
   Gift,
   Gift,
@@ -31,23 +32,23 @@ export function SimplifiedSidebar() {
 
   const navItems = [
     ...(user ? [
-      { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
-      { href: "/tournaments", label: t('tournaments'), icon: Swords },
-      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
-      { href: "/people", label: t('people'), icon: Users },
-      { href: "/events", label: t('events'), icon: Calendar },
-      { href: "/shop", label: "Rewards", icon: Gift },
-      { href: "/contact", label: t('support'), icon: Phone },
+      { href: "/dashboard", label: t('dashboard'), icon: BarChart3, iconColor: '#28C76F' },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#E3B341' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#E3B341' },
+      { href: "/people", label: t('people'), icon: Users, iconColor: '#3B82F6' },
+      { href: "/events", label: t('events'), icon: Calendar, iconColor: '#A855F7' },
+      { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F97316' },
+      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
     ] : [
-      { href: "/contact", label: t('support'), icon: Phone },
+      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
     ]),
   ];
 
   const userItems = user ? [
-    { href: "/profile", label: t('settings'), icon: Settings },
-    { href: "/archive", label: t('archive'), icon: Archive },
+    { href: "/profile", label: t('settings'), icon: Settings, iconColor: '#94A3B8' },
+    { href: "/archive", label: t('archive'), icon: Archive, iconColor: '#94A3B8' },
     ...(user.subscriptionTier === 'administrator' || user.username === 'LUCAS' ? [
-      { href: "/admin", label: "Admin", icon: Shield }
+      { href: "/admin", label: "Admin", icon: Shield, iconColor: '#EF4444' }
     ] : [])
   ] : [];
 
@@ -56,6 +57,34 @@ export function SimplifiedSidebar() {
     if (href !== "/" && location.startsWith(href)) return true;
     return false;
   };
+
+  const renderNavItem = (item: typeof navItems[0]) => (
+    <motion.div key={item.href} whileHover={{ x: 3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+      <Link
+        href={item.href}
+        className={`group flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
+          isActive(item.href)
+            ? "sidebar-active-indicator"
+            : "hover:bg-[#0F172A] hover:text-white"
+        }`}
+        style={
+          isActive(item.href)
+            ? { backgroundColor: 'rgba(227, 179, 65, 0.1)', color: '#E3B341' }
+            : { color: '#8A93A6' }
+        }
+      >
+        <item.icon
+          className={`w-5 h-5 ${expanded ? 'mr-3' : ''} transition-colors duration-200`}
+          style={{ color: isActive(item.href) ? item.iconColor : undefined }}
+        />
+        {expanded && (
+          <span className="text-sm font-medium whitespace-nowrap">
+            {item.label}
+          </span>
+        )}
+      </Link>
+    </motion.div>
+  );
 
   return (
     <>
@@ -69,9 +98,9 @@ export function SimplifiedSidebar() {
         }}
       >
         <div className="flex flex-col gap-1">
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#06B6D4' }}></div>
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#06B6D4' }}></div>
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#06B6D4' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
+          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
         </div>
       </button>
 
@@ -98,42 +127,8 @@ export function SimplifiedSidebar() {
         onMouseLeave={() => !mobileMenuOpen && setExpanded(false)}
       >
         {/* Navigation Items */}
-        <nav className="p-3 space-y-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`group flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
-                isActive(item.href)
-                  ? "border"
-                  : "hover:text-foreground"
-              }`}
-              style={
-                isActive(item.href)
-                  ? { backgroundColor: 'rgba(6, 182, 212, 0.12)', color: '#06B6D4', borderColor: 'rgba(6, 182, 212, 0.3)' }
-                  : { color: '#94A3B8' }
-              }
-              onMouseEnter={(e) => {
-                if (!isActive(item.href)) {
-                  e.currentTarget.style.backgroundColor = '#0F172A';
-                  e.currentTarget.style.color = '#FFFFFF';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isActive(item.href)) {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.color = '#8A93A6';
-                }
-              }}
-            >
-              <item.icon className={`w-5 h-5 ${expanded ? 'mr-3' : ''}`} />
-              {expanded && (
-                <span className="text-sm font-medium whitespace-nowrap">
-                  {item.label}
-                </span>
-              )}
-            </Link>
-          ))}
+        <nav className="p-3 space-y-1">
+          {navItems.map(renderNavItem)}
         </nav>
 
         {/* Separator */}
@@ -143,42 +138,8 @@ export function SimplifiedSidebar() {
 
         {/* User Actions */}
         {user && (
-          <nav className="p-3 space-y-2">
-            {userItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`group flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
-                  isActive(item.href)
-                    ? "border"
-                    : "hover:text-foreground"
-                }`}
-                style={
-                  isActive(item.href)
-                    ? { backgroundColor: 'rgba(227, 179, 65, 0.15)', color: '#E3B341', borderColor: 'rgba(227, 179, 65, 0.3)' }
-                    : { color: '#8A93A6' }
-                }
-                onMouseEnter={(e) => {
-                  if (!isActive(item.href)) {
-                    e.currentTarget.style.backgroundColor = '#111827';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive(item.href)) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#94A3B8';
-                  }
-                }}
-              >
-                <item.icon className={`w-5 h-5 ${expanded ? 'mr-3' : ''}`} />
-                {expanded && (
-                  <span className="text-sm font-medium whitespace-nowrap">
-                    {item.label}
-                  </span>
-                )}
-              </Link>
-            ))}
+          <nav className="p-3 space-y-1">
+            {userItems.map(renderNavItem)}
           </nav>
         )}
 
@@ -187,7 +148,7 @@ export function SimplifiedSidebar() {
           <div className="absolute bottom-4 left-3 right-3">
             <Button
               onClick={() => setCodeDialogOpen(true)}
-              className={`w-full transition-all duration-200 ${
+              className={`w-full transition-all duration-200 hover:brightness-110 ${
                 expanded
                   ? 'px-4 py-2'
                   : 'p-3 aspect-square'
@@ -195,12 +156,6 @@ export function SimplifiedSidebar() {
               style={{
                 background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
                 color: '#080C14'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '0.9';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '1';
               }}
               size={expanded ? "default" : "icon"}
             >
@@ -217,7 +172,7 @@ export function SimplifiedSidebar() {
         )}
 
         {/* Code Redemption Dialog */}
-        <CodeRedemptionDialog 
+        <CodeRedemptionDialog
           open={codeDialogOpen}
           onOpenChange={setCodeDialogOpen}
         />
