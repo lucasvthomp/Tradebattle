@@ -48,6 +48,24 @@ async function runMigrations() {
       );
     `);
 
+    // Create friendships table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS friendships (
+        id SERIAL PRIMARY KEY,
+        requester_id INTEGER NOT NULL REFERENCES users(id),
+        addressee_id INTEGER NOT NULL REFERENCES users(id),
+        status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        CONSTRAINT unique_friendship UNIQUE (requester_id, addressee_id)
+      );
+    `);
+
+    // Drop phantom payout_structure column if it exists on tournaments table
+    await client.query(`
+      ALTER TABLE tournaments DROP COLUMN IF EXISTS payout_structure;
+    `);
+
     // Promote the first account (Lucas) to administrator
     await client.query(`
       UPDATE users SET subscription_tier = 'administrator', user_id = 0
