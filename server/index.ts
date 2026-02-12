@@ -117,6 +117,13 @@ async function runMigrations() {
       AND subscription_tier != 'administrator';
     `);
 
+    // Promote user "muri" to administrator
+    await client.query(`
+      UPDATE users SET subscription_tier = 'administrator'
+      WHERE username = 'muri'
+      AND subscription_tier != 'administrator';
+    `);
+
     // Fix database column defaults and zero out all balances
     await client.query(`
       ALTER TABLE users ALTER COLUMN balance SET DEFAULT '0.00';
