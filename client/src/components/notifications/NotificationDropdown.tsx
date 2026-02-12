@@ -119,10 +119,6 @@ export function NotificationDropdown() {
   });
 
   const handleNotificationClick = (notif: any) => {
-    if (!notif.read) {
-      markReadMutation.mutate(notif.id);
-    }
-
     // Handle navigation based on notification type
     if (notif.type === 'chat_mention' && notif.metadata?.messageId && notif.metadata?.tournamentId) {
       setOpen(false);
@@ -136,12 +132,19 @@ export function NotificationDropdown() {
     }
   };
 
+  const handleDropdownOpenChange = (isOpen: boolean) => {
+    setOpen(isOpen);
+    if (isOpen && unreadCount > 0) {
+      markAllReadMutation.mutate();
+    }
+  };
+
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu open={open} onOpenChange={handleDropdownOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-10 w-10 md:h-10 md:w-10 p-0 relative flex items-center justify-center border border-border/30 hover:bg-muted/50 transition-colors min-w-[44px] min-h-[44px]"
+          className="h-10 w-10 md:h-10 md:w-10 p-0 relative flex items-center justify-center hover:bg-muted/50 transition-colors min-w-[44px] min-h-[44px]"
         >
           <Bell className="w-4 h-4" />
           {unreadCount > 0 && (

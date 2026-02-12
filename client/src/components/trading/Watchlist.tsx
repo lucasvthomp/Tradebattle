@@ -8,18 +8,35 @@ import { Skeleton } from "@/components/ui/skeleton";
 interface WatchlistProps {
   selectedSymbol: string;
   onSymbolSelect: (symbol: string) => void;
+  tournamentId?: number;
 }
 
-export function Watchlist({ selectedSymbol, onSymbolSelect }: WatchlistProps) {
+export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: WatchlistProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: popularData, isLoading: isLoadingPopular } = useQuery({
-    queryKey: ["/api/popular"],
+    queryKey: ["/api/popular", tournamentId],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (tournamentId) params.append('tournamentId', tournamentId.toString());
+      const url = `/api/popular${params.toString() ? `?${params.toString()}` : ''}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch popular stocks');
+      return res.json();
+    },
     refetchInterval: 30000,
   });
 
   const { data: searchData, isLoading: isSearching } = useQuery({
-    queryKey: ["/api/search", searchQuery],
+    queryKey: ["/api/search", searchQuery, tournamentId],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (tournamentId) params.append('tournamentId', tournamentId.toString());
+      const url = `/api/search/${searchQuery}${params.toString() ? `?${params.toString()}` : ''}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Search failed');
+      return res.json();
+    },
     enabled: searchQuery.length >= 2,
   });
 

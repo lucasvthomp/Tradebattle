@@ -56,15 +56,30 @@ router.get('/quote/:symbol', asyncHandler(async (req: any, res: any) => {
 /**
  * GET /api/search/:query
  * Search for stock symbols by company name
+ * Query params:
+ *   - tournamentId: Filter results by tournament type (crypto vs stock)
  */
 router.get('/search/:query', asyncHandler(async (req: any, res: any) => {
   const query = sanitizeInput(req.params.query);
+  const tournamentId = req.query.tournamentId;
 
   if (!query || query.length < 2) {
     throw new ValidationError('Query must be at least 2 characters long');
   }
 
-  const results = await searchStocks(query);
+  let results = await searchStocks(query);
+
+  // Filter by tournament type if specified
+  if (tournamentId) {
+    const tournament = await storage.getTournament(parseInt(tournamentId));
+    if (tournament && tournament.tournamentType) {
+      const { isCryptoSymbol } = await import('../services/yahooFinance.js');
+      results = results.filter((result: any) => {
+        const isCrypto = isCryptoSymbol(result.symbol);
+        return tournament.tournamentType === 'crypto' ? isCrypto : !isCrypto;
+      });
+    }
+  }
 
   res.json({
     success: true,
@@ -212,9 +227,42 @@ router.get('/key-stats/:symbol', asyncHandler(async (req: any, res: any) => {
 /**
  * GET /api/popular
  * Get popular/trending stocks
+ * Query params:
+ *   - tournamentId: Filter results by tournament type (crypto vs stock)
  */
 router.get('/popular', asyncHandler(async (req, res) => {
-  const popularStocks = await getPopularStocks();
+  const tournamentId = req.query.tournamentId;
+  let popularStocks = await getPopularStocks();
+
+  // Filter by tournament type if specified
+  if (tournamentId) {
+    const tournament = await storage.getTournament(parseInt(tournamentId as string));
+    if (tournament && tournament.tournamentType) {
+      const { isCryptoSymbol } = await import('../services/yahooFinance.js');
+
+      // If crypto tournament, show popular cryptos; if stock tournament, show popular stocks
+      if (tournament.tournamentType === 'crypto') {
+        // Replace with popular crypto list
+        popularStocks = [
+          { symbol: 'BTC-USD', name: 'Bitcoin' },
+          { symbol: 'ETH-USD', name: 'Ethereum' },
+          { symbol: 'BNB-USD', name: 'Binance Coin' },
+          { symbol: 'SOL-USD', name: 'Solana' },
+          { symbol: 'XRP-USD', name: 'Ripple' },
+          { symbol: 'ADA-USD', name: 'Cardano' },
+          { symbol: 'DOGE-USD', name: 'Dogecoin' },
+          { symbol: 'MATIC-USD', name: 'Polygon' },
+          { symbol: 'DOT-USD', name: 'Polkadot' },
+          { symbol: 'AVAX-USD', name: 'Avalanche' }
+        ];
+      } else {
+        // Filter out any crypto symbols from popular stocks
+        popularStocks = popularStocks.filter((stock: any) =>
+          !isCryptoSymbol(stock.symbol)
+        );
+      }
+    }
+  }
 
   res.json({
     success: true,
@@ -2065,6 +2113,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
         achievementCount: achievementCount,
         tournamentCount,
         tradingStreak,
+        lastActivity: user.lastActivity,
       };
     } catch (error) {
       console.error(`Failed to fetch data for user ${user.id}:`, error);
@@ -2078,6 +2127,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
         achievementCount: 0,
         tournamentCount: 0,
         tradingStreak: 0,
+        lastActivity: user.lastActivity,
       };
     }
   }));

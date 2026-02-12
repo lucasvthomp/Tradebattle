@@ -68,9 +68,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Plus className="w-3.5 h-3.5 ml-1.5" style={{ color: '#10B981' }} />
                 </Button>
 
-                {/* Notifications Bell */}
-                <NotificationDropdown />
-
                 {/* Chat Button - only show for authenticated users */}
                 {onChatToggle && (
                   <Button
@@ -81,6 +78,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     <MessageSquare className="w-4 h-4" />
                   </Button>
                 )}
+
+                {/* Notifications Bell */}
+                <NotificationDropdown />
 
                 {/* User Menu with integrated balance */}
                 <DropdownMenu>
@@ -147,47 +147,50 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
       {/* Mobile Menu Panel - show only on mobile */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)' }}>
-          <div className="container mx-auto px-4 py-4 space-y-2">
+          <div className="container mx-auto px-4 py-6 space-y-4">
             {user ? (
               <>
-                {/* Balance Display */}
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start h-12 hover:bg-primary/10 border-2 min-h-[48px]"
-                  style={{
-                    borderColor: 'rgba(227, 179, 65, 0.4)',
-                    color: '#E3B341'
-                  }}
-                  onClick={() => {
-                    setBalanceDialogOpen(true);
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <DollarSign className="w-5 h-5 mr-3" />
-                  <span className="font-bold text-base">
-                    {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </Button>
+                {/* Balance & Deposit Section */}
+                <div className="space-y-3 pb-4">
+                  {/* Balance Display */}
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start h-12 hover:bg-primary/10 border-2 px-4"
+                    style={{
+                      borderColor: 'rgba(227, 179, 65, 0.4)',
+                      color: '#E3B341'
+                    }}
+                    onClick={() => {
+                      setBalanceDialogOpen(true);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <DollarSign className="w-5 h-5 mr-3" />
+                    <span className="font-bold text-base">
+                      {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </Button>
 
-                {/* Deposit Button */}
-                <Button
-                  className="w-full justify-start h-12 rounded-lg text-white min-h-[48px]"
-                  style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)' }}
-                  onClick={() => {
-                    navigate("/deposit");
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <Plus className="w-5 h-5 mr-3" />
-                  <span className="font-bold text-base">Deposit Funds</span>
-                </Button>
+                  {/* Deposit Button */}
+                  <Button
+                    className="w-full justify-start h-12 rounded-lg text-white px-4"
+                    style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)' }}
+                    onClick={() => {
+                      navigate("/deposit");
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <Plus className="w-5 h-5 mr-3" />
+                    <span className="font-bold text-base">Deposit Funds</span>
+                  </Button>
+                </div>
 
                 {/* Navigation Section */}
-                <div className="pt-2 border-t border-border">
+                <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(30, 45, 63, 0.3)' }}>
                   <Link href="/hub">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#28C76F' }} />
@@ -197,7 +200,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/dashboard">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#28C76F' }} />
@@ -207,7 +210,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/tournaments">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Swords className="w-5 h-5 mr-3" style={{ color: '#E3B341' }} />
@@ -217,7 +220,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/leaderboard">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Trophy className="w-5 h-5 mr-3" style={{ color: '#E3B341' }} />
@@ -227,7 +230,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/people">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <UsersIcon className="w-5 h-5 mr-3" style={{ color: '#3B82F6' }} />
@@ -237,7 +240,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/events">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Calendar className="w-5 h-5 mr-3" style={{ color: '#A855F7' }} />
@@ -247,7 +250,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/shop">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Gift className="w-5 h-5 mr-3" style={{ color: '#F97316' }} />
@@ -257,7 +260,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/contact">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
@@ -274,7 +277,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       setMobileMenuOpen(false);
                     }}
                     variant="ghost"
-                    className="w-full justify-start h-12 border border-border/30 hover:bg-muted/50 min-h-[48px]"
+                    className="w-full justify-start h-12 border border-border/30 hover:bg-muted/50 px-4"
                   >
                     <MessageSquare className="w-5 h-5 mr-3" />
                     <span className="text-base">Chat</span>
@@ -282,15 +285,15 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 )}
 
                 {/* User Section */}
-                <div className="pt-2 pb-2 border-t border-border">
-                  <div className="flex items-center gap-3 px-3 py-3">
+                <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(30, 45, 63, 0.3)' }}>
+                  <div className="flex items-center gap-3 px-4 py-3">
                     <User className="w-5 h-5" />
                     <span className="font-medium text-base">{user?.username || "User"}</span>
                   </div>
                   <Link href="/profile">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Settings className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
@@ -300,48 +303,50 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/archive">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Archive className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Archive</span>
                     </Button>
                   </Link>
+
+                  {/* Admin Link */}
+                  {(user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS') && (
+                    <Link href="/admin">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start h-12 hover:bg-muted/50 px-4"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <Shield className="w-5 h-5 mr-3" />
+                        <span className="text-base">Admin</span>
+                      </Button>
+                    </Link>
+                  )}
                 </div>
 
-                {/* Admin Link */}
-                {(user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS') && (
-                  <Link href="/admin">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Shield className="w-5 h-5 mr-3" />
-                      <span className="text-base">Admin</span>
-                    </Button>
-                  </Link>
-                )}
-
-                {/* Logout */}
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start h-12 hover:bg-destructive/10 text-destructive min-h-[48px]"
-                  onClick={() => {
-                    logoutMutation.mutate();
-                    setMobileMenuOpen(false);
-                  }}
-                >
-                  <LogOut className="w-5 h-5 mr-3" />
-                  <span className="text-base">{t('logout')}</span>
-                </Button>
+                {/* Logout - Separate with subtle divider */}
+                <div className="pt-2 border-t border-border/50">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start h-12 hover:bg-destructive/10 text-destructive px-4"
+                    onClick={() => {
+                      logoutMutation.mutate();
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogOut className="w-5 h-5 mr-3" />
+                    <span className="text-base">{t('logout')}</span>
+                  </Button>
+                </div>
               </>
             ) : (
               <>
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                    className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <LogIn className="w-5 h-5 mr-3" />
@@ -350,7 +355,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 </Link>
                 <Link href="/signup">
                   <Button
-                    className="w-full justify-start h-12 text-white min-h-[48px]"
+                    className="w-full justify-start h-12 text-white px-4"
                     style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
                     onClick={() => setMobileMenuOpen(false)}
                   >

@@ -2,11 +2,14 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, TrendingUp, DollarSign, Crown, Target, Zap, Award, Activity } from "lucide-react";
+import { Trophy, TrendingUp, DollarSign, Crown, Target, Zap, Award, Activity, Medal, Star, Sparkles, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 
 export default function Leaderboard() {
   const { user } = useAuth();
@@ -58,6 +61,23 @@ export default function Leaderboard() {
       default:
         return "bg-[#0F172A] text-[#F1F5F9]";
     }
+  };
+
+  const getTierBadge = (rank: number) => {
+    if (rank <= 3) return null; // Podium positions don't need tier badges
+    if (rank <= 10) return { name: "Diamond", color: "#60A5FA", icon: Sparkles };
+    if (rank <= 25) return { name: "Platinum", color: "#A78BFA", icon: Star };
+    if (rank <= 50) return { name: "Gold", color: "#E3B341", icon: Medal };
+    if (rank <= 100) return { name: "Silver", color: "#CBD5E1", icon: Award };
+    return { name: "Bronze", color: "#CD7F32", icon: Target };
+  };
+
+  const getRankGradient = (rank: number) => {
+    if (rank <= 10) return "linear-gradient(135deg, rgba(96, 165, 250, 0.15), rgba(96, 165, 250, 0.05))";
+    if (rank <= 25) return "linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(167, 139, 250, 0.05))";
+    if (rank <= 50) return "linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))";
+    if (rank <= 100) return "linear-gradient(135deg, rgba(203, 213, 225, 0.15), rgba(203, 213, 225, 0.05))";
+    return "linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05))";
   };
 
   const LoadingSkeleton = () => (
@@ -519,35 +539,105 @@ export default function Leaderboard() {
                         <div className="space-y-3">
                           {growthRankings.slice(3).map((participant: any, index: number) => {
                             const rank = index + 4;
+                            const tierBadge = getTierBadge(rank);
+                            const TierIcon = tierBadge?.icon;
+                            const isPositive = (participant.percentageChange || 0) >= 0;
+
                             return (
                               <motion.div
                                 key={participant.id || index}
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                whileHover={{ x: 3 }}
-                                className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
+                                whileHover={{ scale: 1.02, x: 5 }}
+                                className="flex items-center justify-between p-5 rounded-xl border transition-all cursor-pointer group"
                                 style={{
-                                  background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
-                                  boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                                  background: getRankGradient(rank),
+                                  borderColor: tierBadge ? `${tierBadge.color}40` : '#2B3A4C',
+                                  boxShadow: `0 2px 15px rgba(0,0,0,0.2), 0 0 0 1px ${tierBadge ? `${tierBadge.color}20` : 'transparent'}`
                                 }}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
-                                    {rank}
+                                  {/* Rank number with tier badge */}
+                                  <div className="relative">
+                                    <div className="w-14 h-14 rounded-full flex items-center justify-center font-black text-xl transition-all group-hover:scale-110"
+                                      style={{
+                                        background: tierBadge ? `linear-gradient(135deg, ${tierBadge.color}, ${tierBadge.color}80)` : '#0F172A',
+                                        color: '#FFFFFF',
+                                        boxShadow: tierBadge ? `0 0 20px ${tierBadge.color}40` : 'none'
+                                      }}
+                                    >
+                                      {rank}
+                                    </div>
+                                    {tierBadge && TierIcon && (
+                                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                                        style={{ backgroundColor: '#080C14', border: `2px solid ${tierBadge.color}` }}
+                                      >
+                                        <TierIcon className="w-3 h-3" style={{ color: tierBadge.color }} />
+                                      </div>
+                                    )}
                                   </div>
+
+                                  {/* Avatar with status */}
+                                  <AvatarWithStatus
+                                    className="w-12 h-12"
+                                    fallback={`${participant.username?.[0]?.toUpperCase() || ''}${participant.username?.[1]?.toUpperCase() || ''}`}
+                                    lastActivity={participant.lastActivity}
+                                    statusSize="sm"
+                                  >
+                                    <Avatar className="w-12 h-12" style={{ border: tierBadge ? `2px solid ${tierBadge.color}` : '2px solid #2B3A4C' }}>
+                                      <AvatarFallback className="text-base font-bold" style={{ backgroundColor: '#0F172A', color: '#E3B341' }}>
+                                        {participant.username?.[0]?.toUpperCase()}{participant.username?.[1]?.toUpperCase()}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </AvatarWithStatus>
+
+                                  {/* User info */}
                                   <div>
-                                    <div className="font-bold text-lg text-white">{participant.username}</div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="font-bold text-lg text-white">{participant.username}</div>
+                                      {tierBadge && (
+                                        <Badge variant="outline" className="text-xs px-2 py-0.5"
+                                          style={{ borderColor: tierBadge.color, color: tierBadge.color, backgroundColor: `${tierBadge.color}10` }}
+                                        >
+                                          {tierBadge.name}
+                                        </Badge>
+                                      )}
+                                    </div>
                                     <div className="text-sm text-[#94A3B8]">
                                       {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
                                     </div>
                                   </div>
                                 </div>
+
+                                {/* Performance metrics */}
                                 <div className="text-right">
-                                  <div className="text-2xl font-black text-[#10B981]">
-                                    +{(participant.percentageChange || 0).toFixed(1)}%
+                                  <div className="flex items-center justify-end gap-2 mb-1">
+                                    <motion.div
+                                      animate={{ y: [0, -3, 0] }}
+                                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                    >
+                                      {isPositive ? (
+                                        <ArrowUp className="w-5 h-5" style={{ color: '#10B981' }} />
+                                      ) : (
+                                        <ArrowDown className="w-5 h-5" style={{ color: '#EF4444' }} />
+                                      )}
+                                    </motion.div>
+                                    <div className="text-2xl font-black" style={{ color: isPositive ? '#10B981' : '#EF4444' }}>
+                                      {isPositive ? '+' : ''}{(participant.percentageChange || 0).toFixed(1)}%
+                                    </div>
                                   </div>
-                                  <div className="text-sm text-[#F1F5F9]">{formatCurrency(participant.portfolioValue)}</div>
+                                  <div className="text-sm font-medium text-[#F1F5F9]">{formatCurrency(participant.portfolioValue)}</div>
+                                  {/* Progress bar for visual interest */}
+                                  <div className="w-32 h-1.5 rounded-full mt-2" style={{ backgroundColor: '#1F2937' }}>
+                                    <motion.div
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${Math.min(Math.abs(participant.percentageChange || 0), 100)}%` }}
+                                      transition={{ duration: 1, delay: index * 0.05 }}
+                                      className="h-full rounded-full"
+                                      style={{ backgroundColor: isPositive ? '#10B981' : '#EF4444' }}
+                                    />
+                                  </div>
                                 </div>
                               </motion.div>
                             );
@@ -582,32 +672,98 @@ export default function Leaderboard() {
                         <div className="space-y-3">
                           {activeRankings.slice(3).map((trader: any, index: number) => {
                             const rank = index + 4;
+                            const tierBadge = getTierBadge(rank);
+                            const TierIcon = tierBadge?.icon;
+
                             return (
                               <motion.div
                                 key={trader.userId || index}
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                whileHover={{ x: 3 }}
-                                className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
+                                whileHover={{ scale: 1.02, x: 5 }}
+                                className="flex items-center justify-between p-5 rounded-xl border transition-all cursor-pointer group"
                                 style={{
-                                  background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
-                                  boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
+                                  background: getRankGradient(rank),
+                                  borderColor: tierBadge ? `${tierBadge.color}40` : '#2B3A4C',
+                                  boxShadow: `0 2px 15px rgba(0,0,0,0.2), 0 0 0 1px ${tierBadge ? `${tierBadge.color}20` : 'transparent'}`
                                 }}
                               >
                                 <div className="flex items-center gap-4">
-                                  <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg bg-[#0F172A] text-[#F1F5F9]">
-                                    {rank}
+                                  {/* Rank number with tier badge */}
+                                  <div className="relative">
+                                    <div className="w-14 h-14 rounded-full flex items-center justify-center font-black text-xl transition-all group-hover:scale-110"
+                                      style={{
+                                        background: tierBadge ? `linear-gradient(135deg, ${tierBadge.color}, ${tierBadge.color}80)` : '#0F172A',
+                                        color: '#FFFFFF',
+                                        boxShadow: tierBadge ? `0 0 20px ${tierBadge.color}40` : 'none'
+                                      }}
+                                    >
+                                      {rank}
+                                    </div>
+                                    {tierBadge && TierIcon && (
+                                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                                        style={{ backgroundColor: '#080C14', border: `2px solid ${tierBadge.color}` }}
+                                      >
+                                        <TierIcon className="w-3 h-3" style={{ color: tierBadge.color }} />
+                                      </div>
+                                    )}
                                   </div>
+
+                                  {/* Avatar with status */}
+                                  <AvatarWithStatus
+                                    className="w-12 h-12"
+                                    fallback={`${trader.username?.[0]?.toUpperCase() || ''}${trader.username?.[1]?.toUpperCase() || ''}`}
+                                    lastActivity={trader.lastActivity}
+                                    statusSize="sm"
+                                  >
+                                    <Avatar className="w-12 h-12" style={{ border: tierBadge ? `2px solid ${tierBadge.color}` : '2px solid #2B3A4C' }}>
+                                      <AvatarFallback className="text-base font-bold" style={{ backgroundColor: '#0F172A', color: '#E3B341' }}>
+                                        {trader.username?.[0]?.toUpperCase()}{trader.username?.[1]?.toUpperCase()}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                  </AvatarWithStatus>
+
+                                  {/* User info */}
                                   <div>
-                                    <div className="font-bold text-lg text-white">{trader.username}</div>
+                                    <div className="flex items-center gap-2">
+                                      <div className="font-bold text-lg text-white">{trader.username}</div>
+                                      {tierBadge && (
+                                        <Badge variant="outline" className="text-xs px-2 py-0.5"
+                                          style={{ borderColor: tierBadge.color, color: tierBadge.color, backgroundColor: `${tierBadge.color}10` }}
+                                        >
+                                          {tierBadge.name}
+                                        </Badge>
+                                      )}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-sm text-[#94A3B8]">
+                                      <Activity className="w-3.5 h-3.5" />
+                                      <span>Active Trader</span>
+                                    </div>
                                   </div>
                                 </div>
+
+                                {/* Trade count */}
                                 <div className="text-right">
-                                  <div className="text-2xl font-black" style={{ color: '#06B6D4' }}>
+                                  <motion.div
+                                    className="text-3xl font-black mb-1"
+                                    style={{ color: '#06B6D4' }}
+                                    animate={{ scale: [1, 1.05, 1] }}
+                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                  >
                                     {trader.totalTrades}
+                                  </motion.div>
+                                  <div className="text-xs font-medium text-[#94A3B8]">total trades</div>
+                                  {/* Visual bar for trade count */}
+                                  <div className="w-32 h-1.5 rounded-full mt-2" style={{ backgroundColor: '#1F2937' }}>
+                                    <motion.div
+                                      initial={{ width: 0 }}
+                                      animate={{ width: `${Math.min((trader.totalTrades / 100) * 100, 100)}%` }}
+                                      transition={{ duration: 1, delay: index * 0.05 }}
+                                      className="h-full rounded-full"
+                                      style={{ backgroundColor: '#06B6D4' }}
+                                    />
                                   </div>
-                                  <div className="text-xs text-[#94A3B8]">trades</div>
                                 </div>
                               </motion.div>
                             );

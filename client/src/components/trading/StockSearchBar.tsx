@@ -29,9 +29,17 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Search for stocks with debouncing
+  // Search for stocks with debouncing, filtered by tournament type
   const { data: searchResults, isLoading: searchLoading } = useQuery({
-    queryKey: ["/api/search", searchQuery],
+    queryKey: ["/api/search", searchQuery, tournamentId],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (tournamentId) params.append('tournamentId', tournamentId.toString());
+      const url = `/api/search/${searchQuery}${params.toString() ? `?${params.toString()}` : ''}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Search failed');
+      return res.json();
+    },
     enabled: searchQuery.length > 1,
     staleTime: 5000, // Cache for 5 seconds
   });

@@ -7,6 +7,7 @@ import { setupVite, serveStatic, log } from "./vite";
 import { tournamentScheduler } from "./services/tournamentScheduler";
 import { db } from "./db";
 import { pool } from "./db";
+import { trackUserActivity } from "./middleware/activityTracker";
 
 async function runMigrations() {
   const client = await pool.connect();
@@ -138,6 +139,12 @@ async function runMigrations() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS locked_until TIMESTAMP;
     `);
 
+    // Add lastActivity column for online status tracking
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS last_activity TIMESTAMP DEFAULT NOW();
+      CREATE INDEX IF NOT EXISTS idx_users_last_activity ON users(last_activity);
+    `);
+
     // Create notifications table
     await client.query(`
       CREATE TABLE IF NOT EXISTS notifications (
@@ -214,6 +221,9 @@ const tradeLimiter = rateLimit({
 
 // Apply general rate limiter to all API routes
 app.use('/api', generalLimiter);
+
+// Track user activity for online status
+app.use('/api', trackUserActivity);
 
 // Apply stricter limits to auth endpoints
 app.use('/api/login', authLimiter);

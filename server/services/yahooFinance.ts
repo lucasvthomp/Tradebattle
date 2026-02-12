@@ -9,6 +9,40 @@ yahooFinance.setGlobalConfig({
   },
 });
 
+// List of known cryptocurrency symbols
+const CRYPTO_SYMBOLS = [
+  'BTC-USD', 'ETH-USD', 'BNB-USD', 'XRP-USD', 'ADA-USD', 'DOGE-USD',
+  'SOL-USD', 'DOT-USD', 'MATIC-USD', 'LTC-USD', 'AVAX-USD', 'UNI-USD',
+  'LINK-USD', 'ATOM-USD', 'XLM-USD', 'ALGO-USD', 'VET-USD', 'FIL-USD',
+  'TRX-USD', 'AAVE-USD', 'SHIB-USD', 'CRO-USD', 'NEAR-USD', 'SAND-USD',
+  'MANA-USD', 'AXS-USD', 'GALA-USD', 'APE-USD', 'OP-USD', 'ARB-USD'
+];
+
+/**
+ * Check if a symbol represents a cryptocurrency
+ * Cryptos typically end with -USD (e.g., BTC-USD) or are in the known crypto list
+ */
+export function isCryptoSymbol(symbol: string): boolean {
+  if (!symbol) return false;
+
+  // Check if in known crypto list
+  if (CRYPTO_SYMBOLS.includes(symbol.toUpperCase())) return true;
+
+  // Check if symbol ends with -USD (common for crypto on Yahoo Finance)
+  if (symbol.toUpperCase().endsWith('-USD')) return true;
+
+  // Check if symbol ends with other crypto suffixes
+  const cryptoSuffixes = ['-USDT', '-EUR', '-GBP', '-BTC', '-ETH'];
+  return cryptoSuffixes.some(suffix => symbol.toUpperCase().endsWith(suffix));
+}
+
+/**
+ * Get asset type for a symbol
+ */
+export function getAssetType(symbol: string): 'crypto' | 'stock' {
+  return isCryptoSymbol(symbol) ? 'crypto' : 'stock';
+}
+
 // Define timeframe options
 export type TimeFrame = '1H' | '1D' | '5D' | '1W' | '1M' | '3M' | '6M' | 'YTD' | '1Y' | '5Y';
 

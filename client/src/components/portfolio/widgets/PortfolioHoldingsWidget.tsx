@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,9 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
   const { formatCurrency, t } = useUserPreferences();
   const [sellDialogOpen, setSellDialogOpen] = useState(false);
   const [selectedStock, setSelectedStock] = useState<any>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showLeftShadow, setShowLeftShadow] = useState(false);
+  const [showRightShadow, setShowRightShadow] = useState(false);
 
   const { data: portfolioData } = useQuery({
     queryKey: ["/api/personal-portfolio"],
@@ -30,6 +33,25 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
     setSelectedStock(stock);
     setSellDialogOpen(true);
   };
+
+  // Handle scroll shadows for mobile
+  useEffect(() => {
+    const handleScroll = () => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      setShowLeftShadow(scrollLeft > 0);
+      setShowRightShadow(scrollLeft < scrollWidth - clientWidth - 5);
+    };
+
+    const container = scrollContainerRef.current;
+    if (container) {
+      handleScroll(); // Check initial state
+      container.addEventListener('scroll', handleScroll);
+      return () => container.removeEventListener('scroll', handleScroll);
+    }
+  }, [holdings]);
 
   if (!Array.isArray(holdings) || !holdings.length) {
     return (
@@ -70,93 +92,109 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-y-auto">
-        <div className="space-y-2">
-          {/* Table Header */}
-          <div className="grid grid-cols-7 gap-2 px-3 py-2 text-xs font-medium text-muted-foreground border-b">
-            <div>Symbol</div>
-            <div>Shares</div>
-            <div>Purchase Price</div>
-            <div>Current Price</div>
-            <div>Change</div>
-            <div>Value</div>
-            <div>Actions</div>
-          </div>
-          
-          {holdings.map((holding: any) => {
-            const totalCost = holding.shares * holding.averagePrice;
-            const currentValue = holding.shares * holding.currentPrice;
-            const gainLoss = currentValue - totalCost;
-            const gainLossPercent = (gainLoss / totalCost) * 100;
-            const priceChange = holding.currentPrice - holding.averagePrice;
-            const priceChangePercent = (priceChange / holding.averagePrice) * 100;
-            const isPositive = gainLoss >= 0;
+        <div className="relative">
+          {/* Scroll shadows for mobile */}
+          <div
+            className={`absolute inset-y-0 left-0 w-8 pointer-events-none z-10 bg-gradient-to-r from-[#1E2D3F] to-transparent md:hidden transition-opacity duration-200 ${showLeftShadow ? 'opacity-100' : 'opacity-0'}`}
+          />
+          <div
+            className={`absolute inset-y-0 right-0 w-8 pointer-events-none z-10 bg-gradient-to-l from-[#1E2D3F] to-transparent md:hidden transition-opacity duration-200 ${showRightShadow ? 'opacity-100' : 'opacity-0'}`}
+          />
 
-            return (
-              <div
-                key={holding.symbol}
-                className="grid grid-cols-7 gap-2 px-3 py-2 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors items-center"
-              >
-                <div className="flex flex-col">
-                  <span className="font-medium text-sm text-foreground">
-                    {holding.symbol}
-                  </span>
-                  <span className="text-xs text-muted-foreground truncate">
-                    {holding.companyName || holding.symbol}
-                  </span>
-                </div>
-                
-                <div className="text-sm">
-                  {holding.shares}
-                </div>
-                
-                <div className="text-sm">
-                  {formatCurrency(holding.averagePrice)}
-                </div>
-                
-                <div className="text-sm font-medium">
-                  {formatCurrency(holding.currentPrice)}
-                </div>
-                
-                <div className={`text-sm flex items-center gap-1 ${
-                  isPositive ? 'text-green-500' : 'text-red-500'
-                }`}>
-                  {isPositive ? (
-                    <TrendingUp className="h-3 w-3" />
-                  ) : (
-                    <TrendingDown className="h-3 w-3" />
-                  )}
-                  <div className="flex flex-col">
-                    <span>{isPositive ? '+' : ''}{formatCurrency(priceChange)}</span>
-                    <span className="text-xs">({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)</span>
-                  </div>
-                </div>
-                
-                <div className="text-sm font-medium">
-                  {formatCurrency(currentValue)}
-                </div>
-                
-                <div className="flex gap-1">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => onSelectStock?.(holding.symbol)}
-                    className="text-xs px-2 py-1 h-7"
-                    title="View chart"
-                  >
-                    <BarChart3 className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleSell(holding)}
-                    className="text-xs px-2 py-1 h-7"
-                  >
-                    Sell
-                  </Button>
-                </div>
+          <div
+            ref={scrollContainerRef}
+            className="overflow-x-auto md:overflow-x-visible -mx-3 md:mx-0"
+          >
+            <div className="min-w-max md:min-w-0 px-3 space-y-2">
+              {/* Table Header */}
+              <div className="grid grid-cols-4 md:grid-cols-7 gap-3 md:gap-2 px-3 py-2 text-sm md:text-xs font-medium text-muted-foreground border-b" style={{ minWidth: '600px' }}>
+                <div>Symbol</div>
+                <div className="hidden md:block">Shares</div>
+                <div className="hidden md:block">Purchase Price</div>
+                <div>Current Price</div>
+                <div className="hidden md:block">Change</div>
+                <div>Value</div>
+                <div>Actions</div>
               </div>
-            );
-          })}
+
+              {holdings.map((holding: any) => {
+                const totalCost = holding.shares * holding.averagePrice;
+                const currentValue = holding.shares * holding.currentPrice;
+                const gainLoss = currentValue - totalCost;
+                const gainLossPercent = (gainLoss / totalCost) * 100;
+                const priceChange = holding.currentPrice - holding.averagePrice;
+                const priceChangePercent = (priceChange / holding.averagePrice) * 100;
+                const isPositive = gainLoss >= 0;
+
+                return (
+                  <div
+                    key={holding.symbol}
+                    className="grid grid-cols-4 md:grid-cols-7 gap-3 md:gap-2 px-3 py-2 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors items-center"
+                    style={{ minWidth: '600px' }}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium text-sm text-foreground">
+                        {holding.symbol}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate">
+                        {holding.companyName || holding.symbol}
+                      </span>
+                    </div>
+
+                    <div className="hidden md:block text-sm">
+                      {holding.shares}
+                    </div>
+
+                    <div className="hidden md:block text-sm">
+                      {formatCurrency(holding.averagePrice)}
+                    </div>
+
+                    <div className="text-sm font-medium">
+                      {formatCurrency(holding.currentPrice)}
+                    </div>
+
+                    <div className={`hidden md:flex text-sm items-center gap-1 ${
+                      isPositive ? 'text-green-500' : 'text-red-500'
+                    }`}>
+                      {isPositive ? (
+                        <TrendingUp className="h-3 w-3" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3" />
+                      )}
+                      <div className="flex flex-col">
+                        <span>{isPositive ? '+' : ''}{formatCurrency(priceChange)}</span>
+                        <span className="text-xs">({isPositive ? '+' : ''}{priceChangePercent.toFixed(2)}%)</span>
+                      </div>
+                    </div>
+
+                    <div className="text-sm font-medium">
+                      {formatCurrency(currentValue)}
+                    </div>
+
+                    <div className="flex gap-1">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => onSelectStock?.(holding.symbol)}
+                        className="text-xs px-2 py-1 h-7"
+                        title="View chart"
+                      >
+                        <BarChart3 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleSell(holding)}
+                        className="text-xs px-2 py-1 h-7"
+                      >
+                        Sell
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </CardContent>
       
