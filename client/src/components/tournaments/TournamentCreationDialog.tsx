@@ -94,7 +94,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
   const { formatCurrency, t } = useUserPreferences();
   const { toast } = useToast();
 
-  // Tournament form state - exactly 7 options as specified
+  // Tournament form state
   const [formData, setFormData] = useState({
     name: "", // 1. Tournament title
     maxPlayers: 10, // 2. Max amount of players
@@ -104,6 +104,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     startDelay: "5 minutes", // 6. In how many minutes, hours, or days the tournament will start
     isPublic: true, // 7. Private or Public
     buyInAmount: 0, // Buy-in amount
+    payoutStructure: "winner_take_all", // Payout structure
     agreeToTerms: false, // Terms of service agreement
     customStartTime: "" // Custom datetime for "custom" start delay
   });
@@ -138,7 +139,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           )).toISOString(),
         buyInAmount: data.buyInAmount,
         tradingRestriction: 'none',
-        isPublic: data.isPublic
+        isPublic: data.isPublic,
+        payoutStructure: data.payoutStructure
       });
       return res.json();
     },
@@ -153,6 +155,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         startDelay: "immediately",
         isPublic: true,
         buyInAmount: 0,
+        payoutStructure: "winner_take_all",
         agreeToTerms: false,
         customStartTime: ""
       });
@@ -509,6 +512,36 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               <div className="p-2 rounded-lg" style={{ backgroundColor: '#10B98115', borderColor: '#10B981', borderWidth: '1px', borderStyle: 'solid' }}>
                 <p className="text-[10px] font-medium" style={{ color: '#10B981' }}>
                   💰 Prize Pool: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.95)} • Fee: {formatCurrency(formData.buyInAmount * formData.maxPlayers * 0.05)}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Payout Structure */}
+          <div className="space-y-1.5">
+            <div className="flex items-center space-x-1.5">
+              <Crown className="w-3.5 h-3.5" style={{ color: '#E3B341' }} />
+              <Label className="text-xs font-medium" style={{ color: '#F1F5F9' }}>Payout Structure</Label>
+              <InfoTooltip content="How the prize pool is split among winners. Creator always receives 5%." />
+            </div>
+            <Select value={formData.payoutStructure} onValueChange={(value) => updateField("payoutStructure", value)}>
+              <SelectTrigger className="h-9 text-xs font-medium" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+                <SelectItem value="winner_take_all" className="text-xs" style={{ color: '#F1F5F9' }}>Winner Take All</SelectItem>
+                <SelectItem value="top_3" className="text-xs" style={{ color: '#F1F5F9' }}>Top 3 (60/25/15)</SelectItem>
+                <SelectItem value="top_5" className="text-xs" style={{ color: '#F1F5F9' }}>Top 5 (40/25/15/12/8)</SelectItem>
+                <SelectItem value="top_half" className="text-xs" style={{ color: '#F1F5F9' }}>Top Half (proportional)</SelectItem>
+              </SelectContent>
+            </Select>
+            {formData.buyInAmount > 0 && (
+              <div className="p-2 rounded-lg" style={{ backgroundColor: '#E3B34115', borderColor: '#E3B341', borderWidth: '1px', borderStyle: 'solid' }}>
+                <p className="text-[10px] font-medium" style={{ color: '#E3B341' }}>
+                  {formData.payoutStructure === 'winner_take_all' && '🥇 100% to 1st place'}
+                  {formData.payoutStructure === 'top_3' && '🥇 60% 1st • 🥈 25% 2nd • 🥉 15% 3rd'}
+                  {formData.payoutStructure === 'top_5' && '🥇 40% • 🥈 25% • 🥉 15% • 4th 12% • 5th 8%'}
+                  {formData.payoutStructure === 'top_half' && `Top ${Math.ceil(formData.maxPlayers / 2)} players split proportionally`}
                 </p>
               </div>
             )}

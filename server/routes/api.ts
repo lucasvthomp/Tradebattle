@@ -261,7 +261,8 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     scheduledStartTime,
     buyInAmount,
     tradingRestriction,
-    isPublic
+    isPublic,
+    payoutStructure
   } = req.body;
   const userId = req.user.id;
 
@@ -296,6 +297,7 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   console.log('[Tournament Creation] Start time:', startTime);
 
+  const validPayoutStructures = ['winner_take_all', 'top_3', 'top_5', 'top_half'];
   const tournamentData = {
     name: sanitizeInput(name),
     maxPlayers: maxPlayers || 10,
@@ -305,7 +307,8 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
     scheduledStartTime: startTime,
     buyInAmount: buyIn.toString(),
     tradingRestriction: tradingRestriction || 'none',
-    isPublic: isPublic !== undefined ? isPublic : true
+    isPublic: isPublic !== undefined ? isPublic : true,
+    payoutStructure: validPayoutStructures.includes(payoutStructure) ? payoutStructure : 'winner_take_all'
   };
 
   console.log('[Tournament Creation] Tournament data:', JSON.stringify(tournamentData, null, 2));
@@ -2389,6 +2392,162 @@ router.get('/friends/status/:userId', requireAuth, asyncHandler(async (req, res)
   }
 
   return res.json({ success: true, data: { status: 'none' } });
+}));
+
+/**
+ * GET /api/tournaments/:id/results
+ * Get tournament results (final standings and payouts)
+ */
+router.get('/tournaments/:id/results', asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  const results = await storage.getTournamentResults(tournamentId);
+
+  res.json({
+    success: true,
+    data: results,
+  });
+}));
+
+/**
+ * GET /api/admin/promo-codes
+ * Get all promo codes (admin only)
+ */
+router.get('/admin/promo-codes', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  const codes = await storage.getAllPromoCodes();
+  res.json({ success: true, data: codes });
+}));
+
+/**
+ * POST /api/admin/promo-codes
+ * Create a new promo code (admin only)
+ */
+router.post('/admin/promo-codes', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  const { code, rewardAmount, usageType, maxUses, expiresAt } = req.body;
+
+  if (!code || !rewardAmount || !usageType) {
+    throw new ValidationError('Code, reward amount, and usage type are required');
+  }
+
+  const promoCode = await storage.createPromoCode({
+    code: code.trim().toUpperCase(),
+    rewardType: 'sitecash',
+    rewardAmount: parseFloat(rewardAmount).toString(),
+    usageType,
+    maxUses: maxUses ? parseInt(maxUses) : null,
+    expiresAt: expiresAt ? new Date(expiresAt) : null,
+    isActive: true,
+    createdBy: userId,
+  });
+
+  res.json({ success: true, data: promoCode });
+}));
+
+/**
+ * PATCH /api/admin/promo-codes/:id
+ * Update a promo code (admin only)
+ */
+router.patch('/admin/promo-codes/:id', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const codeId = parseInt(req.params.id);
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  if (isNaN(codeId)) {
+    throw new ValidationError('Invalid promo code ID');
+  }
+
+  const updates: any = {};
+  if (req.body.isActive !== undefined) updates.isActive = req.body.isActive;
+  if (req.body.maxUses !== undefined) updates.maxUses = req.body.maxUses;
+  if (req.body.expiresAt !== undefined) updates.expiresAt = req.body.expiresAt ? new Date(req.body.expiresAt) : null;
+  if (req.body.rewardAmount !== undefined) updates.rewardAmount = parseFloat(req.body.rewardAmount).toString();
+
+  const updated = await storage.updatePromoCode(codeId, updates);
+  res.json({ success: true, data: updated });
+}));
+
+/**
+ * DELETE /api/admin/promo-codes/:id
+ * Delete a promo code (admin only)
+ */
+router.delete('/admin/promo-codes/:id', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const codeId = parseInt(req.params.id);
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  if (isNaN(codeId)) {
+    throw new ValidationError('Invalid promo code ID');
+  }
+
+  await storage.deletePromoCode(codeId);
+  res.json({ success: true, message: 'Promo code deleted' });
+}));
+
+/**
+ * POST /api/admin/promo-codes/seed
+ * Seed the legacy hardcoded codes into DB (admin only, idempotent)
+ */
+router.post('/admin/promo-codes/seed', requireAuth, asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const user = await storage.getUser(userId);
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  const legacyCodes = [
+    { code: 'WELCOME500', rewardAmount: '500.00' },
+    { code: 'STARTER1000', rewardAmount: '1000.00' },
+    { code: 'BIGBOOST2500', rewardAmount: '2500.00' },
+    { code: 'MEGABOOST5000', rewardAmount: '5000.00' },
+    { code: 'FREEMONEY', rewardAmount: '100.00' },
+  ];
+
+  let created = 0;
+  let skipped = 0;
+
+  for (const legacy of legacyCodes) {
+    const existing = await storage.getPromoCode(legacy.code);
+    if (existing) {
+      skipped++;
+      continue;
+    }
+
+    await storage.createPromoCode({
+      code: legacy.code,
+      rewardType: 'sitecash',
+      rewardAmount: legacy.rewardAmount,
+      usageType: 'once_per_user',
+      maxUses: null,
+      expiresAt: null,
+      isActive: true,
+      createdBy: userId,
+    });
+    created++;
+  }
+
+  res.json({ success: true, message: `Seeded ${created} codes, skipped ${skipped} existing` });
 }));
 
 export default router;

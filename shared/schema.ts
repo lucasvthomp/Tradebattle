@@ -182,6 +182,7 @@ export const tournaments = pgTable("tournaments", {
   tradingRestriction: varchar("trading_restriction", { length: 50 }).default("none").notNull(), // Trading category restrictions
   tournamentType: varchar("tournament_type", { length: 20 }).default("stocks").notNull(), // 'stocks' or 'crypto'
   isPublic: boolean("is_public").default(true).notNull(), // Public/private tournament setting
+  payoutStructure: varchar("payout_structure", { length: 50 }).default("winner_take_all").notNull(), // winner_take_all, top_3, top_5, top_half
   scheduledStartTime: timestamp("scheduled_start_time"), // When tournament is scheduled to start
   createdAt: timestamp("created_at").defaultNow(),
   startedAt: timestamp("started_at"),
@@ -254,6 +255,43 @@ export const friendships = pgTable("friendships", {
   uniqueFriendship: unique("unique_friendship").on(table.requesterId, table.addresseeId),
 }));
 
+// Tournament results table for tracking final standings and payouts
+export const tournamentResults = pgTable("tournament_results", {
+  id: serial("id").primaryKey(),
+  tournamentId: integer("tournament_id").references(() => tournaments.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  rank: integer("rank").notNull(),
+  portfolioValue: numeric("portfolio_value", { precision: 15, scale: 2 }).notNull(),
+  gainPercent: numeric("gain_percent", { precision: 10, scale: 2 }).notNull(),
+  payout: numeric("payout", { precision: 15, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Promo codes table for managed code system
+export const promoCodes = pgTable("promo_codes", {
+  id: serial("id").primaryKey(),
+  code: varchar("code", { length: 50 }).unique().notNull(),
+  rewardType: varchar("reward_type", { length: 20 }).notNull(), // 'balance', 'sitecash'
+  rewardAmount: numeric("reward_amount", { precision: 15, scale: 2 }).notNull(),
+  usageType: varchar("usage_type", { length: 20 }).notNull(), // 'single_use', 'once_per_user', 'limited', 'unlimited'
+  maxUses: integer("max_uses"), // null = unlimited
+  currentUses: integer("current_uses").default(0).notNull(),
+  expiresAt: timestamp("expires_at"), // null = never
+  isActive: boolean("is_active").default(true).notNull(),
+  createdBy: integer("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Code redemptions table for tracking who redeemed what
+export const codeRedemptions = pgTable("code_redemptions", {
+  id: serial("id").primaryKey(),
+  codeId: integer("code_id").references(() => promoCodes.id).notNull(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  redeemedAt: timestamp("redeemed_at").defaultNow().notNull(),
+}, (table) => ({
+  uniqueCodeUser: unique("unique_code_user").on(table.codeId, table.userId),
+}));
+
 // Zod schemas for validation
 export const insertWatchlistSchema = createInsertSchema(watchlist).pick({
   symbol: true,
@@ -295,6 +333,7 @@ export const insertTournamentSchema = createInsertSchema(tournaments).pick({
   isPublic: true,
   tournamentType: true,
   scheduledStartTime: true,
+  payoutStructure: true,
 });
 
 export const insertCreatorRewardSchema = createInsertSchema(tournamentCreatorRewards).pick({
@@ -339,6 +378,31 @@ export const insertPortfolioHistorySchema = createInsertSchema(portfolioHistory)
 export const insertFriendshipSchema = createInsertSchema(friendships).pick({
   requesterId: true,
   addresseeId: true,
+});
+
+export const insertTournamentResultSchema = createInsertSchema(tournamentResults).pick({
+  tournamentId: true,
+  userId: true,
+  rank: true,
+  portfolioValue: true,
+  gainPercent: true,
+  payout: true,
+});
+
+export const insertPromoCodeSchema = createInsertSchema(promoCodes).pick({
+  code: true,
+  rewardType: true,
+  rewardAmount: true,
+  usageType: true,
+  maxUses: true,
+  expiresAt: true,
+  isActive: true,
+  createdBy: true,
+});
+
+export const insertCodeRedemptionSchema = createInsertSchema(codeRedemptions).pick({
+  codeId: true,
+  userId: true,
 });
 
 // Trade history table for tracking all trading actions (buy/sell)
@@ -477,6 +541,13 @@ export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Transaction = typeof transactions.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
+
+export type TournamentResult = typeof tournamentResults.$inferSelect;
+export type InsertTournamentResult = z.infer<typeof insertTournamentResultSchema>;
+export type PromoCode = typeof promoCodes.$inferSelect;
+export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
+export type CodeRedemption = typeof codeRedemptions.$inferSelect;
+export type InsertCodeRedemption = z.infer<typeof insertCodeRedemptionSchema>;
 
 // Export chat schema
 export * from "./chatSchema";

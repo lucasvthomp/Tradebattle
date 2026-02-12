@@ -34,6 +34,18 @@ export default function ArchiveDetailPage() {
     enabled: !!id,
   });
 
+  // Fetch tournament results (payouts) if they exist
+  const { data: tournamentResults } = useQuery({
+    queryKey: ['/api/tournaments', id, 'results'],
+    queryFn: async () => {
+      const res = await fetch(`/api/tournaments/${id}/results`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.data || [];
+    },
+    enabled: !!id,
+  });
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080C14' }}>
@@ -161,6 +173,12 @@ export default function ArchiveDetailPage() {
                     ? ((pnl / tournament.startingBalance) * 100).toFixed(1)
                     : '0';
 
+                  // Look up payout from tournament results
+                  const resultRecord = tournamentResults?.find(
+                    (r: any) => r.userId === participant.userId
+                  );
+                  const payout = resultRecord ? parseFloat(resultRecord.payout || '0') : null;
+
                   return (
                     <div
                       key={participant.userId}
@@ -182,13 +200,23 @@ export default function ArchiveDetailPage() {
                           {participant.name}
                         </span>
                       </div>
-                      <div className="text-right">
-                        <p className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
-                          ${(participant.portfolioValue || 0).toLocaleString()}
-                        </p>
-                        <p className="text-xs" style={{ color: pnl >= 0 ? '#10B981' : '#EF4444' }}>
-                          {pnl >= 0 ? '+' : ''}{pnlPercent}%
-                        </p>
+                      <div className="flex items-center gap-4">
+                        {payout !== null && payout > 0 && (
+                          <div className="text-right">
+                            <p className="text-sm font-bold" style={{ color: '#10B981' }}>
+                              +${payout.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </p>
+                            <p className="text-[10px]" style={{ color: '#94A3B8' }}>Payout</p>
+                          </div>
+                        )}
+                        <div className="text-right">
+                          <p className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
+                            ${(participant.portfolioValue || 0).toLocaleString()}
+                          </p>
+                          <p className="text-xs" style={{ color: pnl >= 0 ? '#10B981' : '#EF4444' }}>
+                            {pnl >= 0 ? '+' : ''}{pnlPercent}%
+                          </p>
+                        </div>
                       </div>
                     </div>
                   );

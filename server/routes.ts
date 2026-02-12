@@ -486,7 +486,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Code redemption endpoint
+  // Code redemption endpoint (DB-backed promo code system)
   app.post("/api/codes/redeem", requireAuth, async (req: any, res) => {
     try {
       const { code } = req.body;
@@ -508,80 +508,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      // Predefined redemption codes with rewards
-      const validCodes: Record<string, { type: string; amount?: number; message: string; reward: string }> = {
-        'WELCOME500': {
-          type: 'balance',
-          amount: 500,
-          message: 'Welcome bonus redeemed! $500 added to your balance.',
-          reward: '$500 Balance Boost'
-        },
-        'STARTER1000': {
-          type: 'balance',
-          amount: 1000,
-          message: 'Starter pack redeemed! $1,000 added to your balance.',
-          reward: '$1,000 Balance Boost'
-        },
-        'BIGBOOST2500': {
-          type: 'balance',
-          amount: 2500,
-          message: 'Big boost redeemed! $2,500 added to your balance.',
-          reward: '$2,500 Balance Boost'
-        },
-        'MEGABOOST5000': {
-          type: 'balance',
-          amount: 5000,
-          message: 'Mega boost redeemed! $5,000 added to your balance.',
-          reward: '$5,000 Balance Boost'
-        },
-        'FREEMONEY': {
-          type: 'balance',
-          amount: 100,
-          message: 'Free money code redeemed! $100 added to your balance.',
-          reward: '$100 Balance Boost'
-        }
-      };
-
-      // Check if code exists
-      const codeData = validCodes[trimmedCode];
-      if (!codeData) {
+      // Look up code in DB
+      const promoCode = await storage.getPromoCode(trimmedCode);
+      if (!promoCode) {
         return res.status(400).json({ message: "Invalid or expired code" });
       }
 
-      // Apply the reward based on type
-      if (codeData.type === 'balance' && codeData.amount) {
-        const currentBalance = parseFloat(user.siteCash?.toString() || '0');
-        const newBalance = currentBalance + codeData.amount;
-
-        // Update user balance
-        await storage.updateUser(userId, {
-          siteCash: newBalance.toString()
-        });
-
-        // Log the code redemption
-        await storage.createAdminLog({
-          adminUserId: userId,
-          targetUserId: userId,
-          action: 'code_redemption',
-          oldValue: currentBalance.toString(),
-          newValue: newBalance.toString(),
-          notes: `User redeemed code "${trimmedCode}" for $${codeData.amount}`
-        });
-
-        res.json({ 
-          success: true, 
-          message: codeData.message,
-          reward: codeData.reward,
-          newBalance: newBalance
-        });
-      } else {
-        // Handle other reward types in the future (premium features, items, etc.)
-        res.json({ 
-          success: true, 
-          message: codeData.message,
-          reward: codeData.reward
-        });
+      // Check if code is active
+      if (!promoCode.isActive) {
+        return res.status(400).json({ message: "This code is no longer active" });
       }
+
+      // Check expiry
+      if (promoCode.expiresAt && new Date(promoCode.expiresAt) < new Date()) {
+        return res.status(400).json({ message: "This code has expired" });
+      }
+
+      // Check usage limits
+      if (promoCode.usageType === 'once_per_user') {
+        const existing = await storage.getCodeRedemption(promoCode.id, userId);
+        if (existing) {
+          return res.status(400).json({ message: "You have already redeemed this code" });
+        }
+      } else if (promoCode.usageType === 'single_use') {
+        if (promoCode.currentUses >= 1) {
+          return res.status(400).json({ message: "This code has already been used" });
+        }
+      } else if (promoCode.usageType === 'limited') {
+        if (promoCode.maxUses !== null && promoCode.currentUses >= promoCode.maxUses) {
+          return res.status(400).json({ message: "This code has reached its maximum number of uses" });
+        }
+      }
+      // 'unlimited' type has no checks
+
+      const rewardAmount = Number(promoCode.rewardAmount);
+      const currentBalance = parseFloat(user.siteCash?.toString() || '0');
+      const newBalance = currentBalance + rewardAmount;
+
+      // Record the redemption
+      await storage.redeemCode(promoCode.id, userId);
+
+      // Add to user's siteCash
+      await storage.updateUser(userId, {
+        siteCash: newBalance.toString()
+      });
+
+      // Log the code redemption
+      await storage.createAdminLog({
+        adminUserId: userId,
+        targetUserId: userId,
+        action: 'code_redemption',
+        oldValue: currentBalance.toString(),
+        newValue: newBalance.toString(),
+        notes: `User redeemed code "${trimmedCode}" for $${rewardAmount.toFixed(2)}`
+      });
+
+      // Create a transaction record
+      try {
+        await storage.createTransaction({
+          userId,
+          type: 'code_redemption',
+          amount: rewardAmount.toString(),
+          balanceBefore: currentBalance.toString(),
+          balanceAfter: newBalance.toString(),
+          status: 'completed',
+          description: `Redeemed promo code: ${trimmedCode}`,
+          referenceId: `promo_${promoCode.id}`,
+        });
+      } catch (txError) {
+        console.error('Failed to create transaction record:', txError);
+      }
+
+      res.json({
+        success: true,
+        message: `Code redeemed! $${rewardAmount.toFixed(2)} added to your balance.`,
+        reward: `$${rewardAmount.toFixed(2)} Balance Boost`,
+        newBalance: newBalance
+      });
     } catch (error) {
       console.error("Error redeeming code:", error);
       res.status(500).json({ message: "Failed to redeem code" });

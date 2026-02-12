@@ -37,8 +37,21 @@ import {
   Filter,
   BarChart3,
   TrendingUp,
-  Ban
+  Ban,
+  Tag,
+  Plus,
+  ToggleLeft,
+  Copy,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -103,6 +116,14 @@ export default function Admin() {
   const [endTournamentOpen, setEndTournamentOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [userFilter, setUserFilter] = useState("all");
+  const [createCodeOpen, setCreateCodeOpen] = useState(false);
+  const [newCode, setNewCode] = useState({
+    code: "",
+    rewardAmount: "",
+    usageType: "once_per_user",
+    maxUses: "",
+    expiresAt: "",
+  });
 
   // Check if user is admin (based on subscription tier or username)
   const isAdmin = user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS';
@@ -173,6 +194,81 @@ export default function Admin() {
   });
 
   const adminTransactions = adminTxData?.data || [];
+
+  // Fetch promo codes
+  const { data: promoCodesData, isLoading: promoCodesLoading, refetch: refetchPromoCodes } = useQuery<any>({
+    queryKey: ["/api/admin/promo-codes"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/promo-codes", { credentials: "include" });
+      if (!res.ok) return { data: [] };
+      return res.json();
+    },
+    enabled: isAdmin && activeTab === "promo-codes",
+  });
+
+  const promoCodes = promoCodesData?.data || [];
+
+  // Create promo code mutation
+  const createCodeMutation = useMutation({
+    mutationFn: async (codeData: any) => {
+      const res = await apiRequest("POST", "/api/admin/promo-codes", codeData);
+      return res.json();
+    },
+    onSuccess: () => {
+      refetchPromoCodes();
+      setCreateCodeOpen(false);
+      setNewCode({ code: "", rewardAmount: "", usageType: "once_per_user", maxUses: "", expiresAt: "" });
+      toast({ title: "Promo code created", description: "The promo code has been created successfully." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Toggle promo code active status
+  const toggleCodeMutation = useMutation({
+    mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
+      const res = await apiRequest("PATCH", `/api/admin/promo-codes/${id}`, { isActive });
+      return res.json();
+    },
+    onSuccess: () => {
+      refetchPromoCodes();
+      toast({ title: "Code updated", description: "Promo code status has been toggled." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Delete promo code mutation
+  const deleteCodeMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("DELETE", `/api/admin/promo-codes/${id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      refetchPromoCodes();
+      toast({ title: "Code deleted", description: "Promo code has been deleted." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
+
+  // Seed legacy codes mutation
+  const seedCodesMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/promo-codes/seed");
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      refetchPromoCodes();
+      toast({ title: "Legacy codes seeded", description: data.message || "Legacy promo codes have been migrated to the database." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    },
+  });
 
   // Filter users based on search and filter
   const filteredUsers = allUsers.filter((u: any) => {
@@ -361,12 +457,13 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
               <TabsTrigger value="revenue">Revenue</TabsTrigger>
               <TabsTrigger value="transactions">Transactions</TabsTrigger>
+              <TabsTrigger value="promo-codes">Promo Codes</TabsTrigger>
               <TabsTrigger value="system">System</TabsTrigger>
             </TabsList>
 
@@ -964,7 +1061,242 @@ export default function Admin() {
               </Card>
             </TabsContent>
 
-            {/* ===== TAB 6: SYSTEM ===== */}
+            {/* ===== TAB 6: PROMO CODES ===== */}
+            <TabsContent value="promo-codes" className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Button
+                    onClick={() => setCreateCodeOpen(true)}
+                    style={{ background: '#E3B341', color: '#06121F' }}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Create Code
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => seedCodesMutation.mutate()}
+                    disabled={seedCodesMutation.isPending}
+                    style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                  >
+                    <RefreshCw className={`h-4 w-4 mr-2 ${seedCodesMutation.isPending ? 'animate-spin' : ''}`} />
+                    Seed Legacy Codes
+                  </Button>
+                </div>
+                <span className="text-sm" style={{ color: '#8A93A6' }}>
+                  {promoCodes.length} codes total
+                </span>
+              </div>
+
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                    <Tag className="h-5 w-5" style={{ color: '#E3B341' }} />
+                    Promo Code Management
+                  </CardTitle>
+                  <CardDescription style={{ color: '#8A93A6' }}>
+                    Create and manage promotional codes for user rewards
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {promoCodesLoading ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }}></div>
+                      <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading promo codes...</p>
+                    </div>
+                  ) : promoCodes.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Tag className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8A93A6' }} />
+                      <p className="text-sm" style={{ color: '#8A93A6' }}>No promo codes yet. Create one or seed legacy codes.</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow style={{ borderColor: '#2B3A4C' }}>
+                          <TableHead style={{ color: '#8A93A6' }}>Code</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Reward</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Uses</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Expires</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Active</TableHead>
+                          <TableHead style={{ color: '#8A93A6' }}>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {promoCodes.map((code: any) => (
+                          <TableRow key={code.id} style={{ borderColor: '#2B3A4C' }}>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono font-bold text-sm" style={{ color: '#E3B341' }}>
+                                  {code.code}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0"
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(code.code);
+                                    toast({ title: "Copied", description: `Code "${code.code}" copied to clipboard.` });
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" style={{ color: '#8A93A6' }} />
+                                </Button>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <span className="font-mono text-sm" style={{ color: '#28C76F' }}>
+                                ${parseFloat(code.rewardAmount || 0).toFixed(2)}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline" className="text-xs capitalize" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                                {(code.usageType || "").replace(/_/g, " ")}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm" style={{ color: '#C9D1E2' }}>
+                                {code.currentUses}{code.maxUses ? `/${code.maxUses}` : ''}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <span className="text-sm" style={{ color: '#8A93A6' }}>
+                                {code.expiresAt
+                                  ? new Date(code.expiresAt).toLocaleDateString()
+                                  : 'Never'}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => toggleCodeMutation.mutate({ id: code.id, isActive: !code.isActive })}
+                                disabled={toggleCodeMutation.isPending}
+                              >
+                                <ToggleLeft className="h-4 w-4 mr-1" style={{ color: code.isActive ? '#28C76F' : '#FF4F58' }} />
+                                <span className="text-xs" style={{ color: code.isActive ? '#28C76F' : '#FF4F58' }}>
+                                  {code.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                              </Button>
+                            </TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => deleteCodeMutation.mutate(code.id)}
+                                disabled={deleteCodeMutation.isPending}
+                              >
+                                <Trash2 className="h-4 w-4" style={{ color: '#FF4F58' }} />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Create Promo Code Dialog */}
+              <Dialog open={createCodeOpen} onOpenChange={setCreateCodeOpen}>
+                <DialogContent style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                  <DialogHeader>
+                    <DialogTitle style={{ color: '#C9D1E2' }}>Create Promo Code</DialogTitle>
+                    <DialogDescription style={{ color: '#8A93A6' }}>
+                      Create a new promotional code for user rewards.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4 py-4">
+                    <div className="space-y-2">
+                      <Label style={{ color: '#C9D1E2' }}>Code</Label>
+                      <Input
+                        placeholder="e.g. WELCOME500"
+                        value={newCode.code}
+                        onChange={(e) => setNewCode({ ...newCode, code: e.target.value.toUpperCase() })}
+                        style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label style={{ color: '#C9D1E2' }}>Reward Amount ($)</Label>
+                      <Input
+                        type="number"
+                        placeholder="e.g. 500"
+                        value={newCode.rewardAmount}
+                        onChange={(e) => setNewCode({ ...newCode, rewardAmount: e.target.value })}
+                        style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label style={{ color: '#C9D1E2' }}>Usage Type</Label>
+                      <Select
+                        value={newCode.usageType}
+                        onValueChange={(value) => setNewCode({ ...newCode, usageType: value })}
+                      >
+                        <SelectTrigger style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="once_per_user">Once Per User</SelectItem>
+                          <SelectItem value="single_use">Single Use (Global)</SelectItem>
+                          <SelectItem value="limited">Limited Uses</SelectItem>
+                          <SelectItem value="unlimited">Unlimited</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    {newCode.usageType === "limited" && (
+                      <div className="space-y-2">
+                        <Label style={{ color: '#C9D1E2' }}>Max Uses</Label>
+                        <Input
+                          type="number"
+                          placeholder="e.g. 100"
+                          value={newCode.maxUses}
+                          onChange={(e) => setNewCode({ ...newCode, maxUses: e.target.value })}
+                          style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        />
+                      </div>
+                    )}
+                    <div className="space-y-2">
+                      <Label style={{ color: '#C9D1E2' }}>Expires At (optional)</Label>
+                      <Input
+                        type="date"
+                        value={newCode.expiresAt}
+                        onChange={(e) => setNewCode({ ...newCode, expiresAt: e.target.value })}
+                        style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button
+                      variant="outline"
+                      onClick={() => setCreateCodeOpen(false)}
+                      style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (!newCode.code || !newCode.rewardAmount) {
+                          toast({ title: "Missing fields", description: "Code and reward amount are required.", variant: "destructive" });
+                          return;
+                        }
+                        createCodeMutation.mutate({
+                          code: newCode.code,
+                          rewardType: "sitecash",
+                          rewardAmount: newCode.rewardAmount,
+                          usageType: newCode.usageType,
+                          maxUses: newCode.usageType === "limited" ? parseInt(newCode.maxUses) || null : null,
+                          expiresAt: newCode.expiresAt ? new Date(newCode.expiresAt).toISOString() : null,
+                        });
+                      }}
+                      disabled={createCodeMutation.isPending}
+                      style={{ background: '#E3B341', color: '#06121F' }}
+                    >
+                      {createCodeMutation.isPending ? "Creating..." : "Create Code"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </TabsContent>
+
+            {/* ===== TAB 7: SYSTEM ===== */}
             <TabsContent value="system" className="space-y-6">
               <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
                 <CardHeader>

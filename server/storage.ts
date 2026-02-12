@@ -16,6 +16,9 @@ import {
   chatMessages,
   notifications,
   transactions,
+  tournamentResults,
+  promoCodes,
+  codeRedemptions,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -48,6 +51,12 @@ import {
   type InsertNotification,
   type Transaction,
   type InsertTransaction,
+  type TournamentResult,
+  type InsertTournamentResult,
+  type PromoCode,
+  type InsertPromoCode,
+  type CodeRedemption,
+  type InsertCodeRedemption,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -205,6 +214,19 @@ export interface IStorage {
   getUserTransactions(userId: number, limit?: number, type?: string): Promise<Transaction[]>;
   getRecentTransactions(limit?: number): Promise<Transaction[]>;
   getTransactionStats(): Promise<{ totalDeposits: number; totalWithdrawals: number; totalBuyIns: number; totalPayouts: number }>;
+
+  // Tournament results operations
+  saveTournamentResults(results: InsertTournamentResult[]): Promise<void>;
+  getTournamentResults(tournamentId: number): Promise<TournamentResult[]>;
+
+  // Promo code operations
+  getPromoCode(code: string): Promise<PromoCode | null>;
+  getCodeRedemption(codeId: number, userId: number): Promise<CodeRedemption | null>;
+  redeemCode(codeId: number, userId: number): Promise<CodeRedemption>;
+  createPromoCode(code: InsertPromoCode): Promise<PromoCode>;
+  getAllPromoCodes(): Promise<PromoCode[]>;
+  updatePromoCode(id: number, updates: Partial<PromoCode>): Promise<PromoCode>;
+  deletePromoCode(id: number): Promise<void>;
 
 }
 
@@ -1632,6 +1654,79 @@ export class DatabaseStorage implements IStorage {
       totalBuyIns: Number(result[0]?.totalBuyIns) || 0,
       totalPayouts: Number(result[0]?.totalPayouts) || 0,
     };
+  }
+
+  // Tournament results operations
+  async saveTournamentResults(results: InsertTournamentResult[]): Promise<void> {
+    if (results.length === 0) return;
+    await db.insert(tournamentResults).values(results);
+  }
+
+  async getTournamentResults(tournamentId: number): Promise<TournamentResult[]> {
+    return await db
+      .select()
+      .from(tournamentResults)
+      .where(eq(tournamentResults.tournamentId, tournamentId))
+      .orderBy(asc(tournamentResults.rank));
+  }
+
+  // Promo code operations
+  async getPromoCode(code: string): Promise<PromoCode | null> {
+    const result = await db
+      .select()
+      .from(promoCodes)
+      .where(eq(promoCodes.code, code))
+      .limit(1);
+    return result[0] || null;
+  }
+
+  async getCodeRedemption(codeId: number, userId: number): Promise<CodeRedemption | null> {
+    const result = await db
+      .select()
+      .from(codeRedemptions)
+      .where(and(eq(codeRedemptions.codeId, codeId), eq(codeRedemptions.userId, userId)))
+      .limit(1);
+    return result[0] || null;
+  }
+
+  async redeemCode(codeId: number, userId: number): Promise<CodeRedemption> {
+    // Insert redemption record
+    const result = await db
+      .insert(codeRedemptions)
+      .values({ codeId, userId })
+      .returning();
+
+    // Increment currentUses on the promo code
+    await db
+      .update(promoCodes)
+      .set({ currentUses: sql`${promoCodes.currentUses} + 1` })
+      .where(eq(promoCodes.id, codeId));
+
+    return result[0];
+  }
+
+  async createPromoCode(code: InsertPromoCode): Promise<PromoCode> {
+    const result = await db.insert(promoCodes).values(code).returning();
+    return result[0];
+  }
+
+  async getAllPromoCodes(): Promise<PromoCode[]> {
+    return await db.select().from(promoCodes).orderBy(desc(promoCodes.createdAt));
+  }
+
+  async updatePromoCode(id: number, updates: Partial<PromoCode>): Promise<PromoCode> {
+    const result = await db
+      .update(promoCodes)
+      .set(updates)
+      .where(eq(promoCodes.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async deletePromoCode(id: number): Promise<void> {
+    // Delete redemptions first (FK constraint)
+    await db.delete(codeRedemptions).where(eq(codeRedemptions.codeId, id));
+    await db.delete(promoCodes).where(eq(promoCodes.id, id));
   }
 }
 

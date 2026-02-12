@@ -1,13 +1,13 @@
 import { storage } from "../storage";
 import { getStockQuote } from "./yahooFinance";
+import type { InsertTournamentResult } from "@shared/schema";
 
-interface TournamentResult {
+interface TournamentResultEntry {
   userId: number;
+  username: string;
   finalBalance: number;
   totalValue: number;
   rank: number;
-  firstName: string;
-  lastName: string;
 }
 
 export class TournamentExpirationService {
@@ -81,15 +81,15 @@ export class TournamentExpirationService {
   /**
    * Calculate final standings for a tournament
    */
-  private async calculateFinalStandings(tournamentId: number): Promise<TournamentResult[]> {
+  private async calculateFinalStandings(tournamentId: number): Promise<TournamentResultEntry[]> {
     const participants = await storage.getTournamentParticipants(tournamentId);
-    const results: TournamentResult[] = [];
+    const results: TournamentResultEntry[] = [];
 
     for (const participant of participants) {
       const purchases = await storage.getTournamentStockPurchases(tournamentId, participant.userId);
-      
-      let totalValue = participant.balance;
-      
+
+      let totalValue = parseFloat(participant.balance?.toString() || '0');
+
       // Calculate current value of all holdings
       for (const purchase of purchases) {
         try {
@@ -105,11 +105,10 @@ export class TournamentExpirationService {
 
       results.push({
         userId: participant.userId,
-        finalBalance: participant.balance,
+        username: participant.username || `User ${participant.userId}`,
+        finalBalance: parseFloat(participant.balance?.toString() || '0'),
         totalValue,
         rank: 0, // Will be set after sorting
-        firstName: participant.firstName,
-        lastName: participant.lastName
       });
     }
 
@@ -123,42 +122,134 @@ export class TournamentExpirationService {
   }
 
   /**
-   * Distribute prize money to the tournament winner and creator
+   * Calculate payout percentages based on structure
    */
-  private async distributePrizeMoney(tournament: any, results: TournamentResult[]): Promise<void> {
+  private getPayoutPercentages(structure: string, participantCount: number): number[] {
+    switch (structure) {
+      case 'top_3':
+        return [0.60, 0.25, 0.15];
+      case 'top_5':
+        return [0.40, 0.25, 0.15, 0.12, 0.08];
+      case 'top_half': {
+        const payoutSlots = Math.ceil(participantCount / 2);
+        if (payoutSlots <= 1) return [1.0];
+        // Proportional split: each slot gets a share inversely proportional to rank
+        const weights: number[] = [];
+        let totalWeight = 0;
+        for (let i = 0; i < payoutSlots; i++) {
+          const weight = payoutSlots - i; // rank 1 gets highest weight
+          weights.push(weight);
+          totalWeight += weight;
+        }
+        return weights.map(w => w / totalWeight);
+      }
+      case 'winner_take_all':
+      default:
+        return [1.0];
+    }
+  }
+
+  /**
+   * Distribute prize money with tiered payout structure
+   */
+  private async distributePrizeMoney(tournament: any, results: TournamentResultEntry[]): Promise<void> {
+    const totalPot = Number(tournament.currentPot || 0);
+    const startingBalance = Number(tournament.startingBalance || 10000);
+    const payoutStructure = tournament.payoutStructure || 'winner_take_all';
+
+    // Persist tournament results for all participants
+    const resultRecords: InsertTournamentResult[] = results.map(r => ({
+      tournamentId: tournament.id,
+      userId: r.userId,
+      rank: r.rank,
+      portfolioValue: r.totalValue.toFixed(2),
+      gainPercent: (((r.totalValue - startingBalance) / startingBalance) * 100).toFixed(2),
+      payout: "0.00", // Will be updated below for winners
+    }));
+
     // Only distribute if there are participants and a pot to distribute
-    if (results.length === 0 || !tournament.currentPot || Number(tournament.currentPot) <= 0) {
-      console.log(`No prize money to distribute for tournament ${tournament.name} (pot: ${tournament.currentPot})`);
+    if (results.length === 0 || totalPot <= 0) {
+      console.log(`No prize money to distribute for tournament ${tournament.name} (pot: ${totalPot})`);
+      // Still save results even with no pot
+      if (resultRecords.length > 0) {
+        await storage.saveTournamentResults(resultRecords);
+      }
+      // Send notifications to all participants
+      for (const r of results) {
+        await this.sendResultNotification(tournament, r, 0);
+      }
       return;
     }
 
-    const winner = results.find(result => result.rank === 1);
-    if (!winner) {
-      console.log(`No winner found for tournament ${tournament.name}`);
-      return;
-    }
+    const creatorAmount = Math.round(totalPot * 0.05 * 100) / 100; // 5% to creator
+    const prizePool = Math.round(totalPot * 0.95 * 100) / 100; // 95% for participants
 
-    const totalPot = Number(tournament.currentPot);
-    const winnerAmount = Math.round(totalPot * 0.95 * 100) / 100; // 95% to winner, rounded to nearest cent
-    const creatorAmount = Math.round(totalPot * 0.05 * 100) / 100; // 5% to creator, rounded to nearest cent
-    
+    const percentages = this.getPayoutPercentages(payoutStructure, results.length);
+    const payoutSlots = Math.min(percentages.length, results.length);
+
     try {
-      // Add 95% of the tournament pot to the winner's siteCash
-      await storage.addUserBalance(winner.userId, winnerAmount);
-      
-      // Add 5% of the tournament pot to the creator's siteCash
+      // Distribute to ranked winners
+      for (let i = 0; i < payoutSlots; i++) {
+        const participant = results[i];
+        const payoutAmount = Math.round(prizePool * percentages[i] * 100) / 100;
+
+        if (payoutAmount > 0) {
+          await storage.addUserBalance(participant.userId, payoutAmount);
+          // Update payout in result records
+          resultRecords[i].payout = payoutAmount.toFixed(2);
+
+          console.log(`Paid $${payoutAmount} to rank ${participant.rank} user ${participant.userId} (${participant.username})`);
+        }
+      }
+
+      // Pay creator commission
       await storage.addUserBalance(tournament.creatorId, creatorAmount);
-      
-      console.log(`Distributed $${winnerAmount} (95%) to winner user ${winner.userId} (${winner.firstName} ${winner.lastName}) and $${creatorAmount} (5%) to creator user ${tournament.creatorId} for tournament ${tournament.name}`);
+
+      console.log(`Distributed prizes for tournament ${tournament.name}: $${prizePool} to players (${payoutStructure}), $${creatorAmount} to creator`);
+
+      // Save all result records
+      await storage.saveTournamentResults(resultRecords);
+
+      // Send notifications to all participants
+      for (const r of results) {
+        const payout = parseFloat(resultRecords.find(rec => rec.userId === r.userId)?.payout?.toString() || '0');
+        await this.sendResultNotification(tournament, r, payout);
+      }
     } catch (error) {
       console.error(`Failed to distribute prize money for tournament ${tournament.name}:`, error);
     }
   }
 
   /**
+   * Send a notification to a participant about their tournament result
+   */
+  private async sendResultNotification(tournament: any, result: TournamentResultEntry, payout: number): Promise<void> {
+    try {
+      const payoutMsg = payout > 0
+        ? `You earned $${payout.toFixed(2)}!`
+        : 'No payout this time.';
+
+      await storage.createNotification({
+        userId: result.userId,
+        type: 'tournament_end',
+        title: `Tournament "${tournament.name}" Ended`,
+        message: `You finished rank #${result.rank} with a portfolio value of $${result.totalValue.toFixed(2)}. ${payoutMsg}`,
+        metadata: {
+          tournamentId: tournament.id,
+          rank: result.rank,
+          portfolioValue: result.totalValue,
+          payout,
+        },
+      });
+    } catch (error) {
+      console.error(`Failed to send result notification to user ${result.userId}:`, error);
+    }
+  }
+
+  /**
    * Award achievements based on tournament results
    */
-  private async awardTournamentAchievements(tournamentId: number, results: TournamentResult[]): Promise<void> {
+  private async awardTournamentAchievements(tournamentId: number, results: TournamentResultEntry[]): Promise<void> {
     for (const result of results) {
       const { userId, rank, totalValue } = result;
       
