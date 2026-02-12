@@ -3,6 +3,7 @@ import {
   useContext,
   useState,
   useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -20,7 +21,17 @@ interface TourContextType {
 const TourContext = createContext<TourContextType | null>(null);
 
 async function markTutorialComplete() {
-  await fetch("/api/tutorial/complete", { method: "POST" });
+  const response = await fetch("/api/tutorial/complete", {
+    method: "POST",
+    credentials: "include", // Important: include session cookie
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+  if (!response.ok) {
+    throw new Error("Failed to mark tutorial complete");
+  }
+  return response.json();
 }
 
 export function TourProvider({ children }: { children: ReactNode }) {
@@ -28,20 +39,37 @@ export function TourProvider({ children }: { children: ReactNode }) {
   const [currentStep, setCurrentStep] = useState(0);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+  const isCompletingRef = useRef(false);
 
   const completeTour = useCallback(async () => {
+    // Prevent multiple simultaneous completions
+    if (isCompletingRef.current) {
+      return;
+    }
+
+    isCompletingRef.current = true;
     setIsTourActive(false);
     setCurrentStep(0);
+
     try {
       await markTutorialComplete();
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-    } catch {
-      // Silently handle — user can still use the app
+      // Wait for the user data to be refetched before showing toast
+      await queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      await queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      toast({
+        title: "You're all set!",
+        description: "Explore the platform and start trading.",
+      });
+    } catch (error) {
+      console.error("Failed to complete tutorial:", error);
+      // Still show the toast even if the API call fails
+      toast({
+        title: "You're all set!",
+        description: "Explore the platform and start trading.",
+      });
+    } finally {
+      isCompletingRef.current = false;
     }
-    toast({
-      title: "You're all set!",
-      description: "Explore the platform and start trading.",
-    });
   }, [queryClient, toast]);
 
   const startTour = useCallback(() => {
