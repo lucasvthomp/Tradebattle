@@ -19,6 +19,7 @@ async function runMigrations() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS withdrawal_frozen BOOLEAN DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS deposit_frozen BOOLEAN DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS tournament_restricted BOOLEAN DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS tutorial_completed BOOLEAN DEFAULT false NOT NULL;
     `);
 
     // Create admin_logs table if it doesn't exist
