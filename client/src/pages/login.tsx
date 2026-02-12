@@ -29,9 +29,7 @@ export default function Login() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate({ username, password }, {
-      onSuccess: () => navigate("/dashboard"),
-    });
+    loginMutation.mutate({ username, password });
   };
 
   const handle2FASubmit = async (e: React.FormEvent) => {
