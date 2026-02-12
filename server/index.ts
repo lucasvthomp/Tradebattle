@@ -61,9 +61,51 @@ async function runMigrations() {
       );
     `);
 
-    // Drop phantom payout_structure column if it exists on tournaments table
+    // Add payout_structure column to tournaments if it doesn't exist
     await client.query(`
-      ALTER TABLE tournaments DROP COLUMN IF EXISTS payout_structure;
+      ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS payout_structure VARCHAR(50) NOT NULL DEFAULT 'winner_take_all';
+    `);
+
+    // Create tournament_results table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS tournament_results (
+        id SERIAL PRIMARY KEY,
+        tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        rank INTEGER NOT NULL,
+        portfolio_value NUMERIC(15, 2) NOT NULL,
+        gain_percent NUMERIC(10, 2) NOT NULL,
+        payout NUMERIC(15, 2) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Create promo_codes table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS promo_codes (
+        id SERIAL PRIMARY KEY,
+        code VARCHAR(50) UNIQUE NOT NULL,
+        reward_type VARCHAR(20) NOT NULL,
+        reward_amount NUMERIC(15, 2) NOT NULL,
+        usage_type VARCHAR(20) NOT NULL,
+        max_uses INTEGER,
+        current_uses INTEGER DEFAULT 0 NOT NULL,
+        expires_at TIMESTAMP,
+        is_active BOOLEAN DEFAULT true NOT NULL,
+        created_by INTEGER REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Create code_redemptions table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS code_redemptions (
+        id SERIAL PRIMARY KEY,
+        code_id INTEGER NOT NULL REFERENCES promo_codes(id),
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        redeemed_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        CONSTRAINT unique_code_user UNIQUE (code_id, user_id)
+      );
     `);
 
     // Promote the first account (Lucas) to administrator
