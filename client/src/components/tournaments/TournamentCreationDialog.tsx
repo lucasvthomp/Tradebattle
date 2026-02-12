@@ -47,6 +47,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+import { TournamentSuccessDialog } from "./TournamentSuccessDialog";
 
 interface TournamentCreationDialogProps {
   isOpen: boolean;
@@ -110,7 +111,9 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [currentStep, setCurrentStep] = useState<'form' | 'confirm'>('form');
+  const [successDialogOpen, setSuccessDialogOpen] = useState(false);
+  const [createdTournament, setCreatedTournament] = useState<{ id: number; name: string; code: string } | null>(null);
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
@@ -144,7 +147,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
       onClose();
       setFormData({
         name: "",
@@ -160,12 +163,16 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         customStartTime: ""
       });
       setErrors({});
-      setConfirmOpen(false);
+      setCurrentStep('form');
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
-      toast({
-        title: "Success",
-        description: "Tournament created successfully!",
+
+      // Show success dialog with tournament details
+      setCreatedTournament({
+        id: response.data.id,
+        name: response.data.name,
+        code: response.data.code
       });
+      setSuccessDialogOpen(true);
     },
     onError: (error: Error) => {
       toast({
@@ -234,8 +241,14 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
   return (
     <>
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => {
+      if (!open) {
+        setCurrentStep('form');
+      }
+      onClose();
+    }}>
       <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#080C14', borderColor: '#E3B341', borderWidth: '2px' }}>
+        {currentStep === 'form' ? (
         <div className="grid grid-cols-5 gap-0 h-full">
           {/* Left Side - Form (3/5 width) */}
           <div className="col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#0F172A' }}>
@@ -562,7 +575,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     setErrors({ name: "Tournament name is required" });
                     return;
                   }
-                  setConfirmOpen(true);
+                  setCurrentStep('confirm');
                 }}
                 className="h-9 font-bold"
                 style={{ backgroundColor: '#E3B341', color: '#080C14' }}
@@ -801,13 +814,9 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         </div>
       </div>
     </div>
-      </DialogContent>
-    </Dialog>
-
-    {/* Confirmation Dialog (Step 2) */}
-    <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-      <DialogContent className="max-w-lg p-0" style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', borderWidth: '2px' }}>
-        <div className="p-6 space-y-4">
+        ) : (
+        /* Confirmation Step (Step 2) - same size and position */
+        <div className="p-6 space-y-4" style={{ backgroundColor: '#0F172A' }}>
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-3">
               <div className="p-2 rounded-lg" style={{ backgroundColor: '#E3B341' }}>
@@ -890,7 +899,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <div className="flex justify-between pt-1">
             <Button
               variant="outline"
-              onClick={() => setConfirmOpen(false)}
+              onClick={() => setCurrentStep('form')}
               className="h-9"
               style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
             >
@@ -906,8 +915,23 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             </Button>
           </div>
         </div>
+        )}
       </DialogContent>
     </Dialog>
+
+    {/* Success Dialog */}
+    {createdTournament && (
+      <TournamentSuccessDialog
+        isOpen={successDialogOpen}
+        onClose={() => {
+          setSuccessDialogOpen(false);
+          setCreatedTournament(null);
+        }}
+        tournamentId={createdTournament.id}
+        tournamentName={createdTournament.name}
+        tournamentCode={createdTournament.code}
+      />
+    )}
     </>
   );
 }

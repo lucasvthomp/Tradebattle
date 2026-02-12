@@ -590,6 +590,59 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
 }));
 
 /**
+ * POST /api/tournaments/:id/invite
+ * Send tournament invitations to friends
+ */
+router.post('/tournaments/:id/invite', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+  const { userIds } = req.body;
+
+  if (!Array.isArray(userIds) || userIds.length === 0) {
+    throw new ValidationError('User IDs array is required');
+  }
+
+  const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  // Verify the requesting user is the tournament creator or a participant
+  if (tournament.creatorId !== userId) {
+    const participant = await storage.getTournamentParticipant(tournamentId, userId);
+    if (!participant) {
+      throw new ValidationError('Only tournament participants can send invites');
+    }
+  }
+
+  // Create notifications for each invited user
+  const notifications = await Promise.all(
+    userIds.map(async (invitedUserId: number) => {
+      return await storage.createNotification({
+        userId: invitedUserId,
+        type: 'tournament_invite',
+        title: 'Tournament Invitation',
+        message: `${req.user.username} invited you to join "${tournament.name}"`,
+        metadata: {
+          tournamentId: tournament.id,
+          tournamentName: tournament.name,
+          tournamentCode: tournament.code,
+          invitedBy: userId,
+          invitedByUsername: req.user.username
+        }
+      });
+    })
+  );
+
+  res.json({
+    success: true,
+    data: {
+      invitesSent: notifications.length
+    }
+  });
+}));
+
+/**
  * GET /api/tournaments
  * Get user's tournaments
  */
@@ -2077,6 +2130,34 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
     tournamentId: null
   });
 
+  // Detect mentions in the format @username
+  const mentionRegex = /@(\w+)/g;
+  const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
+
+  // Create notifications for mentioned users
+  if (mentions.length > 0) {
+    const uniqueMentions = [...new Set(mentions)];
+    await Promise.all(
+      uniqueMentions.map(async (mentionedUsername) => {
+        const mentionedUser = await storage.getUserByUsername(mentionedUsername);
+        if (mentionedUser && mentionedUser.id !== userId) {
+          await storage.createNotification({
+            userId: mentionedUser.id,
+            type: 'chat_mention',
+            title: 'Chat Mention',
+            message: `${user.username} mentioned you in global chat`,
+            metadata: {
+              messageId: chatMessage.id,
+              tournamentId: null,
+              mentionedBy: userId,
+              mentionedByUsername: user.username
+            }
+          });
+        }
+      })
+    );
+  }
+
   res.json({
     success: true,
     data: chatMessage
@@ -2098,6 +2179,39 @@ router.get('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (re
   res.json({
     success: true,
     data: messages
+  });
+}));
+
+/**
+ * GET /api/chat/tournament/:tournamentId/message/:messageId/context
+ * Get messages around a specific message (for mention notifications)
+ */
+router.get('/chat/tournament/:tournamentId/message/:messageId/context', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.tournamentId);
+  const messageId = parseInt(req.params.messageId);
+
+  if (isNaN(tournamentId) || isNaN(messageId)) {
+    throw new ValidationError('Invalid tournament or message ID');
+  }
+
+  const allMessages = await storage.getChatMessages(tournamentId);
+  const messageIndex = allMessages.findIndex((msg: any) => msg.id === messageId);
+
+  if (messageIndex === -1) {
+    throw new NotFoundError('Message not found');
+  }
+
+  // Get 10 messages before and 10 after
+  const startIndex = Math.max(0, messageIndex - 10);
+  const endIndex = Math.min(allMessages.length, messageIndex + 11);
+  const contextMessages = allMessages.slice(startIndex, endIndex);
+
+  res.json({
+    success: true,
+    data: {
+      messages: contextMessages,
+      highlightId: messageId
+    }
   });
 }));
 
@@ -2132,6 +2246,35 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
     message: censoredMessage,
     tournamentId
   });
+
+  // Detect mentions in the format @username
+  const mentionRegex = /@(\w+)/g;
+  const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
+
+  // Create notifications for mentioned users
+  if (mentions.length > 0) {
+    const tournament = await storage.getTournamentById(tournamentId);
+    const uniqueMentions = [...new Set(mentions)];
+    await Promise.all(
+      uniqueMentions.map(async (mentionedUsername) => {
+        const mentionedUser = await storage.getUserByUsername(mentionedUsername);
+        if (mentionedUser && mentionedUser.id !== userId) {
+          await storage.createNotification({
+            userId: mentionedUser.id,
+            type: 'chat_mention',
+            title: 'Chat Mention',
+            message: `${user.username} mentioned you in ${tournament?.name || 'tournament chat'}`,
+            metadata: {
+              messageId: chatMessage.id,
+              tournamentId,
+              mentionedBy: userId,
+              mentionedByUsername: user.username
+            }
+          });
+        }
+      })
+    );
+  }
 
   res.json({
     success: true,

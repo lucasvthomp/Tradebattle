@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import {
@@ -8,12 +9,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail } from "lucide-react";
+import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail, UserPlus, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const typeIcons: Record<string, any> = {
   tournament_start: Trophy,
   tournament_end: Trophy,
   tournament_join: Users,
+  tournament_invite: UserPlus,
+  chat_mention: Mail,
   deposit: DollarSign,
   withdrawal: DollarSign,
   payout: DollarSign,
@@ -41,6 +45,8 @@ function timeAgo(dateStr: string): string {
 
 export function NotificationDropdown() {
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const { data } = useQuery<{ data: any[]; unreadCount: number }>({
@@ -73,6 +79,49 @@ export function NotificationDropdown() {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
     },
   });
+
+  const acceptInviteMutation = useMutation({
+    mutationFn: async ({ tournamentId, notificationId }: { tournamentId: number; notificationId: number }) => {
+      await apiRequest("POST", `/api/tournaments/${tournamentId}/join`);
+      await apiRequest("PATCH", `/api/notifications/${notificationId}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
+      toast({
+        title: "Joined tournament!",
+        description: "You've successfully joined the tournament",
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to join tournament",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const rejectInviteMutation = useMutation({
+    mutationFn: async (notificationId: number) => {
+      await apiRequest("PATCH", `/api/notifications/${notificationId}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
+    },
+  });
+
+  const handleNotificationClick = (notif: any) => {
+    if (notif.type === 'chat_mention' && notif.metadata?.messageId && notif.metadata?.tournamentId) {
+      // Navigate to chat and highlight message
+      navigate(`/tournaments/${notif.metadata.tournamentId}?messageId=${notif.metadata.messageId}`);
+      setOpen(false);
+    }
+
+    if (!notif.read) {
+      markReadMutation.mutate(notif.id);
+    }
+  };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -119,28 +168,63 @@ export function NotificationDropdown() {
               {notifications.map((notif: any) => (
                 <div
                   key={notif.id}
-                  className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
                   style={{
                     borderBottom: "1px solid #2B3A4C",
                     opacity: notif.read ? 0.6 : 1,
                   }}
-                  onClick={() => {
-                    if (!notif.read) markReadMutation.mutate(notif.id);
-                  }}
                 >
                   <div
-                    className="mt-1 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: notif.read ? "#1a2332" : "rgba(227, 179, 65, 0.15)", color: notif.read ? "#8A93A6" : "#E3B341" }}
+                    className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
+                    onClick={() => handleNotificationClick(notif)}
                   >
-                    {getIcon(notif.type)}
+                    <div
+                      className="mt-1 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: notif.read ? "#1a2332" : "rgba(227, 179, 65, 0.15)", color: notif.read ? "#8A93A6" : "#E3B341" }}
+                    >
+                      {getIcon(notif.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate" style={{ color: "#C9D1E2" }}>{notif.title}</p>
+                      <p className="text-xs mt-0.5 line-clamp-2" style={{ color: "#8A93A6" }}>{notif.message}</p>
+                      <p className="text-xs mt-1" style={{ color: "#5f6b7a" }}>{timeAgo(notif.createdAt)}</p>
+                    </div>
+                    {!notif.read && (
+                      <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: "#E3B341" }} />
+                    )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate" style={{ color: "#C9D1E2" }}>{notif.title}</p>
-                    <p className="text-xs mt-0.5 line-clamp-2" style={{ color: "#8A93A6" }}>{notif.message}</p>
-                    <p className="text-xs mt-1" style={{ color: "#5f6b7a" }}>{timeAgo(notif.createdAt)}</p>
-                  </div>
-                  {!notif.read && (
-                    <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: "#E3B341" }} />
+
+                  {/* Tournament Invite Actions */}
+                  {notif.type === 'tournament_invite' && !notif.read && notif.metadata?.tournamentId && (
+                    <div className="flex items-center gap-2 px-4 pb-3">
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          acceptInviteMutation.mutate({
+                            tournamentId: notif.metadata.tournamentId,
+                            notificationId: notif.id
+                          });
+                        }}
+                        disabled={acceptInviteMutation.isPending}
+                        className="flex-1 h-8 text-xs font-bold"
+                        style={{ backgroundColor: "#10B981", color: "#FFFFFF" }}
+                      >
+                        <Check className="w-3 h-3 mr-1" />
+                        Accept
+                      </Button>
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          rejectInviteMutation.mutate(notif.id);
+                        }}
+                        disabled={rejectInviteMutation.isPending}
+                        className="flex-1 h-8 text-xs"
+                        variant="outline"
+                        style={{ borderColor: "#FF4F58", color: "#FF4F58" }}
+                      >
+                        <X className="w-3 h-3 mr-1" />
+                        Decline
+                      </Button>
+                    </div>
                   )}
                 </div>
               ))}

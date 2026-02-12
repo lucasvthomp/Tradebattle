@@ -380,7 +380,7 @@ export default function TournamentsPage() {
                       onClick={() => joinByCodeMutation.mutate(joinCode)}
                       disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
                       className="w-full border-0"
-                      style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
+                      style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
                     >
                       {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
                     </Button>
@@ -396,7 +396,7 @@ export default function TournamentsPage() {
                 height: 'clamp(32px, 2.5vh, 40px)',
                 padding: '0 clamp(12px, 1.5vw, 20px)',
                 fontSize: 'clamp(0.75rem, 1vw, 1rem)',
-                background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
+                background: 'linear-gradient(135deg, #1E293B, #334155)',
                 color: '#FFFFFF'
               }}>
                 <Plus style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', marginRight: '8px' }} />
@@ -479,7 +479,7 @@ export default function TournamentsPage() {
                 onClick={() => setActiveTab('upcoming')}
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
                 style={activeTab === 'upcoming'
-                  ? { background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }
+                  ? { backgroundColor: '#10B981', color: '#FFFFFF' }
                   : { backgroundColor: 'transparent', color: '#FFFFFF' }
                 }
               >
@@ -496,7 +496,7 @@ export default function TournamentsPage() {
                 onClick={() => setActiveTab('live')}
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
                 style={activeTab === 'live'
-                  ? { background: 'linear-gradient(135deg, #F59E0B, #EF4444)', color: '#FFFFFF' }
+                  ? { backgroundColor: '#64748B', color: '#FFFFFF' }
                   : { backgroundColor: 'transparent', color: '#FFFFFF' }
                 }
               >
@@ -696,7 +696,7 @@ export default function TournamentsPage() {
                   className="flex-1 border-0"
                   onClick={confirmJoinTournament}
                   disabled={!agreementChecked || joinTournamentMutation.isPending}
-                  style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
+                  style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
                 >
                   {joinTournamentMutation.isPending ? "Joining..." :
                    tournamentToJoin.buyInAmount > 0 ? `Join - ${formatCurrency(tournamentToJoin.buyInAmount)}` : "Join Free"
@@ -869,7 +869,7 @@ function HorizontalTournamentCard({
             }}
             className="border-0 whitespace-nowrap"
             size="sm"
-            style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
+            style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
           >
             <Play className="w-3.5 h-3.5 mr-1.5" />
             Start
@@ -895,7 +895,7 @@ function HorizontalTournamentCard({
           className="border-0 whitespace-nowrap"
           size="sm"
           style={!(isJoining || tournament.currentPlayers >= tournament.maxPlayers)
-            ? { background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }
+            ? { backgroundColor: '#10B981', color: '#FFFFFF' }
             : { backgroundColor: '#1F2937', color: '#94A3B8' }
           }
         >
@@ -927,24 +927,24 @@ function HorizontalTournamentCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <div className="p-1.5 rounded-lg" style={{
-              backgroundColor: isLive ? 'rgba(245, 158, 11, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+              backgroundColor: 'rgba(100, 116, 139, 0.15)',
             }}>
-              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: isLive ? '#F59E0B' : '#10B981' }} />
+              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
             </div>
             <span className="font-bold text-sm truncate" style={{ color: '#F1F5F9' }}>
               {tournament.name}
             </span>
             {isHighPot && <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#E3B341' }} />}
             {isLive && (
-              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(245, 158, 11, 0.2)', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#F59E0B' }} />
-                <span className="text-[10px] font-bold" style={{ color: '#F59E0B' }}>LIVE</span>
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
+                <span className="text-[10px] font-bold" style={{ color: '#10B981' }}>LIVE</span>
               </div>
             )}
             {!tournament.isPublic && (
-              <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(139, 92, 246, 0.2)' }}>
-                <Lock className="w-2.5 h-2.5" style={{ color: '#8B5CF6' }} />
-                <span className="text-[10px] font-semibold" style={{ color: '#8B5CF6' }}>Private</span>
+              <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(100, 116, 139, 0.2)', border: '1px solid rgba(100, 116, 139, 0.3)' }}>
+                <Lock className="w-2.5 h-2.5" style={{ color: '#94A3B8' }} />
+                <span className="text-[10px] font-semibold" style={{ color: '#94A3B8' }}>Private</span>
               </div>
             )}
           </div>
@@ -953,7 +953,7 @@ function HorizontalTournamentCard({
             {getTimeRemaining() && (
               <>
                 <span>|</span>
-                <span style={{ color: isLive ? '#F59E0B' : '#10B981' }}>{getTimeRemaining()}</span>
+                <span style={{ color: isLive ? '#10B981' : '#94A3B8' }}>{getTimeRemaining()}</span>
               </>
             )}
           </div>
