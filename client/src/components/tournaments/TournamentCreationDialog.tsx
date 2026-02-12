@@ -38,7 +38,7 @@ import {
   Gift
 } from "lucide-react";
 import { motion } from "framer-motion";
-import { 
+import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
@@ -47,11 +47,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-<<<<<<< HEAD
 import { TournamentSuccessDialog } from "./TournamentSuccessDialog";
-=======
-import TournamentSuccessDialog from "./TournamentSuccessDialog";
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
 
 interface TournamentCreationDialogProps {
   isOpen: boolean;
@@ -119,15 +115,9 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
-<<<<<<< HEAD
   const [currentStep, setCurrentStep] = useState<'form' | 'confirm'>('form');
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [createdTournament, setCreatedTournament] = useState<{ id: number; name: string; code: string } | null>(null);
-=======
-  const [step, setStep] = useState<'form' | 'confirmation'>('form');
-  const [createdTournament, setCreatedTournament] = useState<any>(null);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
@@ -189,13 +179,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       });
       return res.json();
     },
-<<<<<<< HEAD
     onSuccess: (response) => {
-=======
-    onSuccess: (data) => {
-      setCreatedTournament(data.data);
-      setShowSuccessDialog(true);
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
       onClose();
       setFormData({
         name: "",
@@ -211,7 +195,6 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         customStartTime: ""
       });
       setErrors({});
-<<<<<<< HEAD
       setCurrentStep('form');
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
 
@@ -222,10 +205,6 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         code: response.data.code
       });
       setSuccessDialogOpen(true);
-=======
-      setStep('form');
-      queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
     },
     onError: (error: Error) => {
       toast({
@@ -294,23 +273,17 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
   return (
     <>
-<<<<<<< HEAD
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) {
         setCurrentStep('form');
       }
       onClose();
     }}>
-      <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#080C14', borderColor: '#E3B341', borderWidth: '2px' }}>
+      <DialogContent className="max-w-[95vw] md:max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#080C14', borderColor: '#E3B341', borderWidth: '2px' }}>
         {currentStep === 'form' ? (
-=======
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={step === 'form' ? "max-w-7xl max-h-[90vh] overflow-hidden p-0" : "max-w-lg p-0"} style={{ backgroundColor: step === 'form' ? '#080C14' : '#0F172A', borderColor: '#E3B341', borderWidth: '2px' }}>
-        {step === 'form' ? (
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
-        <div className="grid grid-cols-5 gap-0 h-full">
-          {/* Left Side - Form (3/5 width) */}
-          <div className="col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#0F172A' }}>
+        <div className="flex flex-col md:grid md:grid-cols-5 gap-0 h-full">
+          {/* Left Side - Form (3/5 width on desktop) */}
+          <div className="md:col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#0F172A' }}>
             <DialogHeader>
               <div className="flex items-center justify-between mb-3">
                 <DialogTitle className="flex items-center space-x-3">
@@ -634,11 +607,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     setErrors({ name: "Tournament name is required" });
                     return;
                   }
-<<<<<<< HEAD
                   setCurrentStep('confirm');
-=======
-                  setStep('confirmation');
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
                 }}
                 className="h-9 font-bold"
                 style={{ backgroundColor: '#E3B341', color: '#080C14' }}
@@ -649,8 +618,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         </div>
       </div>
 
-      {/* Right Side - Live Preview (2/5 width) */}
-      <div className="col-span-2 p-6 overflow-y-auto" style={{ backgroundColor: '#080C14', borderLeft: '2px solid #1F2937' }}>
+      {/* Right Side - Live Preview (2/5 width on desktop, hidden on mobile) */}
+      <div className="hidden md:block md:col-span-2 p-6 overflow-y-auto" style={{ backgroundColor: '#080C14', borderLeft: '2px solid #1F2937' }}>
         <div className="sticky top-0">
           <div className="flex items-center space-x-2 mb-4">
             <div className="h-1 flex-1 rounded-full" style={{ backgroundColor: '#E3B341' }} />
@@ -878,12 +847,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       </div>
     </div>
         ) : (
-<<<<<<< HEAD
         /* Confirmation Step (Step 2) - same size and position */
         <div className="p-6 space-y-4" style={{ backgroundColor: '#0F172A' }}>
-=======
-        <div className="p-6 space-y-4">
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-3">
               <div className="p-2 rounded-lg" style={{ backgroundColor: '#E3B341' }}>
@@ -966,11 +931,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <div className="flex justify-between pt-1">
             <Button
               variant="outline"
-<<<<<<< HEAD
               onClick={() => setCurrentStep('form')}
-=======
-              onClick={() => setStep('form')}
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
               className="h-9"
               style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
             >
@@ -990,7 +951,6 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       </DialogContent>
     </Dialog>
 
-<<<<<<< HEAD
     {/* Success Dialog */}
     {createdTournament && (
       <TournamentSuccessDialog
@@ -1002,20 +962,6 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         tournamentId={createdTournament.id}
         tournamentName={createdTournament.name}
         tournamentCode={createdTournament.code}
-=======
-    {/* Tournament Success Dialog */}
-    {createdTournament && (
-      <TournamentSuccessDialog
-        open={showSuccessDialog}
-        onClose={() => {
-          setShowSuccessDialog(false);
-          setCreatedTournament(null);
-        }}
-        tournament={createdTournament}
-        onNavigate={() => {
-          // Navigation handled by the dialog itself
-        }}
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
       />
     )}
     </>

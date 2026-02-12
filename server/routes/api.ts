@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { 
-  getStockQuote, 
-  searchStocks, 
-  getHistoricalData, 
+import {
+  getStockQuote,
+  searchStocks,
+  getHistoricalData,
   getCompanyProfile,
   getPopularStocks,
   getStockPerformance,
@@ -11,12 +11,12 @@ import {
 } from '../services/yahooFinance.js';
 import { getExchangeRate, convertCurrency, getAllExchangeRates } from '../services/exchangeRates.js';
 import { getKeyStats } from '../services/keyStats.js';
-import { 
-  asyncHandler, 
-  validateSymbol, 
-  sanitizeInput, 
-  ValidationError, 
-  NotFoundError 
+import {
+  asyncHandler,
+  validateSymbol,
+  sanitizeInput,
+  ValidationError,
+  NotFoundError
 } from '../utils/errorHandler.js';
 import { storage } from '../storage.js';
 import { db } from '../db.js';
@@ -33,7 +33,7 @@ const router = Router();
  */
 router.get('/quote/:symbol', asyncHandler(async (req: any, res: any) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
-  
+
   if (!validateSymbol(symbol)) {
     throw new ValidationError('Invalid symbol format');
   }
@@ -59,13 +59,13 @@ router.get('/quote/:symbol', asyncHandler(async (req: any, res: any) => {
  */
 router.get('/search/:query', asyncHandler(async (req: any, res: any) => {
   const query = sanitizeInput(req.params.query);
-  
+
   if (!query || query.length < 2) {
     throw new ValidationError('Query must be at least 2 characters long');
   }
 
   const results = await searchStocks(query);
-  
+
   res.json({
     success: true,
     data: results,
@@ -79,7 +79,7 @@ router.get('/search/:query', asyncHandler(async (req: any, res: any) => {
 router.get('/historical/:symbol', asyncHandler(async (req: any, res: any) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
   const timeFrame = sanitizeInput(req.query.timeframe as string || '1M') as TimeFrame;
-  
+
   if (!validateSymbol(symbol)) {
     throw new ValidationError('Invalid symbol format');
   }
@@ -109,7 +109,7 @@ router.get('/historical/:symbol', asyncHandler(async (req: any, res: any) => {
 router.get('/historical/:symbol/:timeframe', asyncHandler(async (req: any, res: any) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
   const timeFrame = sanitizeInput(req.params.timeframe.toUpperCase()) as TimeFrame;
-  
+
   if (!validateSymbol(symbol)) {
     throw new ValidationError('Invalid symbol format');
   }
@@ -139,7 +139,7 @@ router.get('/historical/:symbol/:timeframe', asyncHandler(async (req: any, res: 
 router.get('/performance/:symbol/:timeframe', asyncHandler(async (req, res) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
   const timeFrame = sanitizeInput(req.params.timeframe.toUpperCase()) as TimeFrame;
-  
+
   if (!validateSymbol(symbol)) {
     throw new ValidationError('Invalid symbol format');
   }
@@ -167,7 +167,7 @@ router.get('/performance/:symbol/:timeframe', asyncHandler(async (req, res) => {
  */
 router.get('/summary/:symbol', asyncHandler(async (req, res) => {
   const symbol = sanitizeInput(req.params.symbol.toUpperCase());
-  
+
   if (!validateSymbol(symbol)) {
     throw new ValidationError('Invalid symbol format');
   }
@@ -215,7 +215,7 @@ router.get('/key-stats/:symbol', asyncHandler(async (req: any, res: any) => {
  */
 router.get('/popular', asyncHandler(async (req, res) => {
   const popularStocks = await getPopularStocks();
-  
+
   res.json({
     success: true,
     data: popularStocks,
@@ -228,7 +228,7 @@ router.get('/popular', asyncHandler(async (req, res) => {
  */
 router.get('/sectors', asyncHandler(async (req, res) => {
   const sectors = getAllSectors();
-  
+
   res.json({
     success: true,
     data: sectors,
@@ -404,7 +404,7 @@ router.post('/tournaments/:id/start-early', requireAuth, asyncHandler(async (req
 router.delete('/tournaments/:id/cancel', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
   const userId = req.user.id;
-  
+
   if (isNaN(tournamentId)) {
     throw new ValidationError('Invalid tournament ID');
   }
@@ -446,7 +446,7 @@ router.delete('/tournaments/:id/participants/:participantId', requireAuth, async
   const tournamentId = parseInt(req.params.id);
   const participantId = parseInt(req.params.participantId);
   const userId = req.user.id;
-  
+
   if (isNaN(tournamentId) || isNaN(participantId)) {
     throw new ValidationError('Invalid tournament or participant ID');
   }
@@ -572,7 +572,9 @@ router.post('/tournaments/:id/invite', requireAuth, asyncHandler(async (req, res
         tournamentName: tournament.name,
         tournamentCode: tournament.code,
         inviterId: userId,
-        inviterUsername: inviter.username
+        inviterUsername: inviter.username,
+        invitedBy: userId,
+        invitedByUsername: inviter.username
       }
     });
     invitedCount++;
@@ -761,7 +763,9 @@ router.post('/tournaments/:id/invite', requireAuth, asyncHandler(async (req, res
           tournamentName: tournament.name,
           tournamentCode: tournament.code,
           invitedBy: userId,
-          invitedByUsername: req.user.username
+          invitedByUsername: req.user.username,
+          inviterId: userId,
+          inviterUsername: req.user.username
         }
       });
     })
@@ -829,7 +833,7 @@ router.get('/tournaments/public', requireAuth, asyncHandler(async (req, res) => 
  */
 router.get('/tournaments/:id/leaderboard', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
-  
+
   const participants = await storage.getTournamentParticipants(tournamentId);
 
   // Calculate portfolio values with current stock prices
@@ -837,7 +841,7 @@ router.get('/tournaments/:id/leaderboard', requireAuth, asyncHandler(async (req,
     participants.map(async (participant) => {
       let stockValue = 0;
       const stockSymbols = [...new Set(participant.stockPurchases.map((p: any) => p.symbol))];
-      
+
       // Get current prices for all symbols
       const stockPrices: { [symbol: string]: number } = {};
       for (const symbol of stockSymbols) {
@@ -853,20 +857,20 @@ router.get('/tournaments/:id/leaderboard', requireAuth, asyncHandler(async (req,
 
       // Calculate total stock value
       const stockHoldings: { [symbol: string]: { quantity: number; averagePrice: number } } = {};
-      
+
       participant.stockPurchases.forEach((purchase: any) => {
         const symbol = purchase.symbol;
         const quantity = parseInt(purchase.shares);
         const price = parseFloat(purchase.purchasePrice);
-        
+
         if (!stockHoldings[symbol]) {
           stockHoldings[symbol] = { quantity: 0, averagePrice: 0 };
         }
-        
+
         const currentHolding = stockHoldings[symbol];
         const totalQuantity = currentHolding.quantity + quantity;
         const totalCost = (currentHolding.quantity * currentHolding.averagePrice) + (quantity * price);
-        
+
         stockHoldings[symbol] = {
           quantity: totalQuantity,
           averagePrice: totalCost / totalQuantity
@@ -917,7 +921,7 @@ router.get('/tournaments/:id/participants', requireAuth, asyncHandler(async (req
     participants.map(async (participant) => {
       let stockValue = 0;
       const stockSymbols = [...new Set(participant.stockPurchases.map((p: any) => p.symbol))];
-      
+
       // Get current prices for all symbols
       const stockPrices: { [symbol: string]: number } = {};
       for (const symbol of stockSymbols) {
@@ -933,20 +937,20 @@ router.get('/tournaments/:id/participants', requireAuth, asyncHandler(async (req
 
       // Calculate total stock value
       const stockHoldings: { [symbol: string]: { quantity: number; averagePrice: number } } = {};
-      
+
       participant.stockPurchases.forEach((purchase: any) => {
         const symbol = purchase.symbol;
         const quantity = parseInt(purchase.shares);
         const price = parseFloat(purchase.purchasePrice);
-        
+
         if (!stockHoldings[symbol]) {
           stockHoldings[symbol] = { quantity: 0, averagePrice: 0 };
         }
-        
+
         const currentHolding = stockHoldings[symbol];
         const totalQuantity = currentHolding.quantity + quantity;
         const totalCost = (currentHolding.quantity * currentHolding.averagePrice) + (quantity * price);
-        
+
         stockHoldings[symbol] = {
           quantity: totalQuantity,
           averagePrice: totalCost / totalQuantity
@@ -1053,12 +1057,12 @@ router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, re
 
   // Get tournament stock purchases
   const purchases = await storage.getTournamentStockPurchases(tournamentId, userId);
-  
+
   // Group purchases by symbol and calculate holdings
-  const stockHoldings: { [symbol: string]: { 
+  const stockHoldings: { [symbol: string]: {
     symbol: string;
     companyName: string;
-    shares: number; 
+    shares: number;
     averagePurchasePrice: number;
     totalCost: number;
     currentPrice?: number;
@@ -1066,14 +1070,14 @@ router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, re
     profitLoss?: number;
     profitLossPercent?: number;
   } } = {};
-  
+
   // Process all purchases to calculate holdings
   for (const purchase of purchases) {
     const symbol = purchase.symbol;
     const shares = purchase.shares;
     const purchasePrice = parseFloat(purchase.purchasePrice);
     const totalCost = parseFloat(purchase.totalCost);
-    
+
     if (!stockHoldings[symbol]) {
       stockHoldings[symbol] = {
         symbol,
@@ -1083,11 +1087,11 @@ router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, re
         totalCost: 0
       };
     }
-    
+
     const holding = stockHoldings[symbol];
     const newTotalShares = holding.shares + shares;
     const newTotalCost = holding.totalCost + totalCost;
-    
+
     stockHoldings[symbol] = {
       ...holding,
       shares: newTotalShares,
@@ -1095,7 +1099,7 @@ router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, re
       averagePurchasePrice: newTotalCost / newTotalShares
     };
   }
-  
+
   // Get current prices and calculate profit/loss
   for (const holding of Object.values(stockHoldings)) {
     try {
@@ -1160,14 +1164,14 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
   // Get user's tournament stock purchases for this symbol
   const allPurchases = await storage.getTournamentStockPurchases(tournamentId, userId);
   const symbolPurchases = allPurchases.filter(p => p.symbol === symbol);
-  
+
   if (symbolPurchases.length === 0) {
     throw new ValidationError('No holdings found for this stock');
   }
 
   // Calculate total shares owned
   const totalShares = symbolPurchases.reduce((sum, purchase) => sum + purchase.shares, 0);
-  
+
   if (sharesToSellNum > totalShares) {
     throw new ValidationError(`Cannot sell ${sharesToSellNum} shares. You only own ${totalShares} shares.`);
   }
@@ -1180,10 +1184,10 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
 
   // Process the sale by removing shares (FIFO - First In, First Out)
   let remainingToSell = sharesToSellNum;
-  
+
   for (const purchase of symbolPurchases) {
     if (remainingToSell <= 0) break;
-    
+
     if (purchase.shares <= remainingToSell) {
       // Sell all shares from this purchase
       remainingToSell -= purchase.shares;
@@ -1192,7 +1196,7 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
       // Partially sell shares from this purchase
       const newShares = purchase.shares - remainingToSell;
       const purchasePrice = parseFloat(purchase.purchasePrice);
-      
+
       // Delete the old record and create a new one with remaining shares
       await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
       await storage.purchaseTournamentStock(tournamentId, userId, {
@@ -1202,7 +1206,7 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
         purchasePrice: purchasePrice,
         totalCost: newShares * purchasePrice
       });
-      
+
       remainingToSell = 0;
     }
   }
@@ -1225,7 +1229,7 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
 
   res.json({
     success: true,
-    data: { 
+    data: {
       saleValue,
       newBalance: currentBalance + saleValue,
       sharesSold: sharesToSellNum
@@ -1242,7 +1246,7 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   const userId = req.user.id;
 
   const { symbol, companyName, shares, purchasePrice } = req.body;
-  
+
   if (!symbol || !companyName || !shares || !purchasePrice) {
     throw new ValidationError('All purchase fields are required');
   }
@@ -1321,30 +1325,30 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
  */
 router.get('/tournaments/leaderboard', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  
+
   // Get all tournaments with participants and their portfolio values
   const tournaments = await storage.getAllTournaments();
   const allParticipants = [];
   let activeTournaments = 0;
-  
+
   for (const tournament of tournaments) {
     // Skip expired/completed tournaments
     if (tournament.status === 'completed') {
       continue;
     }
-    
+
     const participants = await storage.getTournamentParticipants(tournament.id);
-    
+
     // Count as active if it has participants
     if (participants.length > 0) {
       activeTournaments++;
     }
-    
+
     for (const participant of participants) {
       // Calculate portfolio value for each participant
       const purchases = await storage.getTournamentStockPurchases(tournament.id, participant.userId);
       let portfolioValue = parseFloat(participant.balance);
-      
+
       // Add current value of all stock holdings
       for (const purchase of purchases) {
         try {
@@ -1356,11 +1360,11 @@ router.get('/tournaments/leaderboard', requireAuth, asyncHandler(async (req, res
           portfolioValue += purchase.shares * parseFloat(purchase.purchasePrice);
         }
       }
-      
+
       // Calculate percentage change from tournament's actual starting balance
       const startingBalance = parseFloat(tournament.startingBalance);
       const percentageChange = ((portfolioValue - startingBalance) / startingBalance) * 100;
-      
+
       allParticipants.push({
         ...participant,
         portfolioValue,
@@ -1371,10 +1375,10 @@ router.get('/tournaments/leaderboard', requireAuth, asyncHandler(async (req, res
       });
     }
   }
-  
+
   // Sort by percentage change (highest first)
   allParticipants.sort((a, b) => b.percentageChange - a.percentageChange);
-  
+
   // Award special achievement to #1 ranked user
   if (allParticipants.length > 0) {
     const topUser = allParticipants[0];
@@ -1390,10 +1394,10 @@ router.get('/tournaments/leaderboard', requireAuth, asyncHandler(async (req, res
       console.error('Error awarding Tournament Overlord achievement:', error);
     }
   }
-  
+
   // Find user's rank
   const userRank = allParticipants.findIndex(p => p.userId === userId) + 1;
-  
+
   res.json({
     success: true,
     data: {
@@ -1411,16 +1415,16 @@ router.get('/tournaments/leaderboard', requireAuth, asyncHandler(async (req, res
  */
 router.get('/personal/leaderboard', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  
+
   // Get all users with personal portfolios
   const users = await storage.getAllUsers();
   const userPortfolios = [];
-  
+
   for (const user of users) {
     // Calculate portfolio value for all users
     const purchases = await storage.getPersonalStockPurchases(user.id);
     let portfolioValue = parseFloat(user.personalBalance) || 10000;
-    
+
     // Add current value of all stock holdings
     for (const purchase of purchases) {
       try {
@@ -1432,11 +1436,11 @@ router.get('/personal/leaderboard', requireAuth, asyncHandler(async (req, res) =
         portfolioValue += purchase.shares * parseFloat(purchase.purchasePrice);
       }
     }
-    
+
     // Calculate percentage change from total deposited amount
     const totalDeposited = parseFloat(user.totalDeposited) || 10000;
     const percentageChange = ((portfolioValue - totalDeposited) / totalDeposited) * 100;
-    
+
     userPortfolios.push({
       ...user,
       portfolioValue,
@@ -1444,10 +1448,10 @@ router.get('/personal/leaderboard', requireAuth, asyncHandler(async (req, res) =
       startingBalance: totalDeposited
     });
   }
-  
+
   // Sort by percentage change (highest first)
   userPortfolios.sort((a, b) => b.percentageChange - a.percentageChange);
-  
+
   // Award special achievement to #1 ranked user
   if (userPortfolios.length > 0) {
     const topUser = userPortfolios[0];
@@ -1463,10 +1467,10 @@ router.get('/personal/leaderboard', requireAuth, asyncHandler(async (req, res) =
       console.error('Error awarding Portfolio Emperor achievement:', error);
     }
   }
-  
+
   // Find user's rank
   const userRank = userPortfolios.findIndex(p => p.id === userId) + 1;
-  
+
   res.json({
     success: true,
     data: {
@@ -1484,24 +1488,24 @@ router.get('/personal/leaderboard', requireAuth, asyncHandler(async (req, res) =
  */
 router.get('/streak/leaderboard', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  
+
   // Get all users with personal portfolios
   const users = await storage.getAllUsers();
   const userStreaks = [];
-  
+
   for (const user of users) {
     // Calculate trading streak for all users
     const tradingStreak = await calculateTradingStreak(user.id);
-    
+
     userStreaks.push({
       ...user,
       tradingStreak
     });
   }
-  
+
   // Sort by trading streak (highest first)
   userStreaks.sort((a, b) => b.tradingStreak - a.tradingStreak);
-  
+
   // Award special achievement to #1 ranked user
   if (userStreaks.length > 0) {
     const topUser = userStreaks[0];
@@ -1517,7 +1521,7 @@ router.get('/streak/leaderboard', requireAuth, asyncHandler(async (req, res) => 
       console.error('Error awarding Streak Master achievement:', error);
     }
   }
-  
+
   // Find user's rank
   const userRank = userStreaks.findIndex(p => p.id === userId) + 1;
 
@@ -1706,7 +1710,7 @@ router.patch('/admin/users/:userId/username', requireAuth, asyncHandler(async (r
   if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
-  
+
   const trimmedUsername = username?.trim();
   if (!trimmedUsername || trimmedUsername.length < 3 || trimmedUsername.length > 20) {
     return res.status(400).json({ error: 'Username must be 3-20 characters' });
@@ -1738,15 +1742,15 @@ router.patch('/admin/users/:userId/balance', requireAuth, asyncHandler(async (re
   if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
-  
+
   if (!amount || amount <= 0) {
     return res.status(400).json({ error: 'Amount must be greater than 0' });
   }
-  
+
   if (!['add', 'remove'].includes(operation)) {
     return res.status(400).json({ error: 'Operation must be add or remove' });
   }
-  
+
   await storage.adminUpdateUserBalance(targetUserId, amount, operation);
   res.json({ success: true, message: 'Balance updated successfully' });
 }));
@@ -1765,7 +1769,7 @@ router.patch('/admin/users/:userId/note', requireAuth, asyncHandler(async (req, 
   if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
-  
+
   await storage.updateUserAdminNote(targetUserId, note || '');
   res.json({ success: true, message: 'Admin note updated successfully' });
 }));
@@ -1783,7 +1787,7 @@ router.patch('/admin/users/:userId/ban', requireAuth, asyncHandler(async (req, r
   if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
-  
+
   await storage.banUser(targetUserId);
   res.json({ success: true, message: 'User banned successfully' });
 }));
@@ -1922,26 +1926,26 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   // Get all tournaments
   const allTournaments = await storage.getAllTournaments();
-  
+
   // Filter out completed tournaments
   const activeTournaments = allTournaments.filter(tournament => tournament.status !== 'completed');
-  
+
   // Get participant counts for each tournament and calculate end dates
   const tournamentsWithCounts = await Promise.all(
     activeTournaments.map(async (tournament) => {
       const participants = await storage.getTournamentParticipants(tournament.id);
-      
+
       // Calculate end date based on creation date and timeframe
       const createdAt = new Date(tournament.createdAt);
-      
+
       // Parse timeframe properly for different units (minutes, days, weeks, months)
       const parseTimeframe = (timeframe: string): number => {
         const match = timeframe.match(/(\d+)\s*(minute|minutes|day|days|week|weeks|month|months)/i);
         if (!match) return 28 * 24 * 60 * 60 * 1000; // Default to 4 weeks
-        
+
         const value = parseInt(match[1]);
         const unit = match[2].toLowerCase();
-        
+
         switch (unit) {
           case 'minute':
           case 'minutes':
@@ -1959,10 +1963,10 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
             return 28 * 24 * 60 * 60 * 1000;
         }
       };
-      
+
       const timeframeMs = parseTimeframe(tournament.timeframe);
       const endDate = new Date(createdAt.getTime() + timeframeMs);
-      
+
       return {
         ...tournament,
         memberCount: participants.length,
@@ -1998,7 +2002,7 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
   // Get the tournament
   const tournaments = await storage.getAllTournaments();
   const tournament = tournaments.find(t => t.id === tournamentId);
-  
+
   if (!tournament) {
     throw new NotFoundError('Tournament not found');
   }
@@ -2090,18 +2094,18 @@ router.get('/users/public', asyncHandler(async (req, res) => {
  */
 router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   const targetUserId = parseInt(req.params.userId);
-  
+
   if (isNaN(targetUserId)) {
     throw new ValidationError('Invalid user ID');
   }
-  
+
   // Get the target user
   const targetUser = await storage.getUser(targetUserId);
-  
+
   if (!targetUser) {
     throw new NotFoundError('User not found');
   }
-  
+
   // Get total trade count from trade history
   const totalTrades = await storage.getUserTradeCount(targetUserId);
   const tournamentCount = await storage.getUserTournamentCount(targetUserId);
@@ -2118,7 +2122,7 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
     tournamentCount,
     tradingStreak,
   };
-  
+
   res.json({
     success: true,
     data: publicUser
@@ -2132,7 +2136,7 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
 router.get('/tournaments/archived', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const archivedTournaments = await storage.getArchivedTournaments(userId);
-  
+
   res.json({
     success: true,
     data: archivedTournaments
@@ -2171,7 +2175,7 @@ router.get('/portfolio-history/:userId', asyncHandler(async (req, res) => {
   }
 
   const history = await storage.getUserPortfolioHistory(userId, portfolioType, tournamentId);
-  
+
   res.json({
     success: true,
     data: history
@@ -2266,9 +2270,8 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
     tournamentId: null
   });
 
-<<<<<<< HEAD
-  // Detect mentions in the format @username
-  const mentionRegex = /@(\w+)/g;
+  // Detect mentions in the format @username (supports alphanumeric and underscores)
+  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
   const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
 
   // Create notifications for mentioned users
@@ -2281,48 +2284,21 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
           await storage.createNotification({
             userId: mentionedUser.id,
             type: 'chat_mention',
-            title: 'Chat Mention',
+            title: 'You were mentioned',
             message: `${user.username} mentioned you in global chat`,
             metadata: {
               messageId: chatMessage.id,
+              chatType: 'global',
               tournamentId: null,
               mentionedBy: userId,
-              mentionedByUsername: user.username
+              mentionedByUsername: user.username,
+              mentionerUsername: user.username,
+              mentionerId: userId
             }
           });
         }
       })
     );
-=======
-  // Detect @mentions and create notifications
-  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
-  const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
-
-  if (mentions.length > 0) {
-    const allUsers = await storage.getAllUsers();
-
-    for (const username of mentions) {
-      const mentionedUser = allUsers.find(u =>
-        u.username.toLowerCase() === username.toLowerCase()
-      );
-
-      if (mentionedUser && mentionedUser.id !== userId) {
-        await storage.createNotification({
-          userId: mentionedUser.id,
-          type: 'chat_mention',
-          title: 'You were mentioned',
-          message: `${user.username} mentioned you in global chat`,
-          metadata: {
-            messageId: chatMessage.id,
-            chatType: 'global',
-            tournamentId: null,
-            mentionerUsername: user.username,
-            mentionerId: userId
-          }
-        });
-      }
-    }
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
   }
 
   res.json({
@@ -2337,7 +2313,7 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
  */
 router.get('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.tournamentId);
-  
+
   if (isNaN(tournamentId)) {
     throw new ValidationError('Invalid tournament ID');
   }
@@ -2414,9 +2390,8 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
     tournamentId
   });
 
-<<<<<<< HEAD
-  // Detect mentions in the format @username
-  const mentionRegex = /@(\w+)/g;
+  // Detect mentions in the format @username (supports alphanumeric and underscores)
+  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
   const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
 
   // Create notifications for mentioned users
@@ -2430,48 +2405,21 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
           await storage.createNotification({
             userId: mentionedUser.id,
             type: 'chat_mention',
-            title: 'Chat Mention',
+            title: 'You were mentioned',
             message: `${user.username} mentioned you in ${tournament?.name || 'tournament chat'}`,
             metadata: {
               messageId: chatMessage.id,
+              chatType: 'tournament',
               tournamentId,
               mentionedBy: userId,
-              mentionedByUsername: user.username
+              mentionedByUsername: user.username,
+              mentionerUsername: user.username,
+              mentionerId: userId
             }
           });
         }
       })
     );
-=======
-  // Detect @mentions and create notifications
-  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
-  const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
-
-  if (mentions.length > 0) {
-    const allUsers = await storage.getAllUsers();
-
-    for (const username of mentions) {
-      const mentionedUser = allUsers.find(u =>
-        u.username.toLowerCase() === username.toLowerCase()
-      );
-
-      if (mentionedUser && mentionedUser.id !== userId) {
-        await storage.createNotification({
-          userId: mentionedUser.id,
-          type: 'chat_mention',
-          title: 'You were mentioned',
-          message: `${user.username} mentioned you in tournament chat`,
-          metadata: {
-            messageId: chatMessage.id,
-            chatType: 'tournament',
-            tournamentId: tournamentId,
-            mentionerUsername: user.username,
-            mentionerId: userId
-          }
-        });
-      }
-    }
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
   }
 
   res.json({
@@ -2516,13 +2464,13 @@ router.get('/chat/context/:messageId', requireAuth, asyncHandler(async (req, res
  */
 router.get('/exchange-rates/:baseCurrency', asyncHandler(async (req, res) => {
   const { baseCurrency } = req.params;
-  
+
   if (!baseCurrency) {
     throw new ValidationError('Base currency is required');
   }
-  
+
   const rates = await getAllExchangeRates(baseCurrency.toUpperCase());
-  
+
   res.json({
     success: true,
     data: {
@@ -2539,13 +2487,13 @@ router.get('/exchange-rates/:baseCurrency', asyncHandler(async (req, res) => {
  */
 router.get('/exchange-rate/:from/:to', asyncHandler(async (req, res) => {
   const { from, to } = req.params;
-  
+
   if (!from || !to) {
     throw new ValidationError('Both from and to currencies are required');
   }
-  
+
   const rate = await getExchangeRate(from.toUpperCase(), to.toUpperCase());
-  
+
   res.json({
     success: true,
     data: {
@@ -2563,19 +2511,19 @@ router.get('/exchange-rate/:from/:to', asyncHandler(async (req, res) => {
  */
 router.post('/convert-currency', asyncHandler(async (req, res) => {
   const { amount, from, to } = req.body;
-  
+
   if (!amount || !from || !to) {
     throw new ValidationError('Amount, from currency, and to currency are required');
   }
-  
+
   const amountNum = parseFloat(amount);
   if (isNaN(amountNum)) {
     throw new ValidationError('Invalid amount');
   }
-  
+
   const convertedAmount = await convertCurrency(amountNum, from.toUpperCase(), to.toUpperCase());
   const rate = await getExchangeRate(from.toUpperCase(), to.toUpperCase());
-  
+
   res.json({
     success: true,
     data: {

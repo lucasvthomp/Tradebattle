@@ -391,36 +391,37 @@ export default function TournamentsPage() {
               <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
                 <DialogTrigger asChild>
                   <Button variant="outline" className="rounded-lg border-0" style={{
-                    height: 'clamp(32px, 2.5vh, 40px)',
+                    height: 'clamp(44px, 2.5vh, 48px)',
                     padding: '0 clamp(12px, 1.5vw, 20px)',
-                    fontSize: 'clamp(0.75rem, 1vw, 1rem)',
+                    fontSize: 'clamp(0.875rem, 1vw, 1rem)',
                     backgroundColor: '#1F2937',
                     color: '#F1F5F9',
                   }}>
-                    <Lock style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', marginRight: '8px' }} />
+                    <Lock style={{ width: 'clamp(14px, 1.2vw, 20px)', height: 'clamp(14px, 1.2vw, 20px)', marginRight: '8px' }} />
                     Join Private
                   </Button>
                 </DialogTrigger>
-                <DialogContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
                   <DialogHeader>
                     <DialogTitle style={{ color: '#F1F5F9' }}>Join Private Tournament</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
                     <div>
-                      <Label htmlFor="join-code" style={{ color: '#F1F5F9' }}>Tournament Code</Label>
+                      <Label htmlFor="join-code" className="text-base md:text-sm" style={{ color: '#F1F5F9' }}>Tournament Code</Label>
                       <Input
                         id="join-code"
                         value={joinCode}
                         onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                         placeholder="Enter 8-character code"
                         maxLength={8}
+                        className="text-base md:text-sm min-h-[44px]"
                         style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                       />
                     </div>
                     <Button
                       onClick={() => joinByCodeMutation.mutate(joinCode)}
                       disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
-                      className="w-full border-0"
+                      className="w-full border-0 min-h-[44px] text-base md:text-sm"
                       style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
                     >
                       {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
@@ -434,13 +435,13 @@ export default function TournamentsPage() {
                 onClose={() => setCreateDialogOpen(false)}
               />
               <Button onClick={() => setCreateDialogOpen(true)} className="rounded-lg border-0" style={{
-                height: 'clamp(32px, 2.5vh, 40px)',
+                height: 'clamp(44px, 2.5vh, 48px)',
                 padding: '0 clamp(12px, 1.5vw, 20px)',
-                fontSize: 'clamp(0.75rem, 1vw, 1rem)',
+                fontSize: 'clamp(0.875rem, 1vw, 1rem)',
                 background: 'linear-gradient(135deg, #1E293B, #334155)',
                 color: '#FFFFFF'
               }}>
-                <Plus style={{ width: 'clamp(12px, 1.2vw, 20px)', height: 'clamp(12px, 1.2vw, 20px)', marginRight: '8px' }} />
+                <Plus style={{ width: 'clamp(14px, 1.2vw, 20px)', height: 'clamp(14px, 1.2vw, 20px)', marginRight: '8px' }} />
                 Create Tournament
               </Button>
             </div>
@@ -537,11 +538,7 @@ export default function TournamentsPage() {
                 onClick={() => setActiveTab('live')}
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
                 style={activeTab === 'live'
-<<<<<<< HEAD
-                  ? { backgroundColor: '#64748B', color: '#FFFFFF' }
-=======
                   ? { background: 'linear-gradient(135deg, #10B981, #059669)', color: '#FFFFFF' }
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
                   : { backgroundColor: 'transparent', color: '#FFFFFF' }
                 }
               >
@@ -621,9 +618,9 @@ export default function TournamentsPage() {
 
       {/* Join Tournament Confirmation Dialog */}
       <Dialog open={joinConfirmationOpen} onOpenChange={setJoinConfirmationOpen}>
-        <DialogContent className="sm:max-w-[500px]" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+        <DialogContent className="max-w-[95vw] sm:max-w-[500px]" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2" style={{ color: '#F1F5F9' }}>
+            <DialogTitle className="flex items-center space-x-2 text-base md:text-lg" style={{ color: '#F1F5F9' }}>
               <Trophy className="w-5 h-5" style={{ color: '#E3B341' }} />
               <span>Join Tournament</span>
             </DialogTitle>
@@ -632,7 +629,7 @@ export default function TournamentsPage() {
           {tournamentToJoin && (
             <div className="space-y-6">
               <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#111827' }}>
-                <h3 className="text-lg font-bold" style={{ color: '#F1F5F9' }}>{tournamentToJoin.name}</h3>
+                <h3 className="text-base md:text-lg font-bold" style={{ color: '#F1F5F9' }}>{tournamentToJoin.name}</h3>
                 <p className="text-sm" style={{ color: '#94A3B8' }}>
                   {tournamentToJoin.tournamentType === "crypto" ? "Cryptocurrency" : "Stock Market"} Tournament
                 </p>
@@ -679,7 +676,7 @@ export default function TournamentsPage() {
               </div>
 
               <div className="p-4 rounded-lg" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-                <h4 className="font-medium mb-2" style={{ color: '#06B6D4' }}>Tournament Rules</h4>
+                <h4 className="font-medium mb-2 text-base md:text-sm" style={{ color: '#06B6D4' }}>Tournament Rules</h4>
                 <ul className="text-sm space-y-1" style={{ color: '#94A3B8' }}>
                   {tournamentToJoin.isPublic ? (
                     <>
@@ -699,7 +696,7 @@ export default function TournamentsPage() {
 
               {tournamentToJoin.buyInAmount > 0 && (
                 <div className="p-4 rounded-lg" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-                  <h4 className="font-medium mb-2" style={{ color: '#F59E0B' }}>Entry Fee Required</h4>
+                  <h4 className="font-medium mb-2 text-base md:text-sm" style={{ color: '#F59E0B' }}>Entry Fee Required</h4>
                   <p className="text-sm" style={{ color: '#FCD34D' }}>
                     This tournament requires a buy-in of <strong>{formatCurrency(tournamentToJoin.buyInAmount)}</strong>.
                     This fee contributes to the tournament jackpot.
@@ -712,9 +709,10 @@ export default function TournamentsPage() {
                   id="tournament-agreement"
                   checked={agreementChecked}
                   onCheckedChange={(checked) => setAgreementChecked(checked === true)}
+                  className="mt-1"
                 />
                 <div>
-                  <label htmlFor="tournament-agreement" className="text-sm font-medium cursor-pointer" style={{ color: '#F1F5F9' }}>
+                  <label htmlFor="tournament-agreement" className="text-sm md:text-base font-medium cursor-pointer" style={{ color: '#F1F5F9' }}>
                     I agree to the tournament terms and conditions
                   </label>
                   <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>
@@ -724,10 +722,10 @@ export default function TournamentsPage() {
                 </div>
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <Button
                   variant="outline"
-                  className="flex-1 border-0"
+                  className="flex-1 border-0 min-h-[44px] text-base md:text-sm"
                   onClick={() => {
                     setJoinConfirmationOpen(false);
                     setTournamentToJoin(null);
@@ -738,7 +736,7 @@ export default function TournamentsPage() {
                   Cancel
                 </Button>
                 <Button
-                  className="flex-1 border-0"
+                  className="flex-1 border-0 min-h-[44px] text-base md:text-sm"
                   onClick={confirmJoinTournament}
                   disabled={!agreementChecked || joinTournamentMutation.isPending}
                   style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
@@ -890,7 +888,7 @@ function HorizontalTournamentCard({
       return (
         <Button
           onClick={onViewLeaderboard}
-          className="border-0 whitespace-nowrap"
+          className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
           size="sm"
           style={{ backgroundColor: '#1F2937', color: '#10B981' }}
         >
@@ -912,7 +910,7 @@ function HorizontalTournamentCard({
                 console.error("Failed to start tournament:", error);
               }
             }}
-            className="border-0 whitespace-nowrap"
+            className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
             size="sm"
             style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
           >
@@ -921,7 +919,7 @@ function HorizontalTournamentCard({
           </Button>
           <Button
             onClick={onManage}
-            className="border-0 whitespace-nowrap"
+            className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
             size="sm"
             style={{ backgroundColor: '#1F2937', color: '#F1F5F9' }}
           >
@@ -937,7 +935,7 @@ function HorizontalTournamentCard({
         <Button
           onClick={onJoin}
           disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
-          className="border-0 whitespace-nowrap"
+          className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
           size="sm"
           style={!(isJoining || tournament.currentPlayers >= tournament.maxPlayers)
             ? { backgroundColor: '#10B981', color: '#FFFFFF' }
@@ -972,26 +970,16 @@ function HorizontalTournamentCard({
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <div className="p-1.5 rounded-lg" style={{
-<<<<<<< HEAD
-              backgroundColor: 'rgba(100, 116, 139, 0.15)',
-            }}>
-              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
-=======
               backgroundColor: isLive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.2)',
             }}>
               <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: isLive ? '#10B981' : '#10B981' }} />
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
             </div>
             <span className="font-bold text-sm truncate" style={{ color: '#F1F5F9' }}>
               {tournament.name}
             </span>
             {isHighPot && <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#E3B341' }} />}
             {isLive && (
-<<<<<<< HEAD
-              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
-=======
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
                 <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
                 <span className="text-[10px] font-bold" style={{ color: '#10B981' }}>LIVE</span>
               </div>
@@ -1008,11 +996,7 @@ function HorizontalTournamentCard({
             {getTimeRemaining() && (
               <>
                 <span>|</span>
-<<<<<<< HEAD
-                <span style={{ color: isLive ? '#10B981' : '#94A3B8' }}>{getTimeRemaining()}</span>
-=======
                 <span style={{ color: isLive ? '#10B981' : '#10B981' }}>{getTimeRemaining()}</span>
->>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
               </>
             )}
           </div>
