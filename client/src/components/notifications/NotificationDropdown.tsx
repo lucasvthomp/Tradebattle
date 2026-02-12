@@ -8,12 +8,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail } from "lucide-react";
+import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail, MessageSquare, UserCheck } from "lucide-react";
+import { useLocation } from "wouter";
 
 const typeIcons: Record<string, any> = {
   tournament_start: Trophy,
   tournament_end: Trophy,
   tournament_join: Users,
+  tournament_invite: Trophy,
+  tournament_invite_accepted: UserCheck,
+  chat_mention: MessageSquare,
   deposit: DollarSign,
   withdrawal: DollarSign,
   payout: DollarSign,
@@ -22,9 +26,15 @@ const typeIcons: Record<string, any> = {
   default: Bell,
 };
 
-function getIcon(type: string) {
+const typeColors: Record<string, string> = {
+  tournament_invite: '#E3B341',
+  tournament_invite_accepted: '#28C76F',
+  chat_mention: '#3B82F6',
+};
+
+function getIcon(type: string, color?: string) {
   const Icon = typeIcons[type] || typeIcons.default;
-  return <Icon className="w-4 h-4 flex-shrink-0" />;
+  return <Icon className="w-4 h-4 flex-shrink-0" style={color ? { color } : undefined} />;
 }
 
 function timeAgo(dateStr: string): string {
@@ -42,6 +52,7 @@ function timeAgo(dateStr: string): string {
 export function NotificationDropdown() {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [, navigate] = useLocation();
 
   const { data } = useQuery<{ data: any[]; unreadCount: number }>({
     queryKey: ["/api/notifications"],
@@ -73,6 +84,24 @@ export function NotificationDropdown() {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
     },
   });
+
+  const handleNotificationClick = (notif: any) => {
+    if (!notif.read) markReadMutation.mutate(notif.id);
+
+    // Handle navigation based on notification type
+    if (notif.type === 'tournament_invite' && notif.metadata?.tournamentCode) {
+      setOpen(false);
+      navigate(`/tournaments?join=${notif.metadata.tournamentCode}`);
+    } else if (notif.type === 'tournament_invite_accepted' && notif.metadata?.tournamentId) {
+      setOpen(false);
+      navigate('/tournaments');
+    } else if (notif.type === 'chat_mention' && notif.metadata?.messageId) {
+      setOpen(false);
+      // For now, just navigate to tournaments
+      // Full chat highlight functionality would require more context
+      navigate('/tournaments');
+    }
+  };
 
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
@@ -124,15 +153,16 @@ export function NotificationDropdown() {
                     borderBottom: "1px solid #2B3A4C",
                     opacity: notif.read ? 0.6 : 1,
                   }}
-                  onClick={() => {
-                    if (!notif.read) markReadMutation.mutate(notif.id);
-                  }}
+                  onClick={() => handleNotificationClick(notif)}
                 >
                   <div
                     className="mt-1 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: notif.read ? "#1a2332" : "rgba(227, 179, 65, 0.15)", color: notif.read ? "#8A93A6" : "#E3B341" }}
+                    style={{
+                      backgroundColor: notif.read ? "#1a2332" : "rgba(227, 179, 65, 0.15)",
+                      color: notif.read ? "#8A93A6" : (typeColors[notif.type] || "#E3B341")
+                    }}
                   >
-                    {getIcon(notif.type)}
+                    {getIcon(notif.type, notif.read ? undefined : typeColors[notif.type])}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium truncate" style={{ color: "#C9D1E2" }}>{notif.title}</p>
