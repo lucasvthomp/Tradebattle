@@ -1102,6 +1102,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ── Tutorial Completion ──────────────────────────────────────
+  app.post("/api/tutorial/complete", requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      await db
+        .update(users)
+        .set({ tutorialCompleted: true })
+        .where(eq(users.id, userId));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error completing tutorial:", error);
+      res.status(500).json({ message: "Failed to complete tutorial" });
+    }
+  });
+
   // Error handling middleware
   app.use(errorHandler);
 

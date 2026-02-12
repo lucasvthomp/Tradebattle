@@ -211,7 +211,7 @@ export function TradingSidebar({
   })();
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div data-tour="trading-sidebar" className="flex flex-col h-full min-h-0">
       {/* Tournament Selector + Buying Power — always visible */}
       <div className="p-3 space-y-2 shrink-0" style={{ borderBottom: "1px solid #1F2937" }}>
         <div>

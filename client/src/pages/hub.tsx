@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { useTour } from "@/hooks/useTour";
+import { WebsiteTour } from "@/components/tour/WebsiteTour";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 
@@ -38,12 +40,21 @@ const fadeUpItem = {
 export default function Hub() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
+  const { startTour, isTourActive } = useTour();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
+
+  // Auto-start tutorial for new users
+  useEffect(() => {
+    if (user && !user.tutorialCompleted && !isTourActive) {
+      const timer = setTimeout(() => startTour(), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [user, startTour, isTourActive]);
 
   const getGreeting = () => {
     const hour = currentTime.getHours();
@@ -176,7 +187,7 @@ export default function Hub() {
       <div className="container mx-auto px-4 md:px-6 lg:px-8 py-4 md:py-8 relative z-10">
         {/* Hero Header */}
         <motion.div
-          className="mb-8 md:mb-10"
+          className="tour-hub-hero mb-8 md:mb-10"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
@@ -511,6 +522,8 @@ export default function Hub() {
           </Link>
         </motion.div>
       </div>
+
+      <WebsiteTour />
     </motion.div>
   );
 }

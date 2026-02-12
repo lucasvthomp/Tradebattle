@@ -53,6 +53,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Balance Display - Clickable for balance management */}
                 <Button
                   variant="ghost"
+                  data-tour="balance"
                   className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2"
                   style={{
                     borderColor: 'rgba(227, 179, 65, 0.4)',

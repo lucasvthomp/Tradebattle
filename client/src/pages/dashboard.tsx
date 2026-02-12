@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { TradingViewChart } from "@/components/trading/TradingViewChart";
 import { TradingSidebar } from "@/components/trading/TradingSidebar";
+import { WebsiteTour } from "@/components/tour/WebsiteTour";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -117,12 +118,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div
-      className="h-screen flex flex-col [@media(min-aspect-ratio:1/1)]:flex-row"
-      style={{ backgroundColor: "#080C14" }}
-    >
+    <>
+      <WebsiteTour />
+      <div
+        className="h-screen flex flex-col [@media(min-aspect-ratio:1/1)]:flex-row"
+        style={{ backgroundColor: "#080C14" }}
+      >
       {/* LEFT: Chart fills ~5/7 of width */}
-      <div className="flex-1 min-w-0 min-h-[350px] [@media(min-aspect-ratio:1/1)]:min-h-0 h-full">
+      <div data-tour="chart-area" className="flex-1 min-w-0 min-h-[350px] [@media(min-aspect-ratio:1/1)]:min-h-0 h-full">
         <TradingViewChart symbol={selectedSymbol} />
       </div>
 
@@ -149,6 +152,7 @@ export default function Dashboard() {
           startingBalance={selectedTournament?.startingBalance || 0}
         />
       </div>
-    </div>
+      </div>
+    </>
   );
 }

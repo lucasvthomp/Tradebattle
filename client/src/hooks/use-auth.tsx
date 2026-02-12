@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         title: "Welcome back!",
         description: `Good to see you again, ${data.username || data.email}`,
       });
-      navigate("/dashboard");
+      navigate("/hub");
     },
     onError: (error: Error) => {
       toast({
@@ -87,8 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Account created!",
-        description: `Welcome to ORSATH, ${user.name}`,
+        description: `Welcome to ORSATH, ${user.username}`,
       });
+      navigate("/hub");
     },
     onError: (error: Error) => {
       toast({

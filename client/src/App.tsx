@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth, AuthProvider } from "@/hooks/use-auth";
 import { ThemeProvider } from "@/hooks/use-theme";
+import { TourProvider } from "@/hooks/useTour";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import { ChatProvider } from "@/contexts/ChatContext";
 import { useState, useEffect } from "react";
@@ -125,16 +126,18 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <UserPreferencesProvider>
-          <ThemeProvider defaultTheme="dark" storageKey="orsath-ui-theme">
-            <ChatProvider>
+        <TourProvider>
+          <UserPreferencesProvider>
+            <ThemeProvider defaultTheme="dark" storageKey="orsath-ui-theme">
+              <ChatProvider>
               <TooltipProvider>
                 <Router />
                 <Toaster />
               </TooltipProvider>
-            </ChatProvider>
-          </ThemeProvider>
-        </UserPreferencesProvider>
+              </ChatProvider>
+            </ThemeProvider>
+          </UserPreferencesProvider>
+        </TourProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

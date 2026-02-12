@@ -58,6 +58,7 @@ export function SimplifiedSidebar() {
     <motion.div key={item.href} whileHover={{ x: 3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
       <Link
         href={item.href}
+        {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
         className={`group flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
           isActive(item.href)
             ? "sidebar-active-indicator"
@@ -110,6 +111,7 @@ export function SimplifiedSidebar() {
 
       {/* Sidebar - Hidden on mobile by default, shown when menu open */}
       <div
+        data-tour="sidebar"
         className={`fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 transition-all duration-300 ease-in-out
           ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
           md:translate-x-0
