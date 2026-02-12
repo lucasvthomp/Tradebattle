@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail, UserPlus, X } from "lucide-react";
+import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail, MessageSquare, UserCheck, UserPlus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const typeIcons: Record<string, any> = {
@@ -17,7 +17,8 @@ const typeIcons: Record<string, any> = {
   tournament_end: Trophy,
   tournament_join: Users,
   tournament_invite: UserPlus,
-  chat_mention: Mail,
+  tournament_invite_accepted: UserCheck,
+  chat_mention: MessageSquare,
   deposit: DollarSign,
   withdrawal: DollarSign,
   payout: DollarSign,
@@ -26,9 +27,15 @@ const typeIcons: Record<string, any> = {
   default: Bell,
 };
 
-function getIcon(type: string) {
+const typeColors: Record<string, string> = {
+  tournament_invite: '#E3B341',
+  tournament_invite_accepted: '#28C76F',
+  chat_mention: '#3B82F6',
+};
+
+function getIcon(type: string, color?: string) {
   const Icon = typeIcons[type] || typeIcons.default;
-  return <Icon className="w-4 h-4 flex-shrink-0" />;
+  return <Icon className="w-4 h-4 flex-shrink-0" style={color ? { color } : undefined} />;
 }
 
 function timeAgo(dateStr: string): string {
@@ -112,14 +119,20 @@ export function NotificationDropdown() {
   });
 
   const handleNotificationClick = (notif: any) => {
-    if (notif.type === 'chat_mention' && notif.metadata?.messageId && notif.metadata?.tournamentId) {
-      // Navigate to chat and highlight message
-      navigate(`/tournaments/${notif.metadata.tournamentId}?messageId=${notif.metadata.messageId}`);
-      setOpen(false);
-    }
-
     if (!notif.read) {
       markReadMutation.mutate(notif.id);
+    }
+
+    // Handle navigation based on notification type
+    if (notif.type === 'chat_mention' && notif.metadata?.messageId && notif.metadata?.tournamentId) {
+      setOpen(false);
+      navigate(`/tournaments/${notif.metadata.tournamentId}?messageId=${notif.metadata.messageId}`);
+    } else if (notif.type === 'tournament_invite' && notif.metadata?.tournamentCode) {
+      setOpen(false);
+      navigate(`/tournaments?join=${notif.metadata.tournamentCode}`);
+    } else if (notif.type === 'tournament_invite_accepted' && notif.metadata?.tournamentId) {
+      setOpen(false);
+      navigate('/tournaments');
     }
   };
 
@@ -128,7 +141,7 @@ export function NotificationDropdown() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="h-10 w-10 p-0 relative flex items-center justify-center border border-border/30 hover:bg-muted/50 transition-colors"
+          className="h-10 w-10 md:h-10 md:w-10 p-0 relative flex items-center justify-center border border-border/30 hover:bg-muted/50 transition-colors min-w-[44px] min-h-[44px]"
         >
           <Bell className="w-4 h-4" />
           {unreadCount > 0 && (
@@ -141,14 +154,14 @@ export function NotificationDropdown() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80" style={{ background: "#1E2D3F", borderColor: "#2B3A4C" }}>
+      <DropdownMenuContent align="end" className="w-[95vw] max-w-[380px]" style={{ background: "#1E2D3F", borderColor: "#2B3A4C" }}>
         <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid #2B3A4C" }}>
           <span className="text-sm font-semibold" style={{ color: "#C9D1E2" }}>Notifications</span>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 text-xs"
+              className="h-9 text-xs min-h-[44px]"
               style={{ color: "#E3B341" }}
               onClick={() => markAllReadMutation.mutate()}
             >
@@ -157,7 +170,7 @@ export function NotificationDropdown() {
             </Button>
           )}
         </div>
-        <ScrollArea className="max-h-80">
+        <ScrollArea className="max-h-[70vh]">
           {notifications.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" style={{ color: "#8A93A6" }} />
@@ -174,14 +187,17 @@ export function NotificationDropdown() {
                   }}
                 >
                   <div
-                    className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
+                    className="flex items-start gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors min-h-[48px]"
                     onClick={() => handleNotificationClick(notif)}
                   >
                     <div
                       className="mt-1 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: notif.read ? "#1a2332" : "rgba(227, 179, 65, 0.15)", color: notif.read ? "#8A93A6" : "#E3B341" }}
+                      style={{
+                        backgroundColor: notif.read ? "#1a2332" : "rgba(227, 179, 65, 0.15)",
+                        color: notif.read ? "#8A93A6" : (typeColors[notif.type] || "#E3B341")
+                      }}
                     >
-                      {getIcon(notif.type)}
+                      {getIcon(notif.type, notif.read ? undefined : typeColors[notif.type])}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate" style={{ color: "#C9D1E2" }}>{notif.title}</p>
@@ -205,7 +221,7 @@ export function NotificationDropdown() {
                           });
                         }}
                         disabled={acceptInviteMutation.isPending}
-                        className="flex-1 h-8 text-xs font-bold"
+                        className="flex-1 h-11 text-xs font-bold min-h-[44px]"
                         style={{ backgroundColor: "#10B981", color: "#FFFFFF" }}
                       >
                         <Check className="w-3 h-3 mr-1" />
@@ -217,7 +233,7 @@ export function NotificationDropdown() {
                           rejectInviteMutation.mutate(notif.id);
                         }}
                         disabled={rejectInviteMutation.isPending}
-                        className="flex-1 h-8 text-xs"
+                        className="flex-1 h-11 text-xs min-h-[44px]"
                         variant="outline"
                         style={{ borderColor: "#FF4F58", color: "#FF4F58" }}
                       >

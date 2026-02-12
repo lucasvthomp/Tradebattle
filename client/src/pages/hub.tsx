@@ -48,13 +48,16 @@ export default function Hub() {
     return () => clearInterval(timer);
   }, []);
 
-  // Auto-start tutorial for new users
+  // Auto-start tutorial for new users (only once)
+  const [hasAutoStarted, setHasAutoStarted] = useState(false);
+
   useEffect(() => {
-    if (user && !user.tutorialCompleted && !isTourActive) {
+    if (user && !user.tutorialCompleted && !isTourActive && !hasAutoStarted) {
+      setHasAutoStarted(true);
       const timer = setTimeout(() => startTour(), 500);
       return () => clearTimeout(timer);
     }
-  }, [user, startTour, isTourActive]);
+  }, [user, startTour, isTourActive, hasAutoStarted]);
 
   const getGreeting = () => {
     const hour = currentTime.getHours();

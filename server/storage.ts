@@ -158,6 +158,11 @@ export interface IStorage {
   // Chat operations
   getChatMessages(tournamentId?: number): Promise<ChatMessage[]>;
   createChatMessage(message: InsertChatMessage): Promise<ChatMessage>;
+  getChatMessageById(messageId: number): Promise<ChatMessage | null>;
+  getChatMessagesContext(messageId: number, beforeCount: number, afterCount: number): Promise<{
+    messagesBefore: ChatMessage[];
+    messagesAfter: ChatMessage[];
+  }>;
 
   // Admin restriction operations
   unbanUser(userId: number): Promise<void>;
@@ -190,6 +195,7 @@ export interface IStorage {
   getFriendship(userId1: number, userId2: number): Promise<Friendship | undefined>;
   getFriendIds(userId: number): Promise<number[]>;
   getTournamentParticipantUserIds(tournamentId: number): Promise<number[]>;
+  getTournamentInviteableUsers(tournamentId: number, userId: number): Promise<User[]>;
 
   // Email verification operations
   setVerificationToken(userId: number, token: string, expiry: Date): Promise<void>;
@@ -1225,6 +1231,60 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async getChatMessageById(messageId: number): Promise<ChatMessage | null> {
+    const result = await db
+      .select()
+      .from(chatMessages)
+      .where(eq(chatMessages.id, messageId))
+      .limit(1);
+    return result[0] || null;
+  }
+
+  async getChatMessagesContext(messageId: number, beforeCount: number, afterCount: number): Promise<{
+    messagesBefore: ChatMessage[];
+    messagesAfter: ChatMessage[];
+  }> {
+    const targetMessage = await this.getChatMessageById(messageId);
+    if (!targetMessage) {
+      return { messagesBefore: [], messagesAfter: [] };
+    }
+
+    // Get messages before (same chat context - global or tournament)
+    const messagesBefore = await db
+      .select()
+      .from(chatMessages)
+      .where(
+        and(
+          targetMessage.tournamentId
+            ? eq(chatMessages.tournamentId, targetMessage.tournamentId)
+            : isNull(chatMessages.tournamentId),
+          sql`${chatMessages.id} < ${messageId}`
+        )
+      )
+      .orderBy(desc(chatMessages.id))
+      .limit(beforeCount);
+
+    // Get messages after (same chat context - global or tournament)
+    const messagesAfter = await db
+      .select()
+      .from(chatMessages)
+      .where(
+        and(
+          targetMessage.tournamentId
+            ? eq(chatMessages.tournamentId, targetMessage.tournamentId)
+            : isNull(chatMessages.tournamentId),
+          sql`${chatMessages.id} > ${messageId}`
+        )
+      )
+      .orderBy(asc(chatMessages.id))
+      .limit(afterCount);
+
+    return {
+      messagesBefore: messagesBefore.reverse(), // Reverse to get chronological order
+      messagesAfter
+    };
+  }
+
   // Leaderboard & stats operations
   async getAllTournamentParticipants(): Promise<any[]> {
     const results = await db
@@ -1499,6 +1559,33 @@ export class DatabaseStorage implements IStorage {
       .from(tournamentParticipants)
       .where(eq(tournamentParticipants.tournamentId, tournamentId));
     return results.map(r => r.userId);
+  }
+
+  async getTournamentInviteableUsers(tournamentId: number, userId: number): Promise<User[]> {
+    // Get user's friends
+    const friendIds = await this.getFriendIds(userId);
+
+    if (friendIds.length === 0) {
+      return [];
+    }
+
+    // Get tournament participants
+    const participantUserIds = await this.getTournamentParticipantUserIds(tournamentId);
+
+    // Filter out participants from friends list
+    const inviteableIds = friendIds.filter(id => !participantUserIds.includes(id));
+
+    if (inviteableIds.length === 0) {
+      return [];
+    }
+
+    // Fetch user details for inviteable friends
+    const inviteableUsers = await db
+      .select()
+      .from(users)
+      .where(sql`${users.id} IN ${sql.raw(`(${inviteableIds.join(',')})`)}`);
+
+    return inviteableUsers;
   }
 
   async transferBalance(senderId: number, recipientId: number, amount: number): Promise<void> {

@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useLocation as useRouterLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -116,6 +117,7 @@ export default function TournamentsPage() {
   const { user } = useAuth();
   const { formatCurrency, t } = useUserPreferences();
   const { toast } = useToast();
+  const [location, navigate] = useRouterLocation();
 
   const [activeTab, setActiveTab] = useState("upcoming");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -161,6 +163,39 @@ export default function TournamentsPage() {
   });
   const friendIds = useMemo(() => (friendsData?.data || []).map((f: any) => f.userId), [friendsData]);
 
+  // Handle URL join parameter
+  useEffect(() => {
+    const params = new URLSearchParams(location.split('?')[1] || '');
+    const joinParam = params.get('join');
+
+    if (joinParam) {
+      // Fetch tournament by code
+      apiRequest(`/api/tournaments/code/${joinParam}`)
+        .then(response => {
+          const tournament = response.data;
+          if (tournament.alreadyJoined) {
+            toast({
+              title: "Already Joined",
+              description: `You're already in ${tournament.name}`,
+            });
+          } else {
+            setTournamentToJoin(tournament);
+            setJoinConfirmationOpen(true);
+          }
+          // Clean URL
+          navigate('/tournaments', { replace: true });
+        })
+        .catch(error => {
+          toast({
+            title: "Tournament Not Found",
+            description: error.message || "Invalid tournament code",
+            variant: "destructive"
+          });
+          navigate('/tournaments', { replace: true });
+        });
+    }
+  }, [location, navigate, toast]);
+
   const tournamentsLoading = publicLoading || userLoading;
 
   // Join tournament by code mutation
@@ -181,10 +216,16 @@ export default function TournamentsPage() {
     },
   });
 
-  // Join tournament by ID mutation
+  // Join tournament by ID or code mutation
   const joinTournamentMutation = useMutation({
-    mutationFn: async (tournamentId: number) => {
-      const res = await apiRequest("POST", `/api/tournaments/${tournamentId}/join`, {});
+    mutationFn: async (tournamentIdOrCode: number | string) => {
+      // If it's a string (code), use the code endpoint
+      if (typeof tournamentIdOrCode === 'string') {
+        const res = await apiRequest("POST", `/api/tournaments/code/${tournamentIdOrCode}/join`, {});
+        return res.json();
+      }
+      // Otherwise use the ID endpoint
+      const res = await apiRequest("POST", `/api/tournaments/${tournamentIdOrCode}/join`, {});
       return res.json();
     },
     onSuccess: () => {
@@ -208,7 +249,7 @@ export default function TournamentsPage() {
 
   const confirmJoinTournament = () => {
     if (tournamentToJoin && agreementChecked) {
-      joinTournamentMutation.mutate(tournamentToJoin.id);
+      joinTournamentMutation.mutate(tournamentToJoin.code || tournamentToJoin.id);
     }
   };
 
@@ -496,7 +537,11 @@ export default function TournamentsPage() {
                 onClick={() => setActiveTab('live')}
                 className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
                 style={activeTab === 'live'
+<<<<<<< HEAD
                   ? { backgroundColor: '#64748B', color: '#FFFFFF' }
+=======
+                  ? { background: 'linear-gradient(135deg, #10B981, #059669)', color: '#FFFFFF' }
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
                   : { backgroundColor: 'transparent', color: '#FFFFFF' }
                 }
               >
@@ -847,7 +892,7 @@ function HorizontalTournamentCard({
           onClick={onViewLeaderboard}
           className="border-0 whitespace-nowrap"
           size="sm"
-          style={{ backgroundColor: '#1F2937', color: '#F59E0B' }}
+          style={{ backgroundColor: '#1F2937', color: '#10B981' }}
         >
           <Trophy className="w-3.5 h-3.5 mr-1.5" />
           Leaderboard
@@ -920,23 +965,33 @@ function HorizontalTournamentCard({
         className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
         style={{
           backgroundColor: '#111827',
-          border: `1px solid ${isLive ? 'rgba(245, 158, 11, 0.3)' : '#1F2937'}`,
+          border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : '#1F2937'}`,
         }}
       >
         {/* Left: Icon + Name + Badges + Time */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <div className="p-1.5 rounded-lg" style={{
+<<<<<<< HEAD
               backgroundColor: 'rgba(100, 116, 139, 0.15)',
             }}>
               <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: '#94A3B8' }} />
+=======
+              backgroundColor: isLive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+            }}>
+              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: isLive ? '#10B981' : '#10B981' }} />
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
             </div>
             <span className="font-bold text-sm truncate" style={{ color: '#F1F5F9' }}>
               {tournament.name}
             </span>
             {isHighPot && <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#E3B341' }} />}
             {isLive && (
+<<<<<<< HEAD
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.4)' }}>
+=======
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
                 <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
                 <span className="text-[10px] font-bold" style={{ color: '#10B981' }}>LIVE</span>
               </div>
@@ -953,7 +1008,11 @@ function HorizontalTournamentCard({
             {getTimeRemaining() && (
               <>
                 <span>|</span>
+<<<<<<< HEAD
                 <span style={{ color: isLive ? '#10B981' : '#94A3B8' }}>{getTimeRemaining()}</span>
+=======
+                <span style={{ color: isLive ? '#10B981' : '#10B981' }}>{getTimeRemaining()}</span>
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
               </>
             )}
           </div>

@@ -226,7 +226,7 @@ export function TradingSidebar({
             }}
           >
             <SelectTrigger
-              className="h-9"
+              className="h-11 md:h-9"
               style={{ backgroundColor: "#080C14", borderColor: "#1F2937", color: "#E3B341" }}
             >
               <SelectValue placeholder="Select Tournament" />
@@ -278,7 +278,7 @@ export function TradingSidebar({
       >
         <button
           onClick={() => setActiveView("positions")}
-          className="flex-1 py-2.5 text-xs font-semibold text-center transition-colors"
+          className="flex-1 py-3 md:py-2.5 text-sm md:text-xs font-semibold text-center transition-colors min-h-[44px]"
           style={{
             color: activeView === "positions" ? "#E3B341" : "#94A3B8",
             borderBottom:
@@ -289,7 +289,7 @@ export function TradingSidebar({
         </button>
         <button
           onClick={() => setActiveView("history")}
-          className="flex-1 py-2.5 text-xs font-semibold text-center transition-colors"
+          className="flex-1 py-3 md:py-2.5 text-sm md:text-xs font-semibold text-center transition-colors min-h-[44px]"
           style={{
             color: activeView === "history" ? "#E3B341" : "#94A3B8",
             borderBottom:
@@ -304,14 +304,14 @@ export function TradingSidebar({
             setQuantity(1);
             setAwaitingConfirm(false);
           }}
-          className="px-3 py-2.5 flex items-center justify-center transition-colors"
+          className="px-3 py-3 md:py-2.5 flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
           style={{
             color: activeView === "trade" ? "#10B981" : "#94A3B8",
             borderBottom:
               activeView === "trade" ? "2px solid #10B981" : "2px solid transparent",
           }}
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-5 h-5 md:w-4 md:h-4" />
         </button>
       </div>
 
@@ -582,7 +582,7 @@ export function TradingSidebar({
                 <div className="flex mx-4 rounded-lg overflow-hidden" style={{ border: "1px solid #1F2937" }}>
                   <button
                     onClick={() => handleSideChange("buy")}
-                    className="flex-1 py-2 text-sm font-semibold text-center transition-colors"
+                    className="flex-1 py-3 md:py-2 text-base md:text-sm font-semibold text-center transition-colors min-h-[48px]"
                     style={{
                       backgroundColor: orderSide === "buy" ? "#10B981" : "transparent",
                       color: orderSide === "buy" ? "#000000" : "#94A3B8",
@@ -592,7 +592,7 @@ export function TradingSidebar({
                   </button>
                   <button
                     onClick={() => handleSideChange("sell")}
-                    className="flex-1 py-2 text-sm font-semibold text-center transition-colors"
+                    className="flex-1 py-3 md:py-2 text-base md:text-sm font-semibold text-center transition-colors min-h-[48px]"
                     style={{
                       backgroundColor: orderSide === "sell" ? "#EF4444" : "transparent",
                       color: orderSide === "sell" ? "#FFFFFF" : "#94A3B8",
@@ -635,12 +635,13 @@ export function TradingSidebar({
                       <span className="text-sm" style={{ color: "#F1F5F9" }}>Limit Price</span>
                       <Input
                         type="number"
+                        inputMode="decimal"
                         min="0"
                         step="0.01"
                         value={limitPrice || ""}
                         onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
                         placeholder="0.00"
-                        className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                        className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
                         style={{ color: "#10B981" }}
                       />
                     </div>
@@ -655,12 +656,13 @@ export function TradingSidebar({
                       <span className="text-sm" style={{ color: "#F1F5F9" }}>Stop Price</span>
                       <Input
                         type="number"
+                        inputMode="decimal"
                         min="0"
                         step="0.01"
                         value={stopPrice || ""}
                         onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
                         placeholder="0.00"
-                        className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                        className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
                         style={{ color: "#10B981" }}
                       />
                     </div>
@@ -699,11 +701,12 @@ export function TradingSidebar({
                     {buyInMode === "shares" ? (
                       <Input
                         type="number"
+                        inputMode="numeric"
                         min="0"
                         value={quantity || ""}
                         onChange={(e) => { setQuantity(Math.max(0, parseInt(e.target.value) || 0)); setAwaitingConfirm(false); }}
                         placeholder="0"
-                        className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                        className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
                         style={{ color: "#FFFFFF" }}
                       />
                     ) : (
@@ -711,12 +714,13 @@ export function TradingSidebar({
                         <span className="text-sm mr-0.5" style={{ color: "#64748B" }}>$</span>
                         <Input
                           type="number"
+                          inputMode="decimal"
                           min="0"
                           step="0.01"
                           value={dollarAmount || ""}
                           onChange={(e) => { setDollarAmount(Math.max(0, parseFloat(e.target.value) || 0)); setAwaitingConfirm(false); }}
                           placeholder="0.00"
-                          className="w-28 h-7 text-right text-sm border-0 bg-transparent p-0"
+                          className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
                           style={{ color: "#FFFFFF" }}
                         />
                       </div>
@@ -788,7 +792,7 @@ export function TradingSidebar({
                         setAwaitingConfirm(false);
                         setActiveView("positions");
                       }}
-                      className="flex-1 h-10 font-semibold text-sm"
+                      className="flex-1 h-12 md:h-10 font-semibold text-base md:text-sm min-h-[48px]"
                       style={{
                         backgroundColor: "transparent",
                         border: "1px solid #1F2937",
@@ -800,7 +804,7 @@ export function TradingSidebar({
                     <Button
                       onClick={handleSubmit}
                       disabled={!canSubmit || isSubmitting}
-                      className="flex-1 h-10 font-bold text-sm disabled:opacity-40"
+                      className="flex-1 h-12 md:h-10 font-bold text-base md:text-sm disabled:opacity-40 min-h-[48px]"
                       style={{
                         background: awaitingConfirm
                           ? orderSide === "buy"

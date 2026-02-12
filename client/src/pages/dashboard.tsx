@@ -121,17 +121,17 @@ export default function Dashboard() {
     <>
       <WebsiteTour />
       <div
-        className="h-screen flex flex-col [@media(min-aspect-ratio:1/1)]:flex-row"
+        className="h-screen flex flex-col md:flex-row"
         style={{ backgroundColor: "#080C14" }}
       >
       {/* LEFT: Chart fills ~5/7 of width */}
-      <div data-tour="chart-area" className="flex-1 min-w-0 min-h-[350px] [@media(min-aspect-ratio:1/1)]:min-h-0 h-full">
+      <div data-tour="chart-area" className="flex-1 min-w-0 min-h-[350px] md:min-h-0 h-full">
         <TradingViewChart symbol={selectedSymbol} />
       </div>
 
       {/* RIGHT: Unified Sidebar ~2/7 of width */}
       <div
-        className="w-full [@media(min-aspect-ratio:1/1)]:w-[265px] [@media(min-aspect-ratio:1/1)]:max-w-[265px] [@media(min-aspect-ratio:1/1)]:min-w-[220px] flex flex-col h-[60vh] [@media(min-aspect-ratio:1/1)]:h-full"
+        className="w-full md:w-[265px] md:max-w-[265px] md:min-w-[220px] flex flex-col h-[60vh] md:h-full"
         style={{
           backgroundColor: "#111827",
           borderLeft: "1px solid #1F2937",

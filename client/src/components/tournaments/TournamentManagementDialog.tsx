@@ -19,7 +19,8 @@ import {
   AlertTriangle,
   Crown,
   MessageSquare,
-  Settings
+  Settings,
+  UserPlus
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -33,6 +34,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import TournamentInviteModal from "./TournamentInviteModal";
 
 const TournamentChat = React.lazy(() => import("@/components/chat/TournamentChat"));
 
@@ -55,6 +57,7 @@ export function TournamentManagementDialog({
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("manage");
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
 
   const isCreator = user?.id === tournament?.creatorId;
   const isPrivate = !tournament?.isPublic;
@@ -263,6 +266,25 @@ export function TournamentManagementDialog({
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
+                          <p className="font-medium">Invite Friends</p>
+                          <p className="text-sm text-muted-foreground">Send tournament invites to your friends</p>
+                        </div>
+                        <Button
+                          onClick={() => setInviteModalOpen(true)}
+                          variant="outline"
+                          style={{
+                            background: 'rgba(227, 179, 65, 0.1)',
+                            color: '#E3B341',
+                            border: '1px solid #E3B341'
+                          }}
+                        >
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          Invite
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <div>
                           <p className="font-medium">Start Tournament Early</p>
                           <p className="text-sm text-muted-foreground">Begin the tournament immediately</p>
                         </div>
@@ -407,6 +429,13 @@ export function TournamentManagementDialog({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Invite Modal */}
+      <TournamentInviteModal
+        open={inviteModalOpen}
+        onClose={() => setInviteModalOpen(false)}
+        tournament={tournament}
+      />
     </>
   );
 }

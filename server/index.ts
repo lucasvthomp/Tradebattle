@@ -19,6 +19,7 @@ async function runMigrations() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS withdrawal_frozen BOOLEAN DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS deposit_frozen BOOLEAN DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS tournament_restricted BOOLEAN DEFAULT false;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS tutorial_completed BOOLEAN DEFAULT false NOT NULL;
     `);
 
     // Create admin_logs table if it doesn't exist
@@ -45,6 +46,66 @@ async function runMigrations() {
         message TEXT NOT NULL,
         tournament_id INTEGER,
         created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Create friendships table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS friendships (
+        id SERIAL PRIMARY KEY,
+        requester_id INTEGER NOT NULL REFERENCES users(id),
+        addressee_id INTEGER NOT NULL REFERENCES users(id),
+        status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        CONSTRAINT unique_friendship UNIQUE (requester_id, addressee_id)
+      );
+    `);
+
+    // Add payout_structure column to tournaments if it doesn't exist
+    await client.query(`
+      ALTER TABLE tournaments ADD COLUMN IF NOT EXISTS payout_structure VARCHAR(50) NOT NULL DEFAULT 'winner_take_all';
+    `);
+
+    // Create tournament_results table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS tournament_results (
+        id SERIAL PRIMARY KEY,
+        tournament_id INTEGER NOT NULL REFERENCES tournaments(id),
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        rank INTEGER NOT NULL,
+        portfolio_value NUMERIC(15, 2) NOT NULL,
+        gain_percent NUMERIC(10, 2) NOT NULL,
+        payout NUMERIC(15, 2) NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Create promo_codes table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS promo_codes (
+        id SERIAL PRIMARY KEY,
+        code VARCHAR(50) UNIQUE NOT NULL,
+        reward_type VARCHAR(20) NOT NULL,
+        reward_amount NUMERIC(15, 2) NOT NULL,
+        usage_type VARCHAR(20) NOT NULL,
+        max_uses INTEGER,
+        current_uses INTEGER DEFAULT 0 NOT NULL,
+        expires_at TIMESTAMP,
+        is_active BOOLEAN DEFAULT true NOT NULL,
+        created_by INTEGER REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Create code_redemptions table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS code_redemptions (
+        id SERIAL PRIMARY KEY,
+        code_id INTEGER NOT NULL REFERENCES promo_codes(id),
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        redeemed_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        CONSTRAINT unique_code_user UNIQUE (code_id, user_id)
       );
     `);
 

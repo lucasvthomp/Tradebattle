@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus, Menu, X } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus, Menu, X, BarChart3, Trophy, Users as UsersIcon, Phone, Gift, Settings, Archive, Calendar, Swords } from "lucide-react";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 interface HeaderProps {
   chatOpen?: boolean;
@@ -40,14 +40,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               <span className="text-xl font-display font-bold text-foreground tracking-tight">ORSATH</span>
             </Link>
 
-            {/* Market Status Clock - hide on mobile portrait */}
-            <div className="hidden [@media(min-aspect-ratio:1/1)]:block">
+            {/* Market Status Clock - hide on mobile */}
+            <div className="hidden md:block">
               <MarketStatus variant="clock" />
             </div>
           </div>
 
-          {/* Desktop navigation - hide on portrait mobile */}
-          <div className="hidden [@media(min-aspect-ratio:1/1)]:flex items-center space-x-3">
+          {/* Desktop navigation - hide on mobile */}
+          <div className="hidden md:flex items-center space-x-3">
             {user ? (
               <>
                 {/* Balance Display - Clickable for balance management */}
@@ -133,10 +133,10 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
             )}
           </div>
 
-          {/* Mobile hamburger button - show only on portrait */}
+          {/* Mobile hamburger button - show only on mobile */}
           <Button
             variant="ghost"
-            className="[@media(min-aspect-ratio:1/1)]:hidden w-10 h-10 p-0"
+            className="md:hidden w-10 h-10 p-0 min-w-[44px] min-h-[44px]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -144,16 +144,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
         </nav>
       </div>
 
-      {/* Mobile Menu Panel - show only on portrait */}
+      {/* Mobile Menu Panel - show only on mobile */}
       {mobileMenuOpen && (
-        <div className="[@media(min-aspect-ratio:1/1)]:hidden border-t border-border" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)' }}>
-          <div className="container mx-auto px-4 py-4 space-y-3">
+        <div className="md:hidden border-t border-border" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)' }}>
+          <div className="container mx-auto px-4 py-4 space-y-2">
             {user ? (
               <>
                 {/* Balance Display */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start h-12 hover:bg-primary/10 border-2"
+                  className="w-full justify-start h-12 hover:bg-primary/10 border-2 min-h-[48px]"
                   style={{
                     borderColor: 'rgba(227, 179, 65, 0.4)',
                     color: '#E3B341'
@@ -163,24 +163,108 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     setMobileMenuOpen(false);
                   }}
                 >
-                  <DollarSign className="w-5 h-5 mr-2" />
-                  <span className="font-bold">
+                  <DollarSign className="w-5 h-5 mr-3" />
+                  <span className="font-bold text-base">
                     {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </Button>
 
                 {/* Deposit Button */}
                 <Button
-                  className="w-full justify-start h-12 rounded-lg text-white"
+                  className="w-full justify-start h-12 rounded-lg text-white min-h-[48px]"
                   style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)' }}
                   onClick={() => {
                     navigate("/deposit");
                     setMobileMenuOpen(false);
                   }}
                 >
-                  <Plus className="w-5 h-5 mr-2" />
-                  <span className="font-bold">Deposit Funds</span>
+                  <Plus className="w-5 h-5 mr-3" />
+                  <span className="font-bold text-base">Deposit Funds</span>
                 </Button>
+
+                {/* Navigation Section */}
+                <div className="pt-2 border-t border-border">
+                  <Link href="/hub">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#28C76F' }} />
+                      <span className="text-base">Hub</span>
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#28C76F' }} />
+                      <span className="text-base">Dashboard</span>
+                    </Button>
+                  </Link>
+                  <Link href="/tournaments">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Swords className="w-5 h-5 mr-3" style={{ color: '#E3B341' }} />
+                      <span className="text-base">Tournaments</span>
+                    </Button>
+                  </Link>
+                  <Link href="/leaderboard">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Trophy className="w-5 h-5 mr-3" style={{ color: '#E3B341' }} />
+                      <span className="text-base">Leaderboard</span>
+                    </Button>
+                  </Link>
+                  <Link href="/people">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <UsersIcon className="w-5 h-5 mr-3" style={{ color: '#3B82F6' }} />
+                      <span className="text-base">People</span>
+                    </Button>
+                  </Link>
+                  <Link href="/events">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Calendar className="w-5 h-5 mr-3" style={{ color: '#A855F7' }} />
+                      <span className="text-base">Events</span>
+                    </Button>
+                  </Link>
+                  <Link href="/shop">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Gift className="w-5 h-5 mr-3" style={{ color: '#F97316' }} />
+                      <span className="text-base">Rewards</span>
+                    </Button>
+                  </Link>
+                  <Link href="/contact">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <span className="text-base">Support</span>
+                    </Button>
+                  </Link>
+                </div>
 
                 {/* Chat Button */}
                 {onChatToggle && (
@@ -190,19 +274,39 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       setMobileMenuOpen(false);
                     }}
                     variant="ghost"
-                    className="w-full justify-start h-12 border border-border/30 hover:bg-muted/50"
+                    className="w-full justify-start h-12 border border-border/30 hover:bg-muted/50 min-h-[48px]"
                   >
-                    <MessageSquare className="w-5 h-5 mr-2" />
-                    <span>Chat</span>
+                    <MessageSquare className="w-5 h-5 mr-3" />
+                    <span className="text-base">Chat</span>
                   </Button>
                 )}
 
-                {/* User Info */}
+                {/* User Section */}
                 <div className="pt-2 pb-2 border-t border-border">
-                  <div className="flex items-center gap-2 px-3 py-2">
+                  <div className="flex items-center gap-3 px-3 py-3">
                     <User className="w-5 h-5" />
-                    <span className="font-medium">{user?.username || "User"}</span>
+                    <span className="font-medium text-base">{user?.username || "User"}</span>
                   </div>
+                  <Link href="/profile">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Settings className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <span className="text-base">Settings</span>
+                    </Button>
+                  </Link>
+                  <Link href="/archive">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Archive className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <span className="text-base">Archive</span>
+                    </Button>
+                  </Link>
                 </div>
 
                 {/* Admin Link */}
@@ -210,11 +314,11 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Link href="/admin">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50"
+                      className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Shield className="w-5 h-5 mr-2" />
-                      <span>Admin</span>
+                      <Shield className="w-5 h-5 mr-3" />
+                      <span className="text-base">Admin</span>
                     </Button>
                   </Link>
                 )}
@@ -222,14 +326,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Logout */}
                 <Button
                   variant="ghost"
-                  className="w-full justify-start h-12 hover:bg-destructive/10 text-destructive"
+                  className="w-full justify-start h-12 hover:bg-destructive/10 text-destructive min-h-[48px]"
                   onClick={() => {
                     logoutMutation.mutate();
                     setMobileMenuOpen(false);
                   }}
                 >
-                  <LogOut className="w-5 h-5 mr-2" />
-                  <span>{t('logout')}</span>
+                  <LogOut className="w-5 h-5 mr-3" />
+                  <span className="text-base">{t('logout')}</span>
                 </Button>
               </>
             ) : (
@@ -237,21 +341,21 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 <Link href="/login">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start h-12 hover:bg-muted/50"
+                    className="w-full justify-start h-12 hover:bg-muted/50 min-h-[48px]"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <LogIn className="w-5 h-5 mr-2" />
-                    <span>Log In</span>
+                    <LogIn className="w-5 h-5 mr-3" />
+                    <span className="text-base">Log In</span>
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button
-                    className="w-full justify-start h-12 text-white"
+                    className="w-full justify-start h-12 text-white min-h-[48px]"
                     style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <UserPlus className="w-5 h-5 mr-2" />
-                    <span>Sign Up</span>
+                    <UserPlus className="w-5 h-5 mr-3" />
+                    <span className="text-base">Sign Up</span>
                   </Button>
                 </Link>
               </>

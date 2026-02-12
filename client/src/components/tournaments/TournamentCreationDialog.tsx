@@ -47,7 +47,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
+<<<<<<< HEAD
 import { TournamentSuccessDialog } from "./TournamentSuccessDialog";
+=======
+import TournamentSuccessDialog from "./TournamentSuccessDialog";
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
 
 interface TournamentCreationDialogProps {
   isOpen: boolean;
@@ -71,6 +75,10 @@ const START_DELAY_OPTIONS = [
   { value: "6 hours", label: "6 Hours" },
   { value: "12 hours", label: "12 Hours" },
   { value: "1 day", label: "1 Day" },
+  { value: "tomorrow_9am", label: "Tomorrow 9am" },
+  { value: "tomorrow_6pm", label: "Tomorrow 6pm" },
+  { value: "next_monday_9am", label: "Next Monday 9am" },
+  { value: "next_saturday_12pm", label: "Next Saturday 12pm" },
   { value: "3 days", label: "3 Days" },
   { value: "1 week", label: "1 Week" },
   { value: "custom", label: "Custom Date/Time" },
@@ -111,35 +119,69 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
   });
 
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+<<<<<<< HEAD
   const [currentStep, setCurrentStep] = useState<'form' | 'confirm'>('form');
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [createdTournament, setCreatedTournament] = useState<{ id: number; name: string; code: string } | null>(null);
+=======
+  const [step, setStep] = useState<'form' | 'confirmation'>('form');
+  const [createdTournament, setCreatedTournament] = useState<any>(null);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
 
   // Create tournament mutation
   const createTournamentMutation = useMutation({
     mutationFn: async (data: typeof formData) => {
+      let scheduledStartTime: Date;
+
+      if (data.startDelay === 'custom' && data.customStartTime) {
+        scheduledStartTime = new Date(data.customStartTime);
+      } else if (data.startDelay === 'tomorrow_9am') {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(9, 0, 0, 0);
+        scheduledStartTime = tomorrow;
+      } else if (data.startDelay === 'tomorrow_6pm') {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(18, 0, 0, 0);
+        scheduledStartTime = tomorrow;
+      } else if (data.startDelay === 'next_monday_9am') {
+        const nextMonday = new Date();
+        const daysUntilMonday = (1 + 7 - nextMonday.getDay()) % 7 || 7;
+        nextMonday.setDate(nextMonday.getDate() + daysUntilMonday);
+        nextMonday.setHours(9, 0, 0, 0);
+        scheduledStartTime = nextMonday;
+      } else if (data.startDelay === 'next_saturday_12pm') {
+        const nextSaturday = new Date();
+        const daysUntilSaturday = (6 + 7 - nextSaturday.getDay()) % 7 || 7;
+        nextSaturday.setDate(nextSaturday.getDate() + daysUntilSaturday);
+        nextSaturday.setHours(12, 0, 0, 0);
+        scheduledStartTime = nextSaturday;
+      } else {
+        scheduledStartTime = new Date(Date.now() + (
+          data.startDelay === 'immediately' ? 0 :
+          data.startDelay === '1 minute' ? 1 * 60 * 1000 :
+          data.startDelay === '5 minutes' ? 5 * 60 * 1000 :
+          data.startDelay === '10 minutes' ? 10 * 60 * 1000 :
+          data.startDelay === '30 minutes' ? 30 * 60 * 1000 :
+          data.startDelay === '1 hour' ? 60 * 60 * 1000 :
+          data.startDelay === '2 hours' ? 2 * 60 * 60 * 1000 :
+          data.startDelay === '6 hours' ? 6 * 60 * 60 * 1000 :
+          data.startDelay === '12 hours' ? 12 * 60 * 60 * 1000 :
+          data.startDelay === '1 day' ? 24 * 60 * 60 * 1000 :
+          data.startDelay === '3 days' ? 3 * 24 * 60 * 60 * 1000 :
+          7 * 24 * 60 * 60 * 1000
+        ));
+      }
+
       const res = await apiRequest("POST", "/api/tournaments", {
         name: data.name,
         maxPlayers: data.maxPlayers,
         tournamentType: data.tournamentType,
         startingBalance: data.startingBalance,
         duration: data.duration,
-        scheduledStartTime: data.startDelay === 'custom' && data.customStartTime
-          ? new Date(data.customStartTime).toISOString()
-          : new Date(Date.now() + (
-            data.startDelay === 'immediately' ? 0 :
-            data.startDelay === '1 minute' ? 1 * 60 * 1000 :
-            data.startDelay === '5 minutes' ? 5 * 60 * 1000 :
-            data.startDelay === '10 minutes' ? 10 * 60 * 1000 :
-            data.startDelay === '30 minutes' ? 30 * 60 * 1000 :
-            data.startDelay === '1 hour' ? 60 * 60 * 1000 :
-            data.startDelay === '2 hours' ? 2 * 60 * 60 * 1000 :
-            data.startDelay === '6 hours' ? 6 * 60 * 60 * 1000 :
-            data.startDelay === '12 hours' ? 12 * 60 * 60 * 1000 :
-            data.startDelay === '1 day' ? 24 * 60 * 60 * 1000 :
-            data.startDelay === '3 days' ? 3 * 24 * 60 * 60 * 1000 :
-            7 * 24 * 60 * 60 * 1000
-          )).toISOString(),
+        scheduledStartTime: scheduledStartTime.toISOString(),
         buyInAmount: data.buyInAmount,
         tradingRestriction: 'none',
         isPublic: data.isPublic,
@@ -147,7 +189,13 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       });
       return res.json();
     },
+<<<<<<< HEAD
     onSuccess: (response) => {
+=======
+    onSuccess: (data) => {
+      setCreatedTournament(data.data);
+      setShowSuccessDialog(true);
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
       onClose();
       setFormData({
         name: "",
@@ -155,7 +203,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         tournamentType: "stocks",
         startingBalance: 10000,
         duration: "1 week",
-        startDelay: "immediately",
+        startDelay: "5 minutes",
         isPublic: true,
         buyInAmount: 0,
         payoutStructure: "winner_take_all",
@@ -163,6 +211,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         customStartTime: ""
       });
       setErrors({});
+<<<<<<< HEAD
       setCurrentStep('form');
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
 
@@ -173,6 +222,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         code: response.data.code
       });
       setSuccessDialogOpen(true);
+=======
+      setStep('form');
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
     },
     onError: (error: Error) => {
       toast({
@@ -241,6 +294,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
   return (
     <>
+<<<<<<< HEAD
     <Dialog open={isOpen} onOpenChange={(open) => {
       if (!open) {
         setCurrentStep('form');
@@ -249,6 +303,11 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     }}>
       <DialogContent className="max-w-7xl max-h-[90vh] overflow-hidden p-0" style={{ backgroundColor: '#080C14', borderColor: '#E3B341', borderWidth: '2px' }}>
         {currentStep === 'form' ? (
+=======
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className={step === 'form' ? "max-w-7xl max-h-[90vh] overflow-hidden p-0" : "max-w-lg p-0"} style={{ backgroundColor: step === 'form' ? '#080C14' : '#0F172A', borderColor: '#E3B341', borderWidth: '2px' }}>
+        {step === 'form' ? (
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
         <div className="grid grid-cols-5 gap-0 h-full">
           {/* Left Side - Form (3/5 width) */}
           <div className="col-span-3 overflow-y-auto p-6" style={{ backgroundColor: '#0F172A' }}>
@@ -575,7 +634,11 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                     setErrors({ name: "Tournament name is required" });
                     return;
                   }
+<<<<<<< HEAD
                   setCurrentStep('confirm');
+=======
+                  setStep('confirmation');
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
                 }}
                 className="h-9 font-bold"
                 style={{ backgroundColor: '#E3B341', color: '#080C14' }}
@@ -815,8 +878,12 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       </div>
     </div>
         ) : (
+<<<<<<< HEAD
         /* Confirmation Step (Step 2) - same size and position */
         <div className="p-6 space-y-4" style={{ backgroundColor: '#0F172A' }}>
+=======
+        <div className="p-6 space-y-4">
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-3">
               <div className="p-2 rounded-lg" style={{ backgroundColor: '#E3B341' }}>
@@ -899,7 +966,11 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <div className="flex justify-between pt-1">
             <Button
               variant="outline"
+<<<<<<< HEAD
               onClick={() => setCurrentStep('form')}
+=======
+              onClick={() => setStep('form')}
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
               className="h-9"
               style={{ borderColor: '#1F2937', color: '#F1F5F9' }}
             >
@@ -919,6 +990,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       </DialogContent>
     </Dialog>
 
+<<<<<<< HEAD
     {/* Success Dialog */}
     {createdTournament && (
       <TournamentSuccessDialog
@@ -930,6 +1002,20 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         tournamentId={createdTournament.id}
         tournamentName={createdTournament.name}
         tournamentCode={createdTournament.code}
+=======
+    {/* Tournament Success Dialog */}
+    {createdTournament && (
+      <TournamentSuccessDialog
+        open={showSuccessDialog}
+        onClose={() => {
+          setShowSuccessDialog(false);
+          setCreatedTournament(null);
+        }}
+        tournament={createdTournament}
+        onNavigate={() => {
+          // Navigation handled by the dialog itself
+        }}
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
       />
     )}
     </>

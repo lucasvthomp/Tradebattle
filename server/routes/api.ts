@@ -486,6 +486,105 @@ router.delete('/tournaments/:id/participants/:participantId', requireAuth, async
 }));
 
 /**
+ * GET /api/tournaments/code/:code
+ * Look up a tournament by code (for preview before joining)
+ */
+router.get('/tournaments/code/:code', requireAuth, asyncHandler(async (req, res) => {
+  const code = sanitizeInput(req.params.code.toUpperCase());
+  const userId = req.user.id;
+
+  const tournament = await storage.getTournamentByCode(code);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  // Check if user is already a participant
+  const participantUserIds = await storage.getTournamentParticipantUserIds(tournament.id);
+  const alreadyJoined = participantUserIds.includes(userId);
+
+  // Get participant previews
+  const participantPreviews = await storage.getTournamentParticipantPreviews(tournament.id);
+
+  res.json({
+    success: true,
+    data: {
+      ...tournament,
+      alreadyJoined,
+      participantPreviews,
+      participantUserIds
+    }
+  });
+}));
+
+/**
+ * POST /api/tournaments/:id/invite
+ * Invite friends to a tournament
+ */
+router.post('/tournaments/:id/invite', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+  const { friendIds } = req.body;
+
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
+  if (!Array.isArray(friendIds) || friendIds.length === 0) {
+    throw new ValidationError('friendIds must be a non-empty array');
+  }
+
+  const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
+
+  // Check if tournament is in waiting status
+  if (tournament.status !== 'waiting') {
+    throw new ValidationError('Can only invite to waiting tournaments');
+  }
+
+  // Check if user is creator or participant
+  const participantUserIds = await storage.getTournamentParticipantUserIds(tournament.id);
+  if (tournament.creatorId !== userId && !participantUserIds.includes(userId)) {
+    throw new ValidationError('Only tournament participants can send invites');
+  }
+
+  const inviter = await storage.getUser(userId);
+  if (!inviter) {
+    throw new ValidationError('User not found');
+  }
+
+  // Create notifications for each friend
+  let invitedCount = 0;
+  for (const friendId of friendIds) {
+    // Skip if friend is already a participant
+    if (participantUserIds.includes(friendId)) {
+      continue;
+    }
+
+    await storage.createNotification({
+      userId: friendId,
+      type: 'tournament_invite',
+      title: 'Tournament Invitation',
+      message: `${inviter.username} invited you to join "${tournament.name}"`,
+      metadata: {
+        tournamentId: tournament.id,
+        tournamentName: tournament.name,
+        tournamentCode: tournament.code,
+        inviterId: userId,
+        inviterUsername: inviter.username
+      }
+    });
+    invitedCount++;
+  }
+
+  res.json({
+    success: true,
+    invited: invitedCount
+  });
+}));
+
+/**
  * POST /api/tournaments/code/:code/join
  * Join a tournament by code
  */
@@ -524,6 +623,23 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
       earnedAt: new Date(),
       createdAt: new Date()
     });
+
+    // Notify tournament creator that someone joined via invite
+    const joiner = await storage.getUser(userId);
+    if (joiner && tournament.creatorId !== userId) {
+      await storage.createNotification({
+        userId: tournament.creatorId,
+        type: 'tournament_invite_accepted',
+        title: 'Tournament Invite Accepted',
+        message: `${joiner.username} joined your tournament "${tournament.name}"`,
+        metadata: {
+          tournamentId: tournament.id,
+          tournamentName: tournament.name,
+          joinerId: userId,
+          joinerUsername: joiner.username
+        }
+      });
+    }
 
     res.json({
       success: true,
@@ -576,6 +692,23 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
       earnedAt: new Date(),
       createdAt: new Date()
     });
+
+    // Notify tournament creator that someone joined
+    const joiner = await storage.getUser(userId);
+    if (joiner && tournament.creatorId !== userId) {
+      await storage.createNotification({
+        userId: tournament.creatorId,
+        type: 'tournament_invite_accepted',
+        title: 'New Tournament Participant',
+        message: `${joiner.username} joined your tournament "${tournament.name}"`,
+        metadata: {
+          tournamentId: tournament.id,
+          tournamentName: tournament.name,
+          joinerId: userId,
+          joinerUsername: joiner.username
+        }
+      });
+    }
 
     res.json({
       success: true,
@@ -1921,6 +2054,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
       return {
         id: user.id,
         username: user.username,
+        profilePicture: user.profilePicture,
         subscriptionTier: user.subscriptionTier,
         createdAt: user.createdAt,
         totalTrades: user.totalTrades || 0,
@@ -1933,6 +2067,7 @@ router.get('/users/public', asyncHandler(async (req, res) => {
       return {
         id: user.id,
         username: user.username,
+        profilePicture: user.profilePicture,
         subscriptionTier: user.subscriptionTier,
         createdAt: user.createdAt,
         totalTrades: user.totalTrades || 0,
@@ -1976,6 +2111,7 @@ router.get('/users/public/:userId', asyncHandler(async (req, res) => {
   const publicUser = {
     id: targetUser.id,
     username: targetUser.username,
+    profilePicture: targetUser.profilePicture,
     subscriptionTier: targetUser.subscriptionTier,
     createdAt: targetUser.createdAt,
     totalTrades: totalTrades,
@@ -2130,6 +2266,7 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
     tournamentId: null
   });
 
+<<<<<<< HEAD
   // Detect mentions in the format @username
   const mentionRegex = /@(\w+)/g;
   const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
@@ -2156,6 +2293,36 @@ router.post('/chat/global', requireAuth, asyncHandler(async (req, res) => {
         }
       })
     );
+=======
+  // Detect @mentions and create notifications
+  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+  const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
+
+  if (mentions.length > 0) {
+    const allUsers = await storage.getAllUsers();
+
+    for (const username of mentions) {
+      const mentionedUser = allUsers.find(u =>
+        u.username.toLowerCase() === username.toLowerCase()
+      );
+
+      if (mentionedUser && mentionedUser.id !== userId) {
+        await storage.createNotification({
+          userId: mentionedUser.id,
+          type: 'chat_mention',
+          title: 'You were mentioned',
+          message: `${user.username} mentioned you in global chat`,
+          metadata: {
+            messageId: chatMessage.id,
+            chatType: 'global',
+            tournamentId: null,
+            mentionerUsername: user.username,
+            mentionerId: userId
+          }
+        });
+      }
+    }
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
   }
 
   res.json({
@@ -2247,6 +2414,7 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
     tournamentId
   });
 
+<<<<<<< HEAD
   // Detect mentions in the format @username
   const mentionRegex = /@(\w+)/g;
   const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
@@ -2274,11 +2442,71 @@ router.post('/chat/tournament/:tournamentId', requireAuth, asyncHandler(async (r
         }
       })
     );
+=======
+  // Detect @mentions and create notifications
+  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+  const mentions = Array.from(censoredMessage.matchAll(mentionRegex), m => m[1]);
+
+  if (mentions.length > 0) {
+    const allUsers = await storage.getAllUsers();
+
+    for (const username of mentions) {
+      const mentionedUser = allUsers.find(u =>
+        u.username.toLowerCase() === username.toLowerCase()
+      );
+
+      if (mentionedUser && mentionedUser.id !== userId) {
+        await storage.createNotification({
+          userId: mentionedUser.id,
+          type: 'chat_mention',
+          title: 'You were mentioned',
+          message: `${user.username} mentioned you in tournament chat`,
+          metadata: {
+            messageId: chatMessage.id,
+            chatType: 'tournament',
+            tournamentId: tournamentId,
+            mentionerUsername: user.username,
+            mentionerId: userId
+          }
+        });
+      }
+    }
+>>>>>>> 61aee8ab2311c8dfc94d416a78f6abb7ee41d000
   }
 
   res.json({
     success: true,
     data: chatMessage
+  });
+}));
+
+/**
+ * GET /api/chat/context/:messageId
+ * Get chat message with surrounding context
+ */
+router.get('/chat/context/:messageId', requireAuth, asyncHandler(async (req, res) => {
+  const messageId = parseInt(req.params.messageId);
+  const before = parseInt(req.query.before as string) || 10;
+  const after = parseInt(req.query.after as string) || 10;
+
+  if (isNaN(messageId)) {
+    throw new ValidationError('Invalid message ID');
+  }
+
+  const targetMessage = await storage.getChatMessageById(messageId);
+  if (!targetMessage) {
+    throw new NotFoundError('Message not found');
+  }
+
+  const context = await storage.getChatMessagesContext(messageId, before, after);
+
+  res.json({
+    success: true,
+    data: {
+      targetMessage,
+      messagesBefore: context.messagesBefore,
+      messagesAfter: context.messagesAfter
+    }
   });
 }));
 

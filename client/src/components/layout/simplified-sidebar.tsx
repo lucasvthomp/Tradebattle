@@ -85,44 +85,18 @@ export function SimplifiedSidebar() {
 
   return (
     <>
-      {/* Mobile: Hamburger Menu Button */}
-      <button
-        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="md:hidden fixed left-4 top-20 z-50 w-10 h-10 flex items-center justify-center rounded-lg"
-        style={{
-          backgroundColor: '#111827',
-          border: '2px solid #1F2937'
-        }}
-      >
-        <div className="flex flex-col gap-1">
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
-          <div className="w-5 h-0.5" style={{ backgroundColor: '#E3B341' }}></div>
-        </div>
-      </button>
-
-      {/* Mobile: Overlay */}
-      {mobileMenuOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - Hidden on mobile by default, shown when menu open */}
+      {/* Sidebar - Hidden on mobile completely, shown on desktop */}
       <div
         data-tour="sidebar"
-        className={`fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 transition-all duration-300 ease-in-out
-          ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-          md:translate-x-0
+        className={`hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 transition-all duration-300 ease-in-out
           ${expanded ? 'w-56' : 'w-16'}
         `}
         style={{
           backgroundColor: '#0B1120',
           borderColor: '#1F2937'
         }}
-        onMouseEnter={() => !mobileMenuOpen && setExpanded(true)}
-        onMouseLeave={() => !mobileMenuOpen && setExpanded(false)}
+        onMouseEnter={() => setExpanded(true)}
+        onMouseLeave={() => setExpanded(false)}
       >
         {/* Navigation Items */}
         <nav className="p-3 space-y-1">
