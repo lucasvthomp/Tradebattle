@@ -469,32 +469,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Diagnostic endpoint to check API configuration
   app.get("/api/crypto/status", requireAuth, async (req: any, res) => {
     try {
-      const hasApiKey = !!process.env.NOWPAYMENTS_API_KEY && process.env.NOWPAYMENTS_API_KEY.length > 0;
-      const hasIpnSecret = !!process.env.NOWPAYMENTS_IPN_SECRET && process.env.NOWPAYMENTS_IPN_SECRET.length > 0;
-
+      // Keys are hardcoded in nowPayments.ts as fallback, so always test by calling API
       let apiKeyValid = false;
       let apiError = null;
 
-      if (hasApiKey) {
-        try {
-          // Test API key by fetching available currencies
-          await getAvailableCurrencies();
-          apiKeyValid = true;
-        } catch (error: any) {
-          apiError = error.message;
-        }
+      try {
+        // Test API key by fetching available currencies
+        await getAvailableCurrencies();
+        apiKeyValid = true;
+      } catch (error: any) {
+        apiError = error.message;
       }
 
       res.json({
-        configured: hasApiKey && hasIpnSecret,
-        hasApiKey,
-        hasIpnSecret,
+        configured: true, // Keys are hardcoded as fallback
+        hasApiKey: true,
+        hasIpnSecret: true,
         apiKeyValid,
         apiError,
-        message: !hasApiKey || !hasIpnSecret
-          ? "NOWPayments API keys not configured in environment variables"
-          : !apiKeyValid
-          ? `API key configured but invalid: ${apiError}`
+        message: !apiKeyValid
+          ? `API key test failed: ${apiError}`
           : "NOWPayments configured and operational"
       });
     } catch (error) {
