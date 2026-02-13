@@ -1,8 +1,9 @@
 import crypto from 'crypto';
 
 // NOWPayments API configuration
-const NOWPAYMENTS_API_KEY = process.env.NOWPAYMENTS_API_KEY || '';
-const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET || '';
+// Hardcoded temporarily to bypass Railway env var issues
+const NOWPAYMENTS_API_KEY = process.env.NOWPAYMENTS_API_KEY || 'SBCN5M7-VXMM732-NARR69B-JN8E0BQ';
+const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET || 'MFCEpLwGnb36wKjKGG2LEyFo7P8CJubZ';
 const NOWPAYMENTS_API_BASE = 'https://api.nowpayments.io/v1';
 
 // API request wrapper with error handling
