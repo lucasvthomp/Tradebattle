@@ -1,8 +1,5 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import {
   Dialog,
   DialogContent,
@@ -10,20 +7,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import {
-  DollarSign,
-  TrendingUp,
-  TrendingDown,
-  CreditCard,
   Wallet,
   Bitcoin,
-  Smartphone,
-  Ticket
+  ArrowRight,
+  Info
 } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface BalanceDialogProps {
   open: boolean;
@@ -31,361 +22,70 @@ interface BalanceDialogProps {
   currentBalance: number;
 }
 
-type PaymentMethod = 'crypto' | 'card' | 'cashapp' | 'code';
-
 export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDialogProps) {
   const { formatCurrency } = useUserPreferences();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const [depositAmount, setDepositAmount] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [depositMethod, setDepositMethod] = useState<PaymentMethod | null>(null);
-  const [withdrawMethod, setWithdrawMethod] = useState<PaymentMethod | null>(null);
-  const [balanceCode, setBalanceCode] = useState("");
-
-  // Deposit mutation
-  const depositMutation = useMutation({
-    mutationFn: async (data: { amount: number; method: PaymentMethod; code?: string }) => {
-      const response = await apiRequest("POST", "/api/balance/deposit", data);
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to process deposit");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Deposit Successful",
-        description: `${formatCurrency(parseFloat(depositAmount))} has been added to your account.`,
-      });
-      setDepositAmount("");
-      setDepositMethod(null);
-      setBalanceCode("");
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Deposit Failed",
-        description: error.message || "An error occurred while processing your deposit.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Withdrawal mutation
-  const withdrawMutation = useMutation({
-    mutationFn: async (data: { amount: number; method: PaymentMethod }) => {
-      const response = await apiRequest("POST", "/api/balance/withdraw", data);
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Failed to process withdrawal");
-      }
-      return response.json();
-    },
-    onSuccess: () => {
-      toast({
-        title: "Withdrawal Successful",
-        description: `${formatCurrency(parseFloat(withdrawAmount))} has been withdrawn from your account.`,
-      });
-      setWithdrawAmount("");
-      setWithdrawMethod(null);
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Withdrawal Failed",
-        description: error.message || "An error occurred while processing your withdrawal.",
-        variant: "destructive",
-      });
-    },
-  });
+  const [, navigate] = useLocation();
 
   const handleDeposit = () => {
-    const amount = parseFloat(depositAmount);
-    if (isNaN(amount) || amount <= 0) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid deposit amount greater than 0.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!depositMethod) {
-      toast({
-        title: "Select Payment Method",
-        description: "Please select a payment method to continue.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (depositMethod === 'code' && !balanceCode.trim()) {
-      toast({
-        title: "Enter Balance Code",
-        description: "Please enter a valid balance code.",
-        variant: "destructive",
-      });
-      return;
-    }
-    depositMutation.mutate({
-      amount,
-      method: depositMethod,
-      code: depositMethod === 'code' ? balanceCode : undefined
-    });
+    onOpenChange(false);
+    navigate("/deposit");
   };
 
   const handleWithdraw = () => {
-    const amount = parseFloat(withdrawAmount);
-    if (isNaN(amount) || amount <= 0) {
-      toast({
-        title: "Invalid Amount",
-        description: "Please enter a valid withdrawal amount greater than 0.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!withdrawMethod) {
-      toast({
-        title: "Select Payment Method",
-        description: "Please select a payment method to continue.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (amount > currentBalance) {
-      toast({
-        title: "Insufficient Funds",
-        description: "You cannot withdraw more than your current balance.",
-        variant: "destructive",
-      });
-      return;
-    }
-    withdrawMutation.mutate({ amount, method: withdrawMethod });
-  };
-
-  const paymentMethods = {
-    deposit: [
-      { id: 'crypto', label: 'Cryptocurrency', icon: Bitcoin, color: '#E3B341' },
-      { id: 'card', label: 'Credit/Debit Card', icon: CreditCard, color: '#10B981' },
-      { id: 'cashapp', label: 'Cash App', icon: Smartphone, color: '#00D54B' },
-      { id: 'code', label: 'Balance Code', icon: Ticket, color: '#3B82F6' },
-    ],
-    withdraw: [
-      { id: 'crypto', label: 'Cryptocurrency', icon: Bitcoin, color: '#E3B341' },
-      { id: 'card', label: 'Credit/Debit Card', icon: CreditCard, color: '#10B981' },
-      { id: 'cashapp', label: 'Cash App', icon: Smartphone, color: '#00D54B' },
-    ],
+    onOpenChange(false);
+    navigate("/withdraw");
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2" style={{ color: '#F1F5F9' }}>
-            <Wallet className="w-5 h-5" style={{ color: '#E3B341' }} />
+          <DialogTitle className="flex items-center gap-2">
+            <Wallet className="w-5 h-5 text-primary" />
             Manage Balance
           </DialogTitle>
         </DialogHeader>
 
         {/* Current Balance Display */}
-        <div className="p-4 rounded-lg mb-4" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-          <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Available Balance</p>
-          <p className="text-3xl font-bold" style={{ color: '#E3B341' }}>
+        <Card className="p-6 border-primary/20">
+          <p className="text-sm text-muted-foreground mb-2">Available Balance</p>
+          <p className="text-4xl font-bold text-primary">
             {formatCurrency(currentBalance)}
           </p>
+        </Card>
+
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          <Button
+            onClick={handleDeposit}
+            className="w-full h-14 text-base"
+            size="lg"
+          >
+            <Bitcoin className="w-5 h-5 mr-2" />
+            Deposit Crypto
+            <ArrowRight className="w-4 h-4 ml-auto" />
+          </Button>
+
+          <Button
+            onClick={handleWithdraw}
+            variant="outline"
+            className="w-full h-14 text-base"
+            size="lg"
+          >
+            <Wallet className="w-5 h-5 mr-2" />
+            Withdraw Funds
+            <ArrowRight className="w-4 h-4 ml-auto" />
+          </Button>
         </div>
 
-        <Tabs defaultValue="deposit" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6" style={{ backgroundColor: '#111827' }}>
-            <TabsTrigger
-              value="deposit"
-              className="flex items-center gap-2"
-              style={{ color: '#94A3B8' }}
-            >
-              <TrendingUp className="w-4 h-4" />
-              Deposit
-            </TabsTrigger>
-            <TabsTrigger
-              value="withdraw"
-              className="flex items-center gap-2"
-              style={{ color: '#94A3B8' }}
-            >
-              <TrendingDown className="w-4 h-4" />
-              Withdraw
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="deposit" className="space-y-4">
-            {/* Payment Method Selection */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium" style={{ color: '#F1F5F9' }}>
-                Select Payment Method
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                {paymentMethods.deposit.map((method) => {
-                  const Icon = method.icon;
-                  const isSelected = depositMethod === method.id;
-                  return (
-                    <Card
-                      key={method.id}
-                      className="p-4 cursor-pointer transition-all hover:scale-[1.02]"
-                      style={{
-                        backgroundColor: isSelected ? '#111827' : '#0F172A',
-                        borderColor: isSelected ? method.color : '#1F2937',
-                        borderWidth: isSelected ? '2px' : '1px',
-                      }}
-                      onClick={() => setDepositMethod(method.id as PaymentMethod)}
-                    >
-                      <div className="flex flex-col items-center gap-2 text-center">
-                        <Icon className="w-6 h-6" style={{ color: method.color }} />
-                        <span className="text-xs font-medium" style={{ color: isSelected ? '#F1F5F9' : '#94A3B8' }}>
-                          {method.label}
-                        </span>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Amount Input */}
-            {depositMethod && depositMethod !== 'code' && (
-              <div className="space-y-2">
-                <Label htmlFor="deposit-amount" style={{ color: '#F1F5F9' }}>
-                  Amount
-                </Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
-                  <Input
-                    id="deposit-amount"
-                    type="number"
-                    placeholder="0.00"
-                    value={depositAmount}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      if (e.target.value === '') { setDepositAmount(''); return; }
-                      if (!isNaN(val)) setDepositAmount(String(Math.min(10000, Math.max(0.01, val))));
-                    }}
-                    className="pl-10"
-                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
-                    min="0.01"
-                    max="10000"
-                    step="0.01"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Balance Code Input */}
-            {depositMethod === 'code' && (
-              <div className="space-y-3">
-                <div className="space-y-2">
-                  <Label htmlFor="balance-code" style={{ color: '#F1F5F9' }}>
-                    Balance Code
-                  </Label>
-                  <Input
-                    id="balance-code"
-                    type="text"
-                    placeholder="Enter your balance code"
-                    value={balanceCode}
-                    onChange={(e) => setBalanceCode(e.target.value)}
-                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
-                  />
-                  <p className="text-xs" style={{ color: '#94A3B8' }}>
-                    Enter the balance code you received to credit your account.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {depositMethod && (
-              <Button
-                onClick={handleDeposit}
-                disabled={depositMutation.isPending || (depositMethod === 'code' ? !balanceCode : !depositAmount)}
-                className="w-full"
-                style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
-              >
-                {depositMutation.isPending ? "Processing..." : `Deposit via ${paymentMethods.deposit.find(m => m.id === depositMethod)?.label}`}
-              </Button>
-            )}
-          </TabsContent>
-
-          <TabsContent value="withdraw" className="space-y-4">
-            {/* Payment Method Selection */}
-            <div className="space-y-3">
-              <Label className="text-sm font-medium" style={{ color: '#F1F5F9' }}>
-                Select Payment Method
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                {paymentMethods.withdraw.map((method) => {
-                  const Icon = method.icon;
-                  const isSelected = withdrawMethod === method.id;
-                  return (
-                    <Card
-                      key={method.id}
-                      className="p-4 cursor-pointer transition-all hover:scale-[1.02]"
-                      style={{
-                        backgroundColor: isSelected ? '#111827' : '#0F172A',
-                        borderColor: isSelected ? method.color : '#1F2937',
-                        borderWidth: isSelected ? '2px' : '1px',
-                      }}
-                      onClick={() => setWithdrawMethod(method.id as PaymentMethod)}
-                    >
-                      <div className="flex flex-col items-center gap-2 text-center">
-                        <Icon className="w-6 h-6" style={{ color: method.color }} />
-                        <span className="text-xs font-medium" style={{ color: isSelected ? '#F1F5F9' : '#94A3B8' }}>
-                          {method.label}
-                        </span>
-                      </div>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Amount Input */}
-            {withdrawMethod && (
-              <div className="space-y-2">
-                <Label htmlFor="withdraw-amount" style={{ color: '#F1F5F9' }}>
-                  Amount
-                </Label>
-                <div className="relative">
-                  <DollarSign className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
-                  <Input
-                    id="withdraw-amount"
-                    type="number"
-                    placeholder="0.00"
-                    value={withdrawAmount}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value);
-                      if (e.target.value === '') { setWithdrawAmount(''); return; }
-                      if (!isNaN(val)) setWithdrawAmount(String(Math.min(currentBalance, Math.max(0.01, val))));
-                    }}
-                    className="pl-10"
-                    style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
-                    min="0.01"
-                    max={currentBalance}
-                    step="0.01"
-                  />
-                </div>
-                <p className="text-xs" style={{ color: '#94A3B8' }}>
-                  Available: {formatCurrency(currentBalance)}
-                </p>
-              </div>
-            )}
-
-            {withdrawMethod && (
-              <Button
-                onClick={handleWithdraw}
-                disabled={withdrawMutation.isPending || !withdrawAmount || currentBalance <= 0}
-                className="w-full"
-                style={{ backgroundColor: '#EF4444', color: '#FFFFFF' }}
-              >
-                {withdrawMutation.isPending ? "Processing..." : `Withdraw via ${paymentMethods.withdraw.find(m => m.id === withdrawMethod)?.label}`}
-              </Button>
-            )}
-          </TabsContent>
-        </Tabs>
+        {/* Info Alert */}
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription className="text-sm">
+            <strong>Deposits:</strong> Fast crypto deposits with QR codes<br />
+            <strong>Withdrawals:</strong> Subject to admin approval (28% fee)
+          </AlertDescription>
+        </Alert>
       </DialogContent>
     </Dialog>
   );

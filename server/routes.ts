@@ -368,62 +368,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Balance management endpoints
+  // OLD DEPOSIT ENDPOINT - DISABLED FOR SECURITY
+  // Use /api/crypto/create-payment instead for verified crypto deposits
   app.post("/api/balance/deposit", requireAuth, async (req: any, res) => {
-    try {
-      const { amount } = req.body;
-      const userId = req.user.id;
-
-      // Validate amount
-      if (!amount || isNaN(amount) || amount <= 0) {
-        return res.status(400).json({ message: "Invalid deposit amount" });
-      }
-
-      if (amount < 1) {
-        return res.status(400).json({ message: "Minimum deposit amount is $1.00" });
-      }
-
-      if (amount > 10000) {
-        return res.status(400).json({ message: "Maximum deposit amount is $10,000.00 per transaction" });
-      }
-
-      // Get current user
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      if (user.depositFrozen) {
-        return res.status(403).json({ message: "Your deposits have been frozen. Please contact support." });
-      }
-
-      // Calculate new balance
-      const currentBalance = parseFloat(user.siteCash?.toString() || '0');
-      const newBalance = currentBalance + amount;
-
-      // Update user balance
-      await storage.updateUser(userId, {
-        siteCash: newBalance.toString()
-      });
-
-      // Log the transaction
-      await storage.createAdminLog({
-        adminUserId: userId,
-        targetUserId: userId,
-        action: 'balance_deposit',
-        oldValue: currentBalance.toString(),
-        newValue: newBalance.toString(),
-        notes: `User deposited $${amount.toFixed(2)}`
-      });
-
-      res.json({ 
-        success: true, 
-        message: "Deposit successful",
-        newBalance: newBalance
-      });
-    } catch (error) {
-      console.error("Error processing deposit:", error);
-      res.status(500).json({ message: "Failed to process deposit" });
-    }
+    return res.status(410).json({
+      message: "This deposit method is no longer available. Please use crypto deposits at /deposit",
+      error: "DEPRECATED_ENDPOINT"
+    });
   });
 
   app.post("/api/balance/withdraw", requireAuth, async (req: any, res) => {
