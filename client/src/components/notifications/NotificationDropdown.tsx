@@ -145,6 +145,7 @@ export function NotificationDropdown() {
         <Button
           variant="ghost"
           className="h-10 w-10 md:h-10 md:w-10 p-0 relative flex items-center justify-center hover:bg-muted/50 transition-colors min-w-[44px] min-h-[44px]"
+          style={{ border: 'none' }}
         >
           <Bell className="w-4 h-4" />
           {unreadCount > 0 && (
