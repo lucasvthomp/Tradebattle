@@ -431,9 +431,25 @@ export default function Profile() {
 
   const uploadProfilePicture = async (base64Image: string) => {
     try {
-      const result = await apiRequest("PATCH", "/api/profile/picture", { profilePicture: base64Image });
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      const response = await apiRequest("PATCH", "/api/profile/picture", { profilePicture: base64Image });
+      const result = await response.json();
+
+      // Update the user data in the cache immediately with the full user object
+      if (result.user) {
+        // Force update the cache with the new user data
+        queryClient.setQueryData(["/api/user"], result.user);
+
+        // Also refetch to ensure consistency
+        queryClient.refetchQueries({ queryKey: ["/api/user"] });
+      }
+
+      // Clear preview and file state
+      setProfilePicturePreview(null);
+      setProfilePictureFile(null);
+
+      // Invalidate other queries that show profile picture
       queryClient.invalidateQueries({ queryKey: ["/api/users/public"] });
+
       toast({
         title: "Profile picture updated",
         description: "Your profile picture has been successfully updated.",
@@ -444,6 +460,9 @@ export default function Profile() {
         description: error.message || "Failed to update profile picture",
         variant: "destructive",
       });
+      // Clear preview on error too
+      setProfilePicturePreview(null);
+      setProfilePictureFile(null);
     }
   };
 
