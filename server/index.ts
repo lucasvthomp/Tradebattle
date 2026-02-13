@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
@@ -10,15 +9,28 @@ import { pool } from "./db";
 import { trackUserActivity } from "./middleware/activityTracker";
 
 // Debug: Log environment variable status at startup
-console.log("=== ENVIRONMENT VARIABLES CHECK ===");
-console.log("NODE_ENV:", process.env.NODE_ENV);
-console.log("NOWPAYMENTS_API_KEY present:", !!process.env.NOWPAYMENTS_API_KEY);
-console.log("NOWPAYMENTS_API_KEY length:", process.env.NOWPAYMENTS_API_KEY?.length || 0);
-console.log("NOWPAYMENTS_IPN_SECRET present:", !!process.env.NOWPAYMENTS_IPN_SECRET);
-console.log("NOWPAYMENTS_IPN_SECRET length:", process.env.NOWPAYMENTS_IPN_SECRET?.length || 0);
-console.log("DATABASE_URL present:", !!process.env.DATABASE_URL);
-console.log("SESSION_SECRET present:", !!process.env.SESSION_SECRET);
-console.log("===================================");
+console.log("\n");
+console.log("========================================");
+console.log("    ENVIRONMENT VARIABLES CHECK");
+console.log("========================================");
+console.log("Timestamp:", new Date().toISOString());
+console.log("NODE_ENV:", process.env.NODE_ENV || "not set");
+console.log("----------------------------------------");
+console.log("NOWPAYMENTS_API_KEY:");
+console.log("  - Present:", !!process.env.NOWPAYMENTS_API_KEY);
+console.log("  - Length:", process.env.NOWPAYMENTS_API_KEY?.length || 0);
+console.log("  - First 8 chars:", process.env.NOWPAYMENTS_API_KEY?.substring(0, 8) || "NONE");
+console.log("----------------------------------------");
+console.log("NOWPAYMENTS_IPN_SECRET:");
+console.log("  - Present:", !!process.env.NOWPAYMENTS_IPN_SECRET);
+console.log("  - Length:", process.env.NOWPAYMENTS_IPN_SECRET?.length || 0);
+console.log("  - First 8 chars:", process.env.NOWPAYMENTS_IPN_SECRET?.substring(0, 8) || "NONE");
+console.log("----------------------------------------");
+console.log("Other env vars:");
+console.log("  - DATABASE_URL present:", !!process.env.DATABASE_URL);
+console.log("  - SESSION_SECRET present:", !!process.env.SESSION_SECRET);
+console.log("========================================");
+console.log("\n");
 
 async function runMigrations() {
   const client = await pool.connect();
