@@ -11,7 +11,8 @@ import { trackUserActivity } from "./middleware/activityTracker";
 // Debug: Log environment variable status at startup
 console.log("\n");
 console.log("========================================");
-console.log("    ENVIRONMENT VARIABLES CHECK");
+console.log("    ENVIRONMENT VARIABLES CHECK v2");
+console.log("    Build: " + new Date().toISOString());
 console.log("========================================");
 console.log("Timestamp:", new Date().toISOString());
 console.log("NODE_ENV:", process.env.NODE_ENV || "not set");
