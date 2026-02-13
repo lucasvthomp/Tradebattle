@@ -2079,6 +2079,52 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
 }));
 
 /**
+ * GET /api/users/public/:userId
+ * Get specific user's public profile information
+ */
+router.get('/users/public/:userId', asyncHandler(async (req, res) => {
+  const userId = parseInt(req.params.userId);
+
+  if (!userId || isNaN(userId)) {
+    return res.status(400).json({
+      success: false,
+      error: 'Invalid user ID'
+    });
+  }
+
+  const user = await storage.getUser(userId);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      error: 'User not found'
+    });
+  }
+
+  // Get additional stats
+  const achievements = await storage.getUserAchievements(user.id);
+  const achievementCount = achievements.length;
+  const tournamentCount = await storage.getUserTournamentCount(user.id);
+  const tradingStreak = await storage.getUserTradingStreak(user.id);
+
+  res.json({
+    success: true,
+    data: {
+      id: user.id,
+      username: user.username,
+      profilePicture: user.profilePicture,
+      subscriptionTier: user.subscriptionTier,
+      createdAt: user.createdAt,
+      totalTrades: user.totalTrades || 0,
+      achievementCount,
+      tournamentCount,
+      tradingStreak,
+      lastActivity: user.lastActivity,
+    }
+  });
+}));
+
+/**
  * GET /api/users/public
  * Get all users with public profile information
  */
@@ -2275,9 +2321,13 @@ router.patch('/profile/picture', requireAuth, asyncHandler(async (req, res) => {
 
   await storage.updateProfilePicture(userId, profilePicture);
 
+  // Return updated user data
+  const updatedUser = await storage.getUser(userId);
+
   res.json({
     success: true,
-    message: 'Profile picture updated successfully'
+    message: 'Profile picture updated successfully',
+    user: updatedUser
   });
 }));
 
