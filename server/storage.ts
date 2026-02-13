@@ -19,6 +19,8 @@ import {
   tournamentResults,
   promoCodes,
   codeRedemptions,
+  cryptoTransactions,
+  walletConnectionLogs,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -233,6 +235,31 @@ export interface IStorage {
   getAllPromoCodes(): Promise<PromoCode[]>;
   updatePromoCode(id: number, updates: Partial<PromoCode>): Promise<PromoCode>;
   deletePromoCode(id: number): Promise<void>;
+
+  // Wallet authentication methods
+  getUserByWallet(walletAddress: string): Promise<User | undefined>;
+  createWalletUser(data: {
+    walletAddress: string;
+    username: string;
+    email?: string | null;
+    country?: string | null;
+    language?: string;
+    currency?: string;
+  }): Promise<User>;
+  linkWallet(userId: number, walletAddress: string): Promise<void>;
+  updateUserNonce(userId: number, nonce: string, expiry: Date): Promise<void>;
+  invalidateNonce(userId: number): Promise<void>;
+  setTempNonce(walletAddress: string, nonce: string, expiry: Date): Promise<void>;
+  getTempNonce(walletAddress: string): Promise<{ nonce: string; expiry: Date } | null>;
+  deleteTempNonce(walletAddress: string): Promise<void>;
+  logWalletConnection(log: {
+    userId?: number;
+    walletAddress: string;
+    action: string;
+    success: boolean;
+    errorMessage?: string;
+  }): Promise<void>;
+  addSiteCash(userId: number, amount: number, description: string): Promise<void>;
 
 }
 
@@ -1814,6 +1841,139 @@ export class DatabaseStorage implements IStorage {
     // Delete redemptions first (FK constraint)
     await db.delete(codeRedemptions).where(eq(codeRedemptions.codeId, id));
     await db.delete(promoCodes).where(eq(promoCodes.id, id));
+  }
+
+  // ── Wallet Authentication Methods ──────────────────────────────────
+
+  async getUserByWallet(walletAddress: string): Promise<User | undefined> {
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.walletAddress, walletAddress.toLowerCase()));
+    return result[0];
+  }
+
+  async createWalletUser(data: {
+    walletAddress: string;
+    username: string;
+    email?: string | null;
+    country?: string | null;
+    language?: string;
+    currency?: string;
+  }): Promise<User> {
+    // Get next userId (reuse existing logic from createUser)
+    const maxUserIdResult = await db.select({
+      maxUserId: sql`COALESCE(MAX(user_id), -1)`
+    }).from(users);
+    const nextUserId = (maxUserIdResult[0]?.maxUserId as number ?? -1) + 1;
+
+    const result = await db.insert(users).values({
+      walletAddress: data.walletAddress.toLowerCase(),
+      username: data.username,
+      email: data.email || null,
+      password: null, // No password for wallet users
+      userId: nextUserId,
+      country: data.country || null,
+      language: data.language || 'English',
+      currency: data.currency || 'USD',
+      walletVerified: true,
+      walletLinkedAt: new Date(),
+    }).returning();
+
+    const newUser = result[0];
+
+    // Award welcome achievement (reuse existing ensureWelcomeAchievement)
+    await this.ensureWelcomeAchievement(newUser.id);
+
+    return newUser;
+  }
+
+  async linkWallet(userId: number, walletAddress: string): Promise<void> {
+    await db.update(users)
+      .set({
+        walletAddress: walletAddress.toLowerCase(),
+        walletVerified: true,
+        walletLinkedAt: new Date(),
+      })
+      .where(eq(users.id, userId));
+  }
+
+  async updateUserNonce(userId: number, nonce: string, expiry: Date): Promise<void> {
+    await db.update(users)
+      .set({ authNonce: nonce, nonceExpiry: expiry })
+      .where(eq(users.id, userId));
+  }
+
+  async invalidateNonce(userId: number): Promise<void> {
+    await db.update(users)
+      .set({ authNonce: null, nonceExpiry: null })
+      .where(eq(users.id, userId));
+  }
+
+  // Temporary nonces for new users (in-memory cache)
+  private tempNonces = new Map<string, { nonce: string; expiry: Date }>();
+
+  async setTempNonce(walletAddress: string, nonce: string, expiry: Date): Promise<void> {
+    this.tempNonces.set(walletAddress.toLowerCase(), { nonce, expiry });
+
+    // Auto-cleanup after 10 minutes
+    setTimeout(() => {
+      this.tempNonces.delete(walletAddress.toLowerCase());
+    }, 10 * 60 * 1000);
+  }
+
+  async getTempNonce(walletAddress: string): Promise<{ nonce: string; expiry: Date } | null> {
+    const data = this.tempNonces.get(walletAddress.toLowerCase());
+    if (!data || new Date() > data.expiry) {
+      this.tempNonces.delete(walletAddress.toLowerCase());
+      return null;
+    }
+    return data;
+  }
+
+  async deleteTempNonce(walletAddress: string): Promise<void> {
+    this.tempNonces.delete(walletAddress.toLowerCase());
+  }
+
+  async logWalletConnection(log: {
+    userId?: number;
+    walletAddress: string;
+    action: string;
+    success: boolean;
+    errorMessage?: string;
+  }): Promise<void> {
+    await db.insert(walletConnectionLogs).values({
+      userId: log.userId || null,
+      walletAddress: log.walletAddress.toLowerCase(),
+      action: log.action,
+      success: log.success,
+      errorMessage: log.errorMessage || null,
+      ipAddress: null,
+      userAgent: null,
+    });
+  }
+
+  async addSiteCash(userId: number, amount: number, description: string): Promise<void> {
+    // Reuse existing transaction recording pattern
+    const user = await this.getUser(userId);
+    if (!user) throw new Error('User not found');
+
+    const balanceBefore = parseFloat(user.siteCash);
+    const balanceAfter = balanceBefore + amount;
+
+    await db.update(users)
+      .set({ siteCash: balanceAfter.toString() })
+      .where(eq(users.id, userId));
+
+    await db.insert(transactions).values({
+      userId,
+      type: 'bonus',
+      amount: amount.toString(),
+      balanceBefore: balanceBefore.toString(),
+      balanceAfter: balanceAfter.toString(),
+      status: 'completed',
+      description,
+    });
   }
 }
 

@@ -830,6 +830,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { promisify } = await import("util");
       const scryptAsync = promisify(scrypt);
 
+      if (!user.password) {
+        return res.status(400).json({ message: "Password-based authentication not set up for this account" });
+      }
+
       if (user.password.includes(".")) {
         const [hashed, salt] = user.password.split(".");
         if (!hashed || !salt) return res.status(400).json({ message: "Invalid current password" });

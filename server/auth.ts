@@ -10,6 +10,8 @@ import { pool } from "./db";
 import { User as SchemaUser } from "@shared/schema";
 import { containsProfanity } from "./utils/profanityFilter.js";
 import { generateToken, sendVerificationEmail } from "./services/email.js";
+import { ethers } from "ethers";
+import rateLimit from "express-rate-limit";
 
 declare global {
   namespace Express {
@@ -40,6 +42,98 @@ async function comparePasswords(supplied: string, stored: string): Promise<boole
 const failedLoginAttempts = new Map<string, { count: number; lockedUntil: number }>();
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_DURATION_MS = 15 * 60 * 1000; // 15 minutes
+
+// ── Wallet Authentication Helpers ──────────────────────────────────
+
+// Generate cryptographically secure nonce
+function generateNonce(): string {
+  return randomBytes(32).toString('hex'); // 64 character hex
+}
+
+// Construct message for user to sign
+function constructAuthMessage(nonce: string, timestamp: string, wallet: string): string {
+  return `Sign this message to authenticate with Tradebattle.
+
+Nonce: ${nonce}
+Timestamp: ${timestamp}
+Wallet: ${wallet}
+
+This request will not trigger a blockchain transaction or cost any gas fees.`;
+}
+
+// Verify wallet signature
+async function verifyWalletSignature(
+  walletAddress: string,
+  signature: string,
+  message: string
+): Promise<boolean> {
+  try {
+    const recoveredAddress = ethers.verifyMessage(message, signature);
+    return recoveredAddress.toLowerCase() === walletAddress.toLowerCase();
+  } catch (error) {
+    console.error('Signature verification failed:', error);
+    return false;
+  }
+}
+
+// Authenticate user via wallet signature
+async function authenticateWallet(
+  walletAddress: string,
+  signature: string
+): Promise<SchemaUser | null> {
+  try {
+    // 1. Fetch user and nonce
+    const user = await storage.getUserByWallet(walletAddress);
+    if (!user) return null;
+
+    // 2. Verify nonce exists and hasn't expired
+    if (!user.authNonce || !user.nonceExpiry) {
+      throw new Error('No pending authentication request');
+    }
+
+    if (new Date() > user.nonceExpiry) {
+      throw new Error('Authentication request expired');
+    }
+
+    // 3. Reconstruct message
+    const message = constructAuthMessage(
+      user.authNonce,
+      user.nonceExpiry.toISOString(),
+      walletAddress
+    );
+
+    // 4. Verify signature
+    const isValid = await verifyWalletSignature(walletAddress, signature, message);
+    if (!isValid) {
+      throw new Error('Invalid signature');
+    }
+
+    // 5. Invalidate nonce (prevent replay)
+    await storage.invalidateNonce(user.id);
+
+    // 6. Log successful authentication
+    await storage.logWalletConnection({
+      userId: user.id,
+      walletAddress,
+      action: 'login_success',
+      success: true,
+    });
+
+    return user;
+
+  } catch (error: any) {
+    console.error('Wallet authentication failed:', error);
+
+    await storage.logWalletConnection({
+      walletAddress,
+      action: 'login_failed',
+      success: false,
+      errorMessage: error.message,
+    });
+
+    return null;
+  }
+}
 
 export function setupAuth(app: Express) {
   const PgStore = connectPgSimple(session);
@@ -80,7 +174,7 @@ export function setupAuth(app: Express) {
         }
 
         const user = await storage.getUserByUsername(username);
-        if (!user || !(await comparePasswords(password, user.password))) {
+        if (!user || !user.password || !(await comparePasswords(password, user.password))) {
           // Track failed attempt
           const current = failedLoginAttempts.get(lockoutKey) || { count: 0, lockedUntil: 0 };
           current.count += 1;
@@ -226,6 +320,205 @@ export function setupAuth(app: Express) {
       res.status(500).json({ message: "Failed to fetch user" });
     }
   });
+
+  // ── Wallet Authentication Endpoints ───────────────────────────────
+
+  // Rate limiters
+  const nonceRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: 'Too many authentication attempts',
+  });
+
+  const signatureRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 5,
+    message: 'Too many login attempts',
+  });
+
+  // 1. Request nonce for wallet authentication
+  app.post('/api/auth/wallet/nonce', nonceRateLimiter, async (req, res) => {
+    try {
+      const { walletAddress } = req.body;
+
+      if (!ethers.isAddress(walletAddress)) {
+        return res.status(400).json({ error: 'Invalid wallet address' });
+      }
+
+      const nonce = generateNonce();
+      const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+      let user = await storage.getUserByWallet(walletAddress);
+      let isNewUser = false;
+
+      if (user) {
+        await storage.updateUserNonce(user.id, nonce, expiry);
+      } else {
+        await storage.setTempNonce(walletAddress, nonce, expiry);
+        isNewUser = true;
+      }
+
+      res.json({
+        nonce,
+        message: constructAuthMessage(nonce, expiry.toISOString(), walletAddress),
+        isNewUser,
+      });
+
+    } catch (error) {
+      console.error('Nonce generation error:', error);
+      res.status(500).json({ error: 'Failed to generate authentication challenge' });
+    }
+  });
+
+  // 2. Verify signature and login
+  app.post('/api/auth/wallet/verify', signatureRateLimiter, async (req, res) => {
+    try {
+      const { walletAddress, signature } = req.body;
+
+      const user = await authenticateWallet(walletAddress, signature);
+
+      if (!user) {
+        return res.status(401).json({ error: 'Authentication failed' });
+      }
+
+      if (user.banned) {
+        return res.status(403).json({ error: 'Account suspended' });
+      }
+
+      req.login(user, (err) => {
+        if (err) {
+          console.error('Session creation error:', err);
+          return res.status(500).json({ error: 'Failed to create session' });
+        }
+
+        res.json({
+          user: sanitizeUser(user),
+          message: 'Authentication successful',
+        });
+      });
+
+    } catch (error) {
+      console.error('Signature verification error:', error);
+      res.status(500).json({ error: 'Authentication failed' });
+    }
+  });
+
+  // 3. Register new wallet user
+  app.post('/api/auth/wallet/register', async (req, res) => {
+    try {
+      const { walletAddress, signature, username, email, country, language, currency } = req.body;
+
+      // Verify signature first
+      const tempNonce = await storage.getTempNonce(walletAddress);
+      if (!tempNonce || new Date() > tempNonce.expiry) {
+        return res.status(400).json({ error: 'Invalid or expired authentication request' });
+      }
+
+      const message = constructAuthMessage(
+        tempNonce.nonce,
+        tempNonce.expiry.toISOString(),
+        walletAddress
+      );
+
+      const isValid = await verifyWalletSignature(walletAddress, signature, message);
+      if (!isValid) {
+        return res.status(400).json({ error: 'Invalid signature' });
+      }
+
+      // Validate username
+      if (!username || username.length < 3 || username.length > 20 || !/^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username)) {
+        return res.status(400).json({ error: 'Username must be 3-20 characters, letters/numbers, and at most one underscore' });
+      }
+
+      if (containsProfanity(username)) {
+        return res.status(400).json({ error: 'Username contains inappropriate language' });
+      }
+
+      // Check duplicates
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ error: 'Username already taken' });
+      }
+
+      const existingWallet = await storage.getUserByWallet(walletAddress);
+      if (existingWallet) {
+        return res.status(400).json({ error: 'Wallet already registered' });
+      }
+
+      // Create user (no password required)
+      const user = await storage.createWalletUser({
+        walletAddress,
+        username,
+        email: email || null,
+        country: country || null,
+        language: language || 'English',
+        currency: currency || 'USD',
+      });
+
+      await storage.deleteTempNonce(walletAddress);
+
+      req.login(user, (err) => {
+        if (err) {
+          return res.status(500).json({ error: 'Registration successful but failed to login' });
+        }
+
+        res.status(201).json({
+          user: sanitizeUser(user),
+          message: 'Registration successful',
+        });
+      });
+
+    } catch (error) {
+      console.error('Wallet registration error:', error);
+      res.status(500).json({ error: 'Registration failed' });
+    }
+  });
+
+  // 4. Link wallet to existing account
+  app.post('/api/user/link-wallet', requireAuth, async (req, res) => {
+    try {
+      const { walletAddress, signature } = req.body;
+      const userId = req.user!.id;
+
+      const tempNonce = await storage.getTempNonce(walletAddress);
+      if (!tempNonce) {
+        return res.status(400).json({ error: 'Please request a new authentication challenge' });
+      }
+
+      const message = constructAuthMessage(
+        tempNonce.nonce,
+        tempNonce.expiry.toISOString(),
+        walletAddress
+      );
+
+      const isValid = await verifyWalletSignature(walletAddress, signature, message);
+      if (!isValid) {
+        return res.status(400).json({ error: 'Invalid signature' });
+      }
+
+      // Check wallet isn't already linked
+      const existingWallet = await storage.getUserByWallet(walletAddress);
+      if (existingWallet && existingWallet.id !== userId) {
+        return res.status(400).json({ error: 'Wallet already linked to another account' });
+      }
+
+      await storage.linkWallet(userId, walletAddress);
+      await storage.deleteTempNonce(walletAddress);
+
+      // Award bonus
+      await storage.addSiteCash(userId, 100, 'Wallet linking bonus');
+
+      res.json({
+        success: true,
+        walletAddress,
+        bonus: 100,
+      });
+
+    } catch (error) {
+      console.error('Wallet linking error:', error);
+      res.status(500).json({ error: 'Failed to link wallet' });
+    }
+  });
 }
 
 // Strip sensitive fields before sending to client
@@ -235,6 +528,8 @@ function sanitizeUser(user: SchemaUser) {
     userId: user.userId,
     email: user.email,
     username: user.username,
+    walletAddress: user.walletAddress,
+    walletVerified: user.walletVerified,
     country: user.country,
     language: user.language,
     currency: user.currency,

@@ -31,11 +31,20 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").unique(), // New field for admin identification (Lucas=0, Murilo=1)
-  email: varchar("email", { length: 255 }).unique().notNull(),
+
+  // Wallet authentication fields
+  walletAddress: varchar("wallet_address", { length: 42 }).unique(),
+  authNonce: varchar("auth_nonce", { length: 64 }),
+  nonceExpiry: timestamp("nonce_expiry"),
+  walletVerified: boolean("wallet_verified").default(false).notNull(),
+  walletLinkedAt: timestamp("wallet_linked_at"),
+
+  // Traditional authentication (now optional for wallet-only users)
+  email: varchar("email", { length: 255 }).unique(),
   username: varchar("username", { length: 20 }).unique().notNull(), // 3-20 characters, letters/numbers, max 1 underscore
   profilePicture: text("profile_picture"), // Base64 encoded profile picture or URL
   lastUsernameChange: timestamp("last_username_change"), // Track when username was last changed (for 2-week restriction)
-  password: varchar("password", { length: 255 }).notNull(), // hashed password
+  password: varchar("password", { length: 255 }), // hashed password (null for wallet-only users)
   country: varchar("country", { length: 100 }), // User's country
   language: varchar("language", { length: 50 }).default("English"), // User's preferred language
   currency: varchar("currency", { length: 10 }).default("USD"), // User's preferred currency
@@ -66,6 +75,37 @@ export const users = pgTable("users", {
   lastActivity: timestamp("last_activity").defaultNow(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// Crypto transactions table for tracking deposits/withdrawals
+export const cryptoTransactions = pgTable("crypto_transactions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  walletAddress: varchar("wallet_address", { length: 42 }).notNull(),
+  transactionHash: varchar("transaction_hash", { length: 66 }).unique().notNull(),
+  transactionType: varchar("transaction_type", { length: 20 }).notNull(), // 'deposit' | 'withdrawal'
+  cryptoAmount: varchar("crypto_amount", { length: 78 }).notNull(), // Wei as string
+  cryptoCurrency: varchar("crypto_currency", { length: 10 }).notNull(), // 'ETH', 'USDT'
+  usdEquivalent: numeric("usd_equivalent", { precision: 15, scale: 2 }),
+  blockNumber: integer("block_number"),
+  confirmations: integer("confirmations").default(0).notNull(),
+  status: varchar("status", { length: 20 }).default("pending").notNull(), // 'pending' | 'confirmed' | 'failed'
+  chainId: integer("chain_id").notNull(), // 1=Ethereum mainnet
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  confirmedAt: timestamp("confirmed_at"),
+});
+
+// Wallet connection logs for security tracking
+export const walletConnectionLogs = pgTable("wallet_connection_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id),
+  walletAddress: varchar("wallet_address", { length: 42 }).notNull(),
+  action: varchar("action", { length: 50 }).notNull(), // 'connect_attempt', 'signature_verified', 'login_success'
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  success: boolean("success").notNull(),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 // Notifications table
@@ -550,6 +590,9 @@ export type PromoCode = typeof promoCodes.$inferSelect;
 export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
 export type CodeRedemption = typeof codeRedemptions.$inferSelect;
 export type InsertCodeRedemption = z.infer<typeof insertCodeRedemptionSchema>;
+
+export type CryptoTransaction = typeof cryptoTransactions.$inferSelect;
+export type WalletConnectionLog = typeof walletConnectionLogs.$inferSelect;
 
 // Export chat schema
 export * from "./chatSchema";

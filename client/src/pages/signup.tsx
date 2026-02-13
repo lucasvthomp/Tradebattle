@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { Loader2, Eye, EyeOff, CheckCircle, XCircle, ArrowRight, ArrowLeft, User, Lock, Globe, Rocket, Check } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 // Country and language mappings
 const countries = {
@@ -44,7 +45,16 @@ const steps = [
 
 export default function Signup() {
   const [, navigate] = useLocation();
+  const searchString = useSearch();
   const { registerMutation, user } = useAuth();
+  const { toast } = useToast();
+
+  // Detect wallet registration from URL params
+  const params = new URLSearchParams(searchString);
+  const walletAddress = params.get('wallet');
+  const walletSignature = params.get('signature');
+  const isWalletRegistration = !!walletAddress && !!walletSignature;
+
   const [step, setStep] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("English");
@@ -54,6 +64,7 @@ export default function Signup() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<{ checking: boolean; available: boolean | null; reason?: string }>({ checking: false, available: null });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (user) {
     navigate("/dashboard");
@@ -89,21 +100,64 @@ export default function Signup() {
     }
   }, [selectedCountry]);
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
-    registerMutation.mutate({
-      email,
-      password,
-      username,
-      country: selectedCountry,
-      language: selectedLanguage,
-      currency: selectedCurrency,
-    }, {
-      onSuccess: () => navigate("/dashboard"),
-    });
+
+    if (isWalletRegistration) {
+      // Wallet registration flow
+      setIsSubmitting(true);
+      try {
+        const response = await fetch('/api/auth/wallet/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            walletAddress,
+            signature: walletSignature,
+            username,
+            email: email || undefined,
+            country: selectedCountry || undefined,
+            language: selectedLanguage,
+            currency: selectedCurrency,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Registration failed');
+        }
+
+        const { user } = await response.json();
+        toast({
+          title: 'Registration successful',
+          description: `Welcome to Tradebattle, ${user.username}!`,
+        });
+        window.location.href = '/hub';
+      } catch (error: any) {
+        toast({
+          title: 'Registration failed',
+          description: error.message,
+          variant: 'destructive',
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    } else {
+      // Traditional password registration
+      registerMutation.mutate({
+        email,
+        password,
+        username,
+        country: selectedCountry,
+        language: selectedLanguage,
+        currency: selectedCurrency,
+      }, {
+        onSuccess: () => navigate("/dashboard"),
+      });
+    }
   };
 
-  // Password validation
+  // Password validation (skip for wallet users)
   const hasMinLength = password.length >= 6;
   const hasUppercase = /[A-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
@@ -112,11 +166,19 @@ export default function Signup() {
   const usernameValid = username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
   const emailValid = email.includes("@") && email.includes(".");
 
-  // Step validation
+  // Step validation (adjusted for wallet registration)
   const canProceed = () => {
     switch (step) {
-      case 1: return usernameValid && usernameStatus.available === true && emailValid;
-      case 2: return passwordValid;
+      case 1:
+        // For wallet users, only username is required (email optional)
+        if (isWalletRegistration) {
+          return usernameValid && usernameStatus.available === true;
+        }
+        // For password users, both username and email required
+        return usernameValid && usernameStatus.available === true && emailValid;
+      case 2:
+        // Skip password step for wallet users
+        return isWalletRegistration ? true : passwordValid;
       case 3: return !!selectedCountry;
       case 4: return true;
       default: return false;
@@ -124,11 +186,25 @@ export default function Signup() {
   };
 
   const nextStep = () => {
-    if (step < 4 && canProceed()) setStep(step + 1);
+    if (step < 4 && canProceed()) {
+      // Skip password step for wallet users
+      if (isWalletRegistration && step === 1) {
+        setStep(3); // Skip to location
+      } else {
+        setStep(step + 1);
+      }
+    }
   };
 
   const prevStep = () => {
-    if (step > 1) setStep(step - 1);
+    if (step > 1) {
+      // Skip password step when going back for wallet users
+      if (isWalletRegistration && step === 3) {
+        setStep(1);
+      } else {
+        setStep(step - 1);
+      }
+    }
   };
 
   return (
@@ -226,18 +302,28 @@ export default function Signup() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email address"
-                  className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                  style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937', fontSize: '15px' }}
-                />
-              </div>
+              {!isWalletRegistration && (
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                    style={{ backgroundColor: '#0F172A', color: '#F1F5F9', borderColor: '#1F2937', fontSize: '15px' }}
+                  />
+                </div>
+              )}
+
+              {isWalletRegistration && (
+                <div className="p-3 rounded-xl" style={{ backgroundColor: '#E3B34110', border: '1px solid #E3B34130' }}>
+                  <p className="text-xs text-center" style={{ color: '#E3B341' }}>
+                    Wallet: {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

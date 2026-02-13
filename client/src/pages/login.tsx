@@ -8,6 +8,7 @@ import { Link } from "wouter";
 import { Loader2, Eye, EyeOff, TrendingUp, Trophy, Users, ShieldCheck } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useQueryClient } from "@tanstack/react-query";
+import { WalletConnect } from "@/components/auth/WalletConnect";
 
 export default function Login() {
   const [, navigate] = useLocation();
@@ -230,6 +231,26 @@ export default function Login() {
                 Forgot your password?
               </Link>
             </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" style={{ borderColor: '#1F2937' }} />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="px-3 text-xs font-medium" style={{ backgroundColor: '#111827', color: '#94A3B8' }}>
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <WalletConnect
+              onSuccess={() => {
+                navigate("/hub");
+              }}
+              onNewUser={({ address, signature }) => {
+                navigate(`/signup?wallet=${encodeURIComponent(address)}&signature=${encodeURIComponent(signature)}`);
+              }}
+            />
           </form>
         )}
 
