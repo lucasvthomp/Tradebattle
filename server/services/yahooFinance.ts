@@ -18,13 +18,13 @@ const CRYPTO_SYMBOLS = [
   'AAVE-USD', 'APE-USD', 'SHIB-USD', 'MANA-USD', 'SAND-USD', 'CRO-USD'
 ];
 
-// Allowed exchanges for stock trading - NYSE only
-const ALLOWED_EXCHANGES = ['NYQ', 'NYSE'];
+// Allowed exchanges for stock trading - NYSE and NASDAQ
+const ALLOWED_EXCHANGES = ['NYQ', 'NYSE', 'NMS', 'NASDAQ', 'NGM', 'NCM'];
 
 /**
- * Validate if a stock symbol is from NYSE
+ * Validate if a stock symbol is from allowed exchanges (NYSE or NASDAQ)
  */
-export function isNYSEStock(exchange?: string): boolean {
+export function isAllowedExchange(exchange?: string): boolean {
   if (!exchange) return false;
   return ALLOWED_EXCHANGES.includes(exchange.toUpperCase());
 }
@@ -381,11 +381,11 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
 
     const meta = result.meta;
 
-    // Validate NYSE restriction for stocks (skip validation for crypto)
+    // Validate exchange restriction for stocks (skip validation for crypto)
     if (!isCrypto) {
       const exchange = meta.exchangeName || meta.exchange;
-      if (!isNYSEStock(exchange)) {
-        throw new Error(`Stock ${symbol} is not listed on NYSE. Only NYSE stocks are allowed. (Exchange: ${exchange || 'Unknown'})`);
+      if (!isAllowedExchange(exchange)) {
+        throw new Error(`Stock ${symbol} is not listed on NYSE or NASDAQ. Only NYSE and NASDAQ stocks are allowed. (Exchange: ${exchange || 'Unknown'})`);
       }
     }
 
@@ -452,8 +452,8 @@ export async function searchStocks(query: string): Promise<SearchResult[]> {
           return isCoinbaseCrypto(item.symbol);
         }
 
-        // For stocks, only allow NYSE
-        return isNYSEStock(item.exchange);
+        // For stocks, only allow NYSE and NASDAQ
+        return isAllowedExchange(item.exchange);
       })
       .slice(0, 10)
       .map((item: any) => ({
@@ -805,12 +805,12 @@ export async function getMultipleQuotes(symbols: string[]): Promise<StockQuote[]
 }
 
 /**
- * Get popular/trending stocks - NYSE only
+ * Get popular/trending stocks - NYSE and NASDAQ
  */
 export async function getPopularStocks(): Promise<StockQuote[]> {
-  // Popular NYSE-listed stocks only
-  const popularNYSESymbols = ['BAC', 'JPM', 'WMT', 'KO', 'DIS', 'BA', 'GE', 'PFE'];
-  return getMultipleQuotes(popularNYSESymbols);
+  // Popular stocks from both NYSE and NASDAQ
+  const popularSymbols = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'JPM', 'BAC', 'WMT', 'TSLA'];
+  return getMultipleQuotes(popularSymbols);
 }
 
 /**
