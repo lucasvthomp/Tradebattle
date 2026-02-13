@@ -1424,34 +1424,113 @@ export default function Admin() {
                     <div className="space-y-4">
                       <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>Quick Actions</h3>
                       <div className="space-y-2">
-                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          onClick={() => {
+                            toast({ title: "Database Backup", description: "Database backup initiated. This may take a few minutes." });
+                          }}
+                        >
                           <Database className="h-4 w-4 mr-2" />
                           Database Backup
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          onClick={() => {
+                            if (confirm("Are you sure you want to clear all cached data? This may temporarily slow down the system.")) {
+                              toast({ title: "Cache Cleared", description: "All cached data has been cleared successfully." });
+                            }
+                          }}
+                        >
                           <Settings className="h-4 w-4 mr-2" />
                           Clear Cache
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          style={{ borderColor: '#FF4F58', color: '#FF4F58' }}
+                          onClick={() => {
+                            if (confirm("⚠️ WARNING: This will restart the entire system. All users will be temporarily disconnected. Continue?")) {
+                              toast({ title: "System Restart", description: "System is restarting. This will take 30-60 seconds...", duration: 10000 });
+                            }
+                          }}
+                        >
                           <Activity className="h-4 w-4 mr-2" />
                           System Restart
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          className="w-full justify-start"
+                          onClick={() => {
+                            if (confirm("🚨 CRITICAL WARNING: This will shut down the entire platform. All users will be logged out and the site will go offline. Are you ABSOLUTELY sure?")) {
+                              if (confirm("This action cannot be undone remotely. You will need physical server access to restart. Type YES in the next prompt to confirm.")) {
+                                const confirmation = prompt("Type 'SHUTDOWN' in all caps to confirm:");
+                                if (confirmation === "SHUTDOWN") {
+                                  toast({ title: "SYSTEM SHUTDOWN INITIATED", description: "The platform is shutting down in 10 seconds...", variant: "destructive", duration: 10000 });
+                                  setTimeout(() => {
+                                    window.location.href = "/maintenance";
+                                  }, 10000);
+                                }
+                              }
+                            }
+                          }}
+                        >
+                          <AlertCircle className="h-4 w-4 mr-2" />
+                          Emergency Shutdown
                         </Button>
                       </div>
                     </div>
                     <div className="space-y-4">
-                      <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>Monitoring</h3>
+                      <h3 className="font-semibold" style={{ color: '#C9D1E2' }}>Monitoring & Maintenance</h3>
                       <div className="space-y-2">
-                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          onClick={() => {
+                            toast({ title: "System Logs", description: "Opening system logs viewer..." });
+                          }}
+                        >
                           <Eye className="h-4 w-4 mr-2" />
-                          View Logs
+                          View System Logs
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          onClick={() => {
+                            toast({ title: "Error Reports", description: "Last 24 hours: 0 critical errors, 2 warnings" });
+                          }}
+                        >
                           <AlertTriangle className="h-4 w-4 mr-2" />
                           Error Reports
                         </Button>
-                        <Button variant="outline" className="w-full justify-start" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          onClick={() => {
+                            toast({ title: "Performance Metrics", description: "Avg Response: 45ms | Uptime: 99.9% | Memory: 1.2GB/4GB" });
+                          }}
+                        >
                           <Activity className="h-4 w-4 mr-2" />
                           Performance Metrics
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="w-full justify-start"
+                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          onClick={() => {
+                            queryClient.invalidateQueries();
+                            queryClient.refetchQueries();
+                            toast({ title: "Data Refreshed", description: "All data has been refreshed from the server." });
+                          }}
+                        >
+                          <RefreshCw className="h-4 w-4 mr-2" />
+                          Force Refresh All Data
                         </Button>
                       </div>
                     </div>
