@@ -80,24 +80,60 @@ export class TournamentExpirationService {
 
   /**
    * Calculate final standings for a tournament
+   * Optimized to reduce N+1 queries by batching stock quote fetches
    */
   private async calculateFinalStandings(tournamentId: number): Promise<TournamentResultEntry[]> {
     const participants = await storage.getTournamentParticipants(tournamentId);
+
+    // Fetch all purchases for all participants at once
+    const allPurchasesPromises = participants.map(p =>
+      storage.getTournamentStockPurchases(tournamentId, p.userId)
+    );
+    const allPurchasesArrays = await Promise.all(allPurchasesPromises);
+
+    // Create a map of participant ID to their purchases
+    const purchasesByUser = new Map<number, any[]>();
+    participants.forEach((participant, index) => {
+      purchasesByUser.set(participant.userId, allPurchasesArrays[index]);
+    });
+
+    // Get all unique symbols from all purchases
+    const allSymbols = new Set<string>();
+    allPurchasesArrays.forEach(purchases => {
+      purchases.forEach(purchase => allSymbols.add(purchase.symbol));
+    });
+
+    // Batch fetch all stock quotes
+    const quotePromises = Array.from(allSymbols).map(async symbol => {
+      try {
+        const quote = await getStockQuote(symbol);
+        return { symbol, quote };
+      } catch (error) {
+        console.error(`Error fetching quote for ${symbol}:`, error);
+        return { symbol, quote: null };
+      }
+    });
+    const quoteResults = await Promise.all(quotePromises);
+
+    // Create a map of symbol to current price
+    const priceBySymbol = new Map<string, number | null>();
+    quoteResults.forEach(({ symbol, quote }) => {
+      priceBySymbol.set(symbol, quote ? Number(quote.price) : null);
+    });
+
+    // Calculate total value for each participant
     const results: TournamentResultEntry[] = [];
 
     for (const participant of participants) {
-      const purchases = await storage.getTournamentStockPurchases(tournamentId, participant.userId);
-
+      const purchases = purchasesByUser.get(participant.userId) || [];
       let totalValue = parseFloat(participant.balance?.toString() || '0');
 
-      // Calculate current value of all holdings
+      // Calculate current value of all holdings using cached quotes
       for (const purchase of purchases) {
-        try {
-          const currentQuote = await getStockQuote(purchase.symbol);
-          const currentValue = purchase.shares * Number(currentQuote.price);
-          totalValue += currentValue;
-        } catch (error) {
-          console.error(`Error fetching quote for ${purchase.symbol}:`, error);
+        const currentPrice = priceBySymbol.get(purchase.symbol);
+        if (currentPrice !== null && currentPrice !== undefined) {
+          totalValue += purchase.shares * currentPrice;
+        } else {
           // Use purchase price as fallback
           totalValue += purchase.shares * Number(purchase.purchasePrice);
         }

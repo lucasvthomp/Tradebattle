@@ -232,6 +232,55 @@ async function runMigrations() {
       );
     `);
 
+    // Create performance indexes
+    await client.query(`
+      -- Indexes for tournament participants queries
+      CREATE INDEX IF NOT EXISTS idx_tournament_participants_tournament_user
+        ON tournament_participants(tournament_id, user_id);
+      CREATE INDEX IF NOT EXISTS idx_tournament_participants_user
+        ON tournament_participants(user_id);
+
+      -- Indexes for tournament stock purchases
+      CREATE INDEX IF NOT EXISTS idx_tournament_stock_purchases_tournament_user
+        ON tournament_stock_purchases(tournament_id, user_id);
+      CREATE INDEX IF NOT EXISTS idx_tournament_stock_purchases_symbol
+        ON tournament_stock_purchases(symbol);
+
+      -- Indexes for promo codes
+      CREATE INDEX IF NOT EXISTS idx_promo_codes_code
+        ON promo_codes(code);
+      CREATE INDEX IF NOT EXISTS idx_promo_codes_active
+        ON promo_codes(is_active, expires_at);
+
+      -- Indexes for code redemptions
+      CREATE INDEX IF NOT EXISTS idx_code_redemptions_user
+        ON code_redemptions(user_id);
+      CREATE INDEX IF NOT EXISTS idx_code_redemptions_code
+        ON code_redemptions(code_id);
+
+      -- Indexes for notifications
+      CREATE INDEX IF NOT EXISTS idx_notifications_user_read
+        ON notifications(user_id, read);
+      CREATE INDEX IF NOT EXISTS idx_notifications_created
+        ON notifications(created_at DESC);
+
+      -- Indexes for friendships
+      CREATE INDEX IF NOT EXISTS idx_friendships_requester
+        ON friendships(requester_id, status);
+      CREATE INDEX IF NOT EXISTS idx_friendships_addressee
+        ON friendships(addressee_id, status);
+
+      -- Indexes for chat messages
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_tournament
+        ON chat_messages(tournament_id, created_at DESC);
+      CREATE INDEX IF NOT EXISTS idx_chat_messages_user
+        ON chat_messages(user_id);
+
+      -- Indexes for trade history
+      CREATE INDEX IF NOT EXISTS idx_trade_history_user
+        ON trade_history(user_id, created_at DESC);
+    `);
+
     log('Database migrations completed successfully');
   } catch (error) {
     log('Migration error: ' + (error as Error).message);

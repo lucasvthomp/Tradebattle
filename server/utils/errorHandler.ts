@@ -30,6 +30,12 @@ export class NotFoundError extends CustomError {
   }
 }
 
+export class UnauthorizedError extends CustomError {
+  constructor(message: string) {
+    super(message, 401);
+  }
+}
+
 export class RateLimitError extends CustomError {
   constructor(message: string = 'Rate limit exceeded') {
     super(message, 429);
@@ -126,8 +132,16 @@ export function validateSymbol(symbol: string): boolean {
 }
 
 /**
- * Sanitize input strings
+ * Sanitize input strings by encoding HTML entities
+ * Prevents XSS attacks by converting potentially dangerous characters
  */
 export function sanitizeInput(input: string): string {
-  return input.trim().replace(/[<>]/g, '');
+  return input
+    .trim()
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;');
 }

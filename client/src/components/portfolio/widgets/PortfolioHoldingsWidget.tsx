@@ -130,8 +130,7 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
                   <div
                     key={holding.symbol}
                     className="grid grid-cols-4 md:grid-cols-7 gap-3 md:gap-2 px-3 py-2 rounded-lg border border-border/50 hover:bg-muted/30 transition-colors items-center"
-                    style={{ minWidth: '600px' }}
-                  >
+                                      >
                     <div className="flex flex-col">
                       <span className="font-medium text-sm text-foreground">
                         {holding.symbol}
@@ -177,6 +176,7 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
                         variant="outline"
                         onClick={() => onSelectStock?.(holding.symbol)}
                         className="text-xs px-2 py-1 h-7"
+                        aria-label={`View chart for ${holding.symbol}`}
                         title="View chart"
                       >
                         <BarChart3 className="h-3 w-3" />
@@ -186,6 +186,7 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
                         variant="outline"
                         onClick={() => handleSell(holding)}
                         className="text-xs px-2 py-1 h-7"
+                        aria-label={`Sell ${holding.symbol}`}
                       >
                         Sell
                       </Button>

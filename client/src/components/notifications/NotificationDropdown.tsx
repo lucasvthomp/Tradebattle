@@ -144,6 +144,7 @@ export function NotificationDropdown() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
+          aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ''}`}
           className="h-10 w-10 md:h-10 md:w-10 p-0 relative flex items-center justify-center hover:bg-muted/50 transition-colors min-w-[44px] min-h-[44px]"
           style={{ border: 'none' }}
         >

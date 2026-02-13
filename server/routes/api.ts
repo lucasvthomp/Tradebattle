@@ -1733,7 +1733,7 @@ router.get('/admin/users', requireAuth, asyncHandler(async (req, res) => {
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({
       success: false,
       error: 'Admin access required'
@@ -1755,7 +1755,7 @@ router.patch('/admin/users/:userId/username', requireAuth, asyncHandler(async (r
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1787,7 +1787,7 @@ router.patch('/admin/users/:userId/balance', requireAuth, asyncHandler(async (re
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1814,7 +1814,7 @@ router.patch('/admin/users/:userId/note', requireAuth, asyncHandler(async (req, 
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1832,7 +1832,7 @@ router.patch('/admin/users/:userId/ban', requireAuth, asyncHandler(async (req, r
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1849,7 +1849,7 @@ router.patch('/admin/users/:userId/unban', requireAuth, asyncHandler(async (req,
   const targetUserId = parseInt(req.params.userId);
 
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1875,7 +1875,7 @@ router.patch('/admin/users/:userId/freeze-withdrawal', requireAuth, asyncHandler
   const { frozen } = req.body;
 
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1901,7 +1901,7 @@ router.patch('/admin/users/:userId/freeze-deposit', requireAuth, asyncHandler(as
   const { frozen } = req.body;
 
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1927,7 +1927,7 @@ router.patch('/admin/users/:userId/restrict-tournament', requireAuth, asyncHandl
   const { restricted } = req.body;
 
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1951,7 +1951,7 @@ router.get('/admin/stats', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
 
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -1968,7 +1968,7 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   // Check if user is admin (using subscription tier or username)
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 
@@ -2043,7 +2043,7 @@ router.delete('/admin/tournaments/:id', requireAuth, asyncHandler(async (req, re
 
   // Check if user is admin
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     throw new ValidationError('Access denied. Admin privileges required.');
   }
 
@@ -2247,7 +2247,7 @@ router.post('/tournaments/check-expiration', requireAuth, asyncHandler(async (re
   // Check if user is admin
   const userId = req.user.id;
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS' && !req.user.email.includes('admin'))) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     throw new UnauthorizedError('Admin access required');
   }
 
@@ -2839,7 +2839,7 @@ router.get('/tournaments/:id/results', asyncHandler(async (req, res) => {
 router.get('/admin/promo-codes', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -2854,7 +2854,7 @@ router.get('/admin/promo-codes', requireAuth, asyncHandler(async (req, res) => {
 router.post('/admin/promo-codes', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -2886,7 +2886,7 @@ router.patch('/admin/promo-codes/:id', requireAuth, asyncHandler(async (req, res
   const userId = req.user.id;
   const codeId = parseInt(req.params.id);
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -2912,7 +2912,7 @@ router.delete('/admin/promo-codes/:id', requireAuth, asyncHandler(async (req, re
   const userId = req.user.id;
   const codeId = parseInt(req.params.id);
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 
@@ -2931,7 +2931,7 @@ router.delete('/admin/promo-codes/:id', requireAuth, asyncHandler(async (req, re
 router.post('/admin/promo-codes/seed', requireAuth, asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const user = await storage.getUser(userId);
-  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+  if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
     return res.status(403).json({ error: 'Admin access required' });
   }
 

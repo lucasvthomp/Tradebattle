@@ -915,7 +915,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const user = await storage.getUser(userId);
-      if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+      if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
         return res.status(403).json({ message: "Admin access required" });
       }
       const limit = parseInt(req.query.limit as string) || 100;
@@ -931,7 +931,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.id;
       const user = await storage.getUser(userId);
-      if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin' && user.username !== 'LUCAS')) {
+      if (!user || (user.subscriptionTier !== 'administrator' && user.subscriptionTier !== 'admin')) {
         return res.status(403).json({ message: "Admin access required" });
       }
       const stats = await storage.getTransactionStats();
@@ -1103,6 +1103,169 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error verifying 2FA login:", error);
       res.status(500).json({ message: "Failed to verify 2FA" });
+    }
+  });
+
+  // ── Friends System ──────────────────────────────────────
+  // Send friend request
+  app.post('/api/friends/request', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { targetUserId } = req.body;
+
+      if (!targetUserId) {
+        return res.status(400).json({ message: "Target user ID is required" });
+      }
+
+      const friendship = await storage.sendFriendRequest(userId, targetUserId);
+      res.json({ success: true, data: friendship });
+    } catch (error: any) {
+      console.error("Error sending friend request:", error);
+      res.status(400).json({ message: error.message || "Failed to send friend request" });
+    }
+  });
+
+  // Accept friend request
+  app.post('/api/friends/:id/accept', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const friendshipId = parseInt(req.params.id);
+
+      if (isNaN(friendshipId)) {
+        return res.status(400).json({ message: "Invalid friendship ID" });
+      }
+
+      const friendship = await storage.acceptFriendRequest(friendshipId, userId);
+      res.json({ success: true, data: friendship });
+    } catch (error: any) {
+      console.error("Error accepting friend request:", error);
+      res.status(400).json({ message: error.message || "Failed to accept friend request" });
+    }
+  });
+
+  // Decline friend request
+  app.post('/api/friends/:id/decline', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const friendshipId = parseInt(req.params.id);
+
+      if (isNaN(friendshipId)) {
+        return res.status(400).json({ message: "Invalid friendship ID" });
+      }
+
+      const friendship = await storage.declineFriendRequest(friendshipId, userId);
+      res.json({ success: true, data: friendship });
+    } catch (error: any) {
+      console.error("Error declining friend request:", error);
+      res.status(400).json({ message: error.message || "Failed to decline friend request" });
+    }
+  });
+
+  // Remove friend
+  app.delete('/api/friends/:id', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const friendshipId = parseInt(req.params.id);
+
+      if (isNaN(friendshipId)) {
+        return res.status(400).json({ message: "Invalid friendship ID" });
+      }
+
+      await storage.removeFriend(friendshipId, userId);
+      res.json({ success: true, message: "Friend removed successfully" });
+    } catch (error: any) {
+      console.error("Error removing friend:", error);
+      res.status(400).json({ message: error.message || "Failed to remove friend" });
+    }
+  });
+
+  // Get friends list
+  app.get('/api/friends', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const friends = await storage.getFriends(userId);
+      res.json({ success: true, data: friends });
+    } catch (error) {
+      console.error("Error fetching friends:", error);
+      res.status(500).json({ message: "Failed to fetch friends" });
+    }
+  });
+
+  // Get pending friend requests
+  app.get('/api/friends/pending', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const requests = await storage.getPendingFriendRequests(userId);
+      res.json({ success: true, data: requests });
+    } catch (error) {
+      console.error("Error fetching pending requests:", error);
+      res.status(500).json({ message: "Failed to fetch pending requests" });
+    }
+  });
+
+  // Get sent friend requests
+  app.get('/api/friends/sent', requireAuth, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const requests = await storage.getSentFriendRequests(userId);
+      res.json({ success: true, data: requests });
+    } catch (error) {
+      console.error("Error fetching sent requests:", error);
+      res.status(500).json({ message: "Failed to fetch sent requests" });
+    }
+  });
+
+  // Get friendship status with specific user
+  app.get('/api/friends/status/:userId', requireAuth, async (req: any, res) => {
+    try {
+      const currentUserId = req.user.id;
+      const targetUserId = parseInt(req.params.userId);
+
+      if (isNaN(targetUserId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const status = await storage.getFriendshipStatus(currentUserId, targetUserId);
+      res.json({ success: true, data: status });
+    } catch (error) {
+      console.error("Error fetching friendship status:", error);
+      res.status(500).json({ message: "Failed to fetch friendship status" });
+    }
+  });
+
+  // ── Public Users API ──────────────────────────────────────
+  // Get list of public users (for people browsing page)
+  app.get('/api/users/public', async (req: any, res) => {
+    try {
+      const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
+      const offset = parseInt(req.query.offset as string) || 0;
+
+      const users = await storage.getPublicUsers(limit, offset);
+      res.json({ success: true, data: users });
+    } catch (error) {
+      console.error("Error fetching public users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Get specific user's public profile
+  app.get('/api/users/public/:userId', async (req: any, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+
+      if (isNaN(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const profile = await storage.getPublicUserProfile(userId);
+      res.json({ success: true, data: profile });
+    } catch (error: any) {
+      console.error("Error fetching user profile:", error);
+      if (error.message === 'User not found') {
+        res.status(404).json({ message: "User not found" });
+      } else {
+        res.status(500).json({ message: "Failed to fetch user profile" });
+      }
     }
   });
 

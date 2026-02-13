@@ -84,6 +84,8 @@ export interface IStorage {
   subtractUserBalance(userId: number, amount: number): Promise<User>;
   updateProfilePicture(userId: number, profilePicture: string): Promise<void>;
   getAllUsers(): Promise<User[]>;
+  getPublicUsers(limit?: number, offset?: number): Promise<any[]>;
+  getPublicUserProfile(userId: number): Promise<any>;
   deleteUser(id: number): Promise<void>;
   
   // Watchlist operations
@@ -195,6 +197,10 @@ export interface IStorage {
   getPendingFriendRequests(userId: number): Promise<any[]>;
   getSentFriendRequests(userId: number): Promise<any[]>;
   getFriendship(userId1: number, userId2: number): Promise<Friendship | undefined>;
+  getFriendshipStatus(userId1: number, userId2: number): Promise<{
+    status: 'none' | 'pending_sent' | 'pending_received' | 'friends';
+    friendshipId?: number;
+  }>;
   getFriendIds(userId: number): Promise<number[]>;
   getTournamentParticipantUserIds(tournamentId: number): Promise<number[]>;
   getTournamentInviteableUsers(tournamentId: number, userId: number): Promise<User[]>;
@@ -368,17 +374,64 @@ export class DatabaseStorage implements IStorage {
   async subtractUserBalance(userId: number, amount: number): Promise<User> {
     const result = await db
       .update(users)
-      .set({ 
+      .set({
         siteCash: sql`${users.siteCash} - ${amount.toString()}`,
         updatedAt: new Date()
       })
-      .where(eq(users.id, userId))
+      .where(
+        and(
+          eq(users.id, userId),
+          sql`${users.siteCash}::numeric >= ${amount.toString()}::numeric`
+        )
+      )
       .returning();
+
+    if (!result || result.length === 0) {
+      throw new Error('Insufficient balance or user not found');
+    }
+
     return result[0];
   }
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(asc(users.userId));
+  }
+
+  async getPublicUsers(limit: number = 50, offset: number = 0): Promise<any[]> {
+    const userList = await db
+      .select({
+        id: users.id,
+        username: users.username,
+        profilePicture: users.profilePicture,
+        lastActivity: users.lastActivity,
+        tournamentWins: users.tournamentWins,
+        subscriptionTier: users.subscriptionTier,
+      })
+      .from(users)
+      .orderBy(desc(users.lastActivity))
+      .limit(Math.min(limit, 100))
+      .offset(offset);
+
+    return userList;
+  }
+
+  async getPublicUserProfile(userId: number): Promise<any> {
+    const user = await this.getUser(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    // Return only public profile data
+    return {
+      id: user.id,
+      username: user.username,
+      profilePicture: user.profilePicture,
+      lastActivity: user.lastActivity,
+      tournamentWins: user.tournamentWins,
+      subscriptionTier: user.subscriptionTier,
+      // Add tournament stats
+      totalTournaments: await this.getUserTournamentCount(userId),
+    };
   }
 
   async deleteUser(id: number): Promise<void> {
@@ -1563,6 +1616,31 @@ export class DatabaseStorage implements IStorage {
     return result[0];
   }
 
+  async getFriendshipStatus(userId1: number, userId2: number): Promise<{
+    status: 'none' | 'pending_sent' | 'pending_received' | 'friends';
+    friendshipId?: number;
+  }> {
+    const friendship = await this.getFriendship(userId1, userId2);
+
+    if (!friendship) {
+      return { status: 'none' };
+    }
+
+    if (friendship.status === 'accepted') {
+      return { status: 'friends', friendshipId: friendship.id };
+    }
+
+    if (friendship.status === 'pending') {
+      if (friendship.requesterId === userId1) {
+        return { status: 'pending_sent', friendshipId: friendship.id };
+      } else {
+        return { status: 'pending_received', friendshipId: friendship.id };
+      }
+    }
+
+    return { status: 'none' };
+  }
+
   async getFriendIds(userId: number): Promise<number[]> {
     const results = await db
       .select()
@@ -1804,19 +1882,46 @@ export class DatabaseStorage implements IStorage {
   }
 
   async redeemCode(codeId: number, userId: number): Promise<CodeRedemption> {
-    // Insert redemption record
-    const result = await db
-      .insert(codeRedemptions)
-      .values({ codeId, userId })
-      .returning();
+    // Use a transaction to ensure atomicity and prevent race conditions
+    return await db.transaction(async (tx) => {
+      // Get the promo code with row-level lock (FOR UPDATE)
+      const [promoCode] = await tx
+        .select()
+        .from(promoCodes)
+        .where(eq(promoCodes.id, codeId))
+        .for('update');
 
-    // Increment currentUses on the promo code
-    await db
-      .update(promoCodes)
-      .set({ currentUses: sql`${promoCodes.currentUses} + 1` })
-      .where(eq(promoCodes.id, codeId));
+      if (!promoCode) {
+        throw new Error('Promo code not found');
+      }
 
-    return result[0];
+      // Check limits within the transaction
+      if (promoCode.usageType === 'single_use' && promoCode.currentUses >= 1) {
+        throw new Error('This code has already been used');
+      }
+
+      if (
+        promoCode.usageType === 'limited' &&
+        promoCode.maxUses !== null &&
+        promoCode.currentUses >= promoCode.maxUses
+      ) {
+        throw new Error('This code has reached its maximum number of uses');
+      }
+
+      // Insert redemption record
+      const [redemption] = await tx
+        .insert(codeRedemptions)
+        .values({ codeId, userId })
+        .returning();
+
+      // Increment currentUses
+      await tx
+        .update(promoCodes)
+        .set({ currentUses: sql`${promoCodes.currentUses} + 1` })
+        .where(eq(promoCodes.id, codeId));
+
+      return redemption;
+    });
   }
 
   async createPromoCode(code: InsertPromoCode): Promise<PromoCode> {

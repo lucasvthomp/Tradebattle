@@ -57,6 +57,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 <Button
                   variant="ghost"
                   data-tour="balance"
+                  aria-label="Manage balance and deposit funds"
                   className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2"
                   style={{
                     borderColor: 'rgba(227, 179, 65, 0.4)',
@@ -109,6 +110,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <Button
                     onClick={onChatToggle}
                     variant="ghost"
+                    aria-label="Toggle chat"
                     className="h-10 w-10 p-0 flex items-center justify-center hover:bg-muted/50 transition-colors"
                   >
                     <MessageSquare className="w-4 h-4" />
@@ -136,6 +138,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           {/* Mobile hamburger button - show only on mobile */}
           <Button
             variant="ghost"
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
             className="md:hidden w-10 h-10 p-0 min-w-[44px] min-h-[44px]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >

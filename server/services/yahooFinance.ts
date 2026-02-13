@@ -9,14 +9,32 @@ yahooFinance.setGlobalConfig({
   },
 });
 
-// List of known cryptocurrency symbols
+// List of Coinbase-supported cryptocurrency symbols only
+// Restricted to major cryptocurrencies available on Coinbase
 const CRYPTO_SYMBOLS = [
-  'BTC-USD', 'ETH-USD', 'BNB-USD', 'XRP-USD', 'ADA-USD', 'DOGE-USD',
-  'SOL-USD', 'DOT-USD', 'MATIC-USD', 'LTC-USD', 'AVAX-USD', 'UNI-USD',
-  'LINK-USD', 'ATOM-USD', 'XLM-USD', 'ALGO-USD', 'VET-USD', 'FIL-USD',
-  'TRX-USD', 'AAVE-USD', 'SHIB-USD', 'CRO-USD', 'NEAR-USD', 'SAND-USD',
-  'MANA-USD', 'AXS-USD', 'GALA-USD', 'APE-USD', 'OP-USD', 'ARB-USD'
+  'BTC-USD', 'ETH-USD', 'USDT-USD', 'XRP-USD', 'SOL-USD', 'USDC-USD',
+  'ADA-USD', 'DOGE-USD', 'TRX-USD', 'AVAX-USD', 'LINK-USD', 'DOT-USD',
+  'MATIC-USD', 'LTC-USD', 'UNI-USD', 'ATOM-USD', 'XLM-USD', 'ALGO-USD',
+  'AAVE-USD', 'APE-USD', 'SHIB-USD', 'MANA-USD', 'SAND-USD', 'CRO-USD'
 ];
+
+// Allowed exchanges for stock trading - NYSE only
+const ALLOWED_EXCHANGES = ['NYQ', 'NYSE'];
+
+/**
+ * Validate if a stock symbol is from NYSE
+ */
+export function isNYSEStock(exchange?: string): boolean {
+  if (!exchange) return false;
+  return ALLOWED_EXCHANGES.includes(exchange.toUpperCase());
+}
+
+/**
+ * Validate if a crypto symbol is supported on Coinbase
+ */
+export function isCoinbaseCrypto(symbol: string): boolean {
+  return CRYPTO_SYMBOLS.includes(symbol.toUpperCase());
+}
 
 /**
  * Check if a symbol represents a cryptocurrency
@@ -331,6 +349,12 @@ export function getAllSectors(): string[] {
  * This bypasses the yahoo-finance2 library which triggers rate limits due to crumb/cookie setup.
  */
 export async function getStockQuote(symbol: string): Promise<StockQuote> {
+  // Validate exchange restrictions before fetching
+  const isCrypto = isCryptoSymbol(symbol);
+  if (isCrypto && !isCoinbaseCrypto(symbol)) {
+    throw new Error(`Cryptocurrency ${symbol} is not supported. Only Coinbase-listed cryptocurrencies are allowed.`);
+  }
+
   const cacheKey = `quote_${symbol}`;
   const cached = getCachedData(cacheKey);
 
@@ -356,6 +380,15 @@ export async function getStockQuote(symbol: string): Promise<StockQuote> {
     }
 
     const meta = result.meta;
+
+    // Validate NYSE restriction for stocks (skip validation for crypto)
+    if (!isCrypto) {
+      const exchange = meta.exchangeName || meta.exchange;
+      if (!isNYSEStock(exchange)) {
+        throw new Error(`Stock ${symbol} is not listed on NYSE. Only NYSE stocks are allowed. (Exchange: ${exchange || 'Unknown'})`);
+      }
+    }
+
     const currentPrice = meta.regularMarketPrice;
     const previousClosePrice = meta.chartPreviousClose || currentPrice;
     const change = currentPrice - previousClosePrice;
@@ -411,7 +444,17 @@ export async function searchStocks(query: string): Promise<SearchResult[]> {
     }
 
     const searchResults: SearchResult[] = result.quotes
-      .filter((item: any) => item.symbol && (item.shortname || item.longname))
+      .filter((item: any) => {
+        if (!item.symbol || (!item.shortname && !item.longname)) return false;
+
+        // Check if it's a crypto - only allow Coinbase-supported cryptos
+        if (isCryptoSymbol(item.symbol)) {
+          return isCoinbaseCrypto(item.symbol);
+        }
+
+        // For stocks, only allow NYSE
+        return isNYSEStock(item.exchange);
+      })
       .slice(0, 10)
       .map((item: any) => ({
         symbol: item.symbol,
@@ -762,11 +805,12 @@ export async function getMultipleQuotes(symbols: string[]): Promise<StockQuote[]
 }
 
 /**
- * Get popular/trending stocks
+ * Get popular/trending stocks - NYSE only
  */
 export async function getPopularStocks(): Promise<StockQuote[]> {
-  const popularSymbols = ['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'AMZN', 'META', 'NVDA', 'NFLX'];
-  return getMultipleQuotes(popularSymbols);
+  // Popular NYSE-listed stocks only
+  const popularNYSESymbols = ['BAC', 'JPM', 'WMT', 'KO', 'DIS', 'BA', 'GE', 'PFE'];
+  return getMultipleQuotes(popularNYSESymbols);
 }
 
 /**

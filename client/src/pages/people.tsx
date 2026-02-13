@@ -225,16 +225,15 @@ export default function People() {
                   <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
                     {/* Avatar */}
                     <div className="relative">
-                      <div className="w-32 h-32" style={{ border: '4px solid #E3B341', borderRadius: '16px', overflow: 'hidden' }}>
-                        <AvatarWithStatus
-                          className="w-32 h-32"
-                          src={profileData?.profilePicture}
-                          alt={profileData?.username}
-                          fallback={`${profileData?.username?.[0]?.toUpperCase() || ''}${profileData?.username?.[1]?.toUpperCase() || ''}`}
-                          lastActivity={profileData?.lastActivity}
-                          statusSize="lg"
-                        />
-                      </div>
+                      <AvatarWithStatus
+                        className="w-32 h-32"
+                        src={profileData?.profilePicture}
+                        alt={profileData?.username}
+                        fallback={`${profileData?.username?.[0]?.toUpperCase() || ''}${profileData?.username?.[1]?.toUpperCase() || ''}`}
+                        lastActivity={profileData?.lastActivity}
+                        statusSize="lg"
+                        showBorder={true}
+                      />
                     </div>
 
                     {/* User Info */}
@@ -560,16 +559,15 @@ export default function People() {
                   <Card key={person.id} className="shadow-lg hover:shadow-xl transition-all cursor-pointer" style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
                     <CardContent className="p-6">
                       <div className="flex items-center space-x-4 mb-4">
-                        <div style={{ border: '2px solid #E3B341', borderRadius: '8px', overflow: 'hidden' }}>
-                          <AvatarWithStatus
-                            className="w-16 h-16"
-                            src={person.profilePicture}
-                            alt={person.username}
-                            fallback={`${person.username?.[0]?.toUpperCase() || ''}${person.username?.[1]?.toUpperCase() || ''}`}
-                            lastActivity={person.lastActivity}
-                            statusSize="md"
-                          />
-                        </div>
+                        <AvatarWithStatus
+                          className="w-16 h-16"
+                          src={person.profilePicture}
+                          alt={person.username}
+                          fallback={`${person.username?.[0]?.toUpperCase() || ''}${person.username?.[1]?.toUpperCase() || ''}`}
+                          lastActivity={person.lastActivity}
+                          statusSize="md"
+                          showBorder={true}
+                        />
                         <div className="flex-1">
                           <h3 className="text-lg font-semibold" style={{ color: '#F1F5F9' }}>
                             {person.username}
