@@ -152,9 +152,54 @@ async function runMigrations() {
       CREATE INDEX IF NOT EXISTS idx_users_last_activity ON users(last_activity);
     `);
 
-    // Add wallet_address column for future payment system (optional, not used yet)
+    // Add wallet authentication columns for future crypto payment system
     await client.query(`
-      ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_address VARCHAR(255);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_address VARCHAR(42) UNIQUE;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS auth_nonce VARCHAR(64);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS nonce_expiry TIMESTAMP;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_verified BOOLEAN DEFAULT false NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_linked_at TIMESTAMP;
+    `);
+
+    // Make email and password optional for wallet-only users
+    await client.query(`
+      ALTER TABLE users ALTER COLUMN email DROP NOT NULL;
+      ALTER TABLE users ALTER COLUMN password DROP NOT NULL;
+    `);
+
+    // Create crypto_transactions table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS crypto_transactions (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        wallet_address VARCHAR(42) NOT NULL,
+        transaction_hash VARCHAR(66) UNIQUE NOT NULL,
+        transaction_type VARCHAR(20) NOT NULL,
+        crypto_amount VARCHAR(78) NOT NULL,
+        crypto_currency VARCHAR(10) NOT NULL,
+        usd_equivalent NUMERIC(15, 2),
+        block_number INTEGER,
+        confirmations INTEGER DEFAULT 0 NOT NULL,
+        status VARCHAR(20) DEFAULT 'pending' NOT NULL,
+        chain_id INTEGER NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        confirmed_at TIMESTAMP
+      );
+    `);
+
+    // Create wallet_connection_logs table
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS wallet_connection_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        wallet_address VARCHAR(42) NOT NULL,
+        action VARCHAR(50) NOT NULL,
+        ip_address VARCHAR(45),
+        user_agent TEXT,
+        success BOOLEAN NOT NULL,
+        error_message TEXT,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
     `);
 
     // Create notifications table
