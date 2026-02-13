@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { Loader2, Eye, EyeOff, CheckCircle, XCircle, ArrowRight, ArrowLeft, User, Lock, Globe, Rocket, Check } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 
 // Country and language mappings
@@ -65,6 +66,8 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<{ checking: boolean; available: boolean | null; reason?: string }>({ checking: false, available: null });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [acceptedToS, setAcceptedToS] = useState(false);
+  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
   if (user) {
     navigate("/dashboard");
@@ -180,7 +183,7 @@ export default function Signup() {
         // Skip password step for wallet users
         return isWalletRegistration ? true : passwordValid;
       case 3: return !!selectedCountry;
-      case 4: return true;
+      case 4: return acceptedToS && acceptedPrivacy; // Must accept both legal agreements
       default: return false;
     }
   };
@@ -424,7 +427,7 @@ export default function Signup() {
 
           {/* Step 4: Review */}
           {step === 4 && (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <div className="space-y-3">
                 {[
                   { label: "Username", value: username, color: '#E3B341' },
@@ -438,6 +441,51 @@ export default function Signup() {
                     <span className="text-sm font-semibold" style={{ color: item.color }}>{item.value}</span>
                   </div>
                 ))}
+              </div>
+
+              {/* Legal Agreements */}
+              <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="tos"
+                    checked={acceptedToS}
+                    onCheckedChange={(checked) => setAcceptedToS(checked as boolean)}
+                    className="mt-1"
+                    style={{ borderColor: acceptedToS ? '#10B981' : '#1F2937' }}
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="tos" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
+                      I agree to the{' '}
+                      <Link href="/terms" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#E3B341' }}>
+                        Terms of Service
+                      </Link>
+                      <span className="text-red-500 ml-1">*</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-3">
+                  <Checkbox
+                    id="privacy"
+                    checked={acceptedPrivacy}
+                    onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)}
+                    className="mt-1"
+                    style={{ borderColor: acceptedPrivacy ? '#10B981' : '#1F2937' }}
+                  />
+                  <div className="flex-1">
+                    <label htmlFor="privacy" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
+                      I have read and accept the{' '}
+                      <Link href="/privacy" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#E3B341' }}>
+                        Privacy Policy
+                      </Link>
+                      <span className="text-red-500 ml-1">*</span>
+                    </label>
+                  </div>
+                </div>
+
+                <p className="text-xs pt-2" style={{ color: '#5f6b7a', borderTop: '1px solid #1F2937' }}>
+                  By creating an account, you confirm that you are at least 18 years old and agree to receive important updates about your account.
+                </p>
               </div>
             </div>
           )}
@@ -474,9 +522,9 @@ export default function Signup() {
               <Button
                 type="button"
                 onClick={() => handleSubmit()}
-                disabled={registerMutation.isPending}
+                disabled={registerMutation.isPending || !canProceed()}
                 className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
-                style={{ backgroundColor: '#10B981', color: '#FFFFFF', boxShadow: '0 4px 20px rgba(16, 185, 129, 0.3)' }}
+                style={{ backgroundColor: canProceed() ? '#10B981' : '#1F2937', color: '#FFFFFF', boxShadow: canProceed() ? '0 4px 20px rgba(16, 185, 129, 0.3)' : 'none' }}
               >
                 {registerMutation.isPending ? (
                   <>

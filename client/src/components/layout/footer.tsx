@@ -77,7 +77,7 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-4 text-foreground">{t('support')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/support" className="hover:text-foreground transition-colors">
+                  <Link href="/contact" className="hover:text-foreground transition-colors">
                     Help Center
                   </Link>
                 </li>
@@ -100,10 +100,10 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="border-t border-gray-800 mt-8 pt-8">
+          <div className="mt-8 pt-8" style={{ borderTop: '1px solid #2B3A4C' }}>
             <div className="flex flex-col md:flex-row items-center justify-between">
-              <p className="text-gray-400 text-sm">
-                © 2024 ORSATH Holdings, LLC. All rights reserved.
+              <p className="text-sm" style={{ color: '#8A93A6' }}>
+                © 2026 ORSATH Holdings, LLC. All rights reserved.
               </p>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
                 <div className="flex items-center space-x-4 mr-6">
@@ -111,7 +111,8 @@ export default function Footer() {
                     href="https://instagram.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="hover:text-foreground transition-colors"
+                    style={{ color: '#8A93A6' }}
                     aria-label="Instagram"
                   >
                     <FaInstagram className="w-5 h-5" />
@@ -120,7 +121,8 @@ export default function Footer() {
                     href="https://facebook.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="hover:text-foreground transition-colors"
+                    style={{ color: '#8A93A6' }}
                     aria-label="Facebook"
                   >
                     <FaFacebook className="w-5 h-5" />
@@ -129,7 +131,8 @@ export default function Footer() {
                     href="https://twitter.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="hover:text-foreground transition-colors"
+                    style={{ color: '#8A93A6' }}
                     aria-label="Twitter"
                   >
                     <FaTwitter className="w-5 h-5" />
@@ -138,16 +141,17 @@ export default function Footer() {
                     href="https://tiktok.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-gray-400 hover:text-white transition-colors"
+                    className="hover:text-foreground transition-colors"
+                    style={{ color: '#8A93A6' }}
                     aria-label="TikTok"
                   >
                     <FaTiktok className="w-5 h-5" />
                   </a>
                 </div>
-                <Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/privacy" className="hover:text-foreground transition-colors" style={{ color: '#8A93A6' }}>
                   Privacy Policy
                 </Link>
-                <Link href="/terms" className="text-gray-400 hover:text-white transition-colors">
+                <Link href="/terms" className="hover:text-foreground transition-colors" style={{ color: '#8A93A6' }}>
                   Terms of Service
                 </Link>
               </div>
