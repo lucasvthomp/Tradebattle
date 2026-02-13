@@ -179,6 +179,24 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                   <span className="text-xs font-semibold" style={{ color: '#F1F5F9' }}>
                     {group.username}
                   </span>
+                  {(() => {
+                    const userInfo = users.find((u: any) => u.id === group.userId);
+                    return userInfo?.subscriptionTier === 'administrator' ? (
+                      <span
+                        className="text-[10px] font-bold"
+                        style={{
+                          background: 'linear-gradient(90deg, #FF6B35, #F7931E, #FDC830, #F37335, #FF6B35)',
+                          backgroundSize: '200% 100%',
+                          WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          animation: 'gradientShift 3s ease infinite'
+                        }}
+                      >
+                        Admin
+                      </span>
+                    ) : null;
+                  })()}
                   {isCurrentUser && (
                     <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
                   )}
@@ -258,9 +276,9 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
     staleTime: 60000,
   });
 
-  const allUsers: { id: number; username: string }[] = useMemo(() => {
+  const allUsers: { id: number; username: string; subscriptionTier?: string }[] = useMemo(() => {
     const raw = (usersResponse as any)?.data || [];
-    return raw.map((u: any) => ({ id: u.id, username: u.username }));
+    return raw.map((u: any) => ({ id: u.id, username: u.username, subscriptionTier: u.subscriptionTier }));
   }, [usersResponse]);
 
   const allMessages: ChatMessage[] = chatResponse?.data || [];

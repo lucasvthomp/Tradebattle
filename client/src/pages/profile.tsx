@@ -572,25 +572,49 @@ export default function Profile() {
                       <img
                         src={user.profilePicture}
                         alt="Profile"
-                        className="w-full h-full object-cover"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: '0.75rem'
+                        }}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#111827' }}>
                         <User className="w-10 h-10" style={{ color: '#E3B341' }} />
                       </div>
                     )}
-                    {/* Online status indicator */}
-                    <div className="absolute bottom-1 right-1 w-4 h-4 rounded-full" style={{ backgroundColor: '#10B981', borderColor: '#0F172A', borderWidth: '2px', borderStyle: 'solid' }} />
+                    {/* Online status indicator - positioned at perfect square corner */}
+                    <div
+                      className="absolute w-4 h-4 rounded-full"
+                      style={{
+                        backgroundColor: '#10B981',
+                        borderColor: '#0F172A',
+                        borderWidth: '2px',
+                        borderStyle: 'solid',
+                        bottom: '0',
+                        right: '0'
+                      }}
+                    />
                   </div>
 
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h2 className="text-2xl font-bold" style={{ color: '#F1F5F9' }}>{user.username}</h2>
                       {user?.subscriptionTier === 'administrator' && (
-                        <Badge style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
-                          <Crown className="w-3 h-3 mr-1" />
+                        <span
+                          className="text-sm font-semibold px-0"
+                          style={{
+                            background: 'linear-gradient(90deg, #FF6B35, #F7931E, #FDC830, #F37335, #FF6B35)',
+                            backgroundSize: '200% 100%',
+                            WebkitBackgroundClip: 'text',
+                            backgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            animation: 'gradientShift 3s ease infinite'
+                          }}
+                        >
                           Admin
-                        </Badge>
+                        </span>
                       )}
                     </div>
                     <p className="text-sm mb-2" style={{ color: '#94A3B8' }}>{user.email}</p>

@@ -997,3 +997,16 @@ textarea:focus-visible {
   background: #E3B341;
   box-shadow: 0 0 8px rgba(227, 179, 65, 0.4);
 }
+
+/* Admin badge animated gradient */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
