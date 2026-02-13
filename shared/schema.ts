@@ -73,6 +73,7 @@ export const users = pgTable("users", {
   lockedUntil: timestamp("locked_until"),
   tutorialCompleted: boolean("tutorial_completed").default(false).notNull(),
   lastActivity: timestamp("last_activity").defaultNow(),
+  walletAddress: varchar("wallet_address", { length: 255 }), // Optional - for future payment system integration
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

@@ -152,6 +152,11 @@ async function runMigrations() {
       CREATE INDEX IF NOT EXISTS idx_users_last_activity ON users(last_activity);
     `);
 
+    // Add wallet_address column for future payment system (optional, not used yet)
+    await client.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS wallet_address VARCHAR(255);
+    `);
+
     // Create notifications table
     await client.query(`
       CREATE TABLE IF NOT EXISTS notifications (
