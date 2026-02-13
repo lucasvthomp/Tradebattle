@@ -447,6 +447,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     getPayoutStatus
   } = await import("./services/nowPayments.js");
 
+  // Public diagnostic endpoint (no auth) for debugging Railway env vars
+  app.get("/api/crypto/env-check", async (req: any, res) => {
+    res.json({
+      timestamp: new Date().toISOString(),
+      nodeEnv: process.env.NODE_ENV,
+      hasApiKey: !!process.env.NOWPAYMENTS_API_KEY,
+      apiKeyLength: process.env.NOWPAYMENTS_API_KEY?.length || 0,
+      apiKeyFirst4: process.env.NOWPAYMENTS_API_KEY?.substring(0, 4) || 'none',
+      hasIpnSecret: !!process.env.NOWPAYMENTS_IPN_SECRET,
+      ipnSecretLength: process.env.NOWPAYMENTS_IPN_SECRET?.length || 0,
+      ipnSecretFirst4: process.env.NOWPAYMENTS_IPN_SECRET?.substring(0, 4) || 'none',
+      hasDatabaseUrl: !!process.env.DATABASE_URL,
+      hasSessionSecret: !!process.env.SESSION_SECRET,
+      allEnvVars: Object.keys(process.env).filter(key =>
+        key.includes('NOWPAYMENTS') || key.includes('NOW_PAYMENTS')
+      )
+    });
+  });
+
   // Diagnostic endpoint to check API configuration
   app.get("/api/crypto/status", requireAuth, async (req: any, res) => {
     try {

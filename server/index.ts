@@ -9,6 +9,17 @@ import { db } from "./db";
 import { pool } from "./db";
 import { trackUserActivity } from "./middleware/activityTracker";
 
+// Debug: Log environment variable status at startup
+console.log("=== ENVIRONMENT VARIABLES CHECK ===");
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("NOWPAYMENTS_API_KEY present:", !!process.env.NOWPAYMENTS_API_KEY);
+console.log("NOWPAYMENTS_API_KEY length:", process.env.NOWPAYMENTS_API_KEY?.length || 0);
+console.log("NOWPAYMENTS_IPN_SECRET present:", !!process.env.NOWPAYMENTS_IPN_SECRET);
+console.log("NOWPAYMENTS_IPN_SECRET length:", process.env.NOWPAYMENTS_IPN_SECRET?.length || 0);
+console.log("DATABASE_URL present:", !!process.env.DATABASE_URL);
+console.log("SESSION_SECRET present:", !!process.env.SESSION_SECRET);
+console.log("===================================");
+
 async function runMigrations() {
   const client = await pool.connect();
   try {
