@@ -41,11 +41,14 @@ import ResetPassword from "@/pages/reset-password";
 import Transactions from "@/pages/transactions";
 import Layout from "@/components/layout/layout";
 import Footer from "@/components/layout/footer";
+import { AnnouncementModal } from "@/components/announcements/AnnouncementModal";
+import { useAnnouncements } from "@/hooks/use-announcements";
 
 function Router() {
   const { user, isLoading } = useAuth();
   const [location] = useLocation();
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const { announcements, dismissAnnouncement } = useAnnouncements();
 
   // Handle page transitions
   useEffect(() => {
@@ -118,6 +121,14 @@ function Router() {
         </Switch>
         {shouldShowFooter && <Footer />}
       </Layout>
+
+      {/* System-wide announcements modal */}
+      {user && (
+        <AnnouncementModal
+          announcements={announcements}
+          onDismiss={dismissAnnouncement}
+        />
+      )}
     </>
   );
 }
