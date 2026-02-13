@@ -111,6 +111,11 @@ export default function Deposit() {
         currency: selectedCurrency,
       });
 
+      // Check if response has error
+      if (!response || !response.paymentId) {
+        throw new Error("Invalid response from payment server. Please contact support.");
+      }
+
       setPayment(response);
       setPaymentStatus("waiting");
 
@@ -121,13 +126,26 @@ export default function Deposit() {
       setPollingInterval(interval);
 
       toast({
-        title: "Payment Created",
-        description: "Send crypto to the address below to complete your deposit",
+        title: "Payment Created! 🎉",
+        description: "Your QR code is ready. Send crypto to complete your deposit.",
       });
     } catch (error: any) {
+      console.error("Payment creation error:", error);
+
+      // Better error messages
+      let errorMessage = "Failed to create payment. ";
+
+      if (error.message?.includes("API key") || error.message?.includes("401") || error.message?.includes("403")) {
+        errorMessage = "⚠️ Payment system not configured. Please contact support to enable crypto deposits.";
+      } else if (error.message?.includes("minimum") || error.message?.includes("min_amount")) {
+        errorMessage = "Amount too small for this cryptocurrency. Try a larger amount or different crypto.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
       toast({
-        title: "Error",
-        description: error.message || "Failed to create payment",
+        title: "Deposit Failed",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -255,16 +273,19 @@ export default function Deposit() {
               <CardContent className="space-y-6">
                 {/* Amount Input */}
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium">Deposit Amount (USD)</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-base font-semibold">Deposit Amount</Label>
+                    <span className="text-sm text-muted-foreground">USD</span>
+                  </div>
 
                   {/* Preset Amounts */}
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-4 gap-3">
                     {presetAmounts.map((preset) => (
                       <Button
                         key={preset}
                         variant={amount === preset.toString() ? "default" : "outline"}
                         onClick={() => setAmount(preset.toString())}
-                        className="h-12"
+                        className="h-14 text-base font-semibold"
                       >
                         ${preset}
                       </Button>
@@ -273,71 +294,89 @@ export default function Deposit() {
 
                   {/* Custom Amount */}
                   <div className="relative">
-                    <DollarSign className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
+                    <DollarSign className="w-5 h-5 text-muted-foreground absolute left-3 top-1/2 transform -translate-y-1/2" />
                     <Input
                       type="number"
-                      placeholder="Custom amount"
+                      placeholder="Enter custom amount..."
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
                       min="1"
                       max="10000"
                       step="0.01"
-                      className="pl-10"
+                      className="pl-10 h-14 text-lg"
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Min: $1.00 • Max: $10,000.00
-                  </p>
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>Minimum: $1.00</span>
+                    <span>Maximum: $10,000.00</span>
+                  </div>
                 </div>
 
                 <Separator />
 
                 {/* Currency Selection */}
                 <div className="space-y-3">
-                  <Label className="text-sm font-medium">Select Cryptocurrency</Label>
-                  <div className="grid gap-2">
-                    {currencies.map((currency) => (
-                      <button
-                        key={currency.code}
-                        onClick={() => setSelectedCurrency(currency.code)}
-                        className={`w-full p-4 rounded-lg border-2 text-left transition-all ${
-                          selectedCurrency === currency.code
-                            ? "border-primary bg-primary/5"
-                            : "border-border hover:border-primary/50"
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <p className="font-semibold text-foreground">{currency.name}</p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              Network: {currency.network} • Fee: {currency.estimatedFee}
-                            </p>
+                  <Label className="text-base font-semibold">Select Cryptocurrency</Label>
+                  {currencies.length === 0 ? (
+                    <Alert>
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>
+                        Loading payment options... If this persists, crypto deposits may not be configured yet.
+                      </AlertDescription>
+                    </Alert>
+                  ) : (
+                    <div className="grid gap-3">
+                      {currencies.map((currency) => (
+                        <button
+                          key={currency.code}
+                          onClick={() => setSelectedCurrency(currency.code)}
+                          className={`w-full p-5 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+                            selectedCurrency === currency.code
+                              ? "border-primary bg-primary/10 shadow-sm"
+                              : "border-border hover:border-primary/50"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex-1">
+                              <p className="font-bold text-base text-foreground">{currency.name}</p>
+                              <p className="text-sm text-muted-foreground mt-1">
+                                Network: <span className="font-medium">{currency.network}</span>
+                              </p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Fee: {currency.estimatedFee} • {currency.confirmationTime}
+                              </p>
+                            </div>
+                            {selectedCurrency === currency.code && (
+                              <CheckCircle2 className="w-6 h-6 text-primary flex-shrink-0" />
+                            )}
                           </div>
-                          <Badge variant="secondary" className="text-xs">
-                            {currency.confirmationTime}
-                          </Badge>
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Create Payment Button */}
                 <Button
                   onClick={handleCreatePayment}
-                  disabled={loading}
-                  className="w-full h-12 font-semibold"
+                  disabled={loading || !amount || parseFloat(amount) < 1 || currencies.length === 0}
+                  className="w-full h-16 text-lg font-bold"
                   size="lg"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating Payment...
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Creating Your Deposit...
+                    </>
+                  ) : currencies.length === 0 ? (
+                    <>
+                      <AlertCircle className="w-5 h-5 mr-2" />
+                      Crypto Deposits Unavailable
                     </>
                   ) : (
                     <>
-                      <Bitcoin className="w-4 h-4 mr-2" />
-                      Create Deposit
+                      <Bitcoin className="w-5 h-5 mr-2" />
+                      Create Deposit & Get QR Code
                     </>
                   )}
                 </Button>
