@@ -475,9 +475,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       try {
         // Test API key by fetching available currencies
-        await getAvailableCurrencies();
+        console.log("Testing NOWPayments API key...");
+        const result = await getAvailableCurrencies();
+        console.log("API key test SUCCESS, got", result.currencies?.length || 0, "currencies");
         apiKeyValid = true;
       } catch (error: any) {
+        console.error("API key test FAILED:", error);
         apiError = error.message;
       }
 
