@@ -11,6 +11,7 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { UserManagementDialog } from "@/components/admin/UserManagementDialog";
+import { TournamentManagementDialog } from "@/components/admin/TournamentManagementDialog";
 import {
   Shield,
   Users,
@@ -114,6 +115,7 @@ export default function Admin() {
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
   const [endTournamentOpen, setEndTournamentOpen] = useState(false);
+  const [tournamentManagementOpen, setTournamentManagementOpen] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [userFilter, setUserFilter] = useState("all");
   const [createCodeOpen, setCreateCodeOpen] = useState(false);
@@ -341,21 +343,8 @@ export default function Admin() {
 
   // Handle tournament actions
   const handleViewTournamentDetails = (tournament: any) => {
-    const timeLeft = new Date(tournament.endsAt).getTime() - new Date().getTime();
-    const isActive = timeLeft > 0;
-    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-
-    const timeDisplay = isActive
-      ? `${days > 0 ? days + 'd ' : ''}${hours > 0 ? hours + 'h ' : ''}${minutes}m remaining`
-      : 'Tournament ended';
-
-    toast({
-      title: `Tournament: ${tournament.name}`,
-      description: `Code: ${tournament.code} | ${tournament.memberCount} participants | ${timeDisplay} | Starting Balance: $${tournament.startingBalance}`,
-      duration: 5000,
-    });
+    setSelectedTournament(tournament);
+    setTournamentManagementOpen(true);
   };
 
   const handleViewTournamentParticipants = async (tournament: any) => {
@@ -1557,6 +1546,13 @@ export default function Admin() {
           user={selectedUser}
           open={userManagementOpen}
           onOpenChange={setUserManagementOpen}
+        />
+
+        {/* Tournament Management Dialog */}
+        <TournamentManagementDialog
+          tournament={selectedTournament}
+          open={tournamentManagementOpen}
+          onOpenChange={setTournamentManagementOpen}
         />
       </motion.div>
     </div>
