@@ -447,9 +447,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     getPayoutStatus
   } = await import("./services/nowPayments.js");
 
+  // Diagnostic endpoint to check API configuration
+  app.get("/api/crypto/status", requireAuth, async (req: any, res) => {
+    try {
+      const hasApiKey = !!process.env.NOWPAYMENTS_API_KEY && process.env.NOWPAYMENTS_API_KEY.length > 0;
+      const hasIpnSecret = !!process.env.NOWPAYMENTS_IPN_SECRET && process.env.NOWPAYMENTS_IPN_SECRET.length > 0;
+
+      let apiKeyValid = false;
+      let apiError = null;
+
+      if (hasApiKey) {
+        try {
+          // Test API key by fetching available currencies
+          await getAvailableCurrencies();
+          apiKeyValid = true;
+        } catch (error: any) {
+          apiError = error.message;
+        }
+      }
+
+      res.json({
+        configured: hasApiKey && hasIpnSecret,
+        hasApiKey,
+        hasIpnSecret,
+        apiKeyValid,
+        apiError,
+        message: !hasApiKey || !hasIpnSecret
+          ? "NOWPayments API keys not configured in environment variables"
+          : !apiKeyValid
+          ? `API key configured but invalid: ${apiError}`
+          : "NOWPayments configured and operational"
+      });
+    } catch (error) {
+      console.error("Error checking crypto status:", error);
+      res.status(500).json({ message: "Failed to check status" });
+    }
+  });
+
   // Get supported cryptocurrencies
   app.get("/api/crypto/currencies", requireAuth, async (req: any, res) => {
     try {
+      // Check if API is configured
+      if (!process.env.NOWPAYMENTS_API_KEY) {
+        return res.status(503).json({
+          message: "Payment system not configured",
+          currencies: []
+        });
+      }
+
+      // Return recommended currencies
       const currencies = getRecommendedCurrencies();
       res.json({ currencies });
     } catch (error) {
@@ -491,13 +537,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Your deposits have been frozen. Please contact support." });
       }
 
+      // Check if API is configured
+      if (!process.env.NOWPAYMENTS_API_KEY || !process.env.NOWPAYMENTS_IPN_SECRET) {
+        return res.status(503).json({
+          message: "Payment system not configured. Please contact administrator.",
+          error: "MISSING_API_KEYS"
+        });
+      }
+
       // Create IPN callback URL
       const protocol = req.protocol;
       const host = req.get('host');
       const ipnCallbackUrl = `${protocol}://${host}/api/crypto/ipn`;
 
+      console.log(`Creating payment: User ${userId}, Amount $${amount}, Currency ${currency}`);
+      console.log(`IPN Callback URL: ${ipnCallbackUrl}`);
+
       // Create NOWPayments payment
       const payment = await createPayment(userId, amount, currency, ipnCallbackUrl);
+
+      console.log(`Payment created successfully: ${payment.payment_id}`);
 
       // Store payment in database
       await storage.createCryptoCharge({
@@ -522,7 +581,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       console.error("Error creating crypto payment:", error);
-      res.status(500).json({ message: error.message || "Failed to create crypto payment" });
+
+      // Provide more specific error messages
+      let errorMessage = "Failed to create crypto payment";
+      let errorCode = "PAYMENT_ERROR";
+
+      if (error.message) {
+        if (error.message.includes("401") || error.message.includes("Invalid API key")) {
+          errorMessage = "Payment system authentication failed. Please contact administrator.";
+          errorCode = "INVALID_API_KEY";
+        } else if (error.message.includes("minimum")) {
+          errorMessage = error.message;
+          errorCode = "BELOW_MINIMUM";
+        } else if (error.message.includes("currency")) {
+          errorMessage = "Invalid cryptocurrency selected";
+          errorCode = "INVALID_CURRENCY";
+        } else {
+          errorMessage = error.message;
+        }
+      }
+
+      res.status(500).json({ message: errorMessage, error: errorCode, details: error.message });
     }
   });
 

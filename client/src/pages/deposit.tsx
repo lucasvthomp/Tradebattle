@@ -49,14 +49,26 @@ export default function Deposit() {
   const [copied, setCopied] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<string>("waiting");
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [systemStatus, setSystemStatus] = useState<any>(null);
 
   useEffect(() => {
     if (!user) {
       navigate("/login");
       return;
     }
+    checkSystemStatus();
     fetchCurrencies();
   }, [user, navigate]);
+
+  const checkSystemStatus = async () => {
+    try {
+      const status = await apiRequest("GET", "/api/crypto/status");
+      setSystemStatus(status);
+      console.log("Payment system status:", status);
+    } catch (error) {
+      console.error("Error checking system status:", error);
+    }
+  };
 
   useEffect(() => {
     return () => {
@@ -131,14 +143,29 @@ export default function Deposit() {
       });
     } catch (error: any) {
       console.error("Payment creation error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        response: error.response,
+        status: error.status,
+        data: error.data
+      });
 
       // Better error messages
       let errorMessage = "Failed to create payment. ";
 
-      if (error.message?.includes("API key") || error.message?.includes("401") || error.message?.includes("403")) {
-        errorMessage = "⚠️ Payment system not configured. Please contact support to enable crypto deposits.";
-      } else if (error.message?.includes("minimum") || error.message?.includes("min_amount")) {
+      // Check response data first (from apiRequest)
+      const errorData = error.response?.data || error.data || error;
+
+      if (errorData.error === "MISSING_API_KEYS" || errorData.error === "INVALID_API_KEY") {
+        errorMessage = "⚠️ Payment system not configured. Administrator needs to add API keys.";
+      } else if (errorData.error === "BELOW_MINIMUM") {
+        errorMessage = errorData.message || "Amount too small for this cryptocurrency. Try a larger amount.";
+      } else if (error.message?.includes("API key") || error.message?.includes("authentication")) {
+        errorMessage = "⚠️ Payment system authentication failed. Please contact administrator.";
+      } else if (error.message?.includes("minimum")) {
         errorMessage = "Amount too small for this cryptocurrency. Try a larger amount or different crypto.";
+      } else if (errorData.message) {
+        errorMessage = errorData.message;
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -252,6 +279,42 @@ export default function Deposit() {
             </Card>
           </div>
         </motion.div>
+
+        {/* System Status Alert */}
+        {systemStatus && !systemStatus.configured && (
+          <Alert className="mb-6 border-yellow-500 bg-yellow-500/10">
+            <AlertCircle className="h-4 w-4 text-yellow-500" />
+            <AlertDescription className="text-sm">
+              <strong>⚠️ Payment System Not Configured</strong>
+              <br />
+              The administrator needs to add NOWPayments API keys to enable deposits.
+              {systemStatus.hasApiKey === false && " Missing: NOWPAYMENTS_API_KEY"}
+              {systemStatus.hasIpnSecret === false && " Missing: NOWPAYMENTS_IPN_SECRET"}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {systemStatus && systemStatus.configured && !systemStatus.apiKeyValid && (
+          <Alert className="mb-6 border-red-500 bg-red-500/10">
+            <AlertCircle className="h-4 w-4 text-red-500" />
+            <AlertDescription className="text-sm">
+              <strong>❌ Invalid API Configuration</strong>
+              <br />
+              {systemStatus.apiError || "The NOWPayments API key is invalid or expired."}
+              <br />
+              Please contact the administrator.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {systemStatus && systemStatus.configured && systemStatus.apiKeyValid && (
+          <Alert className="mb-6 border-green-500 bg-green-500/10">
+            <AlertCircle className="h-4 w-4 text-green-500" />
+            <AlertDescription className="text-sm">
+              ✅ Payment system is operational and ready to accept deposits.
+            </AlertDescription>
+          </Alert>
+        )}
 
         {!payment ? (
           /* Payment Creation Form */
