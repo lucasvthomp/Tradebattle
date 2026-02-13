@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -43,6 +44,10 @@ import {
   Plus,
   ToggleLeft,
   Copy,
+  Megaphone,
+  PartyPopper,
+  Sparkles,
+  Send,
 } from "lucide-react";
 import {
   Dialog,
@@ -450,6 +455,7 @@ export default function Admin() {
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
               <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
+              <TabsTrigger value="announcements">Announcements</TabsTrigger>
               <TabsTrigger value="revenue">Revenue</TabsTrigger>
               <TabsTrigger value="transactions">Transactions</TabsTrigger>
               <TabsTrigger value="promo-codes">Promo Codes</TabsTrigger>
@@ -871,7 +877,183 @@ export default function Admin() {
               </Card>
             </TabsContent>
 
-            {/* ===== TAB 4: REVENUE ===== */}
+            {/* ===== TAB 4: ANNOUNCEMENTS ===== */}
+            <TabsContent value="announcements" className="space-y-6">
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                    <Megaphone className="h-5 w-5" style={{ color: '#E3B341' }} />
+                    Create System-Wide Announcement
+                  </CardTitle>
+                  <CardDescription style={{ color: '#8A93A6' }}>
+                    Send messages that appear when users log in. Add custom visual effects!
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Announcement Title</Label>
+                      <Input
+                        placeholder="e.g., Big Tournament This Weekend!"
+                        style={{ backgroundColor: '#0F172A', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Type</Label>
+                      <Select defaultValue="info">
+                        <SelectTrigger style={{ backgroundColor: '#0F172A', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="info">Info</SelectItem>
+                          <SelectItem value="success">Success</SelectItem>
+                          <SelectItem value="warning">Warning</SelectItem>
+                          <SelectItem value="celebration">Celebration</SelectItem>
+                          <SelectItem value="urgent">Urgent</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Message</Label>
+                    <Textarea
+                      placeholder="Enter your announcement message here..."
+                      rows={4}
+                      style={{ backgroundColor: '#0F172A', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Visual Effect</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        style={{ borderColor: '#2B3A4C' }}
+                      >
+                        <Sparkles className="h-6 w-6" style={{ color: '#E3B341' }} />
+                        <span className="text-xs">None</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        style={{ borderColor: '#2B3A4C' }}
+                      >
+                        <PartyPopper className="h-6 w-6" style={{ color: '#E3B341' }} />
+                        <span className="text-xs">Confetti</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        style={{ borderColor: '#2B3A4C' }}
+                      >
+                        <span className="text-2xl">💩</span>
+                        <span className="text-xs">Poop Rain</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        style={{ borderColor: '#2B3A4C' }}
+                      >
+                        <span className="text-2xl">❄️</span>
+                        <span className="text-xs">Snow</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        style={{ borderColor: '#2B3A4C' }}
+                      >
+                        <span className="text-2xl">🎆</span>
+                        <span className="text-xs">Fireworks</span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="h-20 flex flex-col gap-2"
+                        style={{ borderColor: '#2B3A4C' }}
+                      >
+                        <Sparkles className="h-6 w-6" style={{ color: '#FDC830' }} />
+                        <span className="text-xs">Sparkles</span>
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Expires At (Optional)</Label>
+                      <Input
+                        type="datetime-local"
+                        style={{ backgroundColor: '#0F172A', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      />
+                    </div>
+                    <div className="flex items-end">
+                      <Button className="w-full h-10" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
+                        <Send className="h-4 w-4 mr-2" />
+                        Send Announcement
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Active Announcements */}
+              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
+                    <Activity className="h-5 w-5" style={{ color: '#28C76F' }} />
+                    Active Announcements
+                  </CardTitle>
+                  <CardDescription style={{ color: '#8A93A6' }}>
+                    Manage currently active system announcements
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#0F172A', border: '1px solid #2B3A4C' }}>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Badge style={{ backgroundColor: '#E3B341', color: '#080C14' }}>CELEBRATION</Badge>
+                          <span className="font-semibold" style={{ color: '#C9D1E2' }}>Welcome to Tradebattle!</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button variant="ghost" size="sm">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="h-4 w-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
+                      <p className="text-sm mb-3" style={{ color: '#8A93A6' }}>
+                        Thanks for joining! Check out our $1000 tournament this weekend.
+                      </p>
+                      <div className="flex items-center gap-4 text-xs" style={{ color: '#8A93A6' }}>
+                        <span className="flex items-center gap-1">
+                          <PartyPopper className="h-3 w-3" />
+                          Confetti Effect
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Users className="h-3 w-3" />
+                          127 views
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          Expires in 6 days
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="text-center py-8" style={{ color: '#8A93A6' }}>
+                      <Megaphone className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                      <p className="text-sm">No other active announcements</p>
+                      <p className="text-xs mt-1">Create one above to send messages to all users</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* ===== TAB 5: REVENUE ===== */}
             <TabsContent value="revenue" className="space-y-6">
               {revenueLoading ? (
                 <div className="text-center py-12">
