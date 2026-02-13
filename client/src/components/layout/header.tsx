@@ -50,6 +50,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           <div className="hidden md:flex items-center space-x-3">
             {user ? (
               <>
+                {/* Notifications Bell */}
+                <NotificationDropdown />
+
                 {/* Balance Display - Clickable for balance management */}
                 <Button
                   variant="ghost"
@@ -67,20 +70,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   </span>
                   <Plus className="w-3.5 h-3.5 ml-1.5" style={{ color: '#10B981' }} />
                 </Button>
-
-                {/* Chat Button - only show for authenticated users */}
-                {onChatToggle && (
-                  <Button
-                    onClick={onChatToggle}
-                    variant="ghost"
-                    className="h-10 w-10 p-0 flex items-center justify-center border border-border/30 hover:bg-muted/50 transition-colors"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                  </Button>
-                )}
-
-                {/* Notifications Bell */}
-                <NotificationDropdown />
 
                 {/* User Menu with integrated balance */}
                 <DropdownMenu>
@@ -114,6 +103,17 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* Chat Button - only show for authenticated users */}
+                {onChatToggle && (
+                  <Button
+                    onClick={onChatToggle}
+                    variant="ghost"
+                    className="h-10 w-10 p-0 flex items-center justify-center hover:bg-muted/50 transition-colors"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                  </Button>
+                )}
               </>
             ) : (
               <>
