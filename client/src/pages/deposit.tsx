@@ -13,7 +13,7 @@ export default function Deposit() {
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
-  const [minimumAmount, setMinimumAmount] = useState<number>(2);
+  const [minimumAmount, setMinimumAmount] = useState<number>(5);
 
   // Load status - NO CACHING
   useEffect(() => {
@@ -38,8 +38,8 @@ export default function Deposit() {
     if (selectedCurrency) {
       fetch(`/api/crypto/minimum/${selectedCurrency}`, { cache: 'no-store' })
         .then(r => r.json())
-        .then(data => setMinimumAmount(data.minimum || 2))
-        .catch(() => setMinimumAmount(2)); // Default to $2 on error
+        .then(data => setMinimumAmount(data.minimum || 5))
+        .catch(() => setMinimumAmount(5)); // Default to $5 on error
     }
   }, [selectedCurrency]);
 
@@ -119,6 +119,7 @@ export default function Deposit() {
     { value: 'usdttrc20', label: 'USDT (TRC20)', icon: '₮' },
     { value: 'btc', label: 'Bitcoin', icon: '₿' },
     { value: 'eth', label: 'Ethereum', icon: 'Ξ' },
+    { value: 'ltc', label: 'Litecoin', icon: 'Ł' },
   ];
 
   return (
@@ -298,7 +299,7 @@ export default function Deposit() {
                 }}>
                   Select Cryptocurrency
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
                   {currencyOptions.map(option => (
                     <button
                       key={option.value}

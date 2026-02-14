@@ -38,14 +38,33 @@ export async function getCurrencies() {
 export async function getMinimumAmount(currency: string) {
   try {
     const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
-    // NOWPayments returns the minimum amount in USD
-    // Typically: USDT TRC20 = ~$2-3, BTC = ~$2-3, ETH = ~$2-3
-    // Use their value, or default to $2 if something goes wrong
-    return data.min_amount || 2;
+    console.log(`[NOWPayments] Minimum for ${currency}:`, data);
+
+    // NOWPayments API can return very high minimums (e.g. $19.58)
+    // This happens because they calculate based on network fees + volatility
+    // For better UX, we'll use a fixed minimum of $5 for common currencies
+    // and let NOWPayments reject if it's truly too low
+
+    const fixedMinimums: Record<string, number> = {
+      'usdttrc20': 5,  // USDT on Tron (low fees)
+      'usdterc20': 10, // USDT on Ethereum (higher fees)
+      'btc': 5,        // Bitcoin
+      'eth': 10,       // Ethereum
+      'ltc': 5,        // Litecoin (lower fees)
+    };
+
+    const fixedMin = fixedMinimums[currency.toLowerCase()];
+
+    if (fixedMin) {
+      console.log(`[NOWPayments] Using fixed minimum $${fixedMin} for ${currency} (API returned $${data.min_amount})`);
+      return fixedMin;
+    }
+
+    // For other currencies, use API minimum or $5 default
+    return data.min_amount || 5;
   } catch (error) {
     console.error(`Failed to get minimum for ${currency}:`, error);
-    // Conservative default - should work for most currencies
-    return 2;
+    return 5;
   }
 }
 
