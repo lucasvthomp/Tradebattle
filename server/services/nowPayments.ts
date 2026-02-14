@@ -1,33 +1,43 @@
 import crypto from 'crypto';
 
-// NOWPayments API configuration
+/**
+ * NOWPayments Crypto Payment Service
+ * Complete rebuild - Production ready
+ */
+
+// Environment configuration
 const NOWPAYMENTS_API_KEY = process.env.NOWPAYMENTS_API_KEY;
 const NOWPAYMENTS_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET;
-const NOWPAYMENTS_ENVIRONMENT = process.env.NOWPAYMENTS_ENVIRONMENT || 'sandbox';
+const NOWPAYMENTS_ENVIRONMENT = process.env.NOWPAYMENTS_ENVIRONMENT || 'production';
 
-// API base URL - sandbox by default, production when env var is set
-const NOWPAYMENTS_API_BASE = NOWPAYMENTS_ENVIRONMENT === 'production'
-  ? 'https://api.nowpayments.io/v1'
-  : 'https://api-sandbox.nowpayments.io/v1';
+// API base URL
+const API_BASE_URL = NOWPAYMENTS_ENVIRONMENT === 'sandbox'
+  ? 'https://api-sandbox.nowpayments.io/v1'
+  : 'https://api.nowpayments.io/v1';
 
-console.log(`[NOWPayments] Initializing in ${NOWPAYMENTS_ENVIRONMENT} mode`);
-console.log(`[NOWPayments] API Base: ${NOWPAYMENTS_API_BASE}`);
-console.log(`[NOWPayments] API Key configured: ${!!NOWPAYMENTS_API_KEY}`);
-console.log(`[NOWPayments] IPN Secret configured: ${!!NOWPAYMENTS_IPN_SECRET}`);
+// Initialization logging
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+console.log('🔐 NOWPayments Service Initialized');
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+console.log(`Environment: ${NOWPAYMENTS_ENVIRONMENT.toUpperCase()}`);
+console.log(`API Base: ${API_BASE_URL}`);
+console.log(`API Key Set: ${NOWPAYMENTS_API_KEY ? '✅ YES' : '❌ NO'}`);
+console.log(`IPN Secret Set: ${NOWPAYMENTS_IPN_SECRET ? '✅ YES' : '❌ NO'}`);
+if (NOWPAYMENTS_API_KEY) {
+  console.log(`API Key Preview: ${NOWPAYMENTS_API_KEY.substring(0, 8)}...${NOWPAYMENTS_API_KEY.substring(NOWPAYMENTS_API_KEY.length - 4)}`);
+}
+console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
-// API request wrapper with error handling
-async function nowPaymentsRequest(
-  endpoint: string,
-  method: 'GET' | 'POST' = 'GET',
-  body?: any
-) {
+/**
+ * Make authenticated request to NOWPayments API
+ */
+async function makeRequest(endpoint: string, method: 'GET' | 'POST' = 'GET', body?: any) {
   if (!NOWPAYMENTS_API_KEY) {
-    throw new Error('NOWPAYMENTS_API_KEY is not configured. Please set it in your environment variables.');
+    throw new Error('NOWPayments API key is not configured');
   }
 
-  const url = `${NOWPAYMENTS_API_BASE}${endpoint}`;
-
-  const headers: Record<string, string> = {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const headers: HeadersInit = {
     'x-api-key': NOWPAYMENTS_API_KEY,
     'Content-Type': 'application/json',
   };
@@ -41,153 +51,239 @@ async function nowPaymentsRequest(
     options.body = JSON.stringify(body);
   }
 
+  console.log(`[NOWPayments] ${method} ${endpoint}`);
+
   try {
-    console.log(`[NOWPayments] ${method} ${endpoint}`);
     const response = await fetch(url, options);
     const data = await response.json();
 
     if (!response.ok) {
-      console.error(`[NOWPayments] API Error ${response.status}:`, data);
-      throw new Error(data.message || `NOWPayments API error: ${response.status}`);
+      console.error(`[NOWPayments] ❌ Error ${response.status}:`, data);
+      const errorMessage = data.message || data.error || `API error: ${response.status}`;
+      throw new Error(errorMessage);
     }
 
-    console.log(`[NOWPayments] ${method} ${endpoint} - Success`);
+    console.log(`[NOWPayments] ✅ Success ${method} ${endpoint}`);
     return data;
   } catch (error: any) {
-    console.error('[NOWPayments] Request failed:', error.message);
+    console.error(`[NOWPayments] 💥 Request failed:`, error.message);
     throw error;
   }
 }
 
 /**
- * Get API status
- * Returns {message: "OK"} if API is working
+ * Check API status
  */
-export async function getApiStatus(): Promise<{ message: string }> {
-  return await nowPaymentsRequest('/status');
+export async function checkStatus() {
+  try {
+    const result = await makeRequest('/status');
+    return { success: true, message: result.message };
+  } catch (error: any) {
+    return { success: false, error: error.message };
+  }
 }
 
 /**
- * Get available cryptocurrencies
- * Returns list of all supported currencies
+ * Get all available currencies
  */
-export async function getAvailableCurrencies(): Promise<{ currencies: string[] }> {
-  return await nowPaymentsRequest('/currencies');
+export async function getAvailableCurrencies() {
+  const result = await makeRequest('/currencies');
+  return result.currencies || [];
 }
 
 /**
- * Get minimum payment amount for a specific currency
- * @param currency - Crypto currency code (e.g., 'btc', 'eth', 'usdttrc20')
+ * Get minimum payment amount for a currency pair
  */
-export async function getMinimumAmount(currency: string): Promise<{ currency_from: string; currency_to: string; min_amount: number }> {
-  return await nowPaymentsRequest(`/min-amount?currency_from=${currency.toLowerCase()}&currency_to=usd`);
+export async function getMinimumAmount(currencyFrom: string, currencyTo: string = 'usd') {
+  return await makeRequest(`/min-amount?currency_from=${currencyFrom.toLowerCase()}&currency_to=${currencyTo.toLowerCase()}`);
 }
 
 /**
- * Get estimated price for crypto payment
- * @param amountUSD - USD amount to convert
- * @param currency - Target crypto currency
+ * Get price estimate
  */
-export async function getEstimatedPrice(amountUSD: number, currency: string) {
-  return await nowPaymentsRequest('/estimate', 'POST', {
-    amount: amountUSD,
-    currency_from: 'usd',
-    currency_to: currency.toLowerCase(),
+export async function getEstimate(amount: number, currencyFrom: string, currencyTo: string) {
+  return await makeRequest('/estimate', 'POST', {
+    amount,
+    currency_from: currencyFrom.toLowerCase(),
+    currency_to: currencyTo.toLowerCase(),
   });
 }
 
 /**
- * Create a crypto payment
- * @param userId - User ID for tracking
- * @param amountUSD - USD amount to charge
- * @param currency - Crypto currency to accept
- * @param ipnCallbackUrl - IPN webhook URL
+ * Create a payment
+ * This is the main function for creating crypto deposits
  */
-export async function createPayment(
-  userId: number,
-  amountUSD: number,
-  currency: string,
-  ipnCallbackUrl: string
-) {
-  return await nowPaymentsRequest('/payment', 'POST', {
-    price_amount: amountUSD,
-    price_currency: 'usd',
-    pay_currency: currency.toLowerCase(),
-    ipn_callback_url: ipnCallbackUrl,
-    order_id: `user_${userId}_${Date.now()}`, // Unique order ID
-    order_description: `Tradebattle deposit for user ${userId}`,
+export async function createPayment(params: {
+  priceAmount: number;
+  priceCurrency: string;
+  payCurrency: string;
+  ipnCallbackUrl: string;
+  orderId: string;
+  orderDescription: string;
+}) {
+  const payload = {
+    price_amount: params.priceAmount,
+    price_currency: params.priceCurrency.toLowerCase(),
+    pay_currency: params.payCurrency.toLowerCase(),
+    ipn_callback_url: params.ipnCallbackUrl,
+    order_id: params.orderId,
+    order_description: params.orderDescription,
+  };
+
+  console.log('[NOWPayments] Creating payment:', {
+    amount: `$${params.priceAmount}`,
+    currency: params.payCurrency.toUpperCase(),
+    orderId: params.orderId,
   });
+
+  return await makeRequest('/payment', 'POST', payload);
 }
 
 /**
  * Get payment status
- * @param paymentId - NOWPayments payment ID
  */
 export async function getPaymentStatus(paymentId: string) {
-  return await nowPaymentsRequest(`/payment/${paymentId}`);
+  return await makeRequest(`/payment/${paymentId}`);
 }
 
 /**
- * Verify IPN callback signature
- * Ensures webhook requests are authentic
- * @param ipnSignature - HMAC signature from x-nowpayments-sig header
- * @param requestBody - Raw request body as string
+ * Verify IPN signature
  */
-export function verifyIPNSignature(ipnSignature: string, requestBody: string): boolean {
+export function verifyIPNSignature(signature: string, rawBody: string): boolean {
   if (!NOWPAYMENTS_IPN_SECRET) {
-    console.error('[NOWPayments] IPN Secret not configured, cannot verify signature');
+    console.error('[NOWPayments] ⚠️  IPN Secret not configured - cannot verify signature');
     return false;
   }
 
   const hmac = crypto
     .createHmac('sha512', NOWPAYMENTS_IPN_SECRET)
-    .update(requestBody)
+    .update(rawBody)
     .digest('hex');
 
-  return hmac === ipnSignature;
+  const isValid = hmac === signature;
+  console.log(`[NOWPayments] IPN Signature: ${isValid ? '✅ VALID' : '❌ INVALID'}`);
+  return isValid;
 }
 
 /**
- * Create a payout (withdrawal)
- * @param address - Destination crypto wallet address
- * @param amount - Amount in crypto currency
- * @param currency - Crypto currency code
+ * Create payout (withdrawal)
  */
-export async function createPayout(
-  address: string,
-  amount: number,
-  currency: string
-) {
-  return await nowPaymentsRequest('/payout', 'POST', {
+export async function createPayout(params: {
+  address: string;
+  amount: number;
+  currency: string;
+}) {
+  const payload = {
     withdrawals: [
       {
-        address,
-        amount,
-        currency: currency.toLowerCase(),
+        address: params.address,
+        amount: params.amount,
+        currency: params.currency.toLowerCase(),
       },
     ],
+  };
+
+  console.log('[NOWPayments] Creating payout:', {
+    amount: params.amount,
+    currency: params.currency.toUpperCase(),
+    address: `${params.address.substring(0, 10)}...${params.address.substring(params.address.length - 6)}`,
   });
+
+  return await makeRequest('/payout', 'POST', payload);
 }
 
 /**
  * Get payout status
- * @param withdrawalId - NOWPayments withdrawal ID
  */
-export async function getPayoutStatus(withdrawalId: string) {
-  return await nowPaymentsRequest(`/payout/${withdrawalId}`);
+export async function getPayoutStatus(payoutId: string) {
+  return await makeRequest(`/payout/${payoutId}`);
 }
 
 /**
- * Get popular/recommended cryptocurrencies for deposits
- * Returns currencies with lowest fees and fastest confirmation
+ * Get recommended currencies (curated list)
  */
 export function getRecommendedCurrencies() {
   return [
-    { code: 'usdttrc20', name: 'USDT (TRC20)', network: 'Tron', estimatedFee: '$0.01', confirmationTime: '1-2 min' },
-    { code: 'usdterc20', name: 'USDT (ERC20)', network: 'Ethereum', estimatedFee: '$1-5', confirmationTime: '2-5 min' },
-    { code: 'usdc', name: 'USDC', network: 'Ethereum', estimatedFee: '$1-5', confirmationTime: '2-5 min' },
-    { code: 'btc', name: 'Bitcoin', network: 'Bitcoin', estimatedFee: '$0.50-2', confirmationTime: '10-30 min' },
-    { code: 'eth', name: 'Ethereum', network: 'Ethereum', estimatedFee: '$1-5', confirmationTime: '2-5 min' },
-    { code: 'ltc', name: 'Litecoin', network: 'Litecoin', estimatedFee: '$0.01-0.10', confirmationTime: '5-15 min' },
+    {
+      code: 'usdttrc20',
+      name: 'USDT (TRC20)',
+      network: 'Tron',
+      estimatedFee: '$0.01',
+      confirmationTime: '1-2 min',
+    },
+    {
+      code: 'usdterc20',
+      name: 'USDT (ERC20)',
+      network: 'Ethereum',
+      estimatedFee: '$1-5',
+      confirmationTime: '2-5 min',
+    },
+    {
+      code: 'usdc',
+      name: 'USDC',
+      network: 'Ethereum',
+      estimatedFee: '$1-5',
+      confirmationTime: '2-5 min',
+    },
+    {
+      code: 'btc',
+      name: 'Bitcoin',
+      network: 'Bitcoin',
+      estimatedFee: '$0.50-2',
+      confirmationTime: '10-30 min',
+    },
+    {
+      code: 'eth',
+      name: 'Ethereum',
+      network: 'Ethereum',
+      estimatedFee: '$1-5',
+      confirmationTime: '2-5 min',
+    },
+    {
+      code: 'ltc',
+      name: 'Litecoin',
+      network: 'Litecoin',
+      estimatedFee: '$0.01-0.10',
+      confirmationTime: '5-15 min',
+    },
   ];
+}
+
+/**
+ * Test API connection
+ */
+export async function testConnection() {
+  try {
+    console.log('[NOWPayments] Testing API connection...');
+
+    // Test 1: Status endpoint
+    const statusResult = await checkStatus();
+    if (!statusResult.success) {
+      return {
+        success: false,
+        error: `Status check failed: ${statusResult.error}`,
+      };
+    }
+
+    // Test 2: Get currencies
+    const currencies = await getAvailableCurrencies();
+    if (!currencies || currencies.length === 0) {
+      return {
+        success: false,
+        error: 'Failed to fetch currencies',
+      };
+    }
+
+    console.log(`[NOWPayments] ✅ Connection test passed - ${currencies.length} currencies available`);
+    return {
+      success: true,
+      currencyCount: currencies.length,
+    };
+  } catch (error: any) {
+    console.error('[NOWPayments] ❌ Connection test failed:', error.message);
+    return {
+      success: false,
+      error: error.message,
+    };
+  }
 }
