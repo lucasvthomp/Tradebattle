@@ -247,11 +247,12 @@ export default function Deposit() {
                 </label>
                 <input
                   type="number"
-                  placeholder="Enter amount"
+                  placeholder="Minimum $2.50"
                   value={amount}
                   onChange={e => setAmount(e.target.value)}
-                  min="1"
+                  min="2.5"
                   max="10000"
+                  step="0.01"
                   style={{
                     width: '100%',
                     padding: '14px 16px',
@@ -266,6 +267,13 @@ export default function Deposit() {
                   onFocus={(e) => e.target.style.borderColor = '#E3B341'}
                   onBlur={(e) => e.target.style.borderColor = '#2B3A4C'}
                 />
+                <div style={{
+                  marginTop: '6px',
+                  fontSize: '12px',
+                  color: '#8A93A6',
+                }}>
+                  Minimum deposit: $2.50 • Maximum: $10,000
+                </div>
               </div>
 
               {/* Currency Selection */}
@@ -318,17 +326,17 @@ export default function Deposit() {
               {/* Create Button */}
               <button
                 onClick={createDeposit}
-                disabled={loading || !amount || parseFloat(amount) < 1}
+                disabled={loading || !amount || parseFloat(amount) < 2.5}
                 style={{
                   width: '100%',
                   padding: '16px',
-                  background: loading || !amount || parseFloat(amount) < 1 ? '#2B3A4C' : '#E3B341',
-                  color: loading || !amount || parseFloat(amount) < 1 ? '#8A93A6' : '#06121F',
+                  background: loading || !amount || parseFloat(amount) < 2.5 ? '#2B3A4C' : '#E3B341',
+                  color: loading || !amount || parseFloat(amount) < 2.5 ? '#8A93A6' : '#06121F',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '16px',
                   fontWeight: '600',
-                  cursor: loading || !amount || parseFloat(amount) < 1 ? 'not-allowed' : 'pointer',
+                  cursor: loading || !amount || parseFloat(amount) < 2.5 ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -336,12 +344,12 @@ export default function Deposit() {
                   transition: 'all 0.2s',
                 }}
                 onMouseEnter={(e) => {
-                  if (!loading && amount && parseFloat(amount) >= 1) {
+                  if (!loading && amount && parseFloat(amount) >= 2.5) {
                     e.currentTarget.style.background = '#D4A537';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!loading && amount && parseFloat(amount) >= 1) {
+                  if (!loading && amount && parseFloat(amount) >= 2.5) {
                     e.currentTarget.style.background = '#E3B341';
                   }
                 }}

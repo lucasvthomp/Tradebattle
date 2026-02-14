@@ -467,6 +467,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/crypto/create-payment', requireAuth, async (req: any, res) => {
     try {
       const { amount, currency } = req.body;
+
+      // Validation
+      if (!amount || isNaN(amount) || amount < 2.5 || amount > 10000) {
+        return res.status(400).json({
+          error: 'Amount must be between $2.50 and $10,000'
+        });
+      }
+
+      if (!currency) {
+        return res.status(400).json({
+          error: 'Currency is required'
+        });
+      }
+
       const { createPayment } = await import('./services/nowPayments.js');
 
       // Build callback URL from request
