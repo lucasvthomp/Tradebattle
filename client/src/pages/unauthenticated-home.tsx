@@ -1,418 +1,369 @@
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
-import {
-  TrendingUp,
-  Trophy,
-  Users,
-  Target,
-  BarChart3,
-  Zap,
-  ArrowRight,
-  DollarSign,
-  Award,
-  Sparkles,
-  Flame,
-  Crown,
-  TrendingDown,
-  Activity,
-  Timer
-} from "lucide-react";
-import { motion, useAnimation } from "framer-motion";
-import { useEffect, useState } from "react";
-
-// Animated floating money icons
-const FloatingMoney = () => {
-  const money = Array.from({ length: 15 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    delay: Math.random() * 5,
-    duration: 15 + Math.random() * 10
-  }));
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {money.map((item) => (
-        <motion.div
-          key={item.id}
-          className="absolute"
-          style={{ left: `${item.x}%`, top: `${item.y}%` }}
-          animate={{
-            y: [0, -100, 0],
-            x: [0, Math.random() * 20 - 10, 0],
-            opacity: [0, 0.6, 0],
-            scale: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: item.duration,
-            delay: item.delay,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        >
-          <DollarSign className="w-6 h-6" style={{ color: '#10B981' }} />
-        </motion.div>
-      ))}
-    </div>
-  );
-};
-
-// Live ticker animation
-const LiveTicker = () => {
-  const tickers = [
-    { symbol: "AAPL", change: "+2.4%", color: "text-[#10B981]" },
-    { symbol: "TSLA", change: "+5.7%", color: "text-[#10B981]" },
-    { symbol: "NVDA", change: "-1.2%", color: "text-[#FF3333]" },
-    { symbol: "MSFT", change: "+3.1%", color: "text-[#10B981]" },
-    { symbol: "GOOGL", change: "+1.8%", color: "text-[#10B981]" },
-  ];
-
-  return (
-    <div className="absolute top-0 left-0 right-0 bg-black/20 backdrop-blur-sm border-b border-border/30 overflow-hidden">
-      <motion.div
-        className="flex items-center py-2 gap-8"
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-      >
-        {[...tickers, ...tickers, ...tickers].map((ticker, i) => (
-          <div key={i} className="flex items-center gap-2 whitespace-nowrap">
-            <span className="font-bold text-sm">{ticker.symbol}</span>
-            <span className={`text-sm font-semibold ${ticker.color}`}>{ticker.change}</span>
-          </div>
-        ))}
-      </motion.div>
-    </div>
-  );
-};
-
-// Prize pool counter
-const PrizeCounter = () => {
-  const [amount, setAmount] = useState(125000);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setAmount(prev => prev + Math.random() * 100);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <motion.div
-      className="text-5xl md:text-7xl font-black mb-4"
-      style={{ color: '#10B981' }}
-      animate={{ scale: [1, 1.05, 1] }}
-      transition={{ duration: 2, repeat: Infinity }}
-    >
-      ${amount.toLocaleString('en-US', { maximumFractionDigits: 0 })}
-    </motion.div>
-  );
-};
+import { TrendingUp, Trophy, Users, Target, ArrowRight } from "lucide-react";
 
 export default function UnauthenticatedHome() {
-  const [countdown, setCountdown] = useState({ hours: 23, minutes: 45, seconds: 30 });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        let { hours, minutes, seconds } = prev;
-        seconds--;
-        if (seconds < 0) { seconds = 59; minutes--; }
-        if (minutes < 0) { minutes = 59; hours--; }
-        if (hours < 0) { hours = 23; }
-        return { hours, minutes, seconds };
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const features = [
-    {
-      icon: Trophy,
-      title: "Win Real Cash",
-      description: "Top 10 winners share prize pools up to $50K per tournament",
-      highlight: "$50K",
-      color: "from-yellow-500 to-orange-600"
-    },
-    {
-      icon: Zap,
-      title: "Instant Action",
-      description: "New tournaments every hour. Jump in and compete instantly",
-      highlight: "24/7",
-      color: "from-blue-500 to-purple-600"
-    },
-    {
-      icon: Target,
-      title: "Zero Risk",
-      description: "Practice with $10,000 virtual money. Keep 100% of real winnings",
-      highlight: "Free",
-      color: "from-green-500 to-emerald-600"
-    },
-    {
-      icon: Crown,
-      title: "Climb Ranks",
-      description: "Earn XP, unlock achievements, and dominate the leaderboards",
-      highlight: "XP",
-      color: "from-purple-500 to-pink-600"
-    }
-  ];
-
-  const recentWinners = [
-    { username: "TraderKing", amount: "$2,450", rank: 1 },
-    { username: "BullMarket", amount: "$1,800", rank: 2 },
-    { username: "WolfOfWS", amount: "$1,200", rank: 3 },
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#080C14] via-[#0F172A] to-[#0B1120] text-white overflow-hidden">
-      {/* Live Ticker */}
-      <LiveTicker />
-
-      {/* Floating Money Background */}
-      <FloatingMoney />
-
+    <div style={{
+      minHeight: '100vh',
+      background: '#06121F',
+      color: '#C9D1E2',
+    }}>
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
+      <section style={{
+        padding: '120px 20px 80px',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        textAlign: 'center',
+      }}>
+        <div style={{
+          display: 'inline-block',
+          background: 'rgba(227, 179, 65, 0.1)',
+          border: '1px solid rgba(227, 179, 65, 0.3)',
+          borderRadius: '24px',
+          padding: '6px 16px',
+          marginBottom: '24px',
+          fontSize: '14px',
+          fontWeight: '600',
+          color: '#E3B341',
+        }}>
+          Stock Trading Tournaments
+        </div>
+
+        <h1 style={{
+          fontSize: '56px',
+          fontWeight: '700',
+          lineHeight: '1.1',
+          marginBottom: '20px',
+          color: '#C9D1E2',
+        }}>
+          Trade Stocks.<br />
+          Win Cash.
+        </h1>
+
+        <p style={{
+          fontSize: '20px',
+          color: '#8A93A6',
+          marginBottom: '40px',
+          maxWidth: '600px',
+          margin: '0 auto 40px',
+        }}>
+          Compete in stock trading tournaments and win real money. No experience required.
+        </p>
+
+        <div style={{
+          display: 'flex',
+          gap: '16px',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          marginBottom: '60px',
+        }}>
+          <Link href="/signup">
+            <Button
+              size="lg"
+              style={{
+                background: 'linear-gradient(135deg, #E3B341, #c99a35)',
+                color: '#080C14',
+                fontWeight: '600',
+                padding: '14px 32px',
+                fontSize: '16px',
+                borderRadius: '8px',
+                border: 'none',
+                cursor: 'pointer',
+              }}
             >
-              {/* Badge */}
-              <motion.div
-                className="inline-block mb-6"
-                animate={{ y: [0, -10, 0] }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                <Badge className="px-6 py-2 text-base font-bold" style={{ backgroundColor: '#10B981', borderColor: '#10B981' }}>
-                  <Flame className="w-5 h-5 mr-2 inline animate-pulse" />
-                  🔥 2,847 Players Online Now
-                </Badge>
-              </motion.div>
+              Get Started Free
+              <ArrowRight style={{ marginLeft: '8px', width: '18px', height: '18px' }} />
+            </Button>
+          </Link>
+          <Link href="/login">
+            <Button
+              size="lg"
+              variant="outline"
+              style={{
+                background: 'transparent',
+                border: '2px solid #2B3A4C',
+                color: '#C9D1E2',
+                fontWeight: '600',
+                padding: '14px 32px',
+                fontSize: '16px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+              }}
+            >
+              Sign In
+            </Button>
+          </Link>
+        </div>
 
-              {/* Main Headline */}
-              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight">
-                <span className="bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
-                  Trade. Compete.
-                </span>
-                <br />
-                <span className="bg-gradient-to-r from-[#10B981] to-[#22c55e] bg-clip-text text-transparent">
-                  Win Cash.
-                </span>
-              </h1>
+        <div style={{
+          display: 'flex',
+          gap: '32px',
+          justifyContent: 'center',
+          fontSize: '14px',
+          color: '#8A93A6',
+          flexWrap: 'wrap',
+        }}>
+          <div>✓ Start with $10,000 virtual cash</div>
+          <div>✓ Real-time stock data</div>
+          <div>✓ Win real money</div>
+        </div>
+      </section>
 
-              <p className="text-xl md:text-2xl text-gray-300 mb-4">
-                The world's most exciting stock trading game
-              </p>
-              <p className="text-lg text-gray-400 mb-12 max-w-2xl mx-auto">
-                Join tournaments, compete with real traders, win real money. No experience required.
-              </p>
+      {/* Features Section */}
+      <section style={{
+        padding: '60px 20px',
+        maxWidth: '1200px',
+        margin: '0 auto',
+      }}>
+        <h2 style={{
+          fontSize: '32px',
+          fontWeight: '600',
+          textAlign: 'center',
+          marginBottom: '48px',
+          color: '#C9D1E2',
+        }}>
+          How It Works
+        </h2>
 
-              {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <Link href="/signup">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button size="lg" className="text-lg px-10 py-7 font-bold" style={{ backgroundColor: '#10B981' }}>
-                      Start Playing Free
-                      <ArrowRight className="ml-2 w-6 h-6" />
-                    </Button>
-                  </motion.div>
-                </Link>
-                <Link href="/tournaments">
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button size="lg" variant="outline" className="text-lg px-10 py-7 font-bold border-2 hover:bg-white/10">
-                      <Trophy className="mr-2 w-6 h-6" />
-                      View Tournaments
-                    </Button>
-                  </motion.div>
-                </Link>
-              </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '24px',
+        }}>
+          {/* Feature 1 */}
+          <div style={{
+            background: '#1E2D3F',
+            border: '1px solid #2B3A4C',
+            borderRadius: '12px',
+            padding: '32px',
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              background: 'rgba(227, 179, 65, 0.1)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+            }}>
+              <Users style={{ width: '24px', height: '24px', color: '#E3B341' }} />
+            </div>
+            <h3 style={{
+              fontSize: '20px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#C9D1E2',
+            }}>
+              Join a Tournament
+            </h3>
+            <p style={{
+              fontSize: '15px',
+              lineHeight: '1.6',
+              color: '#8A93A6',
+            }}>
+              Choose from daily tournaments with different buy-ins and prize pools. New tournaments start every day.
+            </p>
+          </div>
 
-              {/* Quick Stats */}
-              <div className="flex flex-wrap justify-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4" style={{ color: '#10B981' }} />
-                  <span>Start with $10,000</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4" style={{ color: '#FFD700' }} />
-                  <span>Win Real Money</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Zap className="w-4 h-4 text-yellow-400" />
-                  <span>Instant Join</span>
-                </div>
-              </div>
-            </motion.div>
+          {/* Feature 2 */}
+          <div style={{
+            background: '#1E2D3F',
+            border: '1px solid #2B3A4C',
+            borderRadius: '12px',
+            padding: '32px',
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              background: 'rgba(40, 199, 111, 0.1)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+            }}>
+              <TrendingUp style={{ width: '24px', height: '24px', color: '#28C76F' }} />
+            </div>
+            <h3 style={{
+              fontSize: '20px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#C9D1E2',
+            }}>
+              Trade Stocks
+            </h3>
+            <p style={{
+              fontSize: '15px',
+              lineHeight: '1.6',
+              color: '#8A93A6',
+            }}>
+              Buy and sell real stocks with your virtual balance. Trade as much as you want during the tournament.
+            </p>
+          </div>
+
+          {/* Feature 3 */}
+          <div style={{
+            background: '#1E2D3F',
+            border: '1px solid #2B3A4C',
+            borderRadius: '12px',
+            padding: '32px',
+          }}>
+            <div style={{
+              width: '48px',
+              height: '48px',
+              background: 'rgba(227, 179, 65, 0.1)',
+              borderRadius: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+            }}>
+              <Trophy style={{ width: '24px', height: '24px', color: '#E3B341' }} />
+            </div>
+            <h3 style={{
+              fontSize: '20px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#C9D1E2',
+            }}>
+              Win Cash Prizes
+            </h3>
+            <p style={{
+              fontSize: '15px',
+              lineHeight: '1.6',
+              color: '#8A93A6',
+            }}>
+              Top performers win real money. The more profit you make, the bigger your payout at the end.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Prize Pool Section */}
-      <section className="py-16 relative">
-        <div className="container mx-auto px-4">
-          <motion.div
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <Card className="bg-gradient-to-br from-[#111827] to-[#0B1120] border-[#10B981]/30 border-2">
-              <CardContent className="p-12">
-                <div className="flex items-center justify-center gap-3 mb-4">
-                  <Trophy className="w-10 h-10" style={{ color: '#FFD700' }} />
-                  <h2 className="text-3xl font-bold">Total Prize Pool This Month</h2>
-                </div>
-                <PrizeCounter />
-                <p className="text-gray-400 text-lg mb-6">
-                  Join the action and claim your share
-                </p>
-
-                {/* Next Tournament Countdown */}
-                <div className="flex items-center justify-center gap-4 text-2xl font-mono font-bold">
-                  <Timer className="w-6 h-6" style={{ color: '#10B981' }} />
-                  <span>Next Tournament:</span>
-                  <span style={{ color: '#10B981' }}>
-                    {String(countdown.hours).padStart(2, '0')}:
-                    {String(countdown.minutes).padStart(2, '0')}:
-                    {String(countdown.seconds).padStart(2, '0')}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Recent Winners */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <motion.div
-            className="max-w-4xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-center mb-12">
-              <Crown className="inline w-8 h-8 mr-3" style={{ color: '#FFD700' }} />
-              Recent Winners
-            </h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              {recentWinners.map((winner, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.05, y: -10 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <Card className="bg-gradient-to-br from-[#111827] to-[#0B1120] border-[#10B981]/20">
-                    <CardContent className="p-6 text-center">
-                      <div className="text-4xl mb-3">
-                        {winner.rank === 1 && "🥇"}
-                        {winner.rank === 2 && "🥈"}
-                        {winner.rank === 3 && "🥉"}
-                      </div>
-                      <div className="text-xl font-bold mb-2">{winner.username}</div>
-                      <div className="text-3xl font-black mb-1" style={{ color: '#10B981' }}>
-                        {winner.amount}
-                      </div>
-                      <div className="text-sm text-gray-400">Just won!</div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+      {/* Stats Section */}
+      <section style={{
+        padding: '60px 20px',
+        maxWidth: '1200px',
+        margin: '0 auto',
+      }}>
+        <div style={{
+          background: '#1E2D3F',
+          border: '1px solid #2B3A4C',
+          borderRadius: '16px',
+          padding: '48px 32px',
+          textAlign: 'center',
+        }}>
+          <h2 style={{
+            fontSize: '28px',
+            fontWeight: '600',
+            marginBottom: '32px',
+            color: '#C9D1E2',
+          }}>
+            Join Thousands of Traders
+          </h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gap: '32px',
+          }}>
+            <div>
+              <div style={{
+                fontSize: '40px',
+                fontWeight: '700',
+                color: '#E3B341',
+                marginBottom: '8px',
+              }}>
+                $125K+
+              </div>
+              <div style={{
+                fontSize: '14px',
+                color: '#8A93A6',
+              }}>
+                Paid Out Monthly
+              </div>
             </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <motion.div
-              className="text-center mb-16"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                Why Thousands Play Daily
-              </h2>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {features.map((feature, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  whileHover={{ scale: 1.05, rotate: 1 }}
-                >
-                  <Card className={`h-full bg-gradient-to-br ${feature.color} border-0 relative overflow-hidden`}>
-                    <CardContent className="p-6 relative z-10">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="absolute -top-10 -right-10 opacity-20"
-                      >
-                        <feature.icon className="w-32 h-32" />
-                      </motion.div>
-                      <feature.icon className="w-12 h-12 mb-4" />
-                      <div className="text-4xl font-black mb-2">{feature.highlight}</div>
-                      <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
-                      <p className="text-sm opacity-90">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+            <div>
+              <div style={{
+                fontSize: '40px',
+                fontWeight: '700',
+                color: '#E3B341',
+                marginBottom: '8px',
+              }}>
+                10K+
+              </div>
+              <div style={{
+                fontSize: '14px',
+                color: '#8A93A6',
+              }}>
+                Active Traders
+              </div>
+            </div>
+            <div>
+              <div style={{
+                fontSize: '40px',
+                fontWeight: '700',
+                color: '#E3B341',
+                marginBottom: '8px',
+              }}>
+              Daily
+              </div>
+              <div style={{
+                fontSize: '14px',
+                color: '#8A93A6',
+              }}>
+                New Tournaments
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 relative">
-        <div className="container mx-auto px-4">
-          <motion.div
-            className="max-w-4xl mx-auto text-center"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
+      <section style={{
+        padding: '80px 20px 100px',
+        maxWidth: '800px',
+        margin: '0 auto',
+        textAlign: 'center',
+      }}>
+        <h2 style={{
+          fontSize: '36px',
+          fontWeight: '600',
+          marginBottom: '16px',
+          color: '#C9D1E2',
+        }}>
+          Ready to Start Trading?
+        </h2>
+        <p style={{
+          fontSize: '18px',
+          color: '#8A93A6',
+          marginBottom: '32px',
+        }}>
+          Create your free account and join your first tournament today.
+        </p>
+        <Link href="/signup">
+          <Button
+            size="lg"
+            style={{
+              background: 'linear-gradient(135deg, #E3B341, #c99a35)',
+              color: '#080C14',
+              fontWeight: '600',
+              padding: '16px 40px',
+              fontSize: '18px',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
-            <Card className="bg-gradient-to-r from-[#10B981] to-[#22c55e] border-0">
-              <CardContent className="p-16">
-                <h2 className="text-4xl md:text-5xl font-black mb-6 text-white">
-                  Ready to Win?
-                </h2>
-                <p className="text-xl text-white/90 mb-10">
-                  Join 10,000+ traders competing for real cash prizes every day
-                </p>
-                <Link href="/signup">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button size="lg" className="bg-white text-[#10B981] hover:bg-gray-100 text-xl px-12 py-8 font-black">
-                      Create Free Account
-                      <Sparkles className="ml-3 w-6 h-6" />
-                    </Button>
-                  </motion.div>
-                </Link>
-                <p className="text-sm text-white/70 mt-6">
-                  No credit card • No risk • Real prizes
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
+            Get Started Free
+          </Button>
+        </Link>
+        <div style={{
+          marginTop: '16px',
+          fontSize: '14px',
+          color: '#8A93A6',
+        }}>
+          No credit card required • Free to start
         </div>
       </section>
     </div>
