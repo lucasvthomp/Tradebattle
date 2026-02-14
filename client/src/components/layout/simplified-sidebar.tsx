@@ -12,7 +12,6 @@ import {
   Settings,
   Archive,
   Shield,
-  Calendar,
   Swords
 } from "lucide-react";
 import { useState } from "react";
@@ -32,7 +31,6 @@ export function SimplifiedSidebar() {
       { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#E3B341' },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#E3B341' },
       { href: "/people", label: t('people'), icon: Users, iconColor: '#3B82F6' },
-      { href: "/events", label: t('events'), icon: Calendar, iconColor: '#A855F7' },
       { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F97316' },
       { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
     ] : [
