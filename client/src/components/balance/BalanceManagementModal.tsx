@@ -97,8 +97,10 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   }, [isOpen, initialTab]);
 
   // Withdraw fee calculation
-  const SITE_FEE_PERCENTAGE = 25;
-  const TRANSACTION_FEE_PERCENTAGE = 3;
+  // Site takes 0% at withdrawal (we take 7.5% from tournament winnings instead)
+  // NOWPayments charges max 0.5% transaction fee
+  const SITE_FEE_PERCENTAGE = 0;
+  const TRANSACTION_FEE_PERCENTAGE = 0.5;
 
   const getWithdrawalBreakdown = (amount: number) => {
     const siteFee = amount * (SITE_FEE_PERCENTAGE / 100);
