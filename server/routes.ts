@@ -379,25 +379,200 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
-  app.post("/api/balance/withdraw", requireAuth, async (req: any, res) => {
+  // NEW Crypto withdrawal endpoint
+  app.post("/api/crypto/withdraw", requireAuth, async (req: any, res) => {
     try {
-      // TEMPORARILY DISABLED - Crypto withdrawal system under maintenance
-      // The old system just deducted balance without actually sending crypto
-      return res.status(503).json({
-        message: "Crypto withdrawals are temporarily disabled while we upgrade the system. Your balance is safe. Please try again in a few minutes or contact support.",
-        error: "WITHDRAWAL_DISABLED"
+      const { amount, currency, address } = req.body;
+      const userId = req.user.id;
+
+      // Validate inputs
+      if (!amount || isNaN(amount) || amount <= 0) {
+        return res.status(400).json({ error: "Invalid withdrawal amount" });
+      }
+
+      if (!currency || !address) {
+        return res.status(400).json({ error: "Currency and wallet address are required" });
+      }
+
+      if (amount < 1) {
+        return res.status(400).json({ error: "Minimum withdrawal amount is $1.00" });
+      }
+
+      // Get user
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      if (user.withdrawalFrozen) {
+        return res.status(403).json({ error: "Your withdrawals have been frozen. Please contact support." });
+      }
+
+      const currentBalance = parseFloat(user.siteCash?.toString() || '0');
+
+      // Check sufficient funds
+      if (amount > currentBalance) {
+        return res.status(400).json({ error: "Insufficient funds" });
+      }
+
+      // Calculate fees (0.5% transaction fee)
+      const transactionFee = amount * 0.005;
+      const payoutAmount = amount - transactionFee;
+
+      console.log(`[Withdrawal] User ${user.username} requesting $${amount} withdrawal to ${currency.toUpperCase()}`);
+
+      // Create withdrawal record in database
+      const { cryptoWithdrawals } = await import('@shared/schema');
+      const [withdrawal] = await db.insert(cryptoWithdrawals).values({
+        userId: userId,
+        amount: amount.toString(),
+        currency: currency.toLowerCase(),
+        address: address,
+        transactionFee: transactionFee.toString(),
+        payoutAmount: payoutAmount.toString(),
+        status: 'pending',
+        createdAt: new Date(),
+      }).returning();
+
+      console.log(`[Withdrawal] Created withdrawal record ID: ${withdrawal.id}`);
+
+      // Deduct balance immediately (will be refunded if payout fails)
+      const newBalance = currentBalance - amount;
+      await storage.updateUser(userId, {
+        siteCash: newBalance.toString()
       });
 
-      // TODO: Implement proper crypto withdrawal flow:
-      // 1. Collect user's wallet address and currency
-      // 2. Create withdrawal record in cryptoWithdrawals table
-      // 3. Call NOWPayments createPayout API
-      // 4. Track payout status and update database
-      // 5. Only deduct balance after payout is confirmed sent
-    } catch (error) {
-      console.error("Error processing withdrawal:", error);
-      res.status(500).json({ message: "Failed to process withdrawal" });
+      console.log(`[Withdrawal] Deducted $${amount} from user balance: $${currentBalance} → $${newBalance}`);
+
+      // Log transaction
+      await storage.createAdminLog({
+        adminUserId: userId,
+        targetUserId: userId,
+        action: 'balance_withdrawal',
+        oldValue: currentBalance.toString(),
+        newValue: newBalance.toString(),
+        notes: `Crypto withdrawal initiated - Amount: $${amount} - Currency: ${currency.toUpperCase()} - Withdrawal ID: ${withdrawal.id}`,
+      });
+
+      // Create payout via NOWPayments (in background)
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const ipnCallbackUrl = `${protocol}://${host}/api/crypto/withdrawal-ipn`;
+
+      const { createPayout } = await import('./services/nowPayments.js');
+
+      try {
+        const payout = await createPayout({
+          withdrawalId: `withdrawal-${withdrawal.id}-${Date.now()}`,
+          address: address,
+          currency: currency.toLowerCase(),
+          amount: payoutAmount,
+          ipnCallbackUrl: ipnCallbackUrl,
+        });
+
+        console.log(`[Withdrawal] NOWPayments payout created:`, payout);
+
+        // Update withdrawal with payout ID
+        await db.update(cryptoWithdrawals)
+          .set({
+            payoutId: payout.id?.toString() || payout.batch_withdrawal_id?.toString(),
+            status: 'processing',
+            processedAt: new Date(),
+          })
+          .where(eq(cryptoWithdrawals.id, withdrawal.id));
+
+        res.json({
+          success: true,
+          withdrawalId: withdrawal.id,
+          amount: amount,
+          currency: currency,
+          payoutAmount: payoutAmount,
+          status: 'processing',
+          message: "Withdrawal initiated successfully",
+        });
+
+      } catch (payoutError: any) {
+        console.error('[Withdrawal] NOWPayments payout failed:', payoutError);
+
+        // Refund the balance
+        await storage.updateUser(userId, {
+          siteCash: currentBalance.toString()
+        });
+
+        // Update withdrawal status
+        await db.update(cryptoWithdrawals)
+          .set({
+            status: 'failed',
+            errorMessage: payoutError.message,
+          })
+          .where(eq(cryptoWithdrawals.id, withdrawal.id));
+
+        // Log refund
+        await storage.createAdminLog({
+          adminUserId: userId,
+          targetUserId: userId,
+          action: 'balance_adjustment',
+          oldValue: newBalance.toString(),
+          newValue: currentBalance.toString(),
+          notes: `Withdrawal failed, balance refunded - Withdrawal ID: ${withdrawal.id} - Error: ${payoutError.message}`,
+        });
+
+        return res.status(500).json({
+          error: "Withdrawal failed. Your balance has been refunded.",
+          details: payoutError.message,
+        });
+      }
+
+    } catch (error: any) {
+      console.error("[Withdrawal] Error:", error);
+      res.status(500).json({ error: error.message });
     }
+  });
+
+  // Get withdrawal status
+  app.get("/api/crypto/withdrawal-status/:id", requireAuth, async (req: any, res) => {
+    try {
+      const withdrawalId = parseInt(req.params.id);
+      const { cryptoWithdrawals } = await import('@shared/schema');
+
+      const [withdrawal] = await db.select()
+        .from(cryptoWithdrawals)
+        .where(eq(cryptoWithdrawals.id, withdrawalId));
+
+      if (!withdrawal) {
+        return res.status(404).json({ error: "Withdrawal not found" });
+      }
+
+      // Check if user owns this withdrawal
+      if (withdrawal.userId !== req.user.id) {
+        return res.status(403).json({ error: "Access denied" });
+      }
+
+      res.json({
+        id: withdrawal.id,
+        amount: withdrawal.amount,
+        currency: withdrawal.currency,
+        address: withdrawal.address,
+        status: withdrawal.status,
+        payoutId: withdrawal.payoutId,
+        txHash: withdrawal.txHash,
+        errorMessage: withdrawal.errorMessage,
+        createdAt: withdrawal.createdAt,
+        processedAt: withdrawal.processedAt,
+        confirmedAt: withdrawal.confirmedAt,
+      });
+
+    } catch (error: any) {
+      console.error("[Withdrawal Status] Error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // OLD withdrawal endpoint - now redirects to new one
+  app.post("/api/balance/withdraw", requireAuth, async (req: any, res) => {
+    return res.status(410).json({
+      error: "This endpoint is deprecated. Please use /api/crypto/withdraw instead.",
+    });
   });
 
   // Crypto payment endpoints

@@ -58,8 +58,12 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const [minimumAmount, setMinimumAmount] = useState(1);
 
   // Withdraw state
+  const [withdrawStep, setWithdrawStep] = useState<'amount' | 'address' | 'confirm' | 'processing'>('amount');
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [selectedWithdrawAmount, setSelectedWithdrawAmount] = useState<number | null>(null);
+  const [withdrawCurrency, setWithdrawCurrency] = useState("");
+  const [withdrawAddress, setWithdrawAddress] = useState("");
+  const [withdrawalResult, setWithdrawalResult] = useState<any>(null);
 
   const currentBalance = Number(user?.siteCash) || 0;
 
@@ -90,8 +94,12 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         setDepositAmount('');
         setPayment(null);
         setDepositError('');
+        setWithdrawStep('amount');
         setWithdrawAmount('');
         setSelectedWithdrawAmount(null);
+        setWithdrawCurrency('');
+        setWithdrawAddress('');
+        setWithdrawalResult(null);
       }, 300);
     }
   }, [isOpen, initialTab]);
@@ -196,21 +204,23 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
     }, 5000);
   }
 
-  // Withdraw mutation
+  // Withdraw mutation - creates crypto payout
   const withdrawMutation = useMutation({
-    mutationFn: async (amount: number) => {
-      const response = await apiRequest("POST", "/api/balance/withdraw", { amount });
+    mutationFn: async (params: { amount: number; currency: string; address: string }) => {
+      const response = await apiRequest("POST", "/api/crypto/withdraw", params);
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      setWithdrawAmount("");
-      setSelectedWithdrawAmount(null);
+      setWithdrawalResult(data);
+      setWithdrawStep('processing');
+
+      // Poll withdrawal status
+      pollWithdrawalStatus(data.withdrawalId);
+
       toast({
-        title: "Withdrawal Successful",
-        description: `Successfully withdrew ${formatCurrency(data.amount || 0)} from your account.`,
+        title: "Withdrawal Initiated",
+        description: `Your withdrawal is being processed. This may take a few minutes.`,
       });
-      onClose();
     },
     onError: (error: any) => {
       toast({
@@ -218,15 +228,64 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         description: error.message || "Failed to process withdrawal",
         variant: "destructive",
       });
+      setWithdrawStep('amount');
     },
   });
+
+  // Poll withdrawal status
+  function pollWithdrawalStatus(withdrawalId: number) {
+    const interval = setInterval(async () => {
+      try {
+        const response = await fetch(`/api/crypto/withdrawal-status/${withdrawalId}`, {
+          cache: 'no-store',
+        });
+        const data = await response.json();
+
+        console.log('[Withdrawal] Status:', data);
+
+        if (data.status === 'sent' || data.status === 'confirmed') {
+          clearInterval(interval);
+          queryClient.invalidateQueries({ queryKey: ['/api/user'] });
+          toast({
+            title: "Withdrawal Complete!",
+            description: `Your crypto has been sent to your wallet.`,
+          });
+
+          // Wait 2 seconds then close
+          setTimeout(() => {
+            onClose();
+          }, 2000);
+        } else if (data.status === 'failed') {
+          clearInterval(interval);
+          toast({
+            title: "Withdrawal Failed",
+            description: data.errorMessage || "The withdrawal could not be completed.",
+            variant: "destructive",
+          });
+          setWithdrawStep('amount');
+        }
+      } catch (error) {
+        console.error('Withdrawal status check failed:', error);
+      }
+    }, 5000);
+  }
 
   const handleWithdraw = () => {
     const amount = selectedWithdrawAmount || parseFloat(withdrawAmount);
     const breakdown = getWithdrawalBreakdown(amount);
 
     if (amount && amount > 0 && amount <= currentBalance && breakdown.subtotal >= 1) {
-      withdrawMutation.mutate(amount);
+      if (withdrawStep === 'amount') {
+        setWithdrawStep('address');
+      } else if (withdrawStep === 'address' && withdrawCurrency && withdrawAddress) {
+        setWithdrawStep('confirm');
+      } else if (withdrawStep === 'confirm') {
+        withdrawMutation.mutate({
+          amount,
+          currency: withdrawCurrency,
+          address: withdrawAddress,
+        });
+      }
     }
   };
 
@@ -554,156 +613,380 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
 
           {/* WITHDRAW TAB */}
           <TabsContent value="withdraw" className="mt-6 space-y-6">
-            {/* Preset Amounts */}
-            {presetWithdrawAmounts.length > 0 && (
-              <div className="space-y-3">
-                <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
-                  Quick Select
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  {presetWithdrawAmounts.map((amount) => (
-                    <motion.button
-                      key={amount}
-                      onClick={() => {
-                        setSelectedWithdrawAmount(amount);
-                        setWithdrawAmount('');
-                      }}
-                      className="p-4 rounded-xl border-2 font-bold text-lg transition-all"
-                      style={{
-                        background: selectedWithdrawAmount === amount
-                          ? 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)'
-                          : '#06121F',
-                        borderColor: selectedWithdrawAmount === amount ? '#E3B341' : '#2B3A4C',
-                        color: selectedWithdrawAmount === amount ? '#06121F' : '#C9D1E2',
-                      }}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {formatCurrency(amount)}
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            )}
+            <AnimatePresence mode="wait">
+              {/* STEP 1: SELECT AMOUNT */}
+              {withdrawStep === 'amount' && (
+                <motion.div
+                  key="amount"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-6"
+                >
+                  {/* Preset Amounts */}
+                  {presetWithdrawAmounts.length > 0 && (
+                    <div className="space-y-3">
+                      <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
+                        Quick Select
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {presetWithdrawAmounts.map((amount) => (
+                          <motion.button
+                            key={amount}
+                            onClick={() => {
+                              setSelectedWithdrawAmount(amount);
+                              setWithdrawAmount('');
+                            }}
+                            className="p-4 rounded-xl border-2 font-bold text-lg transition-all"
+                            style={{
+                              background: selectedWithdrawAmount === amount
+                                ? 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)'
+                                : '#06121F',
+                              borderColor: selectedWithdrawAmount === amount ? '#E3B341' : '#2B3A4C',
+                              color: selectedWithdrawAmount === amount ? '#06121F' : '#C9D1E2',
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            {formatCurrency(amount)}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-            {/* Custom Amount */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
-                Custom Amount
-              </label>
-              <div className="relative">
-                <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#E3B341' }} />
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  value={withdrawAmount}
-                  onChange={(e) => {
-                    setWithdrawAmount(e.target.value);
-                    setSelectedWithdrawAmount(null);
-                  }}
-                  min="0"
-                  step="0.01"
-                  max={currentBalance}
-                  className="pl-12 h-14 text-lg font-semibold border-2 rounded-xl"
-                  style={{
-                    background: '#06121F',
-                    borderColor: '#2B3A4C',
-                    color: '#C9D1E2',
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Fee Breakdown */}
-            {currentWithdrawAmountValue > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <Card className="p-5 border" style={{
-                  background: 'rgba(227, 179, 65, 0.08)',
-                  borderColor: '#2B3A4C',
-                }}>
-                  <h4 className="font-bold mb-4" style={{ color: '#C9D1E2' }}>
-                    Withdrawal Breakdown
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                      <span style={{ color: '#8A93A6' }}>Withdrawal Amount:</span>
-                      <span className="font-semibold" style={{ color: '#C9D1E2' }}>
-                        {formatCurrency(withdrawBreakdown.originalAmount)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span style={{ color: '#FF4F58' }}>Site Fee (-{SITE_FEE_PERCENTAGE}%):</span>
-                      <span className="font-semibold" style={{ color: '#FF4F58' }}>
-                        -{formatCurrency(withdrawBreakdown.siteFee)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span style={{ color: '#FF4F58' }}>Transaction Fee (-{TRANSACTION_FEE_PERCENTAGE}%):</span>
-                      <span className="font-semibold" style={{ color: '#FF4F58' }}>
-                        -{formatCurrency(withdrawBreakdown.transactionFee)}
-                      </span>
-                    </div>
-                    <div className="pt-3 mt-3 flex justify-between border-t" style={{ borderColor: '#2B3A4C' }}>
-                      <span className="font-bold" style={{ color: '#C9D1E2' }}>You will receive:</span>
-                      <span className="font-black text-xl" style={{ color: '#28C76F' }}>
-                        {formatCurrency(withdrawBreakdown.subtotal)}
-                      </span>
+                  {/* Custom Amount */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
+                      Custom Amount
+                    </label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: '#E3B341' }} />
+                      <Input
+                        type="number"
+                        placeholder="0.00"
+                        value={withdrawAmount}
+                        onChange={(e) => {
+                          setWithdrawAmount(e.target.value);
+                          setSelectedWithdrawAmount(null);
+                        }}
+                        min="0"
+                        step="0.01"
+                        max={currentBalance}
+                        className="pl-12 h-14 text-lg font-semibold border-2 rounded-xl"
+                        style={{
+                          background: '#06121F',
+                          borderColor: '#2B3A4C',
+                          color: '#C9D1E2',
+                        }}
+                      />
                     </div>
                   </div>
-                </Card>
-              </motion.div>
-            )}
 
-            {/* Warnings */}
-            {(selectedWithdrawAmount || parseFloat(withdrawAmount)) > currentBalance && (
-              <Alert variant="destructive">
-                <AlertDescription>
-                  Withdrawal amount cannot exceed your current balance of {formatCurrency(currentBalance)}.
-                </AlertDescription>
-              </Alert>
-            )}
+                  {/* Fee Breakdown */}
+                  {currentWithdrawAmountValue > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                    >
+                      <Card className="p-5 border" style={{
+                        background: 'rgba(227, 179, 65, 0.08)',
+                        borderColor: '#2B3A4C',
+                      }}>
+                        <h4 className="font-bold mb-4" style={{ color: '#C9D1E2' }}>
+                          Withdrawal Breakdown
+                        </h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between text-sm">
+                            <span style={{ color: '#8A93A6' }}>Withdrawal Amount:</span>
+                            <span className="font-semibold" style={{ color: '#C9D1E2' }}>
+                              {formatCurrency(withdrawBreakdown.originalAmount)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span style={{ color: '#8A93A6' }}>Transaction Fee (-{TRANSACTION_FEE_PERCENTAGE}%):</span>
+                            <span className="font-semibold" style={{ color: '#FF4F58' }}>
+                              -{formatCurrency(withdrawBreakdown.transactionFee)}
+                            </span>
+                          </div>
+                          <div className="pt-3 mt-3 flex justify-between border-t" style={{ borderColor: '#2B3A4C' }}>
+                            <span className="font-bold" style={{ color: '#C9D1E2' }}>You will receive:</span>
+                            <span className="font-black text-xl" style={{ color: '#28C76F' }}>
+                              {formatCurrency(withdrawBreakdown.subtotal)}
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </motion.div>
+                  )}
 
-            {currentWithdrawAmountValue > 0 && withdrawBreakdown.subtotal < 1 && (
-              <Alert variant="destructive">
-                <AlertDescription>
-                  After fees, you would receive less than $1.00. Consider withdrawing a larger amount.
-                </AlertDescription>
-              </Alert>
-            )}
+                  {/* Warnings */}
+                  {(selectedWithdrawAmount || parseFloat(withdrawAmount)) > currentBalance && (
+                    <Alert variant="destructive">
+                      <AlertDescription>
+                        Withdrawal amount cannot exceed your current balance of {formatCurrency(currentBalance)}.
+                      </AlertDescription>
+                    </Alert>
+                  )}
 
-            {/* Withdraw Button */}
-            <Button
-              onClick={handleWithdraw}
-              disabled={
-                withdrawMutation.isPending ||
-                !isValidWithdrawAmount() ||
-                currentBalance <= 0
-              }
-              className="w-full h-14 text-lg font-bold rounded-xl"
-              style={{
-                background: withdrawMutation.isPending || !isValidWithdrawAmount() || currentBalance <= 0
-                  ? '#2B3A4C'
-                  : '#FF4F58',
-                color: withdrawMutation.isPending || !isValidWithdrawAmount() || currentBalance <= 0
-                  ? '#8A93A6'
-                  : '#FFFFFF',
-                boxShadow: withdrawMutation.isPending || !isValidWithdrawAmount() || currentBalance <= 0
-                  ? 'none'
-                  : '0 4px 20px rgba(255, 79, 88, 0.3)',
-              }}
-            >
-              {withdrawMutation.isPending ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                'Withdraw Funds'
+                  {currentWithdrawAmountValue > 0 && withdrawBreakdown.subtotal < 1 && (
+                    <Alert variant="destructive">
+                      <AlertDescription>
+                        After fees, you would receive less than $1.00. Consider withdrawing a larger amount.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+
+                  {/* Next Button */}
+                  <Button
+                    onClick={handleWithdraw}
+                    disabled={!isValidWithdrawAmount() || currentBalance <= 0}
+                    className="w-full h-14 text-lg font-bold rounded-xl"
+                    style={{
+                      background: !isValidWithdrawAmount() || currentBalance <= 0
+                        ? '#2B3A4C'
+                        : '#FF4F58',
+                      color: !isValidWithdrawAmount() || currentBalance <= 0
+                        ? '#8A93A6'
+                        : '#FFFFFF',
+                      boxShadow: !isValidWithdrawAmount() || currentBalance <= 0
+                        ? 'none'
+                        : '0 4px 20px rgba(255, 79, 88, 0.3)',
+                    }}
+                  >
+                    Next: Enter Wallet Address
+                  </Button>
+                </motion.div>
               )}
-            </Button>
+
+              {/* STEP 2: ENTER WALLET ADDRESS */}
+              {withdrawStep === 'address' && (
+                <motion.div
+                  key="address"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-6"
+                >
+                  {/* Back Button */}
+                  <Button
+                    variant="ghost"
+                    onClick={() => setWithdrawStep('amount')}
+                    className="mb-4"
+                    style={{ color: '#8A93A6' }}
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Amount
+                  </Button>
+
+                  {/* Select Currency */}
+                  <div className="space-y-3">
+                    <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
+                      Select Cryptocurrency
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      {currencies.map((currency) => (
+                        <motion.button
+                          key={currency.id}
+                          onClick={() => setWithdrawCurrency(currency.id)}
+                          className="p-4 rounded-xl border-2 transition-all"
+                          style={{
+                            background: withdrawCurrency === currency.id
+                              ? 'linear-gradient(135deg, rgba(227, 179, 65, 0.2), rgba(227, 179, 65, 0.1))'
+                              : '#06121F',
+                            borderColor: withdrawCurrency === currency.id ? '#E3B341' : '#2B3A4C',
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <div className="text-3xl mb-2">{currency.icon}</div>
+                          <div className="font-bold" style={{ color: '#C9D1E2' }}>{currency.name}</div>
+                          <div className="text-xs" style={{ color: '#8A93A6' }}>{currency.network}</div>
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Enter Wallet Address */}
+                  {withdrawCurrency && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-2"
+                    >
+                      <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
+                        Your {currencies.find(c => c.id === withdrawCurrency)?.name} Wallet Address
+                      </label>
+                      <Input
+                        value={withdrawAddress}
+                        onChange={(e) => setWithdrawAddress(e.target.value)}
+                        placeholder="Enter your wallet address"
+                        className="h-14 font-mono text-sm border-2 rounded-xl"
+                        style={{
+                          background: '#06121F',
+                          borderColor: '#2B3A4C',
+                          color: '#C9D1E2',
+                        }}
+                      />
+                      <p className="text-xs" style={{ color: '#FF4F58' }}>
+                        ⚠️ Double-check your address. Sending to the wrong address will result in permanent loss of funds.
+                      </p>
+                    </motion.div>
+                  )}
+
+                  {/* Continue Button */}
+                  <Button
+                    onClick={handleWithdraw}
+                    disabled={!withdrawCurrency || !withdrawAddress || withdrawAddress.length < 10}
+                    className="w-full h-14 text-lg font-bold rounded-xl"
+                    style={{
+                      background: !withdrawCurrency || !withdrawAddress || withdrawAddress.length < 10
+                        ? '#2B3A4C'
+                        : '#FF4F58',
+                      color: !withdrawCurrency || !withdrawAddress || withdrawAddress.length < 10
+                        ? '#8A93A6'
+                        : '#FFFFFF',
+                    }}
+                  >
+                    Next: Review & Confirm
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* STEP 3: CONFIRM WITHDRAWAL */}
+              {withdrawStep === 'confirm' && (
+                <motion.div
+                  key="confirm"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-6"
+                >
+                  {/* Back Button */}
+                  <Button
+                    variant="ghost"
+                    onClick={() => setWithdrawStep('address')}
+                    className="mb-4"
+                    style={{ color: '#8A93A6' }}
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Address
+                  </Button>
+
+                  <Card className="p-6 border-2" style={{
+                    background: '#06121F',
+                    borderColor: '#E3B341',
+                  }}>
+                    <h3 className="text-xl font-bold mb-6" style={{ color: '#E3B341' }}>
+                      Confirm Withdrawal
+                    </h3>
+
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Amount</p>
+                        <p className="text-2xl font-black" style={{ color: '#C9D1E2' }}>
+                          {formatCurrency(currentWithdrawAmountValue)}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Cryptocurrency</p>
+                        <p className="text-lg font-bold" style={{ color: '#C9D1E2' }}>
+                          {currencies.find(c => c.id === withdrawCurrency)?.name} ({currencies.find(c => c.id === withdrawCurrency)?.network})
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Wallet Address</p>
+                        <code className="block p-3 rounded-lg text-sm font-mono break-all" style={{
+                          background: '#1E2D3F',
+                          color: '#C9D1E2',
+                        }}>
+                          {withdrawAddress}
+                        </code>
+                      </div>
+
+                      <div className="pt-4 border-t" style={{ borderColor: '#2B3A4C' }}>
+                        <div className="flex justify-between mb-2">
+                          <span style={{ color: '#8A93A6' }}>Transaction Fee</span>
+                          <span style={{ color: '#FF4F58' }}>-{formatCurrency(withdrawBreakdown.transactionFee)}</span>
+                        </div>
+                        <div className="flex justify-between text-lg font-bold">
+                          <span style={{ color: '#C9D1E2' }}>You will receive</span>
+                          <span style={{ color: '#28C76F' }}>{formatCurrency(withdrawBreakdown.subtotal)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+
+                  <Alert style={{ background: 'rgba(255, 79, 88, 0.1)', borderColor: '#FF4F58' }}>
+                    <AlertDescription style={{ color: '#FF4F58' }}>
+                      <strong>⚠️ Warning:</strong> Please verify your wallet address carefully. Cryptocurrency transactions cannot be reversed.
+                    </AlertDescription>
+                  </Alert>
+
+                  <Button
+                    onClick={handleWithdraw}
+                    disabled={withdrawMutation.isPending}
+                    className="w-full h-14 text-lg font-bold rounded-xl"
+                    style={{
+                      background: '#FF4F58',
+                      color: '#FFFFFF',
+                      boxShadow: '0 4px 20px rgba(255, 79, 88, 0.3)',
+                    }}
+                  >
+                    {withdrawMutation.isPending ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      'Confirm Withdrawal'
+                    )}
+                  </Button>
+                </motion.div>
+              )}
+
+              {/* STEP 4: PROCESSING */}
+              {withdrawStep === 'processing' && withdrawalResult && (
+                <motion.div
+                  key="processing"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="space-y-6 text-center py-8"
+                >
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  >
+                    <Loader2 className="w-16 h-16 mx-auto" style={{ color: '#E3B341' }} />
+                  </motion.div>
+
+                  <div>
+                    <h3 className="text-2xl font-bold mb-2" style={{ color: '#E3B341' }}>
+                      Withdrawal Processing
+                    </h3>
+                    <p className="text-sm" style={{ color: '#8A93A6' }}>
+                      Your withdrawal is being sent to the blockchain. This may take a few minutes.
+                    </p>
+                  </div>
+
+                  <Card className="p-5" style={{ background: '#06121F', borderColor: '#2B3A4C' }}>
+                    <div className="text-sm space-y-2" style={{ color: '#8A93A6' }}>
+                      <p>Amount: <span className="font-bold" style={{ color: '#C9D1E2' }}>{formatCurrency(withdrawalResult.amount)}</span></p>
+                      <p>Currency: <span className="font-bold" style={{ color: '#C9D1E2' }}>{withdrawalResult.currency.toUpperCase()}</span></p>
+                      <p>Status: <span className="font-bold" style={{ color: '#E3B341' }}>{withdrawalResult.status}</span></p>
+                    </div>
+                  </Card>
+
+                  <Alert style={{ background: 'rgba(227, 179, 65, 0.1)', borderColor: '#E3B341' }}>
+                    <AlertDescription style={{ color: '#8A93A6' }}>
+                      You'll receive a notification when your withdrawal is complete. You can safely close this window.
+                    </AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </TabsContent>
         </Tabs>
       </DialogContent>
