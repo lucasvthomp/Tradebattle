@@ -172,7 +172,10 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         });
         const data = await response.json();
 
-        if (data.payment_status === 'finished') {
+        console.log('[Deposit] Payment status:', data);
+
+        // Check for finished, confirmed, or partially_paid status
+        if (data.payment_status === 'finished' || data.payment_status === 'confirmed' || data.payment_status === 'sending') {
           clearInterval(interval);
           toast({
             title: "Payment Received!",
@@ -180,7 +183,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
           });
           queryClient.invalidateQueries({ queryKey: ['/api/user'] });
           onClose();
-        } else if (data.payment_status === 'failed' || data.payment_status === 'expired') {
+        } else if (data.payment_status === 'failed' || data.payment_status === 'expired' || data.payment_status === 'refunded') {
           clearInterval(interval);
           setDepositError('Payment failed or expired.');
           setDepositStep('amount');
