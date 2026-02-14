@@ -439,7 +439,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // NOWPayments crypto payment system
-  const nowPayments = await import("./services/nowPayments.js");
+  const {
+    testConnection,
+    checkStatus,
+    getAvailableCurrencies,
+    getRecommendedCurrencies,
+    createPayment,
+    getPaymentStatus,
+    verifyIPNSignature,
+  } = await import("./services/nowPayments.js");
 
   /**
    * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -470,7 +478,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log("[Crypto Status] Testing connection to NOWPayments...");
-      const testResult = await nowPayments.testConnection();
+      const testResult = await testConnection();
       console.log("[Crypto Status] Test result:", testResult);
 
       const response = {
@@ -502,7 +510,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get supported currencies
   app.get("/api/crypto/currencies", requireAuth, async (req: any, res) => {
     try {
-      const currencies = nowPayments.getRecommendedCurrencies();
+      const currencies = getRecommendedCurrencies();
       res.json({ currencies });
     } catch (error: any) {
       res.status(500).json({
@@ -549,7 +557,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const ipnCallbackUrl = `${protocol}://${host}/api/crypto/ipn`;
 
       // Create payment with NOWPayments
-      const payment = await nowPayments.createPayment({
+      const payment = await createPayment({
         priceAmount: amount,
         priceCurrency: 'usd',
         payCurrency: currency,
@@ -601,7 +609,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get status from NOWPayments
-      const status = await nowPayments.getPaymentStatus(paymentId);
+      const status = await getPaymentStatus(paymentId);
 
       // Update database
       await storage.updateCryptoCharge(paymentId, {
@@ -632,7 +640,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const rawBody = JSON.stringify(req.body);
 
       // Verify signature
-      if (!signature || !nowPayments.verifyIPNSignature(signature, rawBody)) {
+      if (!signature || !verifyIPNSignature(signature, rawBody)) {
         console.error('❌ Invalid IPN signature');
         return res.status(401).json({ message: 'Invalid signature' });
       }
