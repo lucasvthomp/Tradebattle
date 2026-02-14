@@ -34,6 +34,12 @@ export async function getCurrencies() {
   return data.currencies || [];
 }
 
+// Get minimum payment amount for a currency
+export async function getMinimumAmount(currency: string) {
+  const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
+  return data.min_amount || 10; // Default to $10 if not found
+}
+
 // Create payment
 export async function createPayment(params: {
   priceAmount: number;

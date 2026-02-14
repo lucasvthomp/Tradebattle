@@ -464,24 +464,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/crypto/minimum/:currency', async (req, res) => {
+    try {
+      const { getMinimumAmount } = await import('./services/nowPayments.js');
+      const minimum = await getMinimumAmount(req.params.currency);
+      res.json({ minimum });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.post('/api/crypto/create-payment', requireAuth, async (req: any, res) => {
     try {
       const { amount, currency } = req.body;
 
       // Validation
-      if (!amount || isNaN(amount) || amount < 2.5 || amount > 10000) {
-        return res.status(400).json({
-          error: 'Amount must be between $2.50 and $10,000'
-        });
-      }
-
       if (!currency) {
         return res.status(400).json({
           error: 'Currency is required'
         });
       }
 
-      const { createPayment } = await import('./services/nowPayments.js');
+      if (!amount || isNaN(amount) || amount > 10000) {
+        return res.status(400).json({
+          error: 'Invalid amount'
+        });
+      }
+
+      const { createPayment, getMinimumAmount } = await import('./services/nowPayments.js');
+
+      // Check minimum amount for this currency
+      const minimumAmount = await getMinimumAmount(currency);
+      if (amount < minimumAmount) {
+        return res.status(400).json({
+          error: `Minimum amount for ${currency.toUpperCase()} is $${minimumAmount.toFixed(2)}`
+        });
+      }
 
       // Build callback URL from request
       const protocol = req.protocol;

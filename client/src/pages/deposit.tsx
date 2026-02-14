@@ -13,6 +13,7 @@ export default function Deposit() {
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
+  const [minimumAmount, setMinimumAmount] = useState<number>(2.5);
 
   // Load status - NO CACHING
   useEffect(() => {
@@ -31,6 +32,16 @@ export default function Deposit() {
         .catch(console.error);
     }
   }, [status]);
+
+  // Fetch minimum amount when currency changes
+  useEffect(() => {
+    if (selectedCurrency) {
+      fetch(`/api/crypto/minimum/${selectedCurrency}`, { cache: 'no-store' })
+        .then(r => r.json())
+        .then(data => setMinimumAmount(data.minimum || 10))
+        .catch(() => setMinimumAmount(10)); // Default to $10 on error
+    }
+  }, [selectedCurrency]);
 
   // Copy address to clipboard
   async function copyAddress() {
@@ -247,10 +258,10 @@ export default function Deposit() {
                 </label>
                 <input
                   type="number"
-                  placeholder="Minimum $2.50"
+                  placeholder={`Minimum $${minimumAmount.toFixed(2)}`}
                   value={amount}
                   onChange={e => setAmount(e.target.value)}
-                  min="2.5"
+                  min={minimumAmount}
                   max="10000"
                   step="0.01"
                   style={{
@@ -272,7 +283,7 @@ export default function Deposit() {
                   fontSize: '12px',
                   color: '#8A93A6',
                 }}>
-                  Minimum deposit: $2.50 • Maximum: $10,000
+                  Minimum deposit: ${minimumAmount.toFixed(2)} • Maximum: $10,000
                 </div>
               </div>
 
@@ -326,17 +337,17 @@ export default function Deposit() {
               {/* Create Button */}
               <button
                 onClick={createDeposit}
-                disabled={loading || !amount || parseFloat(amount) < 2.5}
+                disabled={loading || !amount || parseFloat(amount) < minimumAmount}
                 style={{
                   width: '100%',
                   padding: '16px',
-                  background: loading || !amount || parseFloat(amount) < 2.5 ? '#2B3A4C' : '#E3B341',
-                  color: loading || !amount || parseFloat(amount) < 2.5 ? '#8A93A6' : '#06121F',
+                  background: loading || !amount || parseFloat(amount) < minimumAmount ? '#2B3A4C' : '#E3B341',
+                  color: loading || !amount || parseFloat(amount) < minimumAmount ? '#8A93A6' : '#06121F',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '16px',
                   fontWeight: '600',
-                  cursor: loading || !amount || parseFloat(amount) < 2.5 ? 'not-allowed' : 'pointer',
+                  cursor: loading || !amount || parseFloat(amount) < minimumAmount ? 'not-allowed' : 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -344,12 +355,12 @@ export default function Deposit() {
                   transition: 'all 0.2s',
                 }}
                 onMouseEnter={(e) => {
-                  if (!loading && amount && parseFloat(amount) >= 2.5) {
+                  if (!loading && amount && parseFloat(amount) >= minimumAmount) {
                     e.currentTarget.style.background = '#D4A537';
                   }
                 }}
                 onMouseLeave={(e) => {
-                  if (!loading && amount && parseFloat(amount) >= 2.5) {
+                  if (!loading && amount && parseFloat(amount) >= minimumAmount) {
                     e.currentTarget.style.background = '#E3B341';
                   }
                 }}
