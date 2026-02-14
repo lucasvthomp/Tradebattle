@@ -175,15 +175,15 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
           return (
             <div key={msg.id}>
               {isFirst && (
-                <div className="flex items-center space-x-1.5 mb-0.5">
-                  <span className="text-xs font-semibold" style={{ color: '#F1F5F9' }}>
+                <div className="flex items-center space-x-1.5 mb-1">
+                  <span className="text-sm font-bold" style={{ color: '#F1F5F9', fontFamily: 'Space Grotesk, sans-serif' }}>
                     {group.username}
                   </span>
                   {(() => {
                     const userInfo = users.find((u: any) => u.id === group.userId);
                     return userInfo?.subscriptionTier === 'administrator' ? (
                       <span
-                        className="text-[10px] font-bold"
+                        className="text-xs font-bold"
                         style={{
                           background: 'linear-gradient(90deg, #FF6B35, #F7931E, #FDC830, #F37335, #FF6B35)',
                           backgroundSize: '200% 100%',
@@ -198,22 +198,27 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                     ) : null;
                   })()}
                   {isCurrentUser && (
-                    <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
+                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
                   )}
-                  <span className="text-[10px]" style={{ color: '#94A3B8' }}>
+                  <span className="text-xs" style={{ color: '#94A3B8' }}>
                     {formatTimestamp(msg.createdAt)}
                   </span>
                 </div>
               )}
               <div className="group/msg flex items-center gap-1.5">
-                <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-                  <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>
+                <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+                  <p className="text-sm whitespace-pre-wrap leading-normal" style={{
+                    color: '#F1F5F9',
+                    fontFamily: 'Space Grotesk, sans-serif',
+                    wordBreak: 'break-word',
+                    overflowWrap: 'break-word'
+                  }}>
                     {renderMessageWithMentions(msg.message, users, navigate)}
                   </p>
                 </div>
                 {/* Shift-hover timestamp for subsequent messages */}
                 {!isFirst && shiftHeld && (
-                  <span className="text-[10px] opacity-0 group-hover/msg:opacity-100 transition-opacity whitespace-nowrap" style={{ color: '#94A3B8' }}>
+                  <span className="text-xs opacity-0 group-hover/msg:opacity-100 transition-opacity whitespace-nowrap" style={{ color: '#94A3B8' }}>
                     {formatTimestamp(msg.createdAt)}
                   </span>
                 )}

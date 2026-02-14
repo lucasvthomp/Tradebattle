@@ -50,19 +50,24 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
       </Avatar>
 
       <div className="flex-1 min-w-0">
-        <div className="flex items-center space-x-1.5 mb-0.5">
-          <span className="text-xs font-semibold" style={{ color: '#F1F5F9' }}>
+        <div className="flex items-center space-x-1.5 mb-1">
+          <span className="text-sm font-bold" style={{ color: '#F1F5F9', fontFamily: 'Space Grotesk, sans-serif' }}>
             {message.username}
           </span>
           {isCurrentUser && (
-            <Badge variant="secondary" className="text-[10px] px-1 py-0" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
+            <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
           )}
-          <span className="text-[10px]" style={{ color: '#94A3B8' }}>
+          <span className="text-xs" style={{ color: '#94A3B8' }}>
             {formatTimestamp(message.createdAt)}
           </span>
         </div>
-        <div className="backdrop-blur-sm rounded-md px-2 py-1.5" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-          <p className="text-xs break-words leading-snug" style={{ color: '#F1F5F9' }}>{message.message}</p>
+        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+          <p className="text-sm whitespace-pre-wrap leading-normal" style={{
+            color: '#F1F5F9',
+            fontFamily: 'Space Grotesk, sans-serif',
+            wordBreak: 'break-word',
+            overflowWrap: 'break-word'
+          }}>{message.message}</p>
         </div>
       </div>
     </div>

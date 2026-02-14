@@ -3,10 +3,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { BalanceDialog } from "@/components/balance-dialog";
+import { BalanceManagementModal } from "@/components/balance/BalanceManagementModal";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { MarketStatus } from "@/components/market-status";
-import { DepositModal } from "@/components/deposit/DepositModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,8 +23,8 @@ interface HeaderProps {
 export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) {
   const { user, logoutMutation } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
-  const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
-  const [depositModalOpen, setDepositModalOpen] = useState(false);
+  const [balanceModalOpen, setBalanceModalOpen] = useState(false);
+  const [balanceModalTab, setBalanceModalTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, navigate] = useLocation();
 
@@ -55,32 +54,22 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Notifications Bell */}
                 <NotificationDropdown />
 
-                {/* Deposit Button */}
-                <Button
-                  variant="ghost"
-                  className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2"
-                  style={{
-                    borderColor: 'rgba(227, 179, 65, 0.8)',
-                    background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.1), rgba(227, 179, 65, 0.05))',
-                    color: '#E3B341'
-                  }}
-                  onClick={() => setDepositModalOpen(true)}
-                >
-                  <Plus className="w-4 h-4 mr-1.5" />
-                  <span className="text-sm font-bold">Deposit</span>
-                </Button>
-
-                {/* Balance Display */}
+                {/* Balance Display - Click to open Deposit/Withdraw Modal */}
                 <Button
                   variant="ghost"
                   data-tour="balance"
-                  aria-label="View balance"
-                  className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2"
+                  aria-label="Manage balance - Deposit or Withdraw"
+                  className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2 hover:scale-105"
                   style={{
-                    borderColor: 'rgba(227, 179, 65, 0.4)',
-                    color: '#E3B341'
+                    borderColor: 'rgba(227, 179, 65, 0.6)',
+                    background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))',
+                    color: '#E3B341',
+                    boxShadow: '0 0 20px rgba(227, 179, 65, 0.1)'
                   }}
-                  onClick={() => setBalanceDialogOpen(true)}
+                  onClick={() => {
+                    setBalanceModalTab('deposit');
+                    setBalanceModalOpen(true);
+                  }}
                 >
                   <DollarSign className="w-4 h-4 mr-1" />
                   <span className="text-sm font-bold">
@@ -171,36 +160,28 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               <>
                 {/* Balance & Deposit Section */}
                 <div className="space-y-3 pb-4">
-                  {/* Balance Display */}
+                  {/* Balance Display - Opens Deposit/Withdraw Modal */}
                   <Button
                     variant="ghost"
                     className="w-full justify-start h-12 hover:bg-primary/10 border-2 px-4"
                     style={{
-                      borderColor: 'rgba(227, 179, 65, 0.4)',
+                      borderColor: 'rgba(227, 179, 65, 0.6)',
+                      background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))',
                       color: '#E3B341'
                     }}
                     onClick={() => {
-                      setBalanceDialogOpen(true);
+                      setBalanceModalTab('deposit');
+                      setBalanceModalOpen(true);
                       setMobileMenuOpen(false);
                     }}
                   >
                     <DollarSign className="w-5 h-5 mr-3" />
-                    <span className="font-bold text-base">
-                      {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </span>
-                  </Button>
-
-                  {/* Deposit Button */}
-                  <Button
-                    className="w-full justify-start h-12 rounded-lg text-white px-4"
-                    style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)' }}
-                    onClick={() => {
-                      navigate("/deposit");
-                      setMobileMenuOpen(false);
-                    }}
-                  >
-                    <Plus className="w-5 h-5 mr-3" />
-                    <span className="font-bold text-base">Deposit Funds</span>
+                    <div className="flex flex-col items-start">
+                      <span className="font-bold text-base">
+                        {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                      </span>
+                      <span className="text-xs opacity-70">Tap to deposit or withdraw</span>
+                    </div>
                   </Button>
                 </div>
 
@@ -378,17 +359,11 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
         </div>
       )}
 
-      {/* Balance Dialog */}
-      <BalanceDialog
-        open={balanceDialogOpen}
-        onOpenChange={setBalanceDialogOpen}
-        currentBalance={Number(user?.siteCash) || 0}
-      />
-
-      {/* Deposit Modal */}
-      <DepositModal
-        isOpen={depositModalOpen}
-        onClose={() => setDepositModalOpen(false)}
+      {/* Balance Management Modal - Handles both Deposit and Withdraw */}
+      <BalanceManagementModal
+        isOpen={balanceModalOpen}
+        onClose={() => setBalanceModalOpen(false)}
+        initialTab={balanceModalTab}
       />
     </header>
   );
