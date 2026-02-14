@@ -36,6 +36,7 @@ import ArchiveDetail from "@/pages/archive-detail";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import Transactions from "@/pages/transactions";
+import DebugPayment from "@/pages/debug-payment";
 import Layout from "@/components/layout/layout";
 import Footer from "@/components/layout/footer";
 import { AnnouncementModal } from "@/components/announcements/AnnouncementModal";
@@ -104,6 +105,7 @@ function Router() {
               <Route path="/terms" component={Terms} />
               <Route path="/profile" component={Profile} />
               <Route path="/admin" component={Admin} />
+              <Route path="/debug-payment" component={DebugPayment} />
               <Route path="/archive" component={Archive} />
               <Route path="/archive/:id" component={ArchiveDetail} />
               <Route path="/transactions" component={Transactions} />

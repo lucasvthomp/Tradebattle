@@ -597,6 +597,109 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Debug endpoint to check payment and manually credit (admin only)
+  app.post('/api/crypto/debug-payment', requireAuth, async (req: any, res) => {
+    try {
+      const { paymentId } = req.body;
+
+      if (!paymentId) {
+        return res.status(400).json({ error: 'paymentId is required' });
+      }
+
+      // Get payment status from NOWPayments
+      const { getPaymentStatus } = await import('./services/nowPayments.js');
+      const paymentData = await getPaymentStatus(paymentId);
+
+      console.log(`[Debug Payment] Payment ${paymentId} data:`, JSON.stringify(paymentData, null, 2));
+
+      // Extract user ID from order_id
+      const orderId = paymentData.order_id;
+      const userId = parseInt(orderId.split('-')[1]);
+
+      // Get user from database
+      const user = await storage.getUser(userId);
+
+      // Check if payment was already credited by looking at admin logs
+      const { adminLogs } = await import('@shared/schema');
+      const existingCredit = await db.select().from(adminLogs).where(
+        eq(adminLogs.notes, `Crypto deposit: $${paymentData.price_amount} - Payment ID: ${paymentData.payment_id} - Status: ${paymentData.payment_status}`)
+      );
+
+      res.json({
+        paymentData: paymentData,
+        user: user ? { id: user.id, username: user.username, balance: user.siteCash } : null,
+        alreadyCredited: existingCredit.length > 0,
+        shouldCredit: !existingCredit.length && ['finished', 'confirmed', 'sending'].includes(paymentData.payment_status),
+      });
+
+    } catch (error: any) {
+      console.error('[Debug Payment] Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin endpoint to manually credit a payment (for troubleshooting)
+  app.post('/api/crypto/manual-credit', requireAuth, async (req: any, res) => {
+    try {
+      // Check if user is admin
+      if (req.user.subscriptionTier !== 'administrator' && req.user.username !== 'LUCAS') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { paymentId, username, amount } = req.body;
+
+      if (!paymentId || !username || !amount) {
+        return res.status(400).json({ error: 'paymentId, username, and amount are required' });
+      }
+
+      console.log(`[Manual Credit] Admin ${req.user.username} crediting payment ${paymentId} for user ${username}`);
+
+      // Get payment status from NOWPayments
+      const { getPaymentStatus } = await import('./services/nowPayments.js');
+      const paymentData = await getPaymentStatus(paymentId);
+
+      console.log(`[Manual Credit] Payment status:`, JSON.stringify(paymentData, null, 2));
+
+      // Get user by username
+      const targetUser = await storage.getUserByUsername(username);
+      if (!targetUser) {
+        return res.status(404).json({ error: `User "${username}" not found` });
+      }
+
+      // Update balance
+      const currentBalance = parseFloat(targetUser.siteCash?.toString() || '0');
+      const newBalance = currentBalance + parseFloat(amount);
+
+      await storage.updateUser(targetUser.id, {
+        siteCash: newBalance.toString(),
+      });
+
+      console.log(`[Manual Credit] Updated balance for ${username}: $${currentBalance} → $${newBalance}`);
+
+      // Log transaction
+      await storage.createAdminLog({
+        adminUserId: req.user.id,
+        targetUserId: targetUser.id,
+        action: 'balance_deposit',
+        oldValue: currentBalance.toString(),
+        newValue: newBalance.toString(),
+        notes: `Manual crypto deposit credit by ${req.user.username} - Payment ID: ${paymentId} - NOWPayments Status: ${paymentData.payment_status} - Amount: $${amount}`,
+      });
+
+      res.json({
+        success: true,
+        message: `Credited $${amount} to ${username}'s account`,
+        paymentStatus: paymentData.payment_status,
+        oldBalance: currentBalance,
+        newBalance: newBalance,
+      });
+
+    } catch (error: any) {
+      console.error('[Manual Credit] Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Code redemption endpoint (DB-backed promo code system)
   app.post("/api/codes/redeem", requireAuth, async (req: any, res) => {
     try {
