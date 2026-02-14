@@ -29,7 +29,13 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 export function useChatContext() {
   const context = useContext(ChatContext);
   if (!context) {
-    throw new Error('useChatContext must be used within ChatProvider');
+    // Return safe defaults instead of throwing to prevent crashes
+    console.warn('useChatContext used outside ChatProvider, returning defaults');
+    return {
+      chatOpen: false,
+      setChatOpen: () => {},
+      toggleChat: () => {}
+    };
   }
   return context;
 }

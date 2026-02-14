@@ -6,6 +6,7 @@ import { useState } from "react";
 import { BalanceDialog } from "@/components/balance-dialog";
 import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { MarketStatus } from "@/components/market-status";
+import { DepositModal } from "@/components/deposit/DepositModal";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +25,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const { user, logoutMutation } = useAuth();
   const { t, formatCurrency } = useUserPreferences();
   const [balanceDialogOpen, setBalanceDialogOpen] = useState(false);
+  const [depositModalOpen, setDepositModalOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, navigate] = useLocation();
 
@@ -53,11 +55,26 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* Notifications Bell */}
                 <NotificationDropdown />
 
-                {/* Balance Display - Clickable for balance management */}
+                {/* Deposit Button */}
+                <Button
+                  variant="ghost"
+                  className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2"
+                  style={{
+                    borderColor: 'rgba(227, 179, 65, 0.8)',
+                    background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.1), rgba(227, 179, 65, 0.05))',
+                    color: '#E3B341'
+                  }}
+                  onClick={() => setDepositModalOpen(true)}
+                >
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  <span className="text-sm font-bold">Deposit</span>
+                </Button>
+
+                {/* Balance Display */}
                 <Button
                   variant="ghost"
                   data-tour="balance"
-                  aria-label="Manage balance and deposit funds"
+                  aria-label="View balance"
                   className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2"
                   style={{
                     borderColor: 'rgba(227, 179, 65, 0.4)',
@@ -69,7 +86,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   <span className="text-sm font-bold">
                     {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
-                  <Plus className="w-3.5 h-3.5 ml-1.5" style={{ color: '#10B981' }} />
                 </Button>
 
                 {/* User Menu with integrated balance */}
@@ -240,16 +256,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       <span className="text-base">People</span>
                     </Button>
                   </Link>
-                  <Link href="/events">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Calendar className="w-5 h-5 mr-3" style={{ color: '#A855F7' }} />
-                      <span className="text-base">Events</span>
-                    </Button>
-                  </Link>
                   <Link href="/shop">
                     <Button
                       variant="ghost"
@@ -377,6 +383,12 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
         open={balanceDialogOpen}
         onOpenChange={setBalanceDialogOpen}
         currentBalance={Number(user?.siteCash) || 0}
+      />
+
+      {/* Deposit Modal */}
+      <DepositModal
+        isOpen={depositModalOpen}
+        onClose={() => setDepositModalOpen(false)}
       />
     </header>
   );
