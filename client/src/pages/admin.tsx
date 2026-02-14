@@ -452,15 +452,15 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-7">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="users">Users</TabsTrigger>
-              <TabsTrigger value="tournaments">Tournaments</TabsTrigger>
-              <TabsTrigger value="announcements">Announcements</TabsTrigger>
-              <TabsTrigger value="revenue">Revenue</TabsTrigger>
-              <TabsTrigger value="transactions">Transactions</TabsTrigger>
-              <TabsTrigger value="promo-codes">Promo Codes</TabsTrigger>
-              <TabsTrigger value="system">System</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+              <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Overview</TabsTrigger>
+              <TabsTrigger value="users" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Users</TabsTrigger>
+              <TabsTrigger value="tournaments" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Tournaments</TabsTrigger>
+              <TabsTrigger value="announcements" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Announcements</TabsTrigger>
+              <TabsTrigger value="revenue" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Revenue</TabsTrigger>
+              <TabsTrigger value="transactions" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Transactions</TabsTrigger>
+              <TabsTrigger value="promo-codes" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Promo Codes</TabsTrigger>
+              <TabsTrigger value="system" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">System</TabsTrigger>
             </TabsList>
 
             {/* ===== TAB 1: OVERVIEW ===== */}

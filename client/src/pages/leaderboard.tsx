@@ -103,6 +103,8 @@ export default function Leaderboard() {
     </div>
   );
 
+  const [hoveredPodium, setHoveredPodium] = useState<number | null>(null);
+
   const renderGrowthPodium = (data: any[]) => {
     const top3 = data.slice(0, 3);
     const [first, second, third] = top3;
@@ -405,31 +407,110 @@ export default function Leaderboard() {
     );
   };
 
+  // Generate random particles
+  const particles = Array.from({ length: 25 }).map((_, i) => ({
+    id: i,
+    size: Math.random() * 6 + 2, // 2-8px
+    color: ['#E3B341', '#10B981', '#06B6D4', '#8B5CF6'][Math.floor(Math.random() * 4)],
+    left: `${Math.random() * 100}%`,
+    duration: Math.random() * 10 + 15, // 15-25s
+    delay: Math.random() * 5,
+  }));
+
+  const ambientGlows = [
+    { top: '20%', left: '10%', color: '#E3B341' },
+    { top: '50%', right: '15%', color: '#8B5CF6' },
+    { bottom: '20%', left: '50%', color: '#06B6D4' },
+  ];
+
   return (
     <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#080C14' }}>
+      {/* Floating Particles */}
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          style={{
+            position: 'absolute',
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            borderRadius: '50%',
+            background: particle.color,
+            left: particle.left,
+            top: '-10px',
+            pointerEvents: 'none',
+            boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
+            zIndex: 0,
+          }}
+          animate={{
+            y: ['0vh', '110vh'],
+            x: [0, Math.sin(particle.id) * 100],
+            opacity: [0, 1, 1, 0],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: 'linear',
+          }}
+        />
+      ))}
+
+      {/* Ambient Glows */}
+      {ambientGlows.map((glow, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: '400px',
+            height: '400px',
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${glow.color}40 0%, transparent 70%)`,
+            pointerEvents: 'none',
+            filter: 'blur(60px)',
+            zIndex: 0,
+            ...glow,
+          }}
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 4 + i,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
       <div className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
           className="mb-10"
         >
           <div className="flex items-center gap-4 mb-3">
             <div className="rounded-2xl p-3" style={{
               backgroundColor: '#E3B341',
             }}>
-              <Trophy className="w-10 h-10" style={{ color: '#080C14' }} />
+              <Trophy className="w-12 h-12" style={{ color: '#080C14' }} />
             </div>
-            <h1 className="text-6xl font-black text-white">Global Leaderboards</h1>
+            <h1 className="text-7xl font-black text-white">Global Leaderboards</h1>
           </div>
-          <p className="text-xl text-[#94A3B8]">Top performers across all tournaments and categories</p>
+          <p className="text-2xl text-[#94A3B8]">Top performers across all tournaments and categories</p>
         </motion.div>
 
         {/* Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 h-14 rounded-xl border-none shadow-lg" style={{
-            background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
-          }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3 h-14 rounded-xl border-none shadow-lg" style={{
+              background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
+            }}>
             <TabsTrigger
               value="highwager"
               className="data-[state=active]:bg-[#15803D] data-[state=active]:text-white rounded-lg text-base font-bold"
@@ -466,8 +547,8 @@ export default function Leaderboard() {
                   background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
                 }}>
                   <CardHeader className="p-6">
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                      <Trophy className="w-7 h-7" style={{ color: '#E3B341' }} />
+                    <CardTitle className="flex items-center gap-3 text-3xl">
+                      <Trophy className="w-8 h-8" style={{ color: '#E3B341' }} />
                       <span style={{ color: '#FFFFFF' }}>Highest Buy-In Tournaments</span>
                     </CardTitle>
                   </CardHeader>
@@ -481,20 +562,20 @@ export default function Leaderboard() {
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            whileHover={{ x: 3 }}
-                            className="flex items-center justify-between p-4 rounded-xl border-none transition-all"
+                            whileHover={{ scale: 1.05, x: 8, boxShadow: '0 8px 32px rgba(227, 179, 65, 0.3)' }}
+                            className="flex items-center justify-between p-5 rounded-xl border-none transition-all"
                             style={{
                               background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
                               boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
                             }}
                           >
                             <div className="flex items-center gap-4">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${getRankStyle(rank)}`}>
+                              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${getRankStyle(rank)}`}>
                                 {rank <= 3 ? getRankIcon(rank) : rank}
                               </div>
                               <div>
-                                <div className="font-bold text-lg text-white">{tournament.name}</div>
-                                <div className="text-sm text-[#94A3B8]">
+                                <div className="font-bold text-xl text-white">{tournament.name}</div>
+                                <div className="text-base text-[#94A3B8]">
                                   {tournament.currentPlayers}/{tournament.maxPlayers} players
                                   <span className={tournament.status === 'active' ? ' text-[#10B981]' : ' text-[#E3B341]'}>
                                     {' '}{tournament.status}
@@ -503,10 +584,10 @@ export default function Leaderboard() {
                               </div>
                             </div>
                             <div className="text-right">
-                              <div className="text-2xl font-black" style={{ color: '#E3B341' }}>
+                              <div className="text-3xl font-black" style={{ color: '#E3B341' }}>
                                 {formatCurrency(tournament.buyInAmount)}
                               </div>
-                              <div className="text-xs text-[#94A3B8]">Buy-In</div>
+                              <div className="text-sm text-[#94A3B8]">Buy-In</div>
                             </div>
                           </motion.div>
                         );
@@ -530,8 +611,8 @@ export default function Leaderboard() {
                       background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
                     }}>
                       <CardHeader className="p-6">
-                        <CardTitle className="flex items-center gap-3 text-2xl">
-                          <TrendingUp className="w-7 h-7" style={{ color: '#10B981' }} />
+                        <CardTitle className="flex items-center gap-3 text-3xl">
+                          <TrendingUp className="w-8 h-8" style={{ color: '#10B981' }} />
                           <span style={{ color: '#FFFFFF' }}>Complete Rankings</span>
                         </CardTitle>
                       </CardHeader>
@@ -549,8 +630,8 @@ export default function Leaderboard() {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                whileHover={{ scale: 1.02, x: 5 }}
-                                className="flex items-center justify-between p-5 rounded-xl border transition-all cursor-pointer group"
+                                whileHover={{ scale: 1.05, x: 8 }}
+                                className="flex items-center justify-between p-6 rounded-xl border transition-all cursor-pointer group"
                                 style={{
                                   background: getRankGradient(rank),
                                   borderColor: tierBadge ? `${tierBadge.color}40` : '#2B3A4C',
@@ -595,7 +676,7 @@ export default function Leaderboard() {
                                   {/* User info */}
                                   <div>
                                     <div className="flex items-center gap-2">
-                                      <div className="font-bold text-lg text-white">{participant.username}</div>
+                                      <div className="font-bold text-xl text-white">{participant.username}</div>
                                       {tierBadge && (
                                         <Badge variant="outline" className="text-xs px-2 py-0.5"
                                           style={{ borderColor: tierBadge.color, color: tierBadge.color, backgroundColor: `${tierBadge.color}10` }}
@@ -604,7 +685,7 @@ export default function Leaderboard() {
                                         </Badge>
                                       )}
                                     </div>
-                                    <div className="text-sm text-[#94A3B8]">
+                                    <div className="text-base text-[#94A3B8]">
                                       {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
                                     </div>
                                   </div>
@@ -663,8 +744,8 @@ export default function Leaderboard() {
                       background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
                     }}>
                       <CardHeader className="p-6">
-                        <CardTitle className="flex items-center gap-3 text-2xl">
-                          <Activity className="w-7 h-7" style={{ color: '#06B6D4' }} />
+                        <CardTitle className="flex items-center gap-3 text-3xl">
+                          <Activity className="w-8 h-8" style={{ color: '#06B6D4' }} />
                           <span style={{ color: '#FFFFFF' }}>Complete Rankings</span>
                         </CardTitle>
                       </CardHeader>
@@ -681,8 +762,8 @@ export default function Leaderboard() {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                whileHover={{ scale: 1.02, x: 5 }}
-                                className="flex items-center justify-between p-5 rounded-xl border transition-all cursor-pointer group"
+                                whileHover={{ scale: 1.05, x: 8 }}
+                                className="flex items-center justify-between p-6 rounded-xl border transition-all cursor-pointer group"
                                 style={{
                                   background: getRankGradient(rank),
                                   borderColor: tierBadge ? `${tierBadge.color}40` : '#2B3A4C',
@@ -776,7 +857,8 @@ export default function Leaderboard() {
               )}
             </TabsContent>
           </AnimatePresence>
-        </Tabs>
+          </Tabs>
+        </motion.div>
 
         {/* Stats Summary */}
         <motion.div

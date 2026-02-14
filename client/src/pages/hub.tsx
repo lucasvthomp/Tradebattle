@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import { TrendingUp, Users, Clock, Trophy, Zap, Target, DollarSign, Flame, Star, ArrowRight, Sparkles } from "lucide-react";
 
 export default function Hub() {
@@ -27,13 +28,121 @@ export default function Hub() {
     return "Good evening";
   };
 
+  // Generate random particles
+  const particles = Array.from({ length: 25 }).map((_, i) => ({
+    id: i,
+    size: Math.random() * 6 + 2, // 2-8px
+    colors: ['#E3B341', '#10B981', '#06B6D4', '#8B5CF6'],
+    color: ['#E3B341', '#10B981', '#06B6D4', '#8B5CF6'][Math.floor(Math.random() * 4)],
+    left: `${Math.random() * 100}%`,
+    duration: Math.random() * 10 + 15, // 15-25s
+    delay: Math.random() * 5,
+  }));
+
+  const shootingStars = Array.from({ length: 3 }).map((_, i) => ({
+    id: i,
+    delay: i * 4 + Math.random() * 3,
+  }));
+
+  const ambientGlows = [
+    { top: '10%', left: '15%', color: '#E3B341' },
+    { top: '60%', right: '20%', color: '#8B5CF6' },
+    { bottom: '15%', left: '40%', color: '#06B6D4' },
+  ];
+
   return (
     <div style={{
       minHeight: '100vh',
       background: 'linear-gradient(135deg, #06121F 0%, #0F172A 50%, #1E293B 100%)',
       padding: '40px 20px',
+      position: 'relative',
+      overflow: 'hidden',
     }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+      {/* Floating Particles */}
+      {particles.map((particle) => (
+        <motion.div
+          key={particle.id}
+          style={{
+            position: 'absolute',
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
+            borderRadius: '50%',
+            background: particle.color,
+            left: particle.left,
+            top: '-10px',
+            pointerEvents: 'none',
+            boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
+          }}
+          animate={{
+            y: ['0vh', '110vh'],
+            x: [0, Math.sin(particle.id) * 100],
+            opacity: [0, 1, 1, 0],
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            delay: particle.delay,
+            ease: 'linear',
+          }}
+        />
+      ))}
+
+      {/* Shooting Stars */}
+      {shootingStars.map((star) => (
+        <motion.div
+          key={star.id}
+          style={{
+            position: 'absolute',
+            width: '150px',
+            height: '2px',
+            background: 'linear-gradient(90deg, transparent, #E3B341, transparent)',
+            top: `${Math.random() * 50}%`,
+            left: '-150px',
+            pointerEvents: 'none',
+            transform: 'rotate(-45deg)',
+            boxShadow: '0 0 10px #E3B341',
+          }}
+          animate={{
+            x: ['0vw', '120vw'],
+            opacity: [0, 1, 0],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            delay: star.delay,
+            repeatDelay: 8,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {/* Ambient Glows */}
+      {ambientGlows.map((glow, i) => (
+        <motion.div
+          key={i}
+          style={{
+            position: 'absolute',
+            width: '400px',
+            height: '400px',
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${glow.color}40 0%, transparent 70%)`,
+            pointerEvents: 'none',
+            filter: 'blur(60px)',
+            ...glow,
+          }}
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{
+            duration: 4 + i,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      <div style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
         {/* Welcome Section with Flair */}
         <div style={{
@@ -83,7 +192,11 @@ export default function Hub() {
           marginBottom: '48px',
         }}>
           {/* Balance Card */}
-          <div style={{
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            style={{
             background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
             borderRadius: '16px',
             padding: '28px',
@@ -123,10 +236,14 @@ export default function Hub() {
             }}>
               ${(Number(user?.siteCash) || 0).toFixed(2)}
             </div>
-          </div>
+          </motion.div>
 
           {/* Wins Card */}
-          <div style={{
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            style={{
             background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
             borderRadius: '16px',
             padding: '28px',
@@ -164,10 +281,14 @@ export default function Hub() {
             }}>
               {user?.tournamentWins || 0}
             </div>
-          </div>
+          </motion.div>
 
           {/* Active Tournaments Card */}
-          <div style={{
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            style={{
             background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
             borderRadius: '16px',
             padding: '28px',
@@ -205,7 +326,7 @@ export default function Hub() {
             }}>
               {activeTournaments.length}
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Active Tournaments with Better Design */}
@@ -226,7 +347,9 @@ export default function Hub() {
             <div style={{ display: 'grid', gap: '16px' }}>
               {activeTournaments.slice(0, 3).map((tournament: any) => (
                 <Link key={tournament.id} href="/tournaments">
-                  <div style={{
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -4 }}
+                    style={{
                     background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
                     borderRadius: '16px',
                     padding: '24px',
@@ -235,16 +358,6 @@ export default function Hub() {
                     transition: 'all 0.3s',
                     position: 'relative',
                     overflow: 'hidden',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#22C55E';
-                    e.currentTarget.style.transform = 'translateY(-4px)';
-                    e.currentTarget.style.boxShadow = '0 12px 32px rgba(34, 197, 94, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.3)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
                   }}>
                     <div style={{
                       position: 'absolute',
@@ -296,7 +409,7 @@ export default function Hub() {
                         Ends {new Date(tournament.endTime).toLocaleDateString()}
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 </Link>
               ))}
             </div>
@@ -324,27 +437,28 @@ export default function Hub() {
           }}>
             {/* Join Tournament - Gold Theme */}
             <Link href="/tournaments">
-              <button style={{
+              <motion.button
+                whileHover={{ scale: 1.12, y: -6 }}
+                animate={{
+                  boxShadow: [
+                    '0 0 20px rgba(227, 179, 65, 0.2)',
+                    '0 0 30px rgba(227, 179, 65, 0.4)',
+                    '0 0 20px rgba(227, 179, 65, 0.2)',
+                  ],
+                }}
+                transition={{
+                  boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+                }}
+                style={{
                 width: '100%',
                 background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%)',
                 border: '2px solid #E3B341',
                 borderRadius: '16px',
                 padding: '28px',
                 cursor: 'pointer',
-                transition: 'all 0.3s',
                 textAlign: 'left',
                 position: 'relative',
                 overflow: 'hidden',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(227, 179, 65, 0.25) 0%, rgba(245, 158, 11, 0.15) 100%)';
-                e.currentTarget.style.transform = 'translateY(-6px)';
-                e.currentTarget.style.boxShadow = '0 12px 32px rgba(227, 179, 65, 0.3)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
               }}>
                 <div style={{
                   position: 'absolute',
@@ -362,12 +476,14 @@ export default function Hub() {
                 <div style={{ fontSize: '14px', color: '#8A93A6' }}>
                   Compete against others and win big prizes
                 </div>
-              </button>
+              </motion.button>
             </Link>
 
             {/* Portfolio - Blue/Purple Theme */}
             <Link href="/dashboard">
-              <button style={{
+              <motion.button
+                whileHover={{ scale: 1.1, y: -6 }}
+                style={{
                 width: '100%',
                 background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)',
                 border: '2px solid rgba(99, 102, 241, 0.5)',
@@ -378,16 +494,6 @@ export default function Hub() {
                 textAlign: 'left',
                 position: 'relative',
                 overflow: 'hidden',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#6366F1';
-                e.currentTarget.style.transform = 'translateY(-6px)';
-                e.currentTarget.style.boxShadow = '0 12px 32px rgba(99, 102, 241, 0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.5)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
               }}>
                 <div style={{
                   position: 'absolute',
@@ -413,12 +519,14 @@ export default function Hub() {
                 <div style={{ fontSize: '14px', color: '#8A93A6' }}>
                   Track your performance and gains
                 </div>
-              </button>
+              </motion.button>
             </Link>
 
             {/* Leaderboard - Green Theme */}
             <Link href="/leaderboard">
-              <button style={{
+              <motion.button
+                whileHover={{ scale: 1.1, y: -6 }}
+                style={{
                 width: '100%',
                 background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1) 0%, rgba(16, 185, 129, 0.1) 100%)',
                 border: '2px solid rgba(34, 197, 94, 0.5)',
@@ -429,16 +537,6 @@ export default function Hub() {
                 textAlign: 'left',
                 position: 'relative',
                 overflow: 'hidden',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#22C55E';
-                e.currentTarget.style.transform = 'translateY(-6px)';
-                e.currentTarget.style.boxShadow = '0 12px 32px rgba(34, 197, 94, 0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(34, 197, 94, 0.5)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
               }}>
                 <div style={{
                   position: 'absolute',
@@ -456,7 +554,7 @@ export default function Hub() {
                 <div style={{ fontSize: '14px', color: '#8A93A6' }}>
                   See top traders and rankings
                 </div>
-              </button>
+              </motion.button>
             </Link>
           </div>
         </div>
@@ -482,20 +580,15 @@ export default function Hub() {
               gap: '16px',
             }}>
               {upcomingTournaments.slice(0, 3).map((tournament: any) => (
-                <div key={tournament.id} style={{
+                <motion.div
+                  key={tournament.id}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  style={{
                   background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
                   borderRadius: '16px',
                   padding: '24px',
                   border: '2px solid rgba(168, 85, 247, 0.3)',
                   transition: 'all 0.3s',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = '#A855F7';
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(168, 85, 247, 0.3)';
-                  e.currentTarget.style.transform = 'translateY(0)';
                 }}>
                   <div style={{ fontSize: '18px', fontWeight: '700', color: '#C9D1E2', marginBottom: '8px' }}>
                     {tournament.name}
@@ -514,7 +607,7 @@ export default function Hub() {
                     <Clock size={14} />
                     Starts {new Date(tournament.startTime).toLocaleDateString()}
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           </div>
