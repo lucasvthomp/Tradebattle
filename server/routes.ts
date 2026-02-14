@@ -469,11 +469,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { amount, currency } = req.body;
       const { createPayment } = await import('./services/nowPayments.js');
 
+      // Build callback URL from request
+      const protocol = req.protocol;
+      const host = req.get('host');
+      const ipnCallbackUrl = `${protocol}://${host}/api/crypto/ipn`;
+
       const payment = await createPayment({
         priceAmount: amount,
         priceCurrency: 'usd',
         payCurrency: currency,
         orderId: `deposit-${req.user!.id}-${Date.now()}`,
+        ipnCallbackUrl,
       });
 
       res.json(payment);

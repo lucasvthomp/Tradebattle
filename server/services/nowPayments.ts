@@ -40,12 +40,13 @@ export async function createPayment(params: {
   priceCurrency: string;
   payCurrency: string;
   orderId: string;
+  ipnCallbackUrl: string;
 }) {
   return await apiCall('/payment', 'POST', {
     price_amount: params.priceAmount,
     price_currency: params.priceCurrency.toLowerCase(),
     pay_currency: params.payCurrency.toLowerCase(),
-    ipn_callback_url: `${process.env.BASE_URL || 'http://localhost:5000'}/api/crypto/ipn`,
+    ipn_callback_url: params.ipnCallbackUrl,
     order_id: params.orderId,
     order_description: `Tradebattle deposit`,
   });
