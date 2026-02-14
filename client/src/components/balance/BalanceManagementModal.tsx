@@ -207,10 +207,19 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   // Withdraw mutation - creates crypto payout
   const withdrawMutation = useMutation({
     mutationFn: async (params: { amount: number; currency: string; address: string }) => {
+      console.log('[Withdraw] Sending request:', params);
       const response = await apiRequest("POST", "/api/crypto/withdraw", params);
-      return response.json();
+      const data = await response.json();
+      console.log('[Withdraw] Response:', data);
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Withdrawal failed');
+      }
+
+      return data;
     },
     onSuccess: (data) => {
+      console.log('[Withdraw] Success:', data);
       setWithdrawalResult(data);
       setWithdrawStep('processing');
 
@@ -223,6 +232,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
       });
     },
     onError: (error: any) => {
+      console.error('[Withdraw] Error:', error);
       toast({
         title: "Withdrawal Failed",
         description: error.message || "Failed to process withdrawal",
