@@ -1,13 +1,26 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Trophy, TrendingUp, DollarSign, Crown, Target, Zap, Award, Activity, Medal, Star, Sparkles, ArrowUp, ArrowDown } from "lucide-react";
+import {
+  Trophy,
+  TrendingUp,
+  DollarSign,
+  Crown,
+  Target,
+  Zap,
+  Award,
+  Medal,
+  Star,
+  Sparkles,
+  ArrowUp,
+  Flame,
+  Users,
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
-import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,7 +29,7 @@ export default function Leaderboard() {
   const { formatCurrency } = useUserPreferences();
   const [activeTab, setActiveTab] = useState("highwager");
 
-  // Fetch real data from API
+  // Fetch leaderboard data
   const { data: highWagerData, isLoading: loadingHighWager } = useQuery({
     queryKey: ['/api/leaderboard/highest-wager'],
   });
@@ -26,68 +39,53 @@ export default function Leaderboard() {
   const { data: activeData, isLoading: loadingActive } = useQuery({
     queryKey: ['/api/leaderboard/most-active'],
   });
-  const { data: tournamentsData } = useQuery({
-    queryKey: ['/api/tournaments'],
-  });
 
   const highWagerRankings = (highWagerData as any)?.data?.rankings || [];
   const growthRankings = (growthData as any)?.data?.rankings || [];
   const activeRankings = (activeData as any)?.data?.rankings || [];
 
-  const activeTournamentCount = ((tournamentsData as any)?.data || []).filter((t: any) => t.status === 'active').length;
-  const highestBuyIn = highWagerRankings.length > 0 ? Math.max(...highWagerRankings.map((t: any) => t.buyInAmount || 0)) : 0;
+  // Floating particles animation
+  const particles = Array.from({ length: 25 }, (_, i) => ({
+    id: i,
+    size: Math.random() * 6 + 2,
+    duration: Math.random() * 25 + 20,
+    delay: Math.random() * 5,
+    x: Math.random() * 100,
+  }));
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1:
-        return <Crown className="h-5 w-5 text-[#E3B341]" />;
-      case 2:
-        return <Award className="h-5 w-5 text-[#CBD5E1]" />;
-      case 3:
-        return <Target className="h-5 w-5 text-[#CD7F32]" />;
-      default:
-        return null;
+      case 1: return <Crown className="w-6 h-6" style={{ color: '#FFD700' }} />;
+      case 2: return <Medal className="w-6 h-6" style={{ color: '#CBD5E1' }} />;
+      case 3: return <Award className="w-6 h-6" style={{ color: '#CD7F32' }} />;
+      default: return null;
     }
   };
 
-  const getRankStyle = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return "bg-gradient-to-br from-[#FFD700] via-[#E3B341] to-[#c99a35] text-[#080C14]";
-      case 2:
-        return "bg-gradient-to-br from-[#CBD5E1] via-[#94A3B8] to-[#64748B] text-[#080C14]";
-      case 3:
-        return "bg-gradient-to-br from-[#CD7F32] via-[#b3692a] to-[#995d24] text-white";
-      default:
-        return "bg-[#0F172A] text-[#F1F5F9]";
-    }
+  const getRankColor = (rank: number) => {
+    if (rank === 1) return '#FFD700';
+    if (rank === 2) return '#CBD5E1';
+    if (rank === 3) return '#CD7F32';
+    if (rank <= 10) return '#60A5FA';
+    if (rank <= 25) return '#A78BFA';
+    return '#8A93A6';
   };
 
-  const getTierBadge = (rank: number) => {
-    if (rank <= 3) return null; // Podium positions don't need tier badges
-    if (rank <= 10) return { name: "Diamond", color: "#60A5FA", icon: Sparkles };
-    if (rank <= 25) return { name: "Platinum", color: "#A78BFA", icon: Star };
-    if (rank <= 50) return { name: "Gold", color: "#E3B341", icon: Medal };
-    if (rank <= 100) return { name: "Silver", color: "#CBD5E1", icon: Award };
-    return { name: "Bronze", color: "#CD7F32", icon: Target };
-  };
-
-  const getRankGradient = (rank: number) => {
-    if (rank <= 10) return "linear-gradient(135deg, rgba(96, 165, 250, 0.15), rgba(96, 165, 250, 0.05))";
-    if (rank <= 25) return "linear-gradient(135deg, rgba(167, 139, 250, 0.15), rgba(167, 139, 250, 0.05))";
-    if (rank <= 50) return "linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))";
-    if (rank <= 100) return "linear-gradient(135deg, rgba(203, 213, 225, 0.15), rgba(203, 213, 225, 0.05))";
-    return "linear-gradient(135deg, rgba(205, 127, 50, 0.15), rgba(205, 127, 50, 0.05))";
+  const getPodiumHeight = (rank: number) => {
+    if (rank === 1) return '220px';
+    if (rank === 2) return '180px';
+    if (rank === 3) return '160px';
+    return '0px';
   };
 
   const LoadingSkeleton = () => (
     <div className="space-y-4 p-6">
-      {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-4">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="flex items-center gap-4 p-4 rounded-xl" style={{ background: '#1E2D3F' }}>
           <Skeleton className="w-12 h-12 rounded-full" />
           <div className="flex-1 space-y-2">
-            <Skeleton className="h-4 w-32" />
-            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-5 w-32" />
+            <Skeleton className="h-4 w-24" />
           </div>
           <Skeleton className="h-6 w-20" />
         </div>
@@ -95,850 +93,421 @@ export default function Leaderboard() {
     </div>
   );
 
-  const EmptyState = ({ message }: { message: string }) => (
-    <div className="text-center py-16">
-      <Trophy className="w-12 h-12 mx-auto mb-4" style={{ color: '#1F2937' }} />
-      <p className="text-lg font-semibold" style={{ color: '#94A3B8' }}>{message}</p>
-      <p className="text-sm mt-2" style={{ color: '#64748B' }}>Join tournaments and start trading to appear here!</p>
-    </div>
+  const RankingRow = ({ player, rank, showValue, valueIcon }: any) => (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: rank * 0.05 }}
+      whileHover={{ scale: 1.02, x: 8 }}
+      className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all cursor-pointer"
+      style={{
+        background: rank <= 3
+          ? `linear-gradient(135deg, ${getRankColor(rank)}15, ${getRankColor(rank)}05)`
+          : '#1E2D3F',
+        borderColor: rank <= 3 ? getRankColor(rank) : '#2B3A4C',
+        boxShadow: rank <= 3 ? `0 4px 20px ${getRankColor(rank)}30` : 'none',
+      }}
+    >
+      {/* Rank & Icon */}
+      <div className="flex items-center gap-3 min-w-[80px]">
+        <motion.div
+          className="text-2xl font-black"
+          style={{ color: getRankColor(rank) }}
+          animate={rank <= 3 ? { scale: [1, 1.1, 1] } : {}}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          #{rank}
+        </motion.div>
+        {getRankIcon(rank)}
+      </div>
+
+      {/* Avatar */}
+      <Avatar className="w-12 h-12 border-2" style={{ borderColor: getRankColor(rank) }}>
+        <AvatarFallback style={{
+          background: `linear-gradient(135deg, ${getRankColor(rank)}, ${getRankColor(rank)}80)`,
+          color: '#06121F',
+          fontWeight: 'bold',
+        }}>
+          {player.username?.slice(0, 2).toUpperCase()}
+        </AvatarFallback>
+      </Avatar>
+
+      {/* Username */}
+      <div className="flex-1">
+        <div className="flex items-center gap-2">
+          <span className="font-bold text-lg" style={{ color: '#F1F5F9' }}>
+            {player.username}
+          </span>
+          {player.userId === user?.id && (
+            <Badge style={{ background: '#E3B341', color: '#06121F', fontSize: '11px' }}>
+              You
+            </Badge>
+          )}
+        </div>
+        {rank <= 3 && (
+          <motion.div
+            className="text-xs font-semibold"
+            style={{ color: getRankColor(rank) }}
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            Top {rank} Player 🔥
+          </motion.div>
+        )}
+      </div>
+
+      {/* Value */}
+      <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{
+        background: `${getRankColor(rank)}15`,
+        border: `1px solid ${getRankColor(rank)}40`,
+      }}>
+        {valueIcon}
+        <span className="font-black text-lg" style={{ color: getRankColor(rank) }}>
+          {showValue}
+        </span>
+      </div>
+    </motion.div>
   );
 
-  const [hoveredPodium, setHoveredPodium] = useState<number | null>(null);
+  const PodiumDisplay = ({ rankings }: any) => {
+    if (rankings.length === 0) return null;
 
-  const renderGrowthPodium = (data: any[]) => {
-    const top3 = data.slice(0, 3);
-    const [first, second, third] = top3;
-
-    if (!first) return <EmptyState message="No rankings yet" />;
+    const podiumOrder = [rankings[1], rankings[0], rankings[2]].filter(Boolean);
 
     return (
-      <div className="mb-12 relative">
-        <div className="flex items-end justify-center gap-8 mb-8 px-8">
-          {/* 2nd Place */}
-          {second && (
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
-              className="flex flex-col items-center"
-              style={{ width: '220px' }}
-            >
-              <motion.div
-                whileHover={{ y: -3 }}
-                className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #CBD5E1 0%, #94A3B8 50%, #64748B 100%)',
-                  border: '2px solid rgba(255, 255, 255, 0.3)'
-                }}
-              >
-                <div className="relative z-10 text-center">
-                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(8, 12, 20, 0.3)' }}
-                  >
-                    <Award className="w-12 h-12" style={{ color: '#080C14' }} />
-                  </div>
-                  <div className="text-2xl font-black mb-2" style={{ color: '#080C14' }}>{second.username}</div>
-                  <div className="text-3xl font-black" style={{ color: '#080C14' }}>
-                    +{(second.percentageChange || 0).toFixed(1)}%
-                  </div>
-                </div>
-              </motion.div>
-              <div
-                className="w-full rounded-t-2xl relative overflow-hidden"
-                style={{
-                  height: 160,
-                  background: 'linear-gradient(180deg, #CBD5E1 0%, #94A3B8 50%, #64748B 100%)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderBottom: 'none'
-                }}
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl font-black mb-2" style={{ color: 'rgba(8, 12, 20, 0.9)' }}>2</div>
-                  <div className="text-base font-bold tracking-wider" style={{ color: 'rgba(8, 12, 20, 0.7)' }}>SILVER</div>
-                </div>
-              </div>
-            </motion.div>
-          )}
+      <div className="flex items-end justify-center gap-4 mb-12 px-4">
+        {podiumOrder.map((player, idx) => {
+          const actualRank = idx === 1 ? 1 : idx === 0 ? 2 : 3;
+          const height = getPodiumHeight(actualRank);
 
-          {/* 1st Place */}
-          {first && (
+          return (
             <motion.div
-              initial={{ opacity: 0, y: 100 }}
+              key={player.userId}
+              initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, type: "spring", stiffness: 120 }}
+              transition={{ delay: 0.2 + idx * 0.1 }}
               className="flex flex-col items-center"
-              style={{ width: '240px' }}
+              style={{ flex: actualRank === 1 ? '0 0 160px' : '0 0 140px' }}
             >
-              <motion.div
-                whileHover={{ y: -3 }}
-                className="rounded-3xl p-8 shadow-lg relative overflow-hidden mb-4 cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #E3B341 30%, #c99a35 60%, #a87d28 100%)',
-                  border: '2px solid rgba(255, 215, 0, 0.4)'
-                }}
-              >
-                <div className="relative z-10 text-center">
-                  <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(8, 12, 20, 0.3)' }}
-                  >
-                    <Crown className="w-14 h-14" style={{ color: '#080C14' }} />
-                  </div>
-                  <div className="text-3xl font-black mb-3" style={{ color: '#080C14' }}>{first.username}</div>
-                  <div className="text-4xl font-black" style={{ color: '#080C14' }}>
-                    +{(first.percentageChange || 0).toFixed(1)}%
-                  </div>
-                </div>
-              </motion.div>
-              <div
-                className="w-full rounded-t-2xl relative overflow-hidden"
-                style={{
-                  height: 200,
-                  background: 'linear-gradient(180deg, #FFD700 0%, #E3B341 30%, #c99a35 60%, #9a7728 100%)',
-                  border: '1px solid rgba(255, 215, 0, 0.3)',
-                  borderBottom: 'none'
-                }}
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-8xl font-black mb-2" style={{ color: 'rgba(8, 12, 20, 0.9)' }}>1</div>
-                  <div className="text-lg font-bold tracking-widest" style={{ color: 'rgba(8, 12, 20, 0.8)' }}>GOLD</div>
-                </div>
-              </div>
-            </motion.div>
-          )}
+              {/* Crown Animation for #1 */}
+              {actualRank === 1 && (
+                <motion.div
+                  className="mb-3"
+                  animate={{
+                    y: [0, -10, 0],
+                    rotate: [0, 5, -5, 0],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Crown className="w-12 h-12" style={{ color: '#FFD700' }} />
+                </motion.div>
+              )}
 
-          {/* 3rd Place */}
-          {third && (
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-              className="flex flex-col items-center"
-              style={{ width: '220px' }}
-            >
+              {/* Avatar */}
               <motion.div
-                whileHover={{ y: -3 }}
-                className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
+                className="relative mb-4"
+                whileHover={{ scale: 1.1 }}
+                animate={actualRank === 1 ? {
+                  boxShadow: [
+                    '0 0 20px rgba(255, 215, 0, 0.4)',
+                    '0 0 40px rgba(255, 215, 0, 0.6)',
+                    '0 0 20px rgba(255, 215, 0, 0.4)',
+                  ],
+                } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
                 style={{
-                  background: 'linear-gradient(135deg, #CD7F32 0%, #b3692a 50%, #995d24 100%)',
-                  border: '2px solid rgba(205, 127, 50, 0.4)'
+                  borderRadius: '50%',
                 }}
               >
-                <div className="relative z-10 text-center">
-                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(255, 255, 255, 0.2)' }}
-                  >
-                    <Target className="w-12 h-12 text-white" />
-                  </div>
-                  <div className="text-2xl font-black text-white mb-2">{third.username}</div>
-                  <div className="text-3xl font-black text-white">
-                    +{(third.percentageChange || 0).toFixed(1)}%
-                  </div>
+                <Avatar className="border-4" style={{
+                  width: actualRank === 1 ? '100px' : '80px',
+                  height: actualRank === 1 ? '100px' : '80px',
+                  borderColor: getRankColor(actualRank),
+                }}>
+                  <AvatarFallback style={{
+                    background: `linear-gradient(135deg, ${getRankColor(actualRank)}, ${getRankColor(actualRank)}80)`,
+                    color: '#06121F',
+                    fontSize: actualRank === 1 ? '32px' : '24px',
+                    fontWeight: 'bold',
+                  }}>
+                    {player.username?.slice(0, 2).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+
+                {/* Rank Badge */}
+                <div
+                  className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center font-black text-lg"
+                  style={{
+                    background: getRankColor(actualRank),
+                    color: '#06121F',
+                    boxShadow: `0 4px 12px ${getRankColor(actualRank)}60`,
+                  }}
+                >
+                  #{actualRank}
                 </div>
               </motion.div>
-              <div
-                className="w-full rounded-t-2xl relative overflow-hidden"
-                style={{
-                  height: 130,
-                  background: 'linear-gradient(180deg, #CD7F32 0%, #b3692a 50%, #995d24 100%)',
-                  border: '1px solid rgba(205, 127, 50, 0.3)',
-                  borderBottom: 'none'
-                }}
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl font-black text-white mb-2">3</div>
-                  <div className="text-base font-bold tracking-wider text-white opacity-90">BRONZE</div>
+
+              {/* Username */}
+              <div className="text-center mb-3 px-2">
+                <div className="font-black text-lg mb-1" style={{ color: '#F1F5F9' }}>
+                  {player.username}
+                </div>
+                <div className="text-sm font-semibold" style={{ color: getRankColor(actualRank) }}>
+                  {formatCurrency(player.totalWagered || 0)}
                 </div>
               </div>
+
+              {/* Podium */}
+              <motion.div
+                className="w-full rounded-t-xl flex items-end justify-center pb-6"
+                style={{
+                  height: height,
+                  background: `linear-gradient(180deg, ${getRankColor(actualRank)}40, ${getRankColor(actualRank)}20)`,
+                  border: `2px solid ${getRankColor(actualRank)}`,
+                  borderBottom: 'none',
+                }}
+                initial={{ height: 0 }}
+                animate={{ height: height }}
+                transition={{ delay: 0.4 + idx * 0.1, duration: 0.6 }}
+              >
+                {getRankIcon(actualRank)}
+              </motion.div>
             </motion.div>
-          )}
-        </div>
+          );
+        })}
       </div>
     );
   };
-
-  const renderActivePodium = (data: any[]) => {
-    const top3 = data.slice(0, 3);
-    const [first, second, third] = top3;
-
-    if (!first) return <EmptyState message="No rankings yet" />;
-
-    return (
-      <div className="mb-12 relative">
-        <div className="flex items-end justify-center gap-8 mb-8 px-8">
-          {/* 2nd Place */}
-          {second && (
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
-              className="flex flex-col items-center"
-              style={{ width: '220px' }}
-            >
-              <motion.div
-                whileHover={{ y: -3 }}
-                className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #CBD5E1 0%, #94A3B8 50%, #64748B 100%)',
-                  border: '2px solid rgba(255, 255, 255, 0.3)'
-                }}
-              >
-                <div className="relative z-10 text-center">
-                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(8, 12, 20, 0.3)' }}
-                  >
-                    <Award className="w-12 h-12" style={{ color: '#080C14' }} />
-                  </div>
-                  <div className="text-2xl font-black mb-2" style={{ color: '#080C14' }}>{second.username}</div>
-                  <div className="text-3xl font-black" style={{ color: '#080C14' }}>
-                    {second.totalTrades} trades
-                  </div>
-                </div>
-              </motion.div>
-              <div
-                className="w-full rounded-t-2xl relative overflow-hidden"
-                style={{
-                  height: 160,
-                  background: 'linear-gradient(180deg, #CBD5E1 0%, #94A3B8 50%, #64748B 100%)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  borderBottom: 'none'
-                }}
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl font-black mb-2" style={{ color: 'rgba(8, 12, 20, 0.9)' }}>2</div>
-                  <div className="text-base font-bold tracking-wider" style={{ color: 'rgba(8, 12, 20, 0.7)' }}>SILVER</div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* 1st Place */}
-          {first && (
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1, type: "spring", stiffness: 120 }}
-              className="flex flex-col items-center"
-              style={{ width: '240px' }}
-            >
-              <motion.div
-                whileHover={{ y: -3 }}
-                className="rounded-3xl p-8 shadow-lg relative overflow-hidden mb-4 cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #FFD700 0%, #E3B341 30%, #c99a35 60%, #a87d28 100%)',
-                  border: '2px solid rgba(255, 215, 0, 0.4)'
-                }}
-              >
-                <div className="relative z-10 text-center">
-                  <div className="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(8, 12, 20, 0.3)' }}
-                  >
-                    <Crown className="w-14 h-14" style={{ color: '#080C14' }} />
-                  </div>
-                  <div className="text-3xl font-black mb-3" style={{ color: '#080C14' }}>{first.username}</div>
-                  <div className="text-4xl font-black" style={{ color: '#080C14' }}>
-                    {first.totalTrades} trades
-                  </div>
-                </div>
-              </motion.div>
-              <div
-                className="w-full rounded-t-2xl relative overflow-hidden"
-                style={{
-                  height: 200,
-                  background: 'linear-gradient(180deg, #FFD700 0%, #E3B341 30%, #c99a35 60%, #9a7728 100%)',
-                  border: '1px solid rgba(255, 215, 0, 0.3)',
-                  borderBottom: 'none'
-                }}
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-8xl font-black mb-2" style={{ color: 'rgba(8, 12, 20, 0.9)' }}>1</div>
-                  <div className="text-lg font-bold tracking-widest" style={{ color: 'rgba(8, 12, 20, 0.8)' }}>GOLD</div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* 3rd Place */}
-          {third && (
-            <motion.div
-              initial={{ opacity: 0, y: 100 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
-              className="flex flex-col items-center"
-              style={{ width: '220px' }}
-            >
-              <motion.div
-                whileHover={{ y: -3 }}
-                className="rounded-3xl p-7 border-none shadow-2xl relative overflow-hidden mb-4 cursor-pointer"
-                style={{
-                  background: 'linear-gradient(135deg, #CD7F32 0%, #b3692a 50%, #995d24 100%)',
-                  border: '2px solid rgba(205, 127, 50, 0.4)'
-                }}
-              >
-                <div className="relative z-10 text-center">
-                  <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ background: 'rgba(255, 255, 255, 0.2)' }}
-                  >
-                    <Target className="w-12 h-12 text-white" />
-                  </div>
-                  <div className="text-2xl font-black text-white mb-2">{third.username}</div>
-                  <div className="text-3xl font-black text-white">
-                    {third.totalTrades} trades
-                  </div>
-                </div>
-              </motion.div>
-              <div
-                className="w-full rounded-t-2xl relative overflow-hidden"
-                style={{
-                  height: 130,
-                  background: 'linear-gradient(180deg, #CD7F32 0%, #b3692a 50%, #995d24 100%)',
-                  border: '1px solid rgba(205, 127, 50, 0.3)',
-                  borderBottom: 'none'
-                }}
-              >
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <div className="text-7xl font-black text-white mb-2">3</div>
-                  <div className="text-base font-bold tracking-wider text-white opacity-90">BRONZE</div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
-  // Generate random particles
-  const particles = Array.from({ length: 25 }).map((_, i) => ({
-    id: i,
-    size: Math.random() * 6 + 2, // 2-8px
-    color: ['#E3B341', '#10B981', '#06B6D4', '#8B5CF6'][Math.floor(Math.random() * 4)],
-    left: `${Math.random() * 100}%`,
-    duration: Math.random() * 10 + 15, // 15-25s
-    delay: Math.random() * 5,
-  }));
-
-  const ambientGlows = [
-    { top: '20%', left: '10%', color: '#E3B341' },
-    { top: '50%', right: '15%', color: '#8B5CF6' },
-    { bottom: '20%', left: '50%', color: '#06B6D4' },
-  ];
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ backgroundColor: '#080C14' }}>
-      {/* Floating Particles */}
+    <div className="min-h-screen relative overflow-hidden" style={{ background: '#06121F' }}>
+      {/* Animated Background Particles */}
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
+          className="absolute rounded-full"
           style={{
-            position: 'absolute',
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            borderRadius: '50%',
-            background: particle.color,
-            left: particle.left,
-            top: '-10px',
-            pointerEvents: 'none',
-            boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
-            zIndex: 0,
+            width: particle.size,
+            height: particle.size,
+            left: `${particle.x}%`,
+            background: 'radial-gradient(circle, #E3B341, transparent)',
+            opacity: 0.3,
           }}
           animate={{
-            y: ['0vh', '110vh'],
-            x: [0, Math.sin(particle.id) * 100],
-            opacity: [0, 1, 1, 0],
+            y: ['-10vh', '110vh'],
+            opacity: [0, 0.6, 0],
           }}
           transition={{
             duration: particle.duration,
-            repeat: Infinity,
             delay: particle.delay,
+            repeat: Infinity,
             ease: 'linear',
           }}
         />
       ))}
 
-      {/* Ambient Glows */}
-      {ambientGlows.map((glow, i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: 'absolute',
-            width: '400px',
-            height: '400px',
-            borderRadius: '50%',
-            background: `radial-gradient(circle, ${glow.color}40 0%, transparent 70%)`,
-            pointerEvents: 'none',
-            filter: 'blur(60px)',
-            zIndex: 0,
-            ...glow,
-          }}
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 4 + i,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
+      {/* Pulsing Glows */}
+      <motion.div
+        className="absolute top-0 left-0 w-96 h-96 rounded-full blur-3xl"
+        style={{ background: 'radial-gradient(circle, rgba(255, 215, 0, 0.15), transparent)' }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.3, 0.6, 0.3],
+        }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
 
-      <div className="container mx-auto px-4 lg:px-8 py-8 relative z-10">
-        {/* Header */}
+      <motion.div
+        className="absolute bottom-0 right-0 w-96 h-96 rounded-full blur-3xl"
+        style={{ background: 'radial-gradient(circle, rgba(96, 165, 250, 0.15), transparent)' }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.3, 0.6, 0.3],
+        }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      />
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
+        {/* Hero Header */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-10"
+          className="text-center mb-12"
         >
-          <div className="flex items-center gap-4 mb-3">
-            <div className="rounded-2xl p-3" style={{
-              backgroundColor: '#E3B341',
+          <motion.div
+            className="inline-block mb-6"
+            animate={{
+              rotate: [0, 10, -10, 0],
+              scale: [1, 1.15, 1],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Trophy className="w-24 h-24 mx-auto" style={{ color: '#FFD700' }} />
+          </motion.div>
+
+          <h1 className="text-6xl font-black mb-4" style={{
+            background: 'linear-gradient(135deg, #FFD700, #E3B341, #FFD700)',
+            backgroundSize: '200% 200%',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            animation: 'gradient 3s ease infinite',
+          }}>
+            Leaderboard
+          </h1>
+
+          <motion.p
+            className="text-xl font-semibold"
+            style={{ color: '#8A93A6' }}
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            👑 Compete for glory • Track your rank • Dominate the charts
+          </motion.p>
+
+          {/* Live Stats */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex items-center justify-center gap-6 mt-6"
+          >
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{
+              background: 'rgba(227, 179, 65, 0.15)',
+              border: '2px solid #E3B341',
             }}>
-              <Trophy className="w-12 h-12" style={{ color: '#080C14' }} />
+              <Users className="w-5 h-5" style={{ color: '#E3B341' }} />
+              <span className="font-black text-lg" style={{ color: '#E3B341' }}>
+                {highWagerRankings.length} Players
+              </span>
             </div>
-            <h1 className="text-7xl font-black text-white">Global Leaderboards</h1>
-          </div>
-          <p className="text-2xl text-[#94A3B8]">Top performers across all tournaments and categories</p>
+
+            <div className="flex items-center gap-2 px-4 py-2 rounded-full" style={{
+              background: 'rgba(255, 79, 88, 0.15)',
+              border: '2px solid #FF4F58',
+            }}>
+              <Flame className="w-5 h-5" style={{ color: '#FF4F58' }} />
+              <span className="font-black text-lg" style={{ color: '#FF4F58' }}>
+                LIVE
+              </span>
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Tabs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3 h-14 rounded-xl border-none shadow-lg" style={{
-              background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
-            }}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="max-w-6xl mx-auto">
+          <TabsList className="grid w-full grid-cols-3 h-16 rounded-2xl mb-8" style={{
+            background: '#1E2D3F',
+            border: '2px solid #2B3A4C',
+          }}>
             <TabsTrigger
               value="highwager"
-              className="data-[state=active]:bg-[#15803D] data-[state=active]:text-white rounded-lg text-base font-bold"
-              style={activeTab === "highwager" ? {} : { color: '#94A3B8' }}
+              className="text-lg font-bold rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#E3B341] data-[state=active]:to-[#FFD700] data-[state=active]:text-[#06121F]"
             >
-              <Trophy className="w-5 h-5 mr-2" style={{ color: activeTab === "highwager" ? '#FFFFFF' : '#94A3B8' }} />
-              High Stakes
+              <DollarSign className="w-5 h-5 mr-2" />
+              Highest Wager
             </TabsTrigger>
             <TabsTrigger
               value="growth"
-              className="data-[state=active]:bg-[#15803D] data-[state=active]:text-white rounded-lg text-base font-bold"
-              style={activeTab === "growth" ? {} : { color: '#94A3B8' }}
+              className="text-lg font-bold rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#28C76F] data-[state=active]:to-[#22C55E] data-[state=active]:text-[#06121F]"
             >
-              <TrendingUp className="w-5 h-5 mr-2" style={{ color: activeTab === "growth" ? '#FFFFFF' : '#94A3B8' }} />
-              Top Growth
+              <TrendingUp className="w-5 h-5 mr-2" />
+              Most Growth
             </TabsTrigger>
             <TabsTrigger
               value="active"
-              className="data-[state=active]:bg-[#15803D] data-[state=active]:text-white rounded-lg text-base font-bold"
-              style={activeTab === "active" ? {} : { color: '#94A3B8' }}
+              className="text-lg font-bold rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#60A5FA] data-[state=active]:to-[#3B82F6] data-[state=active]:text-[#06121F]"
             >
-              <Activity className="w-5 h-5 mr-2" style={{ color: activeTab === "active" ? '#FFFFFF' : '#94A3B8' }} />
+              <Zap className="w-5 h-5 mr-2" />
               Most Active
             </TabsTrigger>
           </TabsList>
 
-          <AnimatePresence mode="wait">
-            {/* High Stakes Tournaments Tab */}
-            <TabsContent value="highwager" className="space-y-4">
-              {loadingHighWager ? <LoadingSkeleton /> : highWagerRankings.length === 0 ? (
-                <EmptyState message="No high-stakes tournaments yet" />
-              ) : (
-                <Card className="rounded-2xl border-none shadow-xl" style={{
-                  background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
-                }}>
-                  <CardHeader className="p-6">
-                    <CardTitle className="flex items-center gap-3 text-3xl">
-                      <Trophy className="w-8 h-8" style={{ color: '#E3B341' }} />
-                      <span style={{ color: '#FFFFFF' }}>Highest Buy-In Tournaments</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-6">
-                    <div className="space-y-3">
-                      {highWagerRankings.map((tournament: any, index: number) => {
-                        const rank = index + 1;
-                        return (
-                          <motion.div
-                            key={tournament.id || index}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: index * 0.05 }}
-                            whileHover={{ scale: 1.05, x: 8, boxShadow: '0 8px 32px rgba(227, 179, 65, 0.3)' }}
-                            className="flex items-center justify-between p-5 rounded-xl border-none transition-all"
-                            style={{
-                              background: 'linear-gradient(135deg, rgba(17, 24, 39, 0.6), rgba(15, 23, 42, 0.6))',
-                              boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-                            }}
-                          >
-                            <div className="flex items-center gap-4">
-                              <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${getRankStyle(rank)}`}>
-                                {rank <= 3 ? getRankIcon(rank) : rank}
-                              </div>
-                              <div>
-                                <div className="font-bold text-xl text-white">{tournament.name}</div>
-                                <div className="text-base text-[#94A3B8]">
-                                  {tournament.currentPlayers}/{tournament.maxPlayers} players
-                                  <span className={tournament.status === 'active' ? ' text-[#10B981]' : ' text-[#E3B341]'}>
-                                    {' '}{tournament.status}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-3xl font-black" style={{ color: '#E3B341' }}>
-                                {formatCurrency(tournament.buyInAmount)}
-                              </div>
-                              <div className="text-sm text-[#94A3B8]">Buy-In</div>
-                            </div>
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
+          {/* Highest Wager Tab */}
+          <TabsContent value="highwager" className="space-y-6">
+            {loadingHighWager ? (
+              <LoadingSkeleton />
+            ) : highWagerRankings.length === 0 ? (
+              <div className="text-center py-20">
+                <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#2B3A4C' }} />
+                <p style={{ color: '#8A93A6' }}>No rankings yet. Be the first!</p>
+              </div>
+            ) : (
+              <>
+                <PodiumDisplay rankings={highWagerRankings.slice(0, 3)} />
 
-            {/* Top Growth Tab */}
-            <TabsContent value="growth" className="space-y-6">
-              {loadingGrowth ? <LoadingSkeleton /> : growthRankings.length === 0 ? (
-                <EmptyState message="No growth data yet" />
-              ) : (
-                <>
-                  {renderGrowthPodium(growthRankings)}
-
-                  {growthRankings.length > 3 && (
-                    <Card className="rounded-2xl border-none shadow-xl" style={{
-                      background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
-                    }}>
-                      <CardHeader className="p-6">
-                        <CardTitle className="flex items-center gap-3 text-3xl">
-                          <TrendingUp className="w-8 h-8" style={{ color: '#10B981' }} />
-                          <span style={{ color: '#FFFFFF' }}>Complete Rankings</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-6">
-                        <div className="space-y-3">
-                          {growthRankings.slice(3).map((participant: any, index: number) => {
-                            const rank = index + 4;
-                            const tierBadge = getTierBadge(rank);
-                            const TierIcon = tierBadge?.icon;
-                            const isPositive = (participant.percentageChange || 0) >= 0;
-
-                            return (
-                              <motion.div
-                                key={participant.id || index}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                whileHover={{ scale: 1.05, x: 8 }}
-                                className="flex items-center justify-between p-6 rounded-xl border transition-all cursor-pointer group"
-                                style={{
-                                  background: getRankGradient(rank),
-                                  borderColor: tierBadge ? `${tierBadge.color}40` : '#2B3A4C',
-                                  boxShadow: `0 2px 15px rgba(0,0,0,0.2), 0 0 0 1px ${tierBadge ? `${tierBadge.color}20` : 'transparent'}`
-                                }}
-                              >
-                                <div className="flex items-center gap-4">
-                                  {/* Rank number with tier badge */}
-                                  <div className="relative">
-                                    <div className="w-14 h-14 rounded-full flex items-center justify-center font-black text-xl transition-all group-hover:scale-110"
-                                      style={{
-                                        background: tierBadge ? `linear-gradient(135deg, ${tierBadge.color}, ${tierBadge.color}80)` : '#0F172A',
-                                        color: '#FFFFFF',
-                                        boxShadow: tierBadge ? `0 0 20px ${tierBadge.color}40` : 'none'
-                                      }}
-                                    >
-                                      {rank}
-                                    </div>
-                                    {tierBadge && TierIcon && (
-                                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
-                                        style={{ backgroundColor: '#080C14', border: `2px solid ${tierBadge.color}` }}
-                                      >
-                                        <TierIcon className="w-3 h-3" style={{ color: tierBadge.color }} />
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Avatar with status */}
-                                  <AvatarWithStatus
-                                    className="w-12 h-12"
-                                    fallback={`${participant.username?.[0]?.toUpperCase() || ''}${participant.username?.[1]?.toUpperCase() || ''}`}
-                                    lastActivity={participant.lastActivity}
-                                    statusSize="sm"
-                                  >
-                                    <Avatar className="w-12 h-12" style={{ border: tierBadge ? `2px solid ${tierBadge.color}` : '2px solid #2B3A4C' }}>
-                                      <AvatarFallback className="text-base font-bold" style={{ backgroundColor: '#0F172A', color: '#E3B341' }}>
-                                        {participant.username?.[0]?.toUpperCase()}{participant.username?.[1]?.toUpperCase()}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  </AvatarWithStatus>
-
-                                  {/* User info */}
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <div className="font-bold text-xl text-white">{participant.username}</div>
-                                      {tierBadge && (
-                                        <Badge variant="outline" className="text-xs px-2 py-0.5"
-                                          style={{ borderColor: tierBadge.color, color: tierBadge.color, backgroundColor: `${tierBadge.color}10` }}
-                                        >
-                                          {tierBadge.name}
-                                        </Badge>
-                                      )}
-                                    </div>
-                                    <div className="text-base text-[#94A3B8]">
-                                      {participant.tournamentName} • Started: {formatCurrency(participant.startingBalance)}
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Performance metrics */}
-                                <div className="text-right">
-                                  <div className="flex items-center justify-end gap-2 mb-1">
-                                    <motion.div
-                                      animate={{ y: [0, -3, 0] }}
-                                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                    >
-                                      {isPositive ? (
-                                        <ArrowUp className="w-5 h-5" style={{ color: '#10B981' }} />
-                                      ) : (
-                                        <ArrowDown className="w-5 h-5" style={{ color: '#EF4444' }} />
-                                      )}
-                                    </motion.div>
-                                    <div className="text-2xl font-black" style={{ color: isPositive ? '#10B981' : '#EF4444' }}>
-                                      {isPositive ? '+' : ''}{(participant.percentageChange || 0).toFixed(1)}%
-                                    </div>
-                                  </div>
-                                  <div className="text-sm font-medium text-[#F1F5F9]">{formatCurrency(participant.portfolioValue)}</div>
-                                  {/* Progress bar for visual interest */}
-                                  <div className="w-32 h-1.5 rounded-full mt-2" style={{ backgroundColor: '#1F2937' }}>
-                                    <motion.div
-                                      initial={{ width: 0 }}
-                                      animate={{ width: `${Math.min(Math.abs(participant.percentageChange || 0), 100)}%` }}
-                                      transition={{ duration: 1, delay: index * 0.05 }}
-                                      className="h-full rounded-full"
-                                      style={{ backgroundColor: isPositive ? '#10B981' : '#EF4444' }}
-                                    />
-                                  </div>
-                                </div>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </>
-              )}
-            </TabsContent>
-
-            {/* Most Active Tab */}
-            <TabsContent value="active" className="space-y-6">
-              {loadingActive ? <LoadingSkeleton /> : activeRankings.length === 0 ? (
-                <EmptyState message="No trading activity yet" />
-              ) : (
-                <>
-                  {renderActivePodium(activeRankings)}
-
-                  {activeRankings.length > 3 && (
-                    <Card className="rounded-2xl border-none shadow-xl" style={{
-                      background: 'linear-gradient(135deg, #111827 0%, #0F172A 100%)'
-                    }}>
-                      <CardHeader className="p-6">
-                        <CardTitle className="flex items-center gap-3 text-3xl">
-                          <Activity className="w-8 h-8" style={{ color: '#06B6D4' }} />
-                          <span style={{ color: '#FFFFFF' }}>Complete Rankings</span>
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="p-6">
-                        <div className="space-y-3">
-                          {activeRankings.slice(3).map((trader: any, index: number) => {
-                            const rank = index + 4;
-                            const tierBadge = getTierBadge(rank);
-                            const TierIcon = tierBadge?.icon;
-
-                            return (
-                              <motion.div
-                                key={trader.userId || index}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.05 }}
-                                whileHover={{ scale: 1.05, x: 8 }}
-                                className="flex items-center justify-between p-6 rounded-xl border transition-all cursor-pointer group"
-                                style={{
-                                  background: getRankGradient(rank),
-                                  borderColor: tierBadge ? `${tierBadge.color}40` : '#2B3A4C',
-                                  boxShadow: `0 2px 15px rgba(0,0,0,0.2), 0 0 0 1px ${tierBadge ? `${tierBadge.color}20` : 'transparent'}`
-                                }}
-                              >
-                                <div className="flex items-center gap-4">
-                                  {/* Rank number with tier badge */}
-                                  <div className="relative">
-                                    <div className="w-14 h-14 rounded-full flex items-center justify-center font-black text-xl transition-all group-hover:scale-110"
-                                      style={{
-                                        background: tierBadge ? `linear-gradient(135deg, ${tierBadge.color}, ${tierBadge.color}80)` : '#0F172A',
-                                        color: '#FFFFFF',
-                                        boxShadow: tierBadge ? `0 0 20px ${tierBadge.color}40` : 'none'
-                                      }}
-                                    >
-                                      {rank}
-                                    </div>
-                                    {tierBadge && TierIcon && (
-                                      <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
-                                        style={{ backgroundColor: '#080C14', border: `2px solid ${tierBadge.color}` }}
-                                      >
-                                        <TierIcon className="w-3 h-3" style={{ color: tierBadge.color }} />
-                                      </div>
-                                    )}
-                                  </div>
-
-                                  {/* Avatar with status */}
-                                  <AvatarWithStatus
-                                    className="w-12 h-12"
-                                    fallback={`${trader.username?.[0]?.toUpperCase() || ''}${trader.username?.[1]?.toUpperCase() || ''}`}
-                                    lastActivity={trader.lastActivity}
-                                    statusSize="sm"
-                                  >
-                                    <Avatar className="w-12 h-12" style={{ border: tierBadge ? `2px solid ${tierBadge.color}` : '2px solid #2B3A4C' }}>
-                                      <AvatarFallback className="text-base font-bold" style={{ backgroundColor: '#0F172A', color: '#E3B341' }}>
-                                        {trader.username?.[0]?.toUpperCase()}{trader.username?.[1]?.toUpperCase()}
-                                      </AvatarFallback>
-                                    </Avatar>
-                                  </AvatarWithStatus>
-
-                                  {/* User info */}
-                                  <div>
-                                    <div className="flex items-center gap-2">
-                                      <div className="font-bold text-lg text-white">{trader.username}</div>
-                                      {tierBadge && (
-                                        <Badge variant="outline" className="text-xs px-2 py-0.5"
-                                          style={{ borderColor: tierBadge.color, color: tierBadge.color, backgroundColor: `${tierBadge.color}10` }}
-                                        >
-                                          {tierBadge.name}
-                                        </Badge>
-                                      )}
-                                    </div>
-                                    <div className="flex items-center gap-2 text-sm text-[#94A3B8]">
-                                      <Activity className="w-3.5 h-3.5" />
-                                      <span>Active Trader</span>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Trade count */}
-                                <div className="text-right">
-                                  <motion.div
-                                    className="text-3xl font-black mb-1"
-                                    style={{ color: '#06B6D4' }}
-                                    animate={{ scale: [1, 1.05, 1] }}
-                                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                                  >
-                                    {trader.totalTrades}
-                                  </motion.div>
-                                  <div className="text-xs font-medium text-[#94A3B8]">total trades</div>
-                                  {/* Visual bar for trade count */}
-                                  <div className="w-32 h-1.5 rounded-full mt-2" style={{ backgroundColor: '#1F2937' }}>
-                                    <motion.div
-                                      initial={{ width: 0 }}
-                                      animate={{ width: `${Math.min((trader.totalTrades / 100) * 100, 100)}%` }}
-                                      transition={{ duration: 1, delay: index * 0.05 }}
-                                      className="h-full rounded-full"
-                                      style={{ backgroundColor: '#06B6D4' }}
-                                    />
-                                  </div>
-                                </div>
-                              </motion.div>
-                            );
-                          })}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </>
-              )}
-            </TabsContent>
-          </AnimatePresence>
-          </Tabs>
-        </motion.div>
-
-        {/* Stats Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10"
-        >
-          <motion.div whileHover={{ y: -3 }}>
-            <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
-              background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-            }}>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="p-4 rounded-xl" style={{
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)'
-                  }}>
-                    <Trophy className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-black text-white">{activeTournamentCount}</div>
-                    <div className="text-base font-bold text-white opacity-80">
-                      Active Tournaments
-                    </div>
-                  </div>
+                <div className="space-y-3">
+                  {highWagerRankings.slice(3, 20).map((player: any, idx: number) => (
+                    <RankingRow
+                      key={player.userId}
+                      player={player}
+                      rank={idx + 4}
+                      showValue={formatCurrency(player.totalWagered || 0)}
+                      valueIcon={<DollarSign className="w-5 h-5" />}
+                    />
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              </>
+            )}
+          </TabsContent>
 
-          <motion.div whileHover={{ y: -3 }}>
-            <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
-              background: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)'
-            }}>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="p-4 rounded-xl" style={{
-                    background: 'rgba(255, 255, 255, 0.2)',
-                    backdropFilter: 'blur(10px)'
-                  }}>
-                    <Zap className="w-8 h-8 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-black text-white">{activeRankings.length}</div>
-                    <div className="text-base font-bold text-white opacity-80">
-                      Total Traders
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          {/* Most Growth Tab */}
+          <TabsContent value="growth" className="space-y-6">
+            {loadingGrowth ? (
+              <LoadingSkeleton />
+            ) : growthRankings.length === 0 ? (
+              <div className="text-center py-20">
+                <TrendingUp className="w-16 h-16 mx-auto mb-4" style={{ color: '#2B3A4C' }} />
+                <p style={{ color: '#8A93A6' }}>No rankings yet. Start trading!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {growthRankings.slice(0, 20).map((player: any, idx: number) => (
+                  <RankingRow
+                    key={player.userId}
+                    player={player}
+                    rank={idx + 1}
+                    showValue={`${player.growth >= 0 ? '+' : ''}${(player.growth || 0).toFixed(1)}%`}
+                    valueIcon={<ArrowUp className="w-5 h-5" style={{ color: '#28C76F' }} />}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-          <motion.div whileHover={{ y: -3 }}>
-            <Card className="rounded-2xl border-none shadow-xl relative overflow-hidden" style={{
-              background: 'linear-gradient(135deg, #E3B341 0%, #c99a35 100%)'
-            }}>
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4 relative z-10">
-                  <div className="p-4 rounded-xl" style={{
-                    background: 'rgba(8, 12, 20, 0.3)',
-                    backdropFilter: 'blur(10px)'
-                  }}>
-                    <DollarSign className="w-8 h-8" style={{ color: '#080C14' }} />
-                  </div>
-                  <div>
-                    <div className="text-3xl font-black" style={{ color: '#080C14' }}>
-                      {formatCurrency(highestBuyIn)}
-                    </div>
-                    <div className="text-base font-bold" style={{ color: 'rgba(8, 12, 20, 0.7)' }}>
-                      Highest Buy-In
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
+          {/* Most Active Tab */}
+          <TabsContent value="active" className="space-y-6">
+            {loadingActive ? (
+              <LoadingSkeleton />
+            ) : activeRankings.length === 0 ? (
+              <div className="text-center py-20">
+                <Zap className="w-16 h-16 mx-auto mb-4" style={{ color: '#2B3A4C' }} />
+                <p style={{ color: '#8A93A6' }}>No rankings yet. Join tournaments!</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {activeRankings.slice(0, 20).map((player: any, idx: number) => (
+                  <RankingRow
+                    key={player.userId}
+                    player={player}
+                    rank={idx + 1}
+                    showValue={`${player.tournamentsEntered || 0} tournaments`}
+                    valueIcon={<Zap className="w-5 h-5" />}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
+
+      {/* CSS Animation */}
+      <style>{`
+        @keyframes gradient {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+      `}</style>
     </div>
   );
 }
