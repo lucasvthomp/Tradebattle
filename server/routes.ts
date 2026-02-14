@@ -443,6 +443,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     getPaymentStatus,
     verifyIPNSignature,
     getRecommendedCurrencies,
+    getAvailableCurrencies,
     createPayout,
     getPayoutStatus
   } = await import("./services/nowPayments.js");
