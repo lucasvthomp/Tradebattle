@@ -87,8 +87,13 @@ export async function checkStatus() {
  * Get all available currencies
  */
 export async function getAvailableCurrencies() {
-  const result = await makeRequest('/currencies');
-  return result.currencies || [];
+  try {
+    const result = await makeRequest('/currencies');
+    return result.currencies || [];
+  } catch (error: any) {
+    console.error('[NOWPayments] Failed to get currencies:', error.message);
+    throw error;
+  }
 }
 
 /**
@@ -256,7 +261,14 @@ export async function testConnection() {
   try {
     console.log('[NOWPayments] Testing API connection...');
 
-    // Test 1: Status endpoint
+    if (!NOWPAYMENTS_API_KEY) {
+      return {
+        success: false,
+        error: 'API key not configured',
+      };
+    }
+
+    // Test 1: Status endpoint (doesn't require auth)
     const statusResult = await checkStatus();
     if (!statusResult.success) {
       return {
@@ -265,12 +277,25 @@ export async function testConnection() {
       };
     }
 
-    // Test 2: Get currencies
-    const currencies = await getAvailableCurrencies();
-    if (!currencies || currencies.length === 0) {
+    // Test 2: Get currencies (requires auth)
+    let currencies = [];
+    let currencyError = null;
+
+    try {
+      currencies = await getAvailableCurrencies();
+
+      if (!currencies || currencies.length === 0) {
+        currencyError = 'No currencies returned - account may need verification';
+      }
+    } catch (error: any) {
+      currencyError = error.message;
+    }
+
+    if (currencyError) {
+      console.warn('[NOWPayments] ⚠️  Currency check warning:', currencyError);
       return {
         success: false,
-        error: 'Failed to fetch currencies',
+        error: `Account issue: ${currencyError}. Please verify your NOWPayments account is fully activated.`,
       };
     }
 

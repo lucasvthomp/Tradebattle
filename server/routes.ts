@@ -451,24 +451,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Test API connection status
   app.get("/api/crypto/status", requireAuth, async (req: any, res) => {
     try {
+      const hasApiKey = !!process.env.NOWPAYMENTS_API_KEY;
+      const hasIpnSecret = !!process.env.NOWPAYMENTS_IPN_SECRET;
+
+      if (!hasApiKey || !hasIpnSecret) {
+        return res.json({
+          configured: false,
+          apiKeyValid: false,
+          error: 'Missing API keys',
+          message: 'Please set NOWPAYMENTS_API_KEY and NOWPAYMENTS_IPN_SECRET in Railway',
+        });
+      }
+
       const testResult = await nowPayments.testConnection();
 
       res.json({
-        configured: !!process.env.NOWPAYMENTS_API_KEY,
+        configured: true,
         apiKeyValid: testResult.success,
         error: testResult.error || null,
         currencyCount: testResult.currencyCount || 0,
         environment: process.env.NOWPAYMENTS_ENVIRONMENT || 'production',
         message: testResult.success
-          ? 'Payment system operational'
-          : `Payment system error: ${testResult.error}`,
+          ? '✅ Payment system operational'
+          : `⚠️ ${testResult.error}`,
       });
     } catch (error: any) {
       res.status(500).json({
-        configured: false,
+        configured: true,
         apiKeyValid: false,
         error: error.message,
-        message: 'Failed to check payment system status',
+        message: `❌ Error: ${error.message}`,
       });
     }
   });
