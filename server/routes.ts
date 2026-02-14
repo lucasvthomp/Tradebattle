@@ -381,58 +381,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/balance/withdraw", requireAuth, async (req: any, res) => {
     try {
-      const { amount } = req.body;
-      const userId = req.user.id;
-
-      // Validate amount
-      if (!amount || isNaN(amount) || amount <= 0) {
-        return res.status(400).json({ message: "Invalid withdrawal amount" });
-      }
-
-      if (amount < 1) {
-        return res.status(400).json({ message: "Minimum withdrawal amount is $1.00" });
-      }
-
-      // Get current user
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      if (user.withdrawalFrozen) {
-        return res.status(403).json({ message: "Your withdrawals have been frozen. Please contact support." });
-      }
-
-      const currentBalance = parseFloat(user.siteCash?.toString() || '0');
-
-      // Check if user has sufficient funds
-      if (amount > currentBalance) {
-        return res.status(400).json({ message: "Insufficient funds" });
-      }
-
-      // Calculate new balance
-      const newBalance = currentBalance - amount;
-
-      // Update user balance
-      await storage.updateUser(userId, {
-        siteCash: newBalance.toString()
+      // TEMPORARILY DISABLED - Crypto withdrawal system under maintenance
+      // The old system just deducted balance without actually sending crypto
+      return res.status(503).json({
+        message: "Crypto withdrawals are temporarily disabled while we upgrade the system. Your balance is safe. Please try again in a few minutes or contact support.",
+        error: "WITHDRAWAL_DISABLED"
       });
 
-      // Log the transaction
-      await storage.createAdminLog({
-        adminUserId: userId,
-        targetUserId: userId,
-        action: 'balance_withdrawal',
-        oldValue: currentBalance.toString(),
-        newValue: newBalance.toString(),
-        notes: `User withdrew $${amount.toFixed(2)}`
-      });
-
-      res.json({
-        success: true,
-        message: "Withdrawal successful",
-        newBalance: newBalance
-      });
+      // TODO: Implement proper crypto withdrawal flow:
+      // 1. Collect user's wallet address and currency
+      // 2. Create withdrawal record in cryptoWithdrawals table
+      // 3. Call NOWPayments createPayout API
+      // 4. Track payout status and update database
+      // 5. Only deduct balance after payout is confirmed sent
     } catch (error) {
       console.error("Error processing withdrawal:", error);
       res.status(500).json({ message: "Failed to process withdrawal" });
@@ -638,6 +599,120 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error: any) {
       console.error('[Debug Payment] Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin endpoint to check recent transactions and reverse failed withdrawals
+  app.post('/api/admin/reverse-withdrawal', requireAuth, async (req: any, res) => {
+    try {
+      // Check if user is admin
+      if (req.user.subscriptionTier !== 'administrator' && req.user.username !== 'LUCAS') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { username } = req.body;
+
+      if (!username) {
+        return res.status(400).json({ error: 'username is required' });
+      }
+
+      console.log(`[Reverse Withdrawal] Admin ${req.user.username} checking withdrawals for ${username}`);
+
+      // Get user
+      const targetUser = await storage.getUserByUsername(username);
+      if (!targetUser) {
+        return res.status(404).json({ error: `User "${username}" not found` });
+      }
+
+      // Get recent withdrawal transactions from admin logs
+      const { adminLogs } = await import('@shared/schema');
+      const { like, eq, desc } = await import('drizzle-orm');
+
+      const withdrawalLogs = await db.select()
+        .from(adminLogs)
+        .where(eq(adminLogs.targetUserId, targetUser.id))
+        .orderBy(desc(adminLogs.createdAt))
+        .limit(20);
+
+      // Find withdrawal logs
+      const recentWithdrawals = withdrawalLogs.filter(log =>
+        log.action === 'balance_withdrawal' || log.notes?.includes('withdrew')
+      );
+
+      res.json({
+        user: {
+          id: targetUser.id,
+          username: targetUser.username,
+          currentBalance: targetUser.siteCash,
+        },
+        recentWithdrawals: recentWithdrawals.map(log => ({
+          id: log.id,
+          oldValue: log.oldValue,
+          newValue: log.newValue,
+          notes: log.notes,
+          createdAt: log.createdAt,
+        })),
+        message: `Found ${recentWithdrawals.length} withdrawal transactions`,
+      });
+
+    } catch (error: any) {
+      console.error('[Reverse Withdrawal] Error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin endpoint to restore balance after failed withdrawal
+  app.post('/api/admin/restore-balance', requireAuth, async (req: any, res) => {
+    try {
+      // Check if user is admin
+      if (req.user.subscriptionTier !== 'administrator' && req.user.username !== 'LUCAS') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
+      const { username, amount, reason } = req.body;
+
+      if (!username || !amount) {
+        return res.status(400).json({ error: 'username and amount are required' });
+      }
+
+      console.log(`[Restore Balance] Admin ${req.user.username} restoring $${amount} to ${username}`);
+
+      // Get user
+      const targetUser = await storage.getUserByUsername(username);
+      if (!targetUser) {
+        return res.status(404).json({ error: `User "${username}" not found` });
+      }
+
+      // Update balance
+      const currentBalance = parseFloat(targetUser.siteCash?.toString() || '0');
+      const newBalance = currentBalance + parseFloat(amount);
+
+      await storage.updateUser(targetUser.id, {
+        siteCash: newBalance.toString(),
+      });
+
+      console.log(`[Restore Balance] Updated balance for ${username}: $${currentBalance} → $${newBalance}`);
+
+      // Log transaction
+      await storage.createAdminLog({
+        adminUserId: req.user.id,
+        targetUserId: targetUser.id,
+        action: 'balance_adjustment',
+        oldValue: currentBalance.toString(),
+        newValue: newBalance.toString(),
+        notes: `Balance restored by ${req.user.username} - ${reason || 'Failed withdrawal reversal'} - Amount: $${amount}`,
+      });
+
+      res.json({
+        success: true,
+        message: `Restored $${amount} to ${username}'s account`,
+        oldBalance: currentBalance,
+        newBalance: newBalance,
+      });
+
+    } catch (error: any) {
+      console.error('[Restore Balance] Error:', error);
       res.status(500).json({ error: error.message });
     }
   });
