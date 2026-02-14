@@ -13,7 +13,7 @@ export default function Deposit() {
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
-  const [minimumAmount, setMinimumAmount] = useState<number>(2.5);
+  const [minimumAmount, setMinimumAmount] = useState<number>(2);
 
   // Load status - NO CACHING
   useEffect(() => {
@@ -38,8 +38,8 @@ export default function Deposit() {
     if (selectedCurrency) {
       fetch(`/api/crypto/minimum/${selectedCurrency}`, { cache: 'no-store' })
         .then(r => r.json())
-        .then(data => setMinimumAmount(data.minimum || 10))
-        .catch(() => setMinimumAmount(10)); // Default to $10 on error
+        .then(data => setMinimumAmount(data.minimum || 2))
+        .catch(() => setMinimumAmount(2)); // Default to $2 on error
     }
   }, [selectedCurrency]);
 

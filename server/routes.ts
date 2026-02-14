@@ -468,7 +468,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { getMinimumAmount } = await import('./services/nowPayments.js');
       const minimum = await getMinimumAmount(req.params.currency);
-      res.json({ minimum });
+      res.json({
+        currency: req.params.currency,
+        minimum,
+        note: 'This is the minimum amount in USD for this cryptocurrency'
+      });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

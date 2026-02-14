@@ -36,8 +36,17 @@ export async function getCurrencies() {
 
 // Get minimum payment amount for a currency
 export async function getMinimumAmount(currency: string) {
-  const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
-  return data.min_amount || 10; // Default to $10 if not found
+  try {
+    const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
+    // NOWPayments returns the minimum amount in USD
+    // Typically: USDT TRC20 = ~$2-3, BTC = ~$2-3, ETH = ~$2-3
+    // Use their value, or default to $2 if something goes wrong
+    return data.min_amount || 2;
+  } catch (error) {
+    console.error(`Failed to get minimum for ${currency}:`, error);
+    // Conservative default - should work for most currencies
+    return 2;
+  }
 }
 
 // Create payment
