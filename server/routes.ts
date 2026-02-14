@@ -448,13 +448,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
    * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    */
 
-  // Test API connection status
-  app.get("/api/crypto/status", requireAuth, async (req: any, res) => {
+  // Test API connection status (public endpoint for debugging)
+  app.get("/api/crypto/status", async (req: any, res) => {
+    console.log("[Crypto Status] Endpoint called");
+
     try {
       const hasApiKey = !!process.env.NOWPAYMENTS_API_KEY;
       const hasIpnSecret = !!process.env.NOWPAYMENTS_IPN_SECRET;
 
+      console.log("[Crypto Status] API Key present:", hasApiKey);
+      console.log("[Crypto Status] IPN Secret present:", hasIpnSecret);
+
       if (!hasApiKey || !hasIpnSecret) {
+        console.log("[Crypto Status] Missing keys - returning configured: false");
         return res.json({
           configured: false,
           apiKeyValid: false,
@@ -463,9 +469,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      console.log("[Crypto Status] Testing connection to NOWPayments...");
       const testResult = await nowPayments.testConnection();
+      console.log("[Crypto Status] Test result:", testResult);
 
-      res.json({
+      const response = {
         configured: true,
         apiKeyValid: testResult.success,
         error: testResult.error || null,
@@ -474,14 +482,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: testResult.success
           ? '✅ Payment system operational'
           : `⚠️ ${testResult.error}`,
-      });
+      };
+
+      console.log("[Crypto Status] Sending response:", response);
+      res.json(response);
     } catch (error: any) {
-      res.status(500).json({
+      console.error("[Crypto Status] ERROR:", error);
+      const errorResponse = {
         configured: true,
         apiKeyValid: false,
         error: error.message,
         message: `❌ Error: ${error.message}`,
-      });
+      };
+      console.log("[Crypto Status] Sending error response:", errorResponse);
+      res.status(500).json(errorResponse);
     }
   });
 

@@ -62,11 +62,31 @@ export default function Deposit() {
 
   const checkSystemStatus = async () => {
     try {
+      console.log("[Deposit] Checking crypto system status...");
       const status = await apiRequest("GET", "/api/crypto/status");
+      console.log("[Deposit] Status response:", status);
+
+      // If we got an empty object or null, set error state
+      if (!status || Object.keys(status).length === 0) {
+        console.error("[Deposit] Received empty status response");
+        setSystemStatus({
+          configured: false,
+          apiKeyValid: false,
+          error: "Empty response from server - possible authentication issue",
+          message: "Unable to check payment system status. Try refreshing the page or logging out and back in.",
+        });
+        return;
+      }
+
       setSystemStatus(status);
-      console.log("Payment system status:", status);
-    } catch (error) {
-      console.error("Error checking system status:", error);
+    } catch (error: any) {
+      console.error("[Deposit] Error checking system status:", error);
+      setSystemStatus({
+        configured: false,
+        apiKeyValid: false,
+        error: error.message || "Network error",
+        message: "Failed to connect to payment system. Check your internet connection.",
+      });
     }
   };
 
