@@ -40,19 +40,17 @@ export async function getMinimumAmount(currency: string) {
     const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
     console.log(`[NOWPayments] Minimum for ${currency}:`, data);
 
-    // NOWPayments API can return very high minimums (e.g. $19.58)
-    // This happens because they calculate based on network fees + volatility
-    // We use practical minimums that account for:
-    // 1. Crypto minimum amounts (e.g., 0.0002 BTC = ~$20 at current rates)
-    // 2. Exchange rate fluctuations
-    // 3. Network fees
+    // Set minimums to ABSOLUTE LOWEST possible
+    // Ignore network fees and confirmation times
+    // Let NOWPayments reject if truly too low - we'll show their error
+    // Goal: Make deposits as accessible as possible
 
     const fixedMinimums: Record<string, number> = {
-      'usdttrc20': 10,  // USDT on Tron - stable, low fees, but NOWPayments requires $10+
-      'usdterc20': 20,  // USDT on Ethereum - higher due to gas fees
-      'btc': 20,        // Bitcoin - minimum crypto amount requires ~$20
-      'eth': 25,        // Ethereum - gas fees + minimum amount
-      'ltc': 15,        // Litecoin - lower than BTC/ETH
+      'usdttrc20': 1,   // USDT on Tron - try $1
+      'usdterc20': 1,   // USDT on Ethereum - try $1
+      'btc': 1,         // Bitcoin - try $1
+      'eth': 1,         // Ethereum - try $1
+      'ltc': 1,         // Litecoin - try $1
     };
 
     const fixedMin = fixedMinimums[currency.toLowerCase()];

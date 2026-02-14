@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { QRCodeSVG } from 'qrcode.react';
-import { Copy, Check, Loader2, AlertCircle, CheckCircle2, Clock, Wallet } from 'lucide-react';
+import { Copy, Check, Loader2, AlertCircle, CheckCircle2, Clock, Wallet, X, RefreshCw } from 'lucide-react';
 
 export default function Deposit() {
   const { user } = useAuth();
@@ -13,7 +13,43 @@ export default function Deposit() {
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20');
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
-  const [minimumAmount, setMinimumAmount] = useState<number>(10);
+  const [minimumAmount, setMinimumAmount] = useState<number>(1);
+  const [pendingDeposits, setPendingDeposits] = useState<any[]>([]);
+
+  // Load pending deposits from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('pendingDeposits');
+    if (saved) {
+      try {
+        const deposits = JSON.parse(saved);
+        // Filter out expired deposits (older than 24 hours)
+        const valid = deposits.filter((d: any) => {
+          const age = Date.now() - d.createdAt;
+          return age < 24 * 60 * 60 * 1000; // 24 hours
+        });
+        setPendingDeposits(valid);
+        localStorage.setItem('pendingDeposits', JSON.stringify(valid));
+      } catch (e) {
+        console.error('Failed to load pending deposits:', e);
+      }
+    }
+  }, []);
+
+  // Save payment to localStorage when created
+  useEffect(() => {
+    if (payment) {
+      const deposit = {
+        ...payment,
+        createdAt: Date.now(),
+        amount: amount,
+        currency: selectedCurrency,
+      };
+      const existing = pendingDeposits.filter(d => d.payment_id !== payment.payment_id);
+      const updated = [...existing, deposit];
+      setPendingDeposits(updated);
+      localStorage.setItem('pendingDeposits', JSON.stringify(updated));
+    }
+  }, [payment]);
 
   // Load status - NO CACHING
   useEffect(() => {
@@ -38,8 +74,8 @@ export default function Deposit() {
     if (selectedCurrency) {
       fetch(`/api/crypto/minimum/${selectedCurrency}`, { cache: 'no-store' })
         .then(r => r.json())
-        .then(data => setMinimumAmount(data.minimum || 10))
-        .catch(() => setMinimumAmount(10)); // Default to $10 on error
+        .then(data => setMinimumAmount(data.minimum || 1))
+        .catch(() => setMinimumAmount(1)); // Default to $1 on error
     }
   }, [selectedCurrency]);
 
@@ -89,6 +125,26 @@ export default function Deposit() {
     }
   }
 
+  // Resume existing payment
+  function resumePayment(deposit: any) {
+    setPayment(deposit);
+    setAmount(deposit.amount);
+    setSelectedCurrency(deposit.currency);
+    pollPaymentStatus(deposit.payment_id);
+  }
+
+  // Cancel/dismiss payment
+  function cancelPayment(paymentId?: string) {
+    if (paymentId) {
+      // Remove from pending deposits
+      const updated = pendingDeposits.filter(d => d.payment_id !== paymentId);
+      setPendingDeposits(updated);
+      localStorage.setItem('pendingDeposits', JSON.stringify(updated));
+    }
+    setPayment(null);
+    setError('');
+  }
+
   // Poll payment status - NO CACHING
   function pollPaymentStatus(paymentId: string) {
     const interval = setInterval(async () => {
@@ -100,6 +156,10 @@ export default function Deposit() {
 
         if (data.payment_status === 'finished') {
           clearInterval(interval);
+          // Remove from pending
+          const updated = pendingDeposits.filter(d => d.payment_id !== paymentId);
+          setPendingDeposits(updated);
+          localStorage.setItem('pendingDeposits', JSON.stringify(updated));
           setPayment(null);
           setAmount('');
           alert('Payment received! Your balance has been updated.');
@@ -151,6 +211,91 @@ export default function Deposit() {
             Add funds to your Tradebattle account using cryptocurrency
           </p>
         </div>
+
+        {/* Pending Deposits */}
+        {pendingDeposits.length > 0 && !payment && (
+          <div style={{
+            background: '#1E2D3F',
+            border: '1px solid #E3B341',
+            borderRadius: '12px',
+            padding: '20px',
+            marginBottom: '24px',
+          }}>
+            <h3 style={{
+              color: '#E3B341',
+              fontSize: '16px',
+              fontWeight: '600',
+              marginBottom: '16px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+            }}>
+              <Clock size={18} />
+              Pending Deposits ({pendingDeposits.length})
+            </h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {pendingDeposits.map((deposit) => (
+                <div
+                  key={deposit.payment_id}
+                  style={{
+                    background: '#06121F',
+                    border: '1px solid #2B3A4C',
+                    borderRadius: '8px',
+                    padding: '16px',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div>
+                    <div style={{ color: '#C9D1E2', fontWeight: '600', marginBottom: '4px' }}>
+                      ${deposit.amount} {deposit.currency.toUpperCase()}
+                    </div>
+                    <div style={{ color: '#8A93A6', fontSize: '12px' }}>
+                      Created {new Date(deposit.createdAt).toLocaleString()}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button
+                      onClick={() => resumePayment(deposit)}
+                      style={{
+                        padding: '8px 16px',
+                        background: '#E3B341',
+                        color: '#06121F',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                      }}
+                    >
+                      <RefreshCw size={14} />
+                      Resume
+                    </button>
+                    <button
+                      onClick={() => cancelPayment(deposit.payment_id)}
+                      style={{
+                        padding: '8px',
+                        background: '#2B3A4C',
+                        color: '#C9D1E2',
+                        border: 'none',
+                        borderRadius: '6px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Status Card */}
         <div style={{
@@ -514,17 +659,41 @@ export default function Deposit() {
               display: 'flex',
               alignItems: 'center',
               gap: '12px',
+              marginBottom: '16px',
             }}>
               <Loader2 size={20} color="#E3B341" style={{ animation: 'spin 1s linear infinite' }} />
-              <div>
+              <div style={{ flex: 1 }}>
                 <div style={{ color: '#E3B341', fontWeight: '600', marginBottom: '4px' }}>
                   Waiting for payment...
                 </div>
                 <div style={{ color: '#8A93A6', fontSize: '14px' }}>
-                  Checking status every 5 seconds. Do not close this page.
+                  You can close this page and return later. Your deposit will be saved for 24 hours.
                 </div>
               </div>
             </div>
+
+            {/* Back Button */}
+            <button
+              onClick={() => cancelPayment()}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#2B3A4C',
+                color: '#C9D1E2',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+              }}
+            >
+              <X size={16} />
+              Back to Deposit Menu
+            </button>
           </div>
         )}
       </div>
