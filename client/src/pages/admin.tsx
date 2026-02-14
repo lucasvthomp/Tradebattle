@@ -48,6 +48,7 @@ import {
   PartyPopper,
   Sparkles,
   Send,
+  Edit,
 } from "lucide-react";
 import {
   Dialog,
