@@ -19,12 +19,19 @@ const API_BASE_URL = NOWPAYMENTS_ENVIRONMENT === 'sandbox'
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 console.log('🔐 NOWPayments Service Initialized');
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-console.log(`Environment: ${NOWPAYMENTS_ENVIRONMENT.toUpperCase()}`);
+console.log(`Environment: ${NOWPAYMENTS_ENVIRONMENT?.toUpperCase() || 'PRODUCTION'}`);
 console.log(`API Base: ${API_BASE_URL}`);
 console.log(`API Key Set: ${NOWPAYMENTS_API_KEY ? '✅ YES' : '❌ NO'}`);
 console.log(`IPN Secret Set: ${NOWPAYMENTS_IPN_SECRET ? '✅ YES' : '❌ NO'}`);
 if (NOWPAYMENTS_API_KEY) {
-  console.log(`API Key Preview: ${NOWPAYMENTS_API_KEY.substring(0, 8)}...${NOWPAYMENTS_API_KEY.substring(NOWPAYMENTS_API_KEY.length - 4)}`);
+  console.log(`API Key Length: ${NOWPAYMENTS_API_KEY.length} characters`);
+  console.log(`API Key Preview: "${NOWPAYMENTS_API_KEY.substring(0, 8)}...${NOWPAYMENTS_API_KEY.substring(NOWPAYMENTS_API_KEY.length - 4)}"`);
+  console.log(`API Key First Char Code: ${NOWPAYMENTS_API_KEY.charCodeAt(0)} (should be 84 for 'T')`);
+  console.log(`API Key Last Char Code: ${NOWPAYMENTS_API_KEY.charCodeAt(NOWPAYMENTS_API_KEY.length - 1)} (should be 82 for 'R')`);
+  // Check for whitespace
+  if (NOWPAYMENTS_API_KEY !== NOWPAYMENTS_API_KEY.trim()) {
+    console.log('⚠️  WARNING: API Key has leading or trailing whitespace!');
+  }
 }
 console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 
@@ -51,11 +58,18 @@ async function makeRequest(endpoint: string, method: 'GET' | 'POST' = 'GET', bod
     options.body = JSON.stringify(body);
   }
 
-  console.log(`[NOWPayments] ${method} ${endpoint}`);
+  console.log(`[NOWPayments] ${method} ${url}`);
+  console.log(`[NOWPayments] Headers:`, {
+    'x-api-key': NOWPAYMENTS_API_KEY ? `${NOWPAYMENTS_API_KEY.substring(0, 10)}... (length: ${NOWPAYMENTS_API_KEY.length})` : 'MISSING',
+    'Content-Type': 'application/json'
+  });
 
   try {
     const response = await fetch(url, options);
     const data = await response.json();
+
+    console.log(`[NOWPayments] Response status: ${response.status}`);
+    console.log(`[NOWPayments] Response data:`, data);
 
     if (!response.ok) {
       console.error(`[NOWPayments] ❌ Error ${response.status}:`, data);
