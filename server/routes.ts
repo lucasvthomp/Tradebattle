@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 
 import { storage } from "./storage";
@@ -438,379 +439,105 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // NOWPayments crypto payment system
-  const {
-    testConnection,
-    checkStatus,
-    getAvailableCurrencies,
-    getRecommendedCurrencies,
-    createPayment,
-    getPaymentStatus,
-    verifyIPNSignature,
-  } = await import("./services/nowPayments.js");
-
-  /**
-   * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   * CRYPTO PAYMENT SYSTEM - COMPLETE REBUILD
-   * NOWPayments Integration for Deposits & Withdrawals
-   * ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   */
-
-  // Test API connection status (public endpoint for debugging)
-  app.get("/api/crypto/status", async (req: any, res) => {
-    console.log("[Crypto Status] Endpoint called");
-
+  // Crypto payment endpoints
+  app.get('/api/crypto/status', async (req, res) => {
     try {
-      const hasApiKey = !!process.env.NOWPAYMENTS_API_KEY;
-      const hasIpnSecret = !!process.env.NOWPAYMENTS_IPN_SECRET;
+      const { hasApiKeys } = await import('./services/nowPayments.js');
+      const keysSet = hasApiKeys();
 
-      console.log("[Crypto Status] API Key present:", hasApiKey);
-      console.log("[Crypto Status] IPN Secret present:", hasIpnSecret);
-
-      if (!hasApiKey || !hasIpnSecret) {
-        console.log("[Crypto Status] Missing keys - returning configured: false");
-        return res.json({
-          configured: false,
-          apiKeyValid: false,
-          error: 'Missing API keys',
-          message: 'Please set NOWPAYMENTS_API_KEY and NOWPAYMENTS_IPN_SECRET in Railway',
-        });
-      }
-
-      console.log("[Crypto Status] Testing connection to NOWPayments...");
-      const testResult = await testConnection();
-      console.log("[Crypto Status] Test result:", testResult);
-
-      const response = {
-        configured: true,
-        apiKeyValid: testResult.success,
-        error: testResult.error || null,
-        currencyCount: testResult.currencyCount || 0,
-        environment: process.env.NOWPAYMENTS_ENVIRONMENT || 'production',
-        message: testResult.success
-          ? '✅ Payment system operational'
-          : `⚠️ ${testResult.error}`,
-      };
-
-      console.log("[Crypto Status] Sending response:", response);
-      res.json(response);
+      res.json({
+        apiKeysSet: keysSet,
+        environment: process.env.NOWPAYMENTS_ENVIRONMENT || 'production'
+      });
     } catch (error: any) {
-      console.error("[Crypto Status] ERROR:", error);
-      const errorResponse = {
-        configured: true,
-        apiKeyValid: false,
-        error: error.message,
-        message: `❌ Error: ${error.message}`,
-      };
-      console.log("[Crypto Status] Sending error response:", errorResponse);
-      res.status(500).json(errorResponse);
+      res.status(500).json({ error: error.message });
     }
   });
 
-  // Get supported currencies
-  app.get("/api/crypto/currencies", requireAuth, async (req: any, res) => {
+  app.get('/api/crypto/currencies', async (req, res) => {
     try {
-      const currencies = getRecommendedCurrencies();
+      const { getCurrencies } = await import('./services/nowPayments.js');
+      const currencies = await getCurrencies();
       res.json({ currencies });
     } catch (error: any) {
-      res.status(500).json({
-        message: 'Failed to fetch currencies',
-        error: error.message,
-      });
+      res.status(500).json({ error: error.message });
     }
   });
 
-  // Create deposit payment
-  app.post("/api/crypto/create-payment", requireAuth, async (req: any, res) => {
+  app.post('/api/crypto/create-payment', requireAuth, async (req: any, res) => {
     try {
       const { amount, currency } = req.body;
-      const userId = req.user.id;
+      const { createPayment } = await import('./services/nowPayments.js');
 
-      // Validation
-      if (!amount || amount < 1 || amount > 10000) {
-        return res.status(400).json({
-          message: 'Amount must be between $1 and $10,000',
-        });
-      }
-
-      if (!currency) {
-        return res.status(400).json({
-          message: 'Currency is required',
-        });
-      }
-
-      // Check user status
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      if (user.depositFrozen) {
-        return res.status(403).json({
-          message: 'Deposits frozen. Contact support.',
-        });
-      }
-
-      // Create IPN callback URL
-      const protocol = req.protocol;
-      const host = req.get('host');
-      const ipnCallbackUrl = `${protocol}://${host}/api/crypto/ipn`;
-
-      // Create payment with NOWPayments
       const payment = await createPayment({
         priceAmount: amount,
         priceCurrency: 'usd',
         payCurrency: currency,
-        ipnCallbackUrl,
-        orderId: `user_${userId}_${Date.now()}`,
-        orderDescription: `Tradebattle deposit for user ${userId}`,
+        orderId: `deposit-${req.user!.id}-${Date.now()}`,
       });
 
-      // Save to database
-      await storage.createCryptoCharge({
-        userId,
-        paymentId: payment.payment_id,
-        payAddress: payment.pay_address,
-        payCurrency: payment.pay_currency,
-        payAmount: payment.pay_amount.toString(),
-        priceAmount: amount.toString(),
-        priceCurrency: 'usd',
-        ipnCallbackUrl,
-      });
-
-      res.json({
-        success: true,
-        paymentId: payment.payment_id,
-        payAddress: payment.pay_address,
-        payCurrency: payment.pay_currency,
-        payAmount: payment.pay_amount,
-        priceAmount: amount,
-        expirationTime: payment.expiration_estimate_date,
-      });
+      res.json(payment);
     } catch (error: any) {
-      console.error('Create payment error:', error);
-      res.status(500).json({
-        message: error.message || 'Failed to create payment',
-        error: 'PAYMENT_ERROR',
-      });
+      res.status(500).json({ error: error.message });
     }
   });
 
-  // Get payment status
-  app.get("/api/crypto/payment/:paymentId", requireAuth, async (req: any, res) => {
+  app.get('/api/crypto/payment/:id', requireAuth, async (req: any, res) => {
     try {
-      const { paymentId } = req.params;
-      const userId = req.user.id;
-
-      // Verify ownership
-      const charge = await storage.getCryptoCharge(paymentId);
-      if (!charge || charge.userId !== userId) {
-        return res.status(404).json({ message: 'Payment not found' });
-      }
-
-      // Get status from NOWPayments
-      const status = await getPaymentStatus(paymentId);
-
-      // Update database
-      await storage.updateCryptoCharge(paymentId, {
-        paymentStatus: status.payment_status,
-        actuallyPaid: status.actually_paid?.toString(),
-        outcomeAmount: status.outcome_amount?.toString(),
-      });
-
-      res.json({
-        paymentId: status.payment_id,
-        paymentStatus: status.payment_status,
-        payAddress: status.pay_address,
-        payCurrency: status.pay_currency,
-        payAmount: status.pay_amount,
-        outcomeAmount: status.outcome_amount,
-      });
+      const { getPaymentStatus } = await import('./services/nowPayments.js');
+      const status = await getPaymentStatus(req.params.id);
+      res.json(status);
     } catch (error: any) {
-      res.status(500).json({
-        message: error.message || 'Failed to get payment status',
-      });
+      res.status(500).json({ error: error.message });
     }
   });
 
-  // IPN Webhook (NOWPayments callbacks)
-  app.post("/api/crypto/ipn", async (req: any, res) => {
+  app.post('/api/crypto/ipn', express.raw({ type: 'application/json' }), async (req, res) => {
     try {
-      const signature = req.headers['x-nowpayments-sig'];
-      const rawBody = JSON.stringify(req.body);
+      const signature = req.headers['x-nowpayments-sig'] as string;
+      const rawBody = req.body.toString();
 
-      // Verify signature
-      if (!signature || !verifyIPNSignature(signature, rawBody)) {
-        console.error('❌ Invalid IPN signature');
-        return res.status(401).json({ message: 'Invalid signature' });
+      const { verifyIPN } = await import('./services/nowPayments.js');
+
+      if (!verifyIPN(signature, rawBody)) {
+        return res.status(403).json({ error: 'Invalid signature' });
       }
 
-      const { payment_id, payment_status, outcome_amount } = req.body;
+      const data = JSON.parse(rawBody);
 
-      console.log(`[IPN] Payment ${payment_id}: ${payment_status}`);
+      if (data.payment_status === 'finished') {
+        // Extract user ID from order_id (format: "deposit-{userId}-{timestamp}")
+        const userId = parseInt(data.order_id.split('-')[1]);
 
-      // Get charge from database
-      const charge = await storage.getCryptoCharge(payment_id);
-      if (!charge) {
-        console.error(`[IPN] Payment not found: ${payment_id}`);
-        return res.status(404).json({ message: 'Payment not found' });
-      }
-
-      // Update status in database
-      await storage.updateCryptoCharge(payment_id, {
-        paymentStatus: payment_status,
-        outcomeAmount: outcome_amount?.toString(),
-        confirmedAt: payment_status === 'finished' ? new Date() : undefined,
-      });
-
-      // Credit user if finished
-      if (payment_status === 'finished' && outcome_amount) {
-        const user = await storage.getUser(charge.userId);
+        // Get user
+        const user = await storage.getUser(userId);
         if (!user) {
-          console.error(`[IPN] User not found: ${charge.userId}`);
-          return res.status(404).json({ message: 'User not found' });
+          return res.status(404).json({ error: 'User not found' });
         }
 
+        // Add funds to user account
         const currentBalance = parseFloat(user.siteCash?.toString() || '0');
-        const newBalance = currentBalance + parseFloat(outcome_amount);
+        const newBalance = currentBalance + parseFloat(data.price_amount);
 
-        // Update balance
-        await storage.updateUser(charge.userId, {
+        await storage.updateUser(userId, {
           siteCash: newBalance.toString(),
         });
 
         // Log transaction
         await storage.createAdminLog({
-          adminUserId: charge.userId,
-          targetUserId: charge.userId,
+          adminUserId: userId,
+          targetUserId: userId,
           action: 'balance_deposit',
           oldValue: currentBalance.toString(),
           newValue: newBalance.toString(),
-          notes: `Crypto deposit: $${outcome_amount} (${charge.payCurrency.toUpperCase()}) - ID: ${payment_id}`,
+          notes: `Crypto deposit: $${data.price_amount} - Payment ID: ${data.payment_id}`,
         });
-
-        console.log(`[IPN] ✅ Credited $${outcome_amount} to user ${charge.userId}`);
       }
 
-      res.status(200).json({ success: true });
+      res.status(200).send('OK');
     } catch (error: any) {
-      console.error('[IPN] Error:', error);
-      res.status(500).json({ message: 'Webhook processing failed' });
-    }
-  });
-
-  // Get deposit history
-  app.get("/api/crypto/deposits", requireAuth, async (req: any, res) => {
-    try {
-      const deposits = await storage.getUserCryptoCharges(req.user.id);
-      res.json({ deposits });
-    } catch (error: any) {
-      res.status(500).json({
-        message: 'Failed to fetch deposit history',
-      });
-    }
-  });
-
-  // Crypto withdrawal request endpoint
-  app.post("/api/crypto/withdraw", requireAuth, async (req: any, res) => {
-    try {
-      const { amount, walletAddress, currency } = req.body;
-      const userId = req.user.id;
-
-      // Validate input
-      if (!amount || isNaN(amount) || amount <= 0) {
-        return res.status(400).json({ message: "Invalid withdrawal amount" });
-      }
-
-      if (amount < 1) {
-        return res.status(400).json({ message: "Minimum withdrawal amount is $1.00" });
-      }
-
-      if (!walletAddress || typeof walletAddress !== 'string') {
-        return res.status(400).json({ message: "Invalid wallet address" });
-      }
-
-      if (!currency || typeof currency !== 'string') {
-        return res.status(400).json({ message: "Invalid cryptocurrency selected" });
-      }
-
-      // Get user
-      const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      if (user.withdrawalFrozen) {
-        return res.status(403).json({ message: "Your withdrawals have been frozen. Please contact support." });
-      }
-
-      const currentBalance = parseFloat(user.siteCash?.toString() || '0');
-
-      // Check sufficient funds
-      if (amount > currentBalance) {
-        return res.status(400).json({ message: "Insufficient funds" });
-      }
-
-      // Calculate fees (25% site fee + 3% transaction fee = 28%)
-      const siteFee = amount * 0.25;
-      const transactionFee = amount * 0.03;
-      const totalFees = siteFee + transactionFee;
-      const netAmount = amount - totalFees;
-
-      // Deduct full amount from user balance immediately
-      const newBalance = currentBalance - amount;
-      await storage.updateUser(userId, {
-        siteCash: newBalance.toString(),
-      });
-
-      // Create withdrawal request
-      const withdrawalRequest = await storage.createWithdrawalRequest({
-        userId,
-        grossAmount: amount.toString(),
-        siteFee: siteFee.toString(),
-        transactionFee: transactionFee.toString(),
-        netAmount: netAmount.toString(),
-        withdrawalMethod: 'crypto',
-        destinationAddress: walletAddress,
-        destinationCurrency: currency,
-      });
-
-      // Log the transaction
-      await storage.createAdminLog({
-        adminUserId: userId,
-        targetUserId: userId,
-        action: 'balance_withdrawal',
-        oldValue: currentBalance.toString(),
-        newValue: newBalance.toString(),
-        notes: `Crypto withdrawal request: $${amount.toFixed(2)} (net: $${netAmount.toFixed(2)} to ${currency.toUpperCase()}) - Request ID: ${withdrawalRequest.id}`,
-      });
-
-      res.json({
-        success: true,
-        message: "Withdrawal request submitted for admin review",
-        requestId: withdrawalRequest.id,
-        grossAmount: amount,
-        siteFee,
-        transactionFee,
-        netAmount,
-        estimatedPayout: netAmount,
-        status: "pending_admin_approval",
-      });
-    } catch (error) {
-      console.error("Error creating withdrawal request:", error);
-      res.status(500).json({ message: "Failed to create withdrawal request" });
-    }
-  });
-
-  // Get user's withdrawal requests
-  app.get("/api/crypto/withdrawals", requireAuth, async (req: any, res) => {
-    try {
-      const userId = req.user.id;
-      const withdrawals = await storage.getUserWithdrawalRequests(userId);
-      res.json({ withdrawals });
-    } catch (error) {
-      console.error("Error fetching withdrawal requests:", error);
-      res.status(500).json({ message: "Failed to fetch withdrawal history" });
+      console.error('IPN error:', error);
+      res.status(500).json({ error: error.message });
     }
   });
 

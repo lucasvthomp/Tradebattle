@@ -19,11 +19,6 @@ import {
   tournamentResults,
   promoCodes,
   codeRedemptions,
-  cryptoTransactions,
-  walletConnectionLogs,
-  cryptoCharges,
-  withdrawalRequests,
-  stripePayments,
   type User,
   type InsertUser,
   type WatchlistItem,
@@ -62,12 +57,6 @@ import {
   type InsertPromoCode,
   type CodeRedemption,
   type InsertCodeRedemption,
-  type CryptoCharge,
-  type InsertCryptoCharge,
-  type WithdrawalRequest,
-  type InsertWithdrawalRequest,
-  type StripePayment,
-  type InsertStripePayment,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -2090,77 +2079,6 @@ export class DatabaseStorage implements IStorage {
     });
   }
 
-  // NOWPayments crypto charge management
-  async createCryptoCharge(data: InsertCryptoCharge): Promise<CryptoCharge> {
-    const [charge] = await db.insert(cryptoCharges).values(data).returning();
-    return charge;
-  }
-
-  async getCryptoCharge(paymentId: string): Promise<CryptoCharge | undefined> {
-    const [charge] = await db.select().from(cryptoCharges).where(eq(cryptoCharges.paymentId, paymentId));
-    return charge;
-  }
-
-  async updateCryptoCharge(paymentId: string, updates: Partial<CryptoCharge>): Promise<void> {
-    await db.update(cryptoCharges)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(cryptoCharges.paymentId, paymentId));
-  }
-
-  async getUserCryptoCharges(userId: number): Promise<CryptoCharge[]> {
-    return await db.select()
-      .from(cryptoCharges)
-      .where(eq(cryptoCharges.userId, userId))
-      .orderBy(desc(cryptoCharges.createdAt));
-  }
-
-  // Withdrawal request management
-  async createWithdrawalRequest(data: InsertWithdrawalRequest): Promise<WithdrawalRequest> {
-    const [request] = await db.insert(withdrawalRequests).values(data).returning();
-    return request;
-  }
-
-  async getWithdrawalRequest(id: number): Promise<WithdrawalRequest | undefined> {
-    const [request] = await db.select().from(withdrawalRequests).where(eq(withdrawalRequests.id, id));
-    return request;
-  }
-
-  async updateWithdrawalRequest(id: number, updates: Partial<WithdrawalRequest>): Promise<void> {
-    await db.update(withdrawalRequests)
-      .set(updates)
-      .where(eq(withdrawalRequests.id, id));
-  }
-
-  async getUserWithdrawalRequests(userId: number): Promise<WithdrawalRequest[]> {
-    return await db.select()
-      .from(withdrawalRequests)
-      .where(eq(withdrawalRequests.userId, userId))
-      .orderBy(desc(withdrawalRequests.requestedAt));
-  }
-
-  async getPendingWithdrawalRequests(): Promise<WithdrawalRequest[]> {
-    return await db.select()
-      .from(withdrawalRequests)
-      .where(eq(withdrawalRequests.status, 'pending_admin_approval'))
-      .orderBy(asc(withdrawalRequests.requestedAt));
-  }
-
-  // Stripe payment management
-  async createStripePayment(data: InsertStripePayment): Promise<StripePayment> {
-    const [payment] = await db.insert(stripePayments).values(data).returning();
-    return payment;
-  }
-
-  async getStripePayment(paymentIntentId: string): Promise<StripePayment | undefined> {
-    const [payment] = await db.select().from(stripePayments).where(eq(stripePayments.paymentIntentId, paymentIntentId));
-    return payment;
-  }
-
-  async updateStripePayment(paymentIntentId: string, updates: Partial<StripePayment>): Promise<void> {
-    await db.update(stripePayments)
-      .set(updates)
-      .where(eq(stripePayments.paymentIntentId, paymentIntentId));
-  }
 }
 
 export const storage = new DatabaseStorage();
