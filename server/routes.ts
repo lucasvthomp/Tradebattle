@@ -440,6 +440,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // NOWPayments crypto deposit endpoints
   const {
+    getApiStatus,
     createPayment,
     getPaymentStatus,
     verifyIPNSignature,
@@ -471,54 +472,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Diagnostic endpoint to check API configuration
   app.get("/api/crypto/status", requireAuth, async (req: any, res) => {
     try {
-      // Keys are hardcoded in nowPayments.ts as fallback, so always test by calling API
+      const hasApiKey = !!process.env.NOWPAYMENTS_API_KEY;
+      const hasIpnSecret = !!process.env.NOWPAYMENTS_IPN_SECRET;
+      const configured = hasApiKey && hasIpnSecret;
+
       let apiKeyValid = false;
       let apiError = null;
 
+      if (!configured) {
+        return res.json({
+          configured: false,
+          hasApiKey,
+          hasIpnSecret,
+          apiKeyValid: false,
+          apiError: "Missing environment variables",
+          message: "NOWPayments not configured. Please set NOWPAYMENTS_API_KEY and NOWPAYMENTS_IPN_SECRET."
+        });
+      }
+
+      // Test API key by calling status endpoint
       try {
-        // Test API key by fetching available currencies
-        console.log("Testing NOWPayments API key...");
-        const result = await getAvailableCurrencies();
-        console.log("API key test SUCCESS, got", result.currencies?.length || 0, "currencies");
+        console.log("[API Status] Testing NOWPayments API connection...");
+        const statusResult = await getApiStatus();
+        console.log("[API Status] API test SUCCESS:", statusResult);
         apiKeyValid = true;
       } catch (error: any) {
-        console.error("API key test FAILED:", error);
+        console.error("[API Status] API test FAILED:", error.message);
         apiError = error.message;
       }
 
       res.json({
-        configured: true, // Keys are hardcoded as fallback
-        hasApiKey: true,
-        hasIpnSecret: true,
+        configured,
+        hasApiKey,
+        hasIpnSecret,
         apiKeyValid,
         apiError,
+        environment: process.env.NOWPAYMENTS_ENVIRONMENT || 'sandbox',
         message: !apiKeyValid
-          ? `API key test failed: ${apiError}`
-          : "NOWPayments configured and operational"
+          ? `API connection failed: ${apiError}`
+          : "NOWPayments is configured and operational"
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error checking crypto status:", error);
-      res.status(500).json({ message: "Failed to check status" });
+      res.status(500).json({
+        message: "Failed to check status",
+        error: error.message
+      });
     }
   });
 
   // Get supported cryptocurrencies
   app.get("/api/crypto/currencies", requireAuth, async (req: any, res) => {
     try {
-      // Check if API is configured
-      if (!process.env.NOWPAYMENTS_API_KEY) {
-        return res.status(503).json({
-          message: "Payment system not configured",
-          currencies: []
-        });
-      }
-
-      // Return recommended currencies
+      // Return recommended currencies (static list)
       const currencies = getRecommendedCurrencies();
       res.json({ currencies });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching crypto currencies:", error);
-      res.status(500).json({ message: "Failed to fetch supported currencies" });
+      res.status(500).json({
+        message: "Failed to fetch supported currencies",
+        error: error.message
+      });
     }
   });
 
@@ -553,14 +567,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       if (user.depositFrozen) {
         return res.status(403).json({ message: "Your deposits have been frozen. Please contact support." });
-      }
-
-      // Check if API is configured
-      if (!process.env.NOWPAYMENTS_API_KEY || !process.env.NOWPAYMENTS_IPN_SECRET) {
-        return res.status(503).json({
-          message: "Payment system not configured. Please contact administrator.",
-          error: "MISSING_API_KEYS"
-        });
       }
 
       // Create IPN callback URL
