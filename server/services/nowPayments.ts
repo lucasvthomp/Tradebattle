@@ -91,6 +91,32 @@ export async function getPaymentStatus(paymentId: string) {
   return await apiCall(`/payment/${paymentId}`);
 }
 
+// Create payout (withdrawal) to user's wallet
+export async function createPayout(params: {
+  withdrawalId: string;
+  address: string;
+  currency: string;
+  amount: number;
+  ipnCallbackUrl?: string;
+}) {
+  console.log('[NOWPayments] Creating payout:', params);
+
+  return await apiCall('/payout', 'POST', {
+    withdrawals: [{
+      address: params.address,
+      currency: params.currency.toLowerCase(),
+      amount: params.amount,
+      ipn_callback_url: params.ipnCallbackUrl,
+      unique_external_id: params.withdrawalId,
+    }]
+  });
+}
+
+// Get payout status
+export async function getPayoutStatus(payoutId: string) {
+  return await apiCall(`/payout/${payoutId}`);
+}
+
 // Verify IPN signature
 export function verifyIPN(signature: string, rawBody: string): boolean {
   if (!IPN_SECRET) return false;

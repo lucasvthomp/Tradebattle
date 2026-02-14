@@ -561,5 +561,32 @@ export type InsertPromoCode = z.infer<typeof insertPromoCodeSchema>;
 export type CodeRedemption = typeof codeRedemptions.$inferSelect;
 export type InsertCodeRedemption = z.infer<typeof insertCodeRedemptionSchema>;
 
+// Crypto withdrawals table
+export const cryptoWithdrawals = pgTable("crypto_withdrawals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id),
+  amount: numeric("amount", { precision: 15, scale: 2 }).notNull(), // Amount user requested to withdraw
+  currency: varchar("currency", { length: 20 }).notNull(), // Crypto currency (BTC, ETH, USDT, etc.)
+  address: varchar("address", { length: 255 }).notNull(), // User's wallet address
+  transactionFee: numeric("transaction_fee", { precision: 15, scale: 2 }).notNull(), // 0.5% fee
+  payoutAmount: numeric("payout_amount", { precision: 15, scale: 2 }).notNull(), // Amount after fees
+  status: varchar("status", { length: 50 }).default("pending").notNull(), // pending, processing, sent, confirmed, failed
+  payoutId: varchar("payout_id", { length: 255 }), // NOWPayments payout ID
+  txHash: varchar("tx_hash", { length: 255 }), // Blockchain transaction hash
+  errorMessage: text("error_message"), // Error message if payout failed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  processedAt: timestamp("processed_at"), // When payout was sent
+  confirmedAt: timestamp("confirmed_at"), // When payout was confirmed on blockchain
+});
+
+export const insertCryptoWithdrawalSchema = createInsertSchema(cryptoWithdrawals, {
+  amount: z.number().positive(),
+  currency: z.string().min(2).max(20),
+  address: z.string().min(10).max(255),
+});
+
+export type CryptoWithdrawal = typeof cryptoWithdrawals.$inferSelect;
+export type InsertCryptoWithdrawal = z.infer<typeof insertCryptoWithdrawalSchema>;
+
 // Export chat schema
 export * from "./chatSchema";
