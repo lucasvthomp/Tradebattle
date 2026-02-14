@@ -528,8 +528,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { getPaymentStatus } = await import('./services/nowPayments.js');
       const status = await getPaymentStatus(req.params.id);
+      console.log(`[Payment Status] Payment ${req.params.id}:`, JSON.stringify(status, null, 2));
       res.json(status);
     } catch (error: any) {
+      console.error(`[Payment Status] Error for ${req.params.id}:`, error);
       res.status(500).json({ error: error.message });
     }
   });
@@ -542,18 +544,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { verifyIPN } = await import('./services/nowPayments.js');
 
       if (!verifyIPN(signature, rawBody)) {
+        console.error('[IPN] Invalid signature');
         return res.status(403).json({ error: 'Invalid signature' });
       }
 
       const data = JSON.parse(rawBody);
+      console.log('[IPN] Received webhook:', JSON.stringify(data, null, 2));
 
-      if (data.payment_status === 'finished') {
+      // Accept multiple confirmed payment statuses
+      const confirmedStatuses = ['finished', 'confirmed', 'sending'];
+
+      if (confirmedStatuses.includes(data.payment_status)) {
+        console.log(`[IPN] Processing payment with status: ${data.payment_status}`);
+
         // Extract user ID from order_id (format: "deposit-{userId}-{timestamp}")
         const userId = parseInt(data.order_id.split('-')[1]);
 
         // Get user
         const user = await storage.getUser(userId);
         if (!user) {
+          console.error(`[IPN] User not found: ${userId}`);
           return res.status(404).json({ error: 'User not found' });
         }
 
@@ -565,6 +575,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           siteCash: newBalance.toString(),
         });
 
+        console.log(`[IPN] Updated balance for user ${userId}: $${currentBalance} → $${newBalance}`);
+
         // Log transaction
         await storage.createAdminLog({
           adminUserId: userId,
@@ -572,13 +584,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
           action: 'balance_deposit',
           oldValue: currentBalance.toString(),
           newValue: newBalance.toString(),
-          notes: `Crypto deposit: $${data.price_amount} - Payment ID: ${data.payment_id}`,
+          notes: `Crypto deposit: $${data.price_amount} - Payment ID: ${data.payment_id} - Status: ${data.payment_status}`,
         });
+      } else {
+        console.log(`[IPN] Ignoring payment with status: ${data.payment_status}`);
       }
 
       res.status(200).send('OK');
     } catch (error: any) {
-      console.error('IPN error:', error);
+      console.error('[IPN] Error:', error);
       res.status(500).json({ error: error.message });
     }
   });
