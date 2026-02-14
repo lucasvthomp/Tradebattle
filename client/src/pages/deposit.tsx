@@ -245,7 +245,7 @@ export default function Deposit() {
   const presetAmounts = [10, 25, 50, 100];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #06121F 0%, #0A1828 100%)' }}>
       <div className="container mx-auto px-6 py-8">
         {/* Header */}
         <motion.div className="mb-8" {...fadeUpItem}>
@@ -253,25 +253,26 @@ export default function Deposit() {
             variant="ghost"
             className="mb-4"
             onClick={() => navigate("/hub")}
+            style={{ color: '#C9D1E2' }}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Hub
           </Button>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
             <div>
-              <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-                <Bitcoin className="w-8 h-8 text-primary" />
-                Deposit Funds
+              <h1 className="text-4xl font-bold flex items-center gap-3" style={{ color: '#E3B341' }}>
+                <Bitcoin className="w-10 h-10" style={{ color: '#E3B341' }} />
+                Crypto Deposits
               </h1>
-              <p className="text-muted-foreground mt-2">
-                Add crypto to your account securely
+              <p className="mt-2 text-lg" style={{ color: '#8A93A6' }}>
+                Fast, secure deposits with cryptocurrency • No fees • Instant credit
               </p>
             </div>
-            <Card className="border-primary/20">
-              <CardContent className="p-4">
+            <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px' }}>
+              <CardContent className="p-6">
                 <div className="text-right">
-                  <p className="text-sm text-muted-foreground">Current Balance</p>
-                  <p className="text-2xl font-bold text-primary">
+                  <p className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Your Balance</p>
+                  <p className="text-3xl font-bold mt-1" style={{ color: '#E3B341' }}>
                     ${parseFloat(user.siteCash || "0").toFixed(2)}
                   </p>
                 </div>
@@ -280,41 +281,94 @@ export default function Deposit() {
           </div>
         </motion.div>
 
-        {/* System Status Alert */}
-        {systemStatus && !systemStatus.configured && (
-          <Alert className="mb-6 border-yellow-500 bg-yellow-500/10">
-            <AlertCircle className="h-4 w-4 text-yellow-500" />
-            <AlertDescription className="text-sm">
-              <strong>⚠️ Payment System Not Configured</strong>
-              <br />
-              The administrator needs to add NOWPayments API keys to enable deposits.
-              {systemStatus.hasApiKey === false && " Missing: NOWPAYMENTS_API_KEY"}
-              {systemStatus.hasIpnSecret === false && " Missing: NOWPAYMENTS_IPN_SECRET"}
-            </AlertDescription>
-          </Alert>
-        )}
+        {/* CRYPTO PAYMENT SYSTEM STATUS - DETAILED DEBUG INFO */}
+        <Card className="mb-6" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
+          <CardHeader>
+            <CardTitle style={{ color: '#E3B341' }}>💳 Payment System Status</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {!systemStatus ? (
+              <div className="flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" style={{ color: '#8A93A6' }} />
+                <span style={{ color: '#C9D1E2' }}>Checking payment system...</span>
+              </div>
+            ) : (
+              <>
+                {/* Configured Status */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-3 rounded-full ${systemStatus.configured ? 'bg-green-500' : 'bg-red-500'}`} />
+                  <span style={{ color: '#C9D1E2' }}>
+                    <strong>API Keys:</strong> {systemStatus.configured ? '✅ Set in Railway' : '❌ NOT SET - Check Railway Variables'}
+                  </span>
+                </div>
 
-        {systemStatus && systemStatus.configured && !systemStatus.apiKeyValid && (
-          <Alert className="mb-6 border-red-500 bg-red-500/10">
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            <AlertDescription className="text-sm">
-              <strong>❌ Invalid API Configuration</strong>
-              <br />
-              {systemStatus.apiError || "The NOWPayments API key is invalid or expired."}
-              <br />
-              Please contact the administrator.
-            </AlertDescription>
-          </Alert>
-        )}
+                {/* API Valid Status */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-3 h-3 rounded-full ${systemStatus.apiKeyValid ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                  <span style={{ color: '#C9D1E2' }}>
+                    <strong>API Connection:</strong> {systemStatus.apiKeyValid ? '✅ Working' : '⚠️ Failed'}
+                  </span>
+                </div>
 
-        {systemStatus && systemStatus.configured && systemStatus.apiKeyValid && (
-          <Alert className="mb-6 border-green-500 bg-green-500/10">
-            <AlertCircle className="h-4 w-4 text-green-500" />
-            <AlertDescription className="text-sm">
-              ✅ Payment system is operational and ready to accept deposits.
-            </AlertDescription>
-          </Alert>
-        )}
+                {/* Environment */}
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-blue-500" />
+                  <span style={{ color: '#C9D1E2' }}>
+                    <strong>Environment:</strong> {systemStatus.environment || 'production'}
+                  </span>
+                </div>
+
+                {/* Currency Count */}
+                {systemStatus.currencyCount > 0 && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-3 h-3 rounded-full bg-green-500" />
+                    <span style={{ color: '#C9D1E2' }}>
+                      <strong>Currencies:</strong> {systemStatus.currencyCount} available
+                    </span>
+                  </div>
+                )}
+
+                {/* Error Message - MOST IMPORTANT */}
+                {systemStatus.error && (
+                  <Alert className="mt-4 border-red-500 bg-red-500/10">
+                    <AlertCircle className="h-4 w-4 text-red-500" />
+                    <AlertDescription className="text-sm">
+                      <strong className="text-red-500">🔥 EXACT ERROR:</strong>
+                      <br />
+                      <code className="text-xs bg-black/30 px-2 py-1 rounded mt-2 block">
+                        {systemStatus.error}
+                      </code>
+                      <br />
+                      <strong>What to tell developer:</strong>
+                      <br />
+                      "{systemStatus.message}"
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Success Message */}
+                {systemStatus.configured && systemStatus.apiKeyValid && (
+                  <Alert className="mt-4 border-green-500 bg-green-500/10">
+                    <AlertCircle className="h-4 w-4 text-green-500" />
+                    <AlertDescription className="font-semibold" style={{ color: '#28C76F' }}>
+                      {systemStatus.message}
+                    </AlertDescription>
+                  </Alert>
+                )}
+
+                {/* Debug Raw Response */}
+                <details className="mt-4">
+                  <summary className="cursor-pointer text-xs" style={{ color: '#8A93A6' }}>
+                    🔍 Show raw API response (for debugging)
+                  </summary>
+                  <pre className="text-xs bg-black/30 p-3 rounded mt-2 overflow-auto" style={{ color: '#C9D1E2' }}>
+                    {JSON.stringify(systemStatus, null, 2)}
+                  </pre>
+                </details>
+              </>
+            )}
+          </CardContent>
+        </Card>
 
         {!payment ? (
           /* Payment Creation Form */
@@ -323,14 +377,14 @@ export default function Deposit() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Wallet className="w-5 h-5 text-primary" />
-                  Crypto Deposit
+            <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <CardHeader style={{ backgroundColor: '#152233', borderBottom: '1px solid #2B3A4C' }}>
+                <CardTitle className="flex items-center gap-3 text-xl" style={{ color: '#E3B341' }}>
+                  <Wallet className="w-6 h-6" />
+                  Create Crypto Deposit
                 </CardTitle>
-                <CardDescription>
-                  Fast & secure deposits with cryptocurrency
+                <CardDescription style={{ color: '#8A93A6' }}>
+                  Choose amount and cryptocurrency • Get instant QR code • Funds credited automatically
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
