@@ -104,6 +104,239 @@ const staggerChildren = {
   }
 };
 
+// Payments Debug Tab Component
+function PaymentsDebugTab() {
+  const [paymentId, setPaymentId] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  const { toast } = useToast();
+
+  const checkPayment = async () => {
+    if (!paymentId.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a payment ID",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/crypto/debug-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ paymentId: paymentId.trim() }),
+      });
+
+      const data = await response.json();
+      setResult(data);
+
+      if (data.error) {
+        toast({
+          title: "Error",
+          description: data.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+      setResult({ error: error.message });
+    }
+    setLoading(false);
+  };
+
+  const manualCredit = async () => {
+    if (!result?.user || !result?.paymentData) return;
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/crypto/manual-credit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          paymentId: result.paymentData.payment_id,
+          username: result.user.username,
+          amount: parseFloat(result.paymentData.price_amount),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Success!",
+          description: data.message,
+        });
+        // Refresh the payment status
+        await checkPayment();
+      } else {
+        toast({
+          title: "Error",
+          description: data.error,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
+        <CardHeader>
+          <CardTitle style={{ color: '#E3B341' }}>Crypto Payment Debugger</CardTitle>
+          <CardDescription style={{ color: '#8A93A6' }}>
+            Check NOWPayments status and manually credit confirmed payments
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex gap-2">
+            <Input
+              value={paymentId}
+              onChange={(e) => setPaymentId(e.target.value)}
+              placeholder="Enter payment ID (e.g., 5653033856)"
+              style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              onKeyDown={(e) => e.key === 'Enter' && checkPayment()}
+            />
+            <Button
+              onClick={checkPayment}
+              disabled={loading}
+              style={{ backgroundColor: '#E3B341', color: '#06121F' }}
+            >
+              <Search className="w-4 h-4 mr-2" />
+              {loading ? "Checking..." : "Check"}
+            </Button>
+          </div>
+
+          {result && (
+            <div className="space-y-4 mt-6">
+              {result.error ? (
+                <div className="p-4 rounded-lg" style={{ backgroundColor: 'rgba(255, 79, 88, 0.1)', borderColor: '#FF4F58', border: '1px solid' }}>
+                  <p style={{ color: '#FF4F58' }}>{result.error}</p>
+                </div>
+              ) : (
+                <>
+                  {/* Payment Status Summary */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                      <CardContent className="pt-6">
+                        <div className="text-center">
+                          <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Payment Status</p>
+                          <Badge
+                            style={{
+                              backgroundColor: result.paymentData.payment_status === 'finished' ? '#28C76F' : '#E3B341',
+                              color: '#06121F'
+                            }}
+                          >
+                            {result.paymentData.payment_status}
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                      <CardContent className="pt-6">
+                        <div className="text-center">
+                          <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Already Credited</p>
+                          <Badge
+                            style={{
+                              backgroundColor: result.alreadyCredited ? '#28C76F' : '#FF4F58',
+                              color: '#06121F'
+                            }}
+                          >
+                            {result.alreadyCredited ? 'Yes' : 'No'}
+                            {result.existingCreditCount > 0 && ` (${result.existingCreditCount}x)`}
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                      <CardContent className="pt-6">
+                        <div className="text-center">
+                          <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Should Credit</p>
+                          <Badge
+                            style={{
+                              backgroundColor: result.shouldCredit ? '#28C76F' : '#8A93A6',
+                              color: '#06121F'
+                            }}
+                          >
+                            {result.shouldCredit ? 'Yes' : 'No'}
+                          </Badge>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Payment Details */}
+                  <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                    <CardHeader>
+                      <CardTitle className="text-lg" style={{ color: '#28C76F' }}>Payment Data</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <pre className="bg-black/30 p-4 rounded overflow-auto text-xs" style={{ color: '#8A93A6' }}>
+                        {JSON.stringify(result.paymentData, null, 2)}
+                      </pre>
+                    </CardContent>
+                  </Card>
+
+                  {/* User Details */}
+                  {result.user && (
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                      <CardHeader>
+                        <CardTitle className="text-lg" style={{ color: '#28C76F' }}>User</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <p style={{ color: '#C9D1E2' }}>
+                            <span className="font-semibold">ID:</span> {result.user.id}
+                          </p>
+                          <p style={{ color: '#C9D1E2' }}>
+                            <span className="font-semibold">Username:</span> {result.user.username}
+                          </p>
+                          <p style={{ color: '#C9D1E2' }}>
+                            <span className="font-semibold">Current Balance:</span> ${parseFloat(result.user.balance || 0).toFixed(2)}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Manual Credit Button */}
+                  {result.shouldCredit && !result.alreadyCredited && (
+                    <Button
+                      onClick={manualCredit}
+                      disabled={loading}
+                      className="w-full"
+                      style={{ backgroundColor: '#28C76F', color: '#06121F', fontSize: '16px', padding: '24px' }}
+                    >
+                      <DollarSign className="w-5 h-5 mr-2" />
+                      {loading ? "Processing..." : `Manually Credit $${result.paymentData.price_amount} to ${result.user.username}`}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function Admin() {
   const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
@@ -452,13 +685,14 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-9">
               <TabsTrigger value="overview" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Overview</TabsTrigger>
               <TabsTrigger value="users" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Users</TabsTrigger>
               <TabsTrigger value="tournaments" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Tournaments</TabsTrigger>
               <TabsTrigger value="announcements" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Announcements</TabsTrigger>
               <TabsTrigger value="revenue" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Revenue</TabsTrigger>
               <TabsTrigger value="transactions" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Transactions</TabsTrigger>
+              <TabsTrigger value="payments" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Payments</TabsTrigger>
               <TabsTrigger value="promo-codes" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">Promo Codes</TabsTrigger>
               <TabsTrigger value="system" className="data-[state=active]:border-b-2 data-[state=active]:border-[#E3B341] data-[state=active]:text-[#E3B341]">System</TabsTrigger>
             </TabsList>
@@ -1233,7 +1467,12 @@ export default function Admin() {
               </Card>
             </TabsContent>
 
-            {/* ===== TAB 6: PROMO CODES ===== */}
+            {/* ===== TAB 6: PAYMENTS DEBUG ===== */}
+            <TabsContent value="payments" className="space-y-6">
+              <PaymentsDebugTab />
+            </TabsContent>
+
+            {/* ===== TAB 7: PROMO CODES ===== */}
             <TabsContent value="promo-codes" className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">

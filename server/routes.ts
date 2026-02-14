@@ -620,16 +620,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUser(userId);
 
       // Check if payment was already credited by looking at admin logs
+      // Search for any log entry that mentions this payment ID
       const { adminLogs } = await import('@shared/schema');
+      const { like } = await import('drizzle-orm');
+
       const existingCredit = await db.select().from(adminLogs).where(
-        eq(adminLogs.notes, `Crypto deposit: $${paymentData.price_amount} - Payment ID: ${paymentData.payment_id} - Status: ${paymentData.payment_status}`)
+        like(adminLogs.notes, `%Payment ID: ${paymentData.payment_id}%`)
       );
 
       res.json({
         paymentData: paymentData,
         user: user ? { id: user.id, username: user.username, balance: user.siteCash } : null,
         alreadyCredited: existingCredit.length > 0,
-        shouldCredit: !existingCredit.length && ['finished', 'confirmed', 'sending'].includes(paymentData.payment_status),
+        existingCreditCount: existingCredit.length,
+        shouldCredit: existingCredit.length === 0 && ['finished', 'confirmed', 'sending'].includes(paymentData.payment_status),
       });
 
     } catch (error: any) {
