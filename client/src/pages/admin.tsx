@@ -109,6 +109,9 @@ function PaymentsDebugTab() {
   const [paymentId, setPaymentId] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const [restoreUsername, setRestoreUsername] = useState("");
+  const [restoreAmount, setRestoreAmount] = useState("");
+  const [restoreReason, setRestoreReason] = useState("Failed withdrawal reversal");
   const { toast } = useToast();
 
   const checkPayment = async () => {
@@ -331,6 +334,105 @@ function PaymentsDebugTab() {
               )}
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* Restore Balance Tool */}
+      <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#FF4F58' }}>
+        <CardHeader>
+          <CardTitle style={{ color: '#FF4F58' }}>⚠️ Restore Balance (Failed Withdrawal)</CardTitle>
+          <CardDescription style={{ color: '#8A93A6' }}>
+            Use this to restore money that was deducted by the broken withdrawal system
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block" style={{ color: '#C9D1E2' }}>Username</label>
+              <Input
+                value={restoreUsername}
+                onChange={(e) => setRestoreUsername(e.target.value)}
+                placeholder="Enter username"
+                style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block" style={{ color: '#C9D1E2' }}>Amount ($)</label>
+              <Input
+                type="number"
+                value={restoreAmount}
+                onChange={(e) => setRestoreAmount(e.target.value)}
+                placeholder="20.00"
+                style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block" style={{ color: '#C9D1E2' }}>Reason</label>
+              <Input
+                value={restoreReason}
+                onChange={(e) => setRestoreReason(e.target.value)}
+                placeholder="Failed withdrawal reversal"
+                style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              />
+            </div>
+          </div>
+
+          <Button
+            onClick={async () => {
+              if (!restoreUsername || !restoreAmount) {
+                toast({
+                  title: "Error",
+                  description: "Please enter username and amount",
+                  variant: "destructive",
+                });
+                return;
+              }
+
+              setLoading(true);
+              try {
+                const response = await fetch("/api/admin/restore-balance", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  credentials: "include",
+                  body: JSON.stringify({
+                    username: restoreUsername,
+                    amount: parseFloat(restoreAmount),
+                    reason: restoreReason,
+                  }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                  toast({
+                    title: "Success!",
+                    description: data.message,
+                  });
+                  setRestoreUsername("");
+                  setRestoreAmount("");
+                } else {
+                  toast({
+                    title: "Error",
+                    description: data.error,
+                    variant: "destructive",
+                  });
+                }
+              } catch (error: any) {
+                toast({
+                  title: "Error",
+                  description: error.message,
+                  variant: "destructive",
+                });
+              }
+              setLoading(false);
+            }}
+            disabled={loading}
+            className="w-full"
+            style={{ backgroundColor: '#FF4F58', color: '#FFFFFF', fontSize: '16px', padding: '24px' }}
+          >
+            <RefreshCw className="w-5 h-5 mr-2" />
+            {loading ? "Processing..." : "Restore Balance"}
+          </Button>
         </CardContent>
       </Card>
     </div>
