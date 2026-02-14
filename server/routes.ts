@@ -4,7 +4,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { db } from "./db";
 import { users } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import * as schema from "@shared/schema";
+import { eq, desc, count, sum } from "drizzle-orm";
 import { setupAuth, requireAuth, hashPassword } from "./auth";
 import { insertContactSchema, insertWatchlistSchema, insertStockPurchaseSchema, registerSchema, loginSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
@@ -1008,6 +1009,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting user:", error);
       res.status(500).json({ message: "Failed to delete user", error: error instanceof Error ? error.message : "Unknown error" });
+    }
+  });
+
+  // Get all users (admin only)
+  app.get("/api/admin/users", requireAuth, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.username !== 'LUCAS')) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+
+      const users = await db
+        .select({
+          id: schema.users.id,
+          username: schema.users.username,
+          email: schema.users.email,
+          subscriptionTier: schema.users.subscriptionTier,
+          siteCash: schema.users.siteCash,
+          createdAt: schema.users.createdAt,
+          walletAddress: schema.users.walletAddress,
+        })
+        .from(schema.users)
+        .orderBy(desc(schema.users.createdAt));
+
+      res.json(users);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+
+  // Get admin stats
+  app.get("/api/admin/stats", requireAuth, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.username !== 'LUCAS')) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+
+      const totalUsers = await db.select({ count: count() }).from(schema.users);
+      const activeTournaments = await db
+        .select({ count: count() })
+        .from(schema.tournaments)
+        .where(eq(schema.tournaments.status, 'active'));
+
+      const totalTournaments = await db.select({ count: count() }).from(schema.tournaments);
+
+      const totalRevenue = await db
+        .select({ sum: sum(schema.tradeHistory.amount) })
+        .from(schema.tradeHistory);
+
+      res.json({
+        data: {
+          totalUsers: totalUsers[0]?.count || 0,
+          activeTournaments: activeTournaments[0]?.count || 0,
+          totalTournaments: totalTournaments[0]?.count || 0,
+          totalRevenue: totalRevenue[0]?.sum || 0,
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching admin stats:", error);
+      res.status(500).json({ message: "Failed to fetch admin stats" });
+    }
+  });
+
+  // Get all tournaments (admin only)
+  app.get("/api/admin/tournaments", requireAuth, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.username !== 'LUCAS')) {
+        return res.status(403).json({ message: "Access denied. Admin privileges required." });
+      }
+
+      const tournaments = await db
+        .select({
+          id: schema.tournaments.id,
+          name: schema.tournaments.name,
+          status: schema.tournaments.status,
+          startingBalance: schema.tournaments.startingBalance,
+          buyIn: schema.tournaments.buyIn,
+          prizeMultiplier: schema.tournaments.prizeMultiplier,
+          startDate: schema.tournaments.startDate,
+          endDate: schema.tournaments.endDate,
+          createdAt: schema.tournaments.createdAt,
+        })
+        .from(schema.tournaments)
+        .orderBy(desc(schema.tournaments.createdAt));
+
+      // Get participant counts for each tournament
+      const tournamentsWithCounts = await Promise.all(
+        tournaments.map(async (tournament) => {
+          const participants = await db
+            .select({ count: count() })
+            .from(schema.tournamentParticipants)
+            .where(eq(schema.tournamentParticipants.tournamentId, tournament.id));
+
+          return {
+            ...tournament,
+            participantCount: participants[0]?.count || 0,
+          };
+        })
+      );
+
+      res.json(tournamentsWithCounts);
+    } catch (error) {
+      console.error("Error fetching tournaments:", error);
+      res.status(500).json({ message: "Failed to fetch tournaments" });
     }
   });
 
