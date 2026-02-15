@@ -230,7 +230,7 @@ export default function Shop() {
                   <p className="text-sm font-semibold mb-2" style={{ color: '#E3B341' }}>
                     💡 Where to find codes:
                   </p>
-                  <ul className="text-sm space-y-1" style={{ color: '#8A93A6' }}>
+                  <ul className="text-sm space-y-1" style={{ color: '#C9D1E2' }}>
                     <li>• Follow us on social media</li>
                     <li>• Join our Discord server</li>
                     <li>• Special event giveaways</li>
