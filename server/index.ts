@@ -280,6 +280,29 @@ async function runMigrations() {
         ON trade_history(user_id, created_at DESC);
     `);
 
+    // Create crypto_withdrawals table if it doesn't exist
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS crypto_withdrawals (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id),
+        amount NUMERIC(15, 2) NOT NULL,
+        currency VARCHAR(20) NOT NULL,
+        address VARCHAR(255) NOT NULL,
+        transaction_fee NUMERIC(15, 2) NOT NULL,
+        payout_amount NUMERIC(15, 2) NOT NULL,
+        status VARCHAR(50) NOT NULL DEFAULT 'pending',
+        payout_id VARCHAR(255),
+        tx_hash VARCHAR(255),
+        error_message TEXT,
+        created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+        processed_at TIMESTAMP,
+        confirmed_at TIMESTAMP
+      );
+
+      CREATE INDEX IF NOT EXISTS idx_crypto_withdrawals_user_id ON crypto_withdrawals(user_id);
+      CREATE INDEX IF NOT EXISTS idx_crypto_withdrawals_status ON crypto_withdrawals(status);
+    `);
+
     log('Database migrations completed successfully');
   } catch (error) {
     log('Migration error: ' + (error as Error).message);
