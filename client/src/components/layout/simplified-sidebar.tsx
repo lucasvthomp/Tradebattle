@@ -57,7 +57,9 @@ export function SimplifiedSidebar() {
       <Link
         href={item.href}
         {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
-        className={`group flex items-center px-3 py-3 rounded-lg transition-all duration-200 ${
+        className={`group flex items-center rounded-lg transition-all duration-200 ${
+          expanded ? 'px-3 py-3' : 'w-12 h-12 justify-center mx-auto'
+        } ${
           isActive(item.href)
             ? "sidebar-active-indicator"
             : "hover:bg-[#0F172A] hover:text-white"
@@ -92,7 +94,7 @@ export function SimplifiedSidebar() {
       <div
         data-tour="sidebar"
         className={`hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 transition-all duration-300 ease-in-out ${
-          expanded ? 'w-64' : 'w-20'
+          expanded ? 'w-64' : 'w-16'
         }`}
         style={{
           backgroundColor: '#0B1120',
@@ -100,10 +102,10 @@ export function SimplifiedSidebar() {
         }}
       >
         {/* Menu Toggle Button at top */}
-        <div className="p-3 border-b" style={{ borderColor: '#1F2937' }}>
+        <div className="p-2 border-b" style={{ borderColor: '#1F2937' }}>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-full h-12 flex items-center justify-center hover:bg-[#0F172A] rounded-lg transition-all duration-200"
+            className="w-12 h-12 flex items-center justify-center hover:bg-[#0F172A] rounded-lg transition-all duration-200 mx-auto"
             style={{ color: '#C9D1E2' }}
           >
             <Menu className="w-5 h-5" />
@@ -111,29 +113,29 @@ export function SimplifiedSidebar() {
         </div>
 
         {/* Navigation Items */}
-        <nav className="p-3 space-y-1">
+        <nav className="p-2 space-y-1">
           {navItems.map(renderNavItem)}
         </nav>
 
         {/* Separator */}
         {user && (
-          <div className="mx-3 my-3 h-px" style={{ backgroundColor: '#1F2937' }} />
+          <div className="mx-2 my-2 h-px" style={{ backgroundColor: '#1F2937' }} />
         )}
 
         {/* User Actions */}
         {user && (
-          <nav className="p-3 space-y-1">
+          <nav className="p-2 space-y-1">
             {userItems.map(renderNavItem)}
           </nav>
         )}
 
         {/* Code Redemption - Bottom */}
         {user && (
-          <div className="absolute bottom-4 left-3 right-3">
+          <div className={`absolute bottom-4 ${expanded ? 'left-2 right-2' : 'left-2 right-2'}`}>
             <Button
               onClick={() => setCodeDialogOpen(true)}
-              className={`w-full transition-all duration-200 hover:brightness-110 ${
-                expanded ? 'px-4 py-3' : 'p-3 aspect-square'
+              className={`transition-all duration-200 hover:brightness-110 ${
+                expanded ? 'w-full px-4 py-3' : 'w-12 h-12 p-0 mx-auto'
               }`}
               style={{
                 background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
@@ -146,7 +148,9 @@ export function SimplifiedSidebar() {
                   <span className="text-base font-semibold">Redeem Code</span>
                 </div>
               ) : (
-                <Gift className="w-5 h-5" />
+                <div className="flex items-center justify-center">
+                  <Gift className="w-5 h-5" />
+                </div>
               )}
             </Button>
           </div>

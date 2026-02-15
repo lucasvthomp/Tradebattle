@@ -29,7 +29,7 @@ export default function Layout({ children }: LayoutProps) {
         <div className="flex flex-1 pt-16 min-h-0">
           {/* Main Content with Page Transitions */}
           <main className={`flex-1 min-h-screen transition-all duration-300 px-2 md:px-0 overflow-x-hidden ${
-            user ? 'md:ml-20' : ''
+            user ? 'md:ml-16' : ''
           } ${
             user && chatOpen ? 'md:mr-80' : ''
           }`}>
