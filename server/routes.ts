@@ -382,36 +382,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // NEW Crypto withdrawal endpoint
   app.post("/api/crypto/withdraw", requireAuth, async (req: any, res) => {
     try {
+      console.log('[Withdrawal] Request received:', req.body);
       const { amount, currency, address } = req.body;
       const userId = req.user.id;
 
       // Validate inputs
       if (!amount || isNaN(amount) || amount <= 0) {
+        console.log('[Withdrawal] Invalid amount:', amount);
         return res.status(400).json({ error: "Invalid withdrawal amount" });
       }
 
       if (!currency || !address) {
+        console.log('[Withdrawal] Missing currency or address:', { currency, address });
         return res.status(400).json({ error: "Currency and wallet address are required" });
       }
 
       if (amount < 1) {
+        console.log('[Withdrawal] Amount below minimum:', amount);
         return res.status(400).json({ error: "Minimum withdrawal amount is $1.00" });
       }
 
       // Get user
+      console.log('[Withdrawal] Getting user:', userId);
       const user = await storage.getUser(userId);
       if (!user) {
+        console.log('[Withdrawal] User not found:', userId);
         return res.status(404).json({ error: "User not found" });
       }
 
       if (user.withdrawalFrozen) {
+        console.log('[Withdrawal] Withdrawals frozen for user:', user.username);
         return res.status(403).json({ error: "Your withdrawals have been frozen. Please contact support." });
       }
 
       const currentBalance = parseFloat(user.siteCash?.toString() || '0');
+      console.log('[Withdrawal] Current balance:', currentBalance);
 
       // Check sufficient funds
       if (amount > currentBalance) {
+        console.log('[Withdrawal] Insufficient funds:', { amount, currentBalance });
         return res.status(400).json({ error: "Insufficient funds" });
       }
 
@@ -420,9 +429,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const payoutAmount = amount - transactionFee;
 
       console.log(`[Withdrawal] User ${user.username} requesting $${amount} withdrawal to ${currency.toUpperCase()}`);
+      console.log(`[Withdrawal] Fees - Transaction: $${transactionFee.toFixed(2)}, Payout: $${payoutAmount.toFixed(2)}`);
 
       // Create withdrawal record in database
+      console.log('[Withdrawal] Importing cryptoWithdrawals schema...');
       const { cryptoWithdrawals } = await import('@shared/schema');
+
+      console.log('[Withdrawal] Inserting withdrawal record into database...');
       const [withdrawal] = await db.insert(cryptoWithdrawals).values({
         userId: userId,
         amount: amount.toString(),
@@ -524,8 +537,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
     } catch (error: any) {
-      console.error("[Withdrawal] Error:", error);
-      res.status(500).json({ error: error.message });
+      console.error("[Withdrawal] CRITICAL ERROR:", error);
+      console.error("[Withdrawal] Error name:", error.name);
+      console.error("[Withdrawal] Error message:", error.message);
+      console.error("[Withdrawal] Error stack:", error.stack);
+      res.status(500).json({
+        error: "Withdrawal system error",
+        details: error.message,
+        name: error.name,
+      });
     }
   });
 
