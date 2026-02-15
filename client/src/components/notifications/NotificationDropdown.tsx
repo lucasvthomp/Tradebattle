@@ -12,6 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail, MessageSquare, UserCheck, UserPlus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { TournamentEndCelebration } from "@/components/tournaments/TournamentEndCelebration";
+import { TournamentStartDialog } from "@/components/tournaments/TournamentStartDialog";
 
 const typeIcons: Record<string, any> = {
   tournament_start: Trophy,
@@ -57,6 +58,7 @@ export function NotificationDropdown() {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [celebrationData, setCelebrationData] = useState<any>(null);
+  const [startDialogData, setStartDialogData] = useState<any>(null);
 
   const { data } = useQuery<{ data: any[]; unreadCount: number }>({
     queryKey: ["/api/notifications"],
@@ -122,7 +124,29 @@ export function NotificationDropdown() {
 
   const handleNotificationClick = async (notif: any) => {
     // Handle navigation based on notification type
-    if (notif.type === 'tournament_end' && notif.metadata?.tournamentId) {
+    if (notif.type === 'tournament_start' && notif.metadata?.tournamentId) {
+      setOpen(false);
+      // Fetch tournament details to show start dialog
+      try {
+        const tournamentRes = await apiRequest("GET", `/api/tournaments/${notif.metadata.tournamentId}`);
+        const tournament = await tournamentRes.json();
+
+        if (tournament) {
+          setStartDialogData({
+            id: tournament.id,
+            name: tournament.name,
+            startingBalance: parseFloat(tournament.startingBalance?.toString() || '10000'),
+            prizePool: parseFloat(tournament.currentPot?.toString() || '0'),
+            timeRemaining: new Date(tournament.endTime).getTime() - Date.now(),
+            competitors: tournament.currentPlayers || 0,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch tournament details:", error);
+        // Navigate to tournaments page as fallback
+        navigate('/tournaments');
+      }
+    } else if (notif.type === 'tournament_end' && notif.metadata?.tournamentId) {
       setOpen(false);
       // Fetch tournament details and results to show celebration
       try {
@@ -293,6 +317,18 @@ export function NotificationDropdown() {
         </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>
+
+      {/* Tournament Start Dialog */}
+      {startDialogData && (
+        <TournamentStartDialog
+          isOpen={!!startDialogData}
+          onClose={() => {
+            setStartDialogData(null);
+            navigate('/tournaments');
+          }}
+          tournament={startDialogData}
+        />
+      )}
 
       {/* Tournament End Celebration Modal */}
       {celebrationData && (
