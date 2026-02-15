@@ -11,6 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, Check, CheckCheck, Trophy, DollarSign, Shield, Users, Mail, MessageSquare, UserCheck, UserPlus, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { TournamentEndCelebration } from "@/components/tournaments/TournamentEndCelebration";
 
 const typeIcons: Record<string, any> = {
   tournament_start: Trophy,
@@ -55,6 +56,7 @@ export function NotificationDropdown() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [celebrationData, setCelebrationData] = useState<any>(null);
 
   const { data } = useQuery<{ data: any[]; unreadCount: number }>({
     queryKey: ["/api/notifications"],
@@ -118,9 +120,45 @@ export function NotificationDropdown() {
     },
   });
 
-  const handleNotificationClick = (notif: any) => {
+  const handleNotificationClick = async (notif: any) => {
     // Handle navigation based on notification type
-    if (notif.type === 'chat_mention' && notif.metadata?.messageId && notif.metadata?.tournamentId) {
+    if (notif.type === 'tournament_end' && notif.metadata?.tournamentId) {
+      setOpen(false);
+      // Fetch tournament details and results to show celebration
+      try {
+        const [tournamentRes, resultsRes] = await Promise.all([
+          apiRequest("GET", `/api/tournaments/${notif.metadata.tournamentId}`),
+          apiRequest("GET", `/api/tournaments/${notif.metadata.tournamentId}/results`)
+        ]);
+
+        const tournament = await tournamentRes.json();
+        const resultsData = await resultsRes.json();
+
+        if (resultsData.success && tournament) {
+          setCelebrationData({
+            tournament: {
+              id: notif.metadata.tournamentId,
+              name: tournament.name || notif.title.replace('Tournament "', '').replace('" Ended', ''),
+              prizePool: parseFloat(tournament.currentPot?.toString() || '0'),
+            },
+            results: {
+              winner: resultsData.data.winner,
+              topThree: resultsData.data.topThree,
+              userRank: notif.metadata.rank,
+              userProfit: (notif.metadata.portfolioValue || 0) - (tournament.startingBalance || 10000),
+              totalParticipants: resultsData.data.totalParticipants,
+            },
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch tournament results:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load tournament results",
+          variant: "destructive",
+        });
+      }
+    } else if (notif.type === 'chat_mention' && notif.metadata?.messageId && notif.metadata?.tournamentId) {
       setOpen(false);
       navigate(`/tournaments/${notif.metadata.tournamentId}?messageId=${notif.metadata.messageId}`);
     } else if (notif.type === 'tournament_invite' && notif.metadata?.tournamentCode) {
@@ -140,6 +178,7 @@ export function NotificationDropdown() {
   };
 
   return (
+    <>
     <DropdownMenu open={open} onOpenChange={handleDropdownOpenChange}>
       <DropdownMenuTrigger asChild>
         <Button
@@ -254,5 +293,16 @@ export function NotificationDropdown() {
         </ScrollArea>
       </DropdownMenuContent>
     </DropdownMenu>
+
+      {/* Tournament End Celebration Modal */}
+      {celebrationData && (
+        <TournamentEndCelebration
+          isOpen={!!celebrationData}
+          onClose={() => setCelebrationData(null)}
+          tournament={celebrationData.tournament}
+          results={celebrationData.results}
+        />
+      )}
+    </>
   );
 }

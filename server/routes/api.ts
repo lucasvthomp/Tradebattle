@@ -2825,10 +2825,42 @@ router.get('/tournaments/:id/results', asyncHandler(async (req, res) => {
   }
 
   const results = await storage.getTournamentResults(tournamentId);
+  const tournament = await storage.getTournamentById(tournamentId);
+
+  if (!tournament) {
+    throw new ValidationError('Tournament not found');
+  }
+
+  // Fetch usernames for each result
+  const enrichedResults = await Promise.all(
+    results.map(async (result) => {
+      const user = await storage.getUser(result.userId);
+      return {
+        ...result,
+        username: user?.username || `User ${result.userId}`,
+        finalBalance: parseFloat(result.portfolioValue?.toString() || '0'),
+        profit: parseFloat(result.portfolioValue?.toString() || '0') - parseFloat(tournament.startingBalance?.toString() || '10000'),
+      };
+    })
+  );
+
+  // Extract top 3
+  const topThree = enrichedResults.slice(0, 3);
+  const winner = topThree[0];
 
   res.json({
     success: true,
-    data: results,
+    data: {
+      winner: winner || {
+        username: "Unknown",
+        finalBalance: 0,
+        profit: 0,
+        rank: 1,
+      },
+      topThree,
+      totalParticipants: enrichedResults.length,
+      allResults: enrichedResults,
+    },
   });
 }));
 
