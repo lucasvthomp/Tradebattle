@@ -69,11 +69,11 @@ export function SimplifiedSidebar() {
         }
       >
         <item.icon
-          className={`w-5 h-5 ${expanded ? 'mr-3' : ''} transition-colors duration-200`}
+          className={`w-5.5 h-5.5 ${expanded ? 'mr-3' : ''} transition-colors duration-200`}
           style={{ color: isActive(item.href) ? item.iconColor : undefined }}
         />
         {expanded && (
-          <span className="text-sm font-medium whitespace-nowrap">
+          <span className="text-base font-medium whitespace-nowrap">
             {item.label}
           </span>
         )}
@@ -131,11 +131,11 @@ export function SimplifiedSidebar() {
             >
               {expanded ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <Gift className="w-4 h-4" />
-                  <span className="text-sm font-medium">Redeem Code</span>
+                  <Gift className="w-5 h-5" />
+                  <span className="text-base font-medium">Redeem Code</span>
                 </div>
               ) : (
-                <Gift className="w-4 h-4" />
+                <Gift className="w-5 h-5" />
               )}
             </Button>
           </div>
