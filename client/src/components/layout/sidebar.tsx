@@ -61,10 +61,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-border/50 backdrop-blur-sm">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center neon-glow">
-              <span className="text-primary-foreground font-bold text-sm">O</span>
+            <div className="w-9 h-9 gradient-primary rounded-lg flex items-center justify-center neon-glow">
+              <span className="text-primary-foreground font-bold text-base">O</span>
             </div>
-            <span className="text-lg font-bold gradient-text">ORSATH</span>
+            <span className="text-xl font-bold gradient-text">ORSATH</span>
           </div>
           <Button
             variant="ghost"
@@ -89,8 +89,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/20 hover:backdrop-blur-md"
               }`}
             >
-              <item.icon className="w-5 h-5" />
-              <span>{item.label}</span>
+              <item.icon className="w-5.5 h-5.5" />
+              <span className="text-base">{item.label}</span>
             </Link>
           ))}
         </nav>
@@ -104,8 +104,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               size="lg"
             >
               <div className="flex items-center justify-center space-x-2">
-                <Gift className="w-5 h-5" />
-                <span>Redeem Code</span>
+                <Gift className="w-5.5 h-5.5" />
+                <span className="text-base">Redeem Code</span>
               </div>
             </Button>
           </div>
