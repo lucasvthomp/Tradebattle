@@ -71,14 +71,16 @@ export function SimplifiedSidebar() {
         }
       >
         <item.icon
-          className={`w-5 h-5 ${expanded ? 'mr-3' : ''} transition-all duration-200 flex-shrink-0`}
+          className={`w-5 h-5 transition-all duration-300 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`}
           style={{ color: isActive(item.href) ? item.iconColor : undefined }}
         />
-        {expanded && (
-          <span className="text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-200">
-            {item.label}
-          </span>
-        )}
+        <span
+          className={`text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+            expanded ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'
+          }`}
+        >
+          {item.label}
+        </span>
       </Link>
     </motion.div>
   );
@@ -105,10 +107,14 @@ export function SimplifiedSidebar() {
             }`}
             style={{ color: '#C9D1E2' }}
           >
-            <Menu className={`w-5 h-5 ${expanded ? 'mr-3' : ''}`} />
-            {expanded && (
-              <span className="text-base font-medium">Menu</span>
-            )}
+            <Menu className={`w-5 h-5 transition-all duration-300 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`} />
+            <span
+              className={`text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                expanded ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'
+              }`}
+            >
+              Menu
+            </span>
           </button>
         </div>
 
