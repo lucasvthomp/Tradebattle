@@ -71,18 +71,13 @@ export function SimplifiedSidebar() {
         }
       >
         <item.icon
-          className={`w-5 h-5 ${expanded ? 'mr-3' : ''} transition-all duration-200`}
+          className={`w-5 h-5 ${expanded ? 'mr-3' : ''} transition-all duration-200 flex-shrink-0`}
           style={{ color: isActive(item.href) ? item.iconColor : undefined }}
         />
         {expanded && (
-          <motion.span
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "auto" }}
-            exit={{ opacity: 0, width: 0 }}
-            className="text-base font-medium whitespace-nowrap"
-          >
+          <span className="text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-200">
             {item.label}
-          </motion.span>
+          </span>
         )}
       </Link>
     </motion.div>
@@ -105,10 +100,15 @@ export function SimplifiedSidebar() {
         <div className="p-2 border-b" style={{ borderColor: '#1F2937' }}>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-12 h-12 flex items-center justify-center hover:bg-[#0F172A] rounded-lg transition-all duration-200 mx-auto"
+            className={`flex items-center hover:bg-[#0F172A] rounded-lg transition-all duration-200 ${
+              expanded ? 'w-full px-3 py-3 justify-start' : 'w-12 h-12 justify-center mx-auto'
+            }`}
             style={{ color: '#C9D1E2' }}
           >
-            <Menu className="w-5 h-5" />
+            <Menu className={`w-5 h-5 ${expanded ? 'mr-3' : ''}`} />
+            {expanded && (
+              <span className="text-base font-medium">Menu</span>
+            )}
           </button>
         </div>
 
