@@ -69,7 +69,7 @@ export function SimplifiedSidebar() {
         }
       >
         <item.icon
-          className={`w-6 h-6 ${expanded ? 'mr-3' : ''} transition-all duration-200`}
+          className={`w-5 h-5 ${expanded ? 'mr-3' : ''} transition-all duration-200`}
           style={{ color: isActive(item.href) ? item.iconColor : undefined }}
         />
         {expanded && (
@@ -101,15 +101,13 @@ export function SimplifiedSidebar() {
       >
         {/* Menu Toggle Button at top */}
         <div className="p-3 border-b" style={{ borderColor: '#1F2937' }}>
-          <Button
+          <button
             onClick={() => setExpanded(!expanded)}
-            variant="ghost"
-            size="icon"
-            className="w-full h-12 flex items-center justify-center hover:bg-[#0F172A]"
-            style={{ color: '#E3B341' }}
+            className="w-full h-12 flex items-center justify-center hover:bg-[#0F172A] rounded-lg transition-all duration-200"
+            style={{ color: '#C9D1E2' }}
           >
-            <Menu className="w-6 h-6" />
-          </Button>
+            <Menu className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation Items */}
