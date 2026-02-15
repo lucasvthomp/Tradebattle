@@ -33,6 +33,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { TournamentManagementDialog } from "@/components/tournaments/TournamentManagementDialog";
 import { TournamentCreationDialog } from "@/components/tournaments/TournamentCreationDialog";
 import { TournamentLeaderboardDialog } from "@/components/tournaments/TournamentLeaderboardDialog";
+import { TournamentJoinConfirmation } from "@/components/tournaments/TournamentJoinConfirmation";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -244,12 +245,12 @@ export default function TournamentsPage() {
   const handleJoinTournament = (tournament: any) => {
     setTournamentToJoin(tournament);
     setJoinConfirmationOpen(true);
-    setAgreementChecked(false);
   };
 
   const confirmJoinTournament = () => {
-    if (tournamentToJoin && agreementChecked) {
+    if (tournamentToJoin) {
       joinTournamentMutation.mutate(tournamentToJoin.code || tournamentToJoin.id);
+      setJoinConfirmationOpen(false);
     }
   };
 
@@ -617,139 +618,25 @@ export default function TournamentsPage() {
       )}
 
       {/* Join Tournament Confirmation Dialog */}
-      <Dialog open={joinConfirmationOpen} onOpenChange={setJoinConfirmationOpen}>
-        <DialogContent className="max-w-[95vw] sm:max-w-[500px]" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
-          <DialogHeader>
-            <DialogTitle className="flex items-center space-x-2 text-base md:text-lg" style={{ color: '#F1F5F9' }}>
-              <Trophy className="w-5 h-5" style={{ color: '#E3B341' }} />
-              <span>Join Tournament</span>
-            </DialogTitle>
-          </DialogHeader>
-
-          {tournamentToJoin && (
-            <div className="space-y-6">
-              <div className="text-center p-4 rounded-lg" style={{ backgroundColor: '#111827' }}>
-                <h3 className="text-base md:text-lg font-bold" style={{ color: '#F1F5F9' }}>{tournamentToJoin.name}</h3>
-                <p className="text-sm" style={{ color: '#94A3B8' }}>
-                  {tournamentToJoin.tournamentType === "crypto" ? "Cryptocurrency" : "Stock Market"} Tournament
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span style={{ color: '#94A3B8' }}>Players:</span>
-                    <span style={{ color: '#F1F5F9' }}>{tournamentToJoin.currentPlayers}/{tournamentToJoin.maxPlayers}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span style={{ color: '#94A3B8' }}>Duration:</span>
-                    <span style={{ color: '#F1F5F9' }}>{tournamentToJoin.timeframe}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span style={{ color: '#94A3B8' }}>Starting Balance:</span>
-                    <span style={{ color: '#F1F5F9' }}>{formatCurrency(tournamentToJoin.startingBalance)}</span>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span style={{ color: '#94A3B8' }}>Status:</span>
-                    <Badge style={{
-                      backgroundColor: tournamentToJoin.isPublic ? '#1F2937' : '#1F2937',
-                      color: tournamentToJoin.isPublic ? '#10B981' : '#8B5CF6',
-                    }}>
-                      {tournamentToJoin.isPublic ? "Public" : "Private"}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span style={{ color: '#94A3B8' }}>Buy-in:</span>
-                    <span className="font-medium" style={{ color: '#F1F5F9' }}>
-                      {tournamentToJoin.buyInAmount > 0 ? formatCurrency(tournamentToJoin.buyInAmount) : "Free"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span style={{ color: '#94A3B8' }}>Jackpot:</span>
-                    <span className="font-bold" style={{ color: '#E3B341' }}>
-                      {formatCurrency(tournamentToJoin.currentPot || (tournamentToJoin.buyInAmount * tournamentToJoin.currentPlayers))}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-lg" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
-                <h4 className="font-medium mb-2 text-base md:text-sm" style={{ color: '#06B6D4' }}>Tournament Rules</h4>
-                <ul className="text-sm space-y-1" style={{ color: '#94A3B8' }}>
-                  {tournamentToJoin.isPublic ? (
-                    <>
-                      <li>Public tournaments cannot be cancelled early</li>
-                      <li>Tournament will run for the full duration</li>
-                    </>
-                  ) : (
-                    <>
-                      <li>Private tournaments can be cancelled by the creator</li>
-                      <li>Creator has full control over tournament settings</li>
-                    </>
-                  )}
-                  <li>Virtual trading only - no real money at risk</li>
-                  <li>Rankings based on portfolio performance</li>
-                </ul>
-              </div>
-
-              {tournamentToJoin.buyInAmount > 0 && (
-                <div className="p-4 rounded-lg" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)' }}>
-                  <h4 className="font-medium mb-2 text-base md:text-sm" style={{ color: '#F59E0B' }}>Entry Fee Required</h4>
-                  <p className="text-sm" style={{ color: '#FCD34D' }}>
-                    This tournament requires a buy-in of <strong>{formatCurrency(tournamentToJoin.buyInAmount)}</strong>.
-                    This fee contributes to the tournament jackpot.
-                  </p>
-                </div>
-              )}
-
-              <div className="flex items-start space-x-3 p-4 rounded-lg" style={{ border: '1px solid #1F2937' }}>
-                <Checkbox
-                  id="tournament-agreement"
-                  checked={agreementChecked}
-                  onCheckedChange={(checked) => setAgreementChecked(checked === true)}
-                  className="mt-1"
-                />
-                <div>
-                  <label htmlFor="tournament-agreement" className="text-sm md:text-base font-medium cursor-pointer" style={{ color: '#F1F5F9' }}>
-                    I agree to the tournament terms and conditions
-                  </label>
-                  <p className="text-xs mt-1" style={{ color: '#94A3B8' }}>
-                    By joining, you agree to participate fairly and follow tournament rules.
-                    {tournamentToJoin.buyInAmount > 0 && " Entry fee will be charged upon confirmation."}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-                <Button
-                  variant="outline"
-                  className="flex-1 border-0 min-h-[44px] text-base md:text-sm"
-                  onClick={() => {
-                    setJoinConfirmationOpen(false);
-                    setTournamentToJoin(null);
-                    setAgreementChecked(false);
-                  }}
-                  style={{ backgroundColor: '#1F2937', color: '#F1F5F9' }}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  className="flex-1 border-0 min-h-[44px] text-base md:text-sm"
-                  onClick={confirmJoinTournament}
-                  disabled={!agreementChecked || joinTournamentMutation.isPending}
-                  style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
-                >
-                  {joinTournamentMutation.isPending ? "Joining..." :
-                   tournamentToJoin.buyInAmount > 0 ? `Join - ${formatCurrency(tournamentToJoin.buyInAmount)}` : "Join Free"
-                  }
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {tournamentToJoin && (
+        <TournamentJoinConfirmation
+          isOpen={joinConfirmationOpen}
+          onClose={() => {
+            setJoinConfirmationOpen(false);
+            setTournamentToJoin(null);
+          }}
+          onConfirm={confirmJoinTournament}
+          tournament={{
+            name: tournamentToJoin.name,
+            buyIn: tournamentToJoin.buyInAmount || 0,
+            prizePool: tournamentToJoin.currentPot || (tournamentToJoin.buyInAmount * tournamentToJoin.currentPlayers) || 0,
+            startingBalance: tournamentToJoin.startingBalance,
+            startsAt: tournamentToJoin.startTime,
+            endsAt: tournamentToJoin.endTime
+          }}
+          isLoading={joinTournamentMutation.isPending}
+        />
+      )}
     </div>
   );
 }
