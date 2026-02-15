@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 interface ChatMessage {
   id: number;
@@ -34,12 +35,66 @@ const formatTimestamp = (timestamp: string) => {
   }
 };
 
+function renderMessageWithMentions(
+  text: string,
+  users: { id: number; username: string }[],
+  navigate: (path: string) => void
+): React.ReactNode {
+  const mentionRegex = /@([a-zA-Z0-9_]+)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = mentionRegex.exec(text)) !== null) {
+    // Add text before the mention
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+
+    const mentionedUsername = match[1];
+    const mentionedUser = users.find(
+      (u) => u.username.toLowerCase() === mentionedUsername.toLowerCase()
+    );
+
+    if (mentionedUser) {
+      parts.push(
+        <span
+          key={`mention-${match.index}`}
+          className="font-semibold cursor-pointer hover:underline"
+          style={{ color: '#E3B341' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/people/${mentionedUser.id}`);
+          }}
+        >
+          @{mentionedUser.username}
+        </span>
+      );
+    } else {
+      parts.push(match[0]);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : text;
+}
+
 const ChatMessageItem = React.memo(function ChatMessageItem({
   message,
   isCurrentUser,
+  users,
+  navigate,
 }: {
   message: ChatMessage;
   isCurrentUser: boolean;
+  users: { id: number; username: string }[];
+  navigate: (path: string) => void;
 }) {
   return (
     <div className="flex space-x-2">
@@ -67,7 +122,9 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
             fontFamily: 'Space Grotesk, sans-serif',
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
-          }}>{message.message}</p>
+          }}>
+            {renderMessageWithMentions(message.message, users, navigate)}
+          </p>
         </div>
       </div>
     </div>
@@ -79,6 +136,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
   const [newMessage, setNewMessage] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
 
   const { data: chatResponse, isLoading } = useQuery({
     queryKey: ['/api/chat/tournament', tournamentId],
@@ -92,6 +150,12 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
     gcTime: 5000,
   });
 
+  const { data: usersData } = useQuery({
+    queryKey: ['/api/users'],
+    enabled: !!user,
+  });
+
+  const users = usersData?.users || [];
   const allMessages: ChatMessage[] = chatResponse?.data || [];
   const messages = allMessages.slice(-100);
 
@@ -144,6 +208,8 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
                   key={message.id}
                   message={message}
                   isCurrentUser={message.userId === user?.id}
+                  users={users}
+                  navigate={navigate}
                 />
               ))
             )}
