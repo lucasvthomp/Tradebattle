@@ -520,7 +520,7 @@ export default function TournamentsPage() {
             <div className="flex items-center gap-2 p-1 rounded-xl" style={{ backgroundColor: '#111827' }}>
               <button
                 onClick={() => setActiveTab('upcoming')}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
                 style={activeTab === 'upcoming'
                   ? { backgroundColor: '#10B981', color: '#FFFFFF' }
                   : { backgroundColor: 'transparent', color: '#FFFFFF' }
@@ -537,7 +537,7 @@ export default function TournamentsPage() {
               </button>
               <button
                 onClick={() => setActiveTab('live')}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
                 style={activeTab === 'live'
                   ? { background: 'linear-gradient(135deg, #10B981, #059669)', color: '#FFFFFF' }
                   : { backgroundColor: 'transparent', color: '#FFFFFF' }
