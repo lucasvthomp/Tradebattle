@@ -92,7 +92,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
   return (
     <div className="flex items-center -space-x-2">
       {shown.map((p) => (
-        <Avatar key={p.userId} className="w-7 h-7" style={{ border: '2px solid #111827' }}>
+        <Avatar key={p.userId} className="w-7 h-7">
           {p.profilePicture && (
             <AvatarImage src={p.profilePicture} className="object-cover" />
           )}

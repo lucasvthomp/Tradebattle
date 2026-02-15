@@ -43,7 +43,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
 }) {
   return (
     <div className="flex space-x-2">
-      <Avatar className="w-8 h-8" style={{ border: '2px solid #1F2937' }}>
+      <Avatar className="w-8 h-8">
         <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#111827', color: '#E3B341' }}>
           {message.username.slice(0, 2).toUpperCase()}
         </AvatarFallback>

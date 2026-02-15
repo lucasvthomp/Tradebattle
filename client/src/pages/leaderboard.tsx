@@ -122,7 +122,7 @@ export default function Leaderboard() {
       </div>
 
       {/* Avatar */}
-      <Avatar className="w-12 h-12 border-2" style={{ borderColor: getRankColor(rank) }}>
+      <Avatar className="w-12 h-12">
         <AvatarFallback style={{
           background: `linear-gradient(135deg, ${getRankColor(rank)}, ${getRankColor(rank)}80)`,
           color: '#06121F',
@@ -219,10 +219,9 @@ export default function Leaderboard() {
                   borderRadius: '50%',
                 }}
               >
-                <Avatar className="border-4" style={{
+                <Avatar style={{
                   width: actualRank === 1 ? '100px' : '80px',
                   height: actualRank === 1 ? '100px' : '80px',
-                  borderColor: getRankColor(actualRank),
                 }}>
                   <AvatarFallback style={{
                     background: `linear-gradient(135deg, ${getRankColor(actualRank)}, ${getRankColor(actualRank)}80)`,

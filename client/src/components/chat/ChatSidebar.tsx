@@ -137,7 +137,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="cursor-pointer self-start">
-            <Avatar className="w-9 h-9" style={{ border: '2px solid #1F2937' }}>
+            <Avatar className="w-9 h-9">
               {group.profilePicture && (
                 <AvatarImage src={group.profilePicture} className="object-cover" />
               )}
@@ -523,7 +523,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       }}
                       onMouseEnter={() => setMentionIndex(i)}
                     >
-                      <Avatar className="w-5 h-5" style={{ border: '1px solid #1F2937' }}>
+                      <Avatar className="w-5 h-5">
                         <AvatarFallback className="text-[8px] font-semibold" style={{ backgroundColor: '#0F172A', color: '#E3B341' }}>
                           {u.username.slice(0, 2).toUpperCase()}
                         </AvatarFallback>
