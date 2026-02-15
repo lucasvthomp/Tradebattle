@@ -69,6 +69,9 @@ export class TournamentExpirationService {
           // Start the tournament
           console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached with ${currentPlayers} players`);
           await storage.updateTournament(tournament.id, { status: 'active', startedAt: new Date() });
+
+          // Send notifications to all participants
+          await this.sendTournamentStartNotifications(tournament.id, tournament.name);
         }
       } else if (tournament.scheduledStartTime) {
         const timeUntilStart = tournament.scheduledStartTime.getTime() - now.getTime();
@@ -279,6 +282,33 @@ export class TournamentExpirationService {
       });
     } catch (error) {
       console.error(`Failed to send result notification to user ${result.userId}:`, error);
+    }
+  }
+
+  /**
+   * Send notifications to all participants when tournament starts
+   */
+  private async sendTournamentStartNotifications(tournamentId: number, tournamentName: string): Promise<void> {
+    try {
+      const participants = await storage.getTournamentParticipants(tournamentId);
+      console.log(`Sending start notifications to ${participants.length} participants for tournament ${tournamentName}`);
+
+      for (const participant of participants) {
+        await storage.createNotification({
+          userId: participant.userId,
+          type: 'tournament_start',
+          title: `Tournament "${tournamentName}" Started!`,
+          message: `The tournament has begun! Start trading now with your $${participant.balance?.toString() || '10000'} starting balance.`,
+          metadata: {
+            tournamentId,
+            startingBalance: participant.balance,
+          },
+        });
+      }
+
+      console.log(`Sent start notifications for tournament ${tournamentName}`);
+    } catch (error) {
+      console.error(`Failed to send start notifications for tournament ${tournamentId}:`, error);
     }
   }
 
