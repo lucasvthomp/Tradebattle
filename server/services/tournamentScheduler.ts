@@ -14,14 +14,14 @@ export class TournamentScheduler {
     }
 
     console.log('Starting tournament expiration scheduler...');
-    
+
     // Run immediately on startup
     this.checkExpiredTournaments();
-    
-    // Then run every 5 minutes
+
+    // Then run every 30 seconds for faster response
     this.intervalId = setInterval(() => {
       this.checkExpiredTournaments();
-    }, 5 * 60 * 1000); // 5 minutes
+    }, 30 * 1000); // 30 seconds
   }
 
   /**

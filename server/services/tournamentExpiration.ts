@@ -70,8 +70,10 @@ export class TournamentExpirationService {
           console.log(`Starting tournament: ${tournament.name} (ID: ${tournament.id}) - scheduled start time reached with ${currentPlayers} players`);
           await storage.updateTournament(tournament.id, { status: 'active', startedAt: new Date() });
 
-          // Send notifications to all participants
-          await this.sendTournamentStartNotifications(tournament.id, tournament.name);
+          // Send notifications to all participants (non-blocking)
+          this.sendTournamentStartNotifications(tournament.id, tournament.name).catch(err => {
+            console.error(`Failed to send start notifications for tournament ${tournament.id}:`, err);
+          });
         }
       } else if (tournament.scheduledStartTime) {
         const timeUntilStart = tournament.scheduledStartTime.getTime() - now.getTime();
