@@ -250,7 +250,7 @@ export default function TournamentsPage() {
   const confirmJoinTournament = () => {
     if (tournamentToJoin) {
       joinTournamentMutation.mutate(tournamentToJoin.code || tournamentToJoin.id);
-      setJoinConfirmationOpen(false);
+      // Don't close immediately - let onSuccess handle it
     }
   };
 
