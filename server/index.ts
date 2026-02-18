@@ -307,6 +307,14 @@ const app = express();
 app.use(helmet({
   contentSecurityPolicy: false, // Disable CSP to avoid conflicts with Vite/inline scripts
   crossOriginEmbedderPolicy: false,
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  },
+  noSniff: true,
+  xssFilter: true,
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' }
 }));
 
 // General rate limiter: 100 requests per minute per IP
@@ -396,10 +404,21 @@ app.use((req, res, next) => {
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+
+    // Don't expose internal error details in production
+    const message = status === 500 && process.env.NODE_ENV === 'production'
+      ? "An unexpected error occurred"
+      : (err.message || "Internal Server Error");
 
     res.status(status).json({ message });
-    throw err;
+
+    // Log the full error for debugging
+    if (status === 500) {
+      log(`ERROR: ${err.message}`);
+      if (err.stack) {
+        log(err.stack);
+      }
+    }
   });
 
   // importantly only setup vite in development and after

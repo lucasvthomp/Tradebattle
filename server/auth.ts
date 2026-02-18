@@ -271,8 +271,8 @@ export function setupAuth(app: Express) {
         res.status(201).json(sanitizeUser(user));
       });
     } catch (error: any) {
-      console.error("Registration error:", error?.message, error?.stack);
-      res.status(500).json({ message: "Registration failed", error: error?.message });
+      console.error("Registration error:", error?.message);
+      res.status(500).json({ message: "Registration failed" });
     }
   });
 

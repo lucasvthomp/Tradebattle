@@ -15,11 +15,15 @@ import { trackRequest, getSystemStatus } from "./services/systemMonitor.js";
 import { containsProfanity } from "./utils/profanityFilter.js";
 import { generateToken, sendVerificationEmail, sendPasswordResetEmail } from "./services/email.js";
 import { z } from "zod";
+import { sanitizeInput } from "./middleware/sanitize.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Add request tracking middleware
   app.use(trackRequest);
-  
+
+  // Add input sanitization middleware for all routes
+  app.use(sanitizeInput);
+
   // Auth setup
   setupAuth(app);
 
@@ -48,7 +52,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.json({ available: true });
     } catch (error) {
       console.error("Username check error:", error);
-      res.status(500).json({ available: false, reason: "Server error" });
+      res.status(500).json({ available: false, reason: "Unable to check username availability" });
     }
   });
 
@@ -62,7 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(filtered);
     } catch (error) {
       console.error("Error fetching transactions:", error);
-      res.status(500).json([]);
+      res.status(500).json({ message: "Unable to fetch transaction history" });
     }
   });
 
@@ -77,7 +81,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ data: trades || [] });
     } catch (error) {
       console.error("Error fetching user trades:", error);
-      res.json({ data: [] });
+      res.status(500).json({ message: "Unable to fetch trade history" });
     }
   });
 
@@ -85,9 +89,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/user/profile', requireAuth, async (req: any, res) => {
     try {
       const userId = req.user.id;
-      console.log("Profile update request for user:", userId);
-      console.log("Request body:", req.body);
-      
+
       const validatedData = z.object({
         email: z.string().email(),
         username: z.string().min(3, "Username must be at least 3 characters").max(20, "Username must be at most 20 characters").regex(/^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/, "Username can only contain letters, numbers, and at most one underscore").optional()
@@ -97,10 +99,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Username contains inappropriate language" });
       }
 
-      console.log("Validated data:", validatedData);
-
       const updatedUser = await storage.updateUser(userId, validatedData);
-      console.log("Updated user:", updatedUser);
       
       res.json(updatedUser);
     } catch (error) {
@@ -411,7 +410,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (user.withdrawalFrozen) {
-        console.log('[Withdrawal] Withdrawals frozen for user:', user.username);
+        console.log('[Withdrawal] Withdrawals frozen for user');
         return res.status(403).json({ error: "Your withdrawals have been frozen. Please contact support." });
       }
 
@@ -428,7 +427,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const transactionFee = amount * 0.005;
       const payoutAmount = amount - transactionFee;
 
-      console.log(`[Withdrawal] User ${user.username} requesting $${amount} withdrawal to ${currency.toUpperCase()}`);
+      console.log(`[Withdrawal] User requesting withdrawal to crypto`);
       console.log(`[Withdrawal] Fees - Transaction: $${transactionFee.toFixed(2)}, Payout: $${payoutAmount.toFixed(2)}`);
 
       // Create withdrawal record in database
@@ -542,9 +541,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("[Withdrawal] Error message:", error.message);
       console.error("[Withdrawal] Error stack:", error.stack);
       res.status(500).json({
-        error: "Withdrawal system error",
-        details: error.message,
-        name: error.name,
+        error: "Unable to process withdrawal request",
       });
     }
   });
@@ -584,7 +581,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error: any) {
       console.error("[Withdrawal Status] Error:", error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Unable to fetch withdrawal status" });
     }
   });
 
@@ -606,7 +603,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         environment: process.env.NOWPAYMENTS_ENVIRONMENT || 'production'
       });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("Crypto status error:", error);
+      res.status(500).json({ error: "Unable to fetch crypto payment status" });
     }
   });
 
@@ -616,7 +614,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const currencies = await getCurrencies();
       res.json({ currencies });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("Crypto currencies error:", error);
+      res.status(500).json({ error: "Unable to fetch supported currencies" });
     }
   });
 
@@ -630,7 +629,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         note: 'This is the minimum amount in USD for this cryptocurrency'
       });
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("Crypto minimum error:", error);
+      res.status(500).json({ error: "Unable to fetch minimum amount" });
     }
   });
 
@@ -676,7 +676,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(payment);
     } catch (error: any) {
-      res.status(500).json({ error: error.message });
+      console.error("Create payment error:", error);
+      res.status(500).json({ error: "Unable to create payment" });
     }
   });
 
@@ -684,11 +685,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { getPaymentStatus } = await import('./services/nowPayments.js');
       const status = await getPaymentStatus(req.params.id);
-      console.log(`[Payment Status] Payment ${req.params.id}:`, JSON.stringify(status, null, 2));
+      console.log(`[Payment Status] Payment status check requested`);
       res.json(status);
     } catch (error: any) {
-      console.error(`[Payment Status] Error for ${req.params.id}:`, error);
-      res.status(500).json({ error: error.message });
+      console.error(`[Payment Status] Error fetching payment status:`, error.message);
+      res.status(500).json({ error: "Unable to fetch payment status" });
     }
   });
 
@@ -711,18 +712,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const confirmedStatuses = ['finished', 'confirmed', 'sending'];
 
       if (confirmedStatuses.includes(data.payment_status)) {
-        console.log(`[IPN] Processing payment with status: ${data.payment_status}`);
+        console.log(`[IPN] Processing confirmed payment`);
 
         // Extract user ID from order_id (format: "deposit-{userId}-{timestamp}")
         const orderParts = data.order_id.split('-');
         if (orderParts.length < 3 || orderParts[0] !== 'deposit') {
-          console.error(`[IPN] Invalid order_id format: ${data.order_id}`);
+          console.error(`[IPN] Invalid order_id format`);
           return res.status(400).json({ error: 'Invalid order_id format' });
         }
 
         const userId = parseInt(orderParts[1]);
         if (isNaN(userId) || userId <= 0) {
-          console.error(`[IPN] Invalid userId in order_id: ${data.order_id}`);
+          console.error(`[IPN] Invalid userId in order_id`);
           return res.status(400).json({ error: 'Invalid userId' });
         }
 
@@ -740,7 +741,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const paymentInfo = await getPaymentStatus(data.payment_id);
           // Verify order_id from payment provider matches what we expect
           if (paymentInfo.order_id !== data.order_id) {
-            console.error(`[IPN] Order ID mismatch. Expected: ${paymentInfo.order_id}, Got: ${data.order_id}`);
+            console.error(`[IPN] Order ID mismatch during verification`);
             return res.status(400).json({ error: 'Order ID verification failed' });
           }
         } catch (verifyError) {
@@ -758,14 +759,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
         console.log(`[IPN] Updated balance for user ${userId}: $${currentBalance} → $${newBalance}`);
 
-        // Log transaction
+        // Log transaction (sanitized)
+        const paymentIdShort = data.payment_id ? String(data.payment_id).substring(0, 8) + '...' : 'unknown';
         await storage.createAdminLog({
           adminUserId: userId,
           targetUserId: userId,
           action: 'balance_deposit',
           oldValue: currentBalance.toString(),
           newValue: newBalance.toString(),
-          notes: `Crypto deposit: $${data.price_amount} - Payment ID: ${data.payment_id} - Status: ${data.payment_status}`,
+          notes: `Crypto deposit: $${data.price_amount} - Payment: ${paymentIdShort} - Status: ${data.payment_status}`,
         });
       } else {
         console.log(`[IPN] Ignoring payment with status: ${data.payment_status}`);
@@ -774,7 +776,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(200).send('OK');
     } catch (error: any) {
       console.error('[IPN] Error:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "IPN processing failed" });
     }
   });
 
@@ -791,7 +793,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { getPaymentStatus } = await import('./services/nowPayments.js');
       const paymentData = await getPaymentStatus(paymentId);
 
-      console.log(`[Debug Payment] Payment ${paymentId} data:`, JSON.stringify(paymentData, null, 2));
+      console.log(`[Debug Payment] Payment data retrieved successfully`);
 
       // Extract user ID from order_id
       const orderId = paymentData.order_id;
@@ -819,7 +821,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error: any) {
       console.error('[Debug Payment] Error:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Unable to fetch payment debug info" });
     }
   });
 
@@ -837,7 +839,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'username is required' });
       }
 
-      console.log(`[Reverse Withdrawal] Admin ${req.user.username} checking withdrawals for ${username}`);
+      console.log(`[Reverse Withdrawal] Admin checking withdrawals`);
 
       // Get user
       const targetUser = await storage.getUserByUsername(username);
@@ -878,7 +880,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error: any) {
       console.error('[Reverse Withdrawal] Error:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Unable to process request" });
     }
   });
 
@@ -896,7 +898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'username and amount are required' });
       }
 
-      console.log(`[Restore Balance] Admin ${req.user.username} restoring $${amount} to ${username}`);
+      console.log(`[Restore Balance] Admin restoring balance to user`);
 
       // Get user
       const targetUser = await storage.getUserByUsername(username);
@@ -933,7 +935,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error: any) {
       console.error('[Restore Balance] Error:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Unable to restore balance" });
     }
   });
 
@@ -951,13 +953,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: 'paymentId, username, and amount are required' });
       }
 
-      console.log(`[Manual Credit] Admin ${req.user.username} crediting payment ${paymentId} for user ${username}`);
+      console.log(`[Manual Credit] Admin initiated manual credit`);
 
       // Get payment status from NOWPayments
       const { getPaymentStatus } = await import('./services/nowPayments.js');
       const paymentData = await getPaymentStatus(paymentId);
 
-      console.log(`[Manual Credit] Payment status:`, JSON.stringify(paymentData, null, 2));
+      console.log(`[Manual Credit] Payment status retrieved`);
 
       // Get user by username
       const targetUser = await storage.getUserByUsername(username);
@@ -995,7 +997,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     } catch (error: any) {
       console.error('[Manual Credit] Error:', error);
-      res.status(500).json({ error: error.message });
+      res.status(500).json({ error: "Unable to process manual credit" });
     }
   });
 
@@ -1130,38 +1132,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const adminUserId = req.user.id;
       const targetUserEmail = req.params.userEmail;
 
-      console.log(`Admin userId ${adminUserId} attempting to delete user ${targetUserEmail}`);
+      console.log(`Admin attempting to delete user`);
 
       // Check if user is admin
       const adminUser = await storage.getUser(adminUserId);
       if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.subscriptionTier !== 'admin')) {
-        console.log(`Access denied: User ${adminUserId} is not an admin`);
+        console.log(`Access denied: Not an admin`);
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
 
       // Check if target user exists
       const targetUser = await storage.getUserByEmail(targetUserEmail);
       if (!targetUser) {
-        console.log(`User ${targetUserEmail} not found`);
+        console.log(`User not found`);
         return res.status(404).json({ message: "User not found." });
       }
 
       // Prevent deletion of admin accounts
       if (targetUser.subscriptionTier === 'admin') {
-        console.log(`Cannot delete admin account: User ${targetUserEmail}`);
+        console.log(`Cannot delete admin account`);
         return res.status(403).json({ message: "Cannot delete admin accounts." });
       }
 
-      console.log(`Deleting user ${targetUserEmail}...`);
-      
+      console.log(`Deleting user...`);
+
       // Delete the user
       await storage.deleteUser(targetUser.id);
-      
-      console.log(`User ${targetUserEmail} deleted successfully`);
+
+      console.log(`User deleted successfully`);
       res.json({ message: "User deleted successfully." });
     } catch (error) {
       console.error("Error deleting user:", error);
-      res.status(500).json({ message: "Failed to delete user", error: error instanceof Error ? error.message : "Unknown error" });
+      res.status(500).json({ message: "Failed to delete user" });
     }
   });
 
