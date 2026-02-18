@@ -209,7 +209,7 @@ export default function NotFound() {
           className="mt-8 text-xs"
           style={{ color: '#475569' }}
         >
-          Error 404: Your stop loss triggered before you could reach this page
+          Error 404: Your stop loss triggered before you could reach this page 💸
         </motion.p>
       </div>
     </div>
