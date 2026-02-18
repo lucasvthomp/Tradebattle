@@ -34,12 +34,22 @@ export default function Hub() {
     return "Good evening";
   };
 
-  // Subtle background particles
-  const particles = Array.from({ length: 15 }).map((_, i) => ({
+  // EXPLOSIVE background particles - 25 total for Times Square energy
+  const particles = Array.from({ length: 25 }).map((_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
-    duration: Math.random() * 20 + 20,
+    size: Math.random() * 4 + 2, // Varied sizes 2-6px
+    duration: Math.random() * 15 + 15, // Faster 15-30s
     delay: Math.random() * 5,
+    opacity: Math.random() * 0.3 + 0.2, // Varied opacity 0.2-0.5
+  }));
+
+  // Shooting stars that streak across screen
+  const shootingStars = Array.from({ length: 5 }).map((_, i) => ({
+    id: i,
+    top: `${Math.random() * 60 + 20}%`,
+    duration: Math.random() * 3 + 2,
+    delay: Math.random() * 10,
   }));
 
   return (
@@ -50,24 +60,25 @@ export default function Hub() {
       position: 'relative',
       overflow: 'hidden',
     }}>
-      {/* Subtle ambient particles */}
+      {/* EXPLOSIVE ambient particles - varied sizes and speeds */}
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
           style={{
             position: 'absolute',
-            width: '3px',
-            height: '3px',
+            width: `${particle.size}px`,
+            height: `${particle.size}px`,
             borderRadius: '50%',
             background: '#E3B341',
             left: particle.left,
             top: '-10px',
             pointerEvents: 'none',
-            opacity: 0.15,
+            opacity: particle.opacity,
           }}
           animate={{
             y: ['0vh', '110vh'],
-            opacity: [0, 0.3, 0],
+            opacity: [0, particle.opacity, 0],
+            scale: [0.5, 1, 0.5],
           }}
           transition={{
             duration: particle.duration,
@@ -78,17 +89,97 @@ export default function Hub() {
         />
       ))}
 
-      {/* Single ambient glow */}
-      <div style={{
-        position: 'absolute',
-        top: '10%',
-        right: '10%',
-        width: '600px',
-        height: '600px',
-        background: 'radial-gradient(circle, rgba(227, 179, 65, 0.06) 0%, transparent 70%)',
-        pointerEvents: 'none',
-        filter: 'blur(80px)',
-      }} />
+      {/* Shooting stars streaking across */}
+      {shootingStars.map((star) => (
+        <motion.div
+          key={`star-${star.id}`}
+          style={{
+            position: 'absolute',
+            width: '100px',
+            height: '2px',
+            background: 'linear-gradient(90deg, transparent, #E3B341, transparent)',
+            left: '-120px',
+            top: star.top,
+            pointerEvents: 'none',
+          }}
+          animate={{
+            x: ['0vw', '120vw'],
+            opacity: [0, 1, 0],
+          }}
+          transition={{
+            duration: star.duration,
+            repeat: Infinity,
+            delay: star.delay,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {/* Multiple pulsing ambient glows for depth */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          top: '10%',
+          right: '10%',
+          width: '600px',
+          height: '600px',
+          background: 'radial-gradient(circle, rgba(227, 179, 65, 0.08) 0%, transparent 70%)',
+          pointerEvents: 'none',
+          filter: 'blur(80px)',
+        }}
+        animate={{
+          opacity: [0.5, 1, 0.5],
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          bottom: '20%',
+          left: '15%',
+          width: '500px',
+          height: '500px',
+          background: 'radial-gradient(circle, rgba(40, 199, 111, 0.06) 0%, transparent 70%)',
+          pointerEvents: 'none',
+          filter: 'blur(80px)',
+        }}
+        animate={{
+          opacity: [0.3, 0.7, 0.3],
+          scale: [1, 1.15, 1],
+        }}
+        transition={{
+          duration: 7,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
+      <motion.div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          width: '400px',
+          height: '400px',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
+          pointerEvents: 'none',
+          filter: 'blur(80px)',
+          transform: 'translate(-50%, -50%)',
+        }}
+        animate={{
+          opacity: [0.4, 0.8, 0.4],
+          scale: [1, 1.2, 1],
+        }}
+        transition={{
+          duration: 6,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      />
 
       <div style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
 
@@ -102,17 +193,64 @@ export default function Hub() {
           gap: '16px',
         }}>
           <div>
-            <h1 style={{
-              fontSize: '28px',
-              fontWeight: '700',
-              color: '#C9D1E2',
-              marginBottom: '4px',
-            }}>
-              {getGreeting()}, {user?.username}
-            </h1>
-            <p style={{ fontSize: '14px', color: '#8A93A6' }}>
-              {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-            </p>
+            <motion.h1
+              style={{
+                fontSize: '32px',
+                fontWeight: '800',
+                background: 'linear-gradient(135deg, #C9D1E2 0%, #E3B341 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                marginBottom: '8px',
+              }}
+              animate={{
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
+            >
+              {getGreeting()}, {user?.username} 👋
+            </motion.h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+              <p style={{ fontSize: '14px', color: '#8A93A6' }}>
+                {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+              </p>
+              {activeTournaments.length > 0 && (
+                <motion.div
+                  animate={{
+                    scale: [1, 1.05, 1],
+                    boxShadow: [
+                      '0 0 10px rgba(40, 199, 111, 0.3)',
+                      '0 0 20px rgba(40, 199, 111, 0.6)',
+                      '0 0 10px rgba(40, 199, 111, 0.3)',
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    background: 'rgba(40, 199, 111, 0.15)',
+                    border: '1px solid rgba(40, 199, 111, 0.4)',
+                    borderRadius: '20px',
+                    fontSize: '12px',
+                    fontWeight: '700',
+                    color: '#28C76F',
+                  }}
+                >
+                  <motion.div
+                    animate={{ scale: [1, 1.5, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      background: '#28C76F',
+                    }}
+                  />
+                  {activeTournaments.length} LIVE NOW
+                </motion.div>
+              )}
+            </div>
           </div>
 
           {unreadNotifications > 0 && (
@@ -147,53 +285,157 @@ export default function Hub() {
           gap: '16px',
           marginBottom: '32px',
         }}>
-          <Card style={{ padding: '20px', background: '#1E2D3F', border: '1px solid #2B3A4C' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Balance
+          <motion.div
+            whileHover={{ scale: 1.08, y: -5 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          >
+            <Card style={{
+              padding: '20px',
+              background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2937 100%)',
+              border: '1px solid #2B3A4C',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+              cursor: 'pointer',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Balance
+                </div>
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <DollarSign size={18} style={{ color: '#E3B341', opacity: 0.6 }} />
+                </motion.div>
               </div>
-              <DollarSign size={18} style={{ color: '#E3B341', opacity: 0.4 }} />
-            </div>
-            <div style={{ fontSize: '28px', fontWeight: '700', color: '#E3B341' }}>
-              ${(Number(user?.siteCash) || 0).toFixed(2)}
-            </div>
-          </Card>
+              <motion.div
+                style={{ fontSize: '28px', fontWeight: '700', color: '#E3B341' }}
+                animate={{
+                  textShadow: [
+                    '0 0 10px rgba(227, 179, 65, 0.5)',
+                    '0 0 20px rgba(227, 179, 65, 0.8)',
+                    '0 0 10px rgba(227, 179, 65, 0.5)',
+                  ],
+                }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                ${(Number(user?.siteCash) || 0).toFixed(2)}
+              </motion.div>
+            </Card>
+          </motion.div>
 
-          <Card style={{ padding: '20px', background: '#1E2D3F', border: '1px solid #2B3A4C' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Wins
+          <motion.div
+            whileHover={{ scale: 1.08, y: -5 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          >
+            <Card style={{
+              padding: '20px',
+              background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E24 100%)',
+              border: '1px solid #2B3A4C',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+              cursor: 'pointer',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Wins
+                </div>
+                <motion.div
+                  animate={{ y: [0, -5, 0], rotate: [0, 15, -15, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <Trophy size={18} style={{ color: '#28C76F', opacity: 0.6 }} />
+                </motion.div>
               </div>
-              <Trophy size={18} style={{ color: '#28C76F', opacity: 0.4 }} />
-            </div>
-            <div style={{ fontSize: '28px', fontWeight: '700', color: '#28C76F' }}>
-              {user?.tournamentWins || 0}
-            </div>
-          </Card>
+              <motion.div
+                style={{ fontSize: '28px', fontWeight: '700', color: '#28C76F' }}
+                animate={{
+                  textShadow: [
+                    '0 0 10px rgba(40, 199, 111, 0.5)',
+                    '0 0 20px rgba(40, 199, 111, 0.8)',
+                    '0 0 10px rgba(40, 199, 111, 0.5)',
+                  ],
+                }}
+                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {user?.tournamentWins || 0}
+              </motion.div>
+            </Card>
+          </motion.div>
 
-          <Card style={{ padding: '20px', background: '#1E2D3F', border: '1px solid #2B3A4C' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Active Now
+          <motion.div
+            whileHover={{ scale: 1.08, y: -5 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          >
+            <Card style={{
+              padding: '20px',
+              background: 'linear-gradient(135deg, #1E2D3F 0%, #1E2640 100%)',
+              border: '1px solid #2B3A4C',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+              cursor: 'pointer',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Active Now
+                </div>
+                <motion.div
+                  animate={{ scale: [1, 1.3, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <Activity size={18} style={{ color: '#6366F1', opacity: 0.6 }} />
+                </motion.div>
               </div>
-              <Activity size={18} style={{ color: '#6366F1', opacity: 0.4 }} />
-            </div>
-            <div style={{ fontSize: '28px', fontWeight: '700', color: '#6366F1' }}>
-              {activeTournaments.length}
-            </div>
-          </Card>
+              <motion.div
+                style={{ fontSize: '28px', fontWeight: '700', color: '#6366F1' }}
+                animate={{
+                  textShadow: [
+                    '0 0 10px rgba(99, 102, 241, 0.5)',
+                    '0 0 20px rgba(99, 102, 241, 0.8)',
+                    '0 0 10px rgba(99, 102, 241, 0.5)',
+                  ],
+                }}
+                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {activeTournaments.length}
+              </motion.div>
+            </Card>
+          </motion.div>
 
-          <Card style={{ padding: '20px', background: '#1E2D3F', border: '1px solid #2B3A4C' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-              <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                Total Trades
+          <motion.div
+            whileHover={{ scale: 1.08, y: -5 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+          >
+            <Card style={{
+              padding: '20px',
+              background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E35 100%)',
+              border: '1px solid #2B3A4C',
+              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+              cursor: 'pointer',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
+                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Total Trades
+                </div>
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                >
+                  <BarChart3 size={18} style={{ color: '#06B6D4', opacity: 0.6 }} />
+                </motion.div>
               </div>
-              <BarChart3 size={18} style={{ color: '#06B6D4', opacity: 0.4 }} />
-            </div>
-            <div style={{ fontSize: '28px', fontWeight: '700', color: '#06B6D4' }}>
-              {user?.totalTrades || 0}
-            </div>
-          </Card>
+              <motion.div
+                style={{ fontSize: '28px', fontWeight: '700', color: '#06B6D4' }}
+                animate={{
+                  textShadow: [
+                    '0 0 10px rgba(6, 182, 212, 0.5)',
+                    '0 0 20px rgba(6, 182, 212, 0.8)',
+                    '0 0 10px rgba(6, 182, 212, 0.5)',
+                  ],
+                }}
+                transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+              >
+                {user?.totalTrades || 0}
+              </motion.div>
+            </Card>
+          </motion.div>
         </div>
 
         {/* Main Content Grid */}
@@ -240,17 +482,21 @@ export default function Hub() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {activeTournaments.slice(0, 3).map((tournament: any) => (
+                  {activeTournaments.slice(0, 3).map((tournament: any, index: number) => (
                     <Link key={tournament.id} href="/tournaments">
                       <motion.div
-                        whileHover={{ x: 4 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1, type: 'spring', stiffness: 100 }}
+                        whileHover={{ scale: 1.05, x: 8, boxShadow: '0 8px 30px rgba(40, 199, 111, 0.3)' }}
+                        whileTap={{ scale: 0.98 }}
                         style={{
                           padding: '20px',
-                          background: '#1E2D3F',
-                          border: '1px solid #2B3A4C',
+                          background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E24 100%)',
+                          border: '2px solid #2B3A4C',
                           borderRadius: '12px',
                           cursor: 'pointer',
-                          transition: 'border-color 0.2s',
+                          transition: 'all 0.3s',
                         }}
                         onMouseEnter={(e) => e.currentTarget.style.borderColor = '#28C76F'}
                         onMouseLeave={(e) => e.currentTarget.style.borderColor = '#2B3A4C'}
@@ -312,12 +558,24 @@ export default function Hub() {
               }}>
                 <Link href="/tournaments">
                   <motion.button
-                    whileHover={{ y: -2 }}
+                    whileHover={{ scale: 1.12, y: -4 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    animate={{
+                      boxShadow: [
+                        '0 4px 20px rgba(227, 179, 65, 0.3)',
+                        '0 8px 30px rgba(227, 179, 65, 0.5)',
+                        '0 4px 20px rgba(227, 179, 65, 0.3)',
+                      ],
+                    }}
+                    transition={{
+                      boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+                    }}
                     style={{
                       width: '100%',
                       padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(227, 179, 65, 0.05) 100%)',
-                      border: '1px solid rgba(227, 179, 65, 0.3)',
+                      background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.25) 0%, rgba(227, 179, 65, 0.1) 100%)',
+                      border: '1px solid rgba(227, 179, 65, 0.5)',
                       borderRadius: '10px',
                       cursor: 'pointer',
                       textAlign: 'left',
@@ -326,19 +584,23 @@ export default function Hub() {
                       gap: '12px',
                     }}
                   >
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '8px',
-                      background: 'rgba(227, 179, 65, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
+                    <motion.div
+                      animate={{ rotate: [0, 90, 0], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '8px',
+                        background: 'rgba(227, 179, 65, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <Plus size={20} style={{ color: '#E3B341' }} />
-                    </div>
+                    </motion.div>
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#C9D1E2', marginBottom: '2px' }}>
+                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#E3B341', marginBottom: '2px' }}>
                         Join Tournament
                       </div>
                       <div style={{ fontSize: '12px', color: '#8A93A6' }}>
@@ -350,12 +612,24 @@ export default function Hub() {
 
                 <Link href="/dashboard">
                   <motion.button
-                    whileHover={{ y: -2 }}
+                    whileHover={{ scale: 1.12, y: -4 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    animate={{
+                      boxShadow: [
+                        '0 4px 20px rgba(99, 102, 241, 0.3)',
+                        '0 8px 30px rgba(99, 102, 241, 0.5)',
+                        '0 4px 20px rgba(99, 102, 241, 0.3)',
+                      ],
+                    }}
+                    transition={{
+                      boxShadow: { duration: 2.5, repeat: Infinity, ease: 'easeInOut' },
+                    }}
                     style={{
                       width: '100%',
                       padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0.05) 100%)',
-                      border: '1px solid rgba(99, 102, 241, 0.3)',
+                      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0.1) 100%)',
+                      border: '1px solid rgba(99, 102, 241, 0.5)',
                       borderRadius: '10px',
                       cursor: 'pointer',
                       textAlign: 'left',
@@ -364,19 +638,23 @@ export default function Hub() {
                       gap: '12px',
                     }}
                   >
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '8px',
-                      background: 'rgba(99, 102, 241, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
+                    <motion.div
+                      animate={{ y: [-3, 3, -3] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '8px',
+                        background: 'rgba(99, 102, 241, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <TrendingUp size={20} style={{ color: '#6366F1' }} />
-                    </div>
+                    </motion.div>
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#C9D1E2', marginBottom: '2px' }}>
+                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#6366F1', marginBottom: '2px' }}>
                         Portfolio
                       </div>
                       <div style={{ fontSize: '12px', color: '#8A93A6' }}>
@@ -388,12 +666,24 @@ export default function Hub() {
 
                 <Link href="/leaderboard">
                   <motion.button
-                    whileHover={{ y: -2 }}
+                    whileHover={{ scale: 1.12, y: -4 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    animate={{
+                      boxShadow: [
+                        '0 4px 20px rgba(40, 199, 111, 0.3)',
+                        '0 8px 30px rgba(40, 199, 111, 0.5)',
+                        '0 4px 20px rgba(40, 199, 111, 0.3)',
+                      ],
+                    }}
+                    transition={{
+                      boxShadow: { duration: 2.3, repeat: Infinity, ease: 'easeInOut' },
+                    }}
                     style={{
                       width: '100%',
                       padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(40, 199, 111, 0.15) 0%, rgba(40, 199, 111, 0.05) 100%)',
-                      border: '1px solid rgba(40, 199, 111, 0.3)',
+                      background: 'linear-gradient(135deg, rgba(40, 199, 111, 0.25) 0%, rgba(40, 199, 111, 0.1) 100%)',
+                      border: '1px solid rgba(40, 199, 111, 0.5)',
                       borderRadius: '10px',
                       cursor: 'pointer',
                       textAlign: 'left',
@@ -402,19 +692,23 @@ export default function Hub() {
                       gap: '12px',
                     }}
                   >
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '8px',
-                      background: 'rgba(40, 199, 111, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
+                    <motion.div
+                      animate={{ rotate: [-5, 5, -5], y: [0, -3, 0] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '8px',
+                        background: 'rgba(40, 199, 111, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <Trophy size={20} style={{ color: '#28C76F' }} />
-                    </div>
+                    </motion.div>
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#C9D1E2', marginBottom: '2px' }}>
+                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#28C76F', marginBottom: '2px' }}>
                         Leaderboard
                       </div>
                       <div style={{ fontSize: '12px', color: '#8A93A6' }}>
@@ -426,12 +720,24 @@ export default function Hub() {
 
                 <Link href="/shop">
                   <motion.button
-                    whileHover={{ y: -2 }}
+                    whileHover={{ scale: 1.12, y: -4 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
+                    animate={{
+                      boxShadow: [
+                        '0 4px 20px rgba(236, 72, 153, 0.3)',
+                        '0 8px 30px rgba(236, 72, 153, 0.5)',
+                        '0 4px 20px rgba(236, 72, 153, 0.3)',
+                      ],
+                    }}
+                    transition={{
+                      boxShadow: { duration: 2.7, repeat: Infinity, ease: 'easeInOut' },
+                    }}
                     style={{
                       width: '100%',
                       padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.15) 0%, rgba(236, 72, 153, 0.05) 100%)',
-                      border: '1px solid rgba(236, 72, 153, 0.3)',
+                      background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(236, 72, 153, 0.1) 100%)',
+                      border: '1px solid rgba(236, 72, 153, 0.5)',
                       borderRadius: '10px',
                       cursor: 'pointer',
                       textAlign: 'left',
@@ -440,19 +746,23 @@ export default function Hub() {
                       gap: '12px',
                     }}
                   >
-                    <div style={{
-                      width: '40px',
-                      height: '40px',
-                      borderRadius: '8px',
-                      background: 'rgba(236, 72, 153, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}>
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1], rotate: [0, -15, 15, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      style={{
+                        width: '40px',
+                        height: '40px',
+                        borderRadius: '8px',
+                        background: 'rgba(236, 72, 153, 0.3)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
                       <Gift size={20} style={{ color: '#EC4899' }} />
-                    </div>
+                    </motion.div>
                     <div>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#C9D1E2', marginBottom: '2px' }}>
+                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#EC4899', marginBottom: '2px' }}>
                         Rewards
                       </div>
                       <div style={{ fontSize: '12px', color: '#8A93A6' }}>
