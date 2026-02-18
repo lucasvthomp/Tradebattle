@@ -10,7 +10,7 @@ export default function Dashboard() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const [selectedSymbol, setSelectedSymbol] = useState("AAPL");
+  const [selectedSymbol, setSelectedSymbol] = useState<string>("");
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
 
   // Fetch quote for selected symbol
@@ -37,12 +37,25 @@ export default function Dashboard() {
     return all.filter((t: any) => t.status === "active");
   }, [tournamentsResponse]);
 
-  // Auto-select first tournament
+  // Auto-select first tournament and set default symbol
   useEffect(() => {
     if (activeTournaments.length > 0 && !selectedTournament) {
-      setSelectedTournament(activeTournaments[0]);
+      const firstTournament = activeTournaments[0];
+      setSelectedTournament(firstTournament);
+
+      // Set default symbol based on tournament type
+      const defaultSymbol = firstTournament.tournamentType === 'crypto' ? 'BTC-USD' : 'AAPL';
+      setSelectedSymbol(defaultSymbol);
     }
   }, [activeTournaments, selectedTournament]);
+
+  // Update symbol when tournament changes
+  useEffect(() => {
+    if (selectedTournament && selectedSymbol === "") {
+      const defaultSymbol = selectedTournament.tournamentType === 'crypto' ? 'BTC-USD' : 'AAPL';
+      setSelectedSymbol(defaultSymbol);
+    }
+  }, [selectedTournament, selectedSymbol]);
 
   // Fetch tournament balance
   const { data: balanceResponse } = useQuery({

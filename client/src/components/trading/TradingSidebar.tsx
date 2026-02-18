@@ -84,8 +84,17 @@ export function TradingSidebar({
   const [showSearch, setShowSearch] = useState(false);
 
   const { data: searchData, isLoading: isSearching } = useQuery({
-    queryKey: ["/api/search", searchQuery],
-    enabled: searchQuery.length >= 1,
+    queryKey: ["/api/search", searchQuery, selectedTournament?.id],
+    enabled: searchQuery.length >= 1 && !!selectedTournament?.id,
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        q: searchQuery,
+        ...(selectedTournament?.id && { tournamentId: selectedTournament.id.toString() })
+      });
+      const response = await fetch(`/api/search?${params}`);
+      if (!response.ok) throw new Error('Search failed');
+      return response.json();
+    },
   });
 
   const searchResults = useMemo(() => {
@@ -222,7 +231,12 @@ export function TradingSidebar({
             value={selectedTournament?.id?.toString() || ""}
             onValueChange={(value) => {
               const t = activeTournaments.find((t: any) => t.id.toString() === value);
-              if (t) onTournamentChange(t);
+              if (t) {
+                onTournamentChange(t);
+                // Switch to default symbol for tournament type
+                const defaultSymbol = t.tournamentType === 'crypto' ? 'BTC-USD' : 'AAPL';
+                onSymbolChange(defaultSymbol);
+              }
             }}
           >
             <SelectTrigger
@@ -250,8 +264,8 @@ export function TradingSidebar({
         </div>
       </div>
 
-      {/* Market Closed Banner */}
-      {tradingBlocked && (
+      {/* Market Status Banner */}
+      {!isCryptoTournament && tradingBlocked && (
         <div
           className="px-4 py-3 flex items-center gap-3 shrink-0"
           style={{
@@ -262,10 +276,31 @@ export function TradingSidebar({
           <Clock className="w-4 h-4 shrink-0" style={{ color: "#EF4444" }} />
           <div>
             <div className="text-xs font-bold" style={{ color: "#EF4444" }}>
-              Market Closed
+              Stock Market Closed
             </div>
             <div className="text-[10px]" style={{ color: "#94A3B8" }}>
               Mon-Fri 9:30 AM - 4:00 PM ET
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Crypto Market Always Open Banner */}
+      {isCryptoTournament && (
+        <div
+          className="px-4 py-3 flex items-center gap-3 shrink-0"
+          style={{
+            backgroundColor: "#1A2E1F",
+            borderBottom: "1px solid #2D5A3D",
+          }}
+        >
+          <Clock className="w-4 h-4 shrink-0" style={{ color: "#28C76F" }} />
+          <div>
+            <div className="text-xs font-bold" style={{ color: "#28C76F" }}>
+              Crypto Market - 24/7 Trading
+            </div>
+            <div className="text-[10px]" style={{ color: "#94A3B8" }}>
+              Trade anytime, anywhere
             </div>
           </div>
         </div>
@@ -377,7 +412,7 @@ export function TradingSidebar({
                     No holdings yet
                   </p>
                   <p className="text-[10px] mt-1" style={{ color: "#64748B" }}>
-                    Press + to search and buy stocks
+                    Press + to search and buy {isCryptoTournament ? "crypto" : "stocks"}
                   </p>
                 </div>
               ) : (
@@ -412,7 +447,7 @@ export function TradingSidebar({
                               {h.symbol}
                             </span>
                             <span className="text-[10px]" style={{ color: "#64748B" }}>
-                              {h.shares} shares
+                              {h.shares} {isCryptoTournament ? "units" : "shares"}
                             </span>
                           </div>
                           <div className="text-[10px] mt-0.5" style={{ color: "#94A3B8" }}>
@@ -684,7 +719,9 @@ export function TradingSidebar({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent style={{ backgroundColor: "#111827", borderColor: "#1F2937" }}>
-                        <SelectItem value="shares" style={{ color: "#F1F5F9" }}>Shares</SelectItem>
+                        <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
+                          {isCryptoTournament ? "Units" : "Shares"}
+                        </SelectItem>
                         <SelectItem value="dollars" style={{ color: "#F1F5F9" }}>Dollars</SelectItem>
                       </SelectContent>
                     </Select>
@@ -696,7 +733,7 @@ export function TradingSidebar({
                     style={{ borderBottom: "1px solid #1F2937" }}
                   >
                     <span className="text-sm" style={{ color: "#F1F5F9" }}>
-                      {buyInMode === "shares" ? "Shares" : "Amount"}
+                      {buyInMode === "shares" ? (isCryptoTournament ? "Units" : "Shares") : "Amount"}
                     </span>
                     {buyInMode === "shares" ? (
                       <Input
