@@ -71,7 +71,7 @@ router.get('/search/:query', asyncHandler(async (req: any, res: any) => {
 
   // Filter by tournament type if specified
   if (tournamentId) {
-    const tournament = await storage.getTournament(parseInt(tournamentId));
+    const tournament = await storage.getTournamentById(parseInt(tournamentId));
     if (tournament && tournament.tournamentType) {
       const { isCryptoSymbol } = await import('../services/yahooFinance.js');
       results = results.filter((result: any) => {
@@ -236,7 +236,7 @@ router.get('/popular', asyncHandler(async (req, res) => {
 
   // Filter by tournament type if specified
   if (tournamentId) {
-    const tournament = await storage.getTournament(parseInt(tournamentId as string));
+    const tournament = await storage.getTournamentById(parseInt(tournamentId as string));
     if (tournament && tournament.tournamentType) {
       const { isCryptoSymbol } = await import('../services/yahooFinance.js');
 

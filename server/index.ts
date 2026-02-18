@@ -109,19 +109,8 @@ async function runMigrations() {
       );
     `);
 
-    // Promote the first account (Lucas) to administrator
-    await client.query(`
-      UPDATE users SET subscription_tier = 'administrator', user_id = 0
-      WHERE id = (SELECT id FROM users ORDER BY id ASC LIMIT 1)
-      AND subscription_tier != 'administrator';
-    `);
-
-    // Promote user "muri" to administrator
-    await client.query(`
-      UPDATE users SET subscription_tier = 'administrator'
-      WHERE username = 'muri'
-      AND subscription_tier != 'administrator';
-    `);
+    // Note: Admin promotion should be done manually via database or admin panel
+    // Removed automatic promotion to prevent security issues
 
     // Fix database column defaults and zero out all balances
     await client.query(`

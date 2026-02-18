@@ -1703,16 +1703,24 @@ export class DatabaseStorage implements IStorage {
     const senderBalance = parseFloat(sender.siteCash);
     const recipientBalance = parseFloat(recipient.siteCash);
 
-    // Perform the transfer
-    await db
-      .update(users)
-      .set({ siteCash: (senderBalance - amount).toString() })
-      .where(eq(users.id, senderId));
+    if (senderBalance < amount) {
+      throw new Error('Insufficient balance');
+    }
 
-    await db
-      .update(users)
-      .set({ siteCash: (recipientBalance + amount).toString() })
-      .where(eq(users.id, recipientId));
+    // Perform the transfer atomically within a transaction
+    await db.transaction(async (tx) => {
+      // Deduct from sender
+      await tx
+        .update(users)
+        .set({ siteCash: (senderBalance - amount).toString() })
+        .where(eq(users.id, senderId));
+
+      // Add to recipient
+      await tx
+        .update(users)
+        .set({ siteCash: (recipientBalance + amount).toString() })
+        .where(eq(users.id, recipientId));
+    });
   }
 
   // Email verification operations

@@ -714,13 +714,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
         console.log(`[IPN] Processing payment with status: ${data.payment_status}`);
 
         // Extract user ID from order_id (format: "deposit-{userId}-{timestamp}")
-        const userId = parseInt(data.order_id.split('-')[1]);
+        const orderParts = data.order_id.split('-');
+        if (orderParts.length < 3 || orderParts[0] !== 'deposit') {
+          console.error(`[IPN] Invalid order_id format: ${data.order_id}`);
+          return res.status(400).json({ error: 'Invalid order_id format' });
+        }
+
+        const userId = parseInt(orderParts[1]);
+        if (isNaN(userId) || userId <= 0) {
+          console.error(`[IPN] Invalid userId in order_id: ${data.order_id}`);
+          return res.status(400).json({ error: 'Invalid userId' });
+        }
 
         // Get user
         const user = await storage.getUser(userId);
         if (!user) {
           console.error(`[IPN] User not found: ${userId}`);
           return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Security: Verify payment was actually created by this user
+        // Check if payment_id matches a payment created by this user
+        const { getPaymentStatus } = await import('./services/nowPayments.js');
+        try {
+          const paymentInfo = await getPaymentStatus(data.payment_id);
+          // Verify order_id from payment provider matches what we expect
+          if (paymentInfo.order_id !== data.order_id) {
+            console.error(`[IPN] Order ID mismatch. Expected: ${paymentInfo.order_id}, Got: ${data.order_id}`);
+            return res.status(400).json({ error: 'Order ID verification failed' });
+          }
+        } catch (verifyError) {
+          console.error(`[IPN] Failed to verify payment: ${verifyError}`);
+          // Log but continue - payment signature was already verified
         }
 
         // Add funds to user account
@@ -802,7 +827,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/reverse-withdrawal', requireAuth, async (req: any, res) => {
     try {
       // Check if user is admin
-      if (req.user.subscriptionTier !== 'administrator' && req.user.username !== 'LUCAS') {
+      if (req.user.subscriptionTier !== 'administrator') {
         return res.status(403).json({ error: 'Admin access required' });
       }
 
@@ -861,7 +886,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/admin/restore-balance', requireAuth, async (req: any, res) => {
     try {
       // Check if user is admin
-      if (req.user.subscriptionTier !== 'administrator' && req.user.username !== 'LUCAS') {
+      if (req.user.subscriptionTier !== 'administrator') {
         return res.status(403).json({ error: 'Admin access required' });
       }
 
@@ -916,7 +941,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/crypto/manual-credit', requireAuth, async (req: any, res) => {
     try {
       // Check if user is admin
-      if (req.user.subscriptionTier !== 'administrator' && req.user.username !== 'LUCAS') {
+      if (req.user.subscriptionTier !== 'administrator') {
         return res.status(403).json({ error: 'Admin access required' });
       }
 
@@ -1144,7 +1169,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/users", requireAuth, async (req: any, res) => {
     try {
       const adminUser = await storage.getUser(req.user.id);
-      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.username !== 'LUCAS')) {
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator')) {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
 
@@ -1172,7 +1197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/stats", requireAuth, async (req: any, res) => {
     try {
       const adminUser = await storage.getUser(req.user.id);
-      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.username !== 'LUCAS')) {
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator')) {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
 
@@ -1206,7 +1231,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/tournaments", requireAuth, async (req: any, res) => {
     try {
       const adminUser = await storage.getUser(req.user.id);
-      if (!adminUser || (adminUser.subscriptionTier !== 'administrator' && adminUser.username !== 'LUCAS')) {
+      if (!adminUser || (adminUser.subscriptionTier !== 'administrator')) {
         return res.status(403).json({ message: "Access denied. Admin privileges required." });
       }
 
@@ -1303,6 +1328,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = req.user.id;
       const user = await storage.getUser(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user.email) return res.status(400).json({ message: "No email associated with this account" });
       if (user.emailVerified) return res.status(400).json({ message: "Email is already verified" });
 
       const token = generateToken();
@@ -1355,7 +1381,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.getUserByEmail(email);
       // Always return success to prevent email enumeration
-      if (!user) {
+      if (!user || !user.email) {
         return res.json({ success: true, message: "If an account with that email exists, a password reset link has been sent." });
       }
 
