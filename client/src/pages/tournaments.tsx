@@ -448,21 +448,23 @@ export default function TournamentsPage() {
             </div>
           </motion.div>
 
-          {/* Search and Filter Controls */}
-          <motion.div variants={fadeInUp} className="flex items-center justify-between gap-3 md:gap-4">
-            <div className="flex items-center space-x-2 md:space-x-3 lg:space-x-4">
-              <div className="relative">
+          {/* Search and Filter Controls - Mobile Responsive */}
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 flex-1">
+              {/* Search - Full width on mobile */}
+              <div className="relative flex-1 sm:flex-initial">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: '#94A3B8' }} />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search tournaments..."
-                  className="pl-9 w-64"
+                  className="pl-9 w-full sm:w-64"
                   style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
                 />
               </div>
+              {/* Type Filter - Responsive width */}
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-40" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
+                <SelectTrigger className="w-full sm:w-40" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
@@ -471,39 +473,43 @@ export default function TournamentsPage() {
                   <SelectItem value="crypto">Crypto Only</SelectItem>
                 </SelectContent>
               </Select>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  id="my-tournaments"
-                  checked={showMyTournaments}
-                  onCheckedChange={(checked) => setShowMyTournaments(checked === true)}
-                />
-                <label htmlFor="my-tournaments" className="text-xs cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
-                  My Tournaments
-                </label>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  id="joinable"
-                  checked={showJoinable}
-                  onCheckedChange={(checked) => setShowJoinable(checked === true)}
-                />
-                <label htmlFor="joinable" className="text-xs cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
-                  Joinable
-                </label>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Checkbox
-                  id="with-friends"
-                  checked={showWithFriends}
-                  onCheckedChange={(checked) => setShowWithFriends(checked === true)}
-                />
-                <label htmlFor="with-friends" className="text-xs cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
-                  With Friends
-                </label>
+              {/* Checkboxes - Hidden on mobile, shown on md+ */}
+              <div className="hidden md:flex items-center gap-3">
+                <div className="flex items-center space-x-1.5">
+                  <Checkbox
+                    id="my-tournaments"
+                    checked={showMyTournaments}
+                    onCheckedChange={(checked) => setShowMyTournaments(checked === true)}
+                  />
+                  <label htmlFor="my-tournaments" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                    My Tournaments
+                  </label>
+                </div>
+                <div className="flex items-center space-x-1.5">
+                  <Checkbox
+                    id="joinable"
+                    checked={showJoinable}
+                    onCheckedChange={(checked) => setShowJoinable(checked === true)}
+                  />
+                  <label htmlFor="joinable" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                    Joinable
+                  </label>
+                </div>
+                <div className="flex items-center space-x-1.5">
+                  <Checkbox
+                    id="with-friends"
+                    checked={showWithFriends}
+                    onCheckedChange={(checked) => setShowWithFriends(checked === true)}
+                  />
+                  <label htmlFor="with-friends" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                    With Friends
+                  </label>
+                </div>
               </div>
             </div>
+            {/* Sort - Full width on mobile */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-48" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
+              <SelectTrigger className="w-full sm:w-48" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>

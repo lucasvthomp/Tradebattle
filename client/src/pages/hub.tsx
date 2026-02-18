@@ -181,26 +181,17 @@ export default function Hub() {
         }}
       />
 
-      <div style={{ maxWidth: '1400px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
         {/* Compact Header */}
-        <div style={{
-          marginBottom: '32px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}>
+        <div className="mb-6 sm:mb-8 flex justify-between items-center flex-wrap gap-4">
           <div>
             <motion.h1
+              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-2"
               style={{
-                fontSize: '32px',
-                fontWeight: '800',
                 background: 'linear-gradient(135deg, #C9D1E2 0%, #E3B341 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                marginBottom: '8px',
               }}
               animate={{
                 backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
@@ -209,8 +200,8 @@ export default function Hub() {
             >
               {getGreeting()}, {user?.username} 👋
             </motion.h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
-              <p style={{ fontSize: '14px', color: '#8A93A6' }}>
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <p className="text-sm sm:text-base" style={{ color: '#8A93A6' }}>
                 {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
               </p>
               {activeTournaments.length > 0 && (
@@ -278,37 +269,32 @@ export default function Hub() {
           )}
         </div>
 
-        {/* Stats Grid - More compact */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '16px',
-          marginBottom: '32px',
-        }}>
+        {/* Stats Grid - Mobile responsive */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           <motion.div
             whileHover={{ scale: 1.08, y: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
-            <Card style={{
-              padding: '20px',
+            <Card className="p-3 sm:p-5" style={{
               background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2937 100%)',
               border: '1px solid #2B3A4C',
               boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
               cursor: 'pointer',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div className="flex justify-between items-start mb-2 sm:mb-3">
+                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
                   Balance
                 </div>
                 <motion.div
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <DollarSign size={18} style={{ color: '#E3B341', opacity: 0.6 }} />
+                  <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#E3B341', opacity: 0.6 }} />
                 </motion.div>
               </div>
               <motion.div
-                style={{ fontSize: '28px', fontWeight: '700', color: '#E3B341' }}
+                className="text-xl sm:text-2xl lg:text-3xl font-bold"
+                style={{ color: '#E3B341' }}
                 animate={{
                   textShadow: [
                     '0 0 10px rgba(227, 179, 65, 0.5)',
@@ -327,26 +313,26 @@ export default function Hub() {
             whileHover={{ scale: 1.08, y: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
-            <Card style={{
-              padding: '20px',
+            <Card className="p-3 sm:p-5" style={{
               background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E24 100%)',
               border: '1px solid #2B3A4C',
               boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
               cursor: 'pointer',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div className="flex justify-between items-start mb-2 sm:mb-3">
+                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
                   Wins
                 </div>
                 <motion.div
                   animate={{ y: [0, -5, 0], rotate: [0, 15, -15, 0] }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <Trophy size={18} style={{ color: '#28C76F', opacity: 0.6 }} />
+                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#28C76F', opacity: 0.6 }} />
                 </motion.div>
               </div>
               <motion.div
-                style={{ fontSize: '28px', fontWeight: '700', color: '#28C76F' }}
+                className="text-xl sm:text-2xl lg:text-3xl font-bold"
+                style={{ color: '#28C76F' }}
                 animate={{
                   textShadow: [
                     '0 0 10px rgba(40, 199, 111, 0.5)',
@@ -365,26 +351,26 @@ export default function Hub() {
             whileHover={{ scale: 1.08, y: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
-            <Card style={{
-              padding: '20px',
+            <Card className="p-3 sm:p-5" style={{
               background: 'linear-gradient(135deg, #1E2D3F 0%, #1E2640 100%)',
               border: '1px solid #2B3A4C',
               boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
               cursor: 'pointer',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div className="flex justify-between items-start mb-2 sm:mb-3">
+                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
                   Active Now
                 </div>
                 <motion.div
                   animate={{ scale: [1, 1.3, 1] }}
                   transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                 >
-                  <Activity size={18} style={{ color: '#6366F1', opacity: 0.6 }} />
+                  <Activity className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#6366F1', opacity: 0.6 }} />
                 </motion.div>
               </div>
               <motion.div
-                style={{ fontSize: '28px', fontWeight: '700', color: '#6366F1' }}
+                className="text-xl sm:text-2xl lg:text-3xl font-bold"
+                style={{ color: '#6366F1' }}
                 animate={{
                   textShadow: [
                     '0 0 10px rgba(99, 102, 241, 0.5)',
@@ -403,26 +389,26 @@ export default function Hub() {
             whileHover={{ scale: 1.08, y: -5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 15 }}
           >
-            <Card style={{
-              padding: '20px',
+            <Card className="p-3 sm:p-5" style={{
               background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E35 100%)',
               border: '1px solid #2B3A4C',
               boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
               cursor: 'pointer',
             }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                <div style={{ fontSize: '12px', fontWeight: '600', color: '#8A93A6', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              <div className="flex justify-between items-start mb-2 sm:mb-3">
+                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
                   Total Trades
                 </div>
                 <motion.div
                   animate={{ rotate: [0, 360] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
                 >
-                  <BarChart3 size={18} style={{ color: '#06B6D4', opacity: 0.6 }} />
+                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#06B6D4', opacity: 0.6 }} />
                 </motion.div>
               </div>
               <motion.div
-                style={{ fontSize: '28px', fontWeight: '700', color: '#06B6D4' }}
+                className="text-xl sm:text-2xl lg:text-3xl font-bold"
+                style={{ color: '#06B6D4' }}
                 animate={{
                   textShadow: [
                     '0 0 10px rgba(6, 182, 212, 0.5)',
@@ -439,14 +425,10 @@ export default function Hub() {
         </div>
 
         {/* Main Content Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(12, 1fr)',
-          gap: '20px',
-        }}>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
 
           {/* Left Column - Tournaments */}
-          <div style={{ gridColumn: 'span 12 / span 12', '@media (min-width: 1024px)': { gridColumn: 'span 8 / span 8' } }}>
+          <div className="lg:col-span-8">
 
             {/* Live Tournaments */}
             {activeTournaments.length > 0 && (
@@ -551,11 +533,7 @@ export default function Hub() {
                 Quick Actions
               </h2>
 
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                gap: '12px',
-              }}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Link href="/tournaments">
                   <motion.button
                     whileHover={{ scale: 1.12, y: -4 }}
@@ -776,7 +754,7 @@ export default function Hub() {
           </div>
 
           {/* Right Column - Upcoming & Activity */}
-          <div style={{ gridColumn: 'span 12 / span 12', '@media (min-width: 1024px)': { gridColumn: 'span 4 / span 4' } }}>
+          <div className="lg:col-span-4">
 
             {/* Upcoming Tournaments */}
             {upcomingTournaments.length > 0 && (

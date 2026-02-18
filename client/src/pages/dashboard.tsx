@@ -134,20 +134,20 @@ export default function Dashboard() {
     <>
       <WebsiteTour />
       <div
-        className="h-screen flex flex-col md:flex-row"
+        className="h-screen flex flex-col"
         style={{ backgroundColor: "#080C14" }}
       >
-      {/* LEFT: Chart fills ~5/7 of width */}
-      <div data-tour="chart-area" className="flex-1 min-w-0 min-h-[350px] md:min-h-0 h-full">
+      {/* Chart Area - Responsive height */}
+      <div data-tour="chart-area" className="flex-1 min-h-[40vh] md:min-h-[50vh] lg:min-h-0">
         <TradingViewChart symbol={selectedSymbol} />
       </div>
 
-      {/* RIGHT: Unified Sidebar ~2/7 of width */}
+      {/* Trading Sidebar - Stacks below chart on mobile */}
       <div
-        className="w-full md:w-[265px] md:max-w-[265px] md:min-w-[220px] flex flex-col h-[60vh] md:h-full"
+        className="w-full flex flex-col h-auto max-h-[60vh] md:max-h-[50vh] lg:max-h-none overflow-auto"
         style={{
           backgroundColor: "#111827",
-          borderLeft: "1px solid #1F2937",
+          borderTop: "1px solid #1F2937",
         }}
       >
         <TradingSidebar

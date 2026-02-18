@@ -175,7 +175,7 @@ export default function Leaderboard() {
     const podiumOrder = [rankings[1], rankings[0], rankings[2]].filter(Boolean);
 
     return (
-      <div className="flex items-end justify-center gap-4 mb-12 px-4">
+      <div className="flex items-end justify-center gap-2 sm:gap-4 mb-8 sm:mb-12 px-2 sm:px-4">
         {podiumOrder.map((player, idx) => {
           const actualRank = idx === 1 ? 1 : idx === 0 ? 2 : 3;
           const height = getPodiumHeight(actualRank);
@@ -186,26 +186,26 @@ export default function Leaderboard() {
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + idx * 0.1 }}
-              className="flex flex-col items-center"
-              style={{ flex: actualRank === 1 ? '0 0 160px' : '0 0 140px' }}
+              className="flex flex-col items-center flex-1 max-w-[120px] sm:max-w-none"
+              style={{ flex: actualRank === 1 ? '0 0 auto' : '0 0 auto' }}
             >
               {/* Crown Animation for #1 */}
               {actualRank === 1 && (
                 <motion.div
-                  className="mb-3"
+                  className="mb-2 sm:mb-3"
                   animate={{
                     y: [0, -10, 0],
                     rotate: [0, 5, -5, 0],
                   }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <Crown className="w-12 h-12" style={{ color: '#FFD700' }} />
+                  <Crown className="w-8 h-8 sm:w-12 sm:h-12" style={{ color: '#FFD700' }} />
                 </motion.div>
               )}
 
               {/* Avatar */}
               <motion.div
-                className="relative mb-4"
+                className="relative mb-3 sm:mb-4"
                 whileHover={{ scale: 1.1 }}
                 animate={actualRank === 1 ? {
                   boxShadow: [
@@ -219,15 +219,13 @@ export default function Leaderboard() {
                   borderRadius: '50%',
                 }}
               >
-                <Avatar style={{
-                  width: actualRank === 1 ? '100px' : '80px',
-                  height: actualRank === 1 ? '100px' : '80px',
+                <Avatar className="w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24" style={{
+                  width: actualRank === 1 ? 'clamp(64px, 10vw, 100px)' : 'clamp(56px, 8vw, 80px)',
+                  height: actualRank === 1 ? 'clamp(64px, 10vw, 100px)' : 'clamp(56px, 8vw, 80px)',
                 }}>
-                  <AvatarFallback style={{
+                  <AvatarFallback className="text-lg sm:text-xl lg:text-3xl font-bold" style={{
                     background: `linear-gradient(135deg, ${getRankColor(actualRank)}, ${getRankColor(actualRank)}80)`,
                     color: '#06121F',
-                    fontSize: actualRank === 1 ? '32px' : '24px',
-                    fontWeight: 'bold',
                   }}>
                     {player.username?.slice(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -235,7 +233,7 @@ export default function Leaderboard() {
 
                 {/* Rank Badge */}
                 <div
-                  className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-10 h-10 rounded-full flex items-center justify-center font-black text-lg"
+                  className="absolute -bottom-1 sm:-bottom-2 left-1/2 transform -translate-x-1/2 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-black text-sm sm:text-lg"
                   style={{
                     background: getRankColor(actualRank),
                     color: '#06121F',
@@ -247,11 +245,11 @@ export default function Leaderboard() {
               </motion.div>
 
               {/* Username */}
-              <div className="text-center mb-3 px-2">
-                <div className="font-black text-lg mb-1" style={{ color: '#F1F5F9' }}>
+              <div className="text-center mb-2 sm:mb-3 px-1 sm:px-2">
+                <div className="font-black text-sm sm:text-base lg:text-lg mb-1 truncate" style={{ color: '#F1F5F9' }}>
                   {player.username}
                 </div>
-                <div className="text-sm font-semibold" style={{ color: getRankColor(actualRank) }}>
+                <div className="text-xs sm:text-sm font-semibold" style={{ color: getRankColor(actualRank) }}>
                   {formatCurrency(player.totalWagered || 0)}
                 </div>
               </div>
