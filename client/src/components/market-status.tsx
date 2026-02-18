@@ -136,10 +136,10 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
     };
 
     return (
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <Tooltip>
           <TooltipTrigger asChild>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 cursor-help">
               <Clock
                 className={`w-5 h-5 ${
                   isMarketOpen
@@ -156,17 +156,25 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
               )}
             </div>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs">
+          <TooltipContent
+            side="bottom"
+            className="max-w-xs backdrop-blur-md border-2"
+            style={{
+              backgroundColor: 'rgba(15, 23, 42, 0.95)',
+              borderColor: 'rgba(227, 179, 65, 0.3)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(227, 179, 65, 0.1)'
+            }}
+          >
             <div className="space-y-2">
-              <div className="font-semibold">Market Hours (NYSE)</div>
-              <div className="text-xs space-y-1">
+              <div className="font-semibold" style={{ color: '#F1F5F9' }}>Market Hours (NYSE)</div>
+              <div className="text-xs space-y-1" style={{ color: '#C9D1E2' }}>
                 <div>Monday - Friday</div>
                 <div>9:30 AM - 4:00 PM ET</div>
-                <div className="pt-2 border-t border-border/50">
+                <div className="pt-2 border-t" style={{ borderColor: 'rgba(227, 179, 65, 0.2)' }}>
                   {isMarketOpen ? (
-                    <span className="text-[#10B981]">Currently Open - Closes in {timeUntilClose}</span>
+                    <span className="font-medium" style={{ color: '#10B981' }}>Currently Open - Closes in {timeUntilClose}</span>
                   ) : (
-                    <span className="text-[#FF9F43]">Currently Closed - Opens in {timeUntilOpen}</span>
+                    <span className="font-medium" style={{ color: '#FF9F43' }}>Currently Closed - Opens in {timeUntilOpen}</span>
                   )}
                 </div>
               </div>
