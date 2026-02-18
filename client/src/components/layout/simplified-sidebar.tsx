@@ -53,7 +53,7 @@ export function SimplifiedSidebar() {
   };
 
   const renderNavItem = (item: typeof navItems[0]) => (
-    <motion.div key={item.href} whileHover={{ x: 3 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
+    <div key={item.href}>
       <Link
         href={item.href}
         {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
@@ -82,7 +82,7 @@ export function SimplifiedSidebar() {
           {item.label}
         </span>
       </Link>
-    </motion.div>
+    </div>
   );
 
   return (
@@ -145,17 +145,17 @@ export function SimplifiedSidebar() {
               }`}
               style={{
                 background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
-                color: '#080C14'
+                color: '#06121F'
               }}
             >
               {expanded ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <Gift className="w-5 h-5" />
+                  <Gift className="w-5 h-5" style={{ color: '#06121F' }} />
                   <span className="text-base font-semibold">Redeem Code</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center">
-                  <Gift className="w-5 h-5" />
+                  <Gift className="w-5 h-5" style={{ color: '#06121F' }} />
                 </div>
               )}
             </Button>
