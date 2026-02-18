@@ -232,7 +232,6 @@ export default function People() {
                         fallback={`${profileData?.username?.[0]?.toUpperCase() || ''}${profileData?.username?.[1]?.toUpperCase() || ''}`}
                         lastActivity={profileData?.lastActivity}
                         statusSize="lg"
-                        showBorder={true}
                       />
                     </div>
 
@@ -566,7 +565,6 @@ export default function People() {
                           fallback={`${person.username?.[0]?.toUpperCase() || ''}${person.username?.[1]?.toUpperCase() || ''}`}
                           lastActivity={person.lastActivity}
                           statusSize="md"
-                          showBorder={true}
                         />
                         <div className="flex-1">
                           <h3 className="text-lg font-semibold" style={{ color: '#F1F5F9' }}>

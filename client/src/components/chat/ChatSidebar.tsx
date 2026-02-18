@@ -176,7 +176,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
             <div key={msg.id}>
               {isFirst && (
                 <div className="flex items-center space-x-1.5 mb-1">
-                  <span className="text-sm font-bold" style={{ color: '#F1F5F9', fontFamily: 'Space Grotesk, sans-serif' }}>
+                  <span className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
                     {group.username}
                   </span>
                   {(() => {
@@ -209,7 +209,6 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                 <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
                   <p className="text-sm whitespace-pre-wrap leading-normal" style={{
                     color: '#F1F5F9',
-                    fontFamily: 'Space Grotesk, sans-serif',
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word'
                   }}>
