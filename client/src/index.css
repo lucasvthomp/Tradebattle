@@ -4,6 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fix scrollbar causing layout shift */
+html {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #06121F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2B3A4C;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3A4A5C;
+}
+
 :root {
   /* Clean Modern Game Color System */
 
