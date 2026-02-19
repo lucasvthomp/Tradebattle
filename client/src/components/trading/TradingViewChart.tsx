@@ -48,7 +48,7 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
       allow_symbol_change: true,
       backgroundColor: "rgba(6, 18, 31, 1)",
       gridColor: "rgba(43, 58, 76, 0.3)",
-      hide_side_toolbar: false,
+      hide_side_toolbar: true,
       calendar: false,
       support_host: "https://www.tradingview.com",
     });
