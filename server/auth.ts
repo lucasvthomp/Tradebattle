@@ -282,14 +282,15 @@ export function setupAuth(app: Express) {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: info?.message || "Login failed" });
 
+      // DISABLED: 2FA enforcement (keeping code for future re-enablement)
       // If 2FA is enabled, don't log in yet — require 2FA verification
-      if (user.twoFactorEnabled) {
-        return res.json({
-          requires2FA: true,
-          userId: user.id,
-          message: "Two-factor authentication required",
-        });
-      }
+      // if (user.twoFactorEnabled) {
+      //   return res.json({
+      //     requires2FA: true,
+      //     userId: user.id,
+      //     message: "Two-factor authentication required",
+      //   });
+      // }
 
       req.login(user, (err) => {
         if (err) return next(err);

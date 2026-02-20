@@ -175,6 +175,9 @@ function TwoFactorSection({ user }: { user: any }) {
   const [disableCode, setDisableCode] = useState("");
   const [showDisable, setShowDisable] = useState(false);
 
+  // 2FA is currently disabled system-wide
+  const twoFactorDisabled = true;
+
   const setupMutation = useMutation({
     mutationFn: async () => {
       const res = await apiRequest('POST', '/api/auth/2fa/setup');
@@ -220,7 +223,14 @@ function TwoFactorSection({ user }: { user: any }) {
 
   if (user?.twoFactorEnabled) {
     return (
-      <div>
+      <div className="space-y-3">
+        {twoFactorDisabled && (
+          <div className="p-3 rounded-lg" style={{ backgroundColor: '#94A3B820', border: '1px solid #94A3B840' }}>
+            <p className="text-xs" style={{ color: '#94A3B8' }}>
+              ⓘ Two-factor authentication is currently disabled system-wide for maintenance
+            </p>
+          </div>
+        )}
         <div className="flex items-center justify-between">
           <div>
             <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
@@ -255,14 +265,21 @@ function TwoFactorSection({ user }: { user: any }) {
   }
 
   return (
-    <div>
+    <div className="space-y-3">
+      {twoFactorDisabled && (
+        <div className="p-3 rounded-lg" style={{ backgroundColor: '#94A3B820', border: '1px solid #94A3B840' }}>
+          <p className="text-xs" style={{ color: '#94A3B8' }}>
+            ⓘ Two-factor authentication is currently disabled system-wide for maintenance
+          </p>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <div>
           <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
           <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
         </div>
         {!setupData && (
-          <Button variant="outline" onClick={() => setupMutation.mutate()} disabled={setupMutation.isPending}>
+          <Button variant="outline" onClick={() => setupMutation.mutate()} disabled={twoFactorDisabled || setupMutation.isPending}>
             {setupMutation.isPending ? "Setting up..." : "Enable 2FA"}
           </Button>
         )}
