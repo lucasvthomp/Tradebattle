@@ -66,7 +66,7 @@ export default function Shop() {
   }));
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: '#06121F' }}>
+    <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background Particles */}
       {particles.map((particle) => (
         <motion.div

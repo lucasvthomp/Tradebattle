@@ -185,7 +185,6 @@ export default function Deposit() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#06121F',
       padding: '40px 20px',
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>

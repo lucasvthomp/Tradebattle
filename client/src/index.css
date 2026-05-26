@@ -236,26 +236,27 @@ html {
   }
 
   html {
-    @apply bg-background;
-    background: #0D1B3E !important;
     min-height: 100%;
     height: 100%;
     overscroll-behavior: none;
     font-size: 16px;
+    background: #0D1B3E;
   }
 
   body {
-    @apply bg-background;
     color: #94A3B8 !important;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #0D1B3E !important;
-    background-attachment: fixed !important;
     min-height: 100vh;
     height: 100%;
     overscroll-behavior-y: none;
+    /* Consistent site-wide background: deep blue with subtle radial glow */
+    background:
+      radial-gradient(ellipse 80% 50% at 70% 0%, rgba(0, 122, 255, 0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 20% 80%, rgba(99, 102, 241, 0.07) 0%, transparent 60%),
+      #0D1B3E !important;
+    background-attachment: fixed !important;
   }
 
   /* Override any default text colors */

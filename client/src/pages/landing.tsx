@@ -36,7 +36,7 @@ export default function Landing() {
   }));
 
   return (
-    <div className="min-h-screen relative" style={{ backgroundColor: '#0A0F1C', color: '#F1F5F9' }}>
+    <div className="min-h-screen relative" style={{ color: '#F1F5F9' }}>
       {/* Subtle background particles */}
       {particles.map((p) => (
         <motion.div

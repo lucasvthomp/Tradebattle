@@ -189,7 +189,7 @@ export default function People() {
   if (profileUserId) {
     if (isLoadingProfile) {
       return (
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080C14' }}>
+        <div className="min-h-screen flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E3B341' }}></div>
         </div>
       );
@@ -198,7 +198,7 @@ export default function People() {
     const profileData = (profileUser as any)?.data;
 
     return (
-      <div className="min-h-screen" style={{ backgroundColor: '#080C14' }}>
+      <div className="min-h-screen">
         <div className="container mx-auto py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
           <motion.div
             className="max-w-5xl mx-auto"
@@ -437,7 +437,7 @@ export default function People() {
 
   // Main people browsing page
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#080C14' }}>
+    <div className="min-h-screen">
       <div className="container mx-auto py-6 lg:py-8">
         <motion.div
           initial="initial"

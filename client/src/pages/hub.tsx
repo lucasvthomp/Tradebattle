@@ -57,7 +57,7 @@ export default function Hub() {
   });
 
   return (
-    <div style={{ minHeight: '100vh', background: '#091628', padding: '32px 20px' }}>
+    <div style={{ minHeight: '100vh', padding: '32px 20px' }}>
       {/* Subtle ambient glow — one, not three */}
       <div style={{
         position: 'fixed', top: '15%', right: '8%',
