@@ -337,10 +337,10 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   const startTime = scheduledStartTime ? new Date(scheduledStartTime) : new Date();
 
-  // Enforce minimum 5-minute start delay
-  const fiveMinutesFromNow = new Date(Date.now() + 5 * 60 * 1000);
-  if (startTime < fiveMinutesFromNow) {
-    throw new ValidationError('Tournament must start at least 5 minutes from now');
+  // Enforce minimum 1-minute start delay (prevents backdated tournaments)
+  const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+  if (startTime < oneMinuteAgo) {
+    throw new ValidationError('Tournament start time cannot be in the past');
   }
 
   console.log('[Tournament Creation] Start time:', startTime);
