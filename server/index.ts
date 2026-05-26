@@ -11,7 +11,19 @@ import { trackUserActivity } from "./middleware/activityTracker";
 async function runMigrations() {
   const client = await pool.connect();
   try {
-    // Add missing columns to users table
+    // Ensure users table exists with base columns first
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(20) UNIQUE NOT NULL,
+        email VARCHAR(255) UNIQUE,
+        password VARCHAR(255),
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Add all users table columns (safe with IF NOT EXISTS)
     await client.query(`
       ALTER TABLE users ADD COLUMN IF NOT EXISTS user_id INTEGER UNIQUE;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS admin_note TEXT DEFAULT '';
@@ -20,6 +32,20 @@ async function runMigrations() {
       ALTER TABLE users ADD COLUMN IF NOT EXISTS deposit_frozen BOOLEAN DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS tournament_restricted BOOLEAN DEFAULT false;
       ALTER TABLE users ADD COLUMN IF NOT EXISTS tutorial_completed BOOLEAN DEFAULT false NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_picture TEXT;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS last_username_change TIMESTAMP;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS country VARCHAR(100);
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS language VARCHAR(50) DEFAULT 'English';
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS currency VARCHAR(10) DEFAULT 'USD';
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS balance NUMERIC(15,2) DEFAULT '0.00' NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS site_cash NUMERIC(15,2) DEFAULT '0.00' NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_tier VARCHAR(50) DEFAULT 'free' NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS premium_upgrade_date TIMESTAMP;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS personal_balance NUMERIC(15,2) DEFAULT '0.00' NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS total_deposited NUMERIC(15,2) DEFAULT '0.00' NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS personal_portfolio_start_date TIMESTAMP;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS tournament_wins INTEGER DEFAULT 0 NOT NULL;
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS total_trades INTEGER DEFAULT 0 NOT NULL;
     `);
 
     // Create admin_logs table if it doesn't exist
