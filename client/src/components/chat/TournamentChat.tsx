@@ -99,7 +99,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
   return (
     <div className="flex space-x-2">
       <Avatar className="w-8 h-8">
-        <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#111827', color: '#E3B341' }}>
+        <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#1E2D3F', color: '#E3B341' }}>
           {message.username.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
@@ -116,7 +116,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
             {formatTimestamp(message.createdAt)}
           </span>
         </div>
-        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}>
+        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#1E2D3F', border: '1px solid #1F2937' }}>
           <p className="text-sm whitespace-pre-wrap leading-normal" style={{
             color: '#F1F5F9',
             wordBreak: 'break-word',
@@ -185,7 +185,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
   }, [messages]);
 
   return (
-    <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+    <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#1E2D3F', border: '1px solid #1F2937' }}>
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden">
         <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(8, 12, 20, 0.5)' }}>
@@ -224,7 +224,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Message tournament..."
             className="flex-1 text-sm h-9"
-            style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
+            style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
             maxLength={500}
           />
           <Button

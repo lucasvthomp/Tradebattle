@@ -59,17 +59,15 @@ export function SimplifiedSidebar() {
         href={item.href}
         {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
         className={`group flex items-center rounded-lg transition-colors duration-200 ${
-          expanded ? 'px-3 py-3' : 'w-12 h-12 justify-center mx-auto'
-        } ${
-          isActive(item.href)
-            ? "sidebar-active-indicator"
-            : "hover:bg-[#0F172A] hover:text-white"
+          isActive(item.href) ? "sidebar-active-indicator" : "hover:bg-[#0F172A] hover:text-white"
         }`}
-        style={
-          isActive(item.href)
+        style={{
+          height: '48px',
+          paddingLeft: '14px',
+          ...(isActive(item.href)
             ? { backgroundColor: 'rgba(227, 179, 65, 0.1)', color: '#E3B341' }
-            : { color: '#8A93A6' }
-        }
+            : { color: '#8A93A6' }),
+        }}
       >
         <item.icon
           className="w-5 h-5 flex-shrink-0"
@@ -97,10 +95,9 @@ export function SimplifiedSidebar() {
     <>
       <div
         data-tour="sidebar"
-        className={`hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 ${
-          expanded ? 'w-64' : 'w-16'
-        }`}
+        className="hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40"
         style={{
+          width: expanded ? '256px' : '64px',
           backgroundColor: '#0B1120',
           borderColor: '#1F2937',
           transition: 'width 300ms ease',
@@ -111,9 +108,7 @@ export function SimplifiedSidebar() {
         <div className="p-2 border-b" style={{ borderColor: '#1F2937' }}>
           <button
             onClick={() => setExpanded(!expanded)}
-            className={`flex items-center hover:bg-[#0F172A] rounded-lg transition-colors duration-200 ${
-              expanded ? 'w-full px-3 py-3 justify-start' : 'w-12 h-12 justify-center mx-auto'
-            }`}
+            className="flex items-center hover:bg-[#0F172A] rounded-lg transition-colors duration-200 w-12 h-12 justify-center mx-auto"
             style={{ color: '#C9D1E2' }}
           >
             <Menu

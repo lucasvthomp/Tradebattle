@@ -97,7 +97,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
           {p.profilePicture && (
             <AvatarImage src={p.profilePicture} className="object-cover" />
           )}
-          <AvatarFallback className="text-[9px] font-semibold" style={{ backgroundColor: '#1F2937', color: '#E3B341' }}>
+          <AvatarFallback className="text-[9px] font-semibold" style={{ backgroundColor: '#1E2D3F', color: '#E3B341' }}>
             {p.username.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -105,7 +105,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {overflow > 0 && (
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
-          style={{ backgroundColor: '#1F2937', color: '#E3B341', border: '2px solid #111827' }}
+          style={{ backgroundColor: '#1E2D3F', color: '#E3B341', border: '2px solid #111827' }}
         >
           +{overflow}
         </div>
@@ -395,14 +395,14 @@ export default function TournamentsPage() {
                     height: 'clamp(44px, 2.5vh, 48px)',
                     padding: '0 clamp(12px, 1.5vw, 20px)',
                     fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-                    backgroundColor: '#1F2937',
+                    backgroundColor: '#1E2D3F',
                     color: '#F1F5F9',
                   }}>
                     <Lock style={{ width: 'clamp(14px, 1.2vw, 20px)', height: 'clamp(14px, 1.2vw, 20px)', marginRight: '8px' }} />
                     Join Private
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
                   <DialogHeader>
                     <DialogTitle style={{ color: '#F1F5F9' }}>Join Private Tournament</DialogTitle>
                   </DialogHeader>
@@ -416,7 +416,7 @@ export default function TournamentsPage() {
                         placeholder="Enter 8-character code"
                         maxLength={8}
                         className="text-base md:text-sm min-h-[44px]"
-                        style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
+                        style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
                       />
                     </div>
                     <Button
@@ -459,15 +459,15 @@ export default function TournamentsPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search tournaments..."
                   className="pl-9 w-full sm:w-64"
-                  style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
+                  style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
                 />
               </div>
               {/* Type Filter - Responsive width */}
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full sm:w-40" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
+                <SelectTrigger className="w-full sm:w-40" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+                <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="stocks">Stocks Only</SelectItem>
                   <SelectItem value="crypto">Crypto Only</SelectItem>
@@ -509,10 +509,10 @@ export default function TournamentsPage() {
             </div>
             {/* Sort - Full width on mobile */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-48" style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}>
+              <SelectTrigger className="w-full sm:w-48" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+              <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
                 <SelectItem value="starting-soon">Starting Soonest</SelectItem>
                 <SelectItem value="pot-high-low">Highest Pot</SelectItem>
                 <SelectItem value="pot-low-high">Lowest Pot</SelectItem>
@@ -523,7 +523,7 @@ export default function TournamentsPage() {
 
           {/* Tabs */}
           <motion.div variants={fadeInUp}>
-            <div className="flex items-center gap-2 p-1 rounded-xl" style={{ backgroundColor: '#111827' }}>
+            <div className="flex items-center gap-2 p-1 rounded-xl" style={{ backgroundColor: '#1E2D3F' }}>
               <button
                 onClick={() => setActiveTab('upcoming')}
                 className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
@@ -783,7 +783,7 @@ function HorizontalTournamentCard({
           onClick={onViewLeaderboard}
           className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
           size="sm"
-          style={{ backgroundColor: '#1F2937', color: '#10B981' }}
+          style={{ backgroundColor: '#1E2D3F', color: '#10B981' }}
         >
           <Trophy className="w-3.5 h-3.5 mr-1.5" />
           Leaderboard
@@ -814,7 +814,7 @@ function HorizontalTournamentCard({
             onClick={onManage}
             className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
             size="sm"
-            style={{ backgroundColor: '#1F2937', color: '#F1F5F9' }}
+            style={{ backgroundColor: '#1E2D3F', color: '#F1F5F9' }}
           >
             <Shield className="w-3.5 h-3.5 mr-1.5" />
             Manage
@@ -832,7 +832,7 @@ function HorizontalTournamentCard({
           size="sm"
           style={!(isJoining || tournament.currentPlayers >= tournament.maxPlayers)
             ? { backgroundColor: '#10B981', color: '#FFFFFF' }
-            : { backgroundColor: '#1F2937', color: '#94A3B8' }
+            : { backgroundColor: '#1E2D3F', color: '#94A3B8' }
           }
         >
           {isJoining ? "Joining..." :
@@ -855,7 +855,7 @@ function HorizontalTournamentCard({
       <div
         className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
         style={{
-          backgroundColor: '#111827',
+          backgroundColor: '#1E2D3F',
           border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : '#1F2937'}`,
         }}
       >
