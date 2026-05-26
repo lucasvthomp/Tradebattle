@@ -2013,8 +2013,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/blitz/status", requireAuth, async (req: any, res) => {
     const userId = req.user.id;
+    if (blitzMatchedPlayers.has(userId)) {
+      const tournamentId = blitzMatchedPlayers.get(userId)!;
+      blitzMatchedPlayers.delete(userId);
+      return res.json({ matched: true, tournamentId });
+    }
     const inQueue = !!blitzQueue.find(e => e.userId === userId);
-    res.json({ inQueue, queueLength: blitzQueue.length });
+    res.json({ matched: false, inQueue, queueLength: blitzQueue.length });
   });
 
   // Error handling middleware

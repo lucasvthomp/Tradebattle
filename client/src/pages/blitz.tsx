@@ -42,11 +42,11 @@ export default function Blitz() {
 
   function startPolling() {
     clearPolling();
-    // Poll status every 2s
+    // Poll match status every 2s using GET (POST would re-queue)
     pollRef.current = setInterval(async () => {
       try {
-        const data: any = await apiRequest("POST", "/api/blitz/queue");
-        if (data.status === "matched") {
+        const data: any = await apiRequest("GET", "/api/blitz/status");
+        if (data.matched) {
           setTournamentId(data.tournamentId);
           setMatchState("matched");
           clearPolling();
