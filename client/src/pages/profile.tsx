@@ -597,8 +597,8 @@ export default function Profile() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#111827' }}>
-                        <User className="w-10 h-10" style={{ color: '#E3B341' }} />
+                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#1E2D3F' }}>
+                        <User className="w-10 h-10" style={{ color: '#8A93A6' }} />
                       </div>
                     )}
                     {/* Online status indicator - positioned at perfect square corner */}
