@@ -1201,8 +1201,8 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
     throw new ValidationError('Cannot trade in completed tournaments');
   }
 
-  // Check if market is open for stock tournaments
-  if (tournament && tournament.tournamentType !== 'crypto') {
+  // Check if market is open for stock tournaments (blitz bypasses market hours)
+  if (tournament && tournament.tournamentType !== 'crypto' && tournament.tournamentType !== 'blitz') {
     const { isMarketOpen } = await import('../../shared/marketHours');
     if (!isMarketOpen()) {
       throw new ValidationError('Stock market is closed. Trading is available Mon-Fri 9:30 AM - 4:00 PM ET.');
@@ -1308,8 +1308,8 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
     throw new ValidationError('Cannot trade in completed tournaments');
   }
 
-  // Check if market is open for stock tournaments
-  if (tournament && tournament.tournamentType !== 'crypto') {
+  // Check if market is open for stock tournaments (blitz bypasses market hours)
+  if (tournament && tournament.tournamentType !== 'crypto' && tournament.tournamentType !== 'blitz') {
     const { isMarketOpen } = await import('../../shared/marketHours');
     if (!isMarketOpen()) {
       throw new ValidationError('Stock market is closed. Trading is available Mon-Fri 9:30 AM - 4:00 PM ET.');
