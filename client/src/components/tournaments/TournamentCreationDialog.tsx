@@ -77,6 +77,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     payoutStructure: "winner_take_all",
     customStartTime: "",
   });
+  const [buyInRaw, setBuyInRaw] = useState("0");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successDialogOpen, setSuccessDialogOpen] = useState(false);
   const [createdTournament, setCreatedTournament] = useState<{ id: number; name: string; code: string } | null>(null);
@@ -128,6 +129,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       setCreatedTournament({ id: response.data.id, name: response.data.name, code: response.data.code });
       setSuccessDialogOpen(true);
       setForm({ name: "", maxPlayers: 10, tournamentType: "stocks", startingBalance: 10000, duration: "1 week", startDelay: "5 minutes", isPublic: true, buyInAmount: 0, payoutStructure: "winner_take_all", customStartTime: "" });
+      setBuyInRaw("0");
     },
     onError: (error: Error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -286,8 +288,13 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 type="number" min="0" step="0.01"
                 style={{ ...inputStyle, borderColor: errors.buyInAmount ? '#EF4444' : '#1E3050' }}
                 placeholder="0.00 — free to join"
-                value={form.buyInAmount || ''}
-                onChange={e => set('buyInAmount', Math.max(0, parseFloat(e.target.value) || 0))}
+                value={buyInRaw}
+                onChange={e => {
+                  const raw = e.target.value;
+                  setBuyInRaw(raw);
+                  const parsed = parseFloat(raw);
+                  set('buyInAmount', isNaN(parsed) ? 0 : Math.max(0, parsed));
+                }}
               />
               {errors.buyInAmount && <p style={{ fontSize: '11px', color: '#EF4444', marginTop: '4px' }}>{errors.buyInAmount}</p>}
               {form.buyInAmount > 0 && (
