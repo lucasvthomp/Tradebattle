@@ -108,8 +108,13 @@ export function SimplifiedSidebar() {
         <div className="p-2 border-b" style={{ borderColor: '#1F2937' }}>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center hover:bg-[#0F172A] rounded-lg transition-colors duration-200 w-12 h-12 justify-center mx-auto"
-            style={{ color: '#C9D1E2' }}
+            className="flex items-center hover:bg-[#0F172A] rounded-lg transition-colors duration-200"
+            style={{
+              height: '48px',
+              width: '100%',
+              paddingLeft: '14px',
+              color: '#C9D1E2',
+            }}
           >
             <Menu
               className="w-5 h-5 flex-shrink-0"
