@@ -16,7 +16,7 @@ const staggerChildren = {
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <motion.div 
         className="max-w-4xl mx-auto py-20 px-4"
         initial="initial"
@@ -24,7 +24,7 @@ export default function Privacy() {
         variants={staggerChildren}
       >
         <motion.h1 
-          className="text-4xl md:text-5xl font-bold mb-8 text-black"
+          className="text-4xl md:text-5xl font-bold mb-8 text-foreground"
           variants={fadeInUp}
         >
           Privacy Policy

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Send, MessageSquare } from "lucide-react";
+import { Send, MessageSquare, UserCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -99,8 +99,8 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
   return (
     <div className="flex space-x-2">
       <Avatar className="w-8 h-8">
-        <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#1E2D3F', color: '#E3B341' }}>
-          {message.username.slice(0, 2).toUpperCase()}
+        <AvatarFallback style={{ backgroundColor: '#1E2D3F' }}>
+          <UserCircle className="w-4 h-4" style={{ color: '#4B5563' }} />
         </AvatarFallback>
       </Avatar>
 

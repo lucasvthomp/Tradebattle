@@ -3,8 +3,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
-import { TrendingUp, Users, Clock, Trophy, Zap, Target, DollarSign, Flame, Star, ArrowRight, Activity, BarChart3, Plus, Bell, Gift } from "lucide-react";
-import { Card } from "@/components/ui/card";
+import {
+  TrendingUp, Users, Clock, Trophy, Zap, DollarSign,
+  ArrowRight, BarChart3, Plus, ChevronRight,
+} from "lucide-react";
 
 export default function Hub() {
   const { user } = useAuth();
@@ -15,506 +17,158 @@ export default function Hub() {
     return () => clearInterval(timer);
   }, []);
 
-  const { data: tournamentsData } = useQuery({
-    queryKey: ['/api/tournaments'],
-  });
+  const { data: tournamentsData } = useQuery({ queryKey: ['/api/tournaments'] });
 
-  const { data: notificationsData } = useQuery({
-    queryKey: ['/api/notifications'],
-  });
-
-  const activeTournaments = tournamentsData?.data?.filter((t: any) => t.status === 'active') || [];
-  const upcomingTournaments = tournamentsData?.data?.filter((t: any) => t.status === 'upcoming') || [];
-  const unreadNotifications = notificationsData?.unreadCount || 0;
+  const activeTournaments = (tournamentsData as any)?.data?.filter((t: any) => t.status === 'active') || [];
+  const upcomingTournaments = (tournamentsData as any)?.data?.filter((t: any) => t.status === 'upcoming') || [];
 
   const getGreeting = () => {
-    const hour = currentTime.getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
+    const h = currentTime.getHours();
+    if (h < 12) return "Good morning";
+    if (h < 18) return "Good afternoon";
     return "Good evening";
   };
 
-  // EXPLOSIVE background particles - 25 total for Times Square energy
-  const particles = Array.from({ length: 25 }).map((_, i) => ({
-    id: i,
-    left: `${Math.random() * 100}%`,
-    size: Math.random() * 4 + 2, // Varied sizes 2-6px
-    duration: Math.random() * 15 + 15, // Faster 15-30s
-    delay: Math.random() * 5,
-    opacity: Math.random() * 0.3 + 0.2, // Varied opacity 0.2-0.5
-  }));
+  const cardBase = {
+    background: '#131F35',
+    border: '1px solid #1E3050',
+    borderRadius: '12px',
+  };
 
-  // Shooting stars that streak across screen
-  const shootingStars = Array.from({ length: 5 }).map((_, i) => ({
-    id: i,
-    top: `${Math.random() * 60 + 20}%`,
-    duration: Math.random() * 3 + 2,
-    delay: Math.random() * 10,
-  }));
+  const stats = [
+    { label: 'Balance', value: `$${(Number(user?.siteCash) || 0).toFixed(2)}`, color: '#E3B341', icon: DollarSign },
+    { label: 'Wins', value: String(user?.tournamentWins || 0), color: '#28C76F', icon: Trophy },
+    { label: 'Live', value: String(activeTournaments.length), color: '#8B5CF6', icon: Zap },
+    { label: 'Trades', value: String(user?.totalTrades || 0), color: '#06B6D4', icon: BarChart3 },
+  ];
+
+  const quickActions = [
+    { label: 'Trade Now', sub: 'Open a tournament', href: '/dashboard', color: '#28C76F', icon: TrendingUp },
+    { label: 'Blitz', sub: '1v1 · 5 min match', href: '/blitz', color: '#8B5CF6', icon: Zap },
+    { label: 'Tournaments', sub: 'Browse & join', href: '/tournaments', color: '#E3B341', icon: Trophy },
+    { label: 'Leaderboard', sub: 'See where you rank', href: '/leaderboard', color: '#06B6D4', icon: BarChart3 },
+  ];
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#06121F',
-      padding: '32px 20px',
-      position: 'relative',
-      overflow: 'hidden',
-    }}>
-      {/* EXPLOSIVE ambient particles - varied sizes and speeds */}
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          style={{
-            position: 'absolute',
-            width: `${particle.size}px`,
-            height: `${particle.size}px`,
-            borderRadius: '50%',
-            background: '#E3B341',
-            left: particle.left,
-            top: '-10px',
-            pointerEvents: 'none',
-            opacity: particle.opacity,
-          }}
-          animate={{
-            y: ['0vh', '110vh'],
-            opacity: [0, particle.opacity, 0],
-            scale: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: particle.duration,
-            repeat: Infinity,
-            delay: particle.delay,
-            ease: 'linear',
-          }}
-        />
-      ))}
+    <div style={{ minHeight: '100vh', background: '#06121F', padding: '32px 20px' }}>
+      <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
-      {/* Shooting stars streaking across */}
-      {shootingStars.map((star) => (
-        <motion.div
-          key={`star-${star.id}`}
-          style={{
-            position: 'absolute',
-            width: '100px',
-            height: '2px',
-            background: 'linear-gradient(90deg, transparent, #E3B341, transparent)',
-            left: '-120px',
-            top: star.top,
-            pointerEvents: 'none',
-          }}
-          animate={{
-            x: ['0vw', '120vw'],
-            opacity: [0, 1, 0],
-          }}
-          transition={{
-            duration: star.duration,
-            repeat: Infinity,
-            delay: star.delay,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-
-      {/* Multiple pulsing ambient glows for depth */}
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: '10%',
-          right: '10%',
-          width: '600px',
-          height: '600px',
-          background: 'radial-gradient(circle, rgba(227, 179, 65, 0.08) 0%, transparent 70%)',
-          pointerEvents: 'none',
-          filter: 'blur(80px)',
-        }}
-        animate={{
-          opacity: [0.5, 1, 0.5],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-      <motion.div
-        style={{
-          position: 'absolute',
-          bottom: '20%',
-          left: '15%',
-          width: '500px',
-          height: '500px',
-          background: 'radial-gradient(circle, rgba(40, 199, 111, 0.06) 0%, transparent 70%)',
-          pointerEvents: 'none',
-          filter: 'blur(80px)',
-        }}
-        animate={{
-          opacity: [0.3, 0.7, 0.3],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          width: '400px',
-          height: '400px',
-          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
-          pointerEvents: 'none',
-          filter: 'blur(80px)',
-          transform: 'translate(-50%, -50%)',
-        }}
-        animate={{
-          opacity: [0.4, 0.8, 0.4],
-          scale: [1, 1.2, 1],
-        }}
-        transition={{
-          duration: 6,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-
-        {/* Compact Header */}
-        <div className="mb-6 sm:mb-8 flex justify-between items-center flex-wrap gap-4">
-          <div>
-            <motion.h1
-              className="text-2xl sm:text-3xl lg:text-4xl font-extrabold mb-2"
-              style={{
-                background: 'linear-gradient(135deg, #C9D1E2 0%, #E3B341 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-              animate={{
-                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-              }}
-              transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
-            >
-              {getGreeting()}, {user?.username} 👋
-            </motion.h1>
-            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <p className="text-sm sm:text-base" style={{ color: '#8A93A6' }}>
-                {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-              </p>
-              {activeTournaments.length > 0 && (
-                <motion.div
-                  animate={{
-                    scale: [1, 1.05, 1],
-                    boxShadow: [
-                      '0 0 10px rgba(40, 199, 111, 0.3)',
-                      '0 0 20px rgba(40, 199, 111, 0.6)',
-                      '0 0 10px rgba(40, 199, 111, 0.3)',
-                    ],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '6px 12px',
-                    background: 'rgba(40, 199, 111, 0.15)',
-                    border: '1px solid rgba(40, 199, 111, 0.4)',
-                    borderRadius: '20px',
-                    fontSize: '12px',
-                    fontWeight: '700',
-                    color: '#28C76F',
-                  }}
-                >
-                  <motion.div
-                    animate={{ scale: [1, 1.5, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    style={{
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      background: '#28C76F',
-                    }}
-                  />
-                  {activeTournaments.length} LIVE NOW
-                </motion.div>
-              )}
-            </div>
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '32px' }}>
+          <h1 style={{ fontSize: '26px', fontWeight: '700', color: '#E2E8F0', margin: '0 0 4px' }}>
+            {getGreeting()}, {user?.username}
+          </h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <span style={{ fontSize: '13px', color: '#64748B' }}>
+              {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </span>
+            {activeTournaments.length > 0 && (
+              <span style={{
+                display: 'inline-flex', alignItems: 'center', gap: '5px',
+                padding: '3px 10px', borderRadius: '20px',
+                background: 'rgba(40,199,111,0.12)', border: '1px solid rgba(40,199,111,0.3)',
+                fontSize: '12px', fontWeight: '600', color: '#28C76F',
+              }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#28C76F', display: 'inline-block' }} />
+                {activeTournaments.length} live
+              </span>
+            )}
           </div>
+        </motion.div>
 
-          {unreadNotifications > 0 && (
-            <Link href="/notifications">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  background: 'rgba(227, 179, 65, 0.1)',
-                  border: '1px solid rgba(227, 179, 65, 0.3)',
-                  borderRadius: '8px',
-                  color: '#E3B341',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                  cursor: 'pointer',
-                }}
-              >
-                <Bell size={16} />
-                {unreadNotifications} new notification{unreadNotifications !== 1 ? 's' : ''}
-              </motion.button>
-            </Link>
-          )}
+        {/* Stats Row */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '28px' }} className="hub-stats">
+          {stats.map((s, i) => (
+            <motion.div
+              key={s.label}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.06 }}
+              whileHover={{ y: -2 }}
+              style={{ ...cardBase, padding: '16px', cursor: 'default' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
+                <s.icon size={15} style={{ color: s.color, opacity: 0.7 }} />
+              </div>
+              <div style={{ fontSize: '24px', fontWeight: '700', color: s.color }}>{s.value}</div>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Stats Grid - Mobile responsive */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <motion.div
-            whileHover={{ scale: 1.08, y: -5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-          >
-            <Card className="p-3 sm:p-5" style={{
-              background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2937 100%)',
-              border: '1px solid #2B3A4C',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-              cursor: 'pointer',
-            }}>
-              <div className="flex justify-between items-start mb-2 sm:mb-3">
-                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
-                  Balance
-                </div>
-                <motion.div
-                  animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#E3B341', opacity: 0.6 }} />
-                </motion.div>
+        {/* Main grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px' }} className="hub-grid">
+
+          {/* Left: tournaments */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+            {/* Quick Actions */}
+            <div style={{ ...cardBase, padding: '20px' }}>
+              <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2', marginBottom: '14px' }}>Quick Actions</h2>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                {quickActions.map((a, i) => (
+                  <Link key={a.href} href={a.href}>
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: '12px',
+                        padding: '14px', borderRadius: '10px', cursor: 'pointer',
+                        background: `${a.color}0D`,
+                        border: `1px solid ${a.color}30`,
+                        transition: 'border-color 150ms ease',
+                      }}
+                    >
+                      <div style={{
+                        width: '36px', height: '36px', borderRadius: '8px', flexShrink: 0,
+                        background: `${a.color}20`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      }}>
+                        <a.icon size={16} style={{ color: a.color }} />
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#E2E8F0' }}>{a.label}</div>
+                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '1px' }}>{a.sub}</div>
+                      </div>
+                    </motion.div>
+                  </Link>
+                ))}
               </div>
-              <motion.div
-                className="text-xl sm:text-2xl lg:text-3xl font-bold"
-                style={{ color: '#E3B341' }}
-                animate={{
-                  textShadow: [
-                    '0 0 10px rgba(227, 179, 65, 0.5)',
-                    '0 0 20px rgba(227, 179, 65, 0.8)',
-                    '0 0 10px rgba(227, 179, 65, 0.5)',
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                ${(Number(user?.siteCash) || 0).toFixed(2)}
-              </motion.div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ scale: 1.08, y: -5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-          >
-            <Card className="p-3 sm:p-5" style={{
-              background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E24 100%)',
-              border: '1px solid #2B3A4C',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-              cursor: 'pointer',
-            }}>
-              <div className="flex justify-between items-start mb-2 sm:mb-3">
-                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
-                  Wins
-                </div>
-                <motion.div
-                  animate={{ y: [0, -5, 0], rotate: [0, 15, -15, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <Trophy className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#28C76F', opacity: 0.6 }} />
-                </motion.div>
-              </div>
-              <motion.div
-                className="text-xl sm:text-2xl lg:text-3xl font-bold"
-                style={{ color: '#28C76F' }}
-                animate={{
-                  textShadow: [
-                    '0 0 10px rgba(40, 199, 111, 0.5)',
-                    '0 0 20px rgba(40, 199, 111, 0.8)',
-                    '0 0 10px rgba(40, 199, 111, 0.5)',
-                  ],
-                }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                {user?.tournamentWins || 0}
-              </motion.div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ scale: 1.08, y: -5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-          >
-            <Card className="p-3 sm:p-5" style={{
-              background: 'linear-gradient(135deg, #1E2D3F 0%, #1E2640 100%)',
-              border: '1px solid #2B3A4C',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-              cursor: 'pointer',
-            }}>
-              <div className="flex justify-between items-start mb-2 sm:mb-3">
-                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
-                  Active Now
-                </div>
-                <motion.div
-                  animate={{ scale: [1, 1.3, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <Activity className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#6366F1', opacity: 0.6 }} />
-                </motion.div>
-              </div>
-              <motion.div
-                className="text-xl sm:text-2xl lg:text-3xl font-bold"
-                style={{ color: '#6366F1' }}
-                animate={{
-                  textShadow: [
-                    '0 0 10px rgba(99, 102, 241, 0.5)',
-                    '0 0 20px rgba(99, 102, 241, 0.8)',
-                    '0 0 10px rgba(99, 102, 241, 0.5)',
-                  ],
-                }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                {activeTournaments.length}
-              </motion.div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            whileHover={{ scale: 1.08, y: -5 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-          >
-            <Card className="p-3 sm:p-5" style={{
-              background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E35 100%)',
-              border: '1px solid #2B3A4C',
-              boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-              cursor: 'pointer',
-            }}>
-              <div className="flex justify-between items-start mb-2 sm:mb-3">
-                <div className="text-[10px] sm:text-xs font-semibold uppercase tracking-wide" style={{ color: '#8A93A6' }}>
-                  Total Trades
-                </div>
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                >
-                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#06B6D4', opacity: 0.6 }} />
-                </motion.div>
-              </div>
-              <motion.div
-                className="text-xl sm:text-2xl lg:text-3xl font-bold"
-                style={{ color: '#06B6D4' }}
-                animate={{
-                  textShadow: [
-                    '0 0 10px rgba(6, 182, 212, 0.5)',
-                    '0 0 20px rgba(6, 182, 212, 0.8)',
-                    '0 0 10px rgba(6, 182, 212, 0.5)',
-                  ],
-                }}
-                transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                {user?.totalTrades || 0}
-              </motion.div>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
-
-          {/* Left Column - Tournaments */}
-          <div className="lg:col-span-8">
+            </div>
 
             {/* Live Tournaments */}
             {activeTournaments.length > 0 && (
-              <div style={{ marginBottom: '24px' }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '16px',
-                }}>
-                  <h2 style={{
-                    fontSize: '18px',
-                    fontWeight: '700',
-                    color: '#C9D1E2',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                  }}>
-                    <div style={{
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      background: '#28C76F',
-                      animation: 'pulse 2s ease-in-out infinite',
-                    }} />
-                    Live Tournaments
-                  </h2>
+              <div style={{ ...cardBase, padding: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2' }}>Live Now</h2>
                   <Link href="/tournaments">
-                    <span style={{ fontSize: '14px', color: '#E3B341', cursor: 'pointer', fontWeight: '500' }}>
-                      View all →
-                    </span>
+                    <span style={{ fontSize: '12px', color: '#E3B341', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
                   </Link>
                 </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {activeTournaments.slice(0, 3).map((tournament: any, index: number) => (
-                    <Link key={tournament.id} href="/tournaments">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {activeTournaments.slice(0, 3).map((t: any, i: number) => (
+                    <Link key={t.id} href="/tournaments">
                       <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.1, type: 'spring', stiffness: 100 }}
-                        whileHover={{ scale: 1.05, x: 8, boxShadow: '0 8px 30px rgba(40, 199, 111, 0.3)' }}
-                        whileTap={{ scale: 0.98 }}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        whileHover={{ x: 4 }}
                         style={{
-                          padding: '20px',
-                          background: 'linear-gradient(135deg, #1E2D3F 0%, #1A2E24 100%)',
-                          border: '2px solid #2B3A4C',
-                          borderRadius: '12px',
-                          cursor: 'pointer',
-                          transition: 'all 0.3s',
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          padding: '12px 14px', borderRadius: '8px', cursor: 'pointer',
+                          background: 'rgba(40,199,111,0.06)', border: '1px solid rgba(40,199,111,0.15)',
                         }}
-                        onMouseEnter={(e) => e.currentTarget.style.borderColor = '#28C76F'}
-                        onMouseLeave={(e) => e.currentTarget.style.borderColor = '#2B3A4C'}
                       >
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                          <div>
-                            <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#C9D1E2', marginBottom: '4px' }}>
-                              {tournament.name}
-                            </h3>
-                            <div style={{ fontSize: '14px', color: '#E3B341', fontWeight: '500' }}>
-                              ${tournament.buyInAmount || 0} buy-in • ${tournament.currentPot || 0} pool
-                            </div>
-                          </div>
-                          <div style={{
-                            padding: '4px 10px',
-                            background: 'rgba(40, 199, 111, 0.15)',
-                            border: '1px solid rgba(40, 199, 111, 0.3)',
-                            borderRadius: '6px',
-                            fontSize: '11px',
-                            fontWeight: '600',
-                            color: '#28C76F',
-                            textTransform: 'uppercase',
-                          }}>
-                            Live
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#E2E8F0' }}>{t.name}</div>
+                          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                            {t.participantCount || 0}/{t.maxPlayers} players · ${Number(t.buyInAmount || 0).toFixed(0)} buy-in
                           </div>
                         </div>
-                        <div style={{ display: 'flex', gap: '20px', fontSize: '13px', color: '#8A93A6' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Users size={14} />
-                            {tournament.currentPlayers || 0} players
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Clock size={14} />
-                            Ends {new Date(tournament.endTime).toLocaleDateString()}
-                          </div>
-                        </div>
+                        <div style={{
+                          padding: '3px 8px', borderRadius: '20px',
+                          background: 'rgba(40,199,111,0.15)', fontSize: '11px', fontWeight: '700', color: '#28C76F',
+                        }}>LIVE</div>
                       </motion.div>
                     </Link>
                   ))}
@@ -522,304 +176,162 @@ export default function Hub() {
               </div>
             )}
 
-            {/* Quick Actions */}
-            <div>
-              <h2 style={{
-                fontSize: '18px',
-                fontWeight: '700',
-                color: '#C9D1E2',
-                marginBottom: '16px',
-              }}>
-                Quick Actions
-              </h2>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Link href="/tournaments">
-                  <motion.button
-                    whileHover={{ scale: 1.12, y: -4 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    animate={{
-                      boxShadow: [
-                        '0 4px 20px rgba(227, 179, 65, 0.3)',
-                        '0 8px 30px rgba(227, 179, 65, 0.5)',
-                        '0 4px 20px rgba(227, 179, 65, 0.3)',
-                      ],
-                    }}
-                    transition={{
-                      boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.25) 0%, rgba(227, 179, 65, 0.1) 100%)',
-                      border: '1px solid rgba(227, 179, 65, 0.5)',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                    }}
-                  >
-                    <motion.div
-                      animate={{ rotate: [0, 90, 0], scale: [1, 1.2, 1] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                      style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '8px',
-                        background: 'rgba(227, 179, 65, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Plus size={20} style={{ color: '#E3B341' }} />
-                    </motion.div>
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#E3B341', marginBottom: '2px' }}>
-                        Join Tournament
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#8A93A6' }}>
-                        Compete now
-                      </div>
-                    </div>
-                  </motion.button>
-                </Link>
-
-                <Link href="/dashboard">
-                  <motion.button
-                    whileHover={{ scale: 1.12, y: -4 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    animate={{
-                      boxShadow: [
-                        '0 4px 20px rgba(99, 102, 241, 0.3)',
-                        '0 8px 30px rgba(99, 102, 241, 0.5)',
-                        '0 4px 20px rgba(99, 102, 241, 0.3)',
-                      ],
-                    }}
-                    transition={{
-                      boxShadow: { duration: 2.5, repeat: Infinity, ease: 'easeInOut' },
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.25) 0%, rgba(99, 102, 241, 0.1) 100%)',
-                      border: '1px solid rgba(99, 102, 241, 0.5)',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                    }}
-                  >
-                    <motion.div
-                      animate={{ y: [-3, 3, -3] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                      style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '8px',
-                        background: 'rgba(99, 102, 241, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <TrendingUp size={20} style={{ color: '#6366F1' }} />
-                    </motion.div>
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#6366F1', marginBottom: '2px' }}>
-                        Portfolio
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#8A93A6' }}>
-                        Track performance
-                      </div>
-                    </div>
-                  </motion.button>
-                </Link>
-
-                <Link href="/leaderboard">
-                  <motion.button
-                    whileHover={{ scale: 1.12, y: -4 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    animate={{
-                      boxShadow: [
-                        '0 4px 20px rgba(40, 199, 111, 0.3)',
-                        '0 8px 30px rgba(40, 199, 111, 0.5)',
-                        '0 4px 20px rgba(40, 199, 111, 0.3)',
-                      ],
-                    }}
-                    transition={{
-                      boxShadow: { duration: 2.3, repeat: Infinity, ease: 'easeInOut' },
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(40, 199, 111, 0.25) 0%, rgba(40, 199, 111, 0.1) 100%)',
-                      border: '1px solid rgba(40, 199, 111, 0.5)',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                    }}
-                  >
-                    <motion.div
-                      animate={{ rotate: [-5, 5, -5], y: [0, -3, 0] }}
-                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-                      style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '8px',
-                        background: 'rgba(40, 199, 111, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Trophy size={20} style={{ color: '#28C76F' }} />
-                    </motion.div>
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#28C76F', marginBottom: '2px' }}>
-                        Leaderboard
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#8A93A6' }}>
-                        See rankings
-                      </div>
-                    </div>
-                  </motion.button>
-                </Link>
-
-                <Link href="/shop">
-                  <motion.button
-                    whileHover={{ scale: 1.12, y: -4 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                    animate={{
-                      boxShadow: [
-                        '0 4px 20px rgba(236, 72, 153, 0.3)',
-                        '0 8px 30px rgba(236, 72, 153, 0.5)',
-                        '0 4px 20px rgba(236, 72, 153, 0.3)',
-                      ],
-                    }}
-                    transition={{
-                      boxShadow: { duration: 2.7, repeat: Infinity, ease: 'easeInOut' },
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.25) 0%, rgba(236, 72, 153, 0.1) 100%)',
-                      border: '1px solid rgba(236, 72, 153, 0.5)',
-                      borderRadius: '10px',
-                      cursor: 'pointer',
-                      textAlign: 'left',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '12px',
-                    }}
-                  >
-                    <motion.div
-                      animate={{ scale: [1, 1.2, 1], rotate: [0, -15, 15, 0] }}
-                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                      style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '8px',
-                        background: 'rgba(236, 72, 153, 0.3)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Gift size={20} style={{ color: '#EC4899' }} />
-                    </motion.div>
-                    <div>
-                      <div style={{ fontSize: '14px', fontWeight: '700', color: '#EC4899', marginBottom: '2px' }}>
-                        Rewards
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#8A93A6' }}>
-                        Redeem codes
-                      </div>
-                    </div>
-                  </motion.button>
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Upcoming & Activity */}
-          <div className="lg:col-span-4">
-
-            {/* Upcoming Tournaments */}
+            {/* Upcoming */}
             {upcomingTournaments.length > 0 && (
-              <div style={{ marginBottom: '24px' }}>
-                <h2 style={{
-                  fontSize: '18px',
-                  fontWeight: '700',
-                  color: '#C9D1E2',
-                  marginBottom: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}>
-                  <Clock size={18} style={{ color: '#8A93A6' }} />
-                  Coming Soon
-                </h2>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  {upcomingTournaments.slice(0, 4).map((tournament: any) => (
-                    <Card key={tournament.id} style={{
-                      padding: '16px',
-                      background: '#1E2D3F',
-                      border: '1px solid #2B3A4C',
-                    }}>
-                      <div style={{ fontSize: '14px', fontWeight: '600', color: '#C9D1E2', marginBottom: '8px' }}>
-                        {tournament.name}
-                      </div>
-                      <div style={{ fontSize: '13px', color: '#E3B341', marginBottom: '8px', fontWeight: '500' }}>
-                        ${tournament.buyInAmount || 0} buy-in
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#8A93A6', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <Clock size={12} />
-                        {new Date(tournament.startTime).toLocaleDateString()}
-                      </div>
-                    </Card>
+              <div style={{ ...cardBase, padding: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+                  <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2' }}>Upcoming</h2>
+                  <Link href="/tournaments">
+                    <span style={{ fontSize: '12px', color: '#E3B341', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
+                  </Link>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {upcomingTournaments.slice(0, 3).map((t: any, i: number) => (
+                    <Link key={t.id} href="/tournaments">
+                      <motion.div
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        whileHover={{ x: 4 }}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          padding: '12px 14px', borderRadius: '8px', cursor: 'pointer',
+                          background: '#0D1825', border: '1px solid #1E3050',
+                        }}
+                      >
+                        <div>
+                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#E2E8F0' }}>{t.name}</div>
+                          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                            {t.participantCount || 0}/{t.maxPlayers} · ${Number(t.buyInAmount || 0).toFixed(0)} buy-in
+                          </div>
+                        </div>
+                        <Clock size={14} style={{ color: '#64748B' }} />
+                      </motion.div>
+                    </Link>
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Performance Tips */}
-            <Card style={{
-              padding: '20px',
-              background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.08) 0%, rgba(227, 179, 65, 0.02) 100%)',
-              border: '1px solid rgba(227, 179, 65, 0.2)',
-            }}>
-              <h3 style={{ fontSize: '14px', fontWeight: '600', color: '#E3B341', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                💡 Pro Tip
-              </h3>
-              <p style={{ fontSize: '13px', color: '#C9D1E2', lineHeight: '1.6' }}>
-                Join tournaments early to scout competition and plan your strategy. The first hour is crucial for building momentum.
-              </p>
-            </Card>
+            {activeTournaments.length === 0 && upcomingTournaments.length === 0 && (
+              <div style={{ ...cardBase, padding: '32px', textAlign: 'center' }}>
+                <Trophy size={32} style={{ color: '#1E3050', margin: '0 auto 12px' }} />
+                <p style={{ fontSize: '14px', color: '#C9D1E2', marginBottom: '4px' }}>No tournaments active</p>
+                <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '16px' }}>Create one or join an existing tournament</p>
+                <Link href="/tournaments">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '6px',
+                      padding: '10px 20px', borderRadius: '8px',
+                      background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
+                      border: 'none', color: '#06121F', fontWeight: '700', fontSize: '13px', cursor: 'pointer',
+                    }}
+                  >
+                    <Plus size={14} /> Browse Tournaments
+                  </motion.button>
+                </Link>
+              </div>
+            )}
+          </div>
+
+          {/* Right: info panels */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+            {/* Blitz teaser */}
+            <Link href="/blitz">
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                style={{
+                  borderRadius: '12px', padding: '20px', cursor: 'pointer',
+                  background: 'linear-gradient(135deg, #1A1040 0%, #0F1428 100%)',
+                  border: '1px solid rgba(139,92,246,0.35)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                  <div style={{
+                    width: '34px', height: '34px', borderRadius: '8px',
+                    background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  }}>
+                    <Zap size={16} color="#fff" />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#E2E8F0' }}>Blitz Mode</div>
+                    <div style={{ fontSize: '11px', color: '#8B5CF6' }}>1v1 · 5 minutes</div>
+                  </div>
+                </div>
+                <p style={{ fontSize: '12px', color: '#8A93A6', lineHeight: '1.5', margin: '0 0 12px' }}>
+                  Instant matchmaking. Trade against a real opponent for 5 minutes — highest portfolio wins.
+                </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '600', color: '#8B5CF6' }}>
+                  Find a match <ArrowRight size={12} />
+                </div>
+              </motion.div>
+            </Link>
+
+            {/* Account snapshot */}
+            <div style={{ ...cardBase, padding: '18px' }}>
+              <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#C9D1E2', marginBottom: '12px' }}>Account</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {[
+                  { label: 'Balance', value: `$${(Number(user?.siteCash) || 0).toFixed(2)}`, color: '#E3B341' },
+                  { label: 'Tournament Wins', value: String(user?.tournamentWins || 0), color: '#28C76F' },
+                  { label: 'Total Trades', value: String(user?.totalTrades || 0), color: '#06B6D4' },
+                ].map(row => (
+                  <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontSize: '12px', color: '#64748B' }}>{row.label}</span>
+                    <span style={{ fontSize: '13px', fontWeight: '600', color: row.color }}>{row.value}</span>
+                  </div>
+                ))}
+              </div>
+              <Link href="/deposit">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  style={{
+                    width: '100%', marginTop: '14px', padding: '9px',
+                    borderRadius: '8px', border: '1px solid rgba(227,179,65,0.3)',
+                    background: 'rgba(227,179,65,0.08)', color: '#E3B341',
+                    fontSize: '12px', fontWeight: '600', cursor: 'pointer',
+                  }}
+                >
+                  Deposit Funds
+                </motion.button>
+              </Link>
+            </div>
+
+            {/* Market status */}
+            <div style={{ ...cardBase, padding: '16px' }}>
+              <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#C9D1E2', marginBottom: '10px' }}>Market</h3>
+              {(() => {
+                const hour = currentTime.getHours();
+                const day = currentTime.getDay();
+                const isWeekday = day >= 1 && day <= 5;
+                const isOpen = isWeekday && hour >= 9 && hour < 16;
+                return (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{
+                      width: '8px', height: '8px', borderRadius: '50%',
+                      background: isOpen ? '#28C76F' : '#EF4444',
+                    }} />
+                    <span style={{ fontSize: '13px', color: isOpen ? '#28C76F' : '#EF4444', fontWeight: '600' }}>
+                      {isOpen ? 'Market Open' : 'Market Closed'}
+                    </span>
+                  </div>
+                );
+              })()}
+              <p style={{ fontSize: '11px', color: '#64748B', marginTop: '6px' }}>Mon–Fri 9:30 AM – 4:00 PM ET</p>
+            </div>
+
           </div>
         </div>
       </div>
 
       <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-        @media (min-width: 1024px) {
-          .lg\\:col-span-8 { grid-column: span 8 / span 8; }
-          .lg\\:col-span-4 { grid-column: span 4 / span 4; }
+        @media (max-width: 768px) {
+          .hub-stats { grid-template-columns: repeat(2, 1fr) !important; }
+          .hub-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

@@ -141,8 +141,8 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
               {group.profilePicture && (
                 <AvatarImage src={group.profilePicture} className="object-cover" />
               )}
-              <AvatarFallback className="text-xs font-semibold" style={{ backgroundColor: '#1E2D3F', color: '#E3B341' }}>
-                {group.username.slice(0, 2).toUpperCase()}
+              <AvatarFallback style={{ backgroundColor: '#1E2D3F' }}>
+                <UserCircle className="w-5 h-5" style={{ color: '#4B5563' }} />
               </AvatarFallback>
             </Avatar>
           </div>
@@ -523,8 +523,8 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       onMouseEnter={() => setMentionIndex(i)}
                     >
                       <Avatar className="w-5 h-5">
-                        <AvatarFallback className="text-[8px] font-semibold" style={{ backgroundColor: '#1E2D3F', color: '#E3B341' }}>
-                          {u.username.slice(0, 2).toUpperCase()}
+                        <AvatarFallback style={{ backgroundColor: '#1E2D3F' }}>
+                          <UserCircle className="w-3 h-3" style={{ color: '#4B5563' }} />
                         </AvatarFallback>
                       </Avatar>
                       <span className="font-medium" style={{ color: '#E3B341' }}>@{u.username}</span>
