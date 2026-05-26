@@ -231,12 +231,7 @@ export function TradingSidebar({
             value={selectedTournament?.id?.toString() || ""}
             onValueChange={(value) => {
               const t = activeTournaments.find((t: any) => t.id.toString() === value);
-              if (t) {
-                onTournamentChange(t);
-                // Switch to default symbol for tournament type
-                const defaultSymbol = t.tournamentType === 'crypto' ? 'BTC-USD' : 'AAPL';
-                onSymbolChange(defaultSymbol);
-              }
+              if (t) onTournamentChange(t);
             }}
           >
             <SelectTrigger
@@ -306,6 +301,75 @@ export function TradingSidebar({
         </div>
       )}
 
+      {/* Persistent Symbol Search Bar */}
+      <div className="px-3 py-2 shrink-0" style={{ borderBottom: "1px solid #1F2937" }}>
+        <div className="relative">
+          <Search
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
+            style={{ color: "#94A3B8" }}
+          />
+          <Input
+            placeholder={selectedSymbol || "Search symbol..."}
+            value={showSearch ? searchQuery : ""}
+            onFocus={() => setShowSearch(true)}
+            onChange={(e) => {
+              setShowSearch(true);
+              setSearchQuery(e.target.value.toUpperCase());
+            }}
+            className="h-9 pl-8 pr-8 text-sm"
+            style={{
+              backgroundColor: "#080C14",
+              borderColor: "#1F2937",
+              color: "#FFFFFF",
+            }}
+          />
+          {showSearch && (
+            <button
+              onClick={() => { setShowSearch(false); setSearchQuery(""); }}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2"
+            >
+              <X className="w-3.5 h-3.5" style={{ color: "#94A3B8" }} />
+            </button>
+          )}
+        </div>
+        {/* Search Results Dropdown */}
+        {showSearch && searchQuery.length >= 1 && (
+          <div
+            className="absolute left-3 right-3 z-50 rounded-lg overflow-hidden"
+            style={{ backgroundColor: "#111827", border: "1px solid #1F2937", marginTop: "4px" }}
+          >
+            {isSearching ? (
+              <div className="px-3 py-2 space-y-1.5">
+                {[1, 2, 3].map((i) => <Skeleton key={i} className="h-8 w-full" />)}
+              </div>
+            ) : searchResults.length > 0 ? (
+              searchResults.map((result: any) => (
+                <button
+                  key={result.symbol}
+                  onClick={() => { handleSearchSelect(result.symbol); setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
+                  className="w-full px-3 py-2.5 text-left hover:bg-[#0F172A] flex items-center justify-between transition-colors"
+                  style={{ borderBottom: "1px solid rgba(31,41,55,0.5)" }}
+                >
+                  <div>
+                    <span className="text-sm font-bold" style={{ color: "#06B6D4" }}>{result.symbol}</span>
+                    {result.name && (
+                      <div className="text-xs mt-0.5 truncate" style={{ color: "#94A3B8" }}>{result.name}</div>
+                    )}
+                  </div>
+                  {result.exchange && (
+                    <span className="text-xs ml-2" style={{ color: "#64748B" }}>{result.exchange}</span>
+                  )}
+                </button>
+              ))
+            ) : (
+              <div className="px-3 py-3 text-center">
+                <span className="text-sm" style={{ color: "#94A3B8" }}>No results for "{searchQuery}"</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Tab Bar */}
       <div
         className="flex items-center shrink-0"
@@ -313,40 +377,33 @@ export function TradingSidebar({
       >
         <button
           onClick={() => setActiveView("positions")}
-          className="flex-1 py-3 md:py-2.5 text-sm md:text-xs font-semibold text-center transition-colors min-h-[44px]"
+          className="flex-1 py-3 md:py-2.5 text-sm font-semibold text-center transition-colors min-h-[44px]"
           style={{
             color: activeView === "positions" ? "#E3B341" : "#94A3B8",
-            borderBottom:
-              activeView === "positions" ? "2px solid #E3B341" : "2px solid transparent",
+            borderBottom: activeView === "positions" ? "2px solid #E3B341" : "2px solid transparent",
           }}
         >
           Positions
         </button>
         <button
           onClick={() => setActiveView("history")}
-          className="flex-1 py-3 md:py-2.5 text-sm md:text-xs font-semibold text-center transition-colors min-h-[44px]"
+          className="flex-1 py-3 md:py-2.5 text-sm font-semibold text-center transition-colors min-h-[44px]"
           style={{
             color: activeView === "history" ? "#E3B341" : "#94A3B8",
-            borderBottom:
-              activeView === "history" ? "2px solid #E3B341" : "2px solid transparent",
+            borderBottom: activeView === "history" ? "2px solid #E3B341" : "2px solid transparent",
           }}
         >
           History
         </button>
         <button
-          onClick={() => {
-            setActiveView("trade");
-            setQuantity(1);
-            setAwaitingConfirm(false);
-          }}
-          className="px-3 py-3 md:py-2.5 flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
+          onClick={() => { setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
+          className="px-4 py-3 md:py-2.5 flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
           style={{
             color: activeView === "trade" ? "#10B981" : "#94A3B8",
-            borderBottom:
-              activeView === "trade" ? "2px solid #10B981" : "2px solid transparent",
+            borderBottom: activeView === "trade" ? "2px solid #10B981" : "2px solid transparent",
           }}
         >
-          <Plus className="w-5 h-5 md:w-4 md:h-4" />
+          <Plus className="w-5 h-5" />
         </button>
       </div>
 
@@ -355,51 +412,35 @@ export function TradingSidebar({
         {/* POSITIONS VIEW */}
         {activeView === "positions" && (
           <div>
-            {/* Compact Summary Stats (2x2 grid) */}
-            <div
-              className="grid grid-cols-2 gap-px"
-              style={{ backgroundColor: "#1F2937", borderBottom: "1px solid #1F2937" }}
-            >
+            {/* Portfolio Summary */}
+            <div className="px-3 pt-3 pb-2 space-y-1.5" style={{ borderBottom: "1px solid #1F2937" }}>
               {[
                 { label: "Cash", value: formatMoney(buyingPower), color: "#F1F5F9" },
                 { label: "Invested", value: formatMoney(invested), color: "#F1F5F9" },
-                {
-                  label: "% Change",
-                  value: (pctChange >= 0 ? "+" : "") + pctChange.toFixed(2) + "%",
-                  color: pctChange >= 0 ? "#10B981" : "#EF4444",
-                },
                 {
                   label: "P/L",
                   value: (totalPL >= 0 ? "+" : "") + formatMoney(totalPL),
                   color: totalPL >= 0 ? "#10B981" : "#EF4444",
                 },
+                {
+                  label: "Return",
+                  value: (pctChange >= 0 ? "+" : "") + pctChange.toFixed(2) + "%",
+                  color: pctChange >= 0 ? "#10B981" : "#EF4444",
+                },
               ].map((s) => (
-                <div
-                  key={s.label}
-                  className="flex flex-col items-center py-2.5 px-2"
-                  style={{ backgroundColor: "#111827" }}
-                >
-                  <span
-                    className="text-[9px] uppercase tracking-wide"
-                    style={{ color: "#64748B" }}
-                  >
-                    {s.label}
-                  </span>
-                  <span className="text-sm font-bold mt-0.5" style={{ color: s.color }}>
-                    {s.value}
-                  </span>
+                <div key={s.label} className="flex items-center justify-between">
+                  <span className="text-xs" style={{ color: "#64748B" }}>{s.label}</span>
+                  <span className="text-sm font-semibold" style={{ color: s.color }}>{s.value}</span>
                 </div>
               ))}
             </div>
 
             {/* Holdings List */}
             <div className="px-3 py-3">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold" style={{ color: "#F1F5F9" }}>
-                  Holdings
-                </span>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>Holdings</span>
                 <span
-                  className="text-[9px] px-1.5 py-0.5 rounded-full font-semibold"
+                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
                   style={{ backgroundColor: "rgba(6, 182, 212, 0.12)", color: "#06B6D4" }}
                 >
                   {holdings.length}
@@ -407,64 +448,51 @@ export function TradingSidebar({
               </div>
 
               {holdings.length === 0 ? (
-                <div className="py-6 text-center">
-                  <p className="text-xs" style={{ color: "#94A3B8" }}>
-                    No holdings yet
-                  </p>
-                  <p className="text-[10px] mt-1" style={{ color: "#64748B" }}>
-                    Press + to search and buy {isCryptoTournament ? "crypto" : "stocks"}
+                <div className="py-8 text-center">
+                  <p className="text-sm" style={{ color: "#94A3B8" }}>No holdings yet</p>
+                  <p className="text-xs mt-1" style={{ color: "#64748B" }}>
+                    Search a symbol above to trade
                   </p>
                 </div>
               ) : (
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {holdings.map((h: any) => {
                     const isSelected = h.symbol === selectedSymbol;
                     const isPositive = (h.profitLoss || 0) >= 0;
                     const changePercent =
                       (h.averagePurchasePrice || 0) > 0
-                        ? ((h.currentPrice - h.averagePurchasePrice) / h.averagePurchasePrice) *
-                          100
+                        ? ((h.currentPrice - h.averagePurchasePrice) / h.averagePurchasePrice) * 100
                         : 0;
 
                     return (
                       <button
                         key={h.symbol}
                         onClick={() => handleHoldingClick(h.symbol)}
-                        className="w-full flex items-center justify-between px-2.5 py-2 rounded transition-colors hover:bg-[#0F172A]"
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors hover:bg-[#0F172A]"
                         style={{
                           backgroundColor: isSelected ? "#0F172A" : "transparent",
-                          borderLeft: isSelected
-                            ? "2px solid #06B6D4"
-                            : "2px solid transparent",
+                          borderLeft: isSelected ? "2px solid #06B6D4" : "2px solid transparent",
                         }}
                       >
                         <div className="text-left">
-                          <div className="flex items-center gap-1.5">
-                            <span
-                              className="text-xs font-bold"
-                              style={{ color: isSelected ? "#06B6D4" : "#FFFFFF" }}
-                            >
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold" style={{ color: isSelected ? "#06B6D4" : "#FFFFFF" }}>
                               {h.symbol}
                             </span>
-                            <span className="text-[10px]" style={{ color: "#64748B" }}>
-                              {h.shares} {isCryptoTournament ? "units" : "shares"}
+                            <span className="text-xs" style={{ color: "#64748B" }}>
+                              {h.shares} {isCryptoTournament ? "units" : "sh"}
                             </span>
                           </div>
-                          <div className="text-[10px] mt-0.5" style={{ color: "#94A3B8" }}>
+                          <div className="text-xs mt-0.5" style={{ color: "#94A3B8" }}>
                             Avg {formatCurrency(h.averagePurchasePrice || 0)}
                           </div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs font-semibold" style={{ color: "#FFFFFF" }}>
+                          <div className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
                             {formatCurrency(h.currentValue || 0)}
                           </div>
-                          <div
-                            className="text-[10px] font-medium"
-                            style={{ color: isPositive ? "#10B981" : "#EF4444" }}
-                          >
-                            {isPositive ? "+" : ""}
-                            {changePercent.toFixed(1)}% ({isPositive ? "+" : ""}
-                            {formatCurrency(h.profitLoss || 0)})
+                          <div className="text-xs font-medium" style={{ color: isPositive ? "#10B981" : "#EF4444" }}>
+                            {isPositive ? "+" : ""}{changePercent.toFixed(1)}%
                           </div>
                         </div>
                       </button>
@@ -514,106 +542,8 @@ export function TradingSidebar({
               </div>
             </div>
 
-            {/* Stock Search */}
-            <div className="px-4 pb-2">
-              <div className="relative">
-                <Search
-                  className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-                  style={{ color: "#94A3B8" }}
-                />
-                <Input
-                  placeholder="Search symbol..."
-                  value={showSearch ? searchQuery : ""}
-                  onFocus={() => setShowSearch(true)}
-                  onChange={(e) => {
-                    setShowSearch(true);
-                    setSearchQuery(e.target.value.toUpperCase());
-                  }}
-                  className="h-8 pl-8 pr-8 text-xs"
-                  style={{
-                    backgroundColor: "#080C14",
-                    borderColor: "#1F2937",
-                    color: "#FFFFFF",
-                  }}
-                />
-                {showSearch && (
-                  <button
-                    onClick={() => {
-                      setShowSearch(false);
-                      setSearchQuery("");
-                    }}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2"
-                  >
-                    <X className="w-3.5 h-3.5" style={{ color: "#94A3B8" }} />
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Search Results */}
-            {showSearch && searchQuery.length >= 1 ? (
-              <div style={{ borderBottom: "1px solid #1F2937" }}>
-                {isSearching ? (
-                  <div className="px-3 py-2 space-y-2">
-                    {[1, 2, 3].map((i) => (
-                      <Skeleton key={i} className="h-8 w-full" />
-                    ))}
-                  </div>
-                ) : searchResults.length > 0 ? (
-                  searchResults.map((result: any) => (
-                    <button
-                      key={result.symbol}
-                      onClick={() => handleSearchSelect(result.symbol)}
-                      className="w-full px-4 py-2.5 text-left hover:bg-[#0F172A] flex items-center justify-between transition-colors"
-                      style={{
-                        borderBottom: "1px solid rgba(31, 41, 55, 0.5)",
-                        backgroundColor:
-                          result.symbol === selectedSymbol ? "#0F172A" : "transparent",
-                      }}
-                    >
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold" style={{ color: "#06B6D4" }}>
-                            {result.symbol}
-                          </span>
-                          {result.type && (
-                            <span
-                              className="text-[9px] px-1.5 py-0.5 rounded-full"
-                              style={{
-                                backgroundColor: "rgba(148, 163, 184, 0.15)",
-                                color: "#94A3B8",
-                              }}
-                            >
-                              {result.type}
-                            </span>
-                          )}
-                        </div>
-                        {result.name && (
-                          <div className="text-[10px] mt-0.5 truncate" style={{ color: "#94A3B8" }}>
-                            {result.name}
-                          </div>
-                        )}
-                      </div>
-                      <div className="text-right ml-3 shrink-0">
-                        {result.exchange && (
-                          <div className="text-[10px]" style={{ color: "#64748B" }}>
-                            {result.exchange}
-                          </div>
-                        )}
-                      </div>
-                    </button>
-                  ))
-                ) : (
-                  <div className="px-3 py-4 text-center">
-                    <span className="text-xs" style={{ color: "#94A3B8" }}>
-                      No results for "{searchQuery}"
-                    </span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                {/* Buy / Short Tabs */}
+            {/* Buy / Short Tabs */}
+            <>
                 <div className="flex mx-4 rounded-lg overflow-hidden" style={{ border: "1px solid #1F2937" }}>
                   <button
                     onClick={() => handleSideChange("buy")}
@@ -858,8 +788,7 @@ export function TradingSidebar({
                     </Button>
                   </div>
                 </div>
-              </>
-            )}
+            </>
           </div>
         )}
       </ScrollArea>

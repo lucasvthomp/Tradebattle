@@ -37,25 +37,12 @@ export default function Dashboard() {
     return all.filter((t: any) => t.status === "active");
   }, [tournamentsResponse]);
 
-  // Auto-select first tournament and set default symbol
+  // Auto-select first tournament; no forced default symbol — let user search
   useEffect(() => {
     if (activeTournaments.length > 0 && !selectedTournament) {
-      const firstTournament = activeTournaments[0];
-      setSelectedTournament(firstTournament);
-
-      // Set default symbol based on tournament type
-      const defaultSymbol = firstTournament.tournamentType === 'crypto' ? 'BTC-USD' : 'AAPL';
-      setSelectedSymbol(defaultSymbol);
+      setSelectedTournament(activeTournaments[0]);
     }
   }, [activeTournaments, selectedTournament]);
-
-  // Update symbol when tournament changes
-  useEffect(() => {
-    if (selectedTournament && selectedSymbol === "") {
-      const defaultSymbol = selectedTournament.tournamentType === 'crypto' ? 'BTC-USD' : 'AAPL';
-      setSelectedSymbol(defaultSymbol);
-    }
-  }, [selectedTournament, selectedSymbol]);
 
   // Fetch tournament balance
   const { data: balanceResponse } = useQuery({
