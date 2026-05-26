@@ -63,8 +63,9 @@ export function SimplifiedSidebar() {
           className="group flex items-center rounded-lg transition-colors duration-200"
           style={{
             height: '44px',
-            paddingLeft: '14px',
-            paddingRight: expanded ? '12px' : '14px',
+            paddingLeft: expanded ? '14px' : '0px',
+            paddingRight: expanded ? '12px' : '0px',
+            justifyContent: expanded ? 'flex-start' : 'center',
             backgroundColor: active ? 'rgba(227, 179, 65, 0.1)' : undefined,
             color: active ? '#E3B341' : '#8A93A6',
           }}
@@ -104,7 +105,7 @@ export function SimplifiedSidebar() {
         style={{
           backgroundColor: '#0B1120',
           borderColor: '#1F2937',
-          width: expanded ? '224px' : '52px',
+          width: expanded ? '224px' : '64px',
           transition: 'width 300ms ease',
           overflow: 'hidden',
         }}
@@ -117,7 +118,8 @@ export function SimplifiedSidebar() {
             style={{
               height: '44px',
               width: '100%',
-              paddingLeft: '14px',
+              paddingLeft: expanded ? '14px' : '0px',
+              justifyContent: expanded ? 'flex-start' : 'center',
               color: '#C9D1E2',
             }}
           >
