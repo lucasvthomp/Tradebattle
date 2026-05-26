@@ -1168,6 +1168,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get all users (admin only)
+  // Admin: reset a user's password by username
+  app.post("/api/admin/users/reset-password", requireAuth, async (req: any, res) => {
+    try {
+      const adminUser = await storage.getUser(req.user.id);
+      if (!adminUser || adminUser.subscriptionTier !== 'administrator') {
+        return res.status(403).json({ message: "Access denied." });
+      }
+      const { username, newPassword } = req.body;
+      if (!username || !newPassword || newPassword.length < 6) {
+        return res.status(400).json({ message: "username and newPassword (min 6 chars) required" });
+      }
+      const targetUser = await storage.getUserByUsername(username);
+      if (!targetUser) return res.status(404).json({ message: "User not found" });
+      const hashed = await hashPassword(newPassword);
+      await storage.updateUser(targetUser.id, { password: hashed });
+      res.json({ success: true, message: `Password reset for ${username}` });
+    } catch (error) {
+      console.error("Admin password reset error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
   app.get("/api/admin/users", requireAuth, async (req: any, res) => {
     try {
       const adminUser = await storage.getUser(req.user.id);
