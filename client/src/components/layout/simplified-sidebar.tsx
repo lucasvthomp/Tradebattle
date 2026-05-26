@@ -71,12 +71,12 @@ export function SimplifiedSidebar() {
         }
       >
         <item.icon
-          className={`w-5 h-5 transition-all duration-300 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`}
+          className={`w-5 h-5 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`} style={{ transition: 'margin 300ms ease' }}
           style={{ color: isActive(item.href) ? item.iconColor : undefined }}
         />
         <span
           className={`text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-            expanded ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'
+            expanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
           }`}
         >
           {item.label}
@@ -90,12 +90,14 @@ export function SimplifiedSidebar() {
       {/* Sidebar - Always visible with icons, expands on click */}
       <div
         data-tour="sidebar"
-        className={`hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 transition-all duration-300 ease-in-out ${
+        className={`hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 ${
           expanded ? 'w-64' : 'w-16'
         }`}
         style={{
-          backgroundColor: '#0B1120',
-          borderColor: '#1F2937'
+          backgroundColor: '#0A1530',
+          borderColor: '#1E3D6B',
+          transition: 'width 300ms ease',
+          overflow: 'hidden',
         }}
       >
         {/* Menu Toggle Button at top */}
@@ -107,10 +109,10 @@ export function SimplifiedSidebar() {
             }`}
             style={{ color: '#C9D1E2' }}
           >
-            <Menu className={`w-5 h-5 transition-all duration-300 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`} />
+            <Menu className={`w-5 h-5 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`} style={{ transition: 'margin 300ms ease' }} />
             <span
               className={`text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                expanded ? 'opacity-100 max-w-xs' : 'opacity-0 max-w-0'
+                expanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
               }`}
             >
               Menu
