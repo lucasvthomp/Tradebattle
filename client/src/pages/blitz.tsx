@@ -18,7 +18,8 @@ export default function Blitz() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const queueMutation = useMutation({
-    mutationFn: () => apiRequest("POST", "/api/blitz/queue"),
+    // apiRequest resolves to a Response — parse the JSON body before reading it.
+    mutationFn: async () => (await apiRequest("POST", "/api/blitz/queue")).json(),
     onSuccess: (data: any) => {
       if (data.status === "matched") {
         setTournamentId(data.tournamentId);
@@ -42,10 +43,11 @@ export default function Blitz() {
 
   function startPolling() {
     clearPolling();
-    // Poll match status every 2s using GET (POST would re-queue)
+    // Poll match status every 2s using GET (read-only — won't re-queue the
+    // player). apiRequest resolves to a Response, so parse the JSON body.
     pollRef.current = setInterval(async () => {
       try {
-        const data: any = await apiRequest("GET", "/api/blitz/status");
+        const data: any = await (await apiRequest("GET", "/api/blitz/status")).json();
         if (data.matched) {
           setTournamentId(data.tournamentId);
           setMatchState("matched");
@@ -230,7 +232,7 @@ export default function Blitz() {
                       <p style={{ fontSize: '14px', color: '#8A93A6', marginBottom: '20px' }}>
                         Your 5-minute battle has started. Good luck!
                       </p>
-                      <Link href={`/tournaments/${tournamentId}`}>
+                      <Link href={`/dashboard?tournament=${tournamentId}`}>
                         <button style={{
                           padding: '12px 28px',
                           background: 'linear-gradient(135deg, #28C76F, #20A85A)',

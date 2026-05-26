@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSearch } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,14 @@ export default function Dashboard() {
 
   const [selectedSymbol, setSelectedSymbol] = useState<string>("");
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
+
+  // Optional ?tournament=<id> to pre-select a specific tournament (e.g. from Blitz).
+  const search = useSearch();
+  const requestedTournamentId = useMemo(() => {
+    const raw = new URLSearchParams(search).get("tournament");
+    const id = raw ? parseInt(raw) : NaN;
+    return Number.isNaN(id) ? null : id;
+  }, [search]);
 
   // Fetch quote for selected symbol
   const { data: quoteResponse } = useQuery({
@@ -37,12 +46,17 @@ export default function Dashboard() {
     return all.filter((t: any) => t.status === "active");
   }, [tournamentsResponse]);
 
-  // Auto-select first tournament; no forced default symbol — let user search
+  // Auto-select a tournament; no forced default symbol — let user search.
+  // Prefer the one named in the URL (?tournament=<id>, e.g. from Blitz),
+  // falling back to the first active tournament.
   useEffect(() => {
     if (activeTournaments.length > 0 && !selectedTournament) {
-      setSelectedTournament(activeTournaments[0]);
+      const requested = requestedTournamentId
+        ? activeTournaments.find((t: any) => t.id === requestedTournamentId)
+        : null;
+      setSelectedTournament(requested || activeTournaments[0]);
     }
-  }, [activeTournaments, selectedTournament]);
+  }, [activeTournaments, selectedTournament, requestedTournamentId]);
 
   // Fetch tournament balance
   const { data: balanceResponse } = useQuery({
