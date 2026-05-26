@@ -53,85 +53,82 @@ export function SimplifiedSidebar() {
     return false;
   };
 
-  const renderNavItem = (item: typeof navItems[0]) => {
-    const active = isActive(item.href);
-    return (
-      <div key={item.href}>
-        <Link
-          href={item.href}
-          {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
-          className="group flex items-center rounded-lg transition-colors duration-200"
+  const renderNavItem = (item: typeof navItems[0]) => (
+    <div key={item.href}>
+      <Link
+        href={item.href}
+        {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
+        className={`group flex items-center rounded-lg transition-colors duration-200 ${
+          expanded ? 'px-3 py-3' : 'w-12 h-12 justify-center mx-auto'
+        } ${
+          isActive(item.href)
+            ? "sidebar-active-indicator"
+            : "hover:bg-[#0F172A] hover:text-white"
+        }`}
+        style={
+          isActive(item.href)
+            ? { backgroundColor: 'rgba(227, 179, 65, 0.1)', color: '#E3B341' }
+            : { color: '#8A93A6' }
+        }
+      >
+        <item.icon
+          className="w-5 h-5 flex-shrink-0"
           style={{
-            height: '44px',
-            paddingLeft: expanded ? '14px' : '0px',
-            paddingRight: expanded ? '12px' : '0px',
-            justifyContent: expanded ? 'flex-start' : 'center',
-            backgroundColor: active ? 'rgba(227, 179, 65, 0.1)' : undefined,
-            color: active ? '#E3B341' : '#8A93A6',
+            color: isActive(item.href) ? item.iconColor : undefined,
+            marginRight: expanded ? '12px' : '0',
+            transition: 'margin 300ms ease',
+          }}
+        />
+        <span
+          className="text-base font-medium whitespace-nowrap overflow-hidden"
+          style={{
+            opacity: expanded ? 1 : 0,
+            maxWidth: expanded ? '160px' : '0',
+            transition: 'opacity 200ms ease, max-width 300ms ease',
           }}
         >
-          {/* Icon — always in the same spot */}
-          <item.icon
-            style={{
-              width: '20px',
-              height: '20px',
-              flexShrink: 0,
-              color: active ? item.iconColor : undefined,
-            }}
-          />
-          {/* Label — slides in to the right of icon */}
-          <span
-            className="text-base font-medium whitespace-nowrap"
-            style={{
-              marginLeft: expanded ? '12px' : '0px',
-              maxWidth: expanded ? '160px' : '0px',
-              opacity: expanded ? 1 : 0,
-              overflow: 'hidden',
-              transition: 'max-width 300ms ease, opacity 200ms ease, margin-left 300ms ease',
-            }}
-          >
-            {item.label}
-          </span>
-        </Link>
-      </div>
-    );
-  };
+          {item.label}
+        </span>
+      </Link>
+    </div>
+  );
 
   return (
     <>
       <div
         data-tour="sidebar"
-        className="hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40"
+        className={`hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40 ${
+          expanded ? 'w-64' : 'w-16'
+        }`}
         style={{
           backgroundColor: '#0B1120',
           borderColor: '#1F2937',
-          width: expanded ? '224px' : '64px',
           transition: 'width 300ms ease',
           overflow: 'hidden',
         }}
       >
-        {/* Menu Toggle */}
-        <div className="border-b" style={{ borderColor: '#1F2937' }}>
+        {/* Menu Toggle Button at top */}
+        <div className="p-2 border-b" style={{ borderColor: '#1F2937' }}>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center hover:bg-[#0F172A] rounded-lg transition-colors duration-200"
-            style={{
-              height: '44px',
-              width: '100%',
-              paddingLeft: expanded ? '14px' : '0px',
-              justifyContent: expanded ? 'flex-start' : 'center',
-              color: '#C9D1E2',
-            }}
+            className={`flex items-center hover:bg-[#0F172A] rounded-lg transition-colors duration-200 ${
+              expanded ? 'w-full px-3 py-3 justify-start' : 'w-12 h-12 justify-center mx-auto'
+            }`}
+            style={{ color: '#C9D1E2' }}
           >
-            <Menu style={{ width: '20px', height: '20px', flexShrink: 0 }} />
-            <span
-              className="text-base font-medium whitespace-nowrap"
+            <Menu
+              className="w-5 h-5 flex-shrink-0"
               style={{
-                marginLeft: expanded ? '12px' : '0px',
-                maxWidth: expanded ? '160px' : '0px',
+                marginRight: expanded ? '12px' : '0',
+                transition: 'margin 300ms ease',
+              }}
+            />
+            <span
+              className="text-base font-medium whitespace-nowrap overflow-hidden"
+              style={{
                 opacity: expanded ? 1 : 0,
-                overflow: 'hidden',
-                transition: 'max-width 300ms ease, opacity 200ms ease, margin-left 300ms ease',
+                maxWidth: expanded ? '160px' : '0',
+                transition: 'opacity 200ms ease, max-width 300ms ease',
               }}
             >
               Menu
@@ -140,18 +137,18 @@ export function SimplifiedSidebar() {
         </div>
 
         {/* Navigation Items */}
-        <nav className="p-1 space-y-0.5">
+        <nav className="p-2 space-y-1">
           {navItems.map(renderNavItem)}
         </nav>
 
         {/* Separator */}
         {user && (
-          <div className="mx-2 my-1 h-px" style={{ backgroundColor: '#1F2937' }} />
+          <div className="mx-2 my-2 h-px" style={{ backgroundColor: '#1F2937' }} />
         )}
 
         {/* User Actions */}
         {user && (
-          <nav className="p-1 space-y-0.5">
+          <nav className="p-2 space-y-1">
             {userItems.map(renderNavItem)}
           </nav>
         )}
@@ -161,30 +158,24 @@ export function SimplifiedSidebar() {
           <div className="absolute bottom-4 left-2 right-2">
             <Button
               onClick={() => setCodeDialogOpen(true)}
-              className="transition-all duration-200 hover:brightness-110 w-full"
+              className={`transition-all duration-200 hover:brightness-110 ${
+                expanded ? 'w-full px-4 py-3' : 'w-12 h-12 p-0 mx-auto'
+              }`}
               style={{
                 background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
                 color: '#06121F',
-                height: '44px',
-                minWidth: 0,
-                padding: expanded ? '0 16px' : '0',
-                justifyContent: expanded ? 'flex-start' : 'center',
               }}
             >
-              <Gift style={{ width: '20px', height: '20px', flexShrink: 0, color: '#06121F' }} />
-              <span
-                className="text-base font-semibold whitespace-nowrap"
-                style={{
-                  marginLeft: expanded ? '10px' : '0px',
-                  maxWidth: expanded ? '160px' : '0px',
-                  opacity: expanded ? 1 : 0,
-                  overflow: 'hidden',
-                  transition: 'max-width 300ms ease, opacity 200ms ease, margin-left 300ms ease',
-                  color: '#06121F',
-                }}
-              >
-                Redeem Code
-              </span>
+              {expanded ? (
+                <div className="flex items-center justify-center space-x-2">
+                  <Gift className="w-5 h-5" style={{ color: '#06121F' }} />
+                  <span className="text-base font-semibold">Redeem Code</span>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center">
+                  <Gift className="w-5 h-5" style={{ color: '#06121F' }} />
+                </div>
+              )}
             </Button>
           </div>
         )}
