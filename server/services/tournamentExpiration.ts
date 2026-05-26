@@ -229,27 +229,28 @@ export class TournamentExpirationService {
     const payoutSlots = Math.min(percentages.length, results.length);
 
     try {
-      // Distribute to ranked winners
+      // Build the list of credits (winners + creator commission) so they can
+      // all be applied — together with the result records — in one atomic
+      // transaction. A tournament can never end up partially paid out.
+      const credits: { userId: number; amount: number }[] = [];
+
       for (let i = 0; i < payoutSlots; i++) {
         const participant = results[i];
         const payoutAmount = Math.round(prizePool * percentages[i] * 100) / 100;
 
         if (payoutAmount > 0) {
-          await storage.addUserBalance(participant.userId, payoutAmount);
-          // Update payout in result records
+          credits.push({ userId: participant.userId, amount: payoutAmount });
           resultRecords[i].payout = payoutAmount.toFixed(2);
-
-          console.log(`Paid $${payoutAmount} to rank ${participant.rank} user ${participant.userId} (${participant.username})`);
+          console.log(`Paying $${payoutAmount} to rank ${participant.rank} user ${participant.userId} (${participant.username})`);
         }
       }
 
-      // Pay creator commission
-      await storage.addUserBalance(tournament.creatorId, creatorAmount);
+      // Creator commission
+      credits.push({ userId: tournament.creatorId, amount: creatorAmount });
+
+      await storage.applyTournamentPayouts({ credits, results: resultRecords });
 
       console.log(`Distributed prizes for tournament ${tournament.name}: $${prizePool} to players (${payoutStructure}), $${creatorAmount} to creator`);
-
-      // Save all result records
-      await storage.saveTournamentResults(resultRecords);
 
       // Send notifications to all participants
       for (const r of results) {
@@ -413,47 +414,6 @@ export class TournamentExpirationService {
     });
     
     console.log(`Awarded global ${achievement.name} to user ${userId}`);
-  }
-
-
-
-  /**
-   * Check if a tournament has expired
-   */
-  async isTournamentExpired(tournamentId: number): Promise<boolean> {
-    const tournament = await storage.getTournamentByCode(''); // We need to get by ID, not code
-    if (!tournament) return false;
-    
-    const createdAt = new Date(tournament.createdAt!);
-    const timeframeDays = this.parseTimeframe(tournament.timeframe);
-    const expirationDate = new Date(createdAt.getTime() + timeframeDays * 24 * 60 * 60 * 1000);
-    
-    return new Date() > expirationDate;
-  }
-
-  /**
-   * Parse timeframe string to days
-   */
-  private parseTimeframe(timeframe: string): number {
-    const match = timeframe.match(/(\d+)\s*(day|days|week|weeks|month|months)/i);
-    if (!match) return 28; // Default to 4 weeks
-    
-    const value = parseInt(match[1]);
-    const unit = match[2].toLowerCase();
-    
-    switch (unit) {
-      case 'day':
-      case 'days':
-        return value;
-      case 'week':
-      case 'weeks':
-        return value * 7;
-      case 'month':
-      case 'months':
-        return value * 30;
-      default:
-        return 28;
-    }
   }
 }
 

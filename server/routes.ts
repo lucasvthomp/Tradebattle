@@ -1404,7 +1404,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { token, newPassword } = req.body;
       if (!token || !newPassword) return res.status(400).json({ message: "Token and new password are required" });
 
-      if (newPassword.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters" });
+      if (newPassword.length < 8) return res.status(400).json({ message: "Password must be at least 8 characters" });
       if (!/[A-Z]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one capital letter" });
       if (!/[0-9]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one number" });
 
@@ -1441,7 +1441,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { currentPassword, newPassword } = req.body;
 
       if (!currentPassword || !newPassword) return res.status(400).json({ message: "Current password and new password are required" });
-      if (newPassword.length < 6) return res.status(400).json({ message: "Password must be at least 6 characters" });
+      if (newPassword.length < 8) return res.status(400).json({ message: "Password must be at least 8 characters" });
       if (!/[A-Z]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one capital letter" });
       if (!/[0-9]/.test(newPassword)) return res.status(400).json({ message: "Password must contain at least one number" });
 

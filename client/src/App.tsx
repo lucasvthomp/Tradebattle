@@ -12,14 +12,11 @@ import { useState, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { PageLoader } from "@/components/ui/page-loader";
 import NotFound from "@/pages/not-found";
-import Landing from "@/pages/landing";
 import UnauthenticatedHome from "@/pages/unauthenticated-home";
 import Hub from "@/pages/hub";
 import Blitz from "@/pages/blitz";
 import Dashboard from "@/pages/dashboard";
-import Portfolio from "@/pages/portfolio";
 import Tournaments from "@/pages/tournaments";
-import TournamentsTest from "@/pages/tournaments-test";
 import Leaderboard from "@/pages/leaderboard";
 import People from "@/pages/people";
 import Shop from "@/pages/shop";
@@ -37,7 +34,6 @@ import ArchiveDetail from "@/pages/archive-detail";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import Transactions from "@/pages/transactions";
-import DebugPayment from "@/pages/debug-payment";
 import Layout from "@/components/layout/layout";
 import Footer from "@/components/layout/footer";
 import { AnnouncementModal } from "@/components/announcements/AnnouncementModal";
@@ -107,7 +103,6 @@ function Router() {
               <Route path="/terms" component={Terms} />
               <Route path="/profile" component={Profile} />
               <Route path="/admin" component={Admin} />
-              <Route path="/debug-payment" component={DebugPayment} />
               <Route path="/archive" component={Archive} />
               <Route path="/archive/:id" component={ArchiveDetail} />
               <Route path="/transactions" component={Transactions} />

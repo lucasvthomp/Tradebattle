@@ -28,8 +28,11 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 async function comparePasswords(supplied: string, stored: string): Promise<boolean> {
+  // Reject any non-hashed (legacy plaintext) credential rather than doing a
+  // plaintext comparison. All passwords created by the app are scrypt-hashed
+  // in `salt`-suffixed form, so a stored value without a "." is invalid.
   if (!stored.includes(".")) {
-    return supplied === stored;
+    return false;
   }
   const [hashed, salt] = stored.split(".");
   if (!hashed || !salt) return false;
@@ -138,10 +141,16 @@ async function authenticateWallet(
 export function setupAuth(app: Express) {
   const PgStore = connectPgSimple(session);
 
+  // Require a real session secret in production — never ship the fallback.
+  const sessionSecret = process.env.SESSION_SECRET;
+  if (!sessionSecret && process.env.NODE_ENV === "production") {
+    throw new Error("SESSION_SECRET environment variable is required in production");
+  }
+
   app.set("trust proxy", 1);
   app.use(
     session({
-      secret: process.env.SESSION_SECRET || "tradebattle-secret-change-me",
+      secret: sessionSecret || "tradebattle-dev-secret-not-for-production",
       resave: false,
       saveUninitialized: false,
       store: new PgStore({
@@ -224,8 +233,8 @@ export function setupAuth(app: Express) {
         return res.status(400).json({ message: "Username contains inappropriate language" });
       }
 
-      if (password.length < 6) {
-        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      if (password.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters" });
       }
 
       if (!/[A-Z]/.test(password)) {

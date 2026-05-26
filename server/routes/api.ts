@@ -773,61 +773,6 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
 }));
 
 /**
- * POST /api/tournaments/:id/invite
- * Send tournament invitations to friends
- */
-router.post('/tournaments/:id/invite', requireAuth, asyncHandler(async (req, res) => {
-  const tournamentId = parseInt(req.params.id);
-  const userId = req.user.id;
-  const { userIds } = req.body;
-
-  if (!Array.isArray(userIds) || userIds.length === 0) {
-    throw new ValidationError('User IDs array is required');
-  }
-
-  const tournament = await storage.getTournamentById(tournamentId);
-  if (!tournament) {
-    throw new NotFoundError('Tournament not found');
-  }
-
-  // Verify the requesting user is the tournament creator or a participant
-  if (tournament.creatorId !== userId) {
-    const participant = await storage.getTournamentParticipant(tournamentId, userId);
-    if (!participant) {
-      throw new ValidationError('Only tournament participants can send invites');
-    }
-  }
-
-  // Create notifications for each invited user
-  const notifications = await Promise.all(
-    userIds.map(async (invitedUserId: number) => {
-      return await storage.createNotification({
-        userId: invitedUserId,
-        type: 'tournament_invite',
-        title: 'Tournament Invitation',
-        message: `${req.user.username} invited you to join "${tournament.name}"`,
-        metadata: {
-          tournamentId: tournament.id,
-          tournamentName: tournament.name,
-          tournamentCode: tournament.code,
-          invitedBy: userId,
-          invitedByUsername: req.user.username,
-          inviterId: userId,
-          inviterUsername: req.user.username
-        }
-      });
-    })
-  );
-
-  res.json({
-    success: true,
-    data: {
-      invitesSent: notifications.length
-    }
-  });
-}));
-
-/**
  * GET /api/tournaments
  * Get user's tournaments
  */
@@ -1179,14 +1124,14 @@ router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, re
 router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) => {
   const tournamentId = parseInt(req.params.id);
   const userId = req.user.id;
-  const { symbol, sharesToSell, currentPrice } = req.body;
+  const { symbol, sharesToSell } = req.body;
 
   if (isNaN(tournamentId)) {
     throw new ValidationError('Invalid tournament ID');
   }
 
-  if (!symbol || !sharesToSell || !currentPrice) {
-    throw new ValidationError('Symbol, shares to sell, and current price are required');
+  if (!symbol || !sharesToSell) {
+    throw new ValidationError('Symbol and shares to sell are required');
   }
 
   const sharesToSellNum = parseInt(sharesToSell);
@@ -1195,8 +1140,7 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
   }
 
   // Check if tournament is completed (no trading allowed)
-  const tournaments = await storage.getAllTournaments();
-  const tournament = tournaments.find(t => t.id === tournamentId);
+  const tournament = await storage.getTournamentById(tournamentId);
   if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
   }
@@ -1209,9 +1153,11 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
     }
   }
 
+  const cleanSymbol = sanitizeInput(symbol).toUpperCase();
+
   // Get user's tournament stock purchases for this symbol
   const allPurchases = await storage.getTournamentStockPurchases(tournamentId, userId);
-  const symbolPurchases = allPurchases.filter(p => p.symbol === symbol);
+  const symbolPurchases = allPurchases.filter(p => p.symbol === cleanSymbol);
 
   if (symbolPurchases.length === 0) {
     throw new ValidationError('No holdings found for this stock');
@@ -1224,63 +1170,47 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
     throw new ValidationError(`Cannot sell ${sharesToSellNum} shares. You only own ${totalShares} shares.`);
   }
 
-  // Calculate sale value
-  const saleValue = sharesToSellNum * parseFloat(currentPrice);
-
-  // Get current balance
-  const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
-
-  // Process the sale by removing shares (FIFO - First In, First Out)
-  let remainingToSell = sharesToSellNum;
-
-  for (const purchase of symbolPurchases) {
-    if (remainingToSell <= 0) break;
-
-    if (purchase.shares <= remainingToSell) {
-      // Sell all shares from this purchase
-      remainingToSell -= purchase.shares;
-      await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
-    } else {
-      // Partially sell shares from this purchase
-      const newShares = purchase.shares - remainingToSell;
-      const purchasePrice = parseFloat(purchase.purchasePrice);
-
-      // Delete the old record and create a new one with remaining shares
-      await storage.deleteTournamentPurchase(tournamentId, userId, purchase.id);
-      await storage.purchaseTournamentStock(tournamentId, userId, {
-        symbol: purchase.symbol,
-        companyName: purchase.companyName,
-        shares: newShares,
-        purchasePrice: purchasePrice,
-        totalCost: newShares * purchasePrice
-      });
-
-      remainingToSell = 0;
-    }
+  // SECURITY: Never trust a client-supplied price. Fetch the authoritative
+  // sale price server-side so a manipulated request cannot sell above market.
+  let executionPrice: number;
+  try {
+    const quote = await getStockQuote(cleanSymbol);
+    executionPrice = Math.round(Number(quote.price) * 100) / 100;
+  } catch (err: any) {
+    throw new ValidationError(`Unable to fetch a current price for ${cleanSymbol}. Please try again.`);
+  }
+  if (!isFinite(executionPrice) || executionPrice <= 0) {
+    throw new ValidationError('Received an invalid market price. Please try again.');
   }
 
-  // Update tournament balance
-  await storage.updateTournamentBalance(tournamentId, userId, currentBalance + saleValue);
-
-  // Record the trade in trade history
-  const firstPurchase = symbolPurchases[0]; // Get company name from first purchase
-  await storage.recordTrade({
-    userId: userId,
-    tournamentId: tournamentId,
-    symbol: sanitizeInput(symbol),
-    companyName: sanitizeInput(firstPurchase.companyName),
-    tradeType: 'sell',
-    shares: sharesToSellNum,
-    price: parseFloat(currentPrice).toString(),
-    totalValue: saleValue.toString()
-  });
+  // Execute the sale atomically with true FIFO lot consumption, balance
+  // credit, and trade record all in one transaction.
+  let result;
+  try {
+    result = await storage.executeTournamentSell({
+      tournamentId,
+      userId,
+      symbol: cleanSymbol,
+      companyName: sanitizeInput(symbolPurchases[0].companyName),
+      sharesToSell: sharesToSellNum,
+      price: executionPrice,
+    });
+  } catch (err: any) {
+    if (err?.message === 'INSUFFICIENT_SHARES') {
+      throw new ValidationError(`Cannot sell ${sharesToSellNum} shares. You do not own that many.`);
+    }
+    if (err?.message === 'NOT_A_PARTICIPANT') {
+      throw new ValidationError('You are not a participant in this tournament');
+    }
+    throw err;
+  }
 
   res.json({
     success: true,
     data: {
-      saleValue,
-      newBalance: currentBalance + saleValue,
-      sharesSold: sharesToSellNum
+      saleValue: result.saleValue,
+      newBalance: result.newBalance,
+      sharesSold: result.sharesSold
     },
   });
 }));
@@ -1293,17 +1223,19 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   const tournamentId = parseInt(req.params.id);
   const userId = req.user.id;
 
-  const { symbol, companyName, shares, purchasePrice } = req.body;
+  const { symbol, companyName, shares } = req.body;
 
-  if (!symbol || !companyName || !shares || !purchasePrice) {
-    throw new ValidationError('All purchase fields are required');
+  if (!symbol || !companyName || !shares) {
+    throw new ValidationError('Symbol, company name, and shares are required');
   }
 
-  const totalCost = shares * purchasePrice;
+  const sharesNum = parseInt(shares);
+  if (isNaN(sharesNum) || sharesNum <= 0) {
+    throw new ValidationError('Invalid number of shares');
+  }
 
   // Check if tournament is completed (no trading allowed)
-  const tournaments = await storage.getAllTournaments();
-  const tournament = tournaments.find(t => t.id === tournamentId);
+  const tournament = await storage.getTournamentById(tournamentId);
   if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
   }
@@ -1316,37 +1248,45 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
     }
   }
 
-  // Check if user has enough balance
-  const currentBalance = await storage.getTournamentBalance(tournamentId, userId);
-  if (currentBalance < totalCost) {
-    throw new ValidationError('Insufficient balance for this purchase');
+  // SECURITY: Never trust a client-supplied price. Fetch the authoritative
+  // price server-side so a manipulated request cannot buy below market.
+  const cleanSymbol = sanitizeInput(symbol).toUpperCase();
+  let executionPrice: number;
+  try {
+    const quote = await getStockQuote(cleanSymbol);
+    executionPrice = Math.round(Number(quote.price) * 100) / 100;
+  } catch (err: any) {
+    throw new ValidationError(`Unable to fetch a current price for ${cleanSymbol}. Please try again.`);
+  }
+  if (!isFinite(executionPrice) || executionPrice <= 0) {
+    throw new ValidationError('Received an invalid market price. Please try again.');
   }
 
-  // Create purchase record
-  const purchase = await storage.purchaseTournamentStock(tournamentId, userId, {
-    symbol: sanitizeInput(symbol),
-    companyName: sanitizeInput(companyName),
-    shares: parseInt(shares),
-    purchasePrice: parseFloat(purchasePrice).toString(),
-    totalCost: totalCost.toString()
-  });
+  const totalCost = Math.round(sharesNum * executionPrice * 100) / 100;
 
-  // Record the trade in trade history
-  await storage.recordTrade({
-    userId: userId,
-    tournamentId: tournamentId,
-    symbol: sanitizeInput(symbol),
-    companyName: sanitizeInput(companyName),
-    tradeType: 'buy',
-    shares: parseInt(shares),
-    price: parseFloat(purchasePrice).toString(),
-    totalValue: totalCost.toString()
-  });
+  // Execute the buy atomically (balance check + debit + holding + trade record).
+  let result;
+  try {
+    result = await storage.executeTournamentBuy({
+      tournamentId,
+      userId,
+      symbol: cleanSymbol,
+      companyName: sanitizeInput(companyName),
+      shares: sharesNum,
+      price: executionPrice,
+      totalCost,
+    });
+  } catch (err: any) {
+    if (err?.message === 'INSUFFICIENT_BALANCE') {
+      throw new ValidationError('Insufficient balance for this purchase');
+    }
+    if (err?.message === 'NOT_A_PARTICIPANT') {
+      throw new ValidationError('You are not a participant in this tournament');
+    }
+    throw err;
+  }
 
-  // Update user balance
-  await storage.updateTournamentBalance(tournamentId, userId, currentBalance - totalCost);
-
-  // Award First Trade achievement
+  // Award First Trade achievement (non-critical, outside the money transaction)
   await storage.awardAchievement({
     userId: userId,
     achievementType: 'first_trade',
@@ -1357,7 +1297,7 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
 
   res.status(201).json({
     success: true,
-    data: { purchase },
+    data: { purchase: result.purchase, newBalance: result.newBalance },
   });
 }));
 
@@ -2181,47 +2121,6 @@ router.get('/users/public', asyncHandler(async (req, res) => {
   res.json({
     success: true,
     data: publicUsers
-  });
-}));
-
-/**
- * GET /api/users/public/:userId
- * Get specific user's public profile information
- */
-router.get('/users/public/:userId', asyncHandler(async (req, res) => {
-  const targetUserId = parseInt(req.params.userId);
-
-  if (isNaN(targetUserId)) {
-    throw new ValidationError('Invalid user ID');
-  }
-
-  // Get the target user
-  const targetUser = await storage.getUser(targetUserId);
-
-  if (!targetUser) {
-    throw new NotFoundError('User not found');
-  }
-
-  // Get total trade count from trade history
-  const totalTrades = await storage.getUserTradeCount(targetUserId);
-  const tournamentCount = await storage.getUserTournamentCount(targetUserId);
-  const tradingStreak = await storage.getUserTradingStreak(targetUserId);
-
-  // Return only public information
-  const publicUser = {
-    id: targetUser.id,
-    username: targetUser.username,
-    profilePicture: targetUser.profilePicture,
-    subscriptionTier: targetUser.subscriptionTier,
-    createdAt: targetUser.createdAt,
-    totalTrades: totalTrades,
-    tournamentCount,
-    tradingStreak,
-  };
-
-  res.json({
-    success: true,
-    data: publicUser
   });
 }));
 

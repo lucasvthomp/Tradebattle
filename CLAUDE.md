@@ -17,7 +17,7 @@ npm run db:push      # Push Drizzle schema changes to PostgreSQL
 **Monorepo** with three directories sharing a single `package.json`:
 
 - `client/` — React 18 SPA (Vite, Wouter routing, React Query)
-- `server/` — Express API (Passport auth, WebSocket chat, Yahoo Finance integration)
+- `server/` — Express API (Passport auth, polling-based REST chat, Yahoo Finance integration)
 - `shared/` — Drizzle ORM schema + Zod validation, used by both client and server
 
 ### Path Aliases
@@ -40,8 +40,8 @@ Tradebattle is a stock trading simulation platform where users compete in tourna
 
 ### Server
 
-- **Entry:** `server/index.ts` — Express app setup, Vite dev middleware, WebSocket server, tournament scheduler.
-- **Auth:** Passport.js local strategy in `server/auth.ts`. Password hashing with scrypt. Session-based with MemoryStore.
+- **Entry:** `server/index.ts` — Express app setup, Vite dev middleware, tournament scheduler.
+- **Auth:** Passport.js local strategy in `server/auth.ts`. Password hashing with scrypt. Session-based, stored in PostgreSQL via `connect-pg-simple` (the `sessions` table). Also supports Web3 wallet (sign-in-with-Ethereum) auth.
 - **Routes:** `server/routes.ts` (main app routes) + `server/routes/api.ts` (Yahoo Finance API routes). Protected routes use `requireAuth` middleware.
 - **Storage:** `server/storage.ts` — Database abstraction layer. All DB operations go through the `storage` object (e.g., `storage.getUser()`, `storage.joinTournament()`).
 - **Yahoo Finance:** `server/services/yahooFinance.ts` — `getStockQuote()`, `getHistoricalData()`, `searchStocks()`, `getCompanyProfile()`, `getPopularStocks()`. Has internal caching (5s quotes, 30min historical).

@@ -70,6 +70,25 @@ async function hashPassword(password: string): Promise<string> {
   return `${buf.toString("hex")}.${salt}`;
 }
 
+export interface TournamentBuyParams {
+  tournamentId: number;
+  userId: number;
+  symbol: string;
+  companyName: string;
+  shares: number;
+  price: number;      // server-validated execution price
+  totalCost: number;  // server-computed shares * price
+}
+
+export interface TournamentSellParams {
+  tournamentId: number;
+  userId: number;
+  symbol: string;
+  companyName: string;
+  sharesToSell: number;
+  price: number;      // server-validated execution price
+}
+
 export interface IStorage {
   // User operations for email/password auth
   getUser(id: number): Promise<User | undefined>;
@@ -119,7 +138,9 @@ export interface IStorage {
   purchaseTournamentStock(tournamentId: number, userId: number, purchase: InsertTournamentStockPurchase): Promise<TournamentStockPurchase>;
   getTournamentStockPurchases(tournamentId: number, userId: number): Promise<TournamentStockPurchase[]>;
   deleteTournamentPurchase(tournamentId: number, userId: number, purchaseId: number): Promise<void>;
-  
+  executeTournamentBuy(params: TournamentBuyParams): Promise<{ purchase: TournamentStockPurchase; newBalance: number }>;
+  executeTournamentSell(params: TournamentSellParams): Promise<{ saleValue: number; newBalance: number; sharesSold: number }>;
+
   // Personal portfolio operations
   purchasePersonalStock(userId: number, purchase: InsertPersonalStockPurchase): Promise<PersonalStockPurchase>;
   getPersonalStockPurchases(userId: number): Promise<PersonalStockPurchase[]>;
@@ -229,6 +250,7 @@ export interface IStorage {
 
   // Tournament results operations
   saveTournamentResults(results: InsertTournamentResult[]): Promise<void>;
+  applyTournamentPayouts(params: { credits: { userId: number; amount: number }[]; results: InsertTournamentResult[] }): Promise<void>;
   getTournamentResults(tournamentId: number): Promise<TournamentResult[]>;
 
   // Promo code operations
@@ -808,6 +830,145 @@ export class DatabaseStorage implements IStorage {
         eq(tournamentStockPurchases.tournamentId, tournamentId),
         eq(tournamentStockPurchases.userId, userId)
       ));
+  }
+
+  /**
+   * Atomically execute a tournament buy: balance check, debit, holding insert,
+   * and trade-history record all happen inside one transaction with the
+   * participant row locked (FOR UPDATE) to prevent double-spend races.
+   */
+  async executeTournamentBuy(params: TournamentBuyParams): Promise<{ purchase: TournamentStockPurchase; newBalance: number }> {
+    const { tournamentId, userId, symbol, companyName, shares, price, totalCost } = params;
+    return await db.transaction(async (tx) => {
+      const pRows = await tx
+        .select({ balance: tournamentParticipants.balance })
+        .from(tournamentParticipants)
+        .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)))
+        .for("update");
+
+      if (!pRows[0]) {
+        throw new Error("NOT_A_PARTICIPANT");
+      }
+
+      const balance = parseFloat(pRows[0].balance);
+      if (balance < totalCost) {
+        throw new Error("INSUFFICIENT_BALANCE");
+      }
+
+      const newBalance = Math.round((balance - totalCost) * 100) / 100;
+
+      const inserted = await tx
+        .insert(tournamentStockPurchases)
+        .values({
+          tournamentId,
+          userId,
+          symbol,
+          companyName,
+          shares,
+          purchasePrice: price.toFixed(2),
+          totalCost: totalCost.toFixed(2),
+        })
+        .returning();
+
+      await tx
+        .update(tournamentParticipants)
+        .set({ balance: newBalance.toFixed(2) })
+        .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)));
+
+      await tx.insert(tradeHistory).values({
+        userId,
+        tournamentId,
+        symbol,
+        companyName,
+        tradeType: "buy",
+        shares,
+        price: price.toFixed(2),
+        totalValue: totalCost.toFixed(2),
+      });
+
+      await tx.update(users).set({ totalTrades: sql`${users.totalTrades} + 1` }).where(eq(users.id, userId));
+
+      return { purchase: inserted[0], newBalance };
+    });
+  }
+
+  /**
+   * Atomically execute a tournament sell using true FIFO (oldest lots first):
+   * holdings are re-read and locked inside the transaction, consumed in order,
+   * the balance is credited, and the trade is recorded — all atomically.
+   */
+  async executeTournamentSell(params: TournamentSellParams): Promise<{ saleValue: number; newBalance: number; sharesSold: number }> {
+    const { tournamentId, userId, symbol, companyName, sharesToSell, price } = params;
+    return await db.transaction(async (tx) => {
+      const pRows = await tx
+        .select({ balance: tournamentParticipants.balance })
+        .from(tournamentParticipants)
+        .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)))
+        .for("update");
+
+      if (!pRows[0]) {
+        throw new Error("NOT_A_PARTICIPANT");
+      }
+
+      // Oldest first = true FIFO. Lock the rows so concurrent sells can't
+      // consume the same lots.
+      const lots = await tx
+        .select()
+        .from(tournamentStockPurchases)
+        .where(and(
+          eq(tournamentStockPurchases.tournamentId, tournamentId),
+          eq(tournamentStockPurchases.userId, userId),
+          eq(tournamentStockPurchases.symbol, symbol),
+        ))
+        .orderBy(asc(tournamentStockPurchases.createdAt))
+        .for("update");
+
+      const totalShares = lots.reduce((sum, lot) => sum + lot.shares, 0);
+      if (totalShares < sharesToSell) {
+        throw new Error("INSUFFICIENT_SHARES");
+      }
+
+      let remaining = sharesToSell;
+      for (const lot of lots) {
+        if (remaining <= 0) break;
+        if (lot.shares <= remaining) {
+          remaining -= lot.shares;
+          await tx.delete(tournamentStockPurchases).where(eq(tournamentStockPurchases.id, lot.id));
+        } else {
+          const newShares = lot.shares - remaining;
+          const lotPrice = parseFloat(lot.purchasePrice);
+          await tx
+            .update(tournamentStockPurchases)
+            .set({ shares: newShares, totalCost: (newShares * lotPrice).toFixed(2) })
+            .where(eq(tournamentStockPurchases.id, lot.id));
+          remaining = 0;
+        }
+      }
+
+      const saleValue = Math.round(sharesToSell * price * 100) / 100;
+      const balance = parseFloat(pRows[0].balance);
+      const newBalance = Math.round((balance + saleValue) * 100) / 100;
+
+      await tx
+        .update(tournamentParticipants)
+        .set({ balance: newBalance.toFixed(2) })
+        .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)));
+
+      await tx.insert(tradeHistory).values({
+        userId,
+        tournamentId,
+        symbol,
+        companyName,
+        tradeType: "sell",
+        shares: sharesToSell,
+        price: price.toFixed(2),
+        totalValue: saleValue.toFixed(2),
+      });
+
+      await tx.update(users).set({ totalTrades: sql`${users.totalTrades} + 1` }).where(eq(users.id, userId));
+
+      return { saleValue, newBalance, sharesSold: sharesToSell };
+    });
   }
 
   // Personal portfolio operations
@@ -1858,6 +2019,30 @@ export class DatabaseStorage implements IStorage {
   async saveTournamentResults(results: InsertTournamentResult[]): Promise<void> {
     if (results.length === 0) return;
     await db.insert(tournamentResults).values(results);
+  }
+
+  /**
+   * Atomically credit all tournament payouts (winners + creator) and persist
+   * the result records in a single transaction, so a tournament can never end
+   * up partially paid out.
+   */
+  async applyTournamentPayouts(params: {
+    credits: { userId: number; amount: number }[];
+    results: InsertTournamentResult[];
+  }): Promise<void> {
+    const { credits, results } = params;
+    await db.transaction(async (tx) => {
+      for (const { userId, amount } of credits) {
+        if (amount <= 0) continue;
+        await tx
+          .update(users)
+          .set({ siteCash: sql`${users.siteCash} + ${amount.toString()}`, updatedAt: new Date() })
+          .where(eq(users.id, userId));
+      }
+      if (results.length > 0) {
+        await tx.insert(tournamentResults).values(results);
+      }
+    });
   }
 
   async getTournamentResults(tournamentId: number): Promise<TournamentResult[]> {

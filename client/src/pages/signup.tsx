@@ -161,7 +161,7 @@ export default function Signup() {
   };
 
   // Password validation (skip for wallet users)
-  const hasMinLength = password.length >= 6;
+  const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const passwordValid = hasMinLength && hasUppercase && hasNumber;
@@ -374,7 +374,7 @@ export default function Signup() {
               {/* Requirements Checklist */}
               <div className="space-y-2 p-3 rounded-xl" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
                 {[
-                  { met: hasMinLength, text: "At least 6 characters" },
+                  { met: hasMinLength, text: "At least 8 characters" },
                   { met: hasUppercase, text: "One uppercase letter" },
                   { met: hasNumber, text: "One number" },
                 ].map((req, i) => (
