@@ -352,7 +352,7 @@ export default function TournamentsPage() {
 
   if (!user) {
     return (
-      <div className="h-[calc(100vh-4rem)] flex items-center justify-center">
+      <div className="h-[calc(100vh-4rem)] flex items-center justify-center" style={{ background: 'linear-gradient(to bottom, #080C14, #0F172A)' }}>
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2" style={{ color: '#F1F5F9' }}>Please Log In</h2>
           <p style={{ color: '#94A3B8' }}>You need to be logged in to view tournaments.</p>
@@ -370,7 +370,7 @@ export default function TournamentsPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto">
+    <div className="h-[calc(100vh-4rem)] overflow-auto" style={{ background: 'linear-gradient(to bottom, #080C14, #0F172A)' }}>
       <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(16px, 3vh, 40px) clamp(16px, 2vw, 32px)' }}>
         <motion.div
           initial="initial"

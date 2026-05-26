@@ -7,6 +7,7 @@ export default function NotFound() {
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
+      style={{ backgroundColor: '#06121F' }}
     >
       {/* Animated background particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">

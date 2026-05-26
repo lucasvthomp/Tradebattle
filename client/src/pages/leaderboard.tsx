@@ -277,7 +277,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative overflow-hidden" style={{ background: '#06121F' }}>
       {/* Animated Background Particles */}
       {particles.map((particle) => (
         <motion.div

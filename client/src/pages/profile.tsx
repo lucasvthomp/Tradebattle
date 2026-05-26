@@ -551,7 +551,7 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="w-96">
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground">Please log in to view your profile.</p>
@@ -562,7 +562,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
         <motion.div
           className="max-w-4xl mx-auto"

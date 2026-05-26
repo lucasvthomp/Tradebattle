@@ -13,6 +13,7 @@ import {
   Archive,
   Shield,
   Swords,
+  Zap,
   Menu
 } from "lucide-react";
 import { useState } from "react";
@@ -29,6 +30,7 @@ export function SimplifiedSidebar() {
     ...(user ? [
       { href: "/dashboard", label: t('dashboard'), icon: BarChart3, iconColor: '#28C76F' },
       { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#E3B341' },
+      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#8B5CF6' },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#E3B341' },
       { href: "/people", label: t('people'), icon: Users, iconColor: '#3B82F6' },
       { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F97316' },
@@ -57,7 +59,7 @@ export function SimplifiedSidebar() {
       <Link
         href={item.href}
         {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
-        className={`group flex items-center rounded-lg transition-all duration-200 ${
+        className={`group flex items-center rounded-lg transition-colors duration-200 ${
           expanded ? 'px-3 py-3' : 'w-12 h-12 justify-center mx-auto'
         } ${
           isActive(item.href)
@@ -71,13 +73,20 @@ export function SimplifiedSidebar() {
         }
       >
         <item.icon
-          className={`w-5 h-5 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`} style={{ transition: 'margin 300ms ease' }}
-          style={{ color: isActive(item.href) ? item.iconColor : undefined }}
+          className={`w-5 h-5 flex-shrink-0`}
+          style={{
+            color: isActive(item.href) ? item.iconColor : undefined,
+            marginRight: expanded ? '12px' : '0',
+            transition: 'margin 300ms ease',
+          }}
         />
         <span
-          className={`text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-            expanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
-          }`}
+          className={`text-base font-medium whitespace-nowrap overflow-hidden`}
+          style={{
+            opacity: expanded ? 1 : 0,
+            width: expanded ? 'auto' : 0,
+            transition: 'opacity 300ms ease, width 300ms ease',
+          }}
         >
           {item.label}
         </span>
@@ -94,8 +103,8 @@ export function SimplifiedSidebar() {
           expanded ? 'w-64' : 'w-16'
         }`}
         style={{
-          backgroundColor: '#0A1530',
-          borderColor: '#1E3D6B',
+          backgroundColor: '#0B1120',
+          borderColor: '#1F2937',
           transition: 'width 300ms ease',
           overflow: 'hidden',
         }}
@@ -104,16 +113,22 @@ export function SimplifiedSidebar() {
         <div className="p-2 border-b" style={{ borderColor: '#1F2937' }}>
           <button
             onClick={() => setExpanded(!expanded)}
-            className={`flex items-center hover:bg-[#0F172A] rounded-lg transition-all duration-200 ${
+            className={`flex items-center hover:bg-[#0F172A] rounded-lg transition-colors duration-200 ${
               expanded ? 'w-full px-3 py-3 justify-start' : 'w-12 h-12 justify-center mx-auto'
             }`}
             style={{ color: '#C9D1E2' }}
           >
-            <Menu className={`w-5 h-5 flex-shrink-0 ${expanded ? 'mr-3' : 'mr-0'}`} style={{ transition: 'margin 300ms ease' }} />
+            <Menu
+              className="w-5 h-5 flex-shrink-0"
+              style={{ marginRight: expanded ? '12px' : '0', transition: 'margin 300ms ease' }}
+            />
             <span
-              className={`text-base font-medium whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                expanded ? 'opacity-100 w-auto' : 'opacity-0 w-0'
-              }`}
+              className="text-base font-medium whitespace-nowrap overflow-hidden"
+              style={{
+                opacity: expanded ? 1 : 0,
+                width: expanded ? 'auto' : 0,
+                transition: 'opacity 300ms ease, width 300ms ease',
+              }}
             >
               Menu
             </span>

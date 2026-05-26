@@ -95,6 +95,7 @@ export default function Dashboard() {
     return (
       <div
         className="h-screen flex items-center justify-center"
+        style={{ backgroundColor: "#080C14" }}
       >
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2" style={{ color: "#FFFFFF" }}>
@@ -112,6 +113,7 @@ export default function Dashboard() {
     return (
       <div
         className="h-screen flex items-center justify-center"
+        style={{ backgroundColor: "#080C14" }}
       >
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2" style={{ color: "#FFFFFF" }}>
@@ -133,6 +135,7 @@ export default function Dashboard() {
       <WebsiteTour />
       <div
         className="h-screen flex flex-col md:flex-row"
+        style={{ backgroundColor: "#080C14" }}
       >
       {/* LEFT: Chart fills ~5/7 of width */}
       <div data-tour="chart-area" className="flex-1 min-w-0 min-h-[350px] md:min-h-0 h-full">

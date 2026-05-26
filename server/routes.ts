@@ -1910,10 +1910,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ── Blitz Matchmaking ───────────────────────────────────────
   // In-memory queue: { userId, joinedAt, socketId? }
   const blitzQueue: Array<{ userId: number; joinedAt: Date }> = [];
-  const blitzMatches = new Map<number, number>(); // tournamentId -> startedAt timestamp
+  // Maps userId -> tournamentId for players who have been matched but haven't navigated yet
+  const blitzMatchedPlayers = new Map<number, number>();
 
   app.post("/api/blitz/queue", requireAuth, async (req: any, res) => {
     const userId = req.user.id;
+
+    // Already matched? Return their tournament
+    if (blitzMatchedPlayers.has(userId)) {
+      const tournamentId = blitzMatchedPlayers.get(userId)!;
+      blitzMatchedPlayers.delete(userId);
+      return res.json({ status: "matched", tournamentId });
+    }
 
     // Already in queue?
     if (blitzQueue.find(e => e.userId === userId)) {
@@ -1953,10 +1961,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .set({ status: "active", startedAt: new Date() })
           .where(eq(schema.tournaments.id, tournament.id));
 
-        blitzMatches.set(tournament.id, Date.now());
+        // Store match result for both players — whoever polls next will get it
+        blitzMatchedPlayers.set(p1.userId, tournament.id);
+        blitzMatchedPlayers.set(p2.userId, tournament.id);
 
-        // The scheduler (runs every 30s) will auto-expire this based on timeframe "5 minutes"
-        // No manual setTimeout needed — startedAt is set above, expiration is calculated from it
+        // The requesting user gets their result immediately; the other polls and finds it
+        const requestingPlayer = p1.userId === userId ? p1 : p2;
+        blitzMatchedPlayers.delete(requestingPlayer.userId);
 
         return res.json({ status: "matched", tournamentId: tournament.id });
       } catch (err) {
@@ -1974,6 +1985,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const userId = req.user.id;
     const idx = blitzQueue.findIndex(e => e.userId === userId);
     if (idx !== -1) blitzQueue.splice(idx, 1);
+    blitzMatchedPlayers.delete(userId);
     res.json({ status: "removed" });
   });
 

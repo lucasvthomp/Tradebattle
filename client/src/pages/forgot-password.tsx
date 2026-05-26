@@ -28,7 +28,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#06121F' }}>
       <Card className="w-full max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
         <CardHeader>
           <CardTitle style={{ color: '#C9D1E2' }}>Reset Password</CardTitle>
