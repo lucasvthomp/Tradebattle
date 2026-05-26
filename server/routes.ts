@@ -1907,10 +1907,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ── Blitz Matchmaking ───────────────────────────────────────
+  // In-memory queue: { userId, joinedAt, socketId? }
+  const blitzQueue: Array<{ userId: number; joinedAt: Date }> = [];
+  const blitzMatches = new Map<number, number>(); // tournamentId -> startedAt timestamp
+
+  app.post("/api/blitz/queue", requireAuth, async (req: any, res) => {
+    const userId = req.user.id;
+
+    // Already in queue?
+    if (blitzQueue.find(e => e.userId === userId)) {
+      return res.json({ status: "queued" });
+    }
+
+    blitzQueue.push({ userId, joinedAt: new Date() });
+
+    // Need 2 players to start a match
+    if (blitzQueue.length >= 2) {
+      const [p1, p2] = blitzQueue.splice(0, 2);
+
+      try {
+        const [p1User, p2User] = await Promise.all([
+          storage.getUser(p1.userId),
+          storage.getUser(p2.userId),
+        ]);
+
+        // Create a blitz tournament (5 minutes, no buy-in, winner-take-all)
+        const tournament = await storage.createTournament({
+          name: `Blitz: ${p1User?.username} vs ${p2User?.username}`,
+          maxPlayers: 2,
+          startingBalance: "10000",
+          timeframe: "5 minutes",
+          buyInAmount: "0",
+          tournamentType: "blitz",
+          isPublic: false,
+          payoutStructure: "winner_take_all",
+          scheduledStartTime: new Date(),
+        }, p1.userId);
+
+        // Join both players and mark as immediately active
+        await storage.joinTournament(tournament.id, p1.userId);
+        await storage.joinTournament(tournament.id, p2.userId);
+
+        await db.update(schema.tournaments)
+          .set({ status: "active", startedAt: new Date() })
+          .where(eq(schema.tournaments.id, tournament.id));
+
+        blitzMatches.set(tournament.id, Date.now());
+
+        // The scheduler (runs every 30s) will auto-expire this based on timeframe "5 minutes"
+        // No manual setTimeout needed — startedAt is set above, expiration is calculated from it
+
+        return res.json({ status: "matched", tournamentId: tournament.id });
+      } catch (err) {
+        console.error("Blitz match creation failed:", err);
+        // Re-queue both if creation fails
+        blitzQueue.unshift(p1, p2);
+        return res.status(500).json({ message: "Match creation failed, try again" });
+      }
+    }
+
+    return res.json({ status: "queued" });
+  });
+
+  app.delete("/api/blitz/queue", requireAuth, async (req: any, res) => {
+    const userId = req.user.id;
+    const idx = blitzQueue.findIndex(e => e.userId === userId);
+    if (idx !== -1) blitzQueue.splice(idx, 1);
+    res.json({ status: "removed" });
+  });
+
+  app.get("/api/blitz/status", requireAuth, async (req: any, res) => {
+    const userId = req.user.id;
+    const inQueue = !!blitzQueue.find(e => e.userId === userId);
+    res.json({ inQueue, queueLength: blitzQueue.length });
+  });
+
   // Error handling middleware
   app.use(errorHandler);
 
   const httpServer = createServer(app);
-  
+
   return httpServer;
 }

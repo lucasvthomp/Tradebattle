@@ -15,6 +15,7 @@ import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import UnauthenticatedHome from "@/pages/unauthenticated-home";
 import Hub from "@/pages/hub";
+import Blitz from "@/pages/blitz";
 import Dashboard from "@/pages/dashboard";
 import Portfolio from "@/pages/portfolio";
 import Tournaments from "@/pages/tournaments";
@@ -91,6 +92,7 @@ function Router() {
               {/* Authenticated users: root shows hub greeting, dashboard via sidebar */}
               <Route path="/" component={Hub} />
               <Route path="/hub" component={Hub} />
+              <Route path="/blitz" component={Blitz} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/portfolio" component={Dashboard} />
               <Route path="/tournaments" component={Tournaments} />

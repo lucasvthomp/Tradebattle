@@ -17,7 +17,8 @@ import {
   Gift,
   Target,
   Swords,
-  Shield
+  Shield,
+  Zap
 } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
@@ -37,6 +38,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     ...(user ? [
       { href: "/dashboard", label: t('dashboard'), icon: BarChart3 },
       { href: "/tournaments", label: t('tournaments'), icon: Swords },
+      { href: "/blitz", label: "Blitz", icon: Zap },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
       { href: "/people", label: t('people'), icon: Users },
       { href: "/shop", label: "Shop", icon: ShoppingBag },
@@ -54,9 +56,14 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   };
 
   return (
-    <div className={`fixed left-0 top-0 h-full z-40 transition-transform duration-300 ${
-      isOpen ? 'translate-x-0' : '-translate-x-full'
-    }`}>
+    <div
+      style={{
+        position: 'fixed', left: 0, top: 0, height: '100%', zIndex: 40,
+        transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+        transition: 'transform 300ms ease',
+        willChange: 'transform',
+      }}
+    >
       <div className="w-64 h-full bg-sidebar border-r border-border/50 flex flex-col shadow-2xl">
         {/* Sidebar Header */}
         <div className="flex items-center justify-between p-4 border-b border-border/50 backdrop-blur-sm">

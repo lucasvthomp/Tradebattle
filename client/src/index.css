@@ -16,60 +16,60 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #06121F;
+  background: #091628;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2B3A4C;
+  background: #1E3A5F;
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3A4A5C;
+  background: #2A4E7A;
 }
 
 :root {
   /* Clean Modern Game Color System */
 
   /* Primary Background */
-  --background: 222 47% 5%;  /* #080C14 */
+  --background: 220 60% 8%;  /* #091628 — richer blue-dark */
   --foreground: 210 20% 90%;  /* #E2E8F0 */
 
   /* Card & Panel Hierarchy */
-  --card: 220 30% 13%;  /* #18212F - slightly lighter for contrast */
+  --card: 218 45% 14%;  /* #172035 — blue-tinted cards */
   --card-foreground: 215 20% 85%;  /* #CBD5E1 */
-  --popover: 222 33% 11%;
+  --popover: 218 45% 12%;
   --popover-foreground: 215 20% 85%;
 
   /* Primary - Gold (for brand/money) */
   --primary: 43 71% 57%;  /* #E3B341 */
-  --primary-foreground: 222 47% 5%;
+  --primary-foreground: 220 60% 8%;
 
   /* Secondary */
-  --secondary: 220 26% 14%;  /* #1A2030 */
+  --secondary: 218 40% 17%;  /* #1A2B42 */
   --secondary-foreground: 215 20% 85%;
 
   /* Muted */
-  --muted: 217 19% 17%;  /* #1F2937 */
+  --muted: 218 35% 19%;  /* #1E2E44 */
   --muted-foreground: 215 16% 62%;  /* #94A3B8 */
 
   /* Accent - Cyan (interactive elements) */
-  --accent: 189 94% 43%;  /* #06B6D4 */
-  --accent-foreground: 222 47% 5%;
+  --accent: 197 100% 47%;  /* #00C2F0 — slightly brighter cyan */
+  --accent-foreground: 220 60% 8%;
 
   /* Destructive */
   --destructive: 0 84% 60%;  /* #EF4444 */
   --destructive-foreground: 0 0% 100%;
 
   /* Borders & Inputs */
-  --border: 217 19% 17%;  /* #1F2937 */
-  --input: 222 40% 8%;  /* #0F172A */
-  --ring: 189 94% 43%;  /* Cyan focus ring */
+  --border: 218 40% 20%;  /* #1E3050 — visible blue border */
+  --input: 218 50% 11%;  /* #0F1E35 */
+  --ring: 197 100% 47%;  /* Cyan focus ring */
   --radius: 0.75rem;
 
   /* Extended Palette */
-  --sidebar-bg: 222 40% 7%;  /* #0B1120 */
-  --hover-overlay: 222 33% 11%;  /* #111827 */
+  --sidebar-bg: 220 60% 7%;  /* #091220 */
+  --hover-overlay: 218 45% 16%;  /* #162540 */
   --secondary-text: 215 16% 62%;  /* #94A3B8 */
   --disabled-text: 215 12% 42%;
   --neutral-gray: 215 14% 58%;
@@ -80,13 +80,13 @@ html {
   --gold-highlight: 43 71% 57%;  /* #E3B341 */
 
   /* New accent colors */
-  --cyan: 189 94% 43%;  /* #06B6D4 */
+  --cyan: 197 100% 47%;  /* #00C2F0 */
   --purple: 258 90% 66%;  /* #8B5CF6 */
 
   /* Shadows */
   --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.45);
   --shadow-gold: 0 0 20px rgba(227, 179, 65, 0.2);
-  --shadow-cyan: 0 0 20px rgba(6, 182, 212, 0.2);
+  --shadow-cyan: 0 0 20px rgba(0, 194, 240, 0.2);
 }
 
 /* React Grid Layout Styles */
@@ -141,32 +141,32 @@ html {
 .dark {
   /* Clean Modern Game - Dark Mode */
 
-  --background: 222 47% 5%;  /* #080C14 */
+  --background: 220 60% 8%;  /* #091628 */
   --foreground: 0 0% 100%;
 
-  --card: 220 30% 13%;  /* #18212F - slightly lighter for contrast */
+  --card: 218 45% 14%;  /* #172035 */
   --card-foreground: 215 16% 62%;  /* #94A3B8 */
-  --popover: 222 33% 11%;
+  --popover: 218 45% 12%;
   --popover-foreground: 215 16% 62%;
 
   --primary: 43 71% 57%;  /* #E3B341 */
-  --primary-foreground: 222 47% 5%;
+  --primary-foreground: 220 60% 8%;
 
-  --secondary: 220 26% 14%;  /* #1A2030 */
+  --secondary: 218 40% 17%;  /* #1A2B42 */
   --secondary-foreground: 215 16% 62%;
 
-  --muted: 217 19% 17%;  /* #1F2937 */
+  --muted: 218 35% 19%;  /* #1E2E44 */
   --muted-foreground: 215 16% 62%;
 
-  --accent: 189 94% 43%;  /* #06B6D4 */
-  --accent-foreground: 222 47% 5%;
+  --accent: 197 100% 47%;  /* #00C2F0 */
+  --accent-foreground: 220 60% 8%;
 
   --destructive: 0 84% 60%;  /* #EF4444 */
   --destructive-foreground: 0 0% 100%;
 
-  --border: 217 19% 17%;  /* #1F2937 */
-  --input: 222 40% 8%;  /* #0F172A */
-  --ring: 189 94% 43%;  /* Cyan */
+  --border: 218 40% 20%;  /* #1E3050 */
+  --input: 218 50% 11%;  /* #0F1E35 */
+  --ring: 197 100% 47%;  /* Cyan */
 }
 
 /* React Grid Layout Styles (dark) */
@@ -237,7 +237,7 @@ html {
 
   html {
     @apply bg-background;
-    background: #080C14 !important;
+    background: #091628 !important;
     min-height: 100%;
     height: 100%;
     overscroll-behavior: none;
@@ -251,7 +251,7 @@ html {
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    background: #080C14 !important;
+    background: #091628 !important;
     background-attachment: fixed !important;
     min-height: 100vh;
     height: 100%;
@@ -273,7 +273,7 @@ html {
 
   /* Prevent white background from showing on overscroll */
   #root {
-    background: #080C14;
+    background: #091628;
     min-height: 100vh;
     position: relative;
   }
@@ -295,16 +295,16 @@ html {
   }
 
   ::-webkit-scrollbar-track {
-    background: #0F172A;
+    background: #0F1E35;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #1F2937;
+    background: #1E3050;
     border-radius: 4px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #06B6D4;
+    background: #00C2F0;
   }
 }
 
@@ -353,7 +353,7 @@ html {
   }
 
   .text-cyan {
-    color: #06B6D4;
+    color: #00C2F0;
   }
 
   .text-purple {
@@ -373,7 +373,7 @@ html {
   }
 
   .bg-cyan {
-    background-color: #06B6D4;
+    background-color: #00C2F0;
   }
 
   .bg-purple {
@@ -382,17 +382,17 @@ html {
 
   /* Backgrounds */
   .bg-sidebar {
-    background-color: #0B1120;
+    background-color: #091220;
   }
 
   .bg-hover {
-    background-color: #111827;
+    background-color: #0F1E35;
   }
 
   /* Gradient button styles */
   .btn-gradient-primary {
     background: linear-gradient(135deg, #E3B341, #F59E0B) !important;
-    color: #080C14 !important;
+    color: #091628 !important;
     font-weight: 600;
     border: none !important;
     transition: opacity 0.2s ease, transform 0.15s ease;
@@ -404,7 +404,7 @@ html {
   }
 
   .btn-gradient-buy {
-    background: linear-gradient(135deg, #10B981, #06B6D4) !important;
+    background: linear-gradient(135deg, #10B981, #00C2F0) !important;
     color: #FFFFFF !important;
     font-weight: 600;
     border: none !important;
@@ -503,7 +503,7 @@ html {
     left: 50%;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #06B6D4, #8B5CF6);
+    background: linear-gradient(90deg, #00C2F0, #8B5CF6);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(-50%);
   }
@@ -514,7 +514,7 @@ html {
 
   /* Gaming-themed borders */
   .border-neon {
-    border-color: #06B6D4;
+    border-color: #00C2F0;
   }
 
   .border-gold {
@@ -527,7 +527,7 @@ html {
 
   /* Status indicators */
   .status-active {
-    background: linear-gradient(135deg, #10B981, #06B6D4);
+    background: linear-gradient(135deg, #10B981, #00C2F0);
     color: #FFFFFF;
   }
 
@@ -538,7 +538,7 @@ html {
   }
 
   .card-inner {
-    background-color: #0F172A;
+    background-color: #0F1E35;
     border: 1px solid rgba(31, 41, 55, 0.3);
   }
 
@@ -546,8 +546,8 @@ html {
 
   /* Input & Form Styles */
   input, textarea, select {
-    background-color: #0F172A;
-    border: 1px solid #1F2937;
+    background-color: #0F1E35;
+    border: 1px solid #1E3050;
     @apply text-card-foreground;
   }
 
@@ -559,8 +559,8 @@ html {
 
   /* Dialog/Dropdown/Popover backgrounds */
   [role="dialog"], [role="menu"], [role="listbox"], [role="combobox"] {
-    background-color: #111827;
-    border: 1px solid #1F2937;
+    background-color: #0F1E35;
+    border: 1px solid #1E3050;
   }
 
   /* Ensure all divs inside cards have backgrounds */
@@ -570,8 +570,8 @@ html {
 
   /* Badge backgrounds */
   .badge, [class*="badge"] {
-    background-color: #0F172A;
-    border: 1px solid #1F2937;
+    background-color: #0F1E35;
+    border: 1px solid #1E3050;
   }
 
   /* Status Colors */
@@ -587,7 +587,7 @@ html {
   .btn-primary {
     background: linear-gradient(135deg, #E3B341, #F59E0B);
     border: none;
-    color: #080C14;
+    color: #091628;
     font-weight: 600;
     transition: opacity 0.2s ease, transform 0.15s ease;
   }
@@ -599,8 +599,8 @@ html {
 
   .btn-secondary {
     background: transparent;
-    border: 2px solid #06B6D4;
-    color: #06B6D4;
+    border: 2px solid #00C2F0;
+    color: #00C2F0;
     transition: all 0.2s ease;
   }
 
@@ -625,7 +625,7 @@ html {
   /* Interactive card effects */
   .interactive-card {
     @apply transition-colors duration-200;
-    background: #111827;
+    background: #0F1E35;
     border: none;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
@@ -668,7 +668,7 @@ html {
 
   /* Dark mode specific overrides */
   .dark .bg-gray-900 {
-    background-color: #080C14;
+    background-color: #091628;
   }
 
   .dark .text-gray-400 {
@@ -676,17 +676,17 @@ html {
   }
 
   .dark .border-gray-800 {
-    border-color: #1F2937;
+    border-color: #1E3050;
   }
 }
 
 /* Keyframe animations */
 @keyframes glow {
   from {
-    text-shadow: 0 0 10px #06B6D4, 0 0 20px #06B6D4, 0 0 30px #06B6D4;
+    text-shadow: 0 0 10px #00C2F0, 0 0 20px #00C2F0, 0 0 30px #00C2F0;
   }
   to {
-    text-shadow: 0 0 20px #06B6D4, 0 0 30px #06B6D4, 0 0 40px #06B6D4;
+    text-shadow: 0 0 20px #00C2F0, 0 0 30px #00C2F0, 0 0 40px #00C2F0;
   }
 }
 
@@ -791,7 +791,7 @@ html {
 /* Loading animations */
 .loading-bar {
   height: 2px;
-  background: linear-gradient(90deg, #080C14 0%, #06B6D4 50%, #080C14 100%);
+  background: linear-gradient(90deg, #091628 0%, #00C2F0 50%, #091628 100%);
   animation: loading 1.5s infinite;
 }
 
@@ -912,7 +912,7 @@ textarea:focus-visible {
   ),
   radial-gradient(
     circle at 40% 80%,
-    #06B6D4 0%,
+    #00C2F0 0%,
     transparent 50%
   );
   opacity: 0.07;
@@ -921,7 +921,7 @@ textarea:focus-visible {
 
 /* Status badge styles */
 .status-active {
-  background: linear-gradient(135deg, #10B981, #06B6D4);
+  background: linear-gradient(135deg, #10B981, #00C2F0);
   color: #FFFFFF;
   @apply text-white font-semibold;
 }
@@ -933,7 +933,7 @@ textarea:focus-visible {
 
 .status-waiting {
   background: linear-gradient(135deg, #E3B341, #F59E0B);
-  color: #080C14;
+  color: #091628;
   @apply font-semibold;
 }
 
