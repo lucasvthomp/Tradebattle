@@ -99,7 +99,7 @@ export default function Login() {
 
         {/* Form */}
         {is2FA ? (
-          <form onSubmit={handle2FASubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
+          <form onSubmit={handle2FASubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
 
             <div className="text-center space-y-2">
@@ -119,7 +119,7 @@ export default function Login() {
                 onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
                 placeholder="000000"
                 className="h-12 rounded-xl text-center text-2xl tracking-[0.5em] font-mono transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                style={{ backgroundColor: '#080F1E', color: '#F1F5F9', borderColor: '#0E1F35' }}
+                style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040' }}
               />
             </div>
 
@@ -158,7 +158,7 @@ export default function Login() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
+          <form onSubmit={handleSubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
 
             <div className="space-y-2">
@@ -171,7 +171,7 @@ export default function Login() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
                 className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                style={{ backgroundColor: '#080F1E', color: '#F1F5F9', borderColor: '#0E1F35', fontSize: '15px' }}
+                style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
               />
             </div>
 
@@ -186,7 +186,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                  style={{ backgroundColor: '#080F1E', color: '#F1F5F9', borderColor: '#0E1F35', fontSize: '15px' }}
+                  style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                 />
                 <button
                   type="button"
@@ -234,10 +234,10 @@ export default function Login() {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" style={{ borderColor: '#0E1F35' }} />
+                <span className="w-full border-t" style={{ borderColor: '#0E2040' }} />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="px-3 text-xs font-medium" style={{ backgroundColor: '#0B1120', color: '#94A3B8' }}>
+                <span className="px-3 text-xs font-medium" style={{ backgroundColor: '#0C1A2E', color: '#94A3B8' }}>
                   Or continue with
                 </span>
               </div>

@@ -116,7 +116,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
             {formatTimestamp(message.createdAt)}
           </span>
         </div>
-        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#1E2D3F', border: '1px solid #0E1F35' }}>
+        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#1E2D3F', border: '1px solid #0E2040' }}>
           <p className="text-sm whitespace-pre-wrap leading-normal" style={{
             color: '#F1F5F9',
             wordBreak: 'break-word',
@@ -185,7 +185,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
   }, [messages]);
 
   return (
-    <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#1E2D3F', border: '1px solid #0E1F35' }}>
+    <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#1E2D3F', border: '1px solid #0E2040' }}>
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden">
         <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(8, 12, 20, 0.5)' }}>
@@ -217,14 +217,14 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
       </div>
 
       {/* Message Input */}
-      <div className="p-3" style={{ borderTop: '1px solid #0E1F35', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
+      <div className="p-3" style={{ borderTop: '1px solid #0E2040', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
         <form onSubmit={handleSendMessage} className="flex space-x-2">
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             placeholder="Message tournament..."
             className="flex-1 text-sm h-9"
-            style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}
+            style={{ backgroundColor: '#1E2D3F', borderColor: '#0E2040', color: '#F1F5F9' }}
             maxLength={500}
           />
           <Button

@@ -85,7 +85,7 @@ export default function Blitz() {
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   const cardStyle = {
-    background: '#0D1117',
+    background: '#0C1829',
     border: '1px solid rgba(255,255,255,0.07)',
     borderRadius: '14px',
     padding: '20px',
@@ -140,7 +140,7 @@ export default function Blitz() {
                 {matchState === "idle" && (
                   <motion.div key="idle" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                     <div style={{
-                      background: 'linear-gradient(160deg, #0D1117 0%, #080C14 100%)',
+                      background: 'linear-gradient(160deg, #0C1829 0%, #080C14 100%)',
                       border: '1px solid rgba(227,179,65,0.2)',
                       borderRadius: '16px',
                       textAlign: 'center', padding: '48px 24px',
@@ -188,7 +188,7 @@ export default function Blitz() {
                 {matchState === "queued" && (
                   <motion.div key="queued" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                     <div style={{
-                      background: 'linear-gradient(160deg, #0D1117 0%, #080C14 100%)',
+                      background: 'linear-gradient(160deg, #0C1829 0%, #080C14 100%)',
                       border: '1px solid rgba(227,179,65,0.2)',
                       borderRadius: '16px',
                       textAlign: 'center', padding: '48px 24px',

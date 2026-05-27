@@ -34,8 +34,8 @@ export default function NotFound() {
       <div
         className="w-full overflow-hidden mb-12"
         style={{
-          borderTop: "1px solid #0E1F35",
-          borderBottom: "1px solid #0E1F35",
+          borderTop: "1px solid #0E2040",
+          borderBottom: "1px solid #0E2040",
           backgroundColor: "#0B1626",
           padding: "8px 0",
         }}
@@ -53,7 +53,7 @@ export default function NotFound() {
               <span style={{ color: t.up ? "#28C76F" : "#FF4F58", fontWeight: 700 }}>
                 {t.chg}
               </span>
-              <span style={{ color: "#0E1F35" }}>│</span>
+              <span style={{ color: "#0E2040" }}>│</span>
             </span>
           ))}
         </motion.div>
@@ -69,7 +69,7 @@ export default function NotFound() {
           style={{
             backgroundColor: "#0B1626",
             borderRadius: "12px",
-            border: "1px solid #0E1F35",
+            border: "1px solid #0E2040",
             padding: "20px 20px 12px",
           }}
         >

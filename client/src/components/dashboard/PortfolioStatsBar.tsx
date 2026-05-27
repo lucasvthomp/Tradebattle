@@ -65,7 +65,7 @@ export function PortfolioStatsBar({
   }, [selectedTournament?.endDate]);
 
   return (
-    <div className="w-full border-b border-border/50 px-6 py-3" style={{ backgroundColor: '#080F1E' }}>
+    <div className="w-full border-b border-border/50 px-6 py-3" style={{ backgroundColor: '#091525' }}>
       <div className="flex items-center gap-6">
         {/* Tournament Selector */}
         {activeTournaments.length > 0 && selectedTournament && onTournamentChange && (
@@ -75,10 +75,10 @@ export function PortfolioStatsBar({
               value={selectedTournament?.id?.toString() || ""}
               onValueChange={onTournamentChange}
             >
-              <SelectTrigger className="w-[200px] h-9 border-0" style={{ backgroundColor: '#0B1120', color: '#F1F5F9' }}>
+              <SelectTrigger className="w-[200px] h-9 border-0" style={{ backgroundColor: '#0C1A2E', color: '#F1F5F9' }}>
                 <SelectValue placeholder="Select tournament" />
               </SelectTrigger>
-              <SelectContent style={{ backgroundColor: '#080F1E', borderColor: '#0E1F35' }}>
+              <SelectContent style={{ backgroundColor: '#091525', borderColor: '#0E2040' }}>
                 {activeTournaments.map((tournament: any) => (
                   <SelectItem key={tournament.id} value={tournament.id.toString()} style={{ color: '#F1F5F9' }}>
                     {tournament.name}

@@ -124,7 +124,7 @@ export default function Shop() {
                   placeholder="ENTER CODE"
                   className="h-11 font-mono tracking-widest text-center"
                   style={{
-                    backgroundColor: '#0B1120',
+                    backgroundColor: '#0C1A2E',
                     borderColor: '#2B3A4C',
                     color: '#C9D1E2',
                   }}
@@ -144,7 +144,7 @@ export default function Shop() {
                 </Button>
               </div>
 
-              <div className="rounded-lg p-3" style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35' }}>
+              <div className="rounded-lg p-3" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}>
                 <p className="text-xs font-semibold mb-2" style={{ color: '#8A93A6' }}>
                   Where to find codes
                 </p>

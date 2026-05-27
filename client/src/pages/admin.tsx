@@ -1232,13 +1232,13 @@ export default function Admin() {
                       <Label>Announcement Title</Label>
                       <Input
                         placeholder="e.g., Big Tournament This Weekend!"
-                        style={{ backgroundColor: '#080F1E', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Type</Label>
                       <Select defaultValue="info">
-                        <SelectTrigger style={{ backgroundColor: '#080F1E', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <SelectTrigger style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1257,7 +1257,7 @@ export default function Admin() {
                     <Textarea
                       placeholder="Enter your announcement message here..."
                       rows={4}
-                      style={{ backgroundColor: '#080F1E', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                     />
                   </div>
 
@@ -1320,7 +1320,7 @@ export default function Admin() {
                       <Label>Expires At (Optional)</Label>
                       <Input
                         type="datetime-local"
-                        style={{ backgroundColor: '#080F1E', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="flex items-end">
@@ -1346,7 +1346,7 @@ export default function Admin() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#080F1E', border: '1px solid #2B3A4C' }}>
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#091525', border: '1px solid #2B3A4C' }}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <Badge style={{ backgroundColor: '#E3B341', color: '#080C14' }}>CELEBRATION</Badge>

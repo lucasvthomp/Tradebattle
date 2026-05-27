@@ -238,13 +238,13 @@ export default function Signup() {
             return (
               <div key={i} className="flex items-center">
                 {i > 0 && (
-                  <div className="w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#E3B341' : '#0E1F35' }} />
+                  <div className="w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#E3B341' : '#0E2040' }} />
                 )}
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
                   style={{
-                    backgroundColor: isActive ? '#E3B341' : isCompleted ? '#E3B34130' : '#0B1120',
-                    border: `2px solid ${isActive ? '#E3B341' : isCompleted ? '#E3B341' : '#0E1F35'}`,
+                    backgroundColor: isActive ? '#E3B341' : isCompleted ? '#E3B34130' : '#0C1A2E',
+                    border: `2px solid ${isActive ? '#E3B341' : isCompleted ? '#E3B341' : '#0E2040'}`,
                   }}
                 >
                   {isCompleted ? (
@@ -265,7 +265,7 @@ export default function Signup() {
         </div>
 
         {/* Form Card */}
-        <div className="p-6 rounded-2xl relative" style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5)' }}>
+        <div className="p-6 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5)' }}>
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
 
           {/* Step 1: Username & Email */}
@@ -282,9 +282,9 @@ export default function Signup() {
                     maxLength={20}
                     className="pr-10 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
                     style={{
-                      backgroundColor: '#080F1E',
+                      backgroundColor: '#091525',
                       color: '#F1F5F9',
-                      borderColor: usernameStatus.available === true ? '#10B981' : usernameStatus.available === false ? '#EF4444' : '#0E1F35',
+                      borderColor: usernameStatus.available === true ? '#10B981' : usernameStatus.available === false ? '#EF4444' : '#0E2040',
                       fontSize: '15px',
                     }}
                   />
@@ -315,7 +315,7 @@ export default function Signup() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address"
                     className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                    style={{ backgroundColor: '#080F1E', color: '#F1F5F9', borderColor: '#0E1F35', fontSize: '15px' }}
+                    style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
                 </div>
               )}
@@ -343,7 +343,7 @@ export default function Signup() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a strong password"
                     className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                    style={{ backgroundColor: '#080F1E', color: '#F1F5F9', borderColor: '#0E1F35', fontSize: '15px' }}
+                    style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
                   <button
                     type="button"
@@ -362,9 +362,9 @@ export default function Signup() {
               {/* Password Strength Bar */}
               <div className="space-y-2">
                 <div className="flex gap-1">
-                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasMinLength ? '#10B981' : '#0E1F35' }} />
-                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasUppercase ? '#10B981' : '#0E1F35' }} />
-                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasNumber ? '#10B981' : '#0E1F35' }} />
+                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasMinLength ? '#10B981' : '#0E2040' }} />
+                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasUppercase ? '#10B981' : '#0E2040' }} />
+                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasNumber ? '#10B981' : '#0E2040' }} />
                 </div>
                 <p className="text-xs font-medium" style={{ color: passwordValid ? '#10B981' : '#94A3B8' }}>
                   {passwordValid ? 'Strong password!' : 'Password strength'}
@@ -372,14 +372,14 @@ export default function Signup() {
               </div>
 
               {/* Requirements Checklist */}
-              <div className="space-y-2 p-3 rounded-xl" style={{ backgroundColor: '#080F1E', border: '1px solid #0E1F35' }}>
+              <div className="space-y-2 p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
                 {[
                   { met: hasMinLength, text: "At least 8 characters" },
                   { met: hasUppercase, text: "One uppercase letter" },
                   { met: hasNumber, text: "One number" },
                 ].map((req, i) => (
                   <div key={i} className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: req.met ? '#10B98130' : '#0E1F35' }}>
+                    <div className="w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: req.met ? '#10B98130' : '#0E2040' }}>
                       {req.met ? (
                         <Check className="w-3 h-3" style={{ color: '#10B981' }} />
                       ) : (
@@ -399,7 +399,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Country</Label>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="h-12 rounded-xl" style={{ backgroundColor: '#080F1E', color: '#F1F5F9', borderColor: '#0E1F35' }}>
+                  <SelectTrigger className="h-12 rounded-xl" style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040' }}>
                     <SelectValue placeholder="Select your country" />
                   </SelectTrigger>
                   <SelectContent>
@@ -412,11 +412,11 @@ export default function Signup() {
 
               {selectedCountry && (
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#080F1E', border: '1px solid #0E1F35' }}>
+                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
                     <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Language</p>
                     <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedLanguage}</p>
                   </div>
-                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#080F1E', border: '1px solid #0E1F35' }}>
+                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
                     <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Currency</p>
                     <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedCurrency}</p>
                   </div>
@@ -436,7 +436,7 @@ export default function Signup() {
                   { label: "Language", value: selectedLanguage, color: '#94A3B8' },
                   { label: "Currency", value: selectedCurrency, color: '#94A3B8' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: '#080F1E', border: '1px solid #0E1F35' }}>
+                  <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
                     <span className="text-xs" style={{ color: '#94A3B8' }}>{item.label}</span>
                     <span className="text-sm font-semibold" style={{ color: item.color }}>{item.value}</span>
                   </div>
@@ -444,14 +444,14 @@ export default function Signup() {
               </div>
 
               {/* Legal Agreements */}
-              <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: '#080F1E', border: '1px solid #0E1F35' }}>
+              <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
                 <div className="flex items-start space-x-3">
                   <Checkbox
                     id="tos"
                     checked={acceptedToS}
                     onCheckedChange={(checked) => setAcceptedToS(checked as boolean)}
                     className="mt-1"
-                    style={{ borderColor: acceptedToS ? '#10B981' : '#0E1F35' }}
+                    style={{ borderColor: acceptedToS ? '#10B981' : '#0E2040' }}
                   />
                   <div className="flex-1">
                     <label htmlFor="tos" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
@@ -470,7 +470,7 @@ export default function Signup() {
                     checked={acceptedPrivacy}
                     onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)}
                     className="mt-1"
-                    style={{ borderColor: acceptedPrivacy ? '#10B981' : '#0E1F35' }}
+                    style={{ borderColor: acceptedPrivacy ? '#10B981' : '#0E2040' }}
                   />
                   <div className="flex-1">
                     <label htmlFor="privacy" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
@@ -483,7 +483,7 @@ export default function Signup() {
                   </div>
                 </div>
 
-                <p className="text-xs pt-2" style={{ color: '#5f6b7a', borderTop: '1px solid #0E1F35' }}>
+                <p className="text-xs pt-2" style={{ color: '#5f6b7a', borderTop: '1px solid #0E2040' }}>
                   By creating an account, you confirm that you are at least 18 years old and agree to receive important updates about your account.
                 </p>
               </div>
@@ -498,7 +498,7 @@ export default function Signup() {
                 variant="outline"
                 onClick={prevStep}
                 className="h-11 rounded-xl px-5"
-                style={{ borderColor: '#0E1F35', color: '#F1F5F9' }}
+                style={{ borderColor: '#0E2040', color: '#F1F5F9' }}
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back
@@ -513,7 +513,7 @@ export default function Signup() {
                 onClick={nextStep}
                 disabled={!canProceed()}
                 className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
-                style={{ backgroundColor: canProceed() ? '#E3B341' : '#0E1F35', color: canProceed() ? '#080C14' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(227, 179, 65, 0.3)' : 'none' }}
+                style={{ backgroundColor: canProceed() ? '#E3B341' : '#0E2040', color: canProceed() ? '#080C14' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(227, 179, 65, 0.3)' : 'none' }}
               >
                 Next
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -524,7 +524,7 @@ export default function Signup() {
                 onClick={() => handleSubmit()}
                 disabled={registerMutation.isPending || !canProceed()}
                 className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
-                style={{ backgroundColor: canProceed() ? '#10B981' : '#0E1F35', color: '#FFFFFF', boxShadow: canProceed() ? '0 4px 20px rgba(16, 185, 129, 0.3)' : 'none' }}
+                style={{ backgroundColor: canProceed() ? '#10B981' : '#0E2040', color: '#FFFFFF', boxShadow: canProceed() ? '0 4px 20px rgba(16, 185, 129, 0.3)' : 'none' }}
               >
                 {registerMutation.isPending ? (
                   <>

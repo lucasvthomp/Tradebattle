@@ -43,7 +43,7 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
       style: "1",
       locale: "en",
       allow_symbol_change: false,
-      backgroundColor: "rgba(5, 10, 22, 1)",
+      backgroundColor: "rgba(10, 22, 40, 1)",
       gridColor: "rgba(255, 255, 255, 0.03)",
       hide_side_toolbar: true,
       hide_top_toolbar: false,
@@ -67,7 +67,7 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
-          backgroundColor: "rgba(5, 10, 22, 1)",
+          backgroundColor: "rgba(10, 22, 40, 1)",
           gap: "12px",
         }}
       >

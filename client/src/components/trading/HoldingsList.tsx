@@ -56,7 +56,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
       {holdings.length > 0 && (
         <div
           className="flex items-center gap-2 px-2 pb-2 text-[9px] uppercase tracking-wide"
-          style={{ color: "#64748B", borderBottom: "1px solid #0E1F35" }}
+          style={{ color: "#64748B", borderBottom: "1px solid #0E2040" }}
         >
           <span className="w-[52px] shrink-0">Symbol</span>
           <span className="w-[32px] shrink-0 text-right">Qty</span>
@@ -106,9 +106,9 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
                 <button
                   key={holding.symbol}
                   onClick={() => onSelectStock(holding.symbol)}
-                  className="w-full flex items-center gap-2 px-2 py-2 text-left transition-colors hover:bg-[#080F1E] rounded"
+                  className="w-full flex items-center gap-2 px-2 py-2 text-left transition-colors hover:bg-[#091525] rounded"
                   style={{
-                    backgroundColor: isSelected ? "#080F1E" : "transparent",
+                    backgroundColor: isSelected ? "#091525" : "transparent",
                     borderLeft: isSelected ? "2px solid #06B6D4" : "2px solid transparent",
                   }}
                 >

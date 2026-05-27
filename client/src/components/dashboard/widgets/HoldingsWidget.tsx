@@ -24,9 +24,9 @@ export function HoldingsWidget({
   const { formatCurrency } = useUserPreferences();
 
   return (
-    <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#0B1120' }}>
+    <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#0C1A2E' }}>
       {/* Header with Toggle */}
-      <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#0E1F35', backgroundColor: '#080F1E' }}>
+      <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#0E2040', backgroundColor: '#091525' }}>
         <div className="flex items-center gap-2">
           <Coins className="w-4 h-4" style={{ color: '#E3B341' }} />
           <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Holdings</span>
@@ -83,7 +83,7 @@ export function HoldingsWidget({
                 <div
                   key={index}
                   className="p-2 rounded transition-colors"
-                  style={{ backgroundColor: '#080F1E', border: '1px solid #0E1F35' }}
+                  style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}
                 >
                   <div className="flex justify-between items-center mb-1">
                     <div className="flex items-baseline gap-2">
@@ -104,7 +104,7 @@ export function HoldingsWidget({
                       size="sm"
                       onClick={() => onChartClick(holding.symbol)}
                       className="text-[10px] px-1.5 py-0.5 h-6 flex-1"
-                      style={{ backgroundColor: '#0B1120', borderColor: '#0E1F35', color: '#F1F5F9', border: '1px solid #0E1F35' }}
+                      style={{ backgroundColor: '#0C1A2E', borderColor: '#0E2040', color: '#F1F5F9', border: '1px solid #0E2040' }}
                     >
                       <BarChart3 className="h-3 w-3 mr-0.5" />
                       Chart

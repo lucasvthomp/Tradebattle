@@ -32,7 +32,7 @@ const fadeInUp = {
 };
 
 const cardStyle = {
-  backgroundColor: "#0D1117",
+  backgroundColor: "#0C1829",
   border: "1px solid rgba(255,255,255,0.06)",
   borderRadius: "12px",
 };
@@ -173,14 +173,14 @@ export default function People() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-9 h-10 text-sm"
-                style={{ backgroundColor: "#0D1117", borderColor: "rgba(255,255,255,0.08)", color: "#F1F5F9" }}
+                style={{ backgroundColor: "#0C1829", borderColor: "rgba(255,255,255,0.08)", color: "#F1F5F9" }}
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="px-3 py-2 rounded-lg text-sm"
-              style={{ backgroundColor: "#0D1117", border: "1px solid rgba(255,255,255,0.08)", color: "#8A93A6" }}
+              style={{ backgroundColor: "#0C1829", border: "1px solid rgba(255,255,255,0.08)", color: "#8A93A6" }}
             >
               <option value="newest">{t("newestMembers")}</option>
               <option value="oldest">{t("oldestMembers")}</option>
@@ -300,7 +300,7 @@ export default function People() {
             >
               <div
                 className="w-full max-w-md overflow-hidden"
-                style={{ backgroundColor: "#0D1117", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px" }}
+                style={{ backgroundColor: "#0C1829", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px" }}
               >
                 {isLoadingProfile ? (
                   <div className="flex items-center justify-center py-16">

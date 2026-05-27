@@ -308,7 +308,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-lg border" style={{
-        background: '#0D1117',
+        background: '#0C1829',
         borderColor: 'rgba(227,179,65,0.25)',
         boxShadow: '0 25px 60px rgba(0,0,0,0.7), 0 0 40px rgba(227,179,65,0.08)'
       }}>
@@ -439,7 +439,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   </Button>
 
                   <Card className="p-4 border-2" style={{
-                    background: '#0D1117',
+                    background: '#0C1829',
                     borderColor: `${currencies.find(c => c.id === selectedCurrency)?.color}40`,
                   }}>
                     <div className="flex items-center gap-3">
@@ -499,7 +499,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         : 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)',
                       color: depositLoading || !depositAmount || parseFloat(depositAmount) < minimumAmount
                         ? '#8A93A6'
-                        : '#0D1117',
+                        : '#0C1829',
                       boxShadow: depositLoading || !depositAmount || parseFloat(depositAmount) < minimumAmount
                         ? 'none'
                         : '0 4px 20px rgba(227, 179, 65, 0.3)',
@@ -561,7 +561,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       Send to this address
                     </label>
                     <div className="flex items-center gap-2 p-3 rounded-xl border-2" style={{
-                      background: '#0D1117',
+                      background: '#0C1829',
                       borderColor: 'rgba(255,255,255,0.08)',
                     }}>
                       <code className="flex-1 text-sm font-mono break-all" style={{ color: '#C9D1E2' }}>
@@ -573,7 +573,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         className="shrink-0"
                         style={{
                           background: copied ? '#28C76F' : '#E3B341',
-                          color: '#0D1117',
+                          color: '#0C1829',
                         }}
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -591,7 +591,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       borderColor: '#E3B341',
                       boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)',
                     }}>
-                      <div className="text-3xl font-black" style={{ color: '#0D1117' }}>
+                      <div className="text-3xl font-black" style={{ color: '#0C1829' }}>
                         {payment.pay_amount} {payment.pay_currency.toUpperCase()}
                       </div>
                     </div>
@@ -647,9 +647,9 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                             style={{
                               background: selectedWithdrawAmount === amount
                                 ? 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)'
-                                : '#0D1117',
+                                : '#0C1829',
                               borderColor: selectedWithdrawAmount === amount ? '#E3B341' : 'rgba(255,255,255,0.08)',
-                              color: selectedWithdrawAmount === amount ? '#0D1117' : '#C9D1E2',
+                              color: selectedWithdrawAmount === amount ? '#0C1829' : '#C9D1E2',
                             }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -799,7 +799,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           style={{
                             background: withdrawCurrency === currency.id
                               ? 'linear-gradient(135deg, rgba(227, 179, 65, 0.2), rgba(227, 179, 65, 0.1))'
-                              : '#0D1117',
+                              : '#0C1829',
                             borderColor: withdrawCurrency === currency.id ? '#E3B341' : 'rgba(255,255,255,0.08)',
                           }}
                           whileHover={{ scale: 1.05 }}
@@ -880,7 +880,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   </Button>
 
                   <Card className="p-6 border-2" style={{
-                    background: '#0D1117',
+                    background: '#0C1829',
                     borderColor: '#E3B341',
                   }}>
                     <h3 className="text-xl font-bold mb-6" style={{ color: '#E3B341' }}>
@@ -905,7 +905,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       <div>
                         <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Wallet Address</p>
                         <code className="block p-3 rounded-lg text-sm font-mono break-all" style={{
-                          background: '#161B22',
+                          background: '#0F1E33',
                           color: '#C9D1E2',
                         }}>
                           {withdrawAddress}
@@ -977,7 +977,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     </p>
                   </div>
 
-                  <Card className="p-5" style={{ background: '#0D1117', borderColor: 'rgba(255,255,255,0.08)' }}>
+                  <Card className="p-5" style={{ background: '#0C1829', borderColor: 'rgba(255,255,255,0.08)' }}>
                     <div className="text-sm space-y-2" style={{ color: '#8A93A6' }}>
                       <p>Amount: <span className="font-bold" style={{ color: '#C9D1E2' }}>{formatCurrency(withdrawalResult.amount)}</span></p>
                       <p>Currency: <span className="font-bold" style={{ color: '#C9D1E2' }}>{withdrawalResult.currency.toUpperCase()}</span></p>

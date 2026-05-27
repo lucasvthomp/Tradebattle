@@ -33,7 +33,7 @@ export default function UnauthenticatedHome() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #06121F 0%, #080F1E 50%, #1E293B 100%)',
+      background: 'linear-gradient(135deg, #06121F 0%, #091525 50%, #1E293B 100%)',
       color: '#C9D1E2',
       position: 'relative',
       overflow: 'hidden',

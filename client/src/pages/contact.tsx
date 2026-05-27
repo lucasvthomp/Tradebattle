@@ -19,7 +19,7 @@ const contactSchema = z.object({
 type ContactForm = z.infer<typeof contactSchema>;
 
 const cardStyle = {
-  backgroundColor: "#0D1117",
+  backgroundColor: "#0C1829",
   border: "1px solid rgba(255,255,255,0.06)",
   borderRadius: "12px",
 };

@@ -285,7 +285,7 @@ function TwoFactorSection({ user }: { user: any }) {
         )}
       </div>
       {setupData && (
-        <div className="mt-4 space-y-4 p-4 rounded-lg" style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35' }}>
+        <div className="mt-4 space-y-4 p-4 rounded-lg" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}>
           <div>
             <h5 className="font-medium text-foreground mb-2">Step 1: Scan QR Code</h5>
             <p className="text-sm text-muted-foreground mb-3">
@@ -300,7 +300,7 @@ function TwoFactorSection({ user }: { user: any }) {
               />
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Or enter this key manually: <code className="px-1 py-0.5 rounded text-xs" style={{ backgroundColor: '#0E1F35', color: '#E3B341' }}>{setupData.secret}</code>
+              Or enter this key manually: <code className="px-1 py-0.5 rounded text-xs" style={{ backgroundColor: '#0E2040', color: '#E3B341' }}>{setupData.secret}</code>
             </p>
           </div>
           <div>
@@ -577,13 +577,13 @@ export default function Profile() {
 
           {/* User Overview Card */}
           <motion.div variants={fadeInUp}>
-            <Card className="mb-8 shadow-lg" style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35' }}>
+            <Card className="mb-8 shadow-lg" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}>
 
               <CardContent className="p-6 relative z-10">
                 <div className="flex items-center space-x-4">
                   <div
                     className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden relative"
-                    style={{ border: '2px solid #0E1F35' }}
+                    style={{ border: '2px solid #0E2040' }}
                   >
                     {user.profilePicture ? (
                       <img
@@ -606,7 +606,7 @@ export default function Profile() {
                       className="absolute w-4 h-4 rounded-full"
                       style={{
                         backgroundColor: '#10B981',
-                        borderColor: '#080F1E',
+                        borderColor: '#091525',
                         borderWidth: '2px',
                         borderStyle: 'solid',
                         bottom: '0',
@@ -685,7 +685,7 @@ export default function Profile() {
                   ];
                   const rank = rankTitles.find(r => level >= r.min) || rankTitles[rankTitles.length - 1];
                   return (
-                    <div className="mt-4 pt-4" style={{ borderTop: '1px solid #0E1F35' }}>
+                    <div className="mt-4 pt-4" style={{ borderTop: '1px solid #0E2040' }}>
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <span className="text-xs font-bold" style={{ color: rank.color }}>{rank.title}</span>

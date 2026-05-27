@@ -59,7 +59,7 @@ export function SimplifiedSidebar() {
         href={item.href}
         {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
         className={`group flex items-center rounded-lg transition-colors duration-200 ${
-          isActive(item.href) ? "sidebar-active-indicator" : "hover:bg-[#080F1E] hover:text-white"
+          isActive(item.href) ? "sidebar-active-indicator" : "hover:bg-[#091525] hover:text-white"
         }`}
         style={{
           height: '48px',
@@ -98,17 +98,17 @@ export function SimplifiedSidebar() {
         className="hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40"
         style={{
           width: expanded ? '256px' : '64px',
-          backgroundColor: '#0B1120',
-          borderColor: '#0E1F35',
+          backgroundColor: '#0C1A2E',
+          borderColor: '#0E2040',
           transition: 'width 300ms ease',
           overflow: 'hidden',
         }}
       >
         {/* Menu Toggle Button at top */}
-        <div className="p-2 border-b" style={{ borderColor: '#0E1F35' }}>
+        <div className="p-2 border-b" style={{ borderColor: '#0E2040' }}>
           <button
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center hover:bg-[#080F1E] rounded-lg transition-colors duration-200"
+            className="flex items-center hover:bg-[#091525] rounded-lg transition-colors duration-200"
             style={{
               height: '48px',
               width: '100%',
@@ -143,7 +143,7 @@ export function SimplifiedSidebar() {
 
         {/* Separator */}
         {user && (
-          <div className="mx-2 my-2 h-px" style={{ backgroundColor: '#0E1F35' }} />
+          <div className="mx-2 my-2 h-px" style={{ backgroundColor: '#0E2040' }} />
         )}
 
         {/* User Actions */}

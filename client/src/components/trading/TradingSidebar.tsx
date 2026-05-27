@@ -199,7 +199,7 @@ export function TradingSidebar({
     <div
       data-tour="trading-sidebar"
       className="flex flex-col h-full min-h-0"
-      style={{ backgroundColor: "#0D1117" }}
+      style={{ backgroundColor: "#0C1829" }}
     >
       {/* ── HEADER: Tournament selector + portfolio scorecard ── */}
       <div
@@ -223,7 +223,7 @@ export function TradingSidebar({
           >
             <SelectValue placeholder="Select Tournament" />
           </SelectTrigger>
-          <SelectContent style={{ backgroundColor: "#161B22", borderColor: "rgba(227,179,65,0.2)" }}>
+          <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(227,179,65,0.2)" }}>
             {activeTournaments.map((t: any) => (
               <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
                 {t.name}
@@ -332,7 +332,7 @@ export function TradingSidebar({
           <div
             style={{
               position: "absolute", left: "12px", right: "12px", zIndex: 9999, top: "calc(100% + 2px)",
-              backgroundColor: "#161B22", border: "1px solid rgba(227,179,65,0.25)",
+              backgroundColor: "#0F1E33", border: "1px solid rgba(227,179,65,0.25)",
               borderRadius: "12px", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
             }}
           >
@@ -584,7 +584,7 @@ export function TradingSidebar({
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#161B22", borderColor: "rgba(227,179,65,0.2)" }}>
+                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(227,179,65,0.2)" }}>
                     <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
                     <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
                     <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
@@ -645,7 +645,7 @@ export function TradingSidebar({
                   <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#E3B341" }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#161B22", borderColor: "rgba(227,179,65,0.2)" }}>
+                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(227,179,65,0.2)" }}>
                     <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
                       {isCryptoTournament ? "Units" : "Shares"}
                     </SelectItem>
