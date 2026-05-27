@@ -533,7 +533,7 @@ export function TradingSidebar({
               >
                 <button
                   onClick={() => handleSideChange("buy")}
-                  className="flex-1 py-3 text-sm font-black text-center rounded-lg transition-all"
+                  className="flex-1 py-1.5 text-xs font-black text-center rounded-lg transition-all"
                   style={
                     orderSide === "buy"
                       ? {
@@ -548,7 +548,7 @@ export function TradingSidebar({
                 </button>
                 <button
                   onClick={() => handleSideChange("sell")}
-                  className="flex-1 py-3 text-sm font-black text-center rounded-lg transition-all"
+                  className="flex-1 py-1.5 text-xs font-black text-center rounded-lg transition-all"
                   style={
                     orderSide === "sell"
                       ? {
@@ -568,7 +568,7 @@ export function TradingSidebar({
             <div className="px-3 space-y-1 pb-2">
               {/* Order Type */}
               <div
-                className="flex items-center justify-between py-3"
+                className="flex items-center justify-between py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
@@ -596,7 +596,7 @@ export function TradingSidebar({
               {/* Limit Price */}
               {(orderType === "limit" || orderType === "stop_limit") && (
                 <div
-                  className="flex items-center justify-between py-3"
+                  className="flex items-center justify-between py-2"
                   style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
                 >
                   <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
@@ -616,7 +616,7 @@ export function TradingSidebar({
               {/* Stop Price */}
               {(orderType === "stop_market" || orderType === "stop_limit") && (
                 <div
-                  className="flex items-center justify-between py-3"
+                  className="flex items-center justify-between py-2"
                   style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
                 >
                   <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
@@ -635,7 +635,7 @@ export function TradingSidebar({
 
               {/* Buy In mode */}
               <div
-                className="flex items-center justify-between py-3"
+                className="flex items-center justify-between py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
@@ -656,7 +656,7 @@ export function TradingSidebar({
 
               {/* Quantity */}
               <div
-                className="flex items-center justify-between py-3"
+                className="flex items-center justify-between py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
@@ -714,7 +714,7 @@ export function TradingSidebar({
 
               {/* Estimated total */}
               <div
-                className="flex items-center justify-between py-3"
+                className="flex items-center justify-between py-2"
                 style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
               >
                 <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
@@ -747,7 +747,7 @@ export function TradingSidebar({
               <div className="flex gap-2 pt-2 pb-4">
                 <button
                   onClick={() => { setAwaitingConfirm(false); setActiveView("positions"); }}
-                  className="flex-1 py-3 rounded-xl text-sm font-bold transition-colors"
+                  className="flex-1 py-2 rounded-xl text-sm font-bold transition-colors"
                   style={{
                     backgroundColor: "rgba(255,255,255,0.05)",
                     color: "#8A93A6",
@@ -759,7 +759,7 @@ export function TradingSidebar({
                 <button
                   onClick={handleSubmit}
                   disabled={!canSubmit || isSubmitting}
-                  className="flex-1 py-3 rounded-xl text-sm font-black transition-all disabled:opacity-30"
+                  className="flex-1 py-2 rounded-xl text-sm font-black transition-all disabled:opacity-30"
                   style={
                     canSubmit
                       ? orderSide === "buy"

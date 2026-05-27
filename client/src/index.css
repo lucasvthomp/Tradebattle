@@ -4,6 +4,22 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide TradingView watermark bar */
+.tradingview-widget-container {
+  position: relative;
+}
+.tradingview-widget-container::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  background: rgba(10, 22, 40, 1);
+  pointer-events: none;
+  z-index: 10;
+}
+
 /* Fix scrollbar causing layout shift */
 html {
   overflow-y: scroll;

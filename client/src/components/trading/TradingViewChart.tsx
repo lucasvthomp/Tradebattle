@@ -21,13 +21,14 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
 
     const widgetDiv = document.createElement("div");
     widgetDiv.className = "tradingview-widget-container__widget";
-    widgetDiv.style.height = "calc(100% - 28px)";
+    widgetDiv.style.height = "100%";
     widgetDiv.style.width = "100%";
     widgetContainer.appendChild(widgetDiv);
 
+    // Hide the attribution bar (kept in DOM for TradingView compliance but invisible)
     const copyright = document.createElement("div");
     copyright.className = "tradingview-widget-copyright";
-    copyright.innerHTML = `<a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span style="color: #2D3748; font-size: 10px;">Chart by TradingView</span></a>`;
+    copyright.style.display = "none";
     widgetContainer.appendChild(copyright);
 
     const script = document.createElement("script");

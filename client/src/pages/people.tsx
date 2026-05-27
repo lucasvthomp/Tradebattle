@@ -191,19 +191,14 @@ export default function People() {
 
           {/* Grid */}
           <motion.div variants={fadeInUp}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
               {isLoadingUsers ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} style={cardStyle} className="p-5 animate-pulse">
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: "rgba(255,255,255,0.05)" }} />
-                      <div className="flex-1 space-y-2">
-                        <div className="h-3.5 rounded w-1/2" style={{ backgroundColor: "rgba(255,255,255,0.05)" }} />
-                        <div className="h-2.5 rounded w-1/3" style={{ backgroundColor: "rgba(255,255,255,0.03)" }} />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[1, 2, 3].map(j => <div key={j} className="h-12 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.03)" }} />)}
+                Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} style={cardStyle} className="p-3 animate-pulse flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl shrink-0" style={{ backgroundColor: "rgba(255,255,255,0.05)" }} />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 rounded w-1/2" style={{ backgroundColor: "rgba(255,255,255,0.05)" }} />
+                      <div className="h-2.5 rounded w-2/3" style={{ backgroundColor: "rgba(255,255,255,0.03)" }} />
                     </div>
                   </div>
                 ))
@@ -229,44 +224,31 @@ export default function People() {
                   <button
                     key={person.id}
                     onClick={() => setSelectedUserId(String(person.id))}
-                    className="text-left transition-all"
-                    style={{ ...cardStyle, padding: "16px", display: "block", width: "100%" }}
+                    className="text-left transition-all flex items-center gap-3"
+                    style={{ ...cardStyle, padding: "12px 14px", display: "flex", width: "100%" }}
                     onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(227,179,65,0.2)")}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}
                   >
-                    <div className="flex items-center gap-3 mb-3">
-                      <AvatarWithStatus
-                        className="w-11 h-11 shrink-0"
-                        src={person.profilePicture}
-                        alt={person.username}
-                        fallback={`${person.username?.[0]?.toUpperCase() || ""}${person.username?.[1]?.toUpperCase() || ""}`}
-                        lastActivity={person.lastActivity}
-                        statusSize="sm"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-bold truncate" style={{ color: "#F1F5F9" }}>{person.username}</span>
-                          {person.subscriptionTier === "administrator" && (
-                            <Crown className="w-3 h-3 shrink-0" style={{ color: "#E3B341" }} />
-                          )}
-                        </div>
-                        <span className="text-xs" style={{ color: "#4B5563" }}>
-                          Joined {person.createdAt ? new Date(person.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "—"}
-                        </span>
+                    <AvatarWithStatus
+                      className="w-10 h-10 shrink-0"
+                      src={person.profilePicture}
+                      alt={person.username}
+                      fallback={`${person.username?.[0]?.toUpperCase() || ""}${person.username?.[1]?.toUpperCase() || ""}`}
+                      lastActivity={person.lastActivity}
+                      statusSize="sm"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm font-bold truncate" style={{ color: "#F1F5F9" }}>{person.username}</span>
+                        {person.subscriptionTier === "administrator" && (
+                          <Crown className="w-3 h-3 shrink-0" style={{ color: "#E3B341" }} />
+                        )}
                       </div>
+                      <span className="text-xs" style={{ color: "#4B5563" }}>
+                        {person.totalTrades || 0} trades · {person.tournamentCount || 0} tournaments
+                      </span>
                     </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {[
-                        { label: t("totalTrades"), value: person.totalTrades || 0, color: "#C9D1E2" },
-                        { label: "Streak", value: `${person.tradingStreak || 0}d`, color: "#E3B341" },
-                        { label: t("tournaments"), value: person.tournamentCount || 0, color: "#28C76F" },
-                      ].map((stat) => (
-                        <div key={stat.label} className="text-center py-2 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.03)" }}>
-                          <div className="text-sm font-bold" style={{ color: stat.color }}>{stat.value}</div>
-                          <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>{stat.label}</div>
-                        </div>
-                      ))}
-                    </div>
+                    <span className="text-xs shrink-0" style={{ color: "#2D3748" }}>›</span>
                   </button>
                 ))
               )}
