@@ -307,50 +307,46 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl border-2" style={{
-        background: '#1E2D3F',
-        borderColor: '#E3B341',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 40px rgba(227, 179, 65, 0.2)'
+      <DialogContent className="max-w-lg border" style={{
+        background: '#0D1117',
+        borderColor: 'rgba(227,179,65,0.25)',
+        boxShadow: '0 25px 60px rgba(0,0,0,0.7), 0 0 40px rgba(227,179,65,0.08)'
       }}>
-        <DialogHeader className="pb-4" style={{ borderBottom: '1px solid #2B3A4C' }}>
+        <DialogHeader className="pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div className="flex items-center gap-3">
-            <motion.div
-              animate={{
-                rotate: [0, 5, -5, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-            >
-              <Wallet className="w-7 h-7" style={{ color: '#E3B341' }} />
-            </motion.div>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{
+              background: 'linear-gradient(135deg, rgba(227,179,65,0.2), rgba(227,179,65,0.06))',
+              border: '1px solid rgba(227,179,65,0.3)',
+            }}>
+              <Wallet className="w-5 h-5" style={{ color: '#E3B341' }} />
+            </div>
             <div>
-              <DialogTitle className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
-                Balance Management
+              <DialogTitle className="text-lg font-black" style={{ color: '#F1F5F9', letterSpacing: '-0.01em' }}>
+                Wallet
               </DialogTitle>
-              <p className="text-sm mt-1" style={{ color: '#8A93A6' }}>
-                Current Balance: <span className="font-semibold" style={{ color: '#E3B341' }}>{formatCurrency(currentBalance)}</span>
+              <p className="text-xs mt-0.5" style={{ color: '#4B5563' }}>
+                Balance: <span className="font-black" style={{ color: '#E3B341' }}>{formatCurrency(currentBalance)}</span>
               </p>
             </div>
           </div>
         </DialogHeader>
 
-        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'deposit' | 'withdraw')} className="mt-4">
-          <TabsList className="grid w-full grid-cols-2 h-14 rounded-xl" style={{ background: '#06121F' }}>
+        <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'deposit' | 'withdraw')} className="mt-3">
+          <TabsList className="grid w-full grid-cols-2 h-11 rounded-xl p-1 gap-1" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
             <TabsTrigger
               value="deposit"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#E3B341] data-[state=active]:to-[#D4A537] data-[state=active]:text-[#06121F] rounded-lg text-base font-bold flex items-center gap-2"
+              className="rounded-lg text-sm font-black flex items-center gap-2 data-[state=active]:shadow-none"
+              style={{ color: activeTab === 'deposit' ? '#000' : '#4B5563' }}
             >
-              <TrendingUp className="w-5 h-5" />
+              <TrendingUp className="w-4 h-4" />
               Deposit
             </TabsTrigger>
             <TabsTrigger
               value="withdraw"
-              className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#E3B341] data-[state=active]:to-[#D4A537] data-[state=active]:text-[#06121F] rounded-lg text-base font-bold flex items-center gap-2"
+              className="rounded-lg text-sm font-black flex items-center gap-2 data-[state=active]:shadow-none"
+              style={{ color: activeTab === 'withdraw' ? '#000' : '#4B5563' }}
             >
-              <TrendingDown className="w-5 h-5" />
+              <TrendingDown className="w-4 h-4" />
               Withdraw
             </TabsTrigger>
           </TabsList>
@@ -391,8 +387,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         }}
                         className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all"
                         style={{
-                          background: '#06121F',
-                          borderColor: '#2B3A4C',
+                          background: 'rgba(255,255,255,0.03)',
+                          borderColor: 'rgba(255,255,255,0.08)',
                         }}
                         whileHover={{
                           scale: 1.02,
@@ -443,7 +439,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   </Button>
 
                   <Card className="p-4 border-2" style={{
-                    background: '#06121F',
+                    background: '#0D1117',
                     borderColor: `${currencies.find(c => c.id === selectedCurrency)?.color}40`,
                   }}>
                     <div className="flex items-center gap-3">
@@ -482,8 +478,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         step="0.01"
                         className="pl-12 h-16 text-2xl font-bold border-2 rounded-xl"
                         style={{
-                          background: '#06121F',
-                          borderColor: '#2B3A4C',
+                          background: 'rgba(255,255,255,0.03)',
+                          borderColor: 'rgba(255,255,255,0.08)',
                           color: '#C9D1E2',
                         }}
                       />
@@ -499,11 +495,11 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     className="w-full h-14 text-lg font-bold rounded-xl"
                     style={{
                       background: depositLoading || !depositAmount || parseFloat(depositAmount) < minimumAmount
-                        ? '#2B3A4C'
+                        ? 'rgba(255,255,255,0.08)'
                         : 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)',
                       color: depositLoading || !depositAmount || parseFloat(depositAmount) < minimumAmount
                         ? '#8A93A6'
-                        : '#06121F',
+                        : '#0D1117',
                       boxShadow: depositLoading || !depositAmount || parseFloat(depositAmount) < minimumAmount
                         ? 'none'
                         : '0 4px 20px rgba(227, 179, 65, 0.3)',
@@ -565,8 +561,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       Send to this address
                     </label>
                     <div className="flex items-center gap-2 p-3 rounded-xl border-2" style={{
-                      background: '#06121F',
-                      borderColor: '#2B3A4C',
+                      background: '#0D1117',
+                      borderColor: 'rgba(255,255,255,0.08)',
                     }}>
                       <code className="flex-1 text-sm font-mono break-all" style={{ color: '#C9D1E2' }}>
                         {payment.pay_address}
@@ -577,7 +573,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         className="shrink-0"
                         style={{
                           background: copied ? '#28C76F' : '#E3B341',
-                          color: '#06121F',
+                          color: '#0D1117',
                         }}
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -595,7 +591,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       borderColor: '#E3B341',
                       boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)',
                     }}>
-                      <div className="text-3xl font-black" style={{ color: '#06121F' }}>
+                      <div className="text-3xl font-black" style={{ color: '#0D1117' }}>
                         {payment.pay_amount} {payment.pay_currency.toUpperCase()}
                       </div>
                     </div>
@@ -651,9 +647,9 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                             style={{
                               background: selectedWithdrawAmount === amount
                                 ? 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)'
-                                : '#06121F',
-                              borderColor: selectedWithdrawAmount === amount ? '#E3B341' : '#2B3A4C',
-                              color: selectedWithdrawAmount === amount ? '#06121F' : '#C9D1E2',
+                                : '#0D1117',
+                              borderColor: selectedWithdrawAmount === amount ? '#E3B341' : 'rgba(255,255,255,0.08)',
+                              color: selectedWithdrawAmount === amount ? '#0D1117' : '#C9D1E2',
                             }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
@@ -685,8 +681,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         max={currentBalance}
                         className="pl-12 h-14 text-lg font-semibold border-2 rounded-xl"
                         style={{
-                          background: '#06121F',
-                          borderColor: '#2B3A4C',
+                          background: 'rgba(255,255,255,0.03)',
+                          borderColor: 'rgba(255,255,255,0.08)',
                           color: '#C9D1E2',
                         }}
                       />
@@ -701,7 +697,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     >
                       <Card className="p-5 border" style={{
                         background: 'rgba(227, 179, 65, 0.08)',
-                        borderColor: '#2B3A4C',
+                        borderColor: 'rgba(255,255,255,0.08)',
                       }}>
                         <h4 className="font-bold mb-4" style={{ color: '#C9D1E2' }}>
                           Withdrawal Breakdown
@@ -719,7 +715,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                               -{formatCurrency(withdrawBreakdown.transactionFee)}
                             </span>
                           </div>
-                          <div className="pt-3 mt-3 flex justify-between border-t" style={{ borderColor: '#2B3A4C' }}>
+                          <div className="pt-3 mt-3 flex justify-between border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                             <span className="font-bold" style={{ color: '#C9D1E2' }}>You will receive:</span>
                             <span className="font-black text-xl" style={{ color: '#28C76F' }}>
                               {formatCurrency(withdrawBreakdown.subtotal)}
@@ -754,7 +750,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     className="w-full h-14 text-lg font-bold rounded-xl"
                     style={{
                       background: !isValidWithdrawAmount() || currentBalance <= 0
-                        ? '#2B3A4C'
+                        ? 'rgba(255,255,255,0.08)'
                         : '#FF4F58',
                       color: !isValidWithdrawAmount() || currentBalance <= 0
                         ? '#8A93A6'
@@ -803,8 +799,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           style={{
                             background: withdrawCurrency === currency.id
                               ? 'linear-gradient(135deg, rgba(227, 179, 65, 0.2), rgba(227, 179, 65, 0.1))'
-                              : '#06121F',
-                            borderColor: withdrawCurrency === currency.id ? '#E3B341' : '#2B3A4C',
+                              : '#0D1117',
+                            borderColor: withdrawCurrency === currency.id ? '#E3B341' : 'rgba(255,255,255,0.08)',
                           }}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
@@ -833,8 +829,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         placeholder="Enter your wallet address"
                         className="h-14 font-mono text-sm border-2 rounded-xl"
                         style={{
-                          background: '#06121F',
-                          borderColor: '#2B3A4C',
+                          background: 'rgba(255,255,255,0.03)',
+                          borderColor: 'rgba(255,255,255,0.08)',
                           color: '#C9D1E2',
                         }}
                       />
@@ -851,7 +847,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     className="w-full h-14 text-lg font-bold rounded-xl"
                     style={{
                       background: !withdrawCurrency || !withdrawAddress || withdrawAddress.length < 10
-                        ? '#2B3A4C'
+                        ? 'rgba(255,255,255,0.08)'
                         : '#FF4F58',
                       color: !withdrawCurrency || !withdrawAddress || withdrawAddress.length < 10
                         ? '#8A93A6'
@@ -884,7 +880,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   </Button>
 
                   <Card className="p-6 border-2" style={{
-                    background: '#06121F',
+                    background: '#0D1117',
                     borderColor: '#E3B341',
                   }}>
                     <h3 className="text-xl font-bold mb-6" style={{ color: '#E3B341' }}>
@@ -909,14 +905,14 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       <div>
                         <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Wallet Address</p>
                         <code className="block p-3 rounded-lg text-sm font-mono break-all" style={{
-                          background: '#1E2D3F',
+                          background: '#161B22',
                           color: '#C9D1E2',
                         }}>
                           {withdrawAddress}
                         </code>
                       </div>
 
-                      <div className="pt-4 border-t" style={{ borderColor: '#2B3A4C' }}>
+                      <div className="pt-4 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
                         <div className="flex justify-between mb-2">
                           <span style={{ color: '#8A93A6' }}>Transaction Fee</span>
                           <span style={{ color: '#FF4F58' }}>-{formatCurrency(withdrawBreakdown.transactionFee)}</span>
@@ -981,7 +977,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     </p>
                   </div>
 
-                  <Card className="p-5" style={{ background: '#06121F', borderColor: '#2B3A4C' }}>
+                  <Card className="p-5" style={{ background: '#0D1117', borderColor: 'rgba(255,255,255,0.08)' }}>
                     <div className="text-sm space-y-2" style={{ color: '#8A93A6' }}>
                       <p>Amount: <span className="font-bold" style={{ color: '#C9D1E2' }}>{formatCurrency(withdrawalResult.amount)}</span></p>
                       <p>Currency: <span className="font-bold" style={{ color: '#C9D1E2' }}>{withdrawalResult.currency.toUpperCase()}</span></p>

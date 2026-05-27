@@ -202,7 +202,7 @@ export function TradingSidebar({
       className="flex flex-col h-full min-h-0"
       style={{ backgroundColor: "#0D1117" }}
     >
-      {/* ── HEADER: Tournament selector + balance chip ── */}
+      {/* ── HEADER: Tournament selector + portfolio scorecard ── */}
       <div
         className="p-3 shrink-0 space-y-2"
         style={{ borderBottom: "1px solid rgba(227,179,65,0.15)" }}
@@ -233,23 +233,44 @@ export function TradingSidebar({
           </SelectContent>
         </Select>
 
-        {/* Chip-style balance display */}
+        {/* Portfolio scorecard — inline under tournament selector */}
         <div
-          className="flex items-center justify-between px-3 py-2 rounded-lg"
+          className="rounded-xl p-3 space-y-2"
           style={{
-            background: "linear-gradient(135deg, rgba(227,179,65,0.12), rgba(227,179,65,0.04))",
-            border: "1px solid rgba(227,179,65,0.2)",
+            background: `linear-gradient(135deg, ${isProfit ? "rgba(40,199,111,0.07)" : "rgba(255,79,88,0.07)"}, rgba(13,17,23,0.8))`,
+            border: `1px solid ${isProfit ? "rgba(40,199,111,0.2)" : "rgba(255,79,88,0.2)"}`,
           }}
         >
-          <div className="flex items-center gap-1.5">
-            <span style={{ fontSize: 14 }}>💰</span>
-            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-              Cash
-            </span>
+          <div className="flex items-end justify-between">
+            <div>
+              <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: "#4B5563" }}>Portfolio</div>
+              <div className="text-lg font-black" style={{ color: "#F1F5F9", letterSpacing: "-0.02em" }}>
+                {formatMoney(totalValue)}
+              </div>
+            </div>
+            <div
+              className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-black"
+              style={{
+                backgroundColor: isProfit ? "rgba(40,199,111,0.12)" : "rgba(255,79,88,0.12)",
+                color: isProfit ? "#28C76F" : "#FF4F58",
+              }}
+            >
+              {isProfit ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
+            </div>
           </div>
-          <span className="text-sm font-black" style={{ color: "#E3B341", letterSpacing: "-0.02em" }}>
-            {formatCurrency(buyingPower)}
-          </span>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { label: "Cash", value: formatMoney(buyingPower), color: "#C9D1E2" },
+              { label: "Invested", value: formatMoney(invested), color: "#C9D1E2" },
+              { label: "P / L", value: (totalPL >= 0 ? "+" : "") + formatMoney(totalPL), color: totalPL >= 0 ? "#28C76F" : "#FF4F58" },
+            ].map((s) => (
+              <div key={s.label} className="rounded-lg p-1.5 text-center" style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>
+                <div className="text-[8px] font-bold uppercase tracking-wider mb-0.5" style={{ color: "#4B5563" }}>{s.label}</div>
+                <div className="text-[10px] font-bold truncate" style={{ color: s.color }}>{s.value}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -285,7 +306,7 @@ export function TradingSidebar({
       {/* ── SYMBOL SEARCH ── */}
       <div
         className="px-3 py-2 shrink-0"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative" }}
       >
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "#4B5563" }} />
@@ -310,8 +331,11 @@ export function TradingSidebar({
 
         {showSearch && searchQuery.length >= 1 && (
           <div
-            className="absolute left-3 right-3 z-50 rounded-xl overflow-hidden"
-            style={{ backgroundColor: "#161B22", border: "1px solid rgba(227,179,65,0.2)", marginTop: 4, boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}
+            style={{
+              position: "absolute", left: "12px", right: "12px", zIndex: 9999, top: "calc(100% + 2px)",
+              backgroundColor: "#161B22", border: "1px solid rgba(227,179,65,0.25)",
+              borderRadius: "12px", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
+            }}
           >
             {isSearching ? (
               <div className="px-3 py-2 space-y-1.5">
@@ -385,63 +409,6 @@ export function TradingSidebar({
         {/* POSITIONS VIEW */}
         {activeView === "positions" && (
           <div>
-            {/* Portfolio scorecard */}
-            <div
-              className="mx-3 mt-3 mb-2 rounded-xl p-3 space-y-2"
-              style={{
-                background: "linear-gradient(135deg, rgba(13,17,23,0.8), rgba(22,27,34,0.8))",
-                border: `1px solid ${isProfit ? "rgba(40,199,111,0.25)" : "rgba(255,79,88,0.25)"}`,
-              }}
-            >
-              {/* Total value hero */}
-              <div className="flex items-end justify-between">
-                <div>
-                  <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#4B5563" }}>
-                    Portfolio Value
-                  </div>
-                  <div className="text-xl font-black mt-0.5" style={{ color: "#F1F5F9", letterSpacing: "-0.02em" }}>
-                    {formatMoney(totalValue)}
-                  </div>
-                </div>
-                <div
-                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-black"
-                  style={{
-                    backgroundColor: isProfit ? "rgba(40,199,111,0.15)" : "rgba(255,79,88,0.15)",
-                    color: isProfit ? "#28C76F" : "#FF4F58",
-                  }}
-                >
-                  {isProfit ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
-                  {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
-                </div>
-              </div>
-
-              {/* Cash / Invested / P-L row */}
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { label: "Cash", value: formatMoney(buyingPower), color: "#C9D1E2" },
-                  { label: "Invested", value: formatMoney(invested), color: "#C9D1E2" },
-                  {
-                    label: "P / L",
-                    value: (totalPL >= 0 ? "+" : "") + formatMoney(totalPL),
-                    color: totalPL >= 0 ? "#28C76F" : "#FF4F58",
-                  },
-                ].map((s) => (
-                  <div
-                    key={s.label}
-                    className="rounded-lg p-2 text-center"
-                    style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
-                  >
-                    <div className="text-[9px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#4B5563" }}>
-                      {s.label}
-                    </div>
-                    <div className="text-xs font-bold truncate" style={{ color: s.color }}>
-                      {s.value}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Holdings */}
             <div className="px-3 py-2">
               <div className="flex items-center justify-between mb-2">

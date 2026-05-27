@@ -370,7 +370,7 @@ export default function TournamentsPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto" style={{ background: 'linear-gradient(to bottom, #080C14, #0F172A)' }}>
+    <div className="h-[calc(100vh-4rem)] overflow-auto" style={{ background: '#080C14' }}>
       <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(16px, 3vh, 40px) clamp(16px, 2vw, 32px)' }}>
         <motion.div
           initial="initial"
@@ -381,28 +381,38 @@ export default function TournamentsPage() {
           {/* Header */}
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center mb-3" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
-                <Trophy style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)', color: '#E3B341' }} />
-                <h1 className="font-black" style={{ fontSize: 'clamp(1.5rem, 4vw, 3.75rem)', color: '#F1F5F9' }}>
+              <div className="flex items-center mb-1" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
+                <div className="flex items-center justify-center rounded-xl" style={{
+                  width: 'clamp(36px, 3vw, 48px)', height: 'clamp(36px, 3vw, 48px)',
+                  background: 'linear-gradient(135deg, rgba(227,179,65,0.25), rgba(227,179,65,0.08))',
+                  border: '1px solid rgba(227,179,65,0.35)',
+                }}>
+                  <Trophy style={{ width: 'clamp(18px, 1.8vw, 24px)', height: 'clamp(18px, 1.8vw, 24px)', color: '#E3B341' }} />
+                </div>
+                <h1 className="font-black" style={{ fontSize: 'clamp(1.5rem, 4vw, 3rem)', color: '#F1F5F9', letterSpacing: '-0.02em' }}>
                   Tournaments
                 </h1>
               </div>
+              <p style={{ fontSize: '13px', color: '#4B5563', marginLeft: 'clamp(44px, 4vw, 64px)' }}>
+                Compete. Trade. Win.
+              </p>
             </div>
             <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
               <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="rounded-lg border-0" style={{
-                    height: 'clamp(44px, 2.5vh, 48px)',
+                  <Button variant="outline" className="rounded-xl border-0 font-bold" style={{
+                    height: 'clamp(40px, 2.5vh, 44px)',
                     padding: '0 clamp(12px, 1.5vw, 20px)',
-                    fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-                    backgroundColor: '#1E2D3F',
-                    color: '#F1F5F9',
+                    fontSize: 'clamp(0.8rem, 1vw, 0.9rem)',
+                    backgroundColor: 'rgba(255,255,255,0.05)',
+                    color: '#C9D1E2',
+                    border: '1px solid rgba(255,255,255,0.08)',
                   }}>
-                    <Lock style={{ width: 'clamp(14px, 1.2vw, 20px)', height: 'clamp(14px, 1.2vw, 20px)', marginRight: '8px' }} />
+                    <Lock style={{ width: 14, height: 14, marginRight: '8px' }} />
                     Join Private
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
+                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#161B22', borderColor: 'rgba(227,179,65,0.2)' }}>
                   <DialogHeader>
                     <DialogTitle style={{ color: '#F1F5F9' }}>Join Private Tournament</DialogTitle>
                   </DialogHeader>
@@ -415,15 +425,15 @@ export default function TournamentsPage() {
                         onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
                         placeholder="Enter 8-character code"
                         maxLength={8}
-                        className="text-base md:text-sm min-h-[44px]"
-                        style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
+                        className="text-base md:text-sm min-h-[44px] font-bold"
+                        style={{ backgroundColor: '#0D1117', borderColor: 'rgba(255,255,255,0.08)', color: '#E3B341' }}
                       />
                     </div>
                     <Button
                       onClick={() => joinByCodeMutation.mutate(joinCode)}
                       disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
-                      className="w-full border-0 min-h-[44px] text-base md:text-sm"
-                      style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
+                      className="w-full border-0 min-h-[44px] text-base md:text-sm font-black"
+                      style={{ background: 'linear-gradient(135deg, #28C76F, #20a35a)', color: '#000' }}
                     >
                       {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
                     </Button>
@@ -435,15 +445,16 @@ export default function TournamentsPage() {
                 isOpen={createDialogOpen}
                 onClose={() => setCreateDialogOpen(false)}
               />
-              <Button onClick={() => setCreateDialogOpen(true)} className="rounded-lg border-0" style={{
-                height: 'clamp(44px, 2.5vh, 48px)',
+              <Button onClick={() => setCreateDialogOpen(true)} className="rounded-xl border-0 font-black" style={{
+                height: 'clamp(40px, 2.5vh, 44px)',
                 padding: '0 clamp(12px, 1.5vw, 20px)',
-                fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-                background: 'linear-gradient(135deg, #1E293B, #334155)',
-                color: '#FFFFFF'
+                fontSize: 'clamp(0.8rem, 1vw, 0.9rem)',
+                background: 'linear-gradient(135deg, #E3B341, #c99a35)',
+                color: '#000000',
+                boxShadow: '0 0 16px rgba(227,179,65,0.25)',
               }}>
-                <Plus style={{ width: 'clamp(14px, 1.2vw, 20px)', height: 'clamp(14px, 1.2vw, 20px)', marginRight: '8px' }} />
-                Create Tournament
+                <Plus style={{ width: 14, height: 14, marginRight: '8px' }} />
+                Create
               </Button>
             </div>
           </motion.div>
@@ -523,40 +534,43 @@ export default function TournamentsPage() {
 
           {/* Tabs */}
           <motion.div variants={fadeInUp}>
-            <div className="flex items-center gap-2 p-1 rounded-xl" style={{ backgroundColor: '#1E2D3F' }}>
+            <div className="flex items-center gap-1.5 p-1 rounded-xl" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
               <button
                 onClick={() => setActiveTab('upcoming')}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-black text-sm transition-all duration-200"
                 style={activeTab === 'upcoming'
-                  ? { backgroundColor: '#10B981', color: '#FFFFFF' }
-                  : { backgroundColor: 'transparent', color: '#FFFFFF' }
+                  ? { background: 'linear-gradient(135deg, rgba(227,179,65,0.2), rgba(227,179,65,0.08))', color: '#E3B341', border: '1px solid rgba(227,179,65,0.3)' }
+                  : { backgroundColor: 'transparent', color: '#4B5563', border: '1px solid transparent' }
                 }
               >
                 <Trophy className="w-4 h-4" />
                 <span>Upcoming</span>
-                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'upcoming' ? 'rgba(255,255,255,0.2)' : '#1F2937',
-                  color: '#FFFFFF',
+                <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full" style={{
+                  backgroundColor: activeTab === 'upcoming' ? 'rgba(227,179,65,0.2)' : 'rgba(255,255,255,0.06)',
+                  color: activeTab === 'upcoming' ? '#E3B341' : '#4B5563',
                 }}>
                   {upcomingTournaments.length}
                 </span>
               </button>
               <button
                 onClick={() => setActiveTab('live')}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-black text-sm transition-all duration-200"
                 style={activeTab === 'live'
-                  ? { background: 'linear-gradient(135deg, #10B981, #059669)', color: '#FFFFFF' }
-                  : { backgroundColor: 'transparent', color: '#FFFFFF' }
+                  ? { background: 'linear-gradient(135deg, rgba(40,199,111,0.2), rgba(40,199,111,0.06))', color: '#28C76F', border: '1px solid rgba(40,199,111,0.3)' }
+                  : { backgroundColor: 'transparent', color: '#4B5563', border: '1px solid transparent' }
                 }
               >
                 <Play className="w-4 h-4" />
                 <span>Live</span>
-                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'live' ? 'rgba(255,255,255,0.2)' : '#1F2937',
-                  color: '#FFFFFF',
-                }}>
-                  {liveTournaments.length}
-                </span>
+                {liveTournaments.length > 0 && (
+                  <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full flex items-center gap-1" style={{
+                    backgroundColor: activeTab === 'live' ? 'rgba(40,199,111,0.2)' : 'rgba(40,199,111,0.12)',
+                    color: '#28C76F',
+                  }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse inline-block" />
+                    {liveTournaments.length}
+                  </span>
+                )}
               </button>
             </div>
 
@@ -665,15 +679,15 @@ function TournamentList({
 }) {
   if (tournaments.length === 0) {
     return (
-      <div className="text-center py-12">
-        <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#94A3B8', opacity: 0.3 }} />
-        <h3 className="text-lg font-semibold mb-2" style={{ color: '#F1F5F9' }}>
+      <div className="text-center py-16">
+        <div className="text-5xl mb-4">{type === "upcoming" ? "🏆" : "⚡"}</div>
+        <h3 className="text-base font-black mb-2" style={{ color: '#C9D1E2' }}>
           {type === "upcoming" ? "No upcoming tournaments" : "No live tournaments"}
         </h3>
-        <p style={{ color: '#94A3B8' }}>
+        <p className="text-sm" style={{ color: '#4B5563' }}>
           {type === "upcoming"
-            ? "No tournaments are waiting to start. Create your own!"
-            : "No tournaments are currently live."
+            ? "Nothing scheduled yet — create one!"
+            : "Check back soon for live action."
           }
         </p>
       </div>
@@ -776,25 +790,27 @@ function HorizontalTournamentCard({
     return null;
   };
 
+  const btnBase: React.CSSProperties = {
+    border: 'none', borderRadius: '10px', cursor: 'pointer',
+    fontWeight: 800, fontSize: '13px', padding: '8px 16px',
+    display: 'inline-flex', alignItems: 'center', gap: '6px',
+    whiteSpace: 'nowrap', minHeight: '36px',
+  };
+
   const getActionButton = () => {
     if (isLive) {
       return (
-        <Button
-          onClick={onViewLeaderboard}
-          className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-          size="sm"
-          style={{ backgroundColor: '#1E2D3F', color: '#10B981' }}
-        >
-          <Trophy className="w-3.5 h-3.5 mr-1.5" />
+        <button onClick={onViewLeaderboard} style={{ ...btnBase, backgroundColor: 'rgba(227,179,65,0.12)', color: '#E3B341', border: '1px solid rgba(227,179,65,0.25)' }}>
+          <Trophy className="w-3.5 h-3.5" />
           Leaderboard
-        </Button>
+        </button>
       );
     }
 
     if (isCreator && isWaiting) {
       return (
         <div className="flex gap-2">
-          <Button
+          <button
             onClick={async () => {
               try {
                 await apiRequest("POST", `/api/tournaments/${tournament.id}/start-early`);
@@ -803,43 +819,30 @@ function HorizontalTournamentCard({
                 console.error("Failed to start tournament:", error);
               }
             }}
-            className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-            size="sm"
-            style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
+            style={{ ...btnBase, background: 'linear-gradient(135deg, #28C76F, #20a35a)', color: '#000', boxShadow: '0 0 12px rgba(40,199,111,0.3)' }}
           >
-            <Play className="w-3.5 h-3.5 mr-1.5" />
-            Start
-          </Button>
-          <Button
-            onClick={onManage}
-            className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-            size="sm"
-            style={{ backgroundColor: '#1E2D3F', color: '#F1F5F9' }}
-          >
-            <Shield className="w-3.5 h-3.5 mr-1.5" />
-            Manage
-          </Button>
+            <Play className="w-3.5 h-3.5" /> Start
+          </button>
+          <button onClick={onManage} style={{ ...btnBase, backgroundColor: 'rgba(255,255,255,0.06)', color: '#C9D1E2', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <Shield className="w-3.5 h-3.5" /> Manage
+          </button>
         </div>
       );
     }
 
     if (isWaiting) {
+      const full = tournament.currentPlayers >= tournament.maxPlayers;
       return (
-        <Button
-          onClick={onJoin}
-          disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
-          className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-          size="sm"
-          style={!(isJoining || tournament.currentPlayers >= tournament.maxPlayers)
-            ? { backgroundColor: '#10B981', color: '#FFFFFF' }
-            : { backgroundColor: '#1E2D3F', color: '#94A3B8' }
+        <button
+          onClick={full ? undefined : onJoin}
+          disabled={isJoining || full}
+          style={full
+            ? { ...btnBase, backgroundColor: 'rgba(255,255,255,0.04)', color: '#4B5563', cursor: 'default' }
+            : { ...btnBase, background: 'linear-gradient(135deg, #28C76F, #20a35a)', color: '#000', boxShadow: '0 0 12px rgba(40,199,111,0.25)' }
           }
         >
-          {isJoining ? "Joining..." :
-           tournament.currentPlayers >= tournament.maxPlayers ? "Full" :
-           tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
-          }
-        </Button>
+          {isJoining ? "Joining..." : full ? "Full" : tournament.buyInAmount > 0 ? `Join · ${formatCurrency(tournament.buyInAmount)}` : "Join Free"}
+        </button>
       );
     }
 
@@ -850,79 +853,72 @@ function HorizontalTournamentCard({
     <motion.div
       variants={cardVariants}
       custom={index}
-      whileHover={{ y: -1, transition: { duration: 0.15 } }}
+      whileHover={{ y: -2, transition: { duration: 0.15 } }}
     >
       <div
         className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
         style={{
-          backgroundColor: '#1E2D3F',
-          border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : '#1F2937'}`,
+          backgroundColor: '#0D1117',
+          border: `1px solid ${isLive ? 'rgba(40,199,111,0.25)' : 'rgba(255,255,255,0.07)'}`,
+          boxShadow: isLive ? '0 0 20px rgba(40,199,111,0.06)' : 'none',
         }}
       >
-        {/* Left: Icon + Name + Badges + Time */}
+        {/* Left: type icon + name + badges + countdown */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <div className="p-1.5 rounded-lg" style={{
-              backgroundColor: isLive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+            <div className="p-1.5 rounded-lg flex-shrink-0" style={{
+              backgroundColor: isLive ? 'rgba(40,199,111,0.12)' : 'rgba(255,255,255,0.05)',
+              border: `1px solid ${isLive ? 'rgba(40,199,111,0.2)' : 'rgba(255,255,255,0.07)'}`,
             }}>
-              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: isLive ? '#10B981' : '#10B981' }} />
+              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: isLive ? '#28C76F' : '#8A93A6' }} />
             </div>
-            <span className="font-bold text-sm truncate" style={{ color: '#F1F5F9' }}>
+            <span className="font-black text-sm truncate" style={{ color: '#F1F5F9' }}>
               {tournament.name}
             </span>
-            {isHighPot && <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#E3B341' }} />}
+            {isHighPot && <Crown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#E3B341' }} />}
             {isLive && (
-              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
-                <span className="text-[10px] font-bold" style={{ color: '#10B981' }}>LIVE</span>
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(40,199,111,0.12)', border: '1px solid rgba(40,199,111,0.25)' }}>
+                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#28C76F' }} />
+                <span className="text-[10px] font-black" style={{ color: '#28C76F' }}>LIVE</span>
               </div>
             )}
             {!tournament.isPublic && (
-              <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(100, 116, 139, 0.2)', border: '1px solid rgba(100, 116, 139, 0.3)' }}>
-                <Lock className="w-2.5 h-2.5" style={{ color: '#94A3B8' }} />
-                <span className="text-[10px] font-semibold" style={{ color: '#94A3B8' }}>Private</span>
+              <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <Lock className="w-2.5 h-2.5" style={{ color: '#4B5563' }} />
+                <span className="text-[10px] font-bold" style={{ color: '#4B5563' }}>Private</span>
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2 text-xs" style={{ color: '#94A3B8' }}>
-            <span>{tournament.tournamentType === "crypto" ? "Crypto" : "Stocks"}</span>
+          <div className="flex items-center gap-2 text-xs">
+            <span style={{ color: '#4B5563' }}>{tournament.tournamentType === "crypto" ? "Crypto" : "Stocks"}</span>
             {getTimeRemaining() && (
               <>
-                <span>|</span>
-                <span style={{ color: isLive ? '#10B981' : '#10B981' }}>{getTimeRemaining()}</span>
+                <span style={{ color: '#2D3748' }}>·</span>
+                <span style={{ color: isLive ? '#28C76F' : '#8A93A6' }}>{getTimeRemaining()}</span>
               </>
             )}
           </div>
         </div>
 
-        {/* Center: Stats columns */}
-        <div className="hidden md:flex items-center gap-6">
-          <div className="text-center">
-            <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Jackpot</div>
-            <div className="text-sm font-bold" style={{ color: '#E3B341' }}>{formatCurrency(currentPot)}</div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Buy-in</div>
-            <div className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
-              {tournament.buyInAmount > 0 ? formatCurrency(tournament.buyInAmount) : "Free"}
+        {/* Center: Stats */}
+        <div className="hidden md:flex items-center gap-5">
+          {[
+            { label: 'Jackpot', value: formatCurrency(currentPot), color: '#E3B341' },
+            { label: 'Buy-in', value: tournament.buyInAmount > 0 ? formatCurrency(tournament.buyInAmount) : 'Free', color: '#C9D1E2' },
+            { label: 'Players', value: `${tournament.currentPlayers}/${tournament.maxPlayers}`, color: '#C9D1E2' },
+          ].map(s => (
+            <div key={s.label} className="text-center">
+              <div className="text-[9px] uppercase font-bold tracking-wider mb-0.5" style={{ color: '#2D3748' }}>{s.label}</div>
+              <div className="text-sm font-black" style={{ color: s.color }}>{s.value}</div>
             </div>
-          </div>
-          <div className="text-center">
-            <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Players</div>
-            <div className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
-              {tournament.currentPlayers}/{tournament.maxPlayers}
-            </div>
-          </div>
+          ))}
         </div>
 
-        {/* Right: Avatar stack + Action */}
+        {/* Right: Avatars + action */}
         <div className="flex items-center gap-3">
           {participantPreviews.length > 0 && (
             <div className="hidden lg:block">
-              <ParticipantAvatarStack
-                participants={participantPreviews}
-                totalCount={tournament.currentPlayers}
-              />
+              <ParticipantAvatarStack participants={participantPreviews} totalCount={tournament.currentPlayers} />
             </div>
           )}
           {getActionButton()}
