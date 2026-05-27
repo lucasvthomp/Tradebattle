@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { db } from "./db";
 import { users } from "@shared/schema";
 import * as schema from "@shared/schema";
-import { eq, desc, count, sum } from "drizzle-orm";
+import { eq, desc, count, sum, and, ne, asc, lt, inArray, sql } from "drizzle-orm";
 import { setupAuth, requireAuth, hashPassword } from "./auth";
 import { insertContactSchema, insertWatchlistSchema, insertStockPurchaseSchema, registerSchema, loginSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
@@ -1928,97 +1928,156 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ── Blitz Matchmaking ───────────────────────────────────────
-  // In-memory queue: { userId, joinedAt, socketId? }
-  const blitzQueue: Array<{ userId: number; joinedAt: Date }> = [];
-  // Maps userId -> tournamentId for players who have been matched but haven't navigated yet
-  const blitzMatchedPlayers = new Map<number, number>();
+  // ── Blitz Matchmaking (DB-backed queue) ─────────────────────
+  // The queue lives in the `blitz_queue` table so it survives redeploys and
+  // works across multiple server instances. Pairing happens under a
+  // transaction-scoped advisory lock, so two concurrent requests can never
+  // double-match the same player.
+  const BLITZ_LOCK_KEY = 911911;
+  const BLITZ_STALE_MS = 2 * 60 * 1000; // abandon idle queue entries after 2 min
+
+  type BlitzDecision =
+    | { kind: "matched"; tournamentId: number }
+    | { kind: "queued" }
+    | { kind: "pair"; opponentId: number };
+
+  // Try to pair `userId`; returns a tournamentId if a match was created.
+  async function blitzMatchmake(userId: number): Promise<{ matched: boolean; tournamentId?: number }> {
+    // Phase 1 — atomic pairing decision (serialized via advisory lock).
+    const decision: BlitzDecision = await db.transaction(async (tx) => {
+      await tx.execute(sql`SELECT pg_advisory_xact_lock(${BLITZ_LOCK_KEY})`);
+
+      // Drop abandoned entries (closed tabs, crashed matches).
+      await tx.delete(schema.blitzQueue).where(
+        and(
+          ne(schema.blitzQueue.status, "matched"),
+          lt(schema.blitzQueue.joinedAt, new Date(Date.now() - BLITZ_STALE_MS)),
+        ),
+      );
+
+      const mine = await tx.select().from(schema.blitzQueue)
+        .where(eq(schema.blitzQueue.userId, userId)).limit(1);
+
+      if (mine[0]?.status === "matched" && mine[0].matchedTournamentId) {
+        await tx.delete(schema.blitzQueue).where(eq(schema.blitzQueue.userId, userId));
+        return { kind: "matched", tournamentId: mine[0].matchedTournamentId };
+      }
+      // Someone else is already creating a match for us — just keep waiting.
+      if (mine[0]?.status === "claiming") {
+        return { kind: "queued" };
+      }
+
+      const opponent = await tx.select().from(schema.blitzQueue)
+        .where(and(eq(schema.blitzQueue.status, "waiting"), ne(schema.blitzQueue.userId, userId)))
+        .orderBy(asc(schema.blitzQueue.joinedAt)).limit(1);
+
+      if (!opponent[0]) {
+        // No opponent yet — (re)join the queue.
+        await tx.insert(schema.blitzQueue)
+          .values({ userId, status: "waiting" })
+          .onConflictDoUpdate({ target: schema.blitzQueue.userId, set: { status: "waiting", joinedAt: new Date() } });
+        return { kind: "queued" };
+      }
+
+      // Reserve both players so no other request can grab them.
+      await tx.update(schema.blitzQueue).set({ status: "claiming" })
+        .where(eq(schema.blitzQueue.userId, opponent[0].userId));
+      await tx.insert(schema.blitzQueue)
+        .values({ userId, status: "claiming" })
+        .onConflictDoUpdate({ target: schema.blitzQueue.userId, set: { status: "claiming" } });
+
+      return { kind: "pair", opponentId: opponent[0].userId };
+    });
+
+    if (decision.kind === "matched") return { matched: true, tournamentId: decision.tournamentId };
+    if (decision.kind === "queued") return { matched: false };
+
+    // Phase 2 — create the match (lock released; both players are 'claiming').
+    const opponentId = decision.opponentId;
+    try {
+      const [oppUser, meUser] = await Promise.all([
+        storage.getUser(opponentId),
+        storage.getUser(userId),
+      ]);
+
+      const tournament = await storage.createTournament({
+        name: `Blitz: ${oppUser?.username} vs ${meUser?.username}`,
+        maxPlayers: 2,
+        startingBalance: "10000",
+        timeframe: "5 minutes",
+        buyInAmount: "0",
+        tournamentType: "blitz",
+        isPublic: false,
+        payoutStructure: "winner_take_all",
+        scheduledStartTime: new Date(),
+      }, opponentId);
+
+      // createTournament adds the creator (opponent) as a participant, so only
+      // the requesting player still needs to join. (Joining the creator again
+      // throws "User is already participating" and aborts the match.)
+      await storage.joinTournament(tournament.id, userId);
+
+      await db.update(schema.tournaments)
+        .set({ status: "active", startedAt: new Date() })
+        .where(eq(schema.tournaments.id, tournament.id));
+
+      // Opponent discovers the match on their next status poll; requester now.
+      await db.update(schema.blitzQueue)
+        .set({ status: "matched", matchedTournamentId: tournament.id })
+        .where(eq(schema.blitzQueue.userId, opponentId));
+      await db.delete(schema.blitzQueue).where(eq(schema.blitzQueue.userId, userId));
+
+      return { matched: true, tournamentId: tournament.id };
+    } catch (err) {
+      console.error("Blitz match creation failed:", err);
+      // Release both players back into the queue so they can retry.
+      await db.update(schema.blitzQueue).set({ status: "waiting" })
+        .where(inArray(schema.blitzQueue.userId, [opponentId, userId]));
+      throw err;
+    }
+  }
 
   app.post("/api/blitz/queue", requireAuth, async (req: any, res) => {
-    const userId = req.user.id;
-
-    // Already matched? Return their tournament
-    if (blitzMatchedPlayers.has(userId)) {
-      const tournamentId = blitzMatchedPlayers.get(userId)!;
-      blitzMatchedPlayers.delete(userId);
-      return res.json({ status: "matched", tournamentId });
+    try {
+      const result = await blitzMatchmake(req.user.id);
+      res.json(result.matched
+        ? { status: "matched", tournamentId: result.tournamentId }
+        : { status: "queued" });
+    } catch (err) {
+      res.status(500).json({ message: "Match creation failed, try again" });
     }
-
-    // Already in queue?
-    if (blitzQueue.find(e => e.userId === userId)) {
-      return res.json({ status: "queued" });
-    }
-
-    blitzQueue.push({ userId, joinedAt: new Date() });
-
-    // Need 2 players to start a match
-    if (blitzQueue.length >= 2) {
-      const [p1, p2] = blitzQueue.splice(0, 2);
-
-      try {
-        const [p1User, p2User] = await Promise.all([
-          storage.getUser(p1.userId),
-          storage.getUser(p2.userId),
-        ]);
-
-        // Create a blitz tournament (5 minutes, no buy-in, winner-take-all)
-        const tournament = await storage.createTournament({
-          name: `Blitz: ${p1User?.username} vs ${p2User?.username}`,
-          maxPlayers: 2,
-          startingBalance: "10000",
-          timeframe: "5 minutes",
-          buyInAmount: "0",
-          tournamentType: "blitz",
-          isPublic: false,
-          payoutStructure: "winner_take_all",
-          scheduledStartTime: new Date(),
-        }, p1.userId);
-
-        // Join both players and mark as immediately active
-        await storage.joinTournament(tournament.id, p1.userId);
-        await storage.joinTournament(tournament.id, p2.userId);
-
-        await db.update(schema.tournaments)
-          .set({ status: "active", startedAt: new Date() })
-          .where(eq(schema.tournaments.id, tournament.id));
-
-        // Store match result for both players — whoever polls next will get it
-        blitzMatchedPlayers.set(p1.userId, tournament.id);
-        blitzMatchedPlayers.set(p2.userId, tournament.id);
-
-        // The requesting user gets their result immediately; the other polls and finds it
-        const requestingPlayer = p1.userId === userId ? p1 : p2;
-        blitzMatchedPlayers.delete(requestingPlayer.userId);
-
-        return res.json({ status: "matched", tournamentId: tournament.id });
-      } catch (err) {
-        console.error("Blitz match creation failed:", err);
-        // Re-queue both if creation fails
-        blitzQueue.unshift(p1, p2);
-        return res.status(500).json({ message: "Match creation failed, try again" });
-      }
-    }
-
-    return res.json({ status: "queued" });
   });
 
   app.delete("/api/blitz/queue", requireAuth, async (req: any, res) => {
-    const userId = req.user.id;
-    const idx = blitzQueue.findIndex(e => e.userId === userId);
-    if (idx !== -1) blitzQueue.splice(idx, 1);
-    blitzMatchedPlayers.delete(userId);
+    await db.delete(schema.blitzQueue).where(eq(schema.blitzQueue.userId, req.user.id));
     res.json({ status: "removed" });
   });
 
   app.get("/api/blitz/status", requireAuth, async (req: any, res) => {
     const userId = req.user.id;
-    if (blitzMatchedPlayers.has(userId)) {
-      const tournamentId = blitzMatchedPlayers.get(userId)!;
-      blitzMatchedPlayers.delete(userId);
-      return res.json({ matched: true, tournamentId });
+    try {
+      const mine = await db.select().from(schema.blitzQueue)
+        .where(eq(schema.blitzQueue.userId, userId)).limit(1);
+
+      if (mine[0]?.status === "matched" && mine[0].matchedTournamentId) {
+        await db.delete(schema.blitzQueue).where(eq(schema.blitzQueue.userId, userId));
+        return res.json({ matched: true, tournamentId: mine[0].matchedTournamentId });
+      }
+
+      // If still waiting, opportunistically try to pair — self-heals the rare
+      // case where two players are left waiting at the same instant.
+      if (mine[0]?.status === "waiting") {
+        const result = await blitzMatchmake(userId);
+        if (result.matched) return res.json({ matched: true, tournamentId: result.tournamentId });
+      }
+
+      const [waiting] = await db.select({ value: count() })
+        .from(schema.blitzQueue).where(eq(schema.blitzQueue.status, "waiting"));
+      res.json({ matched: false, inQueue: !!mine[0], queueLength: Number(waiting?.value ?? 0) });
+    } catch (err) {
+      console.error("Blitz status error:", err);
+      res.json({ matched: false, inQueue: false, queueLength: 0 });
     }
-    const inQueue = !!blitzQueue.find(e => e.userId === userId);
-    res.json({ matched: false, inQueue, queueLength: blitzQueue.length });
   });
 
   // Error handling middleware

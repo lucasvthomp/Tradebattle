@@ -214,6 +214,16 @@ export const tournaments = pgTable("tournaments", {
   endedAt: timestamp("ended_at"),
 });
 
+// Blitz 1v1 matchmaking queue. DB-backed so it survives redeploys and works
+// even if more than one server instance is running.
+export const blitzQueue = pgTable("blitz_queue", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull().unique(),
+  status: varchar("status", { length: 16 }).default("waiting").notNull(), // 'waiting' | 'claiming' | 'matched'
+  matchedTournamentId: integer("matched_tournament_id").references(() => tournaments.id),
+  joinedAt: timestamp("joined_at").defaultNow().notNull(),
+});
+
 // Tournament participants table
 export const tournamentParticipants = pgTable("tournament_participants", {
   id: serial("id").primaryKey(),
