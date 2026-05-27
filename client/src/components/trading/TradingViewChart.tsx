@@ -1,4 +1,5 @@
 import { useEffect, useRef, memo } from "react";
+import { Search } from "lucide-react";
 
 interface TradingViewChartProps {
   symbol: string;
@@ -9,12 +10,10 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !symbol) return;
 
-    // Clear previous widget
     container.innerHTML = "";
 
-    // Create widget container structure
     const widgetContainer = document.createElement("div");
     widgetContainer.className = "tradingview-widget-container";
     widgetContainer.style.height = "100%";
@@ -22,33 +21,32 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
 
     const widgetDiv = document.createElement("div");
     widgetDiv.className = "tradingview-widget-container__widget";
-    widgetDiv.style.height = "calc(100% - 32px)";
+    widgetDiv.style.height = "calc(100% - 28px)";
     widgetDiv.style.width = "100%";
     widgetContainer.appendChild(widgetDiv);
 
-    // Attribution (required for free use)
     const copyright = document.createElement("div");
     copyright.className = "tradingview-widget-copyright";
-    copyright.innerHTML = `<a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span style="color: #8A93A6; font-size: 11px;">Chart by TradingView</span></a>`;
+    copyright.innerHTML = `<a href="https://www.tradingview.com/" rel="noopener nofollow" target="_blank"><span style="color: #2D3748; font-size: 10px;">Chart by TradingView</span></a>`;
     widgetContainer.appendChild(copyright);
 
-    // Create and configure the script
     const script = document.createElement("script");
     script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
     script.type = "text/javascript";
     script.async = true;
     script.textContent = JSON.stringify({
       autosize: true,
-      symbol: symbol,
+      symbol,
       interval: "D",
       timezone: "exchange",
       theme: "dark",
       style: "1",
       locale: "en",
-      allow_symbol_change: true,
-      backgroundColor: "rgba(10, 14, 23, 1)",
-      gridColor: "rgba(255, 255, 255, 0.04)",
+      allow_symbol_change: false,
+      backgroundColor: "rgba(5, 10, 22, 1)",
+      gridColor: "rgba(255, 255, 255, 0.03)",
       hide_side_toolbar: true,
+      hide_top_toolbar: false,
       calendar: false,
       support_host: "https://www.tradingview.com",
     });
@@ -56,17 +54,46 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
     widgetContainer.appendChild(script);
     container.appendChild(widgetContainer);
 
-    return () => {
-      container.innerHTML = "";
-    };
+    return () => { container.innerHTML = ""; };
   }, [symbol]);
 
-  return (
-    <div
-      ref={containerRef}
-      style={{ width: "100%", height: "100%" }}
-    />
-  );
+  if (!symbol) {
+    return (
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(5, 10, 22, 1)",
+          gap: "12px",
+        }}
+      >
+        <div
+          style={{
+            width: "48px",
+            height: "48px",
+            borderRadius: "12px",
+            backgroundColor: "rgba(227,179,65,0.08)",
+            border: "1px solid rgba(227,179,65,0.15)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Search style={{ width: "20px", height: "20px", color: "#E3B341", opacity: 0.6 }} />
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ color: "#C9D1E2", fontSize: "14px", fontWeight: 600 }}>Search a ticker to begin</div>
+          <div style={{ color: "#2D3748", fontSize: "12px", marginTop: "4px" }}>e.g. AAPL, TSLA, BTC-USD</div>
+        </div>
+      </div>
+    );
+  }
+
+  return <div ref={containerRef} style={{ width: "100%", height: "100%" }} />;
 }
 
 export const TradingViewChart = memo(TradingViewChartInner);
