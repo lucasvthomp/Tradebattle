@@ -1,21 +1,14 @@
 import { useState } from "react";
-import { useParams, useLocation } from "wouter";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
 import {
   Users,
   Trophy,
-  Crown,
   Calendar,
-  ChevronRight,
   Search,
   Activity,
   Flame,
@@ -25,7 +18,9 @@ import {
   UserPlus,
   UserCheck,
   UserX,
-  Clock as ClockIcon
+  Clock as ClockIcon,
+  X,
+  Crown,
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -33,86 +28,75 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
+  transition: { duration: 0.4 },
 };
 
-const staggerChildren = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
+const cardStyle = {
+  backgroundColor: "#0D1117",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: "12px",
 };
 
 export default function People() {
-  const { userId: profileUserId } = useParams<{ userId: string }>();
-  const [, navigate] = useLocation();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { t } = useUserPreferences();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
-  const [filterBy, setFilterBy] = useState("all");
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
-  // Fetch all users for browsing with polling for status updates
+  // Fetch all users
   const { data: allUsers, isLoading: isLoadingUsers, error: usersError } = useQuery({
-    queryKey: ['/api/users/public'],
-    enabled: !profileUserId,
+    queryKey: ["/api/users/public"],
     retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     staleTime: 30000,
-    refetchInterval: 30000, // Poll every 30 seconds for status updates
+    refetchInterval: 30000,
     refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
   });
 
-  // Fetch specific user profile
+  // Fetch selected user profile (for modal)
   const { data: profileUser, isLoading: isLoadingProfile } = useQuery({
-    queryKey: ['/api/users/public', profileUserId],
-    enabled: !!profileUserId,
+    queryKey: ["/api/users/public", selectedUserId],
+    enabled: !!selectedUserId,
     retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
-  // Fetch recent trades for profile view
+  // Fetch recent trades for modal
   const { data: tradesResponse } = useQuery({
-    queryKey: ['/api/users', profileUserId, 'trades'],
+    queryKey: ["/api/users", selectedUserId, "trades"],
     queryFn: async () => {
-      const res = await fetch(`/api/users/${profileUserId}/trades`);
+      const res = await fetch(`/api/users/${selectedUserId}/trades`);
       if (!res.ok) return { data: [] };
       return res.json();
     },
-    enabled: !!profileUserId,
+    enabled: !!selectedUserId,
     staleTime: 30000,
   });
 
-  // Fetch friend status for profile view
+  // Friend status for modal
   const { data: friendStatusData } = useQuery({
-    queryKey: ['/api/friends/status', profileUserId],
+    queryKey: ["/api/friends/status", selectedUserId],
     queryFn: async () => {
-      const res = await fetch(`/api/friends/status/${profileUserId}`);
-      if (!res.ok) return { data: { status: 'none' } };
+      const res = await fetch(`/api/friends/status/${selectedUserId}`);
+      if (!res.ok) return { data: { status: "none" } };
       return res.json();
     },
-    enabled: !!profileUserId && !!user && String(user.id) !== profileUserId,
+    enabled: !!selectedUserId && !!user && String(user.id) !== selectedUserId,
   });
 
   const friendStatus = (friendStatusData as any)?.data;
 
-  // Friend mutations
   const sendFriendRequestMutation = useMutation({
     mutationFn: async (addresseeId: number) => {
       const res = await apiRequest("POST", "/api/friends/request", { addresseeId });
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/friends/status", selectedUserId] });
       toast({ title: "Friend request sent!" });
     },
-    onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    },
+    onError: (error: Error) => toast({ title: "Error", description: error.message, variant: "destructive" }),
   });
 
   const acceptFriendRequestMutation = useMutation({
@@ -121,12 +105,10 @@ export default function People() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/friends/status", selectedUserId] });
       toast({ title: "Friend request accepted!" });
     },
-    onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    },
+    onError: (error: Error) => toast({ title: "Error", description: error.message, variant: "destructive" }),
   });
 
   const declineFriendRequestMutation = useMutation({
@@ -135,12 +117,10 @@ export default function People() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/friends/status", selectedUserId] });
       toast({ title: "Friend request declined" });
     },
-    onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    },
+    onError: (error: Error) => toast({ title: "Error", description: error.message, variant: "destructive" }),
   });
 
   const removeFriendMutation = useMutation({
@@ -149,468 +129,346 @@ export default function People() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/friends/status', profileUserId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/friends/status", selectedUserId] });
       toast({ title: "Friend removed" });
     },
-    onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    },
+    onError: (error: Error) => toast({ title: "Error", description: error.message, variant: "destructive" }),
   });
 
-  // Filter and sort users
   const filteredAndSortedUsers = (() => {
     let users = (allUsers as any)?.data || [];
-
-    if (searchQuery) {
-      users = users.filter((u: any) =>
-        u.username?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
-
-    if (filterBy !== "all") {
-      users = users.filter((u: any) => u.subscriptionTier === filterBy);
-    }
-
+    if (searchQuery) users = users.filter((u: any) => u.username?.toLowerCase().includes(searchQuery.toLowerCase()));
     switch (sortBy) {
-      case "newest":
-        return users.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      case "oldest":
-        return users.sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-      case "trades":
-        return users.sort((a: any, b: any) => (b.totalTrades || 0) - (a.totalTrades || 0));
-      case "name":
-        return users.sort((a: any, b: any) => (a.username || "").localeCompare(b.username || ""));
-      default:
-        return users;
+      case "newest": return [...users].sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      case "oldest": return [...users].sort((a: any, b: any) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      case "trades": return [...users].sort((a: any, b: any) => (b.totalTrades || 0) - (a.totalTrades || 0));
+      case "name": return [...users].sort((a: any, b: any) => (a.username || "").localeCompare(b.username || ""));
+      default: return users;
     }
   })();
 
-  // If viewing a specific user profile
-  if (profileUserId) {
-    if (isLoadingProfile) {
-      return (
-        <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: '#E3B341' }}></div>
-        </div>
-      );
-    }
+  const profileData = (profileUser as any)?.data;
+  const trades = (tradesResponse as any)?.data || [];
 
-    const profileData = (profileUser as any)?.data;
-
-    return (
-      <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
-        <div className="container mx-auto py-6 lg:py-8 px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="max-w-5xl mx-auto"
-            initial="initial"
-            animate="animate"
-            variants={staggerChildren}
-          >
-            {/* Back Button */}
-            <motion.div className="mb-6" variants={fadeInUp}>
-              <Button
-                variant="ghost"
-                onClick={() => window.history.back()}
-                className="flex items-center"
-              >
-                <ChevronRight className="w-4 h-4 mr-2 rotate-180" />
-                {t('backToPeople')}
-              </Button>
-            </motion.div>
-
-            {/* Profile Header */}
-            <motion.div variants={fadeInUp}>
-              <Card className="mb-8 shadow-2xl overflow-hidden" style={{ backgroundColor: '#111827', borderColor: '#E3B341', borderWidth: '2px' }}>
-                <CardContent className="p-8">
-                  <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-6 lg:space-y-0 lg:space-x-8">
-                    {/* Avatar */}
-                    <div className="relative">
-                      <AvatarWithStatus
-                        className="w-32 h-32"
-                        src={profileData?.profilePicture}
-                        alt={profileData?.username}
-                        fallback={`${profileData?.username?.[0]?.toUpperCase() || ''}${profileData?.username?.[1]?.toUpperCase() || ''}`}
-                        lastActivity={profileData?.lastActivity}
-                        statusSize="lg"
-                      />
-                    </div>
-
-                    {/* User Info */}
-                    <div className="flex-1 w-full">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <h1 className="text-4xl font-black" style={{ color: '#F1F5F9' }}>
-                          {profileData?.username}
-                        </h1>
-                        {profileData?.subscriptionTier === 'administrator' && (
-                          <Badge className="animate-pulse" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
-                            <Crown className="w-4 h-4 mr-1" />
-                            Admin
-                          </Badge>
-                        )}
-                      </div>
-
-                      {/* Badges Row */}
-                      <div className="flex flex-wrap items-center gap-2 mb-6">
-                        <Badge style={{ backgroundColor: '#0F172A', color: '#F1F5F9', border: '1px solid #1F2937' }}>
-                          <Calendar className="w-3 h-3 mr-1" style={{ color: '#E3B341' }} />
-                          {t('memberSince')} {profileData?.createdAt ? new Date(profileData.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
-                        </Badge>
-                      </div>
-
-                      {/* Friend Button */}
-                      {user && String(user.id) !== profileUserId && (
-                        <div className="mb-6">
-                          {friendStatus?.status === 'none' && (
-                            <Button
-                              onClick={() => sendFriendRequestMutation.mutate(parseInt(profileUserId!))}
-                              disabled={sendFriendRequestMutation.isPending}
-                              className="border-0"
-                              style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
-                            >
-                              <UserPlus className="w-4 h-4 mr-2" />
-                              {sendFriendRequestMutation.isPending ? "Sending..." : "Add Friend"}
-                            </Button>
-                          )}
-                          {friendStatus?.status === 'pending_sent' && (
-                            <Button disabled className="border-0" style={{ backgroundColor: '#1F2937', color: '#94A3B8' }}>
-                              <ClockIcon className="w-4 h-4 mr-2" />
-                              Request Sent
-                            </Button>
-                          )}
-                          {friendStatus?.status === 'pending_received' && (
-                            <div className="flex gap-2">
-                              <Button
-                                onClick={() => acceptFriendRequestMutation.mutate(friendStatus.friendshipId)}
-                                disabled={acceptFriendRequestMutation.isPending}
-                                className="border-0"
-                                style={{ background: 'linear-gradient(135deg, #10B981, #06B6D4)', color: '#FFFFFF' }}
-                              >
-                                <UserCheck className="w-4 h-4 mr-2" />
-                                Accept
-                              </Button>
-                              <Button
-                                onClick={() => declineFriendRequestMutation.mutate(friendStatus.friendshipId)}
-                                disabled={declineFriendRequestMutation.isPending}
-                                variant="outline"
-                                className="border-0"
-                                style={{ backgroundColor: '#1F2937', color: '#EF4444' }}
-                              >
-                                <UserX className="w-4 h-4 mr-2" />
-                                Decline
-                              </Button>
-                            </div>
-                          )}
-                          {friendStatus?.status === 'accepted' && (
-                            <div className="flex items-center gap-3">
-                              <Badge style={{ backgroundColor: '#10B98120', color: '#10B981', border: '1px solid #10B98140' }}>
-                                <UserCheck className="w-3 h-3 mr-1" />
-                                Friends
-                              </Badge>
-                              <Button
-                                onClick={() => removeFriendMutation.mutate(friendStatus.friendshipId)}
-                                disabled={removeFriendMutation.isPending}
-                                variant="ghost"
-                                size="sm"
-                                style={{ color: '#94A3B8' }}
-                              >
-                                Remove Friend
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Stats Grid - 3 real stats only */}
-                      <div className="grid grid-cols-3 gap-4">
-                        <motion.div
-                          className="p-3 rounded-lg"
-                          style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}
-                          whileHover={{ scale: 1.05, borderColor: '#E3B341' }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <div className="flex items-center space-x-2 mb-1">
-                            <Activity className="w-4 h-4" style={{ color: '#E3B341' }} />
-                            <p className="text-xs" style={{ color: '#94A3B8' }}>{t('totalTrades')}</p>
-                          </div>
-                          <p className="text-2xl font-black" style={{ color: '#F1F5F9' }}>{profileData?.totalTrades || 0}</p>
-                        </motion.div>
-
-                        <motion.div
-                          className="p-3 rounded-lg"
-                          style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}
-                          whileHover={{ scale: 1.05, borderColor: '#EF4444' }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <div className="flex items-center space-x-2 mb-1">
-                            <Flame className="w-4 h-4" style={{ color: '#EF4444' }} />
-                            <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tradingStreak')}</p>
-                          </div>
-                          <p className="text-2xl font-black" style={{ color: '#E3B341' }}>{profileData?.tradingStreak || 0}d</p>
-                        </motion.div>
-
-                        <motion.div
-                          className="p-3 rounded-lg"
-                          style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}
-                          whileHover={{ scale: 1.05, borderColor: '#10B981' }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <div className="flex items-center space-x-2 mb-1">
-                            <Trophy className="w-4 h-4" style={{ color: '#E3B341' }} />
-                            <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tournamentsJoined')}</p>
-                          </div>
-                          <p className="text-2xl font-black" style={{ color: '#10B981' }}>{profileData?.tournamentCount || 0}</p>
-                        </motion.div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Recent Trades */}
-            <motion.div variants={fadeInUp}>
-              <Card style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg flex items-center gap-2" style={{ color: '#F1F5F9' }}>
-                    <ArrowRightLeft className="w-5 h-5" style={{ color: '#E3B341' }} />
-                    {t('recentTrades')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {(() => {
-                    const trades = (tradesResponse as any)?.data || [];
-                    if (trades.length === 0) {
-                      return (
-                        <div className="text-center py-6">
-                          <ArrowRightLeft className="w-8 h-8 mx-auto mb-2" style={{ color: '#94A3B8', opacity: 0.5 }} />
-                          <p className="text-sm" style={{ color: '#94A3B8' }}>{t('noTradesYet')}</p>
-                        </div>
-                      );
-                    }
-                    return (
-                      <div className="space-y-2">
-                        {trades.map((trade: any) => (
-                          <div
-                            key={trade.id}
-                            className="flex items-center justify-between p-3 rounded-lg"
-                            style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className="p-1.5 rounded" style={{ backgroundColor: trade.action === 'buy' ? '#10B98120' : '#EF444420' }}>
-                                {trade.action === 'buy' ? (
-                                  <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
-                                ) : (
-                                  <TrendingDown className="w-4 h-4" style={{ color: '#EF4444' }} />
-                                )}
-                              </div>
-                              <div>
-                                <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>
-                                  {trade.action === 'buy' ? t('bought') : t('sold')} {trade.symbol}
-                                </p>
-                                <p className="text-xs" style={{ color: '#94A3B8' }}>
-                                  {trade.shares} shares @ ${parseFloat(trade.price).toFixed(2)}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-sm font-bold" style={{ color: trade.action === 'buy' ? '#EF4444' : '#10B981' }}>
-                                {trade.action === 'buy' ? '-' : '+'}${parseFloat(trade.totalValue || (trade.shares * trade.price)).toFixed(2)}
-                              </p>
-                              <p className="text-xs" style={{ color: '#94A3B8' }}>
-                                {trade.tradeDate ? new Date(trade.tradeDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
-                              </p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  })()}
-                </CardContent>
-              </Card>
-            </motion.div>
-
-          </motion.div>
-        </div>
-      </div>
-    );
-  }
-
-  // Main people browsing page
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
+    <div className="min-h-screen" style={{ backgroundColor: "transparent" }}>
       <div className="container mx-auto py-6 lg:py-8">
-        <motion.div
-          initial="initial"
-          animate="animate"
-          variants={staggerChildren}
-        >
+        <motion.div initial="initial" animate="animate" variants={{ animate: { transition: { staggerChildren: 0.08 } } }}>
+
           {/* Header */}
           <motion.div className="mb-6 lg:mb-8" variants={fadeInUp}>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2" style={{ color: '#F1F5F9' }}>{t('people')}</h1>
+            <h1 className="text-2xl sm:text-3xl font-black mb-1" style={{ color: "#F1F5F9" }}>{t("people")}</h1>
+            <p className="text-sm" style={{ color: "#4B5563" }}>
+              {filteredAndSortedUsers.length} {filteredAndSortedUsers.length === 1 ? t("personUnit") : t("peopleUnit")}
+              {searchQuery && ` matching "${searchQuery}"`}
+            </p>
           </motion.div>
 
-          {/* Error State */}
-          {usersError && (
-            <motion.div variants={fadeInUp} className="mb-6">
-              <Card style={{ backgroundColor: '#111827', borderColor: '#FF3333', borderWidth: '2px' }}>
-                <CardContent className="p-6 text-center">
-                  <h3 className="text-lg font-bold mb-2" style={{ color: '#FF3333' }}>{t('errorLoadingUsers')}</h3>
-                  <p style={{ color: '#94A3B8' }} className="mb-4">
-                    {(usersError as Error)?.message || 'Unable to load user data. Please try again.'}
-                  </p>
-                  <Button onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/users/public'] })} style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
-                    {t('reloadPage')}
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Search and Filters */}
-          <motion.div className="mb-8" variants={fadeInUp}>
-            <div className="flex flex-col sm:flex-row gap-4 mb-4">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-3 h-4 w-4" style={{ color: '#94A3B8' }} />
-                <Input
-                  placeholder={t('searchByName')}
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                  style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
-                />
-              </div>
-
-              {/* Sort By */}
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 rounded-md"
-                style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9', border: '1px solid #1F2937' }}
-              >
-                <option value="newest">{t('newestMembers')}</option>
-                <option value="oldest">{t('oldestMembers')}</option>
-                <option value="trades">{t('mostTrades')}</option>
-                <option value="name">{t('alphabetical')}</option>
-              </select>
-
-              {/* Filter By */}
-              <select
-                value={filterBy}
-                onChange={(e) => setFilterBy(e.target.value)}
-                className="px-3 py-2 rounded-md"
-                style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9', border: '1px solid #1F2937' }}
-              >
-                <option value="all">{t('allMembers')}</option>
-                <option value="administrator">{t('administrators')}</option>
-              </select>
+          {/* Search + Sort */}
+          <motion.div className="mb-6 flex flex-col sm:flex-row gap-3" variants={fadeInUp}>
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#4B5563" }} />
+              <Input
+                placeholder={t("searchByName")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 h-10 text-sm"
+                style={{ backgroundColor: "#0D1117", borderColor: "rgba(255,255,255,0.08)", color: "#F1F5F9" }}
+              />
             </div>
-
-            {/* Results Count */}
-            <div className="text-sm" style={{ color: '#94A3B8' }}>
-              {t('showing')} {filteredAndSortedUsers.length} {filteredAndSortedUsers.length === 1 ? t('personUnit') : t('peopleUnit')}
-              {searchQuery && ` ${t('matching')} "${searchQuery}"`}
-              {filterBy !== "all" && ` (${filterBy})`}
-            </div>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 rounded-lg text-sm"
+              style={{ backgroundColor: "#0D1117", border: "1px solid rgba(255,255,255,0.08)", color: "#8A93A6" }}
+            >
+              <option value="newest">{t("newestMembers")}</option>
+              <option value="oldest">{t("oldestMembers")}</option>
+              <option value="trades">{t("mostTrades")}</option>
+              <option value="name">{t("alphabetical")}</option>
+            </select>
           </motion.div>
 
-          {/* People Grid */}
+          {/* Grid */}
           <motion.div variants={fadeInUp}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {usersError ? (
-                <div className="col-span-full text-center py-12">
-                  <div className="max-w-md mx-auto">
-                    <Users className="w-12 h-12 mx-auto mb-4" style={{ color: '#EF4444' }} />
-                    <p className="text-lg mb-2" style={{ color: '#F1F5F9' }}>{t('errorLoadingUsers')}</p>
-                    <p className="text-sm mb-4" style={{ color: '#94A3B8' }}>
-                      {t('tryAgain')}
-                    </p>
-                    <Button
-                      onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/users/public'] })}
-                      style={{ backgroundColor: '#E3B341', color: '#080C14' }}
-                    >
-                      Retry
-                    </Button>
-                  </div>
-                </div>
-              ) : isLoadingUsers ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {isLoadingUsers ? (
                 Array.from({ length: 6 }).map((_, i) => (
-                  <Card key={i} className="shadow-lg" style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
-                    <CardContent className="p-6">
-                      <div className="animate-pulse">
-                        <div className="w-16 h-16 rounded-lg mb-4" style={{ backgroundColor: '#0F172A' }}></div>
-                        <div className="h-4 rounded mb-2" style={{ backgroundColor: '#0F172A' }}></div>
-                        <div className="h-3 rounded w-3/4 mb-4" style={{ backgroundColor: '#0F172A' }}></div>
-                        <div className="space-y-2">
-                          <div className="h-3 rounded" style={{ backgroundColor: '#0F172A' }}></div>
-                          <div className="h-3 rounded w-5/6" style={{ backgroundColor: '#0F172A' }}></div>
-                        </div>
+                  <div key={i} style={cardStyle} className="p-5 animate-pulse">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-xl" style={{ backgroundColor: "rgba(255,255,255,0.05)" }} />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3.5 rounded w-1/2" style={{ backgroundColor: "rgba(255,255,255,0.05)" }} />
+                        <div className="h-2.5 rounded w-1/3" style={{ backgroundColor: "rgba(255,255,255,0.03)" }} />
                       </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[1, 2, 3].map(j => <div key={j} className="h-12 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.03)" }} />)}
+                    </div>
+                  </div>
                 ))
+              ) : usersError ? (
+                <div className="col-span-full text-center py-16">
+                  <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "#FF4F58", opacity: 0.5 }} />
+                  <p className="text-sm mb-3" style={{ color: "#4B5563" }}>Failed to load users</p>
+                  <button
+                    onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/users/public"] })}
+                    className="text-sm font-semibold"
+                    style={{ color: "#E3B341" }}
+                  >
+                    Retry
+                  </button>
+                </div>
               ) : filteredAndSortedUsers.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <Users className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8' }} />
-                  <p className="text-lg" style={{ color: '#94A3B8' }}>{t('noPeopleFound')}</p>
+                <div className="col-span-full text-center py-16">
+                  <Users className="w-10 h-10 mx-auto mb-3" style={{ color: "#4B5563" }} />
+                  <p className="text-sm" style={{ color: "#4B5563" }}>{t("noPeopleFound")}</p>
                 </div>
               ) : (
                 filteredAndSortedUsers.map((person: any) => (
-                  <Card key={person.id} className="shadow-lg hover:shadow-xl transition-all cursor-pointer" style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
-                    <CardContent className="p-6">
-                      <div className="flex items-center space-x-4 mb-4">
-                        <AvatarWithStatus
-                          className="w-16 h-16"
-                          src={person.profilePicture}
-                          alt={person.username}
-                          fallback={`${person.username?.[0]?.toUpperCase() || ''}${person.username?.[1]?.toUpperCase() || ''}`}
-                          lastActivity={person.lastActivity}
-                          statusSize="md"
-                        />
-                        <div className="flex-1">
-                          <h3 className="text-lg font-semibold" style={{ color: '#F1F5F9' }}>
-                            {person.username}
-                          </h3>
-                          <p className="text-xs" style={{ color: '#94A3B8' }}>
-                            {t('memberSince')} {person.createdAt ? new Date(person.createdAt).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'Unknown'}
-                          </p>
+                  <button
+                    key={person.id}
+                    onClick={() => setSelectedUserId(String(person.id))}
+                    className="text-left transition-all"
+                    style={{ ...cardStyle, padding: "16px", display: "block", width: "100%" }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(227,179,65,0.2)")}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <AvatarWithStatus
+                        className="w-11 h-11 shrink-0"
+                        src={person.profilePicture}
+                        alt={person.username}
+                        fallback={`${person.username?.[0]?.toUpperCase() || ""}${person.username?.[1]?.toUpperCase() || ""}`}
+                        lastActivity={person.lastActivity}
+                        statusSize="sm"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-bold truncate" style={{ color: "#F1F5F9" }}>{person.username}</span>
+                          {person.subscriptionTier === "administrator" && (
+                            <Crown className="w-3 h-3 shrink-0" style={{ color: "#E3B341" }} />
+                          )}
                         </div>
+                        <span className="text-xs" style={{ color: "#4B5563" }}>
+                          Joined {person.createdAt ? new Date(person.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "—"}
+                        </span>
                       </div>
-
-                      {/* Quick Stats - Real data */}
-                      <div className="grid grid-cols-3 gap-2 mb-4">
-                        <div className="text-center p-2 rounded" style={{ backgroundColor: '#0F172A' }}>
-                          <p className="text-sm font-bold" style={{ color: '#F1F5F9' }}>{person.totalTrades || 0}</p>
-                          <p className="text-xs" style={{ color: '#94A3B8' }}>{t('totalTrades')}</p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[
+                        { label: t("totalTrades"), value: person.totalTrades || 0, color: "#C9D1E2" },
+                        { label: "Streak", value: `${person.tradingStreak || 0}d`, color: "#E3B341" },
+                        { label: t("tournaments"), value: person.tournamentCount || 0, color: "#28C76F" },
+                      ].map((stat) => (
+                        <div key={stat.label} className="text-center py-2 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.03)" }}>
+                          <div className="text-sm font-bold" style={{ color: stat.color }}>{stat.value}</div>
+                          <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>{stat.label}</div>
                         </div>
-                        <div className="text-center p-2 rounded" style={{ backgroundColor: '#0F172A' }}>
-                          <p className="text-sm font-bold" style={{ color: '#F1F5F9' }}>{person.tradingStreak || 0}d</p>
-                          <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tradingStreak')}</p>
-                        </div>
-                        <div className="text-center p-2 rounded" style={{ backgroundColor: '#0F172A' }}>
-                          <p className="text-sm font-bold" style={{ color: '#10B981' }}>
-                            {person.tournamentCount || 0}
-                          </p>
-                          <p className="text-xs" style={{ color: '#94A3B8' }}>{t('tournaments')}</p>
-                        </div>
-                      </div>
-
-
-                      <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={() => navigate(`/people/${person.id}`)}
-                        style={{ backgroundColor: '#0F172A', borderColor: '#E3B341', color: '#E3B341' }}
-                      >
-                        {t('viewProfile')}
-                      </Button>
-                    </CardContent>
-                  </Card>
+                      ))}
+                    </div>
+                  </button>
                 ))
               )}
             </div>
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Profile Modal */}
+      <AnimatePresence>
+        {selectedUserId && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedUserId(null)}
+              className="fixed inset-0 z-40"
+              style={{ backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+            />
+
+            {/* Modal */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              onClick={(e) => e.target === e.currentTarget && setSelectedUserId(null)}
+            >
+              <div
+                className="w-full max-w-md overflow-hidden"
+                style={{ backgroundColor: "#0D1117", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px" }}
+              >
+                {isLoadingProfile ? (
+                  <div className="flex items-center justify-center py-16">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: "#E3B341" }} />
+                  </div>
+                ) : (
+                  <>
+                    {/* Header */}
+                    <div className="p-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-4">
+                          <AvatarWithStatus
+                            className="w-14 h-14"
+                            src={profileData?.profilePicture}
+                            alt={profileData?.username}
+                            fallback={`${profileData?.username?.[0]?.toUpperCase() || ""}${profileData?.username?.[1]?.toUpperCase() || ""}`}
+                            lastActivity={profileData?.lastActivity}
+                            statusSize="md"
+                          />
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h2 className="text-xl font-black" style={{ color: "#F1F5F9" }}>{profileData?.username}</h2>
+                              {profileData?.subscriptionTier === "administrator" && (
+                                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(227,179,65,0.15)", color: "#E3B341" }}>Admin</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <Calendar className="w-3 h-3" style={{ color: "#4B5563" }} />
+                              <span className="text-xs" style={{ color: "#4B5563" }}>
+                                {t("memberSince")} {profileData?.createdAt ? new Date(profileData.createdAt).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : "—"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => setSelectedUserId(null)}
+                          className="p-1.5 rounded-lg transition-colors"
+                          style={{ color: "#4B5563" }}
+                          onMouseEnter={e => (e.currentTarget.style.color = "#F1F5F9")}
+                          onMouseLeave={e => (e.currentTarget.style.color = "#4B5563")}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {/* Stats */}
+                      <div className="grid grid-cols-3 gap-2 mt-4">
+                        {[
+                          { icon: <Activity className="w-3.5 h-3.5" style={{ color: "#E3B341" }} />, label: t("totalTrades"), value: profileData?.totalTrades || 0, color: "#C9D1E2" },
+                          { icon: <Flame className="w-3.5 h-3.5" style={{ color: "#FF4F58" }} />, label: t("tradingStreak"), value: `${profileData?.tradingStreak || 0}d`, color: "#E3B341" },
+                          { icon: <Trophy className="w-3.5 h-3.5" style={{ color: "#28C76F" }} />, label: t("tournamentsJoined"), value: profileData?.tournamentCount || 0, color: "#28C76F" },
+                        ].map((stat) => (
+                          <div key={stat.label} className="text-center py-2.5 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
+                            <div className="flex justify-center mb-1">{stat.icon}</div>
+                            <div className="text-base font-black" style={{ color: stat.color }}>{stat.value}</div>
+                            <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>{stat.label}</div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Friend button */}
+                      {user && String(user.id) !== selectedUserId && (
+                        <div className="mt-3">
+                          {friendStatus?.status === "none" && (
+                            <button
+                              onClick={() => sendFriendRequestMutation.mutate(parseInt(selectedUserId!))}
+                              disabled={sendFriendRequestMutation.isPending}
+                              className="w-full py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
+                              style={{ background: "linear-gradient(135deg, #28C76F, #20a35a)", color: "#000" }}
+                            >
+                              <UserPlus className="w-4 h-4 inline mr-1.5" />
+                              {sendFriendRequestMutation.isPending ? "Sending..." : "Add Friend"}
+                            </button>
+                          )}
+                          {friendStatus?.status === "pending_sent" && (
+                            <div className="w-full py-2 rounded-lg text-sm font-semibold text-center" style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#64748B" }}>
+                              <ClockIcon className="w-4 h-4 inline mr-1.5" />Request Sent
+                            </div>
+                          )}
+                          {friendStatus?.status === "pending_received" && (
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => acceptFriendRequestMutation.mutate(friendStatus.friendshipId)}
+                                disabled={acceptFriendRequestMutation.isPending}
+                                className="flex-1 py-2 rounded-lg text-sm font-bold"
+                                style={{ background: "linear-gradient(135deg, #28C76F, #20a35a)", color: "#000" }}
+                              >
+                                <UserCheck className="w-4 h-4 inline mr-1" />Accept
+                              </button>
+                              <button
+                                onClick={() => declineFriendRequestMutation.mutate(friendStatus.friendshipId)}
+                                disabled={declineFriendRequestMutation.isPending}
+                                className="flex-1 py-2 rounded-lg text-sm font-bold"
+                                style={{ backgroundColor: "rgba(255,79,88,0.1)", color: "#FF4F58", border: "1px solid rgba(255,79,88,0.2)" }}
+                              >
+                                <UserX className="w-4 h-4 inline mr-1" />Decline
+                              </button>
+                            </div>
+                          )}
+                          {friendStatus?.status === "accepted" && (
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm font-semibold flex items-center gap-1.5" style={{ color: "#28C76F" }}>
+                                <UserCheck className="w-4 h-4" />Friends
+                              </span>
+                              <button
+                                onClick={() => removeFriendMutation.mutate(friendStatus.friendshipId)}
+                                className="text-xs"
+                                style={{ color: "#4B5563" }}
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Recent Trades */}
+                    <div className="p-5 max-h-64 overflow-y-auto">
+                      <div className="flex items-center gap-2 mb-3">
+                        <ArrowRightLeft className="w-3.5 h-3.5" style={{ color: "#E3B341" }} />
+                        <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#4B5563" }}>{t("recentTrades")}</span>
+                      </div>
+                      {trades.length === 0 ? (
+                        <div className="text-center py-6">
+                          <p className="text-sm" style={{ color: "#4B5563" }}>{t("noTradesYet")}</p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {trades.map((trade: any) => (
+                            <div
+                              key={trade.id}
+                              className="flex items-center justify-between p-2.5 rounded-lg"
+                              style={{ backgroundColor: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.04)" }}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="p-1 rounded" style={{ backgroundColor: trade.action === "buy" ? "rgba(40,199,111,0.12)" : "rgba(255,79,88,0.12)" }}>
+                                  {trade.action === "buy"
+                                    ? <TrendingUp className="w-3.5 h-3.5" style={{ color: "#28C76F" }} />
+                                    : <TrendingDown className="w-3.5 h-3.5" style={{ color: "#FF4F58" }} />}
+                                </div>
+                                <div>
+                                  <p className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>
+                                    {trade.action === "buy" ? t("bought") : t("sold")} {trade.symbol}
+                                  </p>
+                                  <p className="text-xs" style={{ color: "#4B5563" }}>{trade.shares} shares @ ${parseFloat(trade.price).toFixed(2)}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm font-bold" style={{ color: trade.action === "buy" ? "#FF4F58" : "#28C76F" }}>
+                                  {trade.action === "buy" ? "-" : "+"}${parseFloat(trade.totalValue || trade.shares * trade.price).toFixed(2)}
+                                </p>
+                                <p className="text-xs" style={{ color: "#4B5563" }}>
+                                  {trade.tradeDate ? new Date(trade.tradeDate).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : ""}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

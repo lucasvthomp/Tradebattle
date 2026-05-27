@@ -111,7 +111,6 @@ function Router() {
               <Route path="/tournaments" component={Tournaments} />
               <Route path="/leaderboard" component={Leaderboard} />
               <Route path="/people" component={People} />
-              <Route path="/people/:userId" component={People} />
               <Route path="/shop" component={Shop} />
               <Route path="/deposit" component={Deposit} />
               <Route path="/contact" component={Contact} />
