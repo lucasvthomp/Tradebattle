@@ -5,8 +5,26 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   TrendingUp, Users, Clock, Trophy, Zap, DollarSign,
-  ArrowRight, BarChart3, Plus, ChevronRight,
+  ArrowRight, BarChart3, Plus, ChevronRight, Target, Flame,
 } from "lucide-react";
+
+function computeLevel(wins: number, trades: number) {
+  const xp = wins * 120 + trades * 8;
+  const level = Math.floor(Math.sqrt(xp / 40)) + 1;
+  const currentLevelXP = Math.pow(level - 1, 2) * 40;
+  const nextLevelXP = Math.pow(level, 2) * 40;
+  const progress = nextLevelXP === currentLevelXP ? 100 : Math.round(((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
+  return { level, xp, progress: Math.min(progress, 100), nextLevelXP, currentLevelXP };
+}
+
+function getRankTitle(level: number) {
+  if (level >= 50) return { title: "Legend", color: "#FF4F58" };
+  if (level >= 30) return { title: "Elite", color: "#E3B341" };
+  if (level >= 20) return { title: "Expert", color: "#8B5CF6" };
+  if (level >= 12) return { title: "Veteran", color: "#06B6D4" };
+  if (level >= 6) return { title: "Trader", color: "#28C76F" };
+  return { title: "Rookie", color: "#8A93A6" };
+}
 
 export default function Hub() {
   const { user } = useAuth();
@@ -21,6 +39,11 @@ export default function Hub() {
 
   const activeTournaments = (tournamentsData as any)?.data?.filter((t: any) => t.status === 'active') || [];
   const upcomingTournaments = (tournamentsData as any)?.data?.filter((t: any) => t.status === 'upcoming') || [];
+
+  const wins = user?.tournamentWins || 0;
+  const trades = user?.totalTrades || 0;
+  const { level, xp, progress } = computeLevel(wins, trades);
+  const { title: rankTitle, color: rankColor } = getRankTitle(level);
 
   const getGreeting = () => {
     const h = currentTime.getHours();
@@ -37,9 +60,9 @@ export default function Hub() {
 
   const stats = [
     { label: 'Balance', value: `$${(Number(user?.siteCash) || 0).toFixed(2)}`, color: '#E3B341', icon: DollarSign },
-    { label: 'Wins', value: String(user?.tournamentWins || 0), color: '#28C76F', icon: Trophy },
+    { label: 'Wins', value: String(wins), color: '#28C76F', icon: Trophy },
     { label: 'Live', value: String(activeTournaments.length), color: '#8B5CF6', icon: Zap },
-    { label: 'Trades', value: String(user?.totalTrades || 0), color: '#06B6D4', icon: BarChart3 },
+    { label: 'Trades', value: String(trades), color: '#06B6D4', icon: BarChart3 },
   ];
 
   const quickActions = [
@@ -49,35 +72,68 @@ export default function Hub() {
     { label: 'Leaderboard', sub: 'See where you rank', href: '/leaderboard', color: '#06B6D4', icon: BarChart3 },
   ];
 
+  // Daily challenges — derived from user stats so they feel personalized
+  const challenges = [
+    { label: 'Place 3 trades today', icon: TrendingUp, color: '#28C76F', xpReward: 50, done: trades > 0 },
+    { label: 'Join a tournament', icon: Trophy, color: '#E3B341', xpReward: 80, done: wins > 0 },
+    { label: 'Try Blitz mode', icon: Zap, color: '#8B5CF6', xpReward: 60, done: false },
+  ];
+
   return (
     <div style={{ minHeight: '100vh', background: '#06121F', padding: '32px 20px' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
-        {/* Header */}
-        <motion.div className="tour-hub-hero" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontSize: '26px', fontWeight: '700', color: '#E2E8F0', margin: '0 0 4px' }}>
-            {getGreeting()}, {user?.username}
-          </h1>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <span style={{ fontSize: '13px', color: '#64748B' }}>
-              {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-            </span>
-            {activeTournaments.length > 0 && (
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: '5px',
-                padding: '3px 10px', borderRadius: '20px',
-                background: 'rgba(40,199,111,0.12)', border: '1px solid rgba(40,199,111,0.3)',
-                fontSize: '12px', fontWeight: '600', color: '#28C76F',
-              }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#28C76F', display: 'inline-block' }} />
-                {activeTournaments.length} live
-              </span>
-            )}
+        {/* Header + Level Bar */}
+        <motion.div className="tour-hub-hero" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '28px' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+            <div>
+              <h1 style={{ fontSize: '26px', fontWeight: '700', color: '#E2E8F0', margin: '0 0 4px' }}>
+                {getGreeting()}, {user?.username}
+              </h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '13px', color: '#64748B' }}>
+                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                </span>
+                {activeTournaments.length > 0 && (
+                  <span style={{
+                    display: 'inline-flex', alignItems: 'center', gap: '5px',
+                    padding: '3px 10px', borderRadius: '20px',
+                    background: 'rgba(40,199,111,0.12)', border: '1px solid rgba(40,199,111,0.3)',
+                    fontSize: '12px', fontWeight: '600', color: '#28C76F',
+                  }}>
+                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#28C76F', display: 'inline-block' }} />
+                    {activeTournaments.length} live
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Level badge */}
+            <div style={{
+              padding: '12px 16px', borderRadius: '12px', minWidth: '160px',
+              background: '#0D1825', border: `1px solid ${rankColor}40`,
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                <span style={{ fontSize: '11px', fontWeight: '700', color: rankColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                  {rankTitle}
+                </span>
+                <span style={{ fontSize: '13px', fontWeight: '800', color: '#E2E8F0' }}>Lv.{level}</span>
+              </div>
+              <div style={{ height: '5px', borderRadius: '3px', background: '#1E3050', overflow: 'hidden' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+                  style={{ height: '100%', borderRadius: '3px', background: rankColor }}
+                />
+              </div>
+              <div style={{ fontSize: '10px', color: '#64748B', marginTop: '5px' }}>{xp} XP · {progress}% to Lv.{level + 1}</div>
+            </div>
           </div>
         </motion.div>
 
         {/* Stats Row */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '28px' }} className="hub-stats">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px', marginBottom: '24px' }} className="hub-stats">
           {stats.map((s, i) => (
             <motion.div
               key={s.label}
@@ -99,14 +155,14 @@ export default function Hub() {
         {/* Main grid */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px' }} className="hub-grid">
 
-          {/* Left: tournaments */}
+          {/* Left */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
 
             {/* Quick Actions */}
             <div style={{ ...cardBase, padding: '20px' }}>
               <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2', marginBottom: '14px' }}>Quick Actions</h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                {quickActions.map((a, i) => (
+                {quickActions.map((a) => (
                   <Link key={a.href} href={a.href}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
@@ -116,7 +172,6 @@ export default function Hub() {
                         padding: '14px', borderRadius: '10px', cursor: 'pointer',
                         background: `${a.color}0D`,
                         border: `1px solid ${a.color}30`,
-                        transition: 'border-color 150ms ease',
                       }}
                     >
                       <div style={{
@@ -132,6 +187,59 @@ export default function Hub() {
                       </div>
                     </motion.div>
                   </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Daily Challenges */}
+            <div style={{ ...cardBase, padding: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+                <Flame size={15} style={{ color: '#FF7A00' }} />
+                <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2', margin: 0 }}>Daily Challenges</h2>
+                <span style={{
+                  marginLeft: 'auto', fontSize: '11px', fontWeight: '600', color: '#FF7A00',
+                  padding: '2px 8px', borderRadius: '20px', background: 'rgba(255,122,0,0.1)',
+                  border: '1px solid rgba(255,122,0,0.2)',
+                }}>
+                  Resets in {24 - currentTime.getHours()}h
+                </span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {challenges.map((c, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -6 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.07 }}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '12px',
+                      padding: '12px 14px', borderRadius: '10px',
+                      background: c.done ? `${c.color}0C` : '#0D1825',
+                      border: `1px solid ${c.done ? c.color + '30' : '#1E3050'}`,
+                      opacity: c.done ? 0.6 : 1,
+                    }}
+                  >
+                    <div style={{
+                      width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
+                      background: `${c.color}18`,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    }}>
+                      <c.icon size={14} style={{ color: c.color }} />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '13px', fontWeight: '600', color: c.done ? '#64748B' : '#E2E8F0', textDecoration: c.done ? 'line-through' : 'none' }}>
+                        {c.label}
+                      </div>
+                    </div>
+                    <div style={{
+                      fontSize: '11px', fontWeight: '700', color: c.done ? '#64748B' : '#E3B341',
+                      padding: '3px 8px', borderRadius: '20px',
+                      background: c.done ? 'transparent' : 'rgba(227,179,65,0.1)',
+                    }}>
+                      +{c.xpReward} XP
+                    </div>
+                    {c.done && <span style={{ fontSize: '12px' }}>✓</span>}
+                  </motion.div>
                 ))}
               </div>
             </div>
@@ -236,7 +344,7 @@ export default function Hub() {
             )}
           </div>
 
-          {/* Right: info panels */}
+          {/* Right */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
 
             {/* Blitz teaser */}
@@ -271,14 +379,44 @@ export default function Hub() {
               </motion.div>
             </Link>
 
-            {/* Account snapshot */}
+            {/* Rank card */}
             <div style={{ ...cardBase, padding: '18px' }}>
-              <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#C9D1E2', marginBottom: '12px' }}>Account</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+                <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#C9D1E2', margin: 0 }}>Your Rank</h3>
+                <span style={{
+                  fontSize: '11px', fontWeight: '700', color: rankColor,
+                  padding: '2px 8px', borderRadius: '12px',
+                  background: `${rankColor}18`, border: `1px solid ${rankColor}30`,
+                }}>
+                  {rankTitle}
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+                <div style={{
+                  width: '48px', height: '48px', borderRadius: '12px', flexShrink: 0,
+                  background: `${rankColor}20`, border: `2px solid ${rankColor}40`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '20px', fontWeight: '900', color: rankColor,
+                }}>
+                  {level}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '4px' }}>Level {level} · {xp} XP total</div>
+                  <div style={{ height: '6px', borderRadius: '3px', background: '#1E3050', overflow: 'hidden' }}>
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 0.8, ease: 'easeOut', delay: 0.4 }}
+                      style={{ height: '100%', borderRadius: '3px', background: rankColor }}
+                    />
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748B', marginTop: '3px' }}>{progress}% to Lv.{level + 1}</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {[
-                  { label: 'Balance', value: `$${(Number(user?.siteCash) || 0).toFixed(2)}`, color: '#E3B341' },
-                  { label: 'Tournament Wins', value: String(user?.tournamentWins || 0), color: '#28C76F' },
-                  { label: 'Total Trades', value: String(user?.totalTrades || 0), color: '#06B6D4' },
+                  { label: 'Tournament Wins', value: String(wins), color: '#28C76F' },
+                  { label: 'Total Trades', value: String(trades), color: '#06B6D4' },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontSize: '12px', color: '#64748B' }}>{row.label}</span>

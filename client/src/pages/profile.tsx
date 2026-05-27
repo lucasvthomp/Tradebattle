@@ -665,6 +665,47 @@ export default function Profile() {
                     className="hidden"
                   />
                 </div>
+
+                {/* XP / Level bar */}
+                {(() => {
+                  const wins = user?.tournamentWins || 0;
+                  const trades = user?.totalTrades || 0;
+                  const xp = wins * 120 + trades * 8;
+                  const level = Math.floor(Math.sqrt(xp / 40)) + 1;
+                  const currentLevelXP = Math.pow(level - 1, 2) * 40;
+                  const nextLevelXP = Math.pow(level, 2) * 40;
+                  const progress = nextLevelXP === currentLevelXP ? 100 : Math.min(Math.round(((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100), 100);
+                  const rankTitles = [
+                    { min: 50, title: 'Legend', color: '#FF4F58' },
+                    { min: 30, title: 'Elite', color: '#E3B341' },
+                    { min: 20, title: 'Expert', color: '#8B5CF6' },
+                    { min: 12, title: 'Veteran', color: '#06B6D4' },
+                    { min: 6, title: 'Trader', color: '#28C76F' },
+                    { min: 0, title: 'Rookie', color: '#8A93A6' },
+                  ];
+                  const rank = rankTitles.find(r => level >= r.min) || rankTitles[rankTitles.length - 1];
+                  return (
+                    <div className="mt-4 pt-4" style={{ borderTop: '1px solid #1F2937' }}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-bold" style={{ color: rank.color }}>{rank.title}</span>
+                          <span className="text-xs" style={{ color: '#94A3B8' }}>·</span>
+                          <span className="text-xs font-semibold" style={{ color: '#C9D1E2' }}>Level {level}</span>
+                        </div>
+                        <span className="text-xs" style={{ color: '#64748B' }}>{xp} XP · {progress}% to Lv.{level + 1}</span>
+                      </div>
+                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#1E2D3F' }}>
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${progress}%` }}
+                          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+                          className="h-full rounded-full"
+                          style={{ backgroundColor: rank.color }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           </motion.div>
