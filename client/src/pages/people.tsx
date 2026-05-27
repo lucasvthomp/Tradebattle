@@ -191,7 +191,7 @@ export default function People() {
 
           {/* Grid */}
           <motion.div variants={fadeInUp}>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {isLoadingUsers ? (
                 Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} style={cardStyle} className="p-3 animate-pulse flex items-center gap-3">
