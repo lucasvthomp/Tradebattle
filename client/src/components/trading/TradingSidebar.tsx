@@ -81,20 +81,19 @@ export function TradingSidebar({
 
   const { data: searchData, isLoading: isSearching } = useQuery({
     queryKey: ["/api/search", searchQuery, selectedTournament?.id],
-    enabled: searchQuery.length >= 1 && !!selectedTournament?.id,
+    enabled: searchQuery.length >= 2 && !!selectedTournament?.id,
     queryFn: async () => {
-      const params = new URLSearchParams({
-        q: searchQuery,
-        ...(selectedTournament?.id && { tournamentId: selectedTournament.id.toString() })
-      });
-      const response = await fetch(`/api/search?${params}`);
+      const params = new URLSearchParams(
+        selectedTournament?.id ? { tournamentId: selectedTournament.id.toString() } : {}
+      );
+      const response = await fetch(`/api/search/${encodeURIComponent(searchQuery)}?${params}`);
       if (!response.ok) throw new Error('Search failed');
       return response.json();
     },
   });
 
   const searchResults = useMemo(() => {
-    if (!searchQuery || searchQuery.length < 1) return [];
+    if (!searchQuery || searchQuery.length < 2) return [];
     const results = (searchData as any)?.data || [];
     return results.slice(0, 8);
   }, [searchData, searchQuery]);
