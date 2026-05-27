@@ -31,7 +31,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)', borderBottom: '1px solid rgba(227, 179, 65, 0.1)', boxShadow: '0 1px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(227, 179, 65, 0.05)' }}>
       <div className="container mx-auto px-4">
-        <nav className="flex items-center justify-between h-16">
+        <nav className="flex items-center h-16 relative">
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
@@ -47,37 +47,41 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
             </div>
           </div>
 
-          {/* Desktop navigation - hide on mobile */}
-          <div className="hidden md:flex items-center space-x-3">
+          {/* Center - Balance (absolutely centered in the bar) */}
+          {user && (
+            <div className="hidden md:flex absolute left-1/2 -translate-x-1/2">
+              <Button
+                variant="ghost"
+                data-tour="balance"
+                aria-label="Manage balance - Deposit or Withdraw"
+                className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2 hover:scale-105"
+                style={{
+                  borderColor: 'rgba(227, 179, 65, 0.6)',
+                  background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))',
+                  color: '#E3B341',
+                  boxShadow: '0 0 20px rgba(227, 179, 65, 0.1)'
+                }}
+                onClick={() => {
+                  setBalanceModalTab('deposit');
+                  setBalanceModalOpen(true);
+                }}
+              >
+                <DollarSign className="w-4 h-4 mr-1" />
+                <span className="text-sm font-bold">
+                  {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                </span>
+              </Button>
+            </div>
+          )}
+
+          {/* Right side - Desktop navigation */}
+          <div className="hidden md:flex items-center space-x-3 ml-auto">
             {user ? (
               <>
                 {/* Notifications Bell */}
                 <NotificationDropdown />
 
-                {/* Balance Display - Click to open Deposit/Withdraw Modal */}
-                <Button
-                  variant="ghost"
-                  data-tour="balance"
-                  aria-label="Manage balance - Deposit or Withdraw"
-                  className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2 hover:scale-105"
-                  style={{
-                    borderColor: 'rgba(227, 179, 65, 0.6)',
-                    background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))',
-                    color: '#E3B341',
-                    boxShadow: '0 0 20px rgba(227, 179, 65, 0.1)'
-                  }}
-                  onClick={() => {
-                    setBalanceModalTab('deposit');
-                    setBalanceModalOpen(true);
-                  }}
-                >
-                  <DollarSign className="w-4 h-4 mr-1" />
-                  <span className="text-sm font-bold">
-                    {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  </span>
-                </Button>
-
-                {/* User Menu with integrated balance */}
+                {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 flex items-center space-x-2 px-3 border border-border/30 hover:bg-muted/50 transition-colors">
