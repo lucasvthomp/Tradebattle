@@ -54,7 +54,7 @@ export default function Hub() {
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '32px' }}>
+        <motion.div className="tour-hub-hero" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '32px' }}>
           <h1 style={{ fontSize: '26px', fontWeight: '700', color: '#E2E8F0', margin: '0 0 4px' }}>
             {getGreeting()}, {user?.username}
           </h1>

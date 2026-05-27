@@ -38,6 +38,23 @@ import Layout from "@/components/layout/layout";
 import Footer from "@/components/layout/footer";
 import { AnnouncementModal } from "@/components/announcements/AnnouncementModal";
 import { useAnnouncements } from "@/hooks/use-announcements";
+import { WebsiteTour } from "@/components/tour/WebsiteTour";
+import { useTour } from "@/hooks/useTour";
+
+function AutoTourStarter() {
+  const { user } = useAuth();
+  const { startTour, isTourActive } = useTour();
+
+  useEffect(() => {
+    if (user && user.tutorialCompleted === false && !isTourActive) {
+      // Small delay so the hub page has time to mount its tour targets
+      const t = setTimeout(() => startTour(), 800);
+      return () => clearTimeout(t);
+    }
+  }, [user?.id, user?.tutorialCompleted]);
+
+  return null;
+}
 
 function Router() {
   const { user, isLoading } = useAuth();
@@ -114,6 +131,12 @@ function Router() {
         </Switch>
         {shouldShowFooter && <Footer />}
       </Layout>
+
+      {/* Tutorial tour overlay */}
+      {user && <WebsiteTour />}
+
+      {/* Auto-start tour for new users */}
+      {user && <AutoTourStarter />}
 
       {/* System-wide announcements modal */}
       {user && (
