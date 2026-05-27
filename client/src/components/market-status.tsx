@@ -161,8 +161,8 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
             className="max-w-xs backdrop-blur-md border-2"
             style={{
               backgroundColor: 'rgba(15, 23, 42, 0.95)',
-              borderColor: 'rgba(227, 179, 65, 0.3)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(227, 179, 65, 0.1)'
+              borderColor: 'rgba(0, 163, 255, 0.25)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 163, 255, 0.1)'
             }}
           >
             <div className="space-y-2">
@@ -170,7 +170,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
               <div className="text-xs space-y-1" style={{ color: '#C9D1E2' }}>
                 <div>Monday - Friday</div>
                 <div>9:30 AM - 4:00 PM ET</div>
-                <div className="pt-2 border-t" style={{ borderColor: 'rgba(227, 179, 65, 0.2)' }}>
+                <div className="pt-2 border-t" style={{ borderColor: 'rgba(0, 163, 255, 0.15)' }}>
                   {isMarketOpen ? (
                     <span className="font-medium" style={{ color: '#10B981' }}>Currently Open - Closes in {timeUntilClose}</span>
                   ) : (

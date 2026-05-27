@@ -45,7 +45,7 @@ export default function UnauthenticatedHome() {
         right: '5%',
         width: '400px',
         height: '400px',
-        background: 'radial-gradient(circle, rgba(227, 179, 65, 0.1) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(0, 163, 255, 0.1) 0%, transparent 70%)',
         borderRadius: '50%',
         pointerEvents: 'none',
         animation: 'float 8s ease-in-out infinite',
@@ -103,7 +103,7 @@ export default function UnauthenticatedHome() {
           </span>
           <br />
           <span style={{
-            background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
+            background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
           }}>
@@ -120,7 +120,7 @@ export default function UnauthenticatedHome() {
           lineHeight: '1.5',
         }}>
           Join tournaments, compete with traders worldwide, and win actual money.
-          <span style={{ color: '#E3B341', fontWeight: '600' }}> No experience needed.</span>
+          <span style={{ color: '#00A3FF', fontWeight: '600' }}> No experience needed.</span>
         </p>
 
         <div style={{
@@ -134,7 +134,7 @@ export default function UnauthenticatedHome() {
             <Button
               size="lg"
               style={{
-                background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
+                background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
                 color: '#091525',
                 fontWeight: '700',
                 padding: '18px 40px',
@@ -142,7 +142,7 @@ export default function UnauthenticatedHome() {
                 borderRadius: '12px',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 8px 24px rgba(227, 179, 65, 0.3)',
+                boxShadow: '0 8px 24px rgba(0, 163, 255, 0.25)',
                 transition: 'all 0.3s',
               }}
               onMouseEnter={(e) => {
@@ -151,7 +151,7 @@ export default function UnauthenticatedHome() {
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(227, 179, 65, 0.3)';
+                e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 163, 255, 0.25)';
               }}
             >
               Start Playing Free
@@ -165,7 +165,7 @@ export default function UnauthenticatedHome() {
               style={{
                 background: 'transparent',
                 border: '2px solid rgba(227, 179, 65, 0.5)',
-                color: '#E3B341',
+                color: '#00A3FF',
                 fontWeight: '700',
                 padding: '18px 40px',
                 fontSize: '18px',
@@ -174,8 +174,8 @@ export default function UnauthenticatedHome() {
                 transition: 'all 0.3s',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#E3B341';
-                e.currentTarget.style.background = 'rgba(227, 179, 65, 0.1)';
+                e.currentTarget.style.borderColor = '#00A3FF';
+                e.currentTarget.style.background = 'rgba(0, 163, 255, 0.1)';
                 e.currentTarget.style.transform = 'translateY(-4px)';
               }}
               onMouseLeave={(e) => {
@@ -199,7 +199,7 @@ export default function UnauthenticatedHome() {
           flexWrap: 'wrap',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={18} color="#E3B341" />
+            <Sparkles size={18} color="#00A3FF" />
             <span>Start with $10,000 virtual</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -220,8 +220,8 @@ export default function UnauthenticatedHome() {
         margin: '0 auto',
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
-          border: '2px solid rgba(227, 179, 65, 0.3)',
+          background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
+          border: '2px solid rgba(0, 163, 255, 0.25)',
           borderRadius: '20px',
           padding: '48px 32px',
           textAlign: 'center',
@@ -234,7 +234,7 @@ export default function UnauthenticatedHome() {
             left: '-20%',
             width: '500px',
             height: '500px',
-            background: 'radial-gradient(circle, rgba(227, 179, 65, 0.15) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(0, 163, 255, 0.12) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }} />
@@ -245,7 +245,7 @@ export default function UnauthenticatedHome() {
             gap: '12px',
             marginBottom: '24px',
           }}>
-            <Trophy size={32} color="#E3B341" />
+            <Trophy size={32} color="#00A3FF" />
             <h2 style={{
               fontSize: '28px',
               fontWeight: '700',
@@ -257,7 +257,7 @@ export default function UnauthenticatedHome() {
           <div style={{
             fontSize: '72px',
             fontWeight: '800',
-            background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
+            background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
             marginBottom: '32px',
@@ -333,7 +333,7 @@ export default function UnauthenticatedHome() {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = 'translateY(-8px)';
-            e.currentTarget.style.boxShadow = '0 16px 40px rgba(227, 179, 65, 0.2)';
+            e.currentTarget.style.boxShadow = '0 16px 40px rgba(0, 163, 255, 0.15)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = 'translateY(0)';
@@ -345,24 +345,24 @@ export default function UnauthenticatedHome() {
               right: '-30px',
               opacity: 0.1,
             }}>
-              <Users size={140} color="#E3B341" />
+              <Users size={140} color="#00A3FF" />
             </div>
             <div style={{
               width: '56px',
               height: '56px',
-              background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
+              background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
               borderRadius: '16px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: '24px',
-              boxShadow: '0 8px 24px rgba(227, 179, 65, 0.3)',
+              boxShadow: '0 8px 24px rgba(0, 163, 255, 0.25)',
             }}>
               <Users style={{ width: '28px', height: '28px', color: '#091525' }} />
             </div>
             <div style={{
               fontSize: '14px',
-              color: '#E3B341',
+              color: '#00A3FF',
               fontWeight: '700',
               textTransform: 'uppercase',
               letterSpacing: '1px',
@@ -529,7 +529,7 @@ export default function UnauthenticatedHome() {
       }}>
         <div style={{
           background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
-          border: '2px solid rgba(227, 179, 65, 0.3)',
+          border: '2px solid rgba(0, 163, 255, 0.25)',
           borderRadius: '20px',
           padding: '56px 40px',
           textAlign: 'center',
@@ -551,7 +551,7 @@ export default function UnauthenticatedHome() {
               <div style={{
                 fontSize: '52px',
                 fontWeight: '800',
-                background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
+                background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 marginBottom: '12px',
@@ -616,7 +616,7 @@ export default function UnauthenticatedHome() {
         textAlign: 'center',
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%)',
+          background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.12) 0%, rgba(245, 158, 11, 0.1) 100%)',
           border: '2px solid rgba(227, 179, 65, 0.4)',
           borderRadius: '24px',
           padding: '56px 40px',
@@ -630,7 +630,7 @@ export default function UnauthenticatedHome() {
             transform: 'translate(-50%, -50%)',
             width: '600px',
             height: '600px',
-            background: 'radial-gradient(circle, rgba(227, 179, 65, 0.1) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(0, 163, 255, 0.1) 0%, transparent 70%)',
             borderRadius: '50%',
             pointerEvents: 'none',
           }} />
@@ -655,7 +655,7 @@ export default function UnauthenticatedHome() {
             <Button
               size="lg"
               style={{
-                background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
+                background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
                 color: '#091525',
                 fontWeight: '800',
                 padding: '20px 48px',

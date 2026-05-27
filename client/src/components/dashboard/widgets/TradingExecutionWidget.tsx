@@ -101,7 +101,7 @@ export function TradingExecutionWidget({
           </h3>
           {selectedStock && (
             <div className="flex items-baseline gap-2 ml-2 pl-2 border-l" style={{ borderColor: '#0E2040' }}>
-              <span className="text-sm font-bold" style={{ color: '#E3B341' }}>{selectedStock.symbol}</span>
+              <span className="text-sm font-bold" style={{ color: '#00A3FF' }}>{selectedStock.symbol}</span>
               <span className="text-xs" style={{ color: '#94A3B8' }}>${selectedStock.price?.toFixed(2)}</span>
             </div>
           )}
@@ -243,7 +243,7 @@ export function TradingExecutionWidget({
             <div className="pt-1.5 border-t" style={{ borderColor: '#0E2040' }}>
               <div className="flex justify-between items-center">
                 <span className="text-[10px]" style={{ color: '#94A3B8' }}>Est. Total</span>
-                <span className="text-sm font-semibold" style={{ color: '#E3B341' }}>
+                <span className="text-sm font-semibold" style={{ color: '#00A3FF' }}>
                   {formatCurrency(calculateEstimatedCost())}
                 </span>
               </div>

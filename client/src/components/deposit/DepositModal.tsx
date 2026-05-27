@@ -171,7 +171,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <ArrowLeft size={20} />
               </button>
             )}
-            <Wallet size={24} color="#E3B341" />
+            <Wallet size={24} color="#00A3FF" />
             <h2 style={{ color: '#C9D1E2', fontSize: '20px', fontWeight: '600', margin: 0 }}>
               Deposit Funds
             </h2>
@@ -342,7 +342,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                       fontWeight: '600',
                       outline: 'none',
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#E3B341'}
+                    onFocus={(e) => e.target.style.borderColor = '#00A3FF'}
                     onBlur={(e) => e.target.style.borderColor = '#0E2040'}
                   />
                 </div>
@@ -359,7 +359,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   padding: '16px',
                   background: loading || !amount || parseFloat(amount) < minimumAmount
                     ? '#0E2040'
-                    : '#E3B341',
+                    : '#00A3FF',
                   color: loading || !amount || parseFloat(amount) < minimumAmount
                     ? '#8A93A6'
                     : '#091525',
@@ -393,7 +393,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
             <div>
               {/* QR Code with gold styling */}
               <div style={{
-                background: 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)',
+                background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
                 padding: '4px',
                 borderRadius: '20px',
                 marginBottom: '20px',
@@ -409,7 +409,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     value={payment.pay_address}
                     size={200}
                     level="H"
-                    fgColor="#E3B341"
+                    fgColor="#00A3FF"
                     bgColor="transparent"
                   />
                 </div>
@@ -463,8 +463,8 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   Amount to send
                 </label>
                 <div style={{
-                  background: 'linear-gradient(135deg, #E3B341 0%, #D4A537 100%)',
-                  border: '2px solid #E3B341',
+                  background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
+                  border: '2px solid #00A3FF',
                   borderRadius: '12px',
                   padding: '16px',
                   textAlign: 'center',
@@ -477,17 +477,17 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
 
               {/* Status */}
               <div style={{
-                background: 'rgba(227, 179, 65, 0.1)',
-                border: '1px solid #E3B341',
+                background: 'rgba(0, 163, 255, 0.1)',
+                border: '1px solid #00A3FF',
                 borderRadius: '12px',
                 padding: '16px',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '12px',
               }}>
-                <Loader2 size={20} color="#E3B341" style={{ animation: 'spin 1s linear infinite' }} />
+                <Loader2 size={20} color="#00A3FF" style={{ animation: 'spin 1s linear infinite' }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ color: '#E3B341', fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>
+                  <div style={{ color: '#00A3FF', fontWeight: '600', fontSize: '14px', marginBottom: '4px' }}>
                     Waiting for payment...
                   </div>
                   <div style={{ color: '#8A93A6', fontSize: '12px' }}>

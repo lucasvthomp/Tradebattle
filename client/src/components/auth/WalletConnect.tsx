@@ -109,9 +109,9 @@ export function WalletConnect({ onSuccess, onNewUser }: WalletConnectProps) {
       className="w-full"
       variant="outline"
       style={{
-        background: 'rgba(227, 179, 65, 0.1)',
-        borderColor: '#E3B341',
-        color: '#E3B341',
+        background: 'rgba(0, 163, 255, 0.1)',
+        borderColor: '#00A3FF',
+        color: '#00A3FF',
       }}
     >
       <Wallet className="w-4 h-4 mr-2" />

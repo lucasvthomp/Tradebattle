@@ -62,7 +62,7 @@ export default function Shop() {
           className="mb-10"
         >
           <div className="flex items-center gap-3 mb-2">
-            <Gift className="w-7 h-7" style={{ color: '#E3B341' }} />
+            <Gift className="w-7 h-7" style={{ color: '#00A3FF' }} />
             <h1 className="text-3xl font-bold" style={{ color: '#C9D1E2' }}>
               Rewards Center
             </h1>
@@ -80,7 +80,7 @@ export default function Shop() {
           className="grid grid-cols-3 gap-4 mb-10"
         >
           {[
-            { icon: DollarSign, label: 'Balance', value: `$${user?.siteCash || '0.00'}`, color: '#E3B341' },
+            { icon: DollarSign, label: 'Balance', value: `$${user?.siteCash || '0.00'}`, color: '#00A3FF' },
             { icon: Trophy, label: 'Wins', value: user?.tournamentWins ?? 0, color: '#28C76F' },
             { icon: Zap, label: 'Trades', value: user?.totalTrades ?? 0, color: '#8B5CF6' },
           ].map(({ icon: Icon, label, value, color }) => (
@@ -107,7 +107,7 @@ export default function Shop() {
           <Card style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
-                <Tag className="w-5 h-5" style={{ color: '#E3B341' }} />
+                <Tag className="w-5 h-5" style={{ color: '#00A3FF' }} />
                 <CardTitle className="text-lg" style={{ color: '#C9D1E2' }}>
                   Redeem a Code
                 </CardTitle>
@@ -136,7 +136,7 @@ export default function Shop() {
                   disabled={!promoCode.trim() || redeemMutation.isPending}
                   className="h-11 px-6 font-semibold"
                   style={{
-                    backgroundColor: '#E3B341',
+                    backgroundColor: '#00A3FF',
                     color: '#091525',
                   }}
                 >

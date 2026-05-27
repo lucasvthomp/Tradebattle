@@ -44,7 +44,7 @@ export function AvatarWithStatus({
     <div
       className={`relative inline-block ${className}`}
       style={showBorder ? {
-        border: `${borderWidth} solid #E3B341`,
+        border: `${borderWidth} solid #00A3FF`,
         borderRadius: borderRadius,
         overflow: 'hidden'
       } : undefined}

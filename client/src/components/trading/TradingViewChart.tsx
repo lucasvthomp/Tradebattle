@@ -77,14 +77,14 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
             width: "48px",
             height: "48px",
             borderRadius: "12px",
-            backgroundColor: "rgba(227,179,65,0.08)",
-            border: "1px solid rgba(227,179,65,0.15)",
+            backgroundColor: "rgba(0,163,255,0.06)",
+            border: "1px solid rgba(0,163,255,0.12)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Search style={{ width: "20px", height: "20px", color: "#E3B341", opacity: 0.6 }} />
+          <Search style={{ width: "20px", height: "20px", color: "#00A3FF", opacity: 0.6 }} />
         </div>
         <div style={{ textAlign: "center" }}>
           <div style={{ color: "#C9D1E2", fontSize: "14px", fontWeight: 600 }}>Search a ticker to begin</div>

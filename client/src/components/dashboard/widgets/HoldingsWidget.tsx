@@ -28,7 +28,7 @@ export function HoldingsWidget({
       {/* Header with Toggle */}
       <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#0E2040', backgroundColor: 'transparent' }}>
         <div className="flex items-center gap-2">
-          <Coins className="w-4 h-4" style={{ color: '#E3B341' }} />
+          <Coins className="w-4 h-4" style={{ color: '#00A3FF' }} />
           <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Holdings</span>
         </div>
         {onToggleView && (
@@ -87,7 +87,7 @@ export function HoldingsWidget({
                 >
                   <div className="flex justify-between items-center mb-1">
                     <div className="flex items-baseline gap-2">
-                      <div className="font-semibold text-sm" style={{ color: '#E3B341' }}>{holding.symbol}</div>
+                      <div className="font-semibold text-sm" style={{ color: '#00A3FF' }}>{holding.symbol}</div>
                       <div className="text-[10px]" style={{ color: '#94A3B8' }}>{holding.shares.toLocaleString('en-US')} sh</div>
                     </div>
                     <div className="text-right">

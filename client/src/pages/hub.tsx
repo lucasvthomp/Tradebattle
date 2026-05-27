@@ -19,7 +19,7 @@ function computeLevel(wins: number, trades: number) {
 
 function getRankTitle(level: number) {
   if (level >= 50) return { title: "Legend", color: "#FF4F58" };
-  if (level >= 30) return { title: "Elite", color: "#E3B341" };
+  if (level >= 30) return { title: "Elite", color: "#00A3FF" };
   if (level >= 20) return { title: "Expert", color: "#8B5CF6" };
   if (level >= 12) return { title: "Veteran", color: "#06B6D4" };
   if (level >= 6) return { title: "Trader", color: "#28C76F" };
@@ -59,7 +59,7 @@ export default function Hub() {
   };
 
   const stats = [
-    { label: 'Balance', value: `$${(Number(user?.siteCash) || 0).toFixed(2)}`, color: '#E3B341', icon: DollarSign },
+    { label: 'Balance', value: `$${(Number(user?.siteCash) || 0).toFixed(2)}`, color: '#00A3FF', icon: DollarSign },
     { label: 'Wins', value: String(wins), color: '#28C76F', icon: Trophy },
     { label: 'Live', value: String(activeTournaments.length), color: '#8B5CF6', icon: Zap },
     { label: 'Trades', value: String(trades), color: '#06B6D4', icon: BarChart3 },
@@ -68,14 +68,14 @@ export default function Hub() {
   const quickActions = [
     { label: 'Trade Now', sub: 'Open a tournament', href: '/dashboard', color: '#28C76F', icon: TrendingUp },
     { label: 'Blitz', sub: '1v1 · 5 min match', href: '/blitz', color: '#8B5CF6', icon: Zap },
-    { label: 'Tournaments', sub: 'Browse & join', href: '/tournaments', color: '#E3B341', icon: Trophy },
+    { label: 'Tournaments', sub: 'Browse & join', href: '/tournaments', color: '#00A3FF', icon: Trophy },
     { label: 'Leaderboard', sub: 'See where you rank', href: '/leaderboard', color: '#06B6D4', icon: BarChart3 },
   ];
 
   // Daily challenges — derived from user stats so they feel personalized
   const challenges = [
     { label: 'Place 3 trades today', icon: TrendingUp, color: '#28C76F', xpReward: 50, done: trades > 0 },
-    { label: 'Join a tournament', icon: Trophy, color: '#E3B341', xpReward: 80, done: wins > 0 },
+    { label: 'Join a tournament', icon: Trophy, color: '#00A3FF', xpReward: 80, done: wins > 0 },
     { label: 'Try Blitz mode', icon: Zap, color: '#8B5CF6', xpReward: 60, done: false },
   ];
 
@@ -232,9 +232,9 @@ export default function Hub() {
                       </div>
                     </div>
                     <div style={{
-                      fontSize: '11px', fontWeight: '700', color: c.done ? '#64748B' : '#E3B341',
+                      fontSize: '11px', fontWeight: '700', color: c.done ? '#64748B' : '#00A3FF',
                       padding: '3px 8px', borderRadius: '20px',
-                      background: c.done ? 'transparent' : 'rgba(227,179,65,0.1)',
+                      background: c.done ? 'transparent' : 'rgba(0,163,255,0.1)',
                     }}>
                       +{c.xpReward} XP
                     </div>
@@ -250,7 +250,7 @@ export default function Hub() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2' }}>Live Now</h2>
                   <Link href="/tournaments">
-                    <span style={{ fontSize: '12px', color: '#E3B341', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
+                    <span style={{ fontSize: '12px', color: '#00A3FF', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
                   </Link>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -290,7 +290,7 @@ export default function Hub() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
                   <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2' }}>Upcoming</h2>
                   <Link href="/tournaments">
-                    <span style={{ fontSize: '12px', color: '#E3B341', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
+                    <span style={{ fontSize: '12px', color: '#00A3FF', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
                   </Link>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -333,8 +333,8 @@ export default function Hub() {
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '10px 20px', borderRadius: '8px',
-                      background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
-                      border: 'none', color: '#091525', fontWeight: '700', fontSize: '13px', cursor: 'pointer',
+                      background: 'linear-gradient(135deg, #00A3FF, #0090E0)',
+                      border: 'none', color: '#FFFFFF', fontWeight: '700', fontSize: '13px', cursor: 'pointer',
                     }}
                   >
                     <Plus size={14} /> Browse Tournaments
@@ -429,8 +429,8 @@ export default function Hub() {
                   whileHover={{ scale: 1.02 }}
                   style={{
                     width: '100%', marginTop: '14px', padding: '9px',
-                    borderRadius: '8px', border: '1px solid rgba(227,179,65,0.3)',
-                    background: 'rgba(227,179,65,0.08)', color: '#E3B341',
+                    borderRadius: '8px', border: '1px solid rgba(0,163,255,0.25)',
+                    background: 'rgba(0,163,255,0.06)', color: '#00A3FF',
                     fontSize: '12px', fontWeight: '600', cursor: 'pointer',
                   }}
                 >

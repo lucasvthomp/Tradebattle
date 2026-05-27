@@ -88,7 +88,7 @@ function renderMessageWithMentions(
         <span
           key={`mention-${match.index}`}
           className="font-semibold cursor-pointer hover:underline"
-          style={{ color: '#E3B341' }}
+          style={{ color: '#00A3FF' }}
           onClick={(e) => {
             e.stopPropagation();
             navigate(`/people/${mentionedUser.id}`);
@@ -153,7 +153,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
             className="cursor-pointer"
             style={{ color: '#F1F5F9' }}
           >
-            <UserCircle className="w-4 h-4 mr-2" style={{ color: '#E3B341' }} />
+            <UserCircle className="w-4 h-4 mr-2" style={{ color: '#00A3FF' }} />
             View Full Profile
           </DropdownMenuItem>
           {!isCurrentUser && (
@@ -198,7 +198,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                     ) : null;
                   })()}
                   {isCurrentUser && (
-                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#E3B341', color: '#091525' }}>You</Badge>
+                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#00A3FF', color: '#091525' }}>You</Badge>
                   )}
                   <span className="text-xs" style={{ color: '#94A3B8' }}>
                     {formatTimestamp(msg.createdAt)}
@@ -451,7 +451,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             {/* Header */}
             <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #0E2040', backgroundColor: 'transparent' }}>
               <div className="flex items-center space-x-2">
-                <MessageSquare className="w-4 h-4" style={{ color: '#E3B341' }} />
+                <MessageSquare className="w-4 h-4" style={{ color: '#00A3FF' }} />
                 <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{t('globalChat')}</span>
               </div>
               <Button
@@ -470,7 +470,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 <div className="space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
-                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#E3B341', borderTopColor: 'transparent' }} />
+                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#00A3FF', borderTopColor: 'transparent' }} />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="text-center py-8">
@@ -527,7 +527,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                           <UserCircle className="w-3 h-3" style={{ color: '#4B5563' }} />
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-medium" style={{ color: '#E3B341' }}>@{u.username}</span>
+                      <span className="font-medium" style={{ color: '#00A3FF' }}>@{u.username}</span>
                     </div>
                   ))}
                 </div>
@@ -549,7 +549,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   size="sm"
                   disabled={!newMessage.trim() || sendMessageMutation.isPending}
                   className="px-3 h-9"
-                  style={{ backgroundColor: '#E3B341', color: '#091525' }}
+                  style={{ backgroundColor: '#00A3FF', color: '#091525' }}
                 >
                   <Send className="w-4 h-4" />
                 </Button>

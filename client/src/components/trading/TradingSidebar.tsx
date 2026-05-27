@@ -204,7 +204,7 @@ export function TradingSidebar({
       {/* ── HEADER: Tournament selector + portfolio scorecard ── */}
       <div
         className="p-3 shrink-0 space-y-2"
-        style={{ borderBottom: "1px solid rgba(227,179,65,0.15)" }}
+        style={{ borderBottom: "1px solid rgba(0,163,255,0.12)" }}
       >
         <Select
           value={selectedTournament?.id?.toString() || ""}
@@ -216,14 +216,14 @@ export function TradingSidebar({
           <SelectTrigger
             className="h-9 text-xs font-bold"
             style={{
-              backgroundColor: "rgba(227,179,65,0.08)",
+              backgroundColor: "rgba(0,163,255,0.06)",
               borderColor: "rgba(227,179,65,0.25)",
-              color: "#E3B341",
+              color: "#00A3FF",
             }}
           >
             <SelectValue placeholder="Select Tournament" />
           </SelectTrigger>
-          <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(227,179,65,0.2)" }}>
+          <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(0,163,255,0.15)" }}>
             {activeTournaments.map((t: any) => (
               <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
                 {t.name}
@@ -318,7 +318,7 @@ export function TradingSidebar({
             style={{
               backgroundColor: "rgba(255,255,255,0.04)",
               borderColor: "rgba(255,255,255,0.08)",
-              color: "#E3B341",
+              color: "#00A3FF",
             }}
           />
           {showSearch && (
@@ -351,7 +351,7 @@ export function TradingSidebar({
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
                   <div>
-                    <span className="text-sm font-black" style={{ color: "#E3B341" }}>{result.symbol}</span>
+                    <span className="text-sm font-black" style={{ color: "#00A3FF" }}>{result.symbol}</span>
                     {result.name && (
                       <div className="text-xs mt-0.5 truncate" style={{ color: "#64748B" }}>{result.name}</div>
                     )}
@@ -381,9 +381,9 @@ export function TradingSidebar({
             onClick={() => setActiveView(tab)}
             className="flex-1 py-2.5 text-xs font-bold uppercase tracking-wider text-center transition-all"
             style={{
-              color: activeView === tab ? "#E3B341" : "#4B5563",
-              borderBottom: activeView === tab ? "2px solid #E3B341" : "2px solid transparent",
-              background: activeView === tab ? "rgba(227,179,65,0.05)" : "transparent",
+              color: activeView === tab ? "#00A3FF" : "#4B5563",
+              borderBottom: activeView === tab ? "2px solid #00A3FF" : "2px solid transparent",
+              background: activeView === tab ? "rgba(0,163,255,0.05)" : "transparent",
             }}
           >
             {tab}
@@ -416,7 +416,7 @@ export function TradingSidebar({
                 </span>
                 <span
                   className="text-[10px] font-black px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: "rgba(227,179,65,0.12)", color: "#E3B341" }}
+                  style={{ backgroundColor: "rgba(227,179,65,0.12)", color: "#00A3FF" }}
                 >
                   {holdings.length}
                 </span>
@@ -445,13 +445,13 @@ export function TradingSidebar({
                         onClick={() => handleHoldingClick(h.symbol)}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all"
                         style={{
-                          backgroundColor: isSelected ? "rgba(227,179,65,0.08)" : "rgba(255,255,255,0.025)",
-                          border: isSelected ? "1px solid rgba(227,179,65,0.3)" : "1px solid transparent",
+                          backgroundColor: isSelected ? "rgba(0,163,255,0.06)" : "rgba(255,255,255,0.025)",
+                          border: isSelected ? "1px solid rgba(0,163,255,0.25)" : "1px solid transparent",
                         }}
                       >
                         <div className="text-left">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-black" style={{ color: isSelected ? "#E3B341" : "#F1F5F9" }}>
+                            <span className="text-sm font-black" style={{ color: isSelected ? "#00A3FF" : "#F1F5F9" }}>
                               {h.symbol}
                             </span>
                             <span
@@ -516,7 +516,7 @@ export function TradingSidebar({
                       <span className="text-xs truncate" style={{ color: "#4B5563" }}>{companyName}</span>
                     )}
                   </div>
-                  <div className="text-lg font-black" style={{ color: "#E3B341", letterSpacing: "-0.02em" }}>
+                  <div className="text-lg font-black" style={{ color: "#00A3FF", letterSpacing: "-0.02em" }}>
                     {formatCurrency(currentPrice)}
                   </div>
                 </div>
@@ -580,11 +580,11 @@ export function TradingSidebar({
                 >
                   <SelectTrigger
                     className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold"
-                    style={{ color: "#E3B341" }}
+                    style={{ color: "#00A3FF" }}
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(227,179,65,0.2)" }}>
+                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(0,163,255,0.15)" }}>
                     <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
                     <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
                     <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
@@ -608,7 +608,7 @@ export function TradingSidebar({
                     onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
                     placeholder="0.00"
                     className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#E3B341" }}
+                    style={{ color: "#00A3FF" }}
                   />
                 </div>
               )}
@@ -628,7 +628,7 @@ export function TradingSidebar({
                     onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
                     placeholder="0.00"
                     className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#E3B341" }}
+                    style={{ color: "#00A3FF" }}
                   />
                 </div>
               )}
@@ -642,10 +642,10 @@ export function TradingSidebar({
                   Buy In
                 </span>
                 <Select value={buyInMode} onValueChange={(v) => { setBuyInMode(v as BuyInMode); setAwaitingConfirm(false); }}>
-                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#E3B341" }}>
+                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#00A3FF" }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(227,179,65,0.2)" }}>
+                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(0,163,255,0.15)" }}>
                     <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
                       {isCryptoTournament ? "Units" : "Shares"}
                     </SelectItem>

@@ -97,7 +97,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
           {p.profilePicture && (
             <AvatarImage src={p.profilePicture} className="object-cover" />
           )}
-          <AvatarFallback className="text-[9px] font-semibold" style={{ backgroundColor: '#0C1829', color: '#E3B341' }}>
+          <AvatarFallback className="text-[9px] font-semibold" style={{ backgroundColor: '#0C1829', color: '#00A3FF' }}>
             {p.username.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -105,7 +105,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {overflow > 0 && (
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
-          style={{ backgroundColor: '#0C1829', color: '#E3B341', border: '2px solid #0C1A2E' }}
+          style={{ backgroundColor: '#0C1829', color: '#00A3FF', border: '2px solid #0C1A2E' }}
         >
           +{overflow}
         </div>
@@ -382,7 +382,7 @@ export default function TournamentsPage() {
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
               <div className="flex items-center mb-3" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
-                <Trophy style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)', color: '#E3B341' }} />
+                <Trophy style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)', color: '#00A3FF' }} />
                 <h1 className="font-black" style={{ fontSize: 'clamp(1.5rem, 4vw, 3.75rem)', color: '#F1F5F9' }}>
                   Tournaments
                 </h1>
@@ -870,7 +870,7 @@ function HorizontalTournamentCard({
             <span className="font-bold text-sm truncate" style={{ color: '#F1F5F9' }}>
               {tournament.name}
             </span>
-            {isHighPot && <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#E3B341' }} />}
+            {isHighPot && <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#00A3FF' }} />}
             {isLive && (
               <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
                 <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
@@ -899,7 +899,7 @@ function HorizontalTournamentCard({
         <div className="hidden md:flex items-center gap-6">
           <div className="text-center">
             <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Jackpot</div>
-            <div className="text-sm font-bold" style={{ color: '#E3B341' }}>{formatCurrency(currentPot)}</div>
+            <div className="text-sm font-bold" style={{ color: '#00A3FF' }}>{formatCurrency(currentPot)}</div>
           </div>
           <div className="text-center">
             <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Buy-in</div>

@@ -99,7 +99,7 @@ export function TournamentSuccessDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] md:max-w-2xl p-0" style={{ backgroundColor: '#0C1829', borderColor: '#E3B341', borderWidth: '2px' }}>
+      <DialogContent className="max-w-[95vw] md:max-w-2xl p-0" style={{ backgroundColor: '#0C1829', borderColor: '#00A3FF', borderWidth: '2px' }}>
         {/* Header Section */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-transparent" />
@@ -126,7 +126,7 @@ export function TournamentSuccessDialog({
           {/* Share Link Section */}
           <div className="space-y-3">
             <div className="flex items-center space-x-2">
-              <Share2 className="w-4 h-4" style={{ color: '#E3B341' }} />
+              <Share2 className="w-4 h-4" style={{ color: '#00A3FF' }} />
               <Label className="text-sm md:text-base font-medium" style={{ color: '#F1F5F9' }}>
                 Share Tournament Link
               </Label>
@@ -141,7 +141,7 @@ export function TournamentSuccessDialog({
               <Button
                 onClick={handleCopyLink}
                 className="px-4 min-h-[44px] md:min-h-0"
-                style={{ backgroundColor: copied ? '#10B981' : '#E3B341', color: '#091525' }}
+                style={{ backgroundColor: copied ? '#10B981' : '#00A3FF', color: '#091525' }}
               >
                 {copied ? (
                   <>
@@ -157,7 +157,7 @@ export function TournamentSuccessDialog({
               </Button>
             </div>
             <p className="text-xs" style={{ color: '#8A93A6' }}>
-              Anyone with this link can join your tournament using code: <span className="font-bold" style={{ color: '#E3B341' }}>{tournamentCode}</span>
+              Anyone with this link can join your tournament using code: <span className="font-bold" style={{ color: '#00A3FF' }}>{tournamentCode}</span>
             </p>
           </div>
 
@@ -167,7 +167,7 @@ export function TournamentSuccessDialog({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <UserPlus className="w-4 h-4" style={{ color: '#E3B341' }} />
+                <UserPlus className="w-4 h-4" style={{ color: '#00A3FF' }} />
                 <Label className="text-sm md:text-base font-medium" style={{ color: '#F1F5F9' }}>
                   Invite Friends
                 </Label>
@@ -195,8 +195,8 @@ export function TournamentSuccessDialog({
                       onClick={() => handleToggleFriend(friend.id)}
                       className="flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 min-h-[44px]"
                       style={{
-                        backgroundColor: selectedFriends.includes(friend.id) ? '#E3B34115' : '#0C1A2E',
-                        borderColor: selectedFriends.includes(friend.id) ? '#E3B341' : '#0E2040',
+                        backgroundColor: selectedFriends.includes(friend.id) ? '#00A3FF15' : '#0C1A2E',
+                        borderColor: selectedFriends.includes(friend.id) ? '#00A3FF' : '#0E2040',
                         borderWidth: '1px',
                       }}
                     >
@@ -205,7 +205,7 @@ export function TournamentSuccessDialog({
                           {friend.profilePicture && (
                             <AvatarImage src={friend.profilePicture} className="object-cover" />
                           )}
-                          <AvatarFallback style={{ backgroundColor: '#0C1829', color: '#E3B341' }}>
+                          <AvatarFallback style={{ backgroundColor: '#0C1829', color: '#00A3FF' }}>
                             {friend.username.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -251,7 +251,7 @@ export function TournamentSuccessDialog({
             <Button
               onClick={() => window.open(`/tournaments/${tournamentId}`, '_blank')}
               className="font-bold min-h-[44px] order-1 sm:order-2"
-              style={{ backgroundColor: '#E3B341', color: '#091525' }}
+              style={{ backgroundColor: '#00A3FF', color: '#091525' }}
             >
               View Tournament
               <ExternalLink className="w-4 h-4 ml-2" />

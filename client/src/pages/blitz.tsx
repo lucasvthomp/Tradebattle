@@ -320,7 +320,7 @@ export default function Blitz() {
                         initial={{ scale: 1.6, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.3 }}
-                        style={{ fontSize: '52px', fontWeight: '900', color: vsCountdown === 0 ? '#28C76F' : '#E3B341', lineHeight: 1 }}
+                        style={{ fontSize: '52px', fontWeight: '900', color: vsCountdown === 0 ? '#28C76F' : '#00A3FF', lineHeight: 1 }}
                       >
                         {vsCountdown === 0 ? 'FIGHT!' : vsCountdown}
                       </motion.div>

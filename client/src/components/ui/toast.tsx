@@ -27,7 +27,7 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-[#E3B341] text-foreground",
+        default: "border-[#00A3FF] text-foreground",
         destructive:
           "destructive border-[#FF4F58] text-destructive-foreground",
       },
@@ -55,7 +55,7 @@ const Toast = React.forwardRef<
         WebkitBackdropFilter: 'blur(12px)',
         boxShadow: variant === 'destructive'
           ? '0 8px 32px rgba(255, 79, 88, 0.3), 0 2px 8px rgba(0, 0, 0, 0.4)'
-          : '0 8px 32px rgba(227, 179, 65, 0.3), 0 2px 8px rgba(0, 0, 0, 0.4)',
+          : '0 8px 32px rgba(0, 163, 255, 0.25), 0 2px 8px rgba(0, 0, 0, 0.4)',
       }}
       {...props}
     />

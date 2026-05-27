@@ -183,8 +183,8 @@ export default function NotFound() {
             <button
               className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:brightness-110"
               style={{
-                background: "linear-gradient(135deg, #E3B341, #F59E0B)",
-                color: "#091525",
+                background: "linear-gradient(135deg, #00A3FF, #0090E0)",
+                color: "#FFFFFF",
               }}
             >
               <Home className="w-4 h-4" />

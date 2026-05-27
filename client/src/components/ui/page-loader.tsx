@@ -16,8 +16,8 @@ export function PageLoader() {
         transition={{ duration: 0.4, ease: 'easeOut' }}
         className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6"
         style={{
-          background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
-          boxShadow: '0 8px 32px rgba(227, 179, 65, 0.3)',
+          background: 'linear-gradient(135deg, #00A3FF, #0090E0)',
+          boxShadow: '0 8px 32px rgba(0, 163, 255, 0.25)',
         }}
       >
         <span style={{ fontSize: '28px', fontWeight: '900', color: '#091525' }}>T</span>
@@ -36,7 +36,7 @@ export function PageLoader() {
       {/* Progress bar */}
       <div style={{ width: '120px', height: '3px', background: '#0C1829', borderRadius: '999px', overflow: 'hidden' }}>
         <motion.div
-          style={{ height: '100%', background: '#E3B341', borderRadius: '999px' }}
+          style={{ height: '100%', background: '#00A3FF', borderRadius: '999px' }}
           initial={{ width: '0%' }}
           animate={{ width: '100%' }}
           transition={{ duration: 1.2, ease: 'easeInOut', repeat: Infinity }}

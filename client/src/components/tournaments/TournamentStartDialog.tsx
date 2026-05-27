@@ -36,7 +36,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden" style={{ backgroundColor: 'transparent', borderColor: '#E3B341', border: '2px solid' }}>
+      <DialogContent className="max-w-2xl p-0 overflow-hidden" style={{ backgroundColor: 'transparent', borderColor: '#00A3FF', border: '2px solid' }}>
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
           {Array.from({ length: 20 }).map((_, i) => (
@@ -47,7 +47,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                 width: Math.random() * 6 + 2,
                 height: Math.random() * 6 + 2,
                 left: `${Math.random() * 100}%`,
-                background: 'radial-gradient(circle, #E3B341, transparent)',
+                background: 'radial-gradient(circle, #00A3FF, transparent)',
               }}
               animate={{
                 y: ['-10%', '110%'],
@@ -86,7 +86,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                     ease: "easeInOut",
                   }}
                 />
-                <Trophy className="w-20 h-20 relative z-10" style={{ color: '#E3B341' }} />
+                <Trophy className="w-20 h-20 relative z-10" style={{ color: '#00A3FF' }} />
               </div>
             </motion.div>
 
@@ -96,7 +96,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
               transition={{ delay: 0.3 }}
               className="text-4xl font-black mb-2"
               style={{
-                background: 'linear-gradient(135deg, #E3B341, #FFD700, #E3B341)',
+                background: 'linear-gradient(135deg, #00A3FF, #FFD700, #00A3FF)',
                 backgroundSize: '200% 200%',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -124,12 +124,12 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
             className="px-8 pb-6"
           >
             <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.1), rgba(227, 179, 65, 0.05))' }}>
+              <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.1), rgba(0, 163, 255, 0.05))' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <DollarSign className="w-5 h-5" style={{ color: '#E3B341' }} />
+                  <DollarSign className="w-5 h-5" style={{ color: '#00A3FF' }} />
                   <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Starting Balance</span>
                 </div>
-                <p className="text-2xl font-black" style={{ color: '#E3B341' }}>
+                <p className="text-2xl font-black" style={{ color: '#00A3FF' }}>
                   ${tournament.startingBalance.toLocaleString()}
                 </p>
               </div>
@@ -168,8 +168,8 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
             {/* Guidelines */}
             <div className="p-6 rounded-xl mb-6" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-5 h-5" style={{ color: '#E3B341' }} />
-                <h3 className="text-lg font-bold" style={{ color: '#E3B341' }}>Quick Guidelines</h3>
+                <Zap className="w-5 h-5" style={{ color: '#00A3FF' }} />
+                <h3 className="text-lg font-bold" style={{ color: '#00A3FF' }}>Quick Guidelines</h3>
               </div>
               <ul className="space-y-3 text-sm" style={{ color: '#C9D1E2' }}>
                 <li className="flex items-start gap-2">
@@ -177,7 +177,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                   <span>Trade stocks to grow your portfolio above your starting balance</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Trophy className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#E3B341' }} />
+                  <Trophy className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#00A3FF' }} />
                   <span>The trader with the highest portfolio value at the end wins</span>
                 </li>
                 <li className="flex items-start gap-2">
@@ -185,7 +185,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                   <span>All trades must be completed before the tournament ends</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <DollarSign className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#E3B341' }} />
+                  <DollarSign className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#00A3FF' }} />
                   <span>Your tournament balance is separate from your main account</span>
                 </li>
               </ul>
@@ -196,7 +196,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
               onClick={onClose}
               className="w-full h-14 text-lg font-bold"
               style={{
-                background: 'linear-gradient(135deg, #E3B341, #FFD700)',
+                background: 'linear-gradient(135deg, #00A3FF, #FFD700)',
                 color: '#091525',
               }}
             >

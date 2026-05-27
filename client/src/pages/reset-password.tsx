@@ -88,7 +88,7 @@ export default function ResetPassword() {
               <Link href="/login">
                 <Button
                   className="w-full text-black font-bold"
-                  style={{ background: '#E3B341' }}
+                  style={{ background: '#00A3FF' }}
                 >
                   Go to Login
                 </Button>
@@ -124,7 +124,7 @@ export default function ResetPassword() {
               <Button
                 type="submit"
                 className="w-full text-black font-bold"
-                style={{ background: '#E3B341' }}
+                style={{ background: '#00A3FF' }}
                 disabled={loading || !password || !confirmPassword}
               >
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

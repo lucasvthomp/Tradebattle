@@ -50,7 +50,7 @@ export default function ArchivePage() {
     <div className="container mx-auto p-4 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: '#F1F5F9' }}>
-          <Archive className="w-6 h-6" style={{ color: '#E3B341' }} />
+          <Archive className="w-6 h-6" style={{ color: '#00A3FF' }} />
           {t('archive')}
         </h1>
       </div>
@@ -70,7 +70,7 @@ export default function ArchivePage() {
       {/* List */}
       {isLoading ? (
         <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }} />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }} />
         </div>
       ) : filtered.length === 0 ? (
         <div className="text-center py-12">
@@ -87,7 +87,7 @@ export default function ArchivePage() {
               <a
                 key={tournament.id}
                 href={`/archive/${tournament.id}`}
-                className="flex items-center justify-between p-4 rounded-lg transition-colors hover:border-[#E3B341]"
+                className="flex items-center justify-between p-4 rounded-lg transition-colors hover:border-[#00A3FF]"
                 style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}
               >
                 <div className="flex-1 min-w-0">
@@ -108,7 +108,7 @@ export default function ArchivePage() {
                       {tournament.endedAt ? new Date(tournament.endedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'}
                     </span>
                     {winner && (
-                      <span className="flex items-center gap-1" style={{ color: '#E3B341' }}>
+                      <span className="flex items-center gap-1" style={{ color: '#00A3FF' }}>
                         <Crown className="w-3 h-3" />
                         {winner.name}
                       </span>

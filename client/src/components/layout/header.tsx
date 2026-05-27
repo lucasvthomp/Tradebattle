@@ -217,7 +217,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Swords className="w-5 h-5 mr-3" style={{ color: '#E3B341' }} />
+                      <Swords className="w-5 h-5 mr-3" style={{ color: '#00A3FF' }} />
                       <span className="text-base">Tournaments</span>
                     </Button>
                   </Link>
@@ -227,7 +227,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Trophy className="w-5 h-5 mr-3" style={{ color: '#E3B341' }} />
+                      <Trophy className="w-5 h-5 mr-3" style={{ color: '#00A3FF' }} />
                       <span className="text-base">Leaderboard</span>
                     </Button>
                   </Link>

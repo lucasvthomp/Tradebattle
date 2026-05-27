@@ -68,14 +68,14 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
         className="px-3 py-2.5 flex items-center justify-between"
         style={{ borderBottom: "1px solid #0E2040" }}
       >
-        <h3 className="text-sm font-bold" style={{ color: "#E3B341" }}>
+        <h3 className="text-sm font-bold" style={{ color: "#00A3FF" }}>
           Watchlist
         </h3>
         <span
           className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
           style={{
             backgroundColor: "rgba(6, 182, 212, 0.15)",
-            color: "#E3B341",
+            color: "#00A3FF",
           }}
         >
           {watchlistItems.length}
@@ -181,13 +181,13 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
               className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#091525]"
               style={{
                 backgroundColor: selectedSymbol === item.symbol ? "#091525" : "transparent",
-                borderLeft: selectedSymbol === item.symbol ? "2px solid #E3B341" : "2px solid transparent",
+                borderLeft: selectedSymbol === item.symbol ? "2px solid #00A3FF" : "2px solid transparent",
                 borderBottom: "1px solid rgba(31, 41, 55, 0.5)",
               }}
             >
               <span
                 className="font-bold"
-                style={{ color: selectedSymbol === item.symbol ? "#E3B341" : "#FFFFFF" }}
+                style={{ color: selectedSymbol === item.symbol ? "#00A3FF" : "#FFFFFF" }}
               >
                 {item.symbol}
               </span>

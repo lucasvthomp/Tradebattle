@@ -41,8 +41,8 @@ export default function ForgotPassword() {
         <CardContent>
           {sent ? (
             <div className="space-y-4 text-center">
-              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(227, 179, 65, 0.15)' }}>
-                <Mail className="w-8 h-8" style={{ color: '#E3B341' }} />
+              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 163, 255, 0.12)' }}>
+                <Mail className="w-8 h-8" style={{ color: '#00A3FF' }} />
               </div>
               <p className="text-sm" style={{ color: '#8A93A6' }}>
                 If an account with that email exists, you will receive a password reset link shortly.
@@ -72,7 +72,7 @@ export default function ForgotPassword() {
               <Button
                 type="submit"
                 className="w-full text-black font-bold"
-                style={{ background: '#E3B341' }}
+                style={{ background: '#00A3FF' }}
                 disabled={loading || !email}
               >
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

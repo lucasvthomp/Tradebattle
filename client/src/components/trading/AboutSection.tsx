@@ -38,7 +38,7 @@ export function AboutSection({ symbol }: AboutSectionProps) {
       </h3>
       <div className="flex flex-wrap gap-2 mb-2">
         {profile.sector && profile.sector !== "N/A" && (
-          <Badge style={{ backgroundColor: "rgba(6, 182, 212, 0.15)", color: "#E3B341", border: "none" }}>
+          <Badge style={{ backgroundColor: "rgba(6, 182, 212, 0.15)", color: "#00A3FF", border: "none" }}>
             {profile.sector}
           </Badge>
         )}
@@ -55,7 +55,7 @@ export function AboutSection({ symbol }: AboutSectionProps) {
         <button
           onClick={() => setExpanded(!expanded)}
           className="text-sm font-semibold mt-1"
-          style={{ color: "#E3B341" }}
+          style={{ color: "#00A3FF" }}
         >
           {expanded ? "Show Less" : "Show More"}
         </button>

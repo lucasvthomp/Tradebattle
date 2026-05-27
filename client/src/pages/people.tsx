@@ -209,7 +209,7 @@ export default function People() {
                   <button
                     onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/users/public"] })}
                     className="text-sm font-semibold"
-                    style={{ color: "#E3B341" }}
+                    style={{ color: "#00A3FF" }}
                   >
                     Retry
                   </button>
@@ -226,7 +226,7 @@ export default function People() {
                     onClick={() => setSelectedUserId(String(person.id))}
                     className="text-left transition-all flex items-center gap-3"
                     style={{ ...cardStyle, padding: "12px 14px", display: "flex", width: "100%" }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(227,179,65,0.2)")}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(0,163,255,0.15)")}
                     onMouseLeave={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)")}
                   >
                     <AvatarWithStatus
@@ -241,7 +241,7 @@ export default function People() {
                       <div className="flex items-center gap-1.5">
                         <span className="text-sm font-bold truncate" style={{ color: "#F1F5F9" }}>{person.username}</span>
                         {person.subscriptionTier === "administrator" && (
-                          <Crown className="w-3 h-3 shrink-0" style={{ color: "#E3B341" }} />
+                          <Crown className="w-3 h-3 shrink-0" style={{ color: "#00A3FF" }} />
                         )}
                       </div>
                       <span className="text-xs" style={{ color: "#4B5563" }}>
@@ -286,7 +286,7 @@ export default function People() {
               >
                 {isLoadingProfile ? (
                   <div className="flex items-center justify-center py-16">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: "#E3B341" }} />
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: "#00A3FF" }} />
                   </div>
                 ) : (
                   <>
@@ -306,7 +306,7 @@ export default function People() {
                             <div className="flex items-center gap-2">
                               <h2 className="text-xl font-black" style={{ color: "#F1F5F9" }}>{profileData?.username}</h2>
                               {profileData?.subscriptionTier === "administrator" && (
-                                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(227,179,65,0.15)", color: "#E3B341" }}>Admin</span>
+                                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(0,163,255,0.12)", color: "#00A3FF" }}>Admin</span>
                               )}
                             </div>
                             <div className="flex items-center gap-1 mt-0.5">
@@ -331,8 +331,8 @@ export default function People() {
                       {/* Stats */}
                       <div className="grid grid-cols-3 gap-2 mt-4">
                         {[
-                          { icon: <Activity className="w-3.5 h-3.5" style={{ color: "#E3B341" }} />, label: t("totalTrades"), value: profileData?.totalTrades || 0, color: "#C9D1E2" },
-                          { icon: <Flame className="w-3.5 h-3.5" style={{ color: "#FF4F58" }} />, label: t("tradingStreak"), value: `${profileData?.tradingStreak || 0}d`, color: "#E3B341" },
+                          { icon: <Activity className="w-3.5 h-3.5" style={{ color: "#00A3FF" }} />, label: t("totalTrades"), value: profileData?.totalTrades || 0, color: "#C9D1E2" },
+                          { icon: <Flame className="w-3.5 h-3.5" style={{ color: "#FF4F58" }} />, label: t("tradingStreak"), value: `${profileData?.tradingStreak || 0}d`, color: "#00A3FF" },
                           { icon: <Trophy className="w-3.5 h-3.5" style={{ color: "#28C76F" }} />, label: t("tournamentsJoined"), value: profileData?.tournamentCount || 0, color: "#28C76F" },
                         ].map((stat) => (
                           <div key={stat.label} className="text-center py-2.5 rounded-lg" style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
@@ -403,7 +403,7 @@ export default function People() {
                     {/* Recent Trades */}
                     <div className="p-5 max-h-64 overflow-y-auto">
                       <div className="flex items-center gap-2 mb-3">
-                        <ArrowRightLeft className="w-3.5 h-3.5" style={{ color: "#E3B341" }} />
+                        <ArrowRightLeft className="w-3.5 h-3.5" style={{ color: "#00A3FF" }} />
                         <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#4B5563" }}>{t("recentTrades")}</span>
                       </div>
                       {trades.length === 0 ? (

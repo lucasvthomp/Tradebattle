@@ -20,7 +20,7 @@ const typeLabels: Record<string, string> = {
 
 const statusColors: Record<string, { bg: string; text: string }> = {
   completed: { bg: "rgba(40, 199, 111, 0.15)", text: "#28C76F" },
-  pending: { bg: "rgba(227, 179, 65, 0.15)", text: "#E3B341" },
+  pending: { bg: "rgba(0, 163, 255, 0.12)", text: "#00A3FF" },
   failed: { bg: "rgba(255, 79, 88, 0.15)", text: "#FF4F58" },
 };
 
@@ -95,14 +95,14 @@ export default function Transactions() {
       <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-            <DollarSign className="h-5 w-5" style={{ color: '#E3B341' }} />
+            <DollarSign className="h-5 w-5" style={{ color: '#00A3FF' }} />
             Transactions ({transactions.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#E3B341' }}></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
               <p className="mt-3 text-sm" style={{ color: '#8A93A6' }}>Loading transactions...</p>
             </div>
           ) : transactions.length === 0 ? (

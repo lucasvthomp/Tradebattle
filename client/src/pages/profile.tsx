@@ -300,7 +300,7 @@ function TwoFactorSection({ user }: { user: any }) {
               />
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Or enter this key manually: <code className="px-1 py-0.5 rounded text-xs" style={{ backgroundColor: '#0E2040', color: '#E3B341' }}>{setupData.secret}</code>
+              Or enter this key manually: <code className="px-1 py-0.5 rounded text-xs" style={{ backgroundColor: '#0E2040', color: '#00A3FF' }}>{setupData.secret}</code>
             </p>
           </div>
           <div>
@@ -606,7 +606,7 @@ export default function Profile() {
                       className="absolute w-4 h-4 rounded-full"
                       style={{
                         backgroundColor: '#10B981',
-                        borderColor: '#091525',
+                        borderColor: '#FFFFFF',
                         borderWidth: '2px',
                         borderStyle: 'solid',
                         bottom: '0',
@@ -677,7 +677,7 @@ export default function Profile() {
                   const progress = nextLevelXP === currentLevelXP ? 100 : Math.min(Math.round(((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100), 100);
                   const rankTitles = [
                     { min: 50, title: 'Legend', color: '#FF4F58' },
-                    { min: 30, title: 'Elite', color: '#E3B341' },
+                    { min: 30, title: 'Elite', color: '#00A3FF' },
                     { min: 20, title: 'Expert', color: '#8B5CF6' },
                     { min: 12, title: 'Veteran', color: '#06B6D4' },
                     { min: 6, title: 'Trader', color: '#28C76F' },

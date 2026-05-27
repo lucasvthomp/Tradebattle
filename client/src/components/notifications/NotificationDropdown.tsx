@@ -30,7 +30,7 @@ const typeIcons: Record<string, any> = {
 };
 
 const typeColors: Record<string, string> = {
-  tournament_invite: '#E3B341',
+  tournament_invite: '#00A3FF',
   tournament_invite_accepted: '#28C76F',
   chat_mention: '#3B82F6',
 };
@@ -230,7 +230,7 @@ export function NotificationDropdown() {
               variant="ghost"
               size="sm"
               className="h-9 text-xs min-h-[44px]"
-              style={{ color: "#E3B341" }}
+              style={{ color: "#00A3FF" }}
               onClick={() => markAllReadMutation.mutate()}
             >
               <CheckCheck className="w-3 h-3 mr-1" />
@@ -261,8 +261,8 @@ export function NotificationDropdown() {
                     <div
                       className="mt-1 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                       style={{
-                        backgroundColor: notif.read ? "#1a2332" : "rgba(227, 179, 65, 0.15)",
-                        color: notif.read ? "#8A93A6" : (typeColors[notif.type] || "#E3B341")
+                        backgroundColor: notif.read ? "#1a2332" : "rgba(0, 163, 255, 0.12)",
+                        color: notif.read ? "#8A93A6" : (typeColors[notif.type] || "#00A3FF")
                       }}
                     >
                       {getIcon(notif.type, notif.read ? undefined : typeColors[notif.type])}
@@ -273,7 +273,7 @@ export function NotificationDropdown() {
                       <p className="text-xs mt-1" style={{ color: "#5f6b7a" }}>{timeAgo(notif.createdAt)}</p>
                     </div>
                     {!notif.read && (
-                      <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: "#E3B341" }} />
+                      <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: "#00A3FF" }} />
                     )}
                   </div>
 

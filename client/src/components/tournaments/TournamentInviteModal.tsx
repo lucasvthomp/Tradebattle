@@ -135,9 +135,9 @@ export default function TournamentInviteModal({
                       className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
                       style={{
                         background: selectedFriends.includes(friend.id)
-                          ? 'rgba(227, 179, 65, 0.1)'
+                          ? 'rgba(0, 163, 255, 0.1)'
                           : '#091525',
-                        border: `1px solid ${selectedFriends.includes(friend.id) ? '#E3B341' : '#0E2040'}`
+                        border: `1px solid ${selectedFriends.includes(friend.id) ? '#00A3FF' : '#0E2040'}`
                       }}
                       onClick={() => handleToggleFriend(friend.id)}
                     >
@@ -219,7 +219,7 @@ export default function TournamentInviteModal({
               disabled={selectedFriends.length === 0 || inviteMutation.isPending}
               className="flex-1"
               style={{
-                background: selectedFriends.length === 0 ? '#0E2040' : '#E3B341',
+                background: selectedFriends.length === 0 ? '#0E2040' : '#00A3FF',
                 color: selectedFriends.length === 0 ? '#8A93A6' : '#091525',
                 border: 'none'
               }}
