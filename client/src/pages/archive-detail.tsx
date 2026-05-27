@@ -48,7 +48,7 @@ export default function ArchiveDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080C14' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
         <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#E3B341' }} />
       </div>
     );
@@ -56,7 +56,7 @@ export default function ArchiveDetailPage() {
 
   if (!tournament) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#080C14' }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
         <div className="text-center">
           <Archive className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8' }} />
           <p className="text-lg mb-4" style={{ color: '#F1F5F9' }}>{t('tournamentNotFound')}</p>

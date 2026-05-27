@@ -92,7 +92,7 @@ export default function Blitz() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', padding: '40px 20px', background: '#080C14' }}>
+    <div style={{ minHeight: '100vh', padding: '40px 20px', background: 'transparent' }}>
       <div style={{ maxWidth: '760px', margin: '0 auto' }}>
 
         {/* Header */}
