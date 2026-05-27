@@ -171,9 +171,10 @@ export default function TournamentsPage() {
 
     if (joinParam) {
       // Fetch tournament by code
-      apiRequest(`/api/tournaments/code/${joinParam}`)
-        .then(response => {
-          const tournament = response.data;
+      apiRequest('GET', `/api/tournaments/code/${joinParam}`)
+        .then(response => response.json())
+        .then((result: any) => {
+          const tournament = result.data ?? result;
           if (tournament.alreadyJoined) {
             toast({
               title: "Already Joined",

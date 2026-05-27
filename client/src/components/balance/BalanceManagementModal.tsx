@@ -453,7 +453,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           color: currencies.find(c => c.id === selectedCurrency)?.color,
                         }}
                       >
-                        {currencies.find(c => c.id === selectedCurrency)?.icon}
+                        {currencies.find(c => c.id === selectedCurrency)?.img}
                       </div>
                       <div>
                         <div className="font-semibold" style={{ color: '#C9D1E2' }}>
@@ -808,7 +808,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className="text-3xl mb-2">{currency.icon}</div>
+                          <div className="text-3xl mb-2">{currency.img}</div>
                           <div className="font-bold" style={{ color: '#C9D1E2' }}>{currency.name}</div>
                           <div className="text-xs" style={{ color: '#8A93A6' }}>{currency.network}</div>
                         </motion.button>

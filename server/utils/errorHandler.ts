@@ -114,11 +114,25 @@ export function errorHandler(
 }
 
 /**
+ * Request whose `user` is guaranteed present (routes wrapped in asyncHandler
+ * are behind requireAuth, or simply don't read req.user).
+ */
+export interface AuthedRequest extends Request {
+  user: Express.User;
+}
+
+type AsyncRouteHandler = (
+  req: AuthedRequest,
+  res: Response,
+  next: NextFunction,
+) => Promise<unknown> | unknown;
+
+/**
  * Async error wrapper for route handlers
  */
-export function asyncHandler(fn: Function) {
+export function asyncHandler(fn: AsyncRouteHandler) {
   return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
+    Promise.resolve(fn(req as AuthedRequest, res, next)).catch(next);
   };
 }
 

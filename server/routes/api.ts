@@ -233,7 +233,7 @@ router.get('/key-stats/:symbol', asyncHandler(async (req: any, res: any) => {
  */
 router.get('/popular', asyncHandler(async (req, res) => {
   const tournamentId = req.query.tournamentId;
-  let popularStocks = await getPopularStocks();
+  let popularStocks: any[] = await getPopularStocks();
 
   // Filter by tournament type if specified
   if (tournamentId) {
@@ -670,9 +670,7 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
       achievementType: 'tournament_participant',
       achievementTier: 'common',
       achievementName: 'Tournament Participant',
-      achievementDescription: 'Joined a tournament',
-      earnedAt: new Date(),
-      createdAt: new Date()
+      achievementDescription: 'Joined a tournament'
     });
 
     // Notify tournament creator that someone joined via invite
@@ -739,9 +737,7 @@ router.post('/tournaments/:id/join', requireAuth, asyncHandler(async (req, res) 
       achievementType: 'tournament_participant',
       achievementTier: 'common',
       achievementName: 'Tournament Participant',
-      achievementDescription: 'Joined a tournament',
-      earnedAt: new Date(),
-      createdAt: new Date()
+      achievementDescription: 'Joined a tournament'
     });
 
     // Notify tournament creator that someone joined
@@ -834,7 +830,7 @@ router.get('/tournaments/:id/leaderboard', requireAuth, asyncHandler(async (req,
   const participantsWithValues = await Promise.all(
     participants.map(async (participant) => {
       let stockValue = 0;
-      const stockSymbols = [...new Set(participant.stockPurchases.map((p: any) => p.symbol))];
+      const stockSymbols = [...new Set<string>(participant.stockPurchases.map((p: any) => p.symbol))];
 
       // Get current prices for all symbols
       const stockPrices: { [symbol: string]: number } = {};
@@ -914,7 +910,7 @@ router.get('/tournaments/:id/participants', requireAuth, asyncHandler(async (req
   const participantsWithValues = await Promise.all(
     participants.map(async (participant) => {
       let stockValue = 0;
-      const stockSymbols = [...new Set(participant.stockPurchases.map((p: any) => p.symbol))];
+      const stockSymbols = [...new Set<string>(participant.stockPurchases.map((p: any) => p.symbol))];
 
       // Get current prices for all symbols
       const stockPrices: { [symbol: string]: number } = {};
@@ -1570,8 +1566,8 @@ router.get('/leaderboard/highest-wager', requireAuth, asyncHandler(async (req, r
 
   // Filter tournaments with buy-ins and sort by buy-in amount
   const rankings = tournaments
-    .filter(t => t.buyInAmount && t.buyInAmount > 0)
-    .sort((a, b) => b.buyInAmount - a.buyInAmount)
+    .filter(t => t.buyInAmount && parseFloat(t.buyInAmount) > 0)
+    .sort((a, b) => parseFloat(b.buyInAmount) - parseFloat(a.buyInAmount))
     .map(t => ({
       id: t.id,
       name: t.name,
@@ -1925,7 +1921,7 @@ router.get('/admin/tournaments', requireAuth, asyncHandler(async (req, res) => {
       const participants = await storage.getTournamentParticipants(tournament.id);
 
       // Calculate end date based on creation date and timeframe
-      const createdAt = new Date(tournament.createdAt);
+      const createdAt = new Date(tournament.createdAt ?? Date.now());
 
       // Parse timeframe properly for different units (minutes, days, weeks, months)
       const parseTimeframe = (timeframe: string): number => {

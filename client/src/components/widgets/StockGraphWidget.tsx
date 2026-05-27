@@ -17,7 +17,7 @@ export function StockGraphWidget({ height = 300 }: StockGraphWidgetProps) {
   const { formatCurrency } = useUserPreferences();
 
   // Fetch stock quote
-  const { data: stockData, isLoading } = useQuery({
+  const { data: stockData, isLoading } = useQuery<any>({
     queryKey: ["/api/quote", symbol],
     enabled: !!symbol,
     refetchInterval: 30000, // Refresh every 30 seconds

@@ -15,7 +15,7 @@ export function PortfolioGraphWidget({ height = 300 }: PortfolioGraphWidgetProps
   const { formatCurrency } = useUserPreferences();
 
   // Fetch portfolio history
-  const { data: portfolioHistory, isLoading } = useQuery({
+  const { data: portfolioHistory, isLoading } = useQuery<any>({
     queryKey: ["/api/portfolio-history", user?.userId],
     enabled: !!user,
     refetchInterval: 60000, // Refresh every minute
@@ -31,7 +31,7 @@ export function PortfolioGraphWidget({ height = 300 }: PortfolioGraphWidgetProps
       const date = new Date();
       date.setDate(date.getDate() - (days - i));
       const randomChange = (Math.random() - 0.5) * 200;
-      const value = i === 0 ? startValue : data[i-1].value + randomChange;
+      const value: number = i === 0 ? startValue : data[i-1].value + randomChange;
       
       data.push({
         date: date.toISOString().split('T')[0],

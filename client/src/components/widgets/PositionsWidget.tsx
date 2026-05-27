@@ -15,7 +15,7 @@ export function PositionsWidget({ height = 300 }: PositionsWidgetProps) {
   const { formatCurrency } = useUserPreferences();
 
   // Fetch personal portfolio positions
-  const { data: purchases, isLoading } = useQuery({
+  const { data: purchases, isLoading } = useQuery<any>({
     queryKey: ["/api/personal-purchases"],
     enabled: !!user,
     refetchInterval: 30000, // Refresh every 30 seconds

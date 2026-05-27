@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { BarChart3, TrendingUp, TrendingDown } from "lucide-react";
 
 export function MarketOverview() {
-  const { data: marketData, isLoading } = useQuery({
+  const { data: marketData, isLoading } = useQuery<any>({
     queryKey: ['/api/popular'],
   });
 

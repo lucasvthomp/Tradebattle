@@ -71,8 +71,8 @@ export async function checkDatabaseHealth(): Promise<{
     
     return {
       connected: true,
-      tableCount: Number(tableCountResult[0]?.count || 0),
-      connectionCount: Number(connectionResult[0]?.count || 0)
+      tableCount: Number(tableCountResult.rows[0]?.count || 0),
+      connectionCount: Number(connectionResult.rows[0]?.count || 0)
     };
   } catch (error) {
     console.error('Database health check failed:', error);

@@ -818,7 +818,7 @@ export async function getPopularStocks(): Promise<StockQuote[]> {
  */
 export function clearExpiredCache(): void {
   const now = Date.now();
-  for (const [key, value] of cache.entries()) {
+  for (const [key, value] of Array.from(cache.entries())) {
     if (now - value.timestamp >= value.ttl) {
       cache.delete(key);
     }

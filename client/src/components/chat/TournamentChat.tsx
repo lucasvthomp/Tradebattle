@@ -137,7 +137,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
   const queryClient = useQueryClient();
   const [, navigate] = useLocation();
 
-  const { data: chatResponse, isLoading } = useQuery({
+  const { data: chatResponse, isLoading } = useQuery<any>({
     queryKey: ['/api/chat/tournament', tournamentId],
     queryFn: async () => {
       const response = await apiRequest("GET", `/api/chat/tournament/${tournamentId}`);
@@ -149,7 +149,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
     gcTime: 5000,
   });
 
-  const { data: usersData } = useQuery({
+  const { data: usersData } = useQuery<any>({
     queryKey: ['/api/users'],
     enabled: !!user,
   });

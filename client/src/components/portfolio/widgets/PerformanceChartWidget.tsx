@@ -7,7 +7,7 @@ export function PerformanceChartWidget() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
 
-  const { data: historyData } = useQuery({
+  const { data: historyData } = useQuery<any>({
     queryKey: ["/api/portfolio-history", 0], // Personal portfolio
     enabled: !!user
   });

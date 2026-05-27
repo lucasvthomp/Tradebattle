@@ -9,7 +9,7 @@ export function PortfolioSummary() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
 
-  const { data: portfolioData, isLoading } = useQuery({
+  const { data: portfolioData, isLoading } = useQuery<any>({
     queryKey: ['/api/portfolio/personal'],
     enabled: !!user,
   });

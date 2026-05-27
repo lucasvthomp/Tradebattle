@@ -308,8 +308,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    // Hash the password before storing
-    const hashedPassword = await hashPassword(userData.password);
+    // Hash the password before storing (wallet-only users may have no password)
+    const hashedPassword = userData.password ? await hashPassword(userData.password) : null;
 
     // Get the next available userId
     const maxUserIdResult = await db.select({

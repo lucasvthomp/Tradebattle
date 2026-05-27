@@ -1600,7 +1600,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const secret = new Secret({ size: 20 });
       const totp = new TOTP({
         issuer: "ORSATH",
-        label: user.email,
+        label: user.email || undefined,
         algorithm: "SHA1",
         digits: 6,
         period: 30,
@@ -1638,7 +1638,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { TOTP, Secret } = await import("otpauth");
       const totp = new TOTP({
         issuer: "ORSATH",
-        label: user.email,
+        label: user.email || undefined,
         algorithm: "SHA1",
         digits: 6,
         period: 30,
@@ -1681,7 +1681,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { TOTP, Secret } = await import("otpauth");
       const totp = new TOTP({
         issuer: "ORSATH",
-        label: user.email,
+        label: user.email || undefined,
         algorithm: "SHA1",
         digits: 6,
         period: 30,
@@ -1717,7 +1717,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { TOTP, Secret } = await import("otpauth");
       const totp = new TOTP({
         issuer: "ORSATH",
-        label: user.email,
+        label: user.email || undefined,
         algorithm: "SHA1",
         digits: 6,
         period: 30,

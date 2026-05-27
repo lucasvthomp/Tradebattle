@@ -9,12 +9,13 @@ export interface StockQuote {
   volume: number;
   marketCap: number;
   currency: string;
+  name?: string;
   sector?: string;
   industry?: string;
 }
 
 export interface HistoricalDataPoint {
-  date: string;
+  date: string | number; // YYYY-MM-DD for daily data, Unix timestamp for intraday
   open: number;
   high: number;
   low: number;

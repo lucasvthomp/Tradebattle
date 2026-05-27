@@ -85,7 +85,7 @@ export default function Partners() {
   }, [user, isPartner, authLoading, toast, setLocation]);
 
   // Fetch research requests
-  const { data: researchRequests, isLoading: requestsLoading } = useQuery({
+  const { data: researchRequests, isLoading: requestsLoading } = useQuery<any[]>({
     queryKey: ["/api/research-requests"],
     enabled: isPartner,
   });
@@ -95,7 +95,7 @@ export default function Partners() {
 
 
   // Fetch research publications
-  const { data: publications, isLoading: publicationsLoading } = useQuery({
+  const { data: publications, isLoading: publicationsLoading } = useQuery<any[]>({
     queryKey: ["/api/research-publications/drafts"],
     enabled: isPartner,
   });
@@ -198,7 +198,7 @@ export default function Partners() {
   });
 
   // Show loading state
-  if (authLoading || requestsLoading || usersLoading || conversationsLoading || publicationsLoading) {
+  if (authLoading || requestsLoading || publicationsLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
@@ -218,7 +218,7 @@ export default function Partners() {
       category: formData.get("category"),
       priority: formData.get("priority"),
     };
-    createRequestMutation.mutate(requestData);
+    createRequestMutation.mutate(requestData as any);
   };
 
   const handleCreatePublication = (formData: FormData) => {
@@ -550,7 +550,7 @@ export default function Partners() {
                             Create a new research publication or insight
                           </DialogDescription>
                         </DialogHeader>
-                        <form action={handleCreatePublication} className="space-y-4">
+                        <form action={handleCreatePublication as any} className="space-y-4">
                           <div>
                             <Label htmlFor="title">Title</Label>
                             <Input 
@@ -639,7 +639,7 @@ export default function Partners() {
                                   <Badge className={publication.isPublished ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
                                     {publication.isPublished ? "Published" : "Draft"}
                                   </Badge>
-                                  {publication.tags?.map((tag, index) => (
+                                  {publication.tags?.map((tag: string, index: number) => (
                                     <Badge key={index} variant="secondary" className="text-xs">
                                       <Hash className="h-3 w-3 mr-1" />
                                       {tag}

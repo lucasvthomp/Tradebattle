@@ -41,7 +41,7 @@ export function TournamentSuccessDialog({
   const [selectedFriends, setSelectedFriends] = useState<number[]>([]);
 
   // Fetch user's friends
-  const { data: friendsData } = useQuery({
+  const { data: friendsData } = useQuery<any>({
     queryKey: ["/api/friends"],
     enabled: isOpen,
   });

@@ -9,7 +9,7 @@ import { Link } from "wouter";
 export function WatchlistWidget() {
   const { user } = useAuth();
 
-  const { data: watchlistData, isLoading } = useQuery({
+  const { data: watchlistData, isLoading } = useQuery<any>({
     queryKey: ['/api/watchlist'],
     enabled: !!user,
   });

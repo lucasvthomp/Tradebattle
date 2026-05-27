@@ -61,8 +61,8 @@ export class TournamentExpirationService {
           await storage.cancelTournament(tournament.id, 'Insufficient players - minimum 2 players required to start');
 
           // Refund the creator's buy-in
-          if (tournament.buyInAmount && tournament.buyInAmount > 0) {
-            await storage.addUserBalance(tournament.creatorId, tournament.buyInAmount);
+          if (tournament.buyInAmount && parseFloat(tournament.buyInAmount) > 0) {
+            await storage.addUserBalance(tournament.creatorId, parseFloat(tournament.buyInAmount));
             console.log(`Refunded $${tournament.buyInAmount} to creator (user ${tournament.creatorId})`);
           }
         } else {

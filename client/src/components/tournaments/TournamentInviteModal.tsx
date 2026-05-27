@@ -37,8 +37,9 @@ export default function TournamentInviteModal({
   const { data: friendsData, isLoading } = useQuery({
     queryKey: ['friends'],
     queryFn: async () => {
-      const response = await apiRequest('/api/friends');
-      return response.data as Friend[];
+      const response = await apiRequest('GET', '/api/friends');
+      const json = await response.json();
+      return (json.data ?? json) as Friend[];
     },
     enabled: open
   });
@@ -46,11 +47,8 @@ export default function TournamentInviteModal({
   // Send invites mutation
   const inviteMutation = useMutation({
     mutationFn: async (friendIds: number[]) => {
-      const response = await apiRequest(`/api/tournaments/${tournament.id}/invite`, {
-        method: 'POST',
-        body: JSON.stringify({ friendIds })
-      });
-      return response;
+      const response = await apiRequest('POST', `/api/tournaments/${tournament.id}/invite`, { friendIds });
+      return await response.json();
     },
     onSuccess: (data) => {
       toast({

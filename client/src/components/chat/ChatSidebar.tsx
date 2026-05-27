@@ -180,7 +180,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                     {group.username}
                   </span>
                   {(() => {
-                    const userInfo = users.find((u: any) => u.id === group.userId);
+                    const userInfo: any = users.find((u: any) => u.id === group.userId);
                     return userInfo?.subscriptionTier === 'administrator' ? (
                       <span
                         className="text-xs font-bold"

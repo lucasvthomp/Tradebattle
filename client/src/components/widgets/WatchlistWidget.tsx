@@ -15,7 +15,7 @@ export function WatchlistWidget({ height = 300 }: WatchlistWidgetProps) {
   const { formatCurrency } = useUserPreferences();
 
   // Fetch watchlist
-  const { data: watchlist, isLoading } = useQuery({
+  const { data: watchlist, isLoading } = useQuery<any>({
     queryKey: ["/api/watchlist"],
     enabled: !!user,
     refetchInterval: 60000, // Refresh every minute

@@ -10,7 +10,7 @@ export function RecentTrades() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
 
-  const { data: tradesData, isLoading } = useQuery({
+  const { data: tradesData, isLoading } = useQuery<any>({
     queryKey: ['/api/portfolio/personal'],
     enabled: !!user,
   });

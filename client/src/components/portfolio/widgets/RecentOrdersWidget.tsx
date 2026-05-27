@@ -9,7 +9,7 @@ export function RecentOrdersWidget() {
   const { user } = useAuth();
   const { formatCurrency } = useUserPreferences();
 
-  const { data: purchasesData } = useQuery({
+  const { data: purchasesData } = useQuery<any>({
     queryKey: ["/api/personal-purchases"],
     enabled: !!user
   });

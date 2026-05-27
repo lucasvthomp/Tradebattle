@@ -241,7 +241,7 @@ export default function Pricing() {
                         console.log("Button clicked for tier:", tier.name);
                         handleTierSelection(tier.name);
                       }}
-                      disabled={subscriptionMutation.isPending || (user && user.subscriptionTier === tier.name.toLowerCase())}
+                      disabled={subscriptionMutation.isPending || !!(user && user.subscriptionTier === tier.name.toLowerCase())}
                       type="button"
                     >
                       {subscriptionMutation.isPending ? 'Updating...' : 

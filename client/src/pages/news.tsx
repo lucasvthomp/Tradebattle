@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { News } from "@shared/schema";
 import { Clock, AlertTriangle, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
@@ -9,11 +8,11 @@ import { useState } from "react";
 export default function NewsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   
-  const { data: news, isLoading } = useQuery<News[]>({
+  const { data: news, isLoading } = useQuery<any[]>({
     queryKey: ["/api/news"],
   });
 
-  const { data: breakingNews, isLoading: breakingLoading } = useQuery<News[]>({
+  const { data: breakingNews, isLoading: breakingLoading } = useQuery<any[]>({
     queryKey: ["/api/news/breaking"],
   });
 
