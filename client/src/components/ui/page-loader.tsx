@@ -34,7 +34,7 @@ export function PageLoader() {
       </motion.p>
 
       {/* Progress bar */}
-      <div style={{ width: '120px', height: '3px', background: '#1E2D3F', borderRadius: '999px', overflow: 'hidden' }}>
+      <div style={{ width: '120px', height: '3px', background: '#0C1829', borderRadius: '999px', overflow: 'hidden' }}>
         <motion.div
           style={{ height: '100%', background: '#E3B341', borderRadius: '999px' }}
           initial={{ width: '0%' }}

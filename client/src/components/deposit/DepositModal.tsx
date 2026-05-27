@@ -129,20 +129,20 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
       padding: '20px',
     }}>
       <div style={{
-        background: '#1E2D3F',
+        background: '#0C1829',
         borderRadius: '20px',
         maxWidth: '500px',
         width: '100%',
         maxHeight: '90vh',
         overflow: 'auto',
         position: 'relative',
-        border: '1px solid #2B3A4C',
+        border: '1px solid #0E2040',
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
       }}>
         {/* Header */}
         <div style={{
           padding: '24px',
-          borderBottom: '1px solid #2B3A4C',
+          borderBottom: '1px solid #0E2040',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -226,7 +226,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     }}
                     style={{
                       background: 'transparent',
-                      border: '2px solid #2B3A4C',
+                      border: '2px solid #0E2040',
                       borderRadius: '12px',
                       padding: '16px',
                       display: 'flex',
@@ -240,7 +240,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                       e.currentTarget.style.background = `${currency.color}15`;
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.borderColor = '#2B3A4C';
+                      e.currentTarget.style.borderColor = '#0E2040';
                       e.currentTarget.style.background = '#091525';
                     }}
                   >
@@ -335,7 +335,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                       width: '100%',
                       padding: '16px 16px 16px 36px',
                       background: 'transparent',
-                      border: '2px solid #2B3A4C',
+                      border: '2px solid #0E2040',
                       borderRadius: '12px',
                       color: '#C9D1E2',
                       fontSize: '20px',
@@ -343,7 +343,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                       outline: 'none',
                     }}
                     onFocus={(e) => e.target.style.borderColor = '#E3B341'}
-                    onBlur={(e) => e.target.style.borderColor = '#2B3A4C'}
+                    onBlur={(e) => e.target.style.borderColor = '#0E2040'}
                   />
                 </div>
                 <div style={{ marginTop: '8px', fontSize: '12px', color: '#8A93A6' }}>
@@ -358,7 +358,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   width: '100%',
                   padding: '16px',
                   background: loading || !amount || parseFloat(amount) < minimumAmount
-                    ? '#2B3A4C'
+                    ? '#0E2040'
                     : '#E3B341',
                   color: loading || !amount || parseFloat(amount) < minimumAmount
                     ? '#8A93A6'
@@ -422,7 +422,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 </label>
                 <div style={{
                   background: 'transparent',
-                  border: '1px solid #2B3A4C',
+                  border: '1px solid #0E2040',
                   borderRadius: '12px',
                   padding: '12px',
                   display: 'flex',
@@ -442,7 +442,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     onClick={copyAddress}
                     style={{
                       padding: '8px',
-                      background: copied ? '#28C76F' : '#2B3A4C',
+                      background: copied ? '#28C76F' : '#0E2040',
                       border: 'none',
                       borderRadius: '8px',
                       color: '#fff',

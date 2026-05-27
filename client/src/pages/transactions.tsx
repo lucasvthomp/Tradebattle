@@ -75,7 +75,7 @@ export default function Transactions() {
       {/* Filter */}
       <div className="flex gap-3">
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-[220px]" style={{ background: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+          <SelectTrigger className="w-[220px]" style={{ background: '#0C1829', borderColor: '#0E2040', color: '#C9D1E2' }}>
             <Filter className="h-4 w-4 mr-2" />
             <SelectValue placeholder="Filter by type" />
           </SelectTrigger>
@@ -92,7 +92,7 @@ export default function Transactions() {
       </div>
 
       {/* Transactions Table */}
-      <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+      <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
             <DollarSign className="h-5 w-5" style={{ color: '#E3B341' }} />
@@ -113,7 +113,7 @@ export default function Transactions() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow style={{ borderColor: '#2B3A4C' }}>
+                <TableRow style={{ borderColor: '#0E2040' }}>
                   <TableHead style={{ color: '#8A93A6' }}>Date</TableHead>
                   <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
                   <TableHead style={{ color: '#8A93A6' }}>Description</TableHead>
@@ -127,7 +127,7 @@ export default function Transactions() {
                   const credit = isCredit(tx.type);
                   const colors = statusColors[tx.status] || statusColors.pending;
                   return (
-                    <TableRow key={tx.id} style={{ borderColor: '#2B3A4C' }}>
+                    <TableRow key={tx.id} style={{ borderColor: '#0E2040' }}>
                       <TableCell>
                         <span className="text-sm" style={{ color: '#C9D1E2' }}>
                           {formatDate(tx.createdAt)}

@@ -254,7 +254,7 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
               <div className="flex gap-2">
                 {currentIndex < activeAnnouncements.length - 1 ? (
                   <>
-                    <Button variant="outline" onClick={handleClose} style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                    <Button variant="outline" onClick={handleClose} style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>
                       Skip All
                     </Button>
                     <Button onClick={handleNext} style={{ backgroundColor: '#E3B341', color: '#091525' }}>

@@ -51,7 +51,7 @@ export function TournamentJoinConfirmation({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl" style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341' }}>
+      <DialogContent className="max-w-2xl" style={{ backgroundColor: '#0C1829', borderColor: '#E3B341' }}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl" style={{ color: '#E3B341' }}>
             <ShieldAlert className="w-8 h-8" />
@@ -61,7 +61,7 @@ export function TournamentJoinConfirmation({
 
         <div className="space-y-6">
           {/* Tournament Details */}
-          <div className="p-4 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #2B3A4C' }}>
+          <div className="p-4 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: '#C9D1E2' }}>
               {tournament.name}
             </h3>
@@ -177,7 +177,7 @@ export function TournamentJoinConfirmation({
               variant="outline"
               className="flex-1 h-12"
               disabled={isLoading}
-              style={{ borderColor: '#2B3A4C', color: '#8A93A6' }}
+              style={{ borderColor: '#0E2040', color: '#8A93A6' }}
             >
               Cancel
             </Button>
@@ -188,7 +188,7 @@ export function TournamentJoinConfirmation({
               style={{
                 background: canConfirm
                   ? 'linear-gradient(135deg, #E3B341, #FFD700)'
-                  : '#2B3A4C',
+                  : '#0E2040',
                 color: canConfirm ? '#091525' : '#5A6572',
                 opacity: canConfirm ? 1 : 0.6,
               }}

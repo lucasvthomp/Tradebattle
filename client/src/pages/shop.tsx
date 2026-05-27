@@ -88,7 +88,7 @@ export default function Shop() {
               key={label}
               whileHover={{ y: -2 }}
               className="rounded-xl p-4 text-center"
-              style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}
+              style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}
             >
               <Icon className="w-5 h-5 mx-auto mb-2" style={{ color }} />
               <div className="text-xl font-bold" style={{ color }}>{value}</div>
@@ -104,7 +104,7 @@ export default function Shop() {
           transition={{ duration: 0.4, delay: 0.15 }}
           className="mb-8"
         >
-          <Card style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}>
+          <Card style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
             <CardHeader className="pb-3">
               <div className="flex items-center gap-2">
                 <Tag className="w-5 h-5" style={{ color: '#E3B341' }} />
@@ -125,7 +125,7 @@ export default function Shop() {
                   className="h-11 font-mono tracking-widest text-center"
                   style={{
                     backgroundColor: '#0C1A2E',
-                    borderColor: '#2B3A4C',
+                    borderColor: '#0E2040',
                     color: '#C9D1E2',
                   }}
                   maxLength={20}
@@ -183,14 +183,14 @@ export default function Shop() {
             <div
               key={title}
               className="rounded-xl p-4 flex items-center gap-4 opacity-60"
-              style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}
+              style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}
             >
               <Icon className="w-6 h-6 flex-shrink-0" style={{ color }} />
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold" style={{ color: '#C9D1E2' }}>{title}</div>
                 <div className="text-xs" style={{ color: '#8A93A6' }}>{desc}</div>
               </div>
-              <Badge className="text-xs flex-shrink-0" style={{ backgroundColor: '#2B3A4C', color: '#8A93A6', border: 'none' }}>
+              <Badge className="text-xs flex-shrink-0" style={{ backgroundColor: '#0E2040', color: '#8A93A6', border: 'none' }}>
                 Soon
               </Badge>
             </div>

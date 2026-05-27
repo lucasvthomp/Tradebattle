@@ -99,8 +99,8 @@ export default function TournamentInviteModal({
       <DialogContent
         className="max-w-md"
         style={{
-          background: '#1E2D3F',
-          border: '1px solid #2B3A4C'
+          background: '#0C1829',
+          border: '1px solid #0E2040'
         }}
       >
         <DialogHeader>
@@ -137,7 +137,7 @@ export default function TournamentInviteModal({
                         background: selectedFriends.includes(friend.id)
                           ? 'rgba(227, 179, 65, 0.1)'
                           : '#091525',
-                        border: `1px solid ${selectedFriends.includes(friend.id) ? '#E3B341' : '#2B3A4C'}`
+                        border: `1px solid ${selectedFriends.includes(friend.id) ? '#E3B341' : '#0E2040'}`
                       }}
                       onClick={() => handleToggleFriend(friend.id)}
                     >
@@ -147,7 +147,7 @@ export default function TournamentInviteModal({
                       />
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={friend.profilePicture} />
-                        <AvatarFallback style={{ background: '#2B3A4C', color: '#C9D1E2' }}>
+                        <AvatarFallback style={{ background: '#0E2040', color: '#C9D1E2' }}>
                           {friend.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -169,12 +169,12 @@ export default function TournamentInviteModal({
                       className="flex items-center gap-3 p-3 rounded-lg opacity-60"
                       style={{
                         background: 'transparent',
-                        border: '1px solid #2B3A4C'
+                        border: '1px solid #0E2040'
                       }}
                     >
                       <Avatar className="h-10 w-10">
                         <AvatarImage src={friend.profilePicture} />
-                        <AvatarFallback style={{ background: '#2B3A4C', color: '#C9D1E2' }}>
+                        <AvatarFallback style={{ background: '#0E2040', color: '#C9D1E2' }}>
                           {friend.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
@@ -201,7 +201,7 @@ export default function TournamentInviteModal({
         </div>
 
         {inviteableFriends.length > 0 && (
-          <div className="flex gap-2 pt-4 border-t" style={{ borderColor: '#2B3A4C' }}>
+          <div className="flex gap-2 pt-4 border-t" style={{ borderColor: '#0E2040' }}>
             <Button
               variant="outline"
               onClick={onClose}
@@ -209,7 +209,7 @@ export default function TournamentInviteModal({
               style={{
                 background: 'transparent',
                 color: '#8A93A6',
-                border: '1px solid #2B3A4C'
+                border: '1px solid #0E2040'
               }}
             >
               Cancel
@@ -219,7 +219,7 @@ export default function TournamentInviteModal({
               disabled={selectedFriends.length === 0 || inviteMutation.isPending}
               className="flex-1"
               style={{
-                background: selectedFriends.length === 0 ? '#2B3A4C' : '#E3B341',
+                background: selectedFriends.length === 0 ? '#0E2040' : '#E3B341',
                 color: selectedFriends.length === 0 ? '#8A93A6' : '#091525',
                 border: 'none'
               }}

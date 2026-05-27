@@ -95,7 +95,7 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="mt-8 pt-8" style={{ borderTop: '1px solid #2B3A4C' }}>
+          <div className="mt-8 pt-8" style={{ borderTop: '1px solid #0E2040' }}>
             <div className="flex flex-col md:flex-row items-center justify-between">
               <p className="text-sm" style={{ color: '#8A93A6' }}>
                 © 2026 ORSATH Holdings, LLC. All rights reserved.

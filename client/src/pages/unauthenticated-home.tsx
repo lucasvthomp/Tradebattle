@@ -323,7 +323,7 @@ export default function UnauthenticatedHome() {
         }}>
           {/* Step 1 */}
           <div style={{
-            background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
+            background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
             border: '2px solid rgba(227, 179, 65, 0.5)',
             borderRadius: '20px',
             padding: '40px',
@@ -389,7 +389,7 @@ export default function UnauthenticatedHome() {
 
           {/* Step 2 */}
           <div style={{
-            background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
+            background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
             border: '2px solid rgba(34, 197, 94, 0.5)',
             borderRadius: '20px',
             padding: '40px',
@@ -455,7 +455,7 @@ export default function UnauthenticatedHome() {
 
           {/* Step 3 */}
           <div style={{
-            background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
+            background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
             border: '2px solid rgba(147, 51, 234, 0.5)',
             borderRadius: '20px',
             padding: '40px',
@@ -528,7 +528,7 @@ export default function UnauthenticatedHome() {
         margin: '0 auto',
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, #1E2D3F 0%, #2D3748 100%)',
+          background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
           border: '2px solid rgba(227, 179, 65, 0.3)',
           borderRadius: '20px',
           padding: '56px 40px',

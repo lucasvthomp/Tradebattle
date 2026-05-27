@@ -99,7 +99,7 @@ export function TournamentSuccessDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-[95vw] md:max-w-2xl p-0" style={{ backgroundColor: '#1E2D3F', borderColor: '#E3B341', borderWidth: '2px' }}>
+      <DialogContent className="max-w-[95vw] md:max-w-2xl p-0" style={{ backgroundColor: '#0C1829', borderColor: '#E3B341', borderWidth: '2px' }}>
         {/* Header Section */}
         <div className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/20 to-transparent" />
@@ -136,7 +136,7 @@ export function TournamentSuccessDialog({
                 readOnly
                 value={tournamentLink}
                 className="flex-1 text-sm"
-                style={{ backgroundColor: '#1E2D3F', borderColor: '#0E2040', color: '#F1F5F9' }}
+                style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
               />
               <Button
                 onClick={handleCopyLink}
@@ -161,7 +161,7 @@ export function TournamentSuccessDialog({
             </p>
           </div>
 
-          <Separator style={{ backgroundColor: '#1E2D3F' }} />
+          <Separator style={{ backgroundColor: '#0C1829' }} />
 
           {/* Invite Friends Section */}
           <div className="space-y-3">
@@ -205,7 +205,7 @@ export function TournamentSuccessDialog({
                           {friend.profilePicture && (
                             <AvatarImage src={friend.profilePicture} className="object-cover" />
                           )}
-                          <AvatarFallback style={{ backgroundColor: '#1E2D3F', color: '#E3B341' }}>
+                          <AvatarFallback style={{ backgroundColor: '#0C1829', color: '#E3B341' }}>
                             {friend.username.slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
@@ -235,7 +235,7 @@ export function TournamentSuccessDialog({
             )}
           </div>
 
-          <Separator style={{ backgroundColor: '#1E2D3F' }} />
+          <Separator style={{ backgroundColor: '#0C1829' }} />
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">

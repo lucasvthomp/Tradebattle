@@ -50,7 +50,7 @@ export default function Leaderboard() {
   const LoadingSkeleton = () => (
     <div className="space-y-2 p-4">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: '#1E2D3F' }}>
+        <div key={i} className="flex items-center gap-3 p-3 rounded-lg" style={{ background: '#0C1829' }}>
           <Skeleton className="w-8 h-8 rounded-full" />
           <div className="flex-1 space-y-1.5">
             <Skeleton className="h-4 w-28" />
@@ -69,8 +69,8 @@ export default function Leaderboard() {
       transition={{ delay: Math.min(rank * 0.03, 0.3) }}
       className="flex items-center gap-3 p-3 rounded-lg border transition-colors hover:brightness-110"
       style={{
-        background: rank <= 3 ? `${getRankColor(rank)}10` : '#1E2D3F',
-        borderColor: rank <= 3 ? `${getRankColor(rank)}40` : '#2B3A4C',
+        background: rank <= 3 ? `${getRankColor(rank)}10` : '#0C1829',
+        borderColor: rank <= 3 ? `${getRankColor(rank)}40` : '#0E2040',
       }}
     >
       <div className="flex items-center gap-1.5 w-12 shrink-0">
@@ -79,7 +79,7 @@ export default function Leaderboard() {
       </div>
 
       <Avatar className="w-8 h-8 shrink-0">
-        <AvatarFallback className="text-xs font-bold" style={{ backgroundColor: '#1E2D3F', color: getRankColor(rank) }}>
+        <AvatarFallback className="text-xs font-bold" style={{ backgroundColor: '#0C1829', color: getRankColor(rank) }}>
           {player.username?.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
@@ -123,7 +123,7 @@ export default function Leaderboard() {
               <Avatar style={{ width: rank === 1 ? '64px' : '52px', height: rank === 1 ? '64px' : '52px', marginBottom: '8px' }}>
                 <AvatarFallback className="font-bold" style={{
                   fontSize: rank === 1 ? '20px' : '16px',
-                  backgroundColor: '#1E2D3F',
+                  backgroundColor: '#0C1829',
                   color,
                 }}>
                   {player.username?.slice(0, 2).toUpperCase()}
@@ -170,7 +170,7 @@ export default function Leaderboard() {
 
         {/* Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 h-10 mb-6" style={{ background: '#1E2D3F', border: '1px solid #2B3A4C' }}>
+          <TabsList className="grid w-full grid-cols-3 h-10 mb-6" style={{ background: '#0C1829', border: '1px solid #0E2040' }}>
             <TabsTrigger value="highwager" className="text-sm font-semibold data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#06121F]">
               <DollarSign className="w-4 h-4 mr-1.5" />
               Top Wager
@@ -188,7 +188,7 @@ export default function Leaderboard() {
           <TabsContent value="highwager">
             {loadingHighWager ? <LoadingSkeleton /> : highWagerRankings.length === 0 ? (
               <div className="text-center py-16">
-                <Trophy className="w-12 h-12 mx-auto mb-3" style={{ color: '#2B3A4C' }} />
+                <Trophy className="w-12 h-12 mx-auto mb-3" style={{ color: '#0E2040' }} />
                 <p style={{ color: '#8A93A6' }}>No rankings yet. Be the first!</p>
               </div>
             ) : (
@@ -209,7 +209,7 @@ export default function Leaderboard() {
           <TabsContent value="growth">
             {loadingGrowth ? <LoadingSkeleton /> : growthRankings.length === 0 ? (
               <div className="text-center py-16">
-                <TrendingUp className="w-12 h-12 mx-auto mb-3" style={{ color: '#2B3A4C' }} />
+                <TrendingUp className="w-12 h-12 mx-auto mb-3" style={{ color: '#0E2040' }} />
                 <p style={{ color: '#8A93A6' }}>No rankings yet. Start trading!</p>
               </div>
             ) : (
@@ -227,7 +227,7 @@ export default function Leaderboard() {
           <TabsContent value="active">
             {loadingActive ? <LoadingSkeleton /> : activeRankings.length === 0 ? (
               <div className="text-center py-16">
-                <Zap className="w-12 h-12 mx-auto mb-3" style={{ color: '#2B3A4C' }} />
+                <Zap className="w-12 h-12 mx-auto mb-3" style={{ color: '#0E2040' }} />
                 <p style={{ color: '#8A93A6' }}>No rankings yet. Join tournaments!</p>
               </div>
             ) : (

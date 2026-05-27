@@ -222,8 +222,8 @@ export function NotificationDropdown() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[95vw] max-w-[380px]" style={{ background: "#1E2D3F", borderColor: "#2B3A4C" }}>
-        <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid #2B3A4C" }}>
+      <DropdownMenuContent align="end" className="w-[95vw] max-w-[380px]" style={{ background: "#0C1829", borderColor: "#0E2040" }}>
+        <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid #0E2040" }}>
           <span className="text-sm font-semibold" style={{ color: "#C9D1E2" }}>Notifications</span>
           {unreadCount > 0 && (
             <Button
@@ -250,7 +250,7 @@ export function NotificationDropdown() {
                 <div
                   key={notif.id}
                   style={{
-                    borderBottom: "1px solid #2B3A4C",
+                    borderBottom: "1px solid #0E2040",
                     opacity: notif.read ? 0.6 : 1,
                   }}
                 >

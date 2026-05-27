@@ -53,7 +53,7 @@ export default function Hub() {
   };
 
   const cardBase = {
-    background: '#131F35',
+    background: '#0C1829',
     border: '1px solid #1E3050',
     borderRadius: '12px',
   };
@@ -111,7 +111,7 @@ export default function Hub() {
             {/* Level badge */}
             <div style={{
               padding: '12px 16px', borderRadius: '12px', minWidth: '160px',
-              background: '#0D1825', border: `1px solid ${rankColor}40`,
+              background: '#0C1829', border: `1px solid ${rankColor}40`,
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                 <span style={{ fontSize: '11px', fontWeight: '700', color: rankColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
@@ -214,7 +214,7 @@ export default function Hub() {
                     style={{
                       display: 'flex', alignItems: 'center', gap: '12px',
                       padding: '12px 14px', borderRadius: '10px',
-                      background: c.done ? `${c.color}0C` : '#0D1825',
+                      background: c.done ? `${c.color}0C` : '#0C1829',
                       border: `1px solid ${c.done ? c.color + '30' : '#1E3050'}`,
                       opacity: c.done ? 0.6 : 1,
                     }}
@@ -304,7 +304,7 @@ export default function Hub() {
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                           padding: '12px 14px', borderRadius: '8px', cursor: 'pointer',
-                          background: '#0D1825', border: '1px solid #1E3050',
+                          background: '#0C1829', border: '1px solid #1E3050',
                         }}
                       >
                         <div>

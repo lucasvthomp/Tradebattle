@@ -127,7 +127,7 @@ export default function Privacy() {
             <p style={{ color: '#8A93A6' }}>
               If you have any questions about this Privacy Policy, please contact us at:
             </p>
-            <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: '#1E2D3F', border: '1px solid #2B3A4C' }}>
+            <div className="mt-4 p-4 rounded-lg" style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
               <p style={{ color: '#8A93A6' }}>
                 <strong style={{ color: '#C9D1E2' }}>Email:</strong> support@tradebattle.gg<br />
                 <strong style={{ color: '#C9D1E2' }}>Address:</strong> United States

@@ -198,7 +198,7 @@ function PaymentsDebugTab() {
 
   return (
     <div className="space-y-6">
-      <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
+      <Card style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
         <CardHeader>
           <CardTitle style={{ color: '#E3B341' }}>Crypto Payment Debugger</CardTitle>
           <CardDescription style={{ color: '#8A93A6' }}>
@@ -211,7 +211,7 @@ function PaymentsDebugTab() {
               value={paymentId}
               onChange={(e) => setPaymentId(e.target.value)}
               placeholder="Enter payment ID (e.g., 5653033856)"
-              style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+              style={{ backgroundColor: '#0F1419', borderColor: '#0E2040', color: '#C9D1E2' }}
               onKeyDown={(e) => e.key === 'Enter' && checkPayment()}
             />
             <Button
@@ -234,7 +234,7 @@ function PaymentsDebugTab() {
                 <>
                   {/* Payment Status Summary */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#0E2040' }}>
                       <CardContent className="pt-6">
                         <div className="text-center">
                           <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Payment Status</p>
@@ -250,7 +250,7 @@ function PaymentsDebugTab() {
                       </CardContent>
                     </Card>
 
-                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#0E2040' }}>
                       <CardContent className="pt-6">
                         <div className="text-center">
                           <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Already Credited</p>
@@ -267,7 +267,7 @@ function PaymentsDebugTab() {
                       </CardContent>
                     </Card>
 
-                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#0E2040' }}>
                       <CardContent className="pt-6">
                         <div className="text-center">
                           <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Should Credit</p>
@@ -285,7 +285,7 @@ function PaymentsDebugTab() {
                   </div>
 
                   {/* Payment Details */}
-                  <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                  <Card style={{ backgroundColor: '#0F1419', borderColor: '#0E2040' }}>
                     <CardHeader>
                       <CardTitle className="text-lg" style={{ color: '#28C76F' }}>Payment Data</CardTitle>
                     </CardHeader>
@@ -298,7 +298,7 @@ function PaymentsDebugTab() {
 
                   {/* User Details */}
                   {result.user && (
-                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C' }}>
+                    <Card style={{ backgroundColor: '#0F1419', borderColor: '#0E2040' }}>
                       <CardHeader>
                         <CardTitle className="text-lg" style={{ color: '#28C76F' }}>User</CardTitle>
                       </CardHeader>
@@ -338,7 +338,7 @@ function PaymentsDebugTab() {
       </Card>
 
       {/* Restore Balance Tool */}
-      <Card style={{ backgroundColor: '#1E2D3F', borderColor: '#FF4F58' }}>
+      <Card style={{ backgroundColor: '#0C1829', borderColor: '#FF4F58' }}>
         <CardHeader>
           <CardTitle style={{ color: '#FF4F58' }}>⚠️ Restore Balance (Failed Withdrawal)</CardTitle>
           <CardDescription style={{ color: '#8A93A6' }}>
@@ -353,7 +353,7 @@ function PaymentsDebugTab() {
                 value={restoreUsername}
                 onChange={(e) => setRestoreUsername(e.target.value)}
                 placeholder="Enter username"
-                style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                style={{ backgroundColor: '#0F1419', borderColor: '#0E2040', color: '#C9D1E2' }}
               />
             </div>
             <div>
@@ -363,7 +363,7 @@ function PaymentsDebugTab() {
                 value={restoreAmount}
                 onChange={(e) => setRestoreAmount(e.target.value)}
                 placeholder="20.00"
-                style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                style={{ backgroundColor: '#0F1419', borderColor: '#0E2040', color: '#C9D1E2' }}
               />
             </div>
             <div>
@@ -372,7 +372,7 @@ function PaymentsDebugTab() {
                 value={restoreReason}
                 onChange={(e) => setRestoreReason(e.target.value)}
                 placeholder="Failed withdrawal reversal"
-                style={{ backgroundColor: '#0F1419', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                style={{ backgroundColor: '#0F1419', borderColor: '#0E2040', color: '#C9D1E2' }}
               />
             </div>
           </div>
@@ -802,7 +802,7 @@ export default function Admin() {
             {/* ===== TAB 1: OVERVIEW ===== */}
             <TabsContent value="overview" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Users</CardTitle>
                     <Users className="h-4 w-4" style={{ color: '#8A93A6' }} />
@@ -813,7 +813,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Site Cash</CardTitle>
                     <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
@@ -826,7 +826,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Wagered</CardTitle>
                     <TrendingUp className="h-4 w-4" style={{ color: '#E3B341' }} />
@@ -839,7 +839,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Tournaments</CardTitle>
                     <Trophy className="h-4 w-4" style={{ color: '#8A93A6' }} />
@@ -850,7 +850,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Trades Today</CardTitle>
                     <BarChart3 className="h-4 w-4" style={{ color: '#8A93A6' }} />
@@ -861,7 +861,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Flagged Users</CardTitle>
                     <AlertTriangle className="h-4 w-4" style={{ color: '#FF4F58' }} />
@@ -875,7 +875,7 @@ export default function Admin() {
 
               {/* Active Tournaments Quick View */}
               {allTournaments.length > 0 && (
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                       <Trophy className="h-5 w-5" style={{ color: '#E3B341' }} />
@@ -901,7 +901,7 @@ export default function Admin() {
                               <span style={{ color: '#E3B341' }}>
                                 Pot: ${parseFloat(tournament.currentPot || 0).toFixed(2)}
                               </span>
-                              <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                              <Badge variant="outline" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>
                                 <Users className="h-3 w-3 mr-1" />
                                 {tournament.memberCount}
                               </Badge>
@@ -929,11 +929,11 @@ export default function Admin() {
                     value={userSearch}
                     onChange={(e) => setUserSearch(e.target.value)}
                     className="pl-10"
-                    style={{ background: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                    style={{ background: '#0C1829', borderColor: '#0E2040', color: '#C9D1E2' }}
                   />
                 </div>
                 <Select value={userFilter} onValueChange={setUserFilter}>
-                  <SelectTrigger className="w-[200px]" style={{ background: '#1E2D3F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                  <SelectTrigger className="w-[200px]" style={{ background: '#0C1829', borderColor: '#0E2040', color: '#C9D1E2' }}>
                     <Filter className="h-4 w-4 mr-2" />
                     <SelectValue placeholder="Filter" />
                   </SelectTrigger>
@@ -948,7 +948,7 @@ export default function Admin() {
               </div>
 
               {/* Users Table */}
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Users className="h-5 w-5" />
@@ -961,7 +961,7 @@ export default function Admin() {
                 <CardContent>
                   <Table>
                     <TableHeader>
-                      <TableRow style={{ borderColor: '#2B3A4C' }}>
+                      <TableRow style={{ borderColor: '#0E2040' }}>
                         <TableHead className="w-16" style={{ color: '#8A93A6' }}>ID</TableHead>
                         <TableHead className="w-32" style={{ color: '#8A93A6' }}>Username</TableHead>
                         <TableHead className="w-48" style={{ color: '#8A93A6' }}>Email</TableHead>
@@ -980,7 +980,7 @@ export default function Admin() {
                           </TableCell>
                         </TableRow>
                       ) : filteredUsers.map((u: any) => (
-                        <TableRow key={u.id} style={{ borderColor: '#2B3A4C' }}>
+                        <TableRow key={u.id} style={{ borderColor: '#0E2040' }}>
                           <TableCell>
                             <div className="flex items-center gap-1">
                               {u.subscriptionTier === 'administrator' && (
@@ -1045,7 +1045,7 @@ export default function Admin() {
             <TabsContent value="tournaments" className="space-y-6">
               {/* Tournament Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Tournaments</CardTitle>
                     <Trophy className="h-4 w-4" style={{ color: '#8A93A6' }} />
@@ -1056,7 +1056,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Players</CardTitle>
                     <GamepadIcon className="h-4 w-4" style={{ color: '#8A93A6' }} />
@@ -1069,7 +1069,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Pot Value</CardTitle>
                     <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
@@ -1082,7 +1082,7 @@ export default function Admin() {
                   </CardContent>
                 </Card>
 
-                <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Tournaments</CardTitle>
                     <Activity className="h-4 w-4" style={{ color: '#8A93A6' }} />
@@ -1097,7 +1097,7 @@ export default function Admin() {
               </div>
 
               {/* Tournaments Table */}
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Trophy className="h-5 w-5" style={{ color: '#E3B341' }} />
@@ -1115,8 +1115,8 @@ export default function Admin() {
                         <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading tournaments...</p>
                       </div>
                     ) : (
-                      <div className="rounded-lg" style={{ border: '1px solid #2B3A4C' }}>
-                        <div className="grid grid-cols-8 gap-3 p-3 font-semibold text-sm" style={{ borderBottom: '1px solid #2B3A4C', color: '#8A93A6' }}>
+                      <div className="rounded-lg" style={{ border: '1px solid #0E2040' }}>
+                        <div className="grid grid-cols-8 gap-3 p-3 font-semibold text-sm" style={{ borderBottom: '1px solid #0E2040', color: '#8A93A6' }}>
                           <div>ID</div>
                           <div>Name</div>
                           <div>Members</div>
@@ -1126,7 +1126,7 @@ export default function Admin() {
                           <div>Status</div>
                           <div>Actions</div>
                         </div>
-                        <div className="divide-y" style={{ borderColor: '#2B3A4C' }}>
+                        <div className="divide-y" style={{ borderColor: '#0E2040' }}>
                           {allTournaments?.map((tournament: any) => {
                             const timeLeft = new Date(tournament.endsAt).getTime() - new Date().getTime();
                             const isActive = timeLeft > 0;
@@ -1135,7 +1135,7 @@ export default function Admin() {
                             const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
 
                             return (
-                              <div key={tournament.id} className="grid grid-cols-8 gap-3 p-3 items-center text-sm" style={{ borderColor: '#2B3A4C' }}>
+                              <div key={tournament.id} className="grid grid-cols-8 gap-3 p-3 items-center text-sm" style={{ borderColor: '#0E2040' }}>
                                 <div>
                                   <span className="font-mono" style={{ color: '#C9D1E2' }}>{tournament.id}</span>
                                 </div>
@@ -1144,7 +1144,7 @@ export default function Admin() {
                                   <div className="text-xs" style={{ color: '#8A93A6' }}>Code: {tournament.code}</div>
                                 </div>
                                 <div>
-                                  <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                                  <Badge variant="outline" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>
                                     <Users className="h-3 w-3 mr-1" />
                                     {tournament.memberCount}
                                   </Badge>
@@ -1216,7 +1216,7 @@ export default function Admin() {
 
             {/* ===== TAB 4: ANNOUNCEMENTS ===== */}
             <TabsContent value="announcements" className="space-y-6">
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Megaphone className="h-5 w-5" style={{ color: '#E3B341' }} />
@@ -1232,13 +1232,13 @@ export default function Admin() {
                       <Label>Announcement Title</Label>
                       <Input
                         placeholder="e.g., Big Tournament This Weekend!"
-                        style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Type</Label>
                       <Select defaultValue="info">
-                        <SelectTrigger style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <SelectTrigger style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1257,7 +1257,7 @@ export default function Admin() {
                     <Textarea
                       placeholder="Enter your announcement message here..."
                       rows={4}
-                      style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                     />
                   </div>
 
@@ -1267,7 +1267,7 @@ export default function Admin() {
                       <Button
                         variant="outline"
                         className="h-20 flex flex-col gap-2"
-                        style={{ borderColor: '#2B3A4C' }}
+                        style={{ borderColor: '#0E2040' }}
                       >
                         <Sparkles className="h-6 w-6" style={{ color: '#E3B341' }} />
                         <span className="text-xs">None</span>
@@ -1275,7 +1275,7 @@ export default function Admin() {
                       <Button
                         variant="outline"
                         className="h-20 flex flex-col gap-2"
-                        style={{ borderColor: '#2B3A4C' }}
+                        style={{ borderColor: '#0E2040' }}
                       >
                         <PartyPopper className="h-6 w-6" style={{ color: '#E3B341' }} />
                         <span className="text-xs">Confetti</span>
@@ -1283,7 +1283,7 @@ export default function Admin() {
                       <Button
                         variant="outline"
                         className="h-20 flex flex-col gap-2"
-                        style={{ borderColor: '#2B3A4C' }}
+                        style={{ borderColor: '#0E2040' }}
                       >
                         <span className="text-2xl">💩</span>
                         <span className="text-xs">Poop Rain</span>
@@ -1291,7 +1291,7 @@ export default function Admin() {
                       <Button
                         variant="outline"
                         className="h-20 flex flex-col gap-2"
-                        style={{ borderColor: '#2B3A4C' }}
+                        style={{ borderColor: '#0E2040' }}
                       >
                         <span className="text-2xl">❄️</span>
                         <span className="text-xs">Snow</span>
@@ -1299,7 +1299,7 @@ export default function Admin() {
                       <Button
                         variant="outline"
                         className="h-20 flex flex-col gap-2"
-                        style={{ borderColor: '#2B3A4C' }}
+                        style={{ borderColor: '#0E2040' }}
                       >
                         <span className="text-2xl">🎆</span>
                         <span className="text-xs">Fireworks</span>
@@ -1307,7 +1307,7 @@ export default function Admin() {
                       <Button
                         variant="outline"
                         className="h-20 flex flex-col gap-2"
-                        style={{ borderColor: '#2B3A4C' }}
+                        style={{ borderColor: '#0E2040' }}
                       >
                         <Sparkles className="h-6 w-6" style={{ color: '#FDC830' }} />
                         <span className="text-xs">Sparkles</span>
@@ -1320,7 +1320,7 @@ export default function Admin() {
                       <Label>Expires At (Optional)</Label>
                       <Input
                         type="datetime-local"
-                        style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="flex items-end">
@@ -1334,7 +1334,7 @@ export default function Admin() {
               </Card>
 
               {/* Active Announcements */}
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Activity className="h-5 w-5" style={{ color: '#28C76F' }} />
@@ -1346,7 +1346,7 @@ export default function Admin() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="p-4 rounded-lg" style={{ backgroundColor: 'transparent', border: '1px solid #2B3A4C' }}>
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
                           <Badge style={{ backgroundColor: '#E3B341', color: '#091525' }}>CELEBRATION</Badge>
@@ -1400,7 +1400,7 @@ export default function Admin() {
               ) : (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                    <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Deposits</CardTitle>
                         <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
@@ -1411,7 +1411,7 @@ export default function Admin() {
                         </div>
                       </CardContent>
                     </Card>
-                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                    <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Withdrawals</CardTitle>
                         <DollarSign className="h-4 w-4" style={{ color: '#FF4F58' }} />
@@ -1422,7 +1422,7 @@ export default function Admin() {
                         </div>
                       </CardContent>
                     </Card>
-                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                    <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Net Revenue</CardTitle>
                         <TrendingUp className="h-4 w-4" style={{ color: '#E3B341' }} />
@@ -1433,7 +1433,7 @@ export default function Admin() {
                         </div>
                       </CardContent>
                     </Card>
-                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                    <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Transactions</CardTitle>
                         <BarChart3 className="h-4 w-4" style={{ color: '#8A93A6' }} />
@@ -1448,7 +1448,7 @@ export default function Admin() {
 
                   {/* Breakdown by type */}
                   {revenueStats.byType && (
-                    <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                    <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                           <BarChart3 className="h-5 w-5" style={{ color: '#E3B341' }} />
@@ -1458,7 +1458,7 @@ export default function Admin() {
                       <CardContent>
                         <Table>
                           <TableHeader>
-                            <TableRow style={{ borderColor: '#2B3A4C' }}>
+                            <TableRow style={{ borderColor: '#0E2040' }}>
                               <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
                               <TableHead className="text-right" style={{ color: '#8A93A6' }}>Count</TableHead>
                               <TableHead className="text-right" style={{ color: '#8A93A6' }}>Total Amount</TableHead>
@@ -1466,7 +1466,7 @@ export default function Admin() {
                           </TableHeader>
                           <TableBody>
                             {revenueStats.byType.map((row: any) => (
-                              <TableRow key={row.type} style={{ borderColor: '#2B3A4C' }}>
+                              <TableRow key={row.type} style={{ borderColor: '#0E2040' }}>
                                 <TableCell>
                                   <span className="font-medium capitalize" style={{ color: '#C9D1E2' }}>
                                     {(row.type || "unknown").replace(/_/g, " ")}
@@ -1493,7 +1493,7 @@ export default function Admin() {
 
             {/* ===== TAB 5: TRANSACTIONS ===== */}
             <TabsContent value="transactions" className="space-y-6">
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <DollarSign className="h-5 w-5" style={{ color: '#E3B341' }} />
@@ -1517,7 +1517,7 @@ export default function Admin() {
                   ) : (
                     <Table>
                       <TableHeader>
-                        <TableRow style={{ borderColor: '#2B3A4C' }}>
+                        <TableRow style={{ borderColor: '#0E2040' }}>
                           <TableHead style={{ color: '#8A93A6' }}>ID</TableHead>
                           <TableHead style={{ color: '#8A93A6' }}>User</TableHead>
                           <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
@@ -1528,7 +1528,7 @@ export default function Admin() {
                       </TableHeader>
                       <TableBody>
                         {adminTransactions.map((tx: any) => (
-                          <TableRow key={tx.id} style={{ borderColor: '#2B3A4C' }}>
+                          <TableRow key={tx.id} style={{ borderColor: '#0E2040' }}>
                             <TableCell>
                               <span className="font-mono text-sm" style={{ color: '#C9D1E2' }}>{tx.id}</span>
                             </TableCell>
@@ -1589,7 +1589,7 @@ export default function Admin() {
                     variant="outline"
                     onClick={() => seedCodesMutation.mutate()}
                     disabled={seedCodesMutation.isPending}
-                    style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                    style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                   >
                     <RefreshCw className={`h-4 w-4 mr-2 ${seedCodesMutation.isPending ? 'animate-spin' : ''}`} />
                     Seed Legacy Codes
@@ -1600,7 +1600,7 @@ export default function Admin() {
                 </span>
               </div>
 
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Tag className="h-5 w-5" style={{ color: '#E3B341' }} />
@@ -1624,7 +1624,7 @@ export default function Admin() {
                   ) : (
                     <Table>
                       <TableHeader>
-                        <TableRow style={{ borderColor: '#2B3A4C' }}>
+                        <TableRow style={{ borderColor: '#0E2040' }}>
                           <TableHead style={{ color: '#8A93A6' }}>Code</TableHead>
                           <TableHead style={{ color: '#8A93A6' }}>Reward</TableHead>
                           <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
@@ -1636,7 +1636,7 @@ export default function Admin() {
                       </TableHeader>
                       <TableBody>
                         {promoCodes.map((code: any) => (
-                          <TableRow key={code.id} style={{ borderColor: '#2B3A4C' }}>
+                          <TableRow key={code.id} style={{ borderColor: '#0E2040' }}>
                             <TableCell>
                               <div className="flex items-center gap-2">
                                 <span className="font-mono font-bold text-sm" style={{ color: '#E3B341' }}>
@@ -1661,7 +1661,7 @@ export default function Admin() {
                               </span>
                             </TableCell>
                             <TableCell>
-                              <Badge variant="outline" className="text-xs capitalize" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                              <Badge variant="outline" className="text-xs capitalize" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>
                                 {(code.usageType || "").replace(/_/g, " ")}
                               </Badge>
                             </TableCell>
@@ -1710,7 +1710,7 @@ export default function Admin() {
 
               {/* Create Promo Code Dialog */}
               <Dialog open={createCodeOpen} onOpenChange={setCreateCodeOpen}>
-                <DialogContent style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+                <DialogContent style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                   <DialogHeader>
                     <DialogTitle style={{ color: '#C9D1E2' }}>Create Promo Code</DialogTitle>
                     <DialogDescription style={{ color: '#8A93A6' }}>
@@ -1724,7 +1724,7 @@ export default function Admin() {
                         placeholder="e.g. WELCOME500"
                         value={newCode.code}
                         onChange={(e) => setNewCode({ ...newCode, code: e.target.value.toUpperCase() })}
-                        style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ background: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -1734,7 +1734,7 @@ export default function Admin() {
                         placeholder="e.g. 500"
                         value={newCode.rewardAmount}
                         onChange={(e) => setNewCode({ ...newCode, rewardAmount: e.target.value })}
-                        style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ background: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -1743,7 +1743,7 @@ export default function Admin() {
                         value={newCode.usageType}
                         onValueChange={(value) => setNewCode({ ...newCode, usageType: value })}
                       >
-                        <SelectTrigger style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <SelectTrigger style={{ background: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1762,7 +1762,7 @@ export default function Admin() {
                           placeholder="e.g. 100"
                           value={newCode.maxUses}
                           onChange={(e) => setNewCode({ ...newCode, maxUses: e.target.value })}
-                          style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ background: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                         />
                       </div>
                     )}
@@ -1772,7 +1772,7 @@ export default function Admin() {
                         type="date"
                         value={newCode.expiresAt}
                         onChange={(e) => setNewCode({ ...newCode, expiresAt: e.target.value })}
-                        style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ background: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                       />
                     </div>
                   </div>
@@ -1780,7 +1780,7 @@ export default function Admin() {
                     <Button
                       variant="outline"
                       onClick={() => setCreateCodeOpen(false)}
-                      style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                     >
                       Cancel
                     </Button>
@@ -1811,7 +1811,7 @@ export default function Admin() {
 
             {/* ===== TAB 7: SYSTEM ===== */}
             <TabsContent value="system" className="space-y-6">
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Server className="h-5 w-5" />
@@ -1844,15 +1844,15 @@ export default function Admin() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Type</span>
-                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.type || "PostgreSQL"}</Badge>
+                            <Badge variant="outline" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.type || "PostgreSQL"}</Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Tables</span>
-                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.tableCount || "0"}</Badge>
+                            <Badge variant="outline" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.tableCount || "0"}</Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Connections</span>
-                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.activeConnections || "0"}</Badge>
+                            <Badge variant="outline" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>{(systemStatus as any)?.database?.activeConnections || "0"}</Badge>
                           </div>
                         </div>
                       </div>
@@ -1881,7 +1881,7 @@ export default function Admin() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Active Users</span>
-                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                            <Badge variant="outline" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>
                               <Users className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.activeUsers || "0"}
                             </Badge>
@@ -1920,7 +1920,7 @@ export default function Admin() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Total Requests</span>
-                            <Badge variant="outline" style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                            <Badge variant="outline" style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>
                               <Activity className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.totalRequests || "0"}
                             </Badge>
@@ -1933,7 +1933,7 @@ export default function Admin() {
               </Card>
 
               {/* IT Administration */}
-              <Card style={{ background: '#1E2D3F', borderColor: '#2B3A4C' }}>
+              <Card style={{ background: '#0C1829', borderColor: '#0E2040' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Settings className="h-5 w-5" />
@@ -1951,7 +1951,7 @@ export default function Admin() {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                           onClick={() => {
                             toast({ title: "Database Backup", description: "Database backup initiated. This may take a few minutes." });
                           }}
@@ -1962,7 +1962,7 @@ export default function Admin() {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                           onClick={() => {
                             if (confirm("Are you sure you want to clear all cached data? This may temporarily slow down the system.")) {
                               toast({ title: "Cache Cleared", description: "All cached data has been cleared successfully." });
@@ -2013,7 +2013,7 @@ export default function Admin() {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                           onClick={() => {
                             toast({ title: "System Logs", description: "Opening system logs viewer..." });
                           }}
@@ -2024,7 +2024,7 @@ export default function Admin() {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                           onClick={() => {
                             toast({ title: "Error Reports", description: "Last 24 hours: 0 critical errors, 2 warnings" });
                           }}
@@ -2035,7 +2035,7 @@ export default function Admin() {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                           onClick={() => {
                             toast({ title: "Performance Metrics", description: "Avg Response: 45ms | Uptime: 99.9% | Memory: 1.2GB/4GB" });
                           }}
@@ -2046,7 +2046,7 @@ export default function Admin() {
                         <Button
                           variant="outline"
                           className="w-full justify-start"
-                          style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ borderColor: '#0E2040', color: '#C9D1E2' }}
                           onClick={() => {
                             queryClient.invalidateQueries();
                             queryClient.refetchQueries();

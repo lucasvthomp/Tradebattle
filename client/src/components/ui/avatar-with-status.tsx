@@ -51,7 +51,7 @@ export function AvatarWithStatus({
     >
       <Avatar className="w-full h-full" style={{ borderRadius: borderRadius }}>
         <AvatarImage src={src || undefined} alt={alt} className="object-cover" />
-        <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#1E2D3F' }}>
+        <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#0C1829' }}>
           <UserCircle className="w-1/2 h-1/2" style={{ color: '#4B5563' }} />
         </AvatarFallback>
       </Avatar>
@@ -60,7 +60,7 @@ export function AvatarWithStatus({
       <div className="absolute bottom-0 right-0 z-10" style={{ transform: 'translate(15%, 15%)' }}>
         <div
           className="rounded-full flex items-center justify-center"
-          style={{ backgroundColor: '#1E2D3F', padding: '2px' }}
+          style={{ backgroundColor: '#0C1829', padding: '2px' }}
         >
           <StatusIndicator status={userStatus} size={statusSize} />
         </div>

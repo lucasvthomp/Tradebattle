@@ -272,7 +272,7 @@ export default function Blitz() {
                         >
                           <div style={{
                             width: '72px', height: '72px', borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #1E2D3F, #2B3A4C)',
+                            background: 'linear-gradient(135deg, #0C1829, #0E2040)',
                             border: '3px solid #8B5CF6',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             margin: '0 auto 10px',
@@ -303,7 +303,7 @@ export default function Blitz() {
                         >
                           <div style={{
                             width: '72px', height: '72px', borderRadius: '50%',
-                            background: 'linear-gradient(135deg, #1E2D3F, #2B3A4C)',
+                            background: 'linear-gradient(135deg, #0C1829, #0E2040)',
                             border: '3px solid #FF4F58',
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             margin: '0 auto 10px',

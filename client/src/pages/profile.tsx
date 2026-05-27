@@ -597,7 +597,7 @@ export default function Profile() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#1E2D3F' }}>
+                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#0C1829' }}>
                         <User className="w-10 h-10" style={{ color: '#8A93A6' }} />
                       </div>
                     )}
@@ -694,7 +694,7 @@ export default function Profile() {
                         </div>
                         <span className="text-xs" style={{ color: '#64748B' }}>{xp} XP · {progress}% to Lv.{level + 1}</span>
                       </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#1E2D3F' }}>
+                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#0C1829' }}>
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${progress}%` }}

@@ -162,7 +162,7 @@ export default function NotFound() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.7, duration: 0.4 }}
           className="rounded-xl px-5 py-4 mb-8 text-center"
-          style={{ backgroundColor: "#1E2D3F", border: "1px solid #2B3A4C" }}
+          style={{ backgroundColor: "#0C1829", border: "1px solid #0E2040" }}
         >
           <p className="text-sm italic mb-1" style={{ color: "#C9D1E2" }}>
             "The market can stay irrational longer than you can find this page."
@@ -195,8 +195,8 @@ export default function NotFound() {
             onClick={() => window.history.back()}
             className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all"
             style={{
-              backgroundColor: "#1E2D3F",
-              border: "1px solid #2B3A4C",
+              backgroundColor: "#0C1829",
+              border: "1px solid #0E2040",
               color: "#C9D1E2",
             }}
           >

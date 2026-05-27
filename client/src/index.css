@@ -36,9 +36,9 @@ html {
   --foreground: 210 20% 90%;  /* #E2E8F0 */
 
   /* Card & Panel Hierarchy */
-  --card: 220 30% 13%;  /* #18212F - slightly lighter for contrast */
+  --card: 220 52% 12%;  /* #0C1829 - blue card */
   --card-foreground: 215 20% 85%;  /* #CBD5E1 */
-  --popover: 222 33% 11%;
+  --popover: 220 52% 12%;
   --popover-foreground: 215 20% 85%;
 
   /* Primary - Gold (for brand/money) */
@@ -46,11 +46,11 @@ html {
   --primary-foreground: 222 47% 5%;
 
   /* Secondary */
-  --secondary: 220 26% 14%;  /* #1A2030 */
+  --secondary: 220 52% 14%;  /* #0D1E35 */
   --secondary-foreground: 215 20% 85%;
 
   /* Muted */
-  --muted: 217 19% 17%;  /* #1F2937 */
+  --muted: 220 48% 16%;  /* #0E1F38 */
   --muted-foreground: 215 16% 62%;  /* #94A3B8 */
 
   /* Accent - Cyan (interactive elements) */
@@ -62,8 +62,8 @@ html {
   --destructive-foreground: 0 0% 100%;
 
   /* Borders & Inputs */
-  --border: 217 19% 17%;  /* #1F2937 */
-  --input: 222 40% 8%;  /* #0F172A */
+  --border: 220 48% 18%;  /* #0E2040 */
+  --input: 220 52% 12%;  /* #0C1829 */
   --ring: 189 94% 43%;  /* Cyan focus ring */
   --radius: 0.75rem;
 
@@ -144,18 +144,18 @@ html {
   --background: 224 52% 5%;  /* #060C18 */
   --foreground: 0 0% 100%;
 
-  --card: 220 30% 13%;  /* #18212F - slightly lighter for contrast */
+  --card: 220 52% 12%;  /* #0C1829 */
   --card-foreground: 215 16% 62%;  /* #94A3B8 */
-  --popover: 222 33% 11%;
+  --popover: 220 52% 12%;
   --popover-foreground: 215 16% 62%;
 
   --primary: 43 71% 57%;  /* #E3B341 */
   --primary-foreground: 222 47% 5%;
 
-  --secondary: 220 26% 14%;  /* #1A2030 */
+  --secondary: 220 52% 14%;  /* #0D1E35 */
   --secondary-foreground: 215 16% 62%;
 
-  --muted: 217 19% 17%;  /* #1F2937 */
+  --muted: 220 48% 16%;  /* #0E1F38 */
   --muted-foreground: 215 16% 62%;
 
   --accent: 189 94% 43%;  /* #06B6D4 */
@@ -164,8 +164,8 @@ html {
   --destructive: 0 84% 60%;  /* #EF4444 */
   --destructive-foreground: 0 0% 100%;
 
-  --border: 217 19% 17%;  /* #1F2937 */
-  --input: 222 40% 8%;  /* #0F172A */
+  --border: 220 48% 18%;  /* #0E2040 */
+  --input: 220 52% 12%;  /* #0C1829 */
   --ring: 189 94% 43%;  /* Cyan */
 }
 

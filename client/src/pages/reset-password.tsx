@@ -43,7 +43,7 @@ export default function ResetPassword() {
   if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
-        <Card className="w-full max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
+        <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
           <CardHeader>
             <CardTitle style={{ color: '#C9D1E2' }}>Invalid Link</CardTitle>
             <CardDescription style={{ color: '#8A93A6' }}>
@@ -65,7 +65,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
-      <Card className="w-full max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
+      <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
         <CardHeader>
           <CardTitle style={{ color: '#C9D1E2' }}>
             {success ? "Password Reset" : "Set New Password"}
@@ -105,7 +105,7 @@ export default function ResetPassword() {
                   value={password}
                   onChange={e => setPassword(e.target.value)}
                   required
-                  style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                  style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                 />
               </div>
               <div className="space-y-2">
@@ -117,7 +117,7 @@ export default function ResetPassword() {
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
                   required
-                  style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                  style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
                 />
               </div>
               {error && <p className="text-sm" style={{ color: '#FF4F58' }}>{error}</p>}
