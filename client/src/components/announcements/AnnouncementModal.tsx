@@ -212,7 +212,7 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[600px]" style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
+      <DialogContent className="sm:max-w-[600px]" style={{ backgroundColor: '#0B1120', borderColor: '#0E1F35' }}>
         <DialogHeader>
           <div className="flex items-center justify-between">
             <DialogTitle className="flex items-center gap-3">

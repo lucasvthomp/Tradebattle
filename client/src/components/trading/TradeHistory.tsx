@@ -22,7 +22,7 @@ export function TradeHistory({ tournamentId }: TradeHistoryProps) {
   if (!tournamentId) return null;
 
   return (
-    <div style={{ borderTop: "1px solid #1F2937" }}>
+    <div style={{ borderTop: "1px solid #0E1F35" }}>
       <div className="px-3 py-2">
         <span className="text-xs font-semibold" style={{ color: "#94A3B8" }}>
           Trade History

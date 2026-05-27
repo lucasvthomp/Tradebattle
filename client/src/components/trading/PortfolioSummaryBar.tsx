@@ -40,7 +40,7 @@ export function PortfolioSummaryBar({ cash, holdings, startingBalance }: Portfol
   return (
     <div
       className="grid grid-cols-4 divide-x px-4 py-3"
-      style={{ borderBottom: "1px solid #1F2937", divideColor: "#1F2937" } as React.CSSProperties}
+      style={{ borderBottom: "1px solid #0E1F35", divideColor: "#0E1F35" } as React.CSSProperties}
     >
       {stats.map((s) => (
         <div key={s.label} className="flex flex-col items-center px-2">

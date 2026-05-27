@@ -144,7 +144,7 @@ export default function Shop() {
                 </Button>
               </div>
 
-              <div className="rounded-lg p-3" style={{ backgroundColor: '#0B1120', border: '1px solid #1F2937' }}>
+              <div className="rounded-lg p-3" style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35' }}>
                 <p className="text-xs font-semibold mb-2" style={{ color: '#8A93A6' }}>
                   Where to find codes
                 </p>

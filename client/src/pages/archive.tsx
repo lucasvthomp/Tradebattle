@@ -63,7 +63,7 @@ export default function ArchivePage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="pl-10"
-          style={{ backgroundColor: '#111827', borderColor: '#1F2937', color: '#F1F5F9' }}
+          style={{ backgroundColor: '#0B1120', borderColor: '#0E1F35', color: '#F1F5F9' }}
         />
       </div>
 
@@ -88,7 +88,7 @@ export default function ArchivePage() {
                 key={tournament.id}
                 href={`/archive/${tournament.id}`}
                 className="flex items-center justify-between p-4 rounded-lg transition-colors hover:border-[#E3B341]"
-                style={{ backgroundColor: '#111827', border: '1px solid #1F2937' }}
+                style={{ backgroundColor: '#0B1120', border: '1px solid #0E1F35' }}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">

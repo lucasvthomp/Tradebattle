@@ -105,7 +105,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {overflow > 0 && (
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
-          style={{ backgroundColor: '#1E2D3F', color: '#E3B341', border: '2px solid #111827' }}
+          style={{ backgroundColor: '#1E2D3F', color: '#E3B341', border: '2px solid #0B1120' }}
         >
           +{overflow}
         </div>
@@ -352,7 +352,7 @@ export default function TournamentsPage() {
 
   if (!user) {
     return (
-      <div className="h-[calc(100vh-4rem)] flex items-center justify-center" style={{ background: 'linear-gradient(to bottom, #080C14, #0F172A)' }}>
+      <div className="h-[calc(100vh-4rem)] flex items-center justify-center" style={{ background: 'linear-gradient(to bottom, #080C14, #080F1E)' }}>
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2" style={{ color: '#F1F5F9' }}>Please Log In</h2>
           <p style={{ color: '#94A3B8' }}>You need to be logged in to view tournaments.</p>
@@ -370,7 +370,7 @@ export default function TournamentsPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto" style={{ background: 'linear-gradient(to bottom, #080C14, #0F172A)' }}>
+    <div className="h-[calc(100vh-4rem)] overflow-auto" style={{ background: 'linear-gradient(to bottom, #080C14, #080F1E)' }}>
       <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(16px, 3vh, 40px) clamp(16px, 2vw, 32px)' }}>
         <motion.div
           initial="initial"
@@ -402,7 +402,7 @@ export default function TournamentsPage() {
                     Join Private
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
+                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35' }}>
                   <DialogHeader>
                     <DialogTitle style={{ color: '#F1F5F9' }}>Join Private Tournament</DialogTitle>
                   </DialogHeader>
@@ -416,7 +416,7 @@ export default function TournamentsPage() {
                         placeholder="Enter 8-character code"
                         maxLength={8}
                         className="text-base md:text-sm min-h-[44px]"
-                        style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
+                        style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}
                       />
                     </div>
                     <Button
@@ -459,15 +459,15 @@ export default function TournamentsPage() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search tournaments..."
                   className="pl-9 w-full sm:w-64"
-                  style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
+                  style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}
                 />
               </div>
               {/* Type Filter - Responsive width */}
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full sm:w-40" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}>
+                <SelectTrigger className="w-full sm:w-40" style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
+                <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35' }}>
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="stocks">Stocks Only</SelectItem>
                   <SelectItem value="crypto">Crypto Only</SelectItem>
@@ -509,10 +509,10 @@ export default function TournamentsPage() {
             </div>
             {/* Sort - Full width on mobile */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-48" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}>
+              <SelectTrigger className="w-full sm:w-48" style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
+              <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35' }}>
                 <SelectItem value="starting-soon">Starting Soonest</SelectItem>
                 <SelectItem value="pot-high-low">Highest Pot</SelectItem>
                 <SelectItem value="pot-low-high">Lowest Pot</SelectItem>
@@ -856,7 +856,7 @@ function HorizontalTournamentCard({
         className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
         style={{
           backgroundColor: '#1E2D3F',
-          border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : '#1F2937'}`,
+          border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : '#0E1F35'}`,
         }}
       >
         {/* Left: Icon + Name + Badges + Time */}

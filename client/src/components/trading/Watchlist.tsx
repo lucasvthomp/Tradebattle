@@ -66,7 +66,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
       {/* Header */}
       <div
         className="px-3 py-2.5 flex items-center justify-between"
-        style={{ borderBottom: "1px solid #1F2937" }}
+        style={{ borderBottom: "1px solid #0E1F35" }}
       >
         <h3 className="text-sm font-bold" style={{ color: "#E3B341" }}>
           Watchlist
@@ -83,7 +83,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
       </div>
 
       {/* Search */}
-      <div className="px-3 py-2" style={{ borderBottom: "1px solid #1F2937" }}>
+      <div className="px-3 py-2" style={{ borderBottom: "1px solid #0E1F35" }}>
         <div className="relative">
           <Search
             className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
@@ -96,7 +96,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
             className="h-8 pl-8 text-xs"
             style={{
               backgroundColor: "#080C14",
-              borderColor: "#1F2937",
+              borderColor: "#0E1F35",
               color: "#FFFFFF",
             }}
           />
@@ -106,7 +106,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
         {searchQuery.length >= 2 && (
           <div
             className="mt-1 rounded-lg overflow-hidden"
-            style={{ backgroundColor: "#080C14", border: "1px solid #1F2937" }}
+            style={{ backgroundColor: "#080C14", border: "1px solid #0E1F35" }}
           >
             {isSearching ? (
               <div className="px-3 py-2 space-y-2">
@@ -119,7 +119,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
                 <button
                   key={result.symbol}
                   onClick={() => handleSearchSelect(result.symbol)}
-                  className="w-full px-3 py-2 text-left text-xs hover:bg-[#0F172A] flex items-center justify-between transition-colors"
+                  className="w-full px-3 py-2 text-left text-xs hover:bg-[#080F1E] flex items-center justify-between transition-colors"
                 >
                   <div>
                     <span className="font-bold" style={{ color: "#FFFFFF" }}>
@@ -178,9 +178,9 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
             <button
               key={item.symbol}
               onClick={() => onSymbolSelect(item.symbol)}
-              className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#0F172A]"
+              className="w-full px-3 py-2.5 flex items-center justify-between text-xs transition-colors hover:bg-[#080F1E]"
               style={{
-                backgroundColor: selectedSymbol === item.symbol ? "#0F172A" : "transparent",
+                backgroundColor: selectedSymbol === item.symbol ? "#080F1E" : "transparent",
                 borderLeft: selectedSymbol === item.symbol ? "2px solid #E3B341" : "2px solid transparent",
                 borderBottom: "1px solid rgba(31, 41, 55, 0.5)",
               }}

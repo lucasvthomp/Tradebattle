@@ -90,7 +90,7 @@ export default function ArchiveDetailPage() {
       </Button>
 
       {/* Tournament Header */}
-      <Card className="mb-6" style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
+      <Card className="mb-6" style={{ backgroundColor: '#0B1120', borderColor: '#0E1F35' }}>
         <CardContent className="p-6">
           <div className="flex items-start justify-between mb-4">
             <div>
@@ -105,7 +105,7 @@ export default function ArchiveDetailPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: '#080F1E' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('players')}</span>
@@ -115,7 +115,7 @@ export default function ArchiveDetailPage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: '#080F1E' }}>
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-4 h-4" style={{ color: '#10B981' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('startingCash')}</span>
@@ -125,7 +125,7 @@ export default function ArchiveDetailPage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: '#080F1E' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="w-4 h-4" style={{ color: '#06B6D4' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('duration')}</span>
@@ -135,7 +135,7 @@ export default function ArchiveDetailPage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#0F172A' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: '#080F1E' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Calendar className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('ended')}</span>
@@ -149,7 +149,7 @@ export default function ArchiveDetailPage() {
       </Card>
 
       {/* Final Leaderboard */}
-      <Card style={{ backgroundColor: '#111827', borderColor: '#1F2937' }}>
+      <Card style={{ backgroundColor: '#0B1120', borderColor: '#0E1F35' }}>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2" style={{ color: '#F1F5F9' }}>
             <Trophy className="w-5 h-5" style={{ color: '#E3B341' }} />
@@ -184,8 +184,8 @@ export default function ArchiveDetailPage() {
                       key={participant.userId}
                       className="flex items-center justify-between p-3 rounded-lg"
                       style={{
-                        backgroundColor: isWinner ? '#E3B34110' : '#0F172A',
-                        border: isWinner ? '1px solid #E3B34140' : '1px solid #1F2937',
+                        backgroundColor: isWinner ? '#E3B34110' : '#080F1E',
+                        border: isWinner ? '1px solid #E3B34140' : '1px solid #0E1F35',
                       }}
                     >
                       <div className="flex items-center gap-3">

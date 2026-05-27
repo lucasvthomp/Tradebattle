@@ -147,7 +147,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
             </Avatar>
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
+        <DropdownMenuContent align="start" style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35' }}>
           <DropdownMenuItem
             onClick={() => onViewProfile(group.userId)}
             className="cursor-pointer"
@@ -206,7 +206,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                 </div>
               )}
               <div className="group/msg flex items-center gap-1.5">
-                <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#1E2D3F', border: '1px solid #1F2937' }}>
+                <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#1E2D3F', border: '1px solid #0E1F35' }}>
                   <p className="text-sm whitespace-pre-wrap leading-normal" style={{
                     color: '#F1F5F9',
                     wordBreak: 'break-word',
@@ -446,10 +446,10 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 30, stiffness: 300 }}
       className="h-full w-full backdrop-blur-md shadow-xl flex flex-col overflow-hidden"
-      style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#1E2D3F', borderLeft: '2px solid #1F2937' }}
+      style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#1E2D3F', borderLeft: '2px solid #0E1F35' }}
     >
             {/* Header */}
-            <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #1F2937', backgroundColor: '#080C14' }}>
+            <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #0E1F35', backgroundColor: '#080C14' }}>
               <div className="flex items-center space-x-2">
                 <MessageSquare className="w-4 h-4" style={{ color: '#E3B341' }} />
                 <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{t('globalChat')}</span>
@@ -501,19 +501,19 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             </div>
 
             {/* Message Input */}
-            <div className="p-3 relative" style={{ borderTop: '1px solid #1F2937', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
+            <div className="p-3 relative" style={{ borderTop: '1px solid #0E1F35', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
               {/* Mention Autocomplete Dropdown */}
               {showMentions && mentionSuggestions.length > 0 && (
                 <div
                   className="absolute bottom-full left-3 right-3 mb-1 rounded-md overflow-hidden shadow-lg z-50"
-                  style={{ backgroundColor: '#1E2D3F', border: '1px solid #1F2937' }}
+                  style={{ backgroundColor: '#1E2D3F', border: '1px solid #0E1F35' }}
                 >
                   {mentionSuggestions.map((u, i) => (
                     <div
                       key={u.id}
                       className="flex items-center space-x-2 px-3 py-2 cursor-pointer text-xs"
                       style={{
-                        backgroundColor: i === mentionIndex ? '#1F2937' : 'transparent',
+                        backgroundColor: i === mentionIndex ? '#0E1F35' : 'transparent',
                         color: '#F1F5F9',
                       }}
                       onMouseDown={(e) => {
@@ -541,7 +541,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   onKeyDown={handleKeyDown}
                   placeholder={t('messageEveryone')}
                   className="flex-1 text-sm h-9"
-                  style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
+                  style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}
                   maxLength={500}
                 />
                 <Button
@@ -562,7 +562,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
       {/* Tip Dialog */}
       <Dialog open={tipDialogOpen} onOpenChange={setTipDialogOpen}>
-        <DialogContent style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
+        <DialogContent style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35' }}>
           <DialogHeader>
             <div className="flex items-center space-x-3 mb-2">
               <div className="p-2 rounded-lg" style={{ backgroundColor: '#10B981' }}>
@@ -587,7 +587,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 onChange={(e) => setTipAmount(e.target.value)}
                 min="0.01"
                 step="0.01"
-                style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
+                style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}
               />
               <p className="text-xs" style={{ color: '#94A3B8' }}>
                 {t('yourBalance')}: ${(Number(user?.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -602,7 +602,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 setTipAmount("");
                 setSelectedUser(null);
               }}
-              style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
+              style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}
             >
               {t('cancel')}
             </Button>

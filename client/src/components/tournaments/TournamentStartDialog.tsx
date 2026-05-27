@@ -166,7 +166,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
             </div>
 
             {/* Guidelines */}
-            <div className="p-6 rounded-xl mb-6" style={{ backgroundColor: '#0F172A', border: '1px solid #1F2937' }}>
+            <div className="p-6 rounded-xl mb-6" style={{ backgroundColor: '#080F1E', border: '1px solid #0E1F35' }}>
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-5 h-5" style={{ color: '#E3B341' }} />
                 <h3 className="text-lg font-bold" style={{ color: '#E3B341' }}>Quick Guidelines</h3>

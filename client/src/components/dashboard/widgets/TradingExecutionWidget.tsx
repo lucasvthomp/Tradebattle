@@ -92,15 +92,15 @@ export function TradingExecutionWidget({
     (orderType === 'market' || (orderType === 'limit' && limitPrice && parseFloat(limitPrice) > 0));
 
   return (
-    <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#111827' }}>
+    <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#0B1120' }}>
       {/* Header with Toggle */}
-      <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: '#1F2937', backgroundColor: '#0F172A' }}>
+      <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: '#0E1F35', backgroundColor: '#080F1E' }}>
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>
             {showHoldings ? "Holdings" : "Trade"}
           </h3>
           {selectedStock && (
-            <div className="flex items-baseline gap-2 ml-2 pl-2 border-l" style={{ borderColor: '#1F2937' }}>
+            <div className="flex items-baseline gap-2 ml-2 pl-2 border-l" style={{ borderColor: '#0E1F35' }}>
               <span className="text-sm font-bold" style={{ color: '#E3B341' }}>{selectedStock.symbol}</span>
               <span className="text-xs" style={{ color: '#94A3B8' }}>${selectedStock.price?.toFixed(2)}</span>
             </div>
@@ -130,7 +130,7 @@ export function TradingExecutionWidget({
       </div>
 
       {/* Stock Search */}
-      <div className="p-2 border-b" style={{ borderColor: '#1F2937' }}>
+      <div className="p-2 border-b" style={{ borderColor: '#0E1F35' }}>
         <StockSearchBar
           type="purchase"
           placeholder="Search symbol..."
@@ -150,7 +150,7 @@ export function TradingExecutionWidget({
                 className="h-7 text-xs font-semibold"
                 style={action === 'buy'
                   ? { backgroundColor: '#10B981', color: '#FFFFFF', border: 'none' }
-                  : { backgroundColor: '#0F172A', color: '#94A3B8', border: '1px solid #1F2937' }
+                  : { backgroundColor: '#080F1E', color: '#94A3B8', border: '1px solid #0E1F35' }
                 }
               >
                 Buy
@@ -160,7 +160,7 @@ export function TradingExecutionWidget({
                 className="h-7 text-xs font-semibold"
                 style={action === 'short_sell'
                   ? { backgroundColor: '#EF4444', color: '#FFFFFF', border: 'none' }
-                  : { backgroundColor: '#0F172A', color: '#94A3B8', border: '1px solid #1F2937' }
+                  : { backgroundColor: '#080F1E', color: '#94A3B8', border: '1px solid #0E1F35' }
                 }
               >
                 Short
@@ -171,7 +171,7 @@ export function TradingExecutionWidget({
                   className="h-7 text-xs font-semibold"
                   style={action === 'short_cover'
                     ? { backgroundColor: '#3B82F6', color: '#FFFFFF', border: 'none' }
-                    : { backgroundColor: '#0F172A', color: '#94A3B8', border: '1px solid #1F2937' }
+                    : { backgroundColor: '#080F1E', color: '#94A3B8', border: '1px solid #0E1F35' }
                   }
                 >
                   Cover
@@ -184,10 +184,10 @@ export function TradingExecutionWidget({
               <div className="space-y-0.5">
                 <label className="text-[10px]" style={{ color: '#94A3B8' }}>Type</label>
                 <Select value={orderType} onValueChange={(value: any) => setOrderType(value)}>
-                  <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937', color: '#F1F5F9' }}>
+                  <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#080F1E', borderColor: '#0E1F35', color: '#F1F5F9' }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+                  <SelectContent style={{ backgroundColor: '#080F1E', borderColor: '#0E1F35' }}>
                     <SelectItem value="market" style={{ color: '#F1F5F9' }}>Market</SelectItem>
                     <SelectItem value="limit" style={{ color: '#F1F5F9' }}>Limit</SelectItem>
                   </SelectContent>
@@ -203,7 +203,7 @@ export function TradingExecutionWidget({
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   className="h-7 text-xs"
-                  style={{ backgroundColor: '#0F172A', borderColor: '#1F2937', color: '#F1F5F9' }}
+                  style={{ backgroundColor: '#080F1E', borderColor: '#0E1F35', color: '#F1F5F9' }}
                   placeholder="0"
                 />
               </div>
@@ -220,7 +220,7 @@ export function TradingExecutionWidget({
                   value={limitPrice}
                   onChange={(e) => setLimitPrice(e.target.value)}
                   className="h-7 text-xs"
-                  style={{ backgroundColor: '#0F172A', borderColor: '#1F2937', color: '#F1F5F9' }}
+                  style={{ backgroundColor: '#080F1E', borderColor: '#0E1F35', color: '#F1F5F9' }}
                   placeholder="$0.00"
                 />
               </div>
@@ -229,10 +229,10 @@ export function TradingExecutionWidget({
             <div className="space-y-0.5">
               <label className="text-[10px]" style={{ color: '#94A3B8' }}>Duration</label>
               <Select value={timeInForce} onValueChange={(value: any) => setTimeInForce(value)}>
-                <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#0F172A', borderColor: '#1F2937', color: '#F1F5F9' }}>
+                <SelectTrigger className="h-7 text-xs" style={{ backgroundColor: '#080F1E', borderColor: '#0E1F35', color: '#F1F5F9' }}>
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#0F172A', borderColor: '#1F2937' }}>
+                <SelectContent style={{ backgroundColor: '#080F1E', borderColor: '#0E1F35' }}>
                   <SelectItem value="day" style={{ color: '#F1F5F9' }}>Day</SelectItem>
                   <SelectItem value="gtc" style={{ color: '#F1F5F9' }}>GTC</SelectItem>
                 </SelectContent>
@@ -240,7 +240,7 @@ export function TradingExecutionWidget({
             </div>
 
             {/* Estimated Cost - More Compact */}
-            <div className="pt-1.5 border-t" style={{ borderColor: '#1F2937' }}>
+            <div className="pt-1.5 border-t" style={{ borderColor: '#0E1F35' }}>
               <div className="flex justify-between items-center">
                 <span className="text-[10px]" style={{ color: '#94A3B8' }}>Est. Total</span>
                 <span className="text-sm font-semibold" style={{ color: '#E3B341' }}>
@@ -251,7 +251,7 @@ export function TradingExecutionWidget({
           </div>
 
           {/* Action Button */}
-          <div className="p-2 border-t" style={{ borderColor: '#1F2937' }}>
+          <div className="p-2 border-t" style={{ borderColor: '#0E1F35' }}>
             <Button
               onClick={handleSubmit}
               disabled={!isFormValid}

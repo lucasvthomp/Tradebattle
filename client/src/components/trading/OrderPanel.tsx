@@ -154,7 +154,7 @@ export function OrderPanel({
   return (
     <div className="flex flex-col flex-1 min-h-0">
       {/* Tournament Selector + Buying Power */}
-      <div className="p-3 space-y-2" style={{ borderBottom: "1px solid #1F2937" }}>
+      <div className="p-3 space-y-2" style={{ borderBottom: "1px solid #0E1F35" }}>
         <div>
           <label className="text-xs font-medium mb-1 block" style={{ color: "#94A3B8" }}>
             Tournament
@@ -168,11 +168,11 @@ export function OrderPanel({
           >
             <SelectTrigger
               className="h-9"
-              style={{ backgroundColor: "#080C14", borderColor: "#1F2937", color: "#E3B341" }}
+              style={{ backgroundColor: "#080C14", borderColor: "#0E1F35", color: "#E3B341" }}
             >
               <SelectValue placeholder="Select Tournament" />
             </SelectTrigger>
-            <SelectContent style={{ backgroundColor: "#111827", borderColor: "#1F2937" }}>
+            <SelectContent style={{ backgroundColor: "#0B1120", borderColor: "#0E1F35" }}>
               {activeTournaments.map((t: any) => (
                 <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
                   {t.name}
@@ -209,7 +209,7 @@ export function OrderPanel({
       )}
 
       {/* Stock Search — always visible */}
-      <div className="px-3 py-2.5" style={{ borderBottom: "1px solid #1F2937" }}>
+      <div className="px-3 py-2.5" style={{ borderBottom: "1px solid #0E1F35" }}>
         <div className="relative">
           <Search
             className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
@@ -223,7 +223,7 @@ export function OrderPanel({
             className="h-9 pl-8 pr-8 text-xs"
             style={{
               backgroundColor: "#080C14",
-              borderColor: "#1F2937",
+              borderColor: "#0E1F35",
               color: "#FFFFFF",
             }}
           />
@@ -257,10 +257,10 @@ export function OrderPanel({
                 <button
                   key={result.symbol}
                   onClick={() => handleSearchSelect(result.symbol)}
-                  className="w-full px-4 py-3 text-left hover:bg-[#0F172A] flex items-center justify-between transition-colors"
+                  className="w-full px-4 py-3 text-left hover:bg-[#080F1E] flex items-center justify-between transition-colors"
                   style={{
                     borderBottom: "1px solid rgba(31, 41, 55, 0.5)",
-                    backgroundColor: result.symbol === symbol ? "#0F172A" : "transparent",
+                    backgroundColor: result.symbol === symbol ? "#080F1E" : "transparent",
                   }}
                 >
                   <div className="flex-1 min-w-0">
@@ -310,7 +310,7 @@ export function OrderPanel({
         /* Empty search state — show popular stocks hint */
         <div className="flex-1 flex items-center justify-center px-4">
           <div className="text-center">
-            <Search className="w-8 h-8 mx-auto mb-2" style={{ color: "#1F2937" }} />
+            <Search className="w-8 h-8 mx-auto mb-2" style={{ color: "#0E1F35" }} />
             <p className="text-xs" style={{ color: "#94A3B8" }}>
               Type a symbol or company name
             </p>
@@ -358,7 +358,7 @@ export function OrderPanel({
               size="sm"
               onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
               className="h-9 w-9 p-0"
-              style={{ backgroundColor: "#080C14", borderColor: "#1F2937", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#080C14", borderColor: "#0E1F35", color: "#FFFFFF" }}
             >
               <Minus className="w-4 h-4" />
             </Button>
@@ -368,13 +368,13 @@ export function OrderPanel({
               value={quantity}
               onChange={(e) => handleQuantityChange(Math.max(0, parseInt(e.target.value) || 0))}
               className="h-9 text-center flex-1"
-              style={{ backgroundColor: "#080C14", borderColor: "#1F2937", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#080C14", borderColor: "#0E1F35", color: "#FFFFFF" }}
             />
             <Button
               size="sm"
               onClick={() => handleQuantityChange(quantity + 1)}
               className="h-9 w-9 p-0"
-              style={{ backgroundColor: "#080C14", borderColor: "#1F2937", color: "#FFFFFF" }}
+              style={{ backgroundColor: "#080C14", borderColor: "#0E1F35", color: "#FFFFFF" }}
             >
               <Plus className="w-4 h-4" />
             </Button>
@@ -391,7 +391,7 @@ export function OrderPanel({
                     style={{
                       backgroundColor: quantity === n ? "rgba(16, 185, 129, 0.2)" : "#080C14",
                       color: quantity === n ? "#10B981" : "#94A3B8",
-                      border: `1px solid ${quantity === n ? "#10B981" : "#1F2937"}`,
+                      border: `1px solid ${quantity === n ? "#10B981" : "#0E1F35"}`,
                     }}
                   >
                     {n}
@@ -404,7 +404,7 @@ export function OrderPanel({
                     style={{
                       backgroundColor: quantity === maxBuyShares ? "rgba(16, 185, 129, 0.2)" : "#080C14",
                       color: quantity === maxBuyShares ? "#10B981" : "#E3B341",
-                      border: `1px solid ${quantity === maxBuyShares ? "#10B981" : "#1F2937"}`,
+                      border: `1px solid ${quantity === maxBuyShares ? "#10B981" : "#0E1F35"}`,
                     }}
                   >
                     Max
@@ -423,7 +423,7 @@ export function OrderPanel({
                         style={{
                           backgroundColor: quantity === n ? "rgba(239, 68, 68, 0.2)" : "#080C14",
                           color: quantity === n ? "#EF4444" : "#94A3B8",
-                          border: `1px solid ${quantity === n ? "#EF4444" : "#1F2937"}`,
+                          border: `1px solid ${quantity === n ? "#EF4444" : "#0E1F35"}`,
                         }}
                       >
                         {n}
@@ -435,7 +435,7 @@ export function OrderPanel({
                       style={{
                         backgroundColor: quantity === ownedShares ? "rgba(239, 68, 68, 0.2)" : "#080C14",
                         color: quantity === ownedShares ? "#EF4444" : "#E3B341",
-                        border: `1px solid ${quantity === ownedShares ? "#EF4444" : "#1F2937"}`,
+                        border: `1px solid ${quantity === ownedShares ? "#EF4444" : "#0E1F35"}`,
                       }}
                     >
                       All ({ownedShares})
@@ -470,7 +470,7 @@ export function OrderPanel({
           </div>
         )}
 
-        <Separator style={{ backgroundColor: "#1F2937" }} />
+        <Separator style={{ backgroundColor: "#0E1F35" }} />
 
         {/* Estimated Cost / Credit */}
         <div className="flex items-center justify-between">

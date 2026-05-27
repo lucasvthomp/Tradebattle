@@ -136,7 +136,7 @@ export function TournamentSuccessDialog({
                 readOnly
                 value={tournamentLink}
                 className="flex-1 text-sm"
-                style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
+                style={{ backgroundColor: '#1E2D3F', borderColor: '#0E1F35', color: '#F1F5F9' }}
               />
               <Button
                 onClick={handleCopyLink}
@@ -195,8 +195,8 @@ export function TournamentSuccessDialog({
                       onClick={() => handleToggleFriend(friend.id)}
                       className="flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all hover:bg-white/5 min-h-[44px]"
                       style={{
-                        backgroundColor: selectedFriends.includes(friend.id) ? '#E3B34115' : '#111827',
-                        borderColor: selectedFriends.includes(friend.id) ? '#E3B341' : '#1F2937',
+                        backgroundColor: selectedFriends.includes(friend.id) ? '#E3B34115' : '#0B1120',
+                        borderColor: selectedFriends.includes(friend.id) ? '#E3B341' : '#0E1F35',
                         borderWidth: '1px',
                       }}
                     >

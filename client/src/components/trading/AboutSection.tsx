@@ -32,7 +32,7 @@ export function AboutSection({ symbol }: AboutSectionProps) {
   const displayText = expanded || !isLong ? description : description.slice(0, 250) + "...";
 
   return (
-    <div className="px-4 py-4" style={{ borderBottom: "1px solid #1F2937" }}>
+    <div className="px-4 py-4" style={{ borderBottom: "1px solid #0E1F35" }}>
       <h3 className="text-base font-bold mb-2" style={{ color: "#F1F5F9" }}>
         About
       </h3>

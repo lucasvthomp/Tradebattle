@@ -105,7 +105,7 @@ export function TourCard({ currentStep, onNext, onSkip }: TourCardProps) {
         transition={{ duration: 0.25, ease: "easeOut" }}
         style={{
           ...cardStyle,
-          background: "#0F172A",
+          background: "#080F1E",
           border: "2px solid #E3B341",
           boxShadow: "0 8px 32px rgba(227,179,65,0.15)",
           borderRadius: 16,
@@ -153,7 +153,7 @@ export function TourCard({ currentStep, onNext, onSkip }: TourCardProps) {
           style={{
             height: 4,
             borderRadius: 2,
-            backgroundColor: "#1F2937",
+            backgroundColor: "#0E1F35",
             marginBottom: 20,
             overflow: "hidden",
           }}
@@ -178,7 +178,7 @@ export function TourCard({ currentStep, onNext, onSkip }: TourCardProps) {
               flex: 1,
               padding: "10px 16px",
               borderRadius: 10,
-              border: "1px solid #1F2937",
+              border: "1px solid #0E1F35",
               background: "transparent",
               color: "#94A3B8",
               fontSize: 14,
