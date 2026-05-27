@@ -234,10 +234,10 @@ export function TradingSidebar({
 
         {/* Portfolio scorecard — inline under tournament selector */}
         <div
-          className="rounded-xl p-3 space-y-2"
+          className="rounded-lg p-2.5 space-y-2"
           style={{
-            background: `linear-gradient(135deg, ${isProfit ? "rgba(40,199,111,0.07)" : "rgba(255,79,88,0.07)"}, rgba(13,17,23,0.8))`,
-            border: `1px solid ${isProfit ? "rgba(40,199,111,0.2)" : "rgba(255,79,88,0.2)"}`,
+            background: `linear-gradient(135deg, ${isProfit ? "rgba(40,199,111,0.05)" : "rgba(255,79,88,0.05)"}, rgba(13,17,23,0.6))`,
+            border: `1px solid ${isProfit ? "rgba(40,199,111,0.12)" : "rgba(255,79,88,0.12)"}`,
           }}
         >
           <div className="flex items-end justify-between">
@@ -528,8 +528,8 @@ export function TradingSidebar({
             {/* BUY / SELL arcade toggle */}
             <div className="px-3 pt-3 pb-2">
               <div
-                className="flex rounded-xl overflow-hidden p-1 gap-1"
-                style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+                className="flex rounded-lg overflow-hidden p-0.5 gap-0.5"
+                style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <button
                   onClick={() => handleSideChange("buy")}

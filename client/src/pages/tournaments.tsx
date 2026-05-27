@@ -523,7 +523,7 @@ export default function TournamentsPage() {
 
           {/* Tabs */}
           <motion.div variants={fadeInUp}>
-            <div className="flex items-center gap-2 p-1 rounded-xl" style={{ backgroundColor: '#1E2D3F' }}>
+            <div className="flex items-center gap-1.5 p-0.5 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
               <button
                 onClick={() => setActiveTab('upcoming')}
                 className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
@@ -535,7 +535,7 @@ export default function TournamentsPage() {
                 <Trophy className="w-4 h-4" />
                 <span>Upcoming</span>
                 <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'upcoming' ? 'rgba(255,255,255,0.2)' : '#1F2937',
+                  backgroundColor: activeTab === 'upcoming' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)',
                   color: '#FFFFFF',
                 }}>
                   {upcomingTournaments.length}
@@ -552,7 +552,7 @@ export default function TournamentsPage() {
                 <Play className="w-4 h-4" />
                 <span>Live</span>
                 <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'live' ? 'rgba(255,255,255,0.2)' : '#1F2937',
+                  backgroundColor: activeTab === 'live' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)',
                   color: '#FFFFFF',
                 }}>
                   {liveTournaments.length}

@@ -1,10 +1,8 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Mail, Clock, Search, ChevronRight } from "lucide-react";
+import { Mail, Clock, Search, MessageSquare, Zap } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -20,14 +18,23 @@ const contactSchema = z.object({
 
 type ContactForm = z.infer<typeof contactSchema>;
 
+const cardStyle = {
+  backgroundColor: "#0D1117",
+  border: "1px solid rgba(255,255,255,0.06)",
+  borderRadius: "12px",
+};
+
+const inputStyle = {
+  backgroundColor: "rgba(255,255,255,0.04)",
+  borderColor: "rgba(255,255,255,0.08)",
+  color: "#F1F5F9",
+};
+
+const labelStyle = { color: "#8A93A6", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.05em" };
+
 export default function Support() {
   const { toast } = useToast();
-  const [formData, setFormData] = useState<ContactForm>({
-    name: "",
-    email: "",
-    subject: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState<ContactForm>({ name: "", email: "", subject: "", message: "" });
   const [errors, setErrors] = useState<Partial<ContactForm>>({});
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -36,19 +43,12 @@ export default function Support() {
       await apiRequest("POST", "/api/contact", data);
     },
     onSuccess: () => {
-      toast({
-        title: "Message Sent",
-        description: "We've received your message and will respond within 24 hours.",
-      });
+      toast({ title: "Message sent", description: "We'll get back to you within 24 hours." });
       setFormData({ name: "", email: "", subject: "", message: "" });
       setErrors({});
     },
     onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
+      toast({ title: "Failed to send", description: "Please try again.", variant: "destructive" });
     },
   });
 
@@ -62,9 +62,7 @@ export default function Support() {
       if (error instanceof z.ZodError) {
         const fieldErrors: Partial<ContactForm> = {};
         error.errors.forEach((err) => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as keyof ContactForm] = err.message;
-          }
+          if (err.path[0]) fieldErrors[err.path[0] as keyof ContactForm] = err.message;
         });
         setErrors(fieldErrors);
       }
@@ -73,267 +71,215 @@ export default function Support() {
 
   const handleChange = (field: keyof ContactForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
   const faqs = [
     {
-      category: "Account & Getting Started",
+      category: "Getting Started",
+      emoji: "🚀",
       questions: [
-        {
-          question: "How do I create an account?",
-          answer: "Click 'Sign Up' in the navigation bar and complete the registration form with your email address and password."
-        },
-        {
-          question: "How do I reset my password?",
-          answer: "Click 'Forgot Password' on the login page, enter your email, and follow the instructions in the reset email."
-        },
-        {
-          question: "How do I change my username?",
-          answer: "Navigate to Profile > Settings > Account Settings to update your display name."
-        }
+        { question: "How do I create an account?", answer: "Click 'Sign Up' in the navigation bar and complete the registration form with your email and password." },
+        { question: "How do I reset my password?", answer: "Click 'Forgot Password' on the login page, enter your email, and follow the instructions in the reset email." },
+        { question: "How do I change my username?", answer: "Navigate to Profile > Settings > Account Settings to update your display name." },
       ]
     },
     {
       category: "Trading",
+      emoji: "📈",
       questions: [
-        {
-          question: "Is my money at risk?",
-          answer: "No. ORSATH uses virtual currency for paper trading only. You never risk real money."
-        },
-        {
-          question: "How often are stock prices updated?",
-          answer: "Stock prices update in real-time during market hours (9:30 AM - 4:00 PM EST, Monday-Friday)."
-        },
-        {
-          question: "Can I sell stocks anytime?",
-          answer: "Yes, you can buy and sell stocks during market hours. Orders placed outside market hours will be queued."
-        },
-        {
-          question: "How are portfolio gains calculated?",
-          answer: "Portfolio gains = (Current Portfolio Value - Initial Deposit). This includes cash balance and current stock values."
-        }
+        { question: "Is my money at risk?", answer: "No. Tradebattle uses virtual currency for paper trading only. You never risk real money on trades." },
+        { question: "How often are prices updated?", answer: "Stock prices refresh in real-time during market hours (9:30 AM–4:00 PM EST, Mon–Fri). Crypto is 24/7." },
+        { question: "Can I sell anytime?", answer: "Yes, during market hours. Orders placed outside hours will be queued for the next open." },
+        { question: "How are portfolio gains calculated?", answer: "Gain % = (Current Value − Starting Balance) / Starting Balance. This includes your cash and all open positions." },
       ]
     },
     {
       category: "Tournaments",
+      emoji: "🏆",
       questions: [
-        {
-          question: "How do I join a tournament?",
-          answer: "Go to the Tournaments page, browse available competitions, and click 'Join Tournament' on your chosen event."
-        },
-        {
-          question: "How do tournament rankings work?",
-          answer: "Rankings are based on portfolio percentage gain. The trader with the highest return wins."
-        },
-        {
-          question: "Can I join multiple tournaments?",
-          answer: "Yes. Each tournament has a separate balance and portfolio."
-        }
+        { question: "How do I join a tournament?", answer: "Go to the Tournaments page, find an event you like, and click Join. Buy-in is deducted from your site wallet." },
+        { question: "How are rankings determined?", answer: "Rankings are based on portfolio percentage gain from the starting balance — highest return wins." },
+        { question: "Can I join multiple tournaments?", answer: "Yes. Each tournament has its own separate balance and portfolio." },
       ]
     },
     {
-      category: "Technical Support",
+      category: "Technical",
+      emoji: "⚙️",
       questions: [
-        {
-          question: "What browsers are supported?",
-          answer: "ORSATH works best on Chrome, Firefox, Safari, and Edge (latest versions)."
-        },
-        {
-          question: "Is there a mobile app?",
-          answer: "ORSATH is fully responsive and works on mobile browsers. No separate app is required."
-        },
-        {
-          question: "I'm experiencing technical issues. What should I do?",
-          answer: "Try clearing your browser cache and cookies. If the issue persists, contact support with details about the problem."
-        }
+        { question: "What browsers are supported?", answer: "Tradebattle works best on the latest versions of Chrome, Firefox, Safari, and Edge." },
+        { question: "Is there a mobile app?", answer: "The site is fully responsive and works great on mobile browsers — no separate app needed." },
+        { question: "I'm having issues. What should I do?", answer: "Try clearing your browser cache and cookies first. If it persists, send us a message below with the details." },
       ]
     }
   ];
 
-  const filteredFaqs = faqs.map(category => ({
-    ...category,
-    questions: category.questions.filter(q =>
+  const filteredFaqs = faqs.map(cat => ({
+    ...cat,
+    questions: cat.questions.filter(q =>
       searchQuery === "" ||
       q.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
       q.answer.toLowerCase().includes(searchQuery.toLowerCase())
     )
-  })).filter(category => category.questions.length > 0);
+  })).filter(cat => cat.questions.length > 0);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen" style={{ backgroundColor: "transparent" }}>
       {/* Header */}
-      <div className="border-b border-border bg-card">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">Support Center</h1>
+      <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", backgroundColor: "rgba(13,17,23,0.6)" }}>
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-10">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #E3B341, #c99a35)" }}>
+              <MessageSquare className="w-5 h-5" style={{ color: "#000" }} />
+            </div>
+            <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Support Center</h1>
+          </div>
+          <p className="text-sm" style={{ color: "#4B5563" }}>Quick answers below — or send us a message and we'll respond within 24 hours.</p>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
         {/* Search */}
-        <div className="mb-12">
+        <div className="mb-10">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#4B5563" }} />
             <Input
-              placeholder="Search for help..."
+              placeholder="Search help articles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-12 text-base"
+              className="pl-11 h-11 text-sm"
+              style={inputStyle}
             />
           </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
-          {/* FAQs - 2/3 width on desktop, full width on mobile */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground mb-6">Frequently Asked Questions</h2>
-
-              {filteredFaqs.map((category, categoryIndex) => (
-                <div key={categoryIndex} className="mb-8">
-                  <h3 className="text-lg font-semibold text-foreground mb-4 pb-2 border-b border-border">
-                    {category.category}
-                  </h3>
-                  <Accordion type="single" collapsible className="w-full">
-                    {category.questions.map((faq, faqIndex) => (
-                      <AccordionItem key={faqIndex} value={`item-${categoryIndex}-${faqIndex}`}>
-                        <AccordionTrigger className="text-left hover:no-underline text-foreground">
+          {/* FAQs */}
+          <div className="lg:col-span-2 space-y-6">
+            {filteredFaqs.map((cat, ci) => (
+              <div key={ci} style={cardStyle} className="overflow-hidden">
+                <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                  <span className="text-base">{cat.emoji}</span>
+                  <span className="text-sm font-bold" style={{ color: "#C9D1E2" }}>{cat.category}</span>
+                </div>
+                <div className="px-4">
+                  <Accordion type="single" collapsible>
+                    {cat.questions.map((faq, fi) => (
+                      <AccordionItem
+                        key={fi}
+                        value={`${ci}-${fi}`}
+                        style={{ borderBottomColor: "rgba(255,255,255,0.05)" }}
+                      >
+                        <AccordionTrigger
+                          className="text-left hover:no-underline py-3.5 text-sm font-semibold"
+                          style={{ color: "#C9D1E2" }}
+                        >
                           {faq.question}
                         </AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
+                        <AccordionContent className="text-sm pb-4 leading-relaxed" style={{ color: "#64748B" }}>
                           {faq.answer}
                         </AccordionContent>
                       </AccordionItem>
                     ))}
                   </Accordion>
                 </div>
-              ))}
+              </div>
+            ))}
 
-              {filteredFaqs.length === 0 && (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <p className="text-muted-foreground mb-4">No results found for your search.</p>
-                    <Button variant="outline" onClick={() => setSearchQuery("")}>
-                      Clear Search
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+            {filteredFaqs.length === 0 && (
+              <div style={cardStyle} className="p-8 text-center">
+                <p className="text-sm mb-3" style={{ color: "#4B5563" }}>No results for "{searchQuery}"</p>
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="text-sm font-semibold"
+                  style={{ color: "#E3B341" }}
+                >
+                  Clear search
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Contact Form - 1/3 width on desktop, full width on mobile */}
-          <div>
-            <div className="lg:sticky lg:top-24 space-y-4 md:space-y-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">Contact Support</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <Label htmlFor="name">Name</Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => handleChange("name", e.target.value)}
-                        placeholder="Your name"
-                        className="mt-1"
-                      />
-                      {errors.name && <p className="text-sm text-destructive mt-1">{errors.name}</p>}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="email">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleChange("email", e.target.value)}
-                        placeholder="you@example.com"
-                        className="mt-1"
-                      />
-                      {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="subject">Subject</Label>
-                      <Input
-                        id="subject"
-                        value={formData.subject}
-                        onChange={(e) => handleChange("subject", e.target.value)}
-                        placeholder="Brief description"
-                        className="mt-1"
-                      />
-                      {errors.subject && <p className="text-sm text-destructive mt-1">{errors.subject}</p>}
-                    </div>
-
-                    <div>
-                      <Label htmlFor="message">Message</Label>
-                      <Textarea
-                        id="message"
-                        value={formData.message}
-                        onChange={(e) => handleChange("message", e.target.value)}
-                        placeholder="Describe your issue..."
-                        className="mt-1 min-h-[120px]"
-                      />
-                      {errors.message && <p className="text-sm text-destructive mt-1">{errors.message}</p>}
-                    </div>
-
-                    <Button
-                      type="submit"
-                      disabled={contactMutation.isPending}
-                      className="w-full"
-                    >
-                      {contactMutation.isPending ? "Sending..." : "Send Message"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Contact Information</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-start space-x-3">
-                    <Mail className="w-5 h-5 text-muted-foreground mt-0.5" />
-                    <div>
-                      <div className="font-medium text-foreground">Email</div>
-                      <div className="text-sm text-muted-foreground">support@orsath.com</div>
-                    </div>
+          {/* Sidebar */}
+          <div className="space-y-4 lg:sticky lg:top-24">
+            {/* Contact form */}
+            <div style={cardStyle} className="p-4">
+              <div className="flex items-center gap-2 mb-4">
+                <Zap className="w-4 h-4" style={{ color: "#E3B341" }} />
+                <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Support</span>
+              </div>
+              <form onSubmit={handleSubmit} className="space-y-3">
+                {(["name", "email", "subject"] as const).map((field) => (
+                  <div key={field}>
+                    <label style={labelStyle} className="block mb-1">{field}</label>
+                    <Input
+                      type={field === "email" ? "email" : "text"}
+                      value={formData[field]}
+                      onChange={(e) => handleChange(field, e.target.value)}
+                      placeholder={field === "email" ? "you@example.com" : field === "name" ? "Your name" : "Brief description"}
+                      className="h-9 text-sm"
+                      style={inputStyle}
+                    />
+                    {errors[field] && <p className="text-xs mt-1" style={{ color: "#FF4F58" }}>{errors[field]}</p>}
                   </div>
+                ))}
+                <div>
+                  <label style={labelStyle} className="block mb-1">message</label>
+                  <Textarea
+                    value={formData.message}
+                    onChange={(e) => handleChange("message", e.target.value)}
+                    placeholder="Describe your issue..."
+                    className="text-sm min-h-[100px] resize-none"
+                    style={inputStyle}
+                  />
+                  {errors.message && <p className="text-xs mt-1" style={{ color: "#FF4F58" }}>{errors.message}</p>}
+                </div>
+                <button
+                  type="submit"
+                  disabled={contactMutation.isPending}
+                  className="w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
+                  style={{ background: "linear-gradient(135deg, #E3B341, #c99a35)", color: "#000" }}
+                >
+                  {contactMutation.isPending ? "Sending..." : "Send Message"}
+                </button>
+              </form>
+            </div>
 
-                  <div className="flex items-start space-x-3">
-                    <Clock className="w-5 h-5 text-muted-foreground mt-0.5" />
-                    <div>
-                      <div className="font-medium text-foreground">Response Time</div>
-                      <div className="text-sm text-muted-foreground">Within 24 hours</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+            {/* Info cards */}
+            <div style={cardStyle} className="p-4 space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(227,179,65,0.1)" }}>
+                  <Mail className="w-4 h-4" style={{ color: "#E3B341" }} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Email</div>
+                  <div className="text-xs" style={{ color: "#4B5563" }}>support@tradebattle.gg</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(40,199,111,0.1)" }}>
+                  <Clock className="w-4 h-4" style={{ color: "#28C76F" }} />
+                </div>
+                <div>
+                  <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Response Time</div>
+                  <div className="text-xs" style={{ color: "#4B5563" }}>Within 24 hours</div>
+                </div>
+              </div>
+            </div>
 
-              <Card>
-                <CardContent className="p-4">
-                  <div className="text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground mb-2">Support Hours</p>
-                    <div className="space-y-1">
-                      <div className="flex justify-between">
-                        <span>Monday - Friday</span>
-                        <span>9 AM - 6 PM EST</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Saturday - Sunday</span>
-                        <span>10 AM - 4 PM EST</span>
-                      </div>
-                    </div>
+            <div style={cardStyle} className="p-4">
+              <div className="text-xs font-bold mb-2" style={{ color: "#C9D1E2" }}>Support Hours</div>
+              <div className="space-y-1.5">
+                {[
+                  { days: "Mon – Fri", hours: "9 AM – 6 PM EST" },
+                  { days: "Sat – Sun", hours: "10 AM – 4 PM EST" },
+                ].map((row) => (
+                  <div key={row.days} className="flex justify-between text-xs">
+                    <span style={{ color: "#64748B" }}>{row.days}</span>
+                    <span style={{ color: "#8A93A6" }}>{row.hours}</span>
                   </div>
-                </CardContent>
-              </Card>
+                ))}
+              </div>
             </div>
           </div>
         </div>
