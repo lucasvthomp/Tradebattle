@@ -1,5 +1,4 @@
 import { useState, useMemo, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Search, X, Clock, ArrowLeft } from "lucide-react";
+import { Search, X, Clock, ArrowLeft, Zap, TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { executeOrder, type OrderRequest } from "@/lib/orderEngine";
@@ -58,7 +57,6 @@ export function TradingSidebar({
 
   const [activeView, setActiveView] = useState<ActiveView>("positions");
 
-  // Order form state
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
   const [orderType, setOrderType] = useState<OrderType>("market");
   const [buyInMode, setBuyInMode] = useState<BuyInMode>("shares");
@@ -69,7 +67,6 @@ export function TradingSidebar({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
-  // Market hours
   const [marketOpen, setMarketOpen] = useState(isMarketOpen());
   const isCryptoTournament = selectedTournament?.tournamentType === "crypto";
   const tradingBlocked = !marketOpen && !isCryptoTournament;
@@ -79,7 +76,6 @@ export function TradingSidebar({
     return () => clearInterval(interval);
   }, []);
 
-  // Stock search state
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
 
@@ -103,35 +99,26 @@ export function TradingSidebar({
     return results.slice(0, 8);
   }, [searchData, searchQuery]);
 
-  // Holdings data
   const holdings = useMemo(() => {
     const raw = (portfolioData as any)?.data || [];
     if (!Array.isArray(raw)) return [];
     return raw.filter((h: any) => h.shares > 0);
   }, [portfolioData]);
 
-  // Portfolio summary calculations
   const invested = holdings.reduce((sum: number, h: any) => sum + (h.currentValue || 0), 0);
   const totalPL = holdings.reduce((sum: number, h: any) => sum + (h.profitLoss || 0), 0);
   const totalValue = buyingPower + invested;
-  const pctChange =
-    startingBalance > 0 ? ((totalValue - startingBalance) / startingBalance) * 100 : 0;
+  const pctChange = startingBalance > 0 ? ((totalValue - startingBalance) / startingBalance) * 100 : 0;
 
   const formatMoney = (val: number) => {
     const abs = Math.abs(val);
-    return (
-      (val < 0 ? "-" : "") +
-      "$" +
-      abs.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-    );
+    return (val < 0 ? "-" : "") + "$" + abs.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  // Bid/Ask spread (simulated ~0.02% spread from market price)
   const spread = currentPrice * 0.0001;
   const bidPrice = currentPrice > 0 ? currentPrice - spread : 0;
   const askPrice = currentPrice > 0 ? currentPrice + spread : 0;
 
-  // Order logic — compute effective quantity and total
   const effectiveQuantity = buyInMode === "dollars" && currentPrice > 0
     ? Math.floor(dollarAmount / currentPrice)
     : quantity;
@@ -151,7 +138,6 @@ export function TradingSidebar({
       setAwaitingConfirm(true);
       return;
     }
-
     setIsSubmitting(true);
     setAwaitingConfirm(false);
     try {
@@ -168,23 +154,12 @@ export function TradingSidebar({
       setQuantity(1);
       setDollarAmount(0);
       onOrderExecuted();
-      queryClient.invalidateQueries({
-        queryKey: ["/api/tournaments", selectedTournament.id, "balance"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["/api/portfolio/tournament", selectedTournament.id],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["/api/tournaments", selectedTournament.id, "trades"],
-      });
-      // Go back to positions after successful trade
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments", selectedTournament.id, "balance"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/portfolio/tournament", selectedTournament.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments", selectedTournament.id, "trades"] });
       setActiveView("positions");
     } catch (error: any) {
-      toast({
-        title: `${orderSide === "buy" ? "Buy" : "Sell"} failed`,
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: `${orderSide === "buy" ? "Buy" : "Sell"} failed`, description: error.message, variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
@@ -214,129 +189,129 @@ export function TradingSidebar({
   };
 
   const buttonLabel = (() => {
-    if (isSubmitting) return "Submitting...";
-    if (awaitingConfirm) return `Confirm ${orderSide === "buy" ? "Buy" : "Short"}`;
-    return `${orderSide === "buy" ? "Buy" : "Short"} ${selectedSymbol}`;
+    if (isSubmitting) return "Placing Order...";
+    if (awaitingConfirm) return `⚡ Confirm ${orderSide === "buy" ? "BUY" : "SELL"}`;
+    return `${orderSide === "buy" ? "BUY" : "SELL"} ${selectedSymbol || "—"}`;
   })();
 
+  const isProfit = pctChange >= 0;
+
   return (
-    <div data-tour="trading-sidebar" className="flex flex-col h-full min-h-0">
-      {/* Tournament Selector + Buying Power — always visible */}
-      <div className="p-3 space-y-2 shrink-0" style={{ borderBottom: "1px solid #1F2937" }}>
-        <div>
-          <label className="text-xs font-medium mb-1 block" style={{ color: "#94A3B8" }}>
-            Tournament
-          </label>
-          <Select
-            value={selectedTournament?.id?.toString() || ""}
-            onValueChange={(value) => {
-              const t = activeTournaments.find((t: any) => t.id.toString() === value);
-              if (t) onTournamentChange(t);
+    <div
+      data-tour="trading-sidebar"
+      className="flex flex-col h-full min-h-0"
+      style={{ backgroundColor: "#0D1117" }}
+    >
+      {/* ── HEADER: Tournament selector + balance chip ── */}
+      <div
+        className="p-3 shrink-0 space-y-2"
+        style={{ borderBottom: "1px solid rgba(227,179,65,0.15)" }}
+      >
+        <Select
+          value={selectedTournament?.id?.toString() || ""}
+          onValueChange={(value) => {
+            const t = activeTournaments.find((t: any) => t.id.toString() === value);
+            if (t) onTournamentChange(t);
+          }}
+        >
+          <SelectTrigger
+            className="h-9 text-xs font-bold"
+            style={{
+              backgroundColor: "rgba(227,179,65,0.08)",
+              borderColor: "rgba(227,179,65,0.25)",
+              color: "#E3B341",
             }}
           >
-            <SelectTrigger
-              className="h-11 md:h-9"
-              style={{ backgroundColor: "#080C14", borderColor: "#1F2937", color: "#E3B341" }}
-            >
-              <SelectValue placeholder="Select Tournament" />
-            </SelectTrigger>
-            <SelectContent style={{ backgroundColor: "#111827", borderColor: "#1F2937" }}>
-              {activeTournaments.map((t: any) => (
-                <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
-                  {t.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-xs" style={{ color: "#94A3B8" }}>
-            Buying Power
-          </span>
-          <span className="text-sm font-semibold" style={{ color: "#E3B341" }}>
+            <SelectValue placeholder="Select Tournament" />
+          </SelectTrigger>
+          <SelectContent style={{ backgroundColor: "#161B22", borderColor: "rgba(227,179,65,0.2)" }}>
+            {activeTournaments.map((t: any) => (
+              <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
+                {t.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {/* Chip-style balance display */}
+        <div
+          className="flex items-center justify-between px-3 py-2 rounded-lg"
+          style={{
+            background: "linear-gradient(135deg, rgba(227,179,65,0.12), rgba(227,179,65,0.04))",
+            border: "1px solid rgba(227,179,65,0.2)",
+          }}
+        >
+          <div className="flex items-center gap-1.5">
+            <span style={{ fontSize: 14 }}>💰</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+              Cash
+            </span>
+          </div>
+          <span className="text-sm font-black" style={{ color: "#E3B341", letterSpacing: "-0.02em" }}>
             {formatCurrency(buyingPower)}
           </span>
         </div>
       </div>
 
-      {/* Market Status Banner */}
+      {/* ── MARKET STATUS BANNER ── */}
       {!isCryptoTournament && tradingBlocked && (
         <div
-          className="px-4 py-3 flex items-center gap-3 shrink-0"
+          className="px-3 py-2 flex items-center gap-2 shrink-0"
           style={{
-            backgroundColor: "#2D1215",
-            borderBottom: "1px solid #5C2327",
+            background: "linear-gradient(90deg, rgba(239,68,68,0.15), transparent)",
+            borderBottom: "1px solid rgba(239,68,68,0.25)",
           }}
         >
-          <Clock className="w-4 h-4 shrink-0" style={{ color: "#EF4444" }} />
+          <Clock className="w-3.5 h-3.5 shrink-0" style={{ color: "#EF4444" }} />
           <div>
-            <div className="text-xs font-bold" style={{ color: "#EF4444" }}>
-              Stock Market Closed
-            </div>
-            <div className="text-[10px]" style={{ color: "#94A3B8" }}>
-              Mon-Fri 9:30 AM - 4:00 PM ET
-            </div>
+            <span className="text-xs font-bold" style={{ color: "#EF4444" }}>Market Closed</span>
+            <span className="text-[10px] ml-2" style={{ color: "#64748B" }}>Mon–Fri 9:30–16:00 ET</span>
           </div>
         </div>
       )}
-
-      {/* Crypto Market Always Open Banner */}
       {isCryptoTournament && (
         <div
-          className="px-4 py-3 flex items-center gap-3 shrink-0"
+          className="px-3 py-2 flex items-center gap-2 shrink-0"
           style={{
-            backgroundColor: "#1A2E1F",
-            borderBottom: "1px solid #2D5A3D",
+            background: "linear-gradient(90deg, rgba(40,199,111,0.12), transparent)",
+            borderBottom: "1px solid rgba(40,199,111,0.2)",
           }}
         >
-          <Clock className="w-4 h-4 shrink-0" style={{ color: "#28C76F" }} />
-          <div>
-            <div className="text-xs font-bold" style={{ color: "#28C76F" }}>
-              Crypto Market - 24/7 Trading
-            </div>
-            <div className="text-[10px]" style={{ color: "#94A3B8" }}>
-              Trade anytime, anywhere
-            </div>
-          </div>
+          <Zap className="w-3.5 h-3.5 shrink-0" style={{ color: "#28C76F" }} />
+          <span className="text-xs font-bold" style={{ color: "#28C76F" }}>Crypto — 24/7 Open</span>
         </div>
       )}
 
-      {/* Persistent Symbol Search Bar */}
-      <div className="px-3 py-2 shrink-0" style={{ borderBottom: "1px solid #1F2937" }}>
+      {/* ── SYMBOL SEARCH ── */}
+      <div
+        className="px-3 py-2 shrink-0"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+      >
         <div className="relative">
-          <Search
-            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5"
-            style={{ color: "#94A3B8" }}
-          />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "#4B5563" }} />
           <Input
-            placeholder={selectedSymbol || "Search symbol..."}
+            placeholder={selectedSymbol ? `${selectedSymbol} — change symbol` : "Search symbol..."}
             value={showSearch ? searchQuery : ""}
             onFocus={() => setShowSearch(true)}
-            onChange={(e) => {
-              setShowSearch(true);
-              setSearchQuery(e.target.value.toUpperCase());
-            }}
-            className="h-9 pl-8 pr-8 text-sm"
+            onChange={(e) => { setShowSearch(true); setSearchQuery(e.target.value.toUpperCase()); }}
+            className="h-9 pl-8 pr-8 text-sm font-bold"
             style={{
-              backgroundColor: "#080C14",
-              borderColor: "#1F2937",
-              color: "#FFFFFF",
+              backgroundColor: "rgba(255,255,255,0.04)",
+              borderColor: "rgba(255,255,255,0.08)",
+              color: "#E3B341",
             }}
           />
           {showSearch && (
-            <button
-              onClick={() => { setShowSearch(false); setSearchQuery(""); }}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2"
-            >
-              <X className="w-3.5 h-3.5" style={{ color: "#94A3B8" }} />
+            <button onClick={() => { setShowSearch(false); setSearchQuery(""); }} className="absolute right-2.5 top-1/2 -translate-y-1/2">
+              <X className="w-3.5 h-3.5" style={{ color: "#64748B" }} />
             </button>
           )}
         </div>
-        {/* Search Results Dropdown */}
+
         {showSearch && searchQuery.length >= 1 && (
           <div
-            className="absolute left-3 right-3 z-50 rounded-lg overflow-hidden"
-            style={{ backgroundColor: "#111827", border: "1px solid #1F2937", marginTop: "4px" }}
+            className="absolute left-3 right-3 z-50 rounded-xl overflow-hidden"
+            style={{ backgroundColor: "#161B22", border: "1px solid rgba(227,179,65,0.2)", marginTop: 4, boxShadow: "0 8px 32px rgba(0,0,0,0.5)" }}
           >
             {isSearching ? (
               <div className="px-3 py-2 space-y-1.5">
@@ -347,101 +322,135 @@ export function TradingSidebar({
                 <button
                   key={result.symbol}
                   onClick={() => { handleSearchSelect(result.symbol); setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
-                  className="w-full px-3 py-2.5 text-left hover:bg-[#0F172A] flex items-center justify-between transition-colors"
-                  style={{ borderBottom: "1px solid rgba(31,41,55,0.5)" }}
+                  className="w-full px-3 py-2.5 text-left flex items-center justify-between transition-colors"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                  onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(227,179,65,0.07)")}
+                  onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
                   <div>
-                    <span className="text-sm font-bold" style={{ color: "#06B6D4" }}>{result.symbol}</span>
+                    <span className="text-sm font-black" style={{ color: "#E3B341" }}>{result.symbol}</span>
                     {result.name && (
-                      <div className="text-xs mt-0.5 truncate" style={{ color: "#94A3B8" }}>{result.name}</div>
+                      <div className="text-xs mt-0.5 truncate" style={{ color: "#64748B" }}>{result.name}</div>
                     )}
                   </div>
                   {result.exchange && (
-                    <span className="text-xs ml-2" style={{ color: "#64748B" }}>{result.exchange}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "#8A93A6" }}>{result.exchange}</span>
                   )}
                 </button>
               ))
             ) : (
               <div className="px-3 py-3 text-center">
-                <span className="text-sm" style={{ color: "#94A3B8" }}>No results for "{searchQuery}"</span>
+                <span className="text-sm" style={{ color: "#64748B" }}>No results for "{searchQuery}"</span>
               </div>
             )}
           </div>
         )}
       </div>
 
-      {/* Tab Bar */}
+      {/* ── TAB BAR ── */}
       <div
         className="flex items-center shrink-0"
-        style={{ borderBottom: "1px solid #1F2937" }}
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
-        <button
-          onClick={() => setActiveView("positions")}
-          className="flex-1 py-3 md:py-2.5 text-sm font-semibold text-center transition-colors min-h-[44px]"
-          style={{
-            color: activeView === "positions" ? "#E3B341" : "#94A3B8",
-            borderBottom: activeView === "positions" ? "2px solid #E3B341" : "2px solid transparent",
-          }}
-        >
-          Positions
-        </button>
-        <button
-          onClick={() => setActiveView("history")}
-          className="flex-1 py-3 md:py-2.5 text-sm font-semibold text-center transition-colors min-h-[44px]"
-          style={{
-            color: activeView === "history" ? "#E3B341" : "#94A3B8",
-            borderBottom: activeView === "history" ? "2px solid #E3B341" : "2px solid transparent",
-          }}
-        >
-          History
-        </button>
+        {(["positions", "history"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveView(tab)}
+            className="flex-1 py-2.5 text-xs font-bold uppercase tracking-wider text-center transition-all"
+            style={{
+              color: activeView === tab ? "#E3B341" : "#4B5563",
+              borderBottom: activeView === tab ? "2px solid #E3B341" : "2px solid transparent",
+              background: activeView === tab ? "rgba(227,179,65,0.05)" : "transparent",
+            }}
+          >
+            {tab}
+          </button>
+        ))}
         <button
           onClick={() => { setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
-          className="px-4 py-3 md:py-2.5 flex items-center justify-center transition-colors min-h-[44px] min-w-[44px]"
+          className="px-4 py-2.5 text-xs font-black uppercase tracking-wider transition-all"
           style={{
-            color: activeView === "trade" ? "#10B981" : "#94A3B8",
-            borderBottom: activeView === "trade" ? "2px solid #10B981" : "2px solid transparent",
+            color: activeView === "trade" ? "#28C76F" : "#4B5563",
+            borderBottom: activeView === "trade" ? "2px solid #28C76F" : "2px solid transparent",
+            background: activeView === "trade" ? "rgba(40,199,111,0.05)" : "transparent",
           }}
         >
-          <Plus className="w-5 h-5" />
+          Trade
         </button>
       </div>
 
-      {/* Content Area — scrollable */}
+      {/* ── CONTENT ── */}
       <ScrollArea className="flex-1 min-h-0">
+
         {/* POSITIONS VIEW */}
         {activeView === "positions" && (
           <div>
-            {/* Portfolio Summary */}
-            <div className="px-3 pt-3 pb-2 space-y-1.5" style={{ borderBottom: "1px solid #1F2937" }}>
-              {[
-                { label: "Cash", value: formatMoney(buyingPower), color: "#F1F5F9" },
-                { label: "Invested", value: formatMoney(invested), color: "#F1F5F9" },
-                {
-                  label: "P/L",
-                  value: (totalPL >= 0 ? "+" : "") + formatMoney(totalPL),
-                  color: totalPL >= 0 ? "#10B981" : "#EF4444",
-                },
-                {
-                  label: "Return",
-                  value: (pctChange >= 0 ? "+" : "") + pctChange.toFixed(2) + "%",
-                  color: pctChange >= 0 ? "#10B981" : "#EF4444",
-                },
-              ].map((s) => (
-                <div key={s.label} className="flex items-center justify-between">
-                  <span className="text-xs" style={{ color: "#64748B" }}>{s.label}</span>
-                  <span className="text-sm font-semibold" style={{ color: s.color }}>{s.value}</span>
+            {/* Portfolio scorecard */}
+            <div
+              className="mx-3 mt-3 mb-2 rounded-xl p-3 space-y-2"
+              style={{
+                background: "linear-gradient(135deg, rgba(13,17,23,0.8), rgba(22,27,34,0.8))",
+                border: `1px solid ${isProfit ? "rgba(40,199,111,0.25)" : "rgba(255,79,88,0.25)"}`,
+              }}
+            >
+              {/* Total value hero */}
+              <div className="flex items-end justify-between">
+                <div>
+                  <div className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: "#4B5563" }}>
+                    Portfolio Value
+                  </div>
+                  <div className="text-xl font-black mt-0.5" style={{ color: "#F1F5F9", letterSpacing: "-0.02em" }}>
+                    {formatMoney(totalValue)}
+                  </div>
                 </div>
-              ))}
+                <div
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-sm font-black"
+                  style={{
+                    backgroundColor: isProfit ? "rgba(40,199,111,0.15)" : "rgba(255,79,88,0.15)",
+                    color: isProfit ? "#28C76F" : "#FF4F58",
+                  }}
+                >
+                  {isProfit ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                  {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
+                </div>
+              </div>
+
+              {/* Cash / Invested / P-L row */}
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: "Cash", value: formatMoney(buyingPower), color: "#C9D1E2" },
+                  { label: "Invested", value: formatMoney(invested), color: "#C9D1E2" },
+                  {
+                    label: "P / L",
+                    value: (totalPL >= 0 ? "+" : "") + formatMoney(totalPL),
+                    color: totalPL >= 0 ? "#28C76F" : "#FF4F58",
+                  },
+                ].map((s) => (
+                  <div
+                    key={s.label}
+                    className="rounded-lg p-2 text-center"
+                    style={{ backgroundColor: "rgba(255,255,255,0.04)" }}
+                  >
+                    <div className="text-[9px] font-semibold uppercase tracking-wider mb-0.5" style={{ color: "#4B5563" }}>
+                      {s.label}
+                    </div>
+                    <div className="text-xs font-bold truncate" style={{ color: s.color }}>
+                      {s.value}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            {/* Holdings List */}
-            <div className="px-3 py-3">
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>Holdings</span>
+            {/* Holdings */}
+            <div className="px-3 py-2">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#4B5563" }}>
+                  Holdings
+                </span>
                 <span
-                  className="text-xs px-2 py-0.5 rounded-full font-semibold"
-                  style={{ backgroundColor: "rgba(6, 182, 212, 0.12)", color: "#06B6D4" }}
+                  className="text-[10px] font-black px-2 py-0.5 rounded-full"
+                  style={{ backgroundColor: "rgba(227,179,65,0.12)", color: "#E3B341" }}
                 >
                   {holdings.length}
                 </span>
@@ -449,9 +458,10 @@ export function TradingSidebar({
 
               {holdings.length === 0 ? (
                 <div className="py-8 text-center">
-                  <p className="text-sm" style={{ color: "#94A3B8" }}>No holdings yet</p>
-                  <p className="text-xs mt-1" style={{ color: "#64748B" }}>
-                    Search a symbol above to trade
+                  <div className="text-2xl mb-2">📈</div>
+                  <p className="text-sm font-semibold" style={{ color: "#4B5563" }}>No positions yet</p>
+                  <p className="text-xs mt-1" style={{ color: "#2D3748" }}>
+                    Search a ticker above to get started
                   </p>
                 </div>
               ) : (
@@ -459,41 +469,49 @@ export function TradingSidebar({
                   {holdings.map((h: any) => {
                     const isSelected = h.symbol === selectedSymbol;
                     const isPositive = (h.profitLoss || 0) >= 0;
-                    const changePercent =
-                      (h.averagePurchasePrice || 0) > 0
-                        ? ((h.currentPrice - h.averagePurchasePrice) / h.averagePurchasePrice) * 100
-                        : 0;
+                    const changePercent = (h.averagePurchasePrice || 0) > 0
+                      ? ((h.currentPrice - h.averagePurchasePrice) / h.averagePurchasePrice) * 100
+                      : 0;
 
                     return (
                       <button
                         key={h.symbol}
                         onClick={() => handleHoldingClick(h.symbol)}
-                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors hover:bg-[#0F172A]"
+                        className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all"
                         style={{
-                          backgroundColor: isSelected ? "#0F172A" : "transparent",
-                          borderLeft: isSelected ? "2px solid #06B6D4" : "2px solid transparent",
+                          backgroundColor: isSelected ? "rgba(227,179,65,0.08)" : "rgba(255,255,255,0.025)",
+                          border: isSelected ? "1px solid rgba(227,179,65,0.3)" : "1px solid transparent",
                         }}
                       >
                         <div className="text-left">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold" style={{ color: isSelected ? "#06B6D4" : "#FFFFFF" }}>
+                            <span className="text-sm font-black" style={{ color: isSelected ? "#E3B341" : "#F1F5F9" }}>
                               {h.symbol}
                             </span>
-                            <span className="text-xs" style={{ color: "#64748B" }}>
+                            <span
+                              className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+                              style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "#8A93A6" }}
+                            >
                               {h.shares} {isCryptoTournament ? "units" : "sh"}
                             </span>
                           </div>
-                          <div className="text-xs mt-0.5" style={{ color: "#94A3B8" }}>
-                            Avg {formatCurrency(h.averagePurchasePrice || 0)}
+                          <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>
+                            avg {formatCurrency(h.averagePurchasePrice || 0)}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
-                            {formatCurrency(h.currentValue || 0)}
+                        <div className="text-right flex items-center gap-2">
+                          <div>
+                            <div className="text-sm font-bold" style={{ color: "#F1F5F9" }}>
+                              {formatCurrency(h.currentValue || 0)}
+                            </div>
+                            <div
+                              className="text-xs font-black"
+                              style={{ color: isPositive ? "#28C76F" : "#FF4F58" }}
+                            >
+                              {isPositive ? "+" : ""}{changePercent.toFixed(1)}%
+                            </div>
                           </div>
-                          <div className="text-xs font-medium" style={{ color: isPositive ? "#10B981" : "#EF4444" }}>
-                            {isPositive ? "+" : ""}{changePercent.toFixed(1)}%
-                          </div>
+                          <ChevronRight className="w-3.5 h-3.5" style={{ color: "#2D3748" }} />
                         </div>
                       </button>
                     );
@@ -509,286 +527,303 @@ export function TradingSidebar({
           <TradeHistory tournamentId={selectedTournament?.id} />
         )}
 
-        {/* TRADE VIEW — Robinhood Legend style */}
+        {/* TRADE VIEW */}
         {activeView === "trade" && (
           <div>
-            {/* Back button */}
+            {/* Back + ticker header */}
             <div
-              className="flex items-center px-3 py-2 shrink-0"
-              style={{ borderBottom: "1px solid #1F2937" }}
+              className="flex items-center gap-2 px-3 py-2.5 shrink-0"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
             >
               <button
                 onClick={() => setActiveView("positions")}
-                className="p-1 rounded hover:bg-[#0F172A] transition-colors"
+                className="p-1.5 rounded-lg transition-colors"
+                style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
               >
-                <ArrowLeft className="w-4 h-4" style={{ color: "#94A3B8" }} />
+                <ArrowLeft className="w-4 h-4" style={{ color: "#8A93A6" }} />
               </button>
-            </div>
-
-            {/* Ticker + Price Header */}
-            <div className="px-4 pt-3 pb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-lg font-bold" style={{ color: "#FFFFFF" }}>
-                  {selectedSymbol}
-                </span>
-                {companyName !== selectedSymbol && (
-                  <span className="text-xs truncate" style={{ color: "#64748B" }}>
-                    {companyName}
-                  </span>
-                )}
-              </div>
-              <div className="text-2xl font-bold mt-0.5" style={{ color: "#FFFFFF" }}>
-                {formatCurrency(currentPrice)}
-              </div>
-            </div>
-
-            {/* Buy / Short Tabs */}
-            <>
-                <div className="flex mx-4 rounded-lg overflow-hidden" style={{ border: "1px solid #1F2937" }}>
-                  <button
-                    onClick={() => handleSideChange("buy")}
-                    className="flex-1 py-3 md:py-2 text-base md:text-sm font-semibold text-center transition-colors min-h-[48px]"
-                    style={{
-                      backgroundColor: orderSide === "buy" ? "#10B981" : "transparent",
-                      color: orderSide === "buy" ? "#000000" : "#94A3B8",
-                    }}
-                  >
-                    Buy
-                  </button>
-                  <button
-                    onClick={() => handleSideChange("sell")}
-                    className="flex-1 py-3 md:py-2 text-base md:text-sm font-semibold text-center transition-colors min-h-[48px]"
-                    style={{
-                      backgroundColor: orderSide === "sell" ? "#EF4444" : "transparent",
-                      color: orderSide === "sell" ? "#FFFFFF" : "#94A3B8",
-                    }}
-                  >
-                    Short
-                  </button>
-                </div>
-
-                {/* Order Form — Robinhood Legend rows */}
-                <div className="px-4 pt-4 space-y-0">
-                  {/* Order Type Row */}
-                  <div
-                    className="flex items-center justify-between py-3"
-                    style={{ borderBottom: "1px solid #1F2937" }}
-                  >
-                    <span className="text-sm" style={{ color: "#F1F5F9" }}>Order Type</span>
-                    <Select value={orderType} onValueChange={(v) => { setOrderType(v as OrderType); setAwaitingConfirm(false); }}>
-                      <SelectTrigger
-                        className="w-auto h-auto p-0 border-0 bg-transparent gap-1"
-                        style={{ color: "#10B981" }}
-                      >
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent style={{ backgroundColor: "#111827", borderColor: "#1F2937" }}>
-                        <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
-                        <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
-                        <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
-                        <SelectItem value="stop_limit" style={{ color: "#F1F5F9" }}>Stop Limit</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Limit Price Row (only for limit / stop limit) */}
-                  {(orderType === "limit" || orderType === "stop_limit") && (
-                    <div
-                      className="flex items-center justify-between py-3"
-                      style={{ borderBottom: "1px solid #1F2937" }}
-                    >
-                      <span className="text-sm" style={{ color: "#F1F5F9" }}>Limit Price</span>
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        min="0"
-                        step="0.01"
-                        value={limitPrice || ""}
-                        onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
-                        placeholder="0.00"
-                        className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
-                        style={{ color: "#10B981" }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Stop Price Row (only for stop market / stop limit) */}
-                  {(orderType === "stop_market" || orderType === "stop_limit") && (
-                    <div
-                      className="flex items-center justify-between py-3"
-                      style={{ borderBottom: "1px solid #1F2937" }}
-                    >
-                      <span className="text-sm" style={{ color: "#F1F5F9" }}>Stop Price</span>
-                      <Input
-                        type="number"
-                        inputMode="decimal"
-                        min="0"
-                        step="0.01"
-                        value={stopPrice || ""}
-                        onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
-                        placeholder="0.00"
-                        className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
-                        style={{ color: "#10B981" }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Buy In Row */}
-                  <div
-                    className="flex items-center justify-between py-3"
-                    style={{ borderBottom: "1px solid #1F2937" }}
-                  >
-                    <span className="text-sm" style={{ color: "#F1F5F9" }}>
-                      {orderSide === "buy" ? "Buy In" : "Short In"}
-                    </span>
-                    <Select value={buyInMode} onValueChange={(v) => { setBuyInMode(v as BuyInMode); setAwaitingConfirm(false); }}>
-                      <SelectTrigger
-                        className="w-auto h-auto p-0 border-0 bg-transparent gap-1"
-                        style={{ color: "#10B981" }}
-                      >
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent style={{ backgroundColor: "#111827", borderColor: "#1F2937" }}>
-                        <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
-                          {isCryptoTournament ? "Units" : "Shares"}
-                        </SelectItem>
-                        <SelectItem value="dollars" style={{ color: "#F1F5F9" }}>Dollars</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Quantity Row */}
-                  <div
-                    className="flex items-center justify-between py-3"
-                    style={{ borderBottom: "1px solid #1F2937" }}
-                  >
-                    <span className="text-sm" style={{ color: "#F1F5F9" }}>
-                      {buyInMode === "shares" ? (isCryptoTournament ? "Units" : "Shares") : "Amount"}
-                    </span>
-                    {buyInMode === "shares" ? (
-                      <Input
-                        type="number"
-                        inputMode="numeric"
-                        min="0"
-                        value={quantity || ""}
-                        onChange={(e) => { setQuantity(Math.max(0, parseInt(e.target.value) || 0)); setAwaitingConfirm(false); }}
-                        placeholder="0"
-                        className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
-                        style={{ color: "#FFFFFF" }}
-                      />
-                    ) : (
-                      <div className="flex items-center">
-                        <span className="text-sm mr-0.5" style={{ color: "#64748B" }}>$</span>
-                        <Input
-                          type="number"
-                          inputMode="decimal"
-                          min="0"
-                          step="0.01"
-                          value={dollarAmount || ""}
-                          onChange={(e) => { setDollarAmount(Math.max(0, parseFloat(e.target.value) || 0)); setAwaitingConfirm(false); }}
-                          placeholder="0.00"
-                          className="w-28 h-11 md:h-7 text-right text-base md:text-sm border-0 bg-transparent p-0"
-                          style={{ color: "#FFFFFF" }}
-                        />
-                      </div>
+              {selectedSymbol ? (
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base font-black" style={{ color: "#FFFFFF" }}>{selectedSymbol}</span>
+                    {companyName !== selectedSymbol && (
+                      <span className="text-xs truncate" style={{ color: "#4B5563" }}>{companyName}</span>
                     )}
                   </div>
-
-                  {/* Dollars mode: show estimated shares */}
-                  {buyInMode === "dollars" && effectiveQuantity > 0 && (
-                    <div className="flex items-center justify-between py-2">
-                      <span className="text-[11px]" style={{ color: "#64748B" }}>
-                        Est. Shares
-                      </span>
-                      <span className="text-[11px] font-medium" style={{ color: "#94A3B8" }}>
-                        {effectiveQuantity}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Market Price + Bid/Ask */}
-                  <div className="pt-3 pb-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm" style={{ color: "#F1F5F9" }}>Market Price</span>
-                      <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
-                        {formatCurrency(currentPrice)}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between mt-1">
-                      <span className="text-[11px]" style={{ color: "#64748B" }}>Bid</span>
-                      <span className="text-[11px]" style={{ color: "#94A3B8" }}>
-                        {formatCurrency(bidPrice)}
-                      </span>
-                    </div>
-                    <div
-                      className="flex items-center justify-between mt-0.5 pb-3"
-                      style={{ borderBottom: "1px solid #1F2937" }}
-                    >
-                      <span className="text-[11px]" style={{ color: "#64748B" }}>Ask</span>
-                      <span className="text-[11px]" style={{ color: "#94A3B8" }}>
-                        {formatCurrency(askPrice)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Estimated Cost */}
-                  <div className="flex items-center justify-between py-3">
-                    <span className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>
-                      Estimated {orderSide === "buy" ? "Cost" : "Credit"}
-                    </span>
-                    <span className="text-sm font-bold" style={{ color: "#FFFFFF" }}>
-                      {formatCurrency(estimatedTotal)}
-                    </span>
-                  </div>
-
-                  {orderSide === "buy" && estimatedTotal > buyingPower && (
-                    <p className="text-xs pb-1" style={{ color: "#EF4444" }}>
-                      Exceeds buying power by {formatCurrency(estimatedTotal - buyingPower)}
-                    </p>
-                  )}
-                  {orderSide === "sell" && effectiveQuantity > ownedShares && ownedShares > 0 && (
-                    <p className="text-xs pb-1" style={{ color: "#EF4444" }}>
-                      You only own {ownedShares} shares
-                    </p>
-                  )}
-
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 pt-2 pb-4">
-                    <Button
-                      onClick={() => {
-                        setAwaitingConfirm(false);
-                        setActiveView("positions");
-                      }}
-                      className="flex-1 h-12 md:h-10 font-semibold text-base md:text-sm min-h-[48px]"
-                      style={{
-                        backgroundColor: "transparent",
-                        border: "1px solid #1F2937",
-                        color: "#94A3B8",
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleSubmit}
-                      disabled={!canSubmit || isSubmitting}
-                      className="flex-1 h-12 md:h-10 font-bold text-base md:text-sm disabled:opacity-40 min-h-[48px]"
-                      style={{
-                        background: awaitingConfirm
-                          ? orderSide === "buy"
-                            ? "linear-gradient(135deg, #0d9668, #0591a3)"
-                            : "linear-gradient(135deg, #c53030, #c05621)"
-                          : orderSide === "buy"
-                            ? "linear-gradient(135deg, #10B981, #06B6D4)"
-                            : "linear-gradient(135deg, #EF4444, #F97316)",
-                        color: orderSide === "buy" ? "#000000" : "#FFFFFF",
-                        border: awaitingConfirm ? "2px solid #FFFFFF" : "none",
-                      }}
-                    >
-                      {buttonLabel}
-                    </Button>
+                  <div className="text-lg font-black" style={{ color: "#E3B341", letterSpacing: "-0.02em" }}>
+                    {formatCurrency(currentPrice)}
                   </div>
                 </div>
-            </>
+              ) : (
+                <span className="text-sm" style={{ color: "#4B5563" }}>No symbol selected</span>
+              )}
+            </div>
+
+            {/* BUY / SELL arcade toggle */}
+            <div className="px-3 pt-3 pb-2">
+              <div
+                className="flex rounded-xl overflow-hidden p-1 gap-1"
+                style={{ backgroundColor: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
+              >
+                <button
+                  onClick={() => handleSideChange("buy")}
+                  className="flex-1 py-3 text-sm font-black text-center rounded-lg transition-all"
+                  style={
+                    orderSide === "buy"
+                      ? {
+                          background: "linear-gradient(135deg, #28C76F, #20a35a)",
+                          color: "#000000",
+                          boxShadow: "0 0 20px rgba(40,199,111,0.35)",
+                        }
+                      : { backgroundColor: "transparent", color: "#4B5563" }
+                  }
+                >
+                  📈 BUY
+                </button>
+                <button
+                  onClick={() => handleSideChange("sell")}
+                  className="flex-1 py-3 text-sm font-black text-center rounded-lg transition-all"
+                  style={
+                    orderSide === "sell"
+                      ? {
+                          background: "linear-gradient(135deg, #FF4F58, #cc3f46)",
+                          color: "#FFFFFF",
+                          boxShadow: "0 0 20px rgba(255,79,88,0.35)",
+                        }
+                      : { backgroundColor: "transparent", color: "#4B5563" }
+                  }
+                >
+                  📉 SELL
+                </button>
+              </div>
+            </div>
+
+            {/* Order form */}
+            <div className="px-3 space-y-1 pb-2">
+              {/* Order Type */}
+              <div
+                className="flex items-center justify-between py-3"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                  Order Type
+                </span>
+                <Select
+                  value={orderType}
+                  onValueChange={(v) => { setOrderType(v as OrderType); setAwaitingConfirm(false); }}
+                >
+                  <SelectTrigger
+                    className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold"
+                    style={{ color: "#E3B341" }}
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent style={{ backgroundColor: "#161B22", borderColor: "rgba(227,179,65,0.2)" }}>
+                    <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
+                    <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
+                    <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
+                    <SelectItem value="stop_limit" style={{ color: "#F1F5F9" }}>Stop Limit</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Limit Price */}
+              {(orderType === "limit" || orderType === "stop_limit") && (
+                <div
+                  className="flex items-center justify-between py-3"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                >
+                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                    Limit Price
+                  </span>
+                  <Input
+                    type="number" inputMode="decimal" min="0" step="0.01"
+                    value={limitPrice || ""}
+                    onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
+                    placeholder="0.00"
+                    className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
+                    style={{ color: "#E3B341" }}
+                  />
+                </div>
+              )}
+
+              {/* Stop Price */}
+              {(orderType === "stop_market" || orderType === "stop_limit") && (
+                <div
+                  className="flex items-center justify-between py-3"
+                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                >
+                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                    Stop Price
+                  </span>
+                  <Input
+                    type="number" inputMode="decimal" min="0" step="0.01"
+                    value={stopPrice || ""}
+                    onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
+                    placeholder="0.00"
+                    className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
+                    style={{ color: "#E3B341" }}
+                  />
+                </div>
+              )}
+
+              {/* Buy In mode */}
+              <div
+                className="flex items-center justify-between py-3"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                  Buy In
+                </span>
+                <Select value={buyInMode} onValueChange={(v) => { setBuyInMode(v as BuyInMode); setAwaitingConfirm(false); }}>
+                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#E3B341" }}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent style={{ backgroundColor: "#161B22", borderColor: "rgba(227,179,65,0.2)" }}>
+                    <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
+                      {isCryptoTournament ? "Units" : "Shares"}
+                    </SelectItem>
+                    <SelectItem value="dollars" style={{ color: "#F1F5F9" }}>Dollars</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Quantity */}
+              <div
+                className="flex items-center justify-between py-3"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                  {buyInMode === "shares" ? (isCryptoTournament ? "Units" : "Shares") : "Amount"}
+                </span>
+                {buyInMode === "shares" ? (
+                  <Input
+                    type="number" inputMode="numeric" min="0"
+                    value={quantity || ""}
+                    onChange={(e) => { setQuantity(Math.max(0, parseInt(e.target.value) || 0)); setAwaitingConfirm(false); }}
+                    placeholder="0"
+                    className="w-28 h-9 md:h-7 text-right text-sm font-black border-0 bg-transparent p-0"
+                    style={{ color: "#FFFFFF" }}
+                  />
+                ) : (
+                  <div className="flex items-center">
+                    <span className="text-sm mr-0.5" style={{ color: "#4B5563" }}>$</span>
+                    <Input
+                      type="number" inputMode="decimal" min="0" step="0.01"
+                      value={dollarAmount || ""}
+                      onChange={(e) => { setDollarAmount(Math.max(0, parseFloat(e.target.value) || 0)); setAwaitingConfirm(false); }}
+                      placeholder="0.00"
+                      className="w-28 h-9 md:h-7 text-right text-sm font-black border-0 bg-transparent p-0"
+                      style={{ color: "#FFFFFF" }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {buyInMode === "dollars" && effectiveQuantity > 0 && (
+                <div className="flex items-center justify-between py-1">
+                  <span className="text-[10px]" style={{ color: "#4B5563" }}>Est. Shares</span>
+                  <span className="text-[10px] font-bold" style={{ color: "#8A93A6" }}>{effectiveQuantity}</span>
+                </div>
+              )}
+
+              {/* Price info strip */}
+              <div
+                className="rounded-xl p-3 mt-1 space-y-1.5"
+                style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs" style={{ color: "#4B5563" }}>Market Price</span>
+                  <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>{formatCurrency(currentPrice)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px]" style={{ color: "#2D3748" }}>Bid</span>
+                  <span className="text-[10px]" style={{ color: "#4B5563" }}>{formatCurrency(bidPrice)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px]" style={{ color: "#2D3748" }}>Ask</span>
+                  <span className="text-[10px]" style={{ color: "#4B5563" }}>{formatCurrency(askPrice)}</span>
+                </div>
+              </div>
+
+              {/* Estimated total */}
+              <div
+                className="flex items-center justify-between py-3"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+              >
+                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                  Est. {orderSide === "buy" ? "Cost" : "Credit"}
+                </span>
+                <span className="text-base font-black" style={{ color: "#FFFFFF" }}>
+                  {formatCurrency(estimatedTotal)}
+                </span>
+              </div>
+
+              {/* Validation warnings */}
+              {orderSide === "buy" && estimatedTotal > buyingPower && estimatedTotal > 0 && (
+                <div
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
+                  style={{ backgroundColor: "rgba(255,79,88,0.1)", color: "#FF4F58", border: "1px solid rgba(255,79,88,0.2)" }}
+                >
+                  ⚠ Exceeds buying power by {formatCurrency(estimatedTotal - buyingPower)}
+                </div>
+              )}
+              {orderSide === "sell" && effectiveQuantity > ownedShares && ownedShares > 0 && (
+                <div
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
+                  style={{ backgroundColor: "rgba(255,79,88,0.1)", color: "#FF4F58", border: "1px solid rgba(255,79,88,0.2)" }}
+                >
+                  ⚠ You only own {ownedShares} shares
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex gap-2 pt-2 pb-4">
+                <button
+                  onClick={() => { setAwaitingConfirm(false); setActiveView("positions"); }}
+                  className="flex-1 py-3 rounded-xl text-sm font-bold transition-colors"
+                  style={{
+                    backgroundColor: "rgba(255,255,255,0.05)",
+                    color: "#8A93A6",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!canSubmit || isSubmitting}
+                  className="flex-1 py-3 rounded-xl text-sm font-black transition-all disabled:opacity-30"
+                  style={
+                    canSubmit
+                      ? orderSide === "buy"
+                        ? {
+                            background: awaitingConfirm
+                              ? "linear-gradient(135deg, #0d9668, #0d7e58)"
+                              : "linear-gradient(135deg, #28C76F, #20a35a)",
+                            color: "#000000",
+                            boxShadow: awaitingConfirm
+                              ? "0 0 24px rgba(40,199,111,0.6)"
+                              : "0 0 16px rgba(40,199,111,0.3)",
+                            border: awaitingConfirm ? "2px solid rgba(40,199,111,0.8)" : "none",
+                          }
+                        : {
+                            background: awaitingConfirm
+                              ? "linear-gradient(135deg, #cc3f46, #a83338)"
+                              : "linear-gradient(135deg, #FF4F58, #cc3f46)",
+                            color: "#FFFFFF",
+                            boxShadow: awaitingConfirm
+                              ? "0 0 24px rgba(255,79,88,0.6)"
+                              : "0 0 16px rgba(255,79,88,0.3)",
+                            border: awaitingConfirm ? "2px solid rgba(255,79,88,0.8)" : "none",
+                          }
+                      : { backgroundColor: "rgba(255,255,255,0.08)", color: "#4B5563" }
+                  }
+                >
+                  {buttonLabel}
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </ScrollArea>

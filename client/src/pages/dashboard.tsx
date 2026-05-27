@@ -136,7 +136,7 @@ export default function Dashboard() {
       <WebsiteTour />
       <div
         className="h-screen flex flex-col md:flex-row"
-        style={{ backgroundColor: "#080C14" }}
+        style={{ backgroundColor: "#0A0E17" }}
       >
       {/* LEFT: Chart fills ~5/7 of width */}
       <div data-tour="chart-area" className="flex-1 min-w-0 min-h-[350px] md:min-h-0 h-full">
@@ -145,10 +145,10 @@ export default function Dashboard() {
 
       {/* RIGHT: Unified Sidebar ~2/7 of width */}
       <div
-        className="w-full md:w-[265px] md:max-w-[265px] md:min-w-[220px] flex flex-col h-[60vh] md:h-full"
+        className="w-full md:w-[270px] md:max-w-[270px] md:min-w-[230px] flex flex-col h-[60vh] md:h-full"
         style={{
-          backgroundColor: "#111827",
-          borderLeft: "1px solid #1F2937",
+          backgroundColor: "#0D1117",
+          borderLeft: "1px solid rgba(227,179,65,0.12)",
         }}
       >
         <TradingSidebar
