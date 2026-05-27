@@ -227,7 +227,6 @@ export default function Terms() {
             <div className="mt-12 pt-8 border-t border-border">
               <p className="mb-2"><strong>Support:</strong> support@profolio.com</p>
               <p className="mb-2"><strong>Legal/DMCA/Arbitration Opt-Out:</strong> legal@orsath.com</p>
-              <p className="mb-8"><strong>General Counsel:</strong> Daniel Palmer</p>
 
               <p className="mb-4">
                 IN WITNESS WHEREOF, by using the Platform, you acknowledge that you have read, understood,
