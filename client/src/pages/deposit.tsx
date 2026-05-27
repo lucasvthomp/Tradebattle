@@ -176,10 +176,12 @@ export default function Deposit() {
   }
 
   const currencyOptions = [
-    { value: 'usdttrc20', label: 'USDT (TRC20)', icon: '₮' },
-    { value: 'btc', label: 'Bitcoin', icon: '₿' },
-    { value: 'eth', label: 'Ethereum', icon: 'Ξ' },
-    { value: 'ltc', label: 'Litecoin', icon: 'Ł' },
+    { value: 'btc',       label: 'BTC',  name: 'Bitcoin',  img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/btc.png' },
+    { value: 'eth',       label: 'ETH',  name: 'Ethereum', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/eth.png' },
+    { value: 'ltc',       label: 'LTC',  name: 'Litecoin', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/ltc.png' },
+    { value: 'sol',       label: 'SOL',  name: 'Solana',   img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/sol.png' },
+    { value: 'usdttrc20', label: 'USDT', name: 'Tether',   img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/usdt.png' },
+    { value: 'usdc',      label: 'USDC', name: 'USD Coin', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/usdc.png' },
   ];
 
   return (
@@ -435,48 +437,48 @@ export default function Deposit() {
 
               {/* Currency Selection */}
               <div style={{ marginBottom: '28px' }}>
-                <label style={{
-                  color: '#8A93A6',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  marginBottom: '12px',
-                  display: 'block',
-                }}>
+                <label style={{ color: '#8A93A6', fontSize: '14px', fontWeight: '500', marginBottom: '12px', display: 'block' }}>
                   Select Cryptocurrency
                 </label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px' }}>
-                  {currencyOptions.map(option => (
-                    <button
-                      key={option.value}
-                      onClick={() => setSelectedCurrency(option.value)}
-                      style={{
-                        padding: '16px',
-                        background: selectedCurrency === option.value ? 'rgba(227, 179, 65, 0.1)' : '#091525',
-                        border: `2px solid ${selectedCurrency === option.value ? '#E3B341' : '#0E2040'}`,
-                        borderRadius: '8px',
-                        color: selectedCurrency === option.value ? '#E3B341' : '#C9D1E2',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        gap: '8px',
-                      }}
-                      onMouseEnter={(e) => {
-                        if (selectedCurrency !== option.value) {
-                          e.currentTarget.style.borderColor = '#8A93A6';
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (selectedCurrency !== option.value) {
-                          e.currentTarget.style.borderColor = '#0E2040';
-                        }
-                      }}
-                    >
-                      <span style={{ fontSize: '24px' }}>{option.icon}</span>
-                      <span style={{ fontSize: '14px', fontWeight: '500' }}>{option.label}</span>
-                    </button>
-                  ))}
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  {currencyOptions.map(option => {
+                    const selected = selectedCurrency === option.value;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setSelectedCurrency(option.value)}
+                        style={{
+                          aspectRatio: '1',
+                          padding: '0',
+                          background: selected ? 'rgba(227,179,65,0.1)' : 'rgba(255,255,255,0.03)',
+                          border: `2px solid ${selected ? '#E3B341' : 'rgba(255,255,255,0.07)'}`,
+                          borderRadius: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '8px',
+                          boxShadow: selected ? '0 0 16px rgba(227,179,65,0.2)' : 'none',
+                        }}
+                        onMouseEnter={e => { if (!selected) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)'; }}
+                        onMouseLeave={e => { if (!selected) e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'; }}
+                      >
+                        <img
+                          src={option.img}
+                          alt={option.label}
+                          style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                        />
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: selected ? '#E3B341' : '#C9D1E2' }}>
+                          {option.label}
+                        </span>
+                        <span style={{ fontSize: '10px', color: '#4B5563', marginTop: '-4px' }}>
+                          {option.name}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
