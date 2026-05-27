@@ -135,6 +135,32 @@ async function runMigrations() {
       );
     `);
 
+    // Create blitz_queue table if it doesn't exist (DB-backed matchmaking queue)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS blitz_queue (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL UNIQUE REFERENCES users(id),
+        status VARCHAR(16) DEFAULT 'waiting' NOT NULL,
+        matched_tournament_id INTEGER REFERENCES tournaments(id),
+        joined_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
+    // Create wallet_connection_logs table if it doesn't exist (Web3 auth audit log)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS wallet_connection_logs (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id),
+        wallet_address VARCHAR(66) NOT NULL,
+        action VARCHAR(50) NOT NULL,
+        success BOOLEAN NOT NULL,
+        error_message TEXT,
+        ip_address VARCHAR(64),
+        user_agent TEXT,
+        created_at TIMESTAMP DEFAULT NOW() NOT NULL
+      );
+    `);
+
     // Note: Admin promotion should be done manually via database or admin panel
     // Removed automatic promotion to prevent security issues
 
