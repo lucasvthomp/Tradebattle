@@ -1,216 +1,209 @@
-import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { TrendingDown, ArrowLeft, Home, BarChart3 } from "lucide-react";
 import { motion } from "framer-motion";
+import { Home, ArrowLeft, TrendingDown } from "lucide-react";
+
+const chartPoints = [
+  { x: 0, y: 20 }, { x: 8, y: 18 }, { x: 16, y: 22 }, { x: 24, y: 15 },
+  { x: 32, y: 19 }, { x: 40, y: 12 }, { x: 48, y: 16 }, { x: 56, y: 10 },
+  { x: 64, y: 14 }, { x: 72, y: 8 }, { x: 80, y: 30 }, { x: 86, y: 48 },
+  { x: 90, y: 62 }, { x: 94, y: 74 }, { x: 98, y: 86 }, { x: 100, y: 95 },
+];
+
+const toSvgPath = (pts: { x: number; y: number }[]) =>
+  pts.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ");
+
+const pathD = toSvgPath(chartPoints);
+const areaD = `${pathD} L 100 100 L 0 100 Z`;
+
+const ticker = [
+  { sym: "ROUTE", val: "404", chg: "-100%", up: false },
+  { sym: "PAGE", val: "NULL", chg: "CRASHED", up: false },
+  { sym: "LINK", val: "DEAD", chg: "-∞", up: false },
+  { sym: "USER", val: "LOST", chg: "?", up: false },
+  { sym: "BTBT", val: "$22.41", chg: "+3.2%", up: true },
+  { sym: "AAPL", val: "$192.68", chg: "+1.1%", up: true },
+];
 
 export default function NotFound() {
   return (
     <div
-      className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
-      style={{ backgroundColor: '#06121F' }}
+      className="min-h-screen w-full flex flex-col items-center justify-center px-4"
+      style={{ backgroundColor: "#06121F" }}
     >
-      {/* Animated background particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 8 }).map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-2 h-2 rounded-full"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              backgroundColor: i % 2 === 0 ? '#EF4444' : '#E3B341',
-              opacity: 0.3,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
+      {/* Ticker tape */}
+      <div
+        className="w-full overflow-hidden mb-12"
+        style={{
+          borderTop: "1px solid #1F2937",
+          borderBottom: "1px solid #1F2937",
+          backgroundColor: "#0B1626",
+          padding: "8px 0",
+        }}
+      >
+        <motion.div
+          className="flex gap-10 whitespace-nowrap"
+          animate={{ x: ["0%", "-50%"] }}
+          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
+          style={{ width: "max-content" }}
+        >
+          {[...ticker, ...ticker].map((t, i) => (
+            <span key={i} className="inline-flex items-center gap-2 text-xs font-mono">
+              <span style={{ color: "#8A93A6" }}>{t.sym}</span>
+              <span style={{ color: "#C9D1E2", fontWeight: 600 }}>{t.val}</span>
+              <span style={{ color: t.up ? "#28C76F" : "#FF4F58", fontWeight: 700 }}>
+                {t.chg}
+              </span>
+              <span style={{ color: "#1F2937" }}>│</span>
+            </span>
+          ))}
+        </motion.div>
       </div>
 
-      <div className="relative z-10 max-w-2xl mx-auto px-4 text-center">
-        {/* Stock Chart "404" */}
+      <div className="max-w-xl w-full">
+        {/* Chart crashing to zero */}
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8 relative"
+          style={{
+            backgroundColor: "#0B1626",
+            borderRadius: "12px",
+            border: "1px solid #1F2937",
+            padding: "20px 20px 12px",
+          }}
         >
-          <div className="flex items-center justify-center gap-4 mb-4">
-            <motion.div
-              animate={{ rotate: [0, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <TrendingDown className="w-16 h-16" style={{ color: '#EF4444' }} />
-            </motion.div>
+          {/* Chart header */}
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-bold" style={{ color: "#C9D1E2" }}>
+                PAGE/USD
+              </span>
+              <span
+                className="text-xs px-2 py-0.5 rounded font-semibold"
+                style={{ backgroundColor: "rgba(255,79,88,0.15)", color: "#FF4F58" }}
+              >
+                ▼ -100%
+              </span>
+            </div>
+            <span className="text-xs font-mono" style={{ color: "#FF4F58" }}>
+              $0.00
+            </span>
+          </div>
+
+          {/* SVG Chart */}
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
+            className="w-full"
+            style={{ height: "80px" }}
+          >
+            {/* Area fill */}
+            <motion.path
+              d={areaD}
+              fill="rgba(255,79,88,0.08)"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            />
+            {/* Line */}
+            <motion.path
+              d={pathD}
+              fill="none"
+              stroke="#FF4F58"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              pathLength={1}
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.4, ease: "easeInOut" }}
+            />
+          </svg>
+
+          {/* X-axis labels */}
+          <div className="flex justify-between mt-1">
+            {["Open", "", "", "", "", "Now"].map((l, i) => (
+              <span key={i} className="text-xs" style={{ color: "#4B5563" }}>
+                {l}
+              </span>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* 404 heading */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.4 }}
+          className="text-center mb-6"
+        >
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <TrendingDown className="w-7 h-7" style={{ color: "#FF4F58" }} />
             <h1
-              className="text-9xl font-black tracking-tighter"
-              style={{
-                background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 50%, #991B1B 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                textShadow: '0 0 40px rgba(239, 68, 68, 0.3)',
-              }}
+              className="text-7xl font-black font-mono tracking-tight"
+              style={{ color: "#FF4F58" }}
             >
               404
             </h1>
-            <motion.div
-              animate={{ rotate: [0, 10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, delay: 1 }}
-            >
-              <TrendingDown className="w-16 h-16" style={{ color: '#EF4444' }} />
-            </motion.div>
+            <TrendingDown className="w-7 h-7" style={{ color: "#FF4F58" }} />
           </div>
-
-          {/* Stock ticker style error message */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="inline-flex items-center gap-2 px-6 py-2 rounded-full mb-6"
-            style={{
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              border: '2px solid rgba(239, 68, 68, 0.3)',
-            }}
-          >
-            <span className="text-sm font-bold" style={{ color: '#EF4444' }}>
-              ERROR
-            </span>
-            <span className="text-sm" style={{ color: '#94A3B8' }}>|</span>
-            <span className="text-sm font-mono" style={{ color: '#F1F5F9' }}>
-              PAGE-404
-            </span>
-            <span className="text-sm font-bold" style={{ color: '#EF4444' }}>
-              ↓ -100%
-            </span>
-          </motion.div>
+          <h2 className="text-xl font-bold mb-2" style={{ color: "#C9D1E2" }}>
+            This page got liquidated
+          </h2>
+          <p className="text-sm" style={{ color: "#8A93A6" }}>
+            The route you requested doesn't exist — or got delisted.
+          </p>
         </motion.div>
 
-        {/* Trading-themed messages */}
+        {/* Quote card */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="space-y-4 mb-10"
+          transition={{ delay: 0.7, duration: 0.4 }}
+          className="rounded-xl px-5 py-4 mb-8 text-center"
+          style={{ backgroundColor: "#1E2D3F", border: "1px solid #2B3A4C" }}
         >
-          <h2
-            className="text-3xl md:text-4xl font-bold"
-            style={{ color: '#F1F5F9' }}
-          >
-            This Page Went to Zero
-          </h2>
-          <p
-            className="text-lg md:text-xl"
-            style={{ color: '#94A3B8' }}
-          >
-            Looks like this route got <span className="font-bold" style={{ color: '#EF4444' }}>liquidated</span> 📉
+          <p className="text-sm italic mb-1" style={{ color: "#C9D1E2" }}>
+            "The market can stay irrational longer than you can find this page."
           </p>
-
-          {/* Trading puns */}
-          <div
-            className="max-w-md mx-auto mt-6 p-4 rounded-lg"
-            style={{
-              backgroundColor: 'rgba(30, 45, 63, 0.5)',
-              border: '1px solid rgba(227, 179, 65, 0.2)',
-            }}
-          >
-            <BarChart3 className="w-6 h-6 mx-auto mb-2" style={{ color: '#E3B341' }} />
-            <p className="text-sm italic" style={{ color: '#C9D1E2' }}>
-              "The market can stay irrational longer than you can find this page."
-            </p>
-            <p className="text-xs mt-2" style={{ color: '#64748B' }}>
-              – Every trader who clicked a bad link
-            </p>
-          </div>
+          <p className="text-xs" style={{ color: "#4B5563" }}>
+            — Every trader who clicked a bad link
+          </p>
         </motion.div>
 
-        {/* Action buttons */}
+        {/* Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+          transition={{ delay: 0.9, duration: 0.4 }}
+          className="flex gap-3 justify-center"
         >
           <Link href="/">
-            <Button
-              className="px-6 py-6 text-base font-semibold transition-all hover:scale-105"
+            <button
+              className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:brightness-110"
               style={{
-                background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
-                color: '#080C14',
-                boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)',
+                background: "linear-gradient(135deg, #E3B341, #F59E0B)",
+                color: "#06121F",
               }}
             >
-              <Home className="w-5 h-5 mr-2" />
+              <Home className="w-4 h-4" />
               Back to Hub
-            </Button>
+            </button>
           </Link>
-
-          <Button
-            variant="ghost"
-            className="px-6 py-6 text-base border-2 hover:scale-105 transition-all"
-            style={{
-              borderColor: 'rgba(227, 179, 65, 0.5)',
-              color: '#E3B341',
-            }}
+          <button
             onClick={() => window.history.back()}
+            className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all"
+            style={{
+              backgroundColor: "#1E2D3F",
+              border: "1px solid #2B3A4C",
+              color: "#C9D1E2",
+            }}
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
+            <ArrowLeft className="w-4 h-4" />
             Go Back
-          </Button>
+          </button>
         </motion.div>
-
-        {/* Fun trading stats */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.9 }}
-          className="mt-12 grid grid-cols-3 gap-4 max-w-lg mx-auto"
-        >
-          {[
-            { label: 'Loss', value: '-100%', color: '#EF4444' },
-            { label: 'Status', value: 'REKT', color: '#FF9F43' },
-            { label: 'Recovery', value: '0%', color: '#94A3B8' },
-          ].map((stat, i) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1 + i * 0.1 }}
-              className="p-3 rounded-lg"
-              style={{
-                backgroundColor: 'rgba(15, 23, 42, 0.8)',
-                border: '1px solid rgba(31, 41, 55, 0.5)',
-              }}
-            >
-              <div className="text-xs mb-1" style={{ color: '#64748B' }}>
-                {stat.label}
-              </div>
-              <div
-                className="text-lg font-bold font-mono"
-                style={{ color: stat.color }}
-              >
-                {stat.value}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Easter egg message */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="mt-8 text-xs"
-          style={{ color: '#475569' }}
-        >
-          Error 404: Your stop loss triggered before you could reach this page 💸
-        </motion.p>
       </div>
     </div>
   );
