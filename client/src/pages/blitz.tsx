@@ -100,11 +100,11 @@ export default function Blitz() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '6px' }}>
             <div style={{
               width: '44px', height: '44px', borderRadius: '12px',
-              background: 'linear-gradient(135deg, rgba(227,179,65,0.25), rgba(227,179,65,0.08))',
-              border: '1px solid rgba(227,179,65,0.35)',
+              background: 'linear-gradient(135deg, rgba(0,163,255,0.2), rgba(0,163,255,0.06))',
+              border: '1px solid rgba(0,163,255,0.35)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Zap size={20} color="#E3B341" />
+              <Zap size={20} color="#00A3FF" />
             </div>
             <div>
               <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.02em' }}>Blitz Mode</h1>
@@ -121,7 +121,7 @@ export default function Blitz() {
             <p style={{ fontSize: '14px', color: '#4B5563', marginBottom: '24px' }}>Create an account to compete in 1v1 trading matches.</p>
             <Link href="/login">
               <button style={{
-                padding: '12px 28px', background: 'linear-gradient(135deg, #E3B341, #c99a35)',
+                padding: '12px 28px', background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
                 border: 'none', borderRadius: '10px', color: '#000',
                 fontSize: '14px', fontWeight: '900', cursor: 'pointer',
               }}>
@@ -141,17 +141,17 @@ export default function Blitz() {
                   <motion.div key="idle" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                     <div style={{
                       background: 'linear-gradient(160deg, #0C1E35 0%, #091525 100%)',
-                      border: '1px solid rgba(227,179,65,0.2)',
+                      border: '1px solid rgba(0,163,255,0.2)',
                       borderRadius: '16px',
                       textAlign: 'center', padding: '48px 24px',
                     }}>
                       <motion.div
-                        animate={{ scale: [1, 1.06, 1], boxShadow: ['0 0 0 0 rgba(227,179,65,0)', '0 0 0 20px rgba(227,179,65,0.07)', '0 0 0 0 rgba(227,179,65,0)'] }}
+                        animate={{ scale: [1, 1.06, 1], boxShadow: ['0 0 0 0 rgba(0,163,255,0)', '0 0 0 20px rgba(0,163,255,0.06)', '0 0 0 0 rgba(0,163,255,0)'] }}
                         transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                         style={{
                           width: '84px', height: '84px', borderRadius: '50%',
-                          background: 'linear-gradient(135deg, rgba(227,179,65,0.15), rgba(227,179,65,0.05))',
-                          border: '2px solid rgba(227,179,65,0.35)',
+                          background: 'linear-gradient(135deg, rgba(0,163,255,0.12), rgba(0,163,255,0.04))',
+                          border: '2px solid rgba(0,163,255,0.35)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           margin: '0 auto 24px', fontSize: '36px',
                         }}
@@ -171,11 +171,11 @@ export default function Blitz() {
                         whileTap={{ scale: 0.97 }}
                         style={{
                           padding: '14px 40px',
-                          background: 'linear-gradient(135deg, #E3B341, #c99a35)',
+                          background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
                           border: 'none', borderRadius: '12px',
                           color: '#000', fontSize: '16px', fontWeight: '900',
                           cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px',
-                          letterSpacing: '0.01em', boxShadow: '0 0 24px rgba(227,179,65,0.3)',
+                          letterSpacing: '0.01em', boxShadow: '0 0 24px rgba(0,163,255,0.25)',
                         }}
                       >
                         <Zap size={18} /> Find Match
@@ -189,7 +189,7 @@ export default function Blitz() {
                   <motion.div key="queued" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                     <div style={{
                       background: 'linear-gradient(160deg, #0C1E35 0%, #091525 100%)',
-                      border: '1px solid rgba(227,179,65,0.2)',
+                      border: '1px solid rgba(0,163,255,0.2)',
                       borderRadius: '16px',
                       textAlign: 'center', padding: '48px 24px',
                     }}>
@@ -200,7 +200,7 @@ export default function Blitz() {
                           style={{
                             position: 'absolute', inset: 0, borderRadius: '50%',
                             border: '2px solid transparent',
-                            borderTopColor: '#E3B341', borderRightColor: 'rgba(227,179,65,0.2)',
+                            borderTopColor: '#00A3FF', borderRightColor: 'rgba(0,163,255,0.2)',
                           }}
                         />
                         <motion.div
@@ -209,12 +209,12 @@ export default function Blitz() {
                           style={{
                             position: 'absolute', inset: '10px', borderRadius: '50%',
                             border: '2px solid transparent',
-                            borderTopColor: 'rgba(227,179,65,0.4)', borderLeftColor: 'rgba(227,179,65,0.15)',
+                            borderTopColor: 'rgba(0,163,255,0.4)', borderLeftColor: 'rgba(0,163,255,0.12)',
                           }}
                         />
                         <div style={{
                           position: 'absolute', inset: '18px', borderRadius: '50%',
-                          background: 'rgba(227,179,65,0.1)',
+                          background: 'rgba(0,163,255,0.1)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: '18px',
                         }}>
@@ -226,7 +226,7 @@ export default function Blitz() {
                         Searching for opponent...
                       </h2>
                       <motion.p
-                        style={{ fontSize: '32px', fontWeight: '900', color: '#E3B341', marginBottom: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}
+                        style={{ fontSize: '32px', fontWeight: '900', color: '#00A3FF', marginBottom: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}
                         animate={{ opacity: [1, 0.5, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       >
@@ -254,7 +254,7 @@ export default function Blitz() {
                   <motion.div key="vs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <div style={{
                       background: 'linear-gradient(160deg, #0A1628 0%, #091525 100%)',
-                      border: '1px solid rgba(227,179,65,0.4)',
+                      border: '1px solid rgba(0,163,255,0.4)',
                       borderRadius: '16px',
                       padding: '48px 24px',
                       textAlign: 'center',
@@ -289,7 +289,7 @@ export default function Blitz() {
                           initial={{ scale: 0, rotate: -10 }}
                           animate={{ scale: 1, rotate: 0 }}
                           transition={{ duration: 0.35, delay: 0.2, ease: 'backOut' }}
-                          style={{ fontSize: '36px', fontWeight: '900', color: '#E3B341', lineHeight: 1 }}
+                          style={{ fontSize: '36px', fontWeight: '900', color: '#00A3FF', lineHeight: 1 }}
                         >
                           VS
                         </motion.div>

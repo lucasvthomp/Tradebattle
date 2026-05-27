@@ -35,8 +35,8 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #E3B341, #c99a35)', boxShadow: '0 0 16px rgba(227, 179, 65, 0.2)' }}>
-                <span className="font-black text-sm" style={{ color: '#091525' }}>O</span>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #00A3FF, #0077CC)', boxShadow: '0 0 16px rgba(0, 163, 255, 0.25)' }}>
+                <span className="font-black text-sm" style={{ color: '#FFFFFF' }}>O</span>
               </div>
               <span className="text-xl font-display font-bold text-foreground tracking-tight">ORSATH</span>
             </Link>
@@ -56,10 +56,10 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 aria-label="Manage balance - Deposit or Withdraw"
                 className="h-10 flex items-center justify-center px-4 hover:bg-primary/10 transition-all border-2 hover:scale-105"
                 style={{
-                  borderColor: 'rgba(227, 179, 65, 0.6)',
-                  background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))',
-                  color: '#E3B341',
-                  boxShadow: '0 0 20px rgba(227, 179, 65, 0.1)'
+                  borderColor: 'rgba(0, 163, 255, 0.5)',
+                  background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.12), rgba(0, 163, 255, 0.04))',
+                  color: '#00A3FF',
+                  boxShadow: '0 0 16px rgba(0, 163, 255, 0.1)'
                 }}
                 onClick={() => {
                   setBalanceModalTab('deposit');
@@ -169,9 +169,9 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     variant="ghost"
                     className="w-full justify-start h-12 hover:bg-primary/10 border-2 px-4"
                     style={{
-                      borderColor: 'rgba(227, 179, 65, 0.6)',
-                      background: 'linear-gradient(135deg, rgba(227, 179, 65, 0.15), rgba(227, 179, 65, 0.05))',
-                      color: '#E3B341'
+                      borderColor: 'rgba(0, 163, 255, 0.5)',
+                      background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.12), rgba(0, 163, 255, 0.04))',
+                      color: '#00A3FF'
                     }}
                     onClick={() => {
                       setBalanceModalTab('deposit');

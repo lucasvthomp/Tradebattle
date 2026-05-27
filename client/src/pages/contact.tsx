@@ -129,7 +129,7 @@ export default function Support() {
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", backgroundColor: "rgba(13,17,23,0.6)" }}>
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-10">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #E3B341, #c99a35)" }}>
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #00A3FF, #0077CC)" }}>
               <MessageSquare className="w-5 h-5" style={{ color: "#000" }} />
             </div>
             <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Support Center</h1>
@@ -192,7 +192,7 @@ export default function Support() {
                 <button
                   onClick={() => setSearchQuery("")}
                   className="text-sm font-semibold"
-                  style={{ color: "#E3B341" }}
+                  style={{ color: "#00A3FF" }}
                 >
                   Clear search
                 </button>
@@ -205,7 +205,7 @@ export default function Support() {
             {/* Contact form */}
             <div style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-4 h-4" style={{ color: "#E3B341" }} />
+                <Zap className="w-4 h-4" style={{ color: "#00A3FF" }} />
                 <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Support</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
@@ -238,7 +238,7 @@ export default function Support() {
                   type="submit"
                   disabled={contactMutation.isPending}
                   className="w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
-                  style={{ background: "linear-gradient(135deg, #E3B341, #c99a35)", color: "#000" }}
+                  style={{ background: "linear-gradient(135deg, #00A3FF, #0077CC)", color: "#FFFFFF" }}
                 >
                   {contactMutation.isPending ? "Sending..." : "Send Message"}
                 </button>
@@ -248,8 +248,8 @@ export default function Support() {
             {/* Info cards */}
             <div style={cardStyle} className="p-4 space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(227,179,65,0.1)" }}>
-                  <Mail className="w-4 h-4" style={{ color: "#E3B341" }} />
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(0,163,255,0.1)" }}>
+                  <Mail className="w-4 h-4" style={{ color: "#00A3FF" }} />
                 </div>
                 <div>
                   <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Email</div>

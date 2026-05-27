@@ -57,9 +57,12 @@ html {
   --popover: 220 52% 12%;
   --popover-foreground: 215 20% 85%;
 
-  /* Primary - Gold (for brand/money) */
-  --primary: 43 71% 57%;  /* #E3B341 */
-  --primary-foreground: 222 47% 5%;
+  /* Primary - Blue (main interaction color) */
+  --primary: 204 100% 50%;  /* #00A3FF */
+  --primary-foreground: 0 0% 100%;
+
+  /* Gold - prestige/reward only */
+  --gold: 43 71% 57%;  /* #E3B341 */
 
   /* Secondary */
   --secondary: 220 52% 14%;  /* #0D1E35 */
@@ -165,8 +168,8 @@ html {
   --popover: 220 52% 12%;
   --popover-foreground: 215 16% 62%;
 
-  --primary: 43 71% 57%;  /* #E3B341 */
-  --primary-foreground: 222 47% 5%;
+  --primary: 204 100% 50%;  /* #00A3FF */
+  --primary-foreground: 0 0% 100%;
 
   --secondary: 220 52% 14%;  /* #0D1E35 */
   --secondary-foreground: 215 16% 62%;

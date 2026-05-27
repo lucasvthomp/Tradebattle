@@ -28,7 +28,7 @@ export function SimplifiedSidebar() {
   const navItems = [
     ...(user ? [
       { href: "/dashboard", label: t('dashboard'), icon: BarChart3, iconColor: '#28C76F' },
-      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#E3B341' },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#00A3FF' },
       { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#8B5CF6' },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#E3B341' },
       { href: "/people", label: t('people'), icon: Users, iconColor: '#3B82F6' },
@@ -65,7 +65,7 @@ export function SimplifiedSidebar() {
           height: '48px',
           paddingLeft: '14px',
           ...(isActive(item.href)
-            ? { backgroundColor: 'rgba(227, 179, 65, 0.1)', color: '#E3B341' }
+            ? { backgroundColor: 'rgba(0, 163, 255, 0.1)', color: '#00A3FF' }
             : { color: '#8A93A6' }),
         }}
       >
@@ -162,7 +162,7 @@ export function SimplifiedSidebar() {
                 expanded ? 'w-full px-4 py-3' : 'w-12 h-12 p-0 mx-auto'
               }`}
               style={{
-                background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
+                background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
                 color: '#FFFFFF',
               }}
             >

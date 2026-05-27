@@ -214,15 +214,15 @@ export default function Signup() {
     <div className="min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden" style={{ backgroundColor: 'transparent' }}>
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #E3B341 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#E3B341 1px, transparent 1px), linear-gradient(90deg, #E3B341 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #00A3FF 0%, transparent 70%)' }} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#00A3FF 1px, transparent 1px), linear-gradient(90deg, #00A3FF 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
       </div>
 
       <div className="max-w-md w-full space-y-6 relative z-10">
         {/* Logo */}
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#E3B341', boxShadow: '0 0 40px rgba(227, 179, 65, 0.3)' }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#00A3FF', boxShadow: '0 0 40px rgba(0, 163, 255, 0.25)' }}>
               <span className="font-black text-3xl" style={{ color: '#091525' }}>O</span>
             </div>
           </div>
@@ -238,17 +238,17 @@ export default function Signup() {
             return (
               <div key={i} className="flex items-center">
                 {i > 0 && (
-                  <div className="w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#E3B341' : '#0E2040' }} />
+                  <div className="w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#00A3FF' : '#0E2040' }} />
                 )}
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
                   style={{
-                    backgroundColor: isActive ? '#E3B341' : isCompleted ? '#E3B34130' : '#0C1A2E',
-                    border: `2px solid ${isActive ? '#E3B341' : isCompleted ? '#E3B341' : '#0E2040'}`,
+                    backgroundColor: isActive ? '#00A3FF' : isCompleted ? '#00A3FF30' : '#0C1A2E',
+                    border: `2px solid ${isActive ? '#00A3FF' : isCompleted ? '#00A3FF' : '#0E2040'}`,
                   }}
                 >
                   {isCompleted ? (
-                    <Check className="w-4 h-4" style={{ color: '#E3B341' }} />
+                    <Check className="w-4 h-4" style={{ color: '#00A3FF' }} />
                   ) : (
                     <StepIcon className="w-4 h-4" style={{ color: isActive ? '#091525' : '#94A3B8' }} />
                   )}
@@ -266,7 +266,7 @@ export default function Signup() {
 
         {/* Form Card */}
         <div className="p-6 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5)' }}>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
 
           {/* Step 1: Username & Email */}
           {step === 1 && (
@@ -280,7 +280,7 @@ export default function Signup() {
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="Choose a unique username"
                     maxLength={20}
-                    className="pr-10 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                    className="pr-10 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                     style={{
                       backgroundColor: 'transparent',
                       color: '#F1F5F9',
@@ -314,15 +314,15 @@ export default function Signup() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address"
-                    className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                    className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                     style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
                 </div>
               )}
 
               {isWalletRegistration && (
-                <div className="p-3 rounded-xl" style={{ backgroundColor: '#E3B34110', border: '1px solid #E3B34130' }}>
-                  <p className="text-xs text-center" style={{ color: '#E3B341' }}>
+                <div className="p-3 rounded-xl" style={{ backgroundColor: '#00A3FF10', border: '1px solid #00A3FF30' }}>
+                  <p className="text-xs text-center" style={{ color: '#00A3FF' }}>
                     Wallet: {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
                   </p>
                 </div>
@@ -342,7 +342,7 @@ export default function Signup() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a strong password"
-                    className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                    className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                     style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
                   <button
@@ -430,7 +430,7 @@ export default function Signup() {
             <div className="space-y-5">
               <div className="space-y-3">
                 {[
-                  { label: "Username", value: username, color: '#E3B341' },
+                  { label: "Username", value: username, color: '#00A3FF' },
                   { label: "Email", value: email, color: '#3B82F6' },
                   { label: "Country", value: selectedCountry, color: '#10B981' },
                   { label: "Language", value: selectedLanguage, color: '#94A3B8' },
@@ -456,7 +456,7 @@ export default function Signup() {
                   <div className="flex-1">
                     <label htmlFor="tos" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
                       I agree to the{' '}
-                      <Link href="/terms" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#E3B341' }}>
+                      <Link href="/terms" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#00A3FF' }}>
                         Terms of Service
                       </Link>
                       <span className="text-red-500 ml-1">*</span>
@@ -475,7 +475,7 @@ export default function Signup() {
                   <div className="flex-1">
                     <label htmlFor="privacy" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
                       I have read and accept the{' '}
-                      <Link href="/privacy" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#E3B341' }}>
+                      <Link href="/privacy" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#00A3FF' }}>
                         Privacy Policy
                       </Link>
                       <span className="text-red-500 ml-1">*</span>
@@ -513,7 +513,7 @@ export default function Signup() {
                 onClick={nextStep}
                 disabled={!canProceed()}
                 className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
-                style={{ backgroundColor: canProceed() ? '#E3B341' : '#0E2040', color: canProceed() ? '#091525' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(227, 179, 65, 0.3)' : 'none' }}
+                style={{ backgroundColor: canProceed() ? '#00A3FF' : '#0E2040', color: canProceed() ? '#FFFFFF' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(0, 163, 255, 0.25)' : 'none' }}
               >
                 Next
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -553,7 +553,7 @@ export default function Signup() {
         {/* Sign In Link */}
         <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
           Already have an account?{" "}
-          <Link href="/login" className="font-semibold hover:underline transition-colors" style={{ color: '#E3B341' }}>
+          <Link href="/login" className="font-semibold hover:underline transition-colors" style={{ color: '#00A3FF' }}>
             Sign in
           </Link>
         </p>

@@ -65,20 +65,20 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden" style={{ backgroundColor: 'transparent' }}>
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #E3B341 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#E3B341 1px, transparent 1px), linear-gradient(90deg, #E3B341 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #00A3FF 0%, transparent 70%)' }} />
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#00A3FF 1px, transparent 1px), linear-gradient(90deg, #00A3FF 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
       </div>
 
       <div className="max-w-md w-full space-y-8 relative z-10">
         {/* Header */}
         <div className="text-center">
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#E3B341', boxShadow: '0 0 40px rgba(227, 179, 65, 0.3), 0 0 80px rgba(227, 179, 65, 0.1)' }}>
+            <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#00A3FF', boxShadow: '0 0 40px rgba(0, 163, 255, 0.25), 0 0 80px rgba(0, 163, 255, 0.1)' }}>
               <span className="font-black text-4xl" style={{ color: '#091525' }}>O</span>
             </div>
           </div>
           <h1 className="text-4xl font-black tracking-tight" style={{ color: '#F1F5F9' }}>Welcome back</h1>
-          <p className="mt-3 text-lg font-medium" style={{ color: '#E3B341' }}>Trade. Compete. Win.</p>
+          <p className="mt-3 text-lg font-medium" style={{ color: '#00A3FF' }}>Trade. Compete. Win.</p>
         </div>
 
         {/* Feature Pills */}
@@ -88,7 +88,7 @@ export default function Login() {
             <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Paper Trading</span>
           </div>
           <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4" style={{ color: '#E3B341' }} />
+            <Trophy className="w-4 h-4" style={{ color: '#00A3FF' }} />
             <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Tournaments</span>
           </div>
           <div className="flex items-center gap-2">
@@ -99,11 +99,11 @@ export default function Login() {
 
         {/* Form */}
         {is2FA ? (
-          <form onSubmit={handle2FASubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
+          <form onSubmit={handle2FASubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
 
             <div className="text-center space-y-2">
-              <ShieldCheck className="w-10 h-10 mx-auto" style={{ color: '#E3B341' }} />
+              <ShieldCheck className="w-10 h-10 mx-auto" style={{ color: '#00A3FF' }} />
               <h2 className="text-lg font-bold" style={{ color: '#F1F5F9' }}>Two-Factor Authentication</h2>
               <p className="text-sm" style={{ color: '#94A3B8' }}>Enter the 6-digit code from your authenticator app</p>
             </div>
@@ -118,7 +118,7 @@ export default function Login() {
                 value={twoFACode}
                 onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
                 placeholder="000000"
-                className="h-12 rounded-xl text-center text-2xl tracking-[0.5em] font-mono transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                className="h-12 rounded-xl text-center text-2xl tracking-[0.5em] font-mono transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                 style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040' }}
               />
             </div>
@@ -133,7 +133,7 @@ export default function Login() {
               type="submit"
               disabled={twoFALoading || twoFACode.length !== 6}
               className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: '#E3B341', color: '#091525', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
+              style={{ backgroundColor: '#00A3FF', color: '#091525', boxShadow: '0 4px 20px rgba(0, 163, 255, 0.25)' }}
             >
               {twoFALoading ? (
                 <>
@@ -158,8 +158,8 @@ export default function Login() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(227, 179, 65, 0.2)' }}>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #E3B341, transparent)' }} />
+          <form onSubmit={handleSubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
 
             <div className="space-y-2">
               <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Username</Label>
@@ -170,7 +170,7 @@ export default function Login() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                 style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
               />
             </div>
@@ -185,7 +185,7 @@ export default function Login() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
-                  className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
+                  className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                   style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                 />
                 <button
@@ -206,7 +206,7 @@ export default function Login() {
               type="submit"
               disabled={loginMutation.isPending}
               className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: '#E3B341', color: '#091525', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
+              style={{ backgroundColor: '#00A3FF', color: '#091525', boxShadow: '0 4px 20px rgba(0, 163, 255, 0.25)' }}
             >
               {loginMutation.isPending ? (
                 <>
@@ -257,7 +257,7 @@ export default function Login() {
         {/* Sign Up Link */}
         <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
           Don't have an account?{" "}
-          <Link href="/signup" className="font-semibold hover:underline transition-colors" style={{ color: '#E3B341' }}>
+          <Link href="/signup" className="font-semibold hover:underline transition-colors" style={{ color: '#00A3FF' }}>
             Create one
           </Link>
         </p>

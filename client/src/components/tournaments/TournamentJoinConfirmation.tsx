@@ -51,9 +51,9 @@ export function TournamentJoinConfirmation({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl" style={{ backgroundColor: '#0C1829', borderColor: '#E3B341' }}>
+      <DialogContent className="max-w-2xl" style={{ backgroundColor: '#0C1829', borderColor: '#00A3FF' }}>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-3 text-2xl" style={{ color: '#E3B341' }}>
+          <DialogTitle className="flex items-center gap-3 text-2xl" style={{ color: '#00A3FF' }}>
             <ShieldAlert className="w-8 h-8" />
             Confirm Tournament Entry
           </DialogTitle>
@@ -79,10 +79,10 @@ export function TournamentJoinConfirmation({
 
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <Trophy className="w-4 h-4" style={{ color: '#E3B341' }} />
+                  <Trophy className="w-4 h-4" style={{ color: '#00A3FF' }} />
                   <span className="text-sm" style={{ color: '#8A93A6' }}>Prize Pool</span>
                 </div>
-                <p className="text-xl font-bold" style={{ color: '#E3B341' }}>
+                <p className="text-xl font-bold" style={{ color: '#00A3FF' }}>
                   ${tournament.prizePool.toLocaleString()}
                 </p>
               </div>
@@ -142,7 +142,7 @@ export function TournamentJoinConfirmation({
                 style={{ color: '#C9D1E2' }}
               >
                 I agree to the{' '}
-                <a href="/terms" target="_blank" className="underline font-semibold" style={{ color: '#E3B341' }}>
+                <a href="/terms" target="_blank" className="underline font-semibold" style={{ color: '#00A3FF' }}>
                   Terms of Service
                 </a>{' '}
                 and understand that the buy-in fee is non-refundable.
@@ -162,7 +162,7 @@ export function TournamentJoinConfirmation({
                 style={{ color: '#C9D1E2' }}
               >
                 I have read and agree to the{' '}
-                <span className="font-semibold" style={{ color: '#E3B341' }}>
+                <span className="font-semibold" style={{ color: '#00A3FF' }}>
                   Trading Tournament Guidelines
                 </span>
                 , including fair play rules and trading restrictions.
@@ -187,7 +187,7 @@ export function TournamentJoinConfirmation({
               className="flex-1 h-12 font-bold"
               style={{
                 background: canConfirm
-                  ? 'linear-gradient(135deg, #E3B341, #FFD700)'
+                  ? 'linear-gradient(135deg, #00A3FF, #00A3FF)'
                   : '#0E2040',
                 color: canConfirm ? '#091525' : '#5A6572',
                 opacity: canConfirm ? 1 : 0.6,
