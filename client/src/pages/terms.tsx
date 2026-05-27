@@ -16,7 +16,7 @@ const staggerChildren = {
 
 export default function Terms() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       <motion.div
         className="max-w-4xl mx-auto py-20 px-4"
         initial="initial"

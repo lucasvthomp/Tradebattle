@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps) {
   const { chatOpen, toggleChat } = useChatContext();
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen flex" style={{ backgroundColor: 'transparent' }}>
       {/* Simplified Sidebar - Only for authenticated users */}
       {user && <SimplifiedSidebar />}
 

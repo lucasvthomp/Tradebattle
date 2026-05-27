@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export default function Events() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="text-center">
         {/* Traffic Cone with Animation */}
         <motion.div
