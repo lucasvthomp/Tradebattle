@@ -16,7 +16,8 @@ import {
   validateSymbol,
   sanitizeInput,
   ValidationError,
-  NotFoundError
+  NotFoundError,
+  UnauthorizedError
 } from '../utils/errorHandler.js';
 import { storage } from '../storage.js';
 import { db } from '../db.js';
@@ -1483,7 +1484,7 @@ router.get('/streak/leaderboard', requireAuth, asyncHandler(async (req, res) => 
 
   for (const user of users) {
     // Calculate trading streak for all users
-    const tradingStreak = await calculateTradingStreak(user.id);
+    const tradingStreak = await storage.getUserTradingStreak(user.id);
 
     userStreaks.push({
       ...user,

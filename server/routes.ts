@@ -1182,7 +1182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const targetUser = await storage.getUserByUsername(username);
       if (!targetUser) return res.status(404).json({ message: "User not found" });
       const hashed = await hashPassword(newPassword);
-      await storage.updateUser(targetUser.id, { password: hashed });
+      await storage.updateUserPassword(targetUser.id, hashed);
       res.json({ success: true, message: `Password reset for ${username}` });
     } catch (error) {
       console.error("Admin password reset error:", error);
@@ -1234,7 +1234,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const totalTournaments = await db.select({ count: count() }).from(schema.tournaments);
 
       const totalRevenue = await db
-        .select({ sum: sum(schema.tradeHistory.amount) })
+        .select({ sum: sum(schema.tradeHistory.totalValue) })
         .from(schema.tradeHistory);
 
       res.json({
@@ -1265,10 +1265,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: schema.tournaments.name,
           status: schema.tournaments.status,
           startingBalance: schema.tournaments.startingBalance,
-          buyIn: schema.tournaments.buyIn,
-          prizeMultiplier: schema.tournaments.prizeMultiplier,
-          startDate: schema.tournaments.startDate,
-          endDate: schema.tournaments.endDate,
+          buyIn: schema.tournaments.buyInAmount,
+          startDate: schema.tournaments.startedAt,
+          endDate: schema.tournaments.endedAt,
           createdAt: schema.tournaments.createdAt,
         })
         .from(schema.tournaments)

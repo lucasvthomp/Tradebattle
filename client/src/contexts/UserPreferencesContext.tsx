@@ -226,7 +226,6 @@ export const translations = {
     inactive: "Inactive",
     completed: "Completed",
     pending: "Pending",
-    processing: "Processing",
     approved: "Approved",
     rejected: "Rejected",
     cancelled: "Cancelled",
@@ -351,7 +350,6 @@ export const translations = {
     basic: "Basic",
     actions: "Actions",
     processing: "Processing...",
-    totalValue: "Total Value",
     
     // Greetings
     goodMorning: "Good Morning",
@@ -661,7 +659,6 @@ export const translations = {
     inactive: "Inativo",
     completed: "Concluído",
     pending: "Pendente",
-    processing: "Processando",
     approved: "Aprovado",
     rejected: "Rejeitado",
     cancelled: "Cancelado",
@@ -786,7 +783,6 @@ export const translations = {
     basic: "Básico",
     actions: "Ações",
     processing: "Processando...",
-    totalValue: "Valor Total",
     
     // Greetings
     goodMorning: "Bom Dia",
@@ -1096,7 +1092,6 @@ export const translations = {
     inactive: "Inactivo",
     completed: "Completado",
     pending: "Pendiente",
-    processing: "Procesando",
     approved: "Aprobado",
     rejected: "Rechazado",
     cancelled: "Cancelado",
@@ -1221,7 +1216,6 @@ export const translations = {
     basic: "Básico",
     actions: "Acciones",
     processing: "Procesando...",
-    totalValue: "Valor Total",
     
     // Greetings
     goodMorning: "Buenos Días",

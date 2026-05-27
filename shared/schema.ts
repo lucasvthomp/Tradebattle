@@ -77,6 +77,19 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+// Audit log for Web3 wallet connection / authentication attempts
+export const walletConnectionLogs = pgTable("wallet_connection_logs", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id), // null for failed attempts on unknown wallets
+  walletAddress: varchar("wallet_address", { length: 66 }).notNull(),
+  action: varchar("action", { length: 50 }).notNull(), // 'login_success', 'login_failed', etc.
+  success: boolean("success").notNull(),
+  errorMessage: text("error_message"),
+  ipAddress: varchar("ip_address", { length: 64 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 
 // Notifications table
 export const notifications = pgTable("notifications", {

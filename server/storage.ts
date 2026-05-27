@@ -57,6 +57,7 @@ import {
   type InsertPromoCode,
   type CodeRedemption,
   type InsertCodeRedemption,
+  walletConnectionLogs,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, asc, and, or, sql, ne, isNull } from "drizzle-orm";
@@ -349,7 +350,7 @@ export class DatabaseStorage implements IStorage {
     return newUser;
   }
 
-  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange' | 'profilePicture'>>): Promise<User> {
+  async updateUser(id: number, updates: Partial<Pick<User, 'username' | 'email' | 'balance' | 'siteCash' | 'subscriptionTier' | 'premiumUpgradeDate' | 'personalBalance' | 'totalDeposited' | 'tournamentWins' | 'language' | 'currency' | 'lastUsernameChange' | 'profilePicture'>>): Promise<User> {
     // If username is being updated, check the two-week restriction
     if (updates.username) {
       const currentUser = await this.getUser(id);
@@ -2238,15 +2239,20 @@ export class DatabaseStorage implements IStorage {
     success: boolean;
     errorMessage?: string;
   }): Promise<void> {
-    await db.insert(walletConnectionLogs).values({
-      userId: log.userId || null,
-      walletAddress: log.walletAddress.toLowerCase(),
-      action: log.action,
-      success: log.success,
-      errorMessage: log.errorMessage || null,
-      ipAddress: null,
-      userAgent: null,
-    });
+    // Best-effort audit log: never let logging failures break the auth flow.
+    try {
+      await db.insert(walletConnectionLogs).values({
+        userId: log.userId || null,
+        walletAddress: log.walletAddress.toLowerCase(),
+        action: log.action,
+        success: log.success,
+        errorMessage: log.errorMessage || null,
+        ipAddress: null,
+        userAgent: null,
+      });
+    } catch (error) {
+      console.error('Failed to write wallet connection log:', error);
+    }
   }
 
   async addSiteCash(userId: number, amount: number, description: string): Promise<void> {
