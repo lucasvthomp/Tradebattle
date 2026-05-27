@@ -164,13 +164,14 @@ async function runMigrations() {
     // Note: Admin promotion should be done manually via database or admin panel
     // Removed automatic promotion to prevent security issues
 
-    // Fix database column defaults and zero out all balances
+    // Ensure new users default to a 0 balance. (Do NOT reset existing users'
+    // balances here — this block runs on every boot, so a blanket UPDATE would
+    // wipe everyone's site_cash on each deploy.)
     await client.query(`
       ALTER TABLE users ALTER COLUMN balance SET DEFAULT '0.00';
       ALTER TABLE users ALTER COLUMN site_cash SET DEFAULT '0.00';
       ALTER TABLE users ALTER COLUMN personal_balance SET DEFAULT '0.00';
       ALTER TABLE users ALTER COLUMN total_deposited SET DEFAULT '0.00';
-      UPDATE users SET site_cash = '0.00', balance = '0.00';
     `);
 
     // Add email verification, password reset, and 2FA columns
