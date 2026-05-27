@@ -111,8 +111,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               size="lg"
             >
               <div className="flex items-center justify-center space-x-2">
-                <Gift className="w-5.5 h-5.5" />
-                <span className="text-base">Redeem Code</span>
+                <Gift className="w-5 h-5" style={{ color: '#FFFFFF' }} />
+                <span className="text-base" style={{ color: '#FFFFFF' }}>Redeem Code</span>
               </div>
             </Button>
           </div>

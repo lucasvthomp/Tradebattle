@@ -163,17 +163,17 @@ export function SimplifiedSidebar() {
               }`}
               style={{
                 background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
-                color: '#091525',
+                color: '#FFFFFF',
               }}
             >
               {expanded ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <Gift className="w-5 h-5" style={{ color: '#091525' }} />
+                  <Gift className="w-5 h-5" style={{ color: '#FFFFFF' }} />
                   <span className="text-base font-semibold">Redeem Code</span>
                 </div>
               ) : (
                 <div className="flex items-center justify-center">
-                  <Gift className="w-5 h-5" style={{ color: '#091525' }} />
+                  <Gift className="w-5 h-5" style={{ color: '#FFFFFF' }} />
                 </div>
               )}
             </Button>
