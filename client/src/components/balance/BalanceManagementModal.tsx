@@ -68,10 +68,12 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const currentBalance = Number(user?.siteCash) || 0;
 
   const currencies = [
-    { id: 'usdttrc20', name: 'USDT', network: 'TRC20', icon: '₮', color: '#26A17B' },
-    { id: 'btc', name: 'Bitcoin', network: 'BTC', icon: '₿', color: '#F7931A' },
-    { id: 'eth', name: 'Ethereum', network: 'ETH', icon: 'Ξ', color: '#627EEA' },
-    { id: 'ltc', name: 'Litecoin', network: 'LTC', icon: 'Ł', color: '#345D9D' },
+    { id: 'btc',       name: 'Bitcoin',  network: 'BTC',   label: 'BTC',  color: '#F7931A', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/btc.png' },
+    { id: 'eth',       name: 'Ethereum', network: 'ETH',   label: 'ETH',  color: '#627EEA', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/eth.png' },
+    { id: 'ltc',       name: 'Litecoin', network: 'LTC',   label: 'LTC',  color: '#345D9D', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/ltc.png' },
+    { id: 'sol',       name: 'Solana',   network: 'SOL',   label: 'SOL',  color: '#9945FF', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/sol.png' },
+    { id: 'usdttrc20', name: 'Tether',   network: 'TRC20', label: 'USDT', color: '#26A17B', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/usdt.png' },
+    { id: 'usdc',      name: 'USD Coin', network: 'ERC20', label: 'USDC', color: '#2775CA', img: 'https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa/128/color/usdc.png' },
   ];
 
   // Fetch minimum when currency selected
@@ -377,7 +379,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   <p className="text-sm" style={{ color: '#8A93A6' }}>
                     Select a cryptocurrency to deposit
                   </p>
-                  <div className="grid gap-3">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                     {currencies.map((currency) => (
                       <motion.button
                         key={currency.id}
@@ -385,35 +387,36 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           setSelectedCurrency(currency.id);
                           setDepositStep('amount');
                         }}
-                        className="flex items-center gap-4 p-4 rounded-xl border-2 transition-all"
                         style={{
+                          aspectRatio: '1',
+                          padding: '0',
                           background: 'rgba(255,255,255,0.03)',
-                          borderColor: 'rgba(255,255,255,0.08)',
+                          border: '2px solid rgba(255,255,255,0.07)',
+                          borderRadius: '12px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '6px',
                         }}
                         whileHover={{
-                          scale: 1.02,
+                          scale: 1.04,
                           borderColor: currency.color,
-                          boxShadow: `0 0 20px ${currency.color}30`,
+                          boxShadow: `0 0 16px ${currency.color}40`,
                         }}
                       >
-                        <div
-                          className="w-14 h-14 rounded-full flex items-center justify-center text-2xl font-bold"
-                          style={{
-                            background: `linear-gradient(135deg, ${currency.color}30, ${currency.color}15)`,
-                            color: currency.color,
-                          }}
-                        >
-                          {currency.icon}
-                        </div>
-                        <div className="flex-1 text-left">
-                          <div className="text-lg font-semibold" style={{ color: '#C9D1E2' }}>
-                            {currency.name}
-                          </div>
-                          <div className="text-sm" style={{ color: '#8A93A6' }}>
-                            Network: {currency.network}
-                          </div>
-                        </div>
-                        <div className="text-2xl font-bold" style={{ color: currency.color }}>→</div>
+                        <img
+                          src={currency.img}
+                          alt={currency.label}
+                          style={{ width: '38px', height: '38px', borderRadius: '50%' }}
+                        />
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: '#C9D1E2' }}>
+                          {currency.label}
+                        </span>
+                        <span style={{ fontSize: '10px', color: '#4B5563', marginTop: '-2px' }}>
+                          {currency.network}
+                        </span>
                       </motion.button>
                     ))}
                   </div>
