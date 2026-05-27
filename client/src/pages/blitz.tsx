@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Users, Clock, Trophy, ArrowRight, Shield, TrendingUp, X, Swords } from "lucide-react";
+import { Zap, ArrowRight, X, Swords } from "lucide-react";
 
 type MatchState = "idle" | "queued" | "vs" | "matched";
 
@@ -378,40 +378,19 @@ export default function Blitz() {
               </AnimatePresence>
             </div>
 
-            {/* How it works */}
-            <div style={cardStyle}>
-              <h3 style={{ fontSize: '13px', fontWeight: '900', color: '#E3B341', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>How It Works</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {[
-                  { emoji: '⚡', color: '#E3B341', text: 'Instantly matched with a real opponent' },
-                  { emoji: '⏱️', color: '#28C76F', text: '5-minute match, starting balance of $10,000' },
-                  { emoji: '📈', color: '#28C76F', text: 'Trade any stock — highest portfolio value wins' },
-                  { emoji: '🏆', color: '#E3B341', text: 'Win to climb the Blitz leaderboard' },
-                ].map((item, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <span style={{ flexShrink: 0, fontSize: '15px', lineHeight: 1.4 }}>{item.emoji}</span>
-                    <span style={{ fontSize: '13px', color: '#8A93A6', lineHeight: '1.5' }}>{item.text}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Rules */}
-            <div style={cardStyle}>
-              <h3 style={{ fontSize: '13px', fontWeight: '900', color: '#E3B341', marginBottom: '14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Rules</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  'Free to play — no buy-in required',
-                  "Market hours don't apply in Blitz",
-                  'No surrender — match runs full 5 minutes',
-                  'Results are final once timer ends',
-                ].map((rule, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
-                    <Shield size={13} style={{ color: '#4B5563', marginTop: '2px', flexShrink: 0 }} />
-                    <span style={{ fontSize: '13px', color: '#8A93A6', lineHeight: '1.5' }}>{rule}</span>
-                  </div>
-                ))}
-              </div>
+            {/* Info strip */}
+            <div style={{ ...cardStyle, gridColumn: '1 / -1', display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center' }}>
+              {[
+                { emoji: '⚡', text: 'Instant matchmaking' },
+                { emoji: '⏱️', text: '5-minute matches' },
+                { emoji: '💰', text: '$10k starting balance' },
+                { emoji: '🏆', text: 'Highest portfolio wins' },
+              ].map((item, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontSize: '16px' }}>{item.emoji}</span>
+                  <span style={{ fontSize: '13px', color: '#8A93A6' }}>{item.text}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}

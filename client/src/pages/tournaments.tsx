@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Trophy,
@@ -459,77 +458,18 @@ export default function TournamentsPage() {
             </div>
           </motion.div>
 
-          {/* Search and Filter Controls - Mobile Responsive */}
-          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 flex-1">
-              {/* Search - Full width on mobile */}
-              <div className="relative flex-1 sm:flex-initial">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: '#94A3B8' }} />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search tournaments..."
-                  className="pl-9 w-full sm:w-64"
-                  style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}
-                />
-              </div>
-              {/* Type Filter - Responsive width */}
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full sm:w-40" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="stocks">Stocks Only</SelectItem>
-                  <SelectItem value="crypto">Crypto Only</SelectItem>
-                </SelectContent>
-              </Select>
-              {/* Checkboxes - Hidden on mobile, shown on md+ */}
-              <div className="hidden md:flex items-center gap-3">
-                <div className="flex items-center space-x-1.5">
-                  <Checkbox
-                    id="my-tournaments"
-                    checked={showMyTournaments}
-                    onCheckedChange={(checked) => setShowMyTournaments(checked === true)}
-                  />
-                  <label htmlFor="my-tournaments" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
-                    My Tournaments
-                  </label>
-                </div>
-                <div className="flex items-center space-x-1.5">
-                  <Checkbox
-                    id="joinable"
-                    checked={showJoinable}
-                    onCheckedChange={(checked) => setShowJoinable(checked === true)}
-                  />
-                  <label htmlFor="joinable" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
-                    Joinable
-                  </label>
-                </div>
-                <div className="flex items-center space-x-1.5">
-                  <Checkbox
-                    id="with-friends"
-                    checked={showWithFriends}
-                    onCheckedChange={(checked) => setShowWithFriends(checked === true)}
-                  />
-                  <label htmlFor="with-friends" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
-                    With Friends
-                  </label>
-                </div>
-              </div>
+          {/* Search */}
+          <motion.div variants={fadeInUp}>
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#4B5563' }} />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tournaments..."
+                className="pl-9"
+                style={{ backgroundColor: 'rgba(255,255,255,0.04)', borderColor: 'rgba(255,255,255,0.08)', color: '#F1F5F9' }}
+              />
             </div>
-            {/* Sort - Full width on mobile */}
-            <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-48" style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937', color: '#F1F5F9' }}>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent style={{ backgroundColor: '#1E2D3F', borderColor: '#1F2937' }}>
-                <SelectItem value="starting-soon">Starting Soonest</SelectItem>
-                <SelectItem value="pot-high-low">Highest Pot</SelectItem>
-                <SelectItem value="pot-low-high">Lowest Pot</SelectItem>
-                <SelectItem value="most-recent">Most Recent</SelectItem>
-              </SelectContent>
-            </Select>
           </motion.div>
 
           {/* Tabs */}
