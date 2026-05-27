@@ -74,7 +74,7 @@ export default function Login() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#E3B341', boxShadow: '0 0 40px rgba(227, 179, 65, 0.3), 0 0 80px rgba(227, 179, 65, 0.1)' }}>
-              <span className="font-black text-4xl" style={{ color: '#080C14' }}>O</span>
+              <span className="font-black text-4xl" style={{ color: '#091525' }}>O</span>
             </div>
           </div>
           <h1 className="text-4xl font-black tracking-tight" style={{ color: '#F1F5F9' }}>Welcome back</h1>
@@ -119,7 +119,7 @@ export default function Login() {
                 onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
                 placeholder="000000"
                 className="h-12 rounded-xl text-center text-2xl tracking-[0.5em] font-mono transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040' }}
+                style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040' }}
               />
             </div>
 
@@ -133,7 +133,7 @@ export default function Login() {
               type="submit"
               disabled={twoFALoading || twoFACode.length !== 6}
               className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: '#E3B341', color: '#080C14', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
+              style={{ backgroundColor: '#E3B341', color: '#091525', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
             >
               {twoFALoading ? (
                 <>
@@ -171,7 +171,7 @@ export default function Login() {
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
                 className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
+                style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
               />
             </div>
 
@@ -186,7 +186,7 @@ export default function Login() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password"
                   className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                  style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
+                  style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                 />
                 <button
                   type="button"
@@ -206,7 +206,7 @@ export default function Login() {
               type="submit"
               disabled={loginMutation.isPending}
               className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: '#E3B341', color: '#080C14', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
+              style={{ backgroundColor: '#E3B341', color: '#091525', boxShadow: '0 4px 20px rgba(227, 179, 65, 0.3)' }}
             >
               {loginMutation.isPending ? (
                 <>

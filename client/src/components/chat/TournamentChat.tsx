@@ -110,7 +110,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
             {message.username}
           </span>
           {isCurrentUser && (
-            <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
+            <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#E3B341', color: '#091525' }}>You</Badge>
           )}
           <span className="text-xs" style={{ color: '#94A3B8' }}>
             {formatTimestamp(message.createdAt)}
@@ -188,7 +188,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
     <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#1E2D3F', border: '1px solid #0E2040' }}>
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden">
-        <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(8, 12, 20, 0.5)' }}>
+        <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(10, 22, 44, 0.5)' }}>
           <div className="space-y-2">
             {isLoading ? (
               <div className="text-center py-4">
@@ -217,7 +217,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
       </div>
 
       {/* Message Input */}
-      <div className="p-3" style={{ borderTop: '1px solid #0E2040', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
+      <div className="p-3" style={{ borderTop: '1px solid #0E2040', backgroundColor: 'rgba(10, 18, 38, 0.92)' }}>
         <form onSubmit={handleSendMessage} className="flex space-x-2">
           <Input
             value={newMessage}
@@ -232,7 +232,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
             size="sm"
             disabled={!newMessage.trim() || sendMessageMutation.isPending}
             className="px-3 h-9"
-            style={{ backgroundColor: '#E3B341', color: '#080C14' }}
+            style={{ backgroundColor: '#E3B341', color: '#091525' }}
           >
             <Send className="w-4 h-4" />
           </Button>

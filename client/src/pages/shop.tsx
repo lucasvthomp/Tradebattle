@@ -137,7 +137,7 @@ export default function Shop() {
                   className="h-11 px-6 font-semibold"
                   style={{
                     backgroundColor: '#E3B341',
-                    color: '#06121F',
+                    color: '#091525',
                   }}
                 >
                   Redeem

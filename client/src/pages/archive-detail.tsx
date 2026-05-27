@@ -105,7 +105,7 @@ export default function ArchiveDetailPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#091525' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('players')}</span>
@@ -115,7 +115,7 @@ export default function ArchiveDetailPage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#091525' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
                 <DollarSign className="w-4 h-4" style={{ color: '#10B981' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('startingCash')}</span>
@@ -125,7 +125,7 @@ export default function ArchiveDetailPage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#091525' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="w-4 h-4" style={{ color: '#06B6D4' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('duration')}</span>
@@ -135,7 +135,7 @@ export default function ArchiveDetailPage() {
               </p>
             </div>
 
-            <div className="p-3 rounded-lg" style={{ backgroundColor: '#091525' }}>
+            <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Calendar className="w-4 h-4" style={{ color: '#94A3B8' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('ended')}</span>

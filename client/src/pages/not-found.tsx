@@ -28,7 +28,7 @@ export default function NotFound() {
   return (
     <div
       className="min-h-screen w-full flex flex-col items-center justify-center px-4"
-      style={{ backgroundColor: "#06121F" }}
+      style={{ backgroundColor: 'transparent' }}
     >
       {/* Ticker tape */}
       <div
@@ -184,7 +184,7 @@ export default function NotFound() {
               className="flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:brightness-110"
               style={{
                 background: "linear-gradient(135deg, #E3B341, #F59E0B)",
-                color: "#06121F",
+                color: "#091525",
               }}
             >
               <Home className="w-4 h-4" />

@@ -88,7 +88,7 @@ export default function Leaderboard() {
         <div className="flex items-center gap-1.5">
           <span className="text-sm font-semibold truncate" style={{ color: '#F1F5F9' }}>{player.username}</span>
           {player.userId === user?.id && (
-            <Badge className="text-[10px] px-1.5 py-0" style={{ background: '#E3B341', color: '#06121F' }}>You</Badge>
+            <Badge className="text-[10px] px-1.5 py-0" style={{ background: '#E3B341', color: '#091525' }}>You</Badge>
           )}
         </div>
       </div>

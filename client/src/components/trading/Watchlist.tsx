@@ -95,7 +95,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
             onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
             className="h-8 pl-8 text-xs"
             style={{
-              backgroundColor: "#080C14",
+              backgroundColor: 'transparent',
               borderColor: "#0E2040",
               color: "#FFFFFF",
             }}
@@ -106,7 +106,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
         {searchQuery.length >= 2 && (
           <div
             className="mt-1 rounded-lg overflow-hidden"
-            style={{ backgroundColor: "#080C14", border: "1px solid #0E2040" }}
+            style={{ backgroundColor: 'transparent', border: "1px solid #0E2040" }}
           >
             {isSearching ? (
               <div className="px-3 py-2 space-y-2">

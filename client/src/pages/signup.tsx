@@ -223,7 +223,7 @@ export default function Signup() {
         <div className="text-center">
           <div className="flex justify-center mb-4">
             <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#E3B341', boxShadow: '0 0 40px rgba(227, 179, 65, 0.3)' }}>
-              <span className="font-black text-3xl" style={{ color: '#080C14' }}>O</span>
+              <span className="font-black text-3xl" style={{ color: '#091525' }}>O</span>
             </div>
           </div>
         </div>
@@ -250,7 +250,7 @@ export default function Signup() {
                   {isCompleted ? (
                     <Check className="w-4 h-4" style={{ color: '#E3B341' }} />
                   ) : (
-                    <StepIcon className="w-4 h-4" style={{ color: isActive ? '#080C14' : '#94A3B8' }} />
+                    <StepIcon className="w-4 h-4" style={{ color: isActive ? '#091525' : '#94A3B8' }} />
                   )}
                 </div>
               </div>
@@ -282,7 +282,7 @@ export default function Signup() {
                     maxLength={20}
                     className="pr-10 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
                     style={{
-                      backgroundColor: '#091525',
+                      backgroundColor: 'transparent',
                       color: '#F1F5F9',
                       borderColor: usernameStatus.available === true ? '#10B981' : usernameStatus.available === false ? '#EF4444' : '#0E2040',
                       fontSize: '15px',
@@ -315,7 +315,7 @@ export default function Signup() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email address"
                     className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                    style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
+                    style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
                 </div>
               )}
@@ -343,7 +343,7 @@ export default function Signup() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Create a strong password"
                     className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#E3B341] focus:border-[#E3B341]"
-                    style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
+                    style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
                   <button
                     type="button"
@@ -372,7 +372,7 @@ export default function Signup() {
               </div>
 
               {/* Requirements Checklist */}
-              <div className="space-y-2 p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
+              <div className="space-y-2 p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                 {[
                   { met: hasMinLength, text: "At least 8 characters" },
                   { met: hasUppercase, text: "One uppercase letter" },
@@ -399,7 +399,7 @@ export default function Signup() {
               <div className="space-y-2">
                 <Label className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Country</Label>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="h-12 rounded-xl" style={{ backgroundColor: '#091525', color: '#F1F5F9', borderColor: '#0E2040' }}>
+                  <SelectTrigger className="h-12 rounded-xl" style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040' }}>
                     <SelectValue placeholder="Select your country" />
                   </SelectTrigger>
                   <SelectContent>
@@ -412,11 +412,11 @@ export default function Signup() {
 
               {selectedCountry && (
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
+                  <div className="p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                     <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Language</p>
                     <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedLanguage}</p>
                   </div>
-                  <div className="p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
+                  <div className="p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                     <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Currency</p>
                     <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedCurrency}</p>
                   </div>
@@ -436,7 +436,7 @@ export default function Signup() {
                   { label: "Language", value: selectedLanguage, color: '#94A3B8' },
                   { label: "Currency", value: selectedCurrency, color: '#94A3B8' },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
+                  <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                     <span className="text-xs" style={{ color: '#94A3B8' }}>{item.label}</span>
                     <span className="text-sm font-semibold" style={{ color: item.color }}>{item.value}</span>
                   </div>
@@ -444,7 +444,7 @@ export default function Signup() {
               </div>
 
               {/* Legal Agreements */}
-              <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
+              <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                 <div className="flex items-start space-x-3">
                   <Checkbox
                     id="tos"
@@ -513,7 +513,7 @@ export default function Signup() {
                 onClick={nextStep}
                 disabled={!canProceed()}
                 className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
-                style={{ backgroundColor: canProceed() ? '#E3B341' : '#0E2040', color: canProceed() ? '#080C14' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(227, 179, 65, 0.3)' : 'none' }}
+                style={{ backgroundColor: canProceed() ? '#E3B341' : '#0E2040', color: canProceed() ? '#091525' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(227, 179, 65, 0.3)' : 'none' }}
               >
                 Next
                 <ArrowRight className="w-4 h-4 ml-2" />

@@ -26,7 +26,7 @@ export function HoldingsWidget({
   return (
     <div className="h-full flex flex-col overflow-hidden" style={{ backgroundColor: '#0C1A2E' }}>
       {/* Header with Toggle */}
-      <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#0E2040', backgroundColor: '#091525' }}>
+      <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#0E2040', backgroundColor: 'transparent' }}>
         <div className="flex items-center gap-2">
           <Coins className="w-4 h-4" style={{ color: '#E3B341' }} />
           <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Holdings</span>
@@ -83,7 +83,7 @@ export function HoldingsWidget({
                 <div
                   key={index}
                   className="p-2 rounded transition-colors"
-                  style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}
+                  style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}
                 >
                   <div className="flex justify-between items-center mb-1">
                     <div className="flex items-baseline gap-2">

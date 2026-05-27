@@ -373,7 +373,7 @@ export function TournamentManagementDialog({
             <TabsContent value="chat" className="mt-4">
               {activeTab === "chat" && (
                 <Suspense fallback={
-                  <div className="flex items-center justify-center h-[400px]" style={{ backgroundColor: '#091525' }}>
+                  <div className="flex items-center justify-center h-[400px]" style={{ backgroundColor: 'transparent' }}>
                     <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#E3B341', borderTopColor: 'transparent' }} />
                   </div>
                 }>

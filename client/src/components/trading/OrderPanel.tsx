@@ -168,7 +168,7 @@ export function OrderPanel({
           >
             <SelectTrigger
               className="h-9"
-              style={{ backgroundColor: "#080C14", borderColor: "#0E2040", color: "#E3B341" }}
+              style={{ backgroundColor: 'transparent', borderColor: "#0E2040", color: "#E3B341" }}
             >
               <SelectValue placeholder="Select Tournament" />
             </SelectTrigger>
@@ -222,7 +222,7 @@ export function OrderPanel({
             onChange={(e) => { setShowSearch(true); setSearchQuery(e.target.value.toUpperCase()); }}
             className="h-9 pl-8 pr-8 text-xs"
             style={{
-              backgroundColor: "#080C14",
+              backgroundColor: 'transparent',
               borderColor: "#0E2040",
               color: "#FFFFFF",
             }}
@@ -358,7 +358,7 @@ export function OrderPanel({
               size="sm"
               onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
               className="h-9 w-9 p-0"
-              style={{ backgroundColor: "#080C14", borderColor: "#0E2040", color: "#FFFFFF" }}
+              style={{ backgroundColor: 'transparent', borderColor: "#0E2040", color: "#FFFFFF" }}
             >
               <Minus className="w-4 h-4" />
             </Button>
@@ -368,13 +368,13 @@ export function OrderPanel({
               value={quantity}
               onChange={(e) => handleQuantityChange(Math.max(0, parseInt(e.target.value) || 0))}
               className="h-9 text-center flex-1"
-              style={{ backgroundColor: "#080C14", borderColor: "#0E2040", color: "#FFFFFF" }}
+              style={{ backgroundColor: 'transparent', borderColor: "#0E2040", color: "#FFFFFF" }}
             />
             <Button
               size="sm"
               onClick={() => handleQuantityChange(quantity + 1)}
               className="h-9 w-9 p-0"
-              style={{ backgroundColor: "#080C14", borderColor: "#0E2040", color: "#FFFFFF" }}
+              style={{ backgroundColor: 'transparent', borderColor: "#0E2040", color: "#FFFFFF" }}
             >
               <Plus className="w-4 h-4" />
             </Button>
@@ -389,7 +389,7 @@ export function OrderPanel({
                     onClick={() => handleQuantityChange(n)}
                     className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
                     style={{
-                      backgroundColor: quantity === n ? "rgba(16, 185, 129, 0.2)" : "#080C14",
+                      backgroundColor: quantity === n ? "rgba(16, 185, 129, 0.2)" : "#091525",
                       color: quantity === n ? "#10B981" : "#94A3B8",
                       border: `1px solid ${quantity === n ? "#10B981" : "#0E2040"}`,
                     }}
@@ -402,7 +402,7 @@ export function OrderPanel({
                     onClick={() => handleQuantityChange(maxBuyShares)}
                     className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
                     style={{
-                      backgroundColor: quantity === maxBuyShares ? "rgba(16, 185, 129, 0.2)" : "#080C14",
+                      backgroundColor: quantity === maxBuyShares ? "rgba(16, 185, 129, 0.2)" : "#091525",
                       color: quantity === maxBuyShares ? "#10B981" : "#E3B341",
                       border: `1px solid ${quantity === maxBuyShares ? "#10B981" : "#0E2040"}`,
                     }}
@@ -421,7 +421,7 @@ export function OrderPanel({
                         onClick={() => handleQuantityChange(n)}
                         className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
                         style={{
-                          backgroundColor: quantity === n ? "rgba(239, 68, 68, 0.2)" : "#080C14",
+                          backgroundColor: quantity === n ? "rgba(239, 68, 68, 0.2)" : "#091525",
                           color: quantity === n ? "#EF4444" : "#94A3B8",
                           border: `1px solid ${quantity === n ? "#EF4444" : "#0E2040"}`,
                         }}
@@ -433,7 +433,7 @@ export function OrderPanel({
                       onClick={() => handleQuantityChange(ownedShares)}
                       className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
                       style={{
-                        backgroundColor: quantity === ownedShares ? "rgba(239, 68, 68, 0.2)" : "#080C14",
+                        backgroundColor: quantity === ownedShares ? "rgba(239, 68, 68, 0.2)" : "#091525",
                         color: quantity === ownedShares ? "#EF4444" : "#E3B341",
                         border: `1px solid ${quantity === ownedShares ? "#EF4444" : "#0E2040"}`,
                       }}

@@ -178,9 +178,9 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
   const getBadgeColor = (type: string) => {
     switch (type) {
       case 'celebration':
-        return { backgroundColor: '#E3B341', color: '#080C14' };
+        return { backgroundColor: '#E3B341', color: '#091525' };
       case 'warning':
-        return { backgroundColor: '#FDC830', color: '#080C14' };
+        return { backgroundColor: '#FDC830', color: '#091525' };
       case 'urgent':
         return { backgroundColor: '#FF4F58', color: '#FFFFFF' };
       case 'success':
@@ -257,12 +257,12 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
                     <Button variant="outline" onClick={handleClose} style={{ borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                       Skip All
                     </Button>
-                    <Button onClick={handleNext} style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
+                    <Button onClick={handleNext} style={{ backgroundColor: '#E3B341', color: '#091525' }}>
                       Next Message
                     </Button>
                   </>
                 ) : (
-                  <Button onClick={handleClose} style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
+                  <Button onClick={handleClose} style={{ backgroundColor: '#E3B341', color: '#091525' }}>
                     Got It!
                   </Button>
                 )}

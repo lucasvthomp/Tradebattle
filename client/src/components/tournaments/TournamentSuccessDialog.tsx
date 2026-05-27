@@ -141,7 +141,7 @@ export function TournamentSuccessDialog({
               <Button
                 onClick={handleCopyLink}
                 className="px-4 min-h-[44px] md:min-h-0"
-                style={{ backgroundColor: copied ? '#10B981' : '#E3B341', color: '#080C14' }}
+                style={{ backgroundColor: copied ? '#10B981' : '#E3B341', color: '#091525' }}
               >
                 {copied ? (
                   <>
@@ -251,7 +251,7 @@ export function TournamentSuccessDialog({
             <Button
               onClick={() => window.open(`/tournaments/${tournamentId}`, '_blank')}
               className="font-bold min-h-[44px] order-1 sm:order-2"
-              style={{ backgroundColor: '#E3B341', color: '#080C14' }}
+              style={{ backgroundColor: '#E3B341', color: '#091525' }}
             >
               View Tournament
               <ExternalLink className="w-4 h-4 ml-2" />

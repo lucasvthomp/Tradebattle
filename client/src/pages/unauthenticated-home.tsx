@@ -33,7 +33,7 @@ export default function UnauthenticatedHome() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #06121F 0%, #091525 50%, #1E293B 100%)',
+      background: 'linear-gradient(135deg, #0A1628 0%, #0C1E3A 50%, #0D2145 100%)',
       color: '#C9D1E2',
       position: 'relative',
       overflow: 'hidden',
@@ -135,7 +135,7 @@ export default function UnauthenticatedHome() {
               size="lg"
               style={{
                 background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
-                color: '#080C14',
+                color: '#091525',
                 fontWeight: '700',
                 padding: '18px 40px',
                 fontSize: '18px',
@@ -358,7 +358,7 @@ export default function UnauthenticatedHome() {
               marginBottom: '24px',
               boxShadow: '0 8px 24px rgba(227, 179, 65, 0.3)',
             }}>
-              <Users style={{ width: '28px', height: '28px', color: '#080C14' }} />
+              <Users style={{ width: '28px', height: '28px', color: '#091525' }} />
             </div>
             <div style={{
               fontSize: '14px',
@@ -656,7 +656,7 @@ export default function UnauthenticatedHome() {
               size="lg"
               style={{
                 background: 'linear-gradient(135deg, #E3B341 0%, #F59E0B 100%)',
-                color: '#080C14',
+                color: '#091525',
                 fontWeight: '800',
                 padding: '20px 48px',
                 fontSize: '20px',

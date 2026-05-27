@@ -80,7 +80,7 @@ export default function Hub() {
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#06121F', padding: '32px 20px' }}>
+    <div style={{ minHeight: '100vh', background: 'transparent', padding: '32px 20px' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
         {/* Header + Level Bar */}
@@ -334,7 +334,7 @@ export default function Hub() {
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '10px 20px', borderRadius: '8px',
                       background: 'linear-gradient(135deg, #E3B341, #F59E0B)',
-                      border: 'none', color: '#06121F', fontWeight: '700', fontSize: '13px', cursor: 'pointer',
+                      border: 'none', color: '#091525', fontWeight: '700', fontSize: '13px', cursor: 'pointer',
                     }}
                   >
                     <Plus size={14} /> Browse Tournaments

@@ -36,7 +36,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl p-0 overflow-hidden" style={{ backgroundColor: '#06121F', borderColor: '#E3B341', border: '2px solid' }}>
+      <DialogContent className="max-w-2xl p-0 overflow-hidden" style={{ backgroundColor: 'transparent', borderColor: '#E3B341', border: '2px solid' }}>
         {/* Animated Background */}
         <div className="absolute inset-0 overflow-hidden">
           {Array.from({ length: 20 }).map((_, i) => (
@@ -166,7 +166,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
             </div>
 
             {/* Guidelines */}
-            <div className="p-6 rounded-xl mb-6" style={{ backgroundColor: '#091525', border: '1px solid #0E2040' }}>
+            <div className="p-6 rounded-xl mb-6" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-5 h-5" style={{ color: '#E3B341' }} />
                 <h3 className="text-lg font-bold" style={{ color: '#E3B341' }}>Quick Guidelines</h3>
@@ -197,7 +197,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
               className="w-full h-14 text-lg font-bold"
               style={{
                 background: 'linear-gradient(135deg, #E3B341, #FFD700)',
-                color: '#06121F',
+                color: '#091525',
               }}
             >
               Let's Trade! 🚀

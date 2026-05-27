@@ -28,7 +28,7 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#06121F' }}>
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
       <Card className="w-full max-w-md" style={{ backgroundColor: '#1E2D3F', borderColor: '#2B3A4C' }}>
         <CardHeader>
           <CardTitle style={{ color: '#C9D1E2' }}>Reset Password</CardTitle>
@@ -65,7 +65,7 @@ export default function ForgotPassword() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   required
-                  style={{ backgroundColor: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                  style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                 />
               </div>
               {error && <p className="text-sm" style={{ color: '#FF4F58' }}>{error}</p>}

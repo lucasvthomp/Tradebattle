@@ -29,14 +29,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const [, navigate] = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)', borderBottom: '1px solid rgba(227, 179, 65, 0.1)', boxShadow: '0 1px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(227, 179, 65, 0.05)' }}>
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(10, 18, 38, 0.92)', borderBottom: '1px solid rgba(227, 179, 65, 0.1)', boxShadow: '0 1px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(227, 179, 65, 0.05)' }}>
       <div className="container mx-auto px-4">
         <nav className="flex items-center h-16 relative">
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #E3B341, #c99a35)', boxShadow: '0 0 16px rgba(227, 179, 65, 0.2)' }}>
-                <span className="font-black text-sm" style={{ color: '#080C14' }}>O</span>
+                <span className="font-black text-sm" style={{ color: '#091525' }}>O</span>
               </div>
               <span className="text-xl font-display font-bold text-foreground tracking-tight">ORSATH</span>
             </Link>
@@ -158,7 +158,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
 
       {/* Mobile Menu Panel - show only on mobile */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border" style={{ backgroundColor: 'rgba(8, 12, 20, 0.95)' }}>
+        <div className="md:hidden border-t border-border" style={{ backgroundColor: 'rgba(10, 18, 38, 0.97)' }}>
           <div className="container mx-auto px-4 py-6 space-y-4">
             {user ? (
               <>

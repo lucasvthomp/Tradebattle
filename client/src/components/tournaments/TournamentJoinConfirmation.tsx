@@ -61,7 +61,7 @@ export function TournamentJoinConfirmation({
 
         <div className="space-y-6">
           {/* Tournament Details */}
-          <div className="p-4 rounded-xl" style={{ backgroundColor: '#091525', border: '1px solid #2B3A4C' }}>
+          <div className="p-4 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #2B3A4C' }}>
             <h3 className="text-xl font-bold mb-4" style={{ color: '#C9D1E2' }}>
               {tournament.name}
             </h3>
@@ -128,7 +128,7 @@ export function TournamentJoinConfirmation({
           </motion.div>
 
           {/* Agreement Checkboxes */}
-          <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: '#091525' }}>
+          <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: 'transparent' }}>
             <div className="flex items-start gap-3">
               <Checkbox
                 id="terms"
@@ -189,7 +189,7 @@ export function TournamentJoinConfirmation({
                 background: canConfirm
                   ? 'linear-gradient(135deg, #E3B341, #FFD700)'
                   : '#2B3A4C',
-                color: canConfirm ? '#06121F' : '#5A6572',
+                color: canConfirm ? '#091525' : '#5A6572',
                 opacity: canConfirm ? 1 : 0.6,
               }}
             >

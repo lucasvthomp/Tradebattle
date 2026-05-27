@@ -217,7 +217,7 @@ function PaymentsDebugTab() {
             <Button
               onClick={checkPayment}
               disabled={loading}
-              style={{ backgroundColor: '#E3B341', color: '#06121F' }}
+              style={{ backgroundColor: '#E3B341', color: '#091525' }}
             >
               <Search className="w-4 h-4 mr-2" />
               {loading ? "Checking..." : "Check"}
@@ -241,7 +241,7 @@ function PaymentsDebugTab() {
                           <Badge
                             style={{
                               backgroundColor: result.paymentData.payment_status === 'finished' ? '#28C76F' : '#E3B341',
-                              color: '#06121F'
+                              color: '#091525'
                             }}
                           >
                             {result.paymentData.payment_status}
@@ -257,7 +257,7 @@ function PaymentsDebugTab() {
                           <Badge
                             style={{
                               backgroundColor: result.alreadyCredited ? '#28C76F' : '#FF4F58',
-                              color: '#06121F'
+                              color: '#091525'
                             }}
                           >
                             {result.alreadyCredited ? 'Yes' : 'No'}
@@ -274,7 +274,7 @@ function PaymentsDebugTab() {
                           <Badge
                             style={{
                               backgroundColor: result.shouldCredit ? '#28C76F' : '#8A93A6',
-                              color: '#06121F'
+                              color: '#091525'
                             }}
                           >
                             {result.shouldCredit ? 'Yes' : 'No'}
@@ -324,7 +324,7 @@ function PaymentsDebugTab() {
                       onClick={manualCredit}
                       disabled={loading}
                       className="w-full"
-                      style={{ backgroundColor: '#28C76F', color: '#06121F', fontSize: '16px', padding: '24px' }}
+                      style={{ backgroundColor: '#28C76F', color: '#091525', fontSize: '16px', padding: '24px' }}
                     >
                       <DollarSign className="w-5 h-5 mr-2" />
                       {loading ? "Processing..." : `Manually Credit $${result.paymentData.price_amount} to ${result.user.username}`}
@@ -889,7 +889,7 @@ export default function Admin() {
                         const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                         const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                         return (
-                          <div key={tournament.id} className="flex items-center justify-between p-3 rounded-lg" style={{ background: '#06121F' }}>
+                          <div key={tournament.id} className="flex items-center justify-between p-3 rounded-lg" style={{ background: 'transparent' }}>
                             <div>
                               <div className="font-medium" style={{ color: '#C9D1E2' }}>{tournament.name}</div>
                               <div className="text-xs" style={{ color: '#8A93A6' }}>Code: {tournament.code}</div>
@@ -1232,13 +1232,13 @@ export default function Admin() {
                       <Label>Announcement Title</Label>
                       <Input
                         placeholder="e.g., Big Tournament This Weekend!"
-                        style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="space-y-2">
                       <Label>Type</Label>
                       <Select defaultValue="info">
-                        <SelectTrigger style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <SelectTrigger style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1257,7 +1257,7 @@ export default function Admin() {
                     <Textarea
                       placeholder="Enter your announcement message here..."
                       rows={4}
-                      style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                      style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                     />
                   </div>
 
@@ -1320,11 +1320,11 @@ export default function Admin() {
                       <Label>Expires At (Optional)</Label>
                       <Input
                         type="datetime-local"
-                        style={{ backgroundColor: '#091525', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ backgroundColor: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="flex items-end">
-                      <Button className="w-full h-10" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>
+                      <Button className="w-full h-10" style={{ backgroundColor: '#E3B341', color: '#091525' }}>
                         <Send className="h-4 w-4 mr-2" />
                         Send Announcement
                       </Button>
@@ -1346,10 +1346,10 @@ export default function Admin() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <div className="p-4 rounded-lg" style={{ backgroundColor: '#091525', border: '1px solid #2B3A4C' }}>
+                    <div className="p-4 rounded-lg" style={{ backgroundColor: 'transparent', border: '1px solid #2B3A4C' }}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Badge style={{ backgroundColor: '#E3B341', color: '#080C14' }}>CELEBRATION</Badge>
+                          <Badge style={{ backgroundColor: '#E3B341', color: '#091525' }}>CELEBRATION</Badge>
                           <span className="font-semibold" style={{ color: '#C9D1E2' }}>Welcome to Tradebattle!</span>
                         </div>
                         <div className="flex gap-2">
@@ -1580,7 +1580,7 @@ export default function Admin() {
                 <div className="flex items-center gap-3">
                   <Button
                     onClick={() => setCreateCodeOpen(true)}
-                    style={{ background: '#E3B341', color: '#06121F' }}
+                    style={{ background: '#E3B341', color: '#091525' }}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Create Code
@@ -1724,7 +1724,7 @@ export default function Admin() {
                         placeholder="e.g. WELCOME500"
                         value={newCode.code}
                         onChange={(e) => setNewCode({ ...newCode, code: e.target.value.toUpperCase() })}
-                        style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -1734,7 +1734,7 @@ export default function Admin() {
                         placeholder="e.g. 500"
                         value={newCode.rewardAmount}
                         onChange={(e) => setNewCode({ ...newCode, rewardAmount: e.target.value })}
-                        style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
                     <div className="space-y-2">
@@ -1743,7 +1743,7 @@ export default function Admin() {
                         value={newCode.usageType}
                         onValueChange={(value) => setNewCode({ ...newCode, usageType: value })}
                       >
-                        <SelectTrigger style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
+                        <SelectTrigger style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -1762,7 +1762,7 @@ export default function Admin() {
                           placeholder="e.g. 100"
                           value={newCode.maxUses}
                           onChange={(e) => setNewCode({ ...newCode, maxUses: e.target.value })}
-                          style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                          style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                         />
                       </div>
                     )}
@@ -1772,7 +1772,7 @@ export default function Admin() {
                         type="date"
                         value={newCode.expiresAt}
                         onChange={(e) => setNewCode({ ...newCode, expiresAt: e.target.value })}
-                        style={{ background: '#06121F', borderColor: '#2B3A4C', color: '#C9D1E2' }}
+                        style={{ background: 'transparent', borderColor: '#2B3A4C', color: '#C9D1E2' }}
                       />
                     </div>
                   </div>
@@ -1800,7 +1800,7 @@ export default function Admin() {
                         });
                       }}
                       disabled={createCodeMutation.isPending}
-                      style={{ background: '#E3B341', color: '#06121F' }}
+                      style={{ background: '#E3B341', color: '#091525' }}
                     >
                       {createCodeMutation.isPending ? "Creating..." : "Create Code"}
                     </Button>

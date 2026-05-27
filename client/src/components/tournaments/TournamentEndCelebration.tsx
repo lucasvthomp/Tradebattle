@@ -100,7 +100,7 @@ export function TournamentEndCelebration({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         className="max-w-4xl p-0 overflow-hidden"
-        style={{ backgroundColor: '#06121F', borderColor: '#E3B341', border: '3px solid' }}
+        style={{ backgroundColor: 'transparent', borderColor: '#E3B341', border: '3px solid' }}
       >
         {/* Animated Background */}
         <div className="absolute inset-0">
@@ -345,7 +345,7 @@ export function TournamentEndCelebration({
                   className="w-full h-14 text-lg font-bold"
                   style={{
                     background: 'linear-gradient(135deg, #E3B341, #FFD700)',
-                    color: '#06121F',
+                    color: '#091525',
                   }}
                 >
                   Awesome! 🎉

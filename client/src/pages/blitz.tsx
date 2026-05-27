@@ -140,7 +140,7 @@ export default function Blitz() {
                 {matchState === "idle" && (
                   <motion.div key="idle" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                     <div style={{
-                      background: 'linear-gradient(160deg, #0C1829 0%, #080C14 100%)',
+                      background: 'linear-gradient(160deg, #0C1E35 0%, #091525 100%)',
                       border: '1px solid rgba(227,179,65,0.2)',
                       borderRadius: '16px',
                       textAlign: 'center', padding: '48px 24px',
@@ -188,7 +188,7 @@ export default function Blitz() {
                 {matchState === "queued" && (
                   <motion.div key="queued" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
                     <div style={{
-                      background: 'linear-gradient(160deg, #0C1829 0%, #080C14 100%)',
+                      background: 'linear-gradient(160deg, #0C1E35 0%, #091525 100%)',
                       border: '1px solid rgba(227,179,65,0.2)',
                       borderRadius: '16px',
                       textAlign: 'center', padding: '48px 24px',
@@ -253,7 +253,7 @@ export default function Blitz() {
                 {matchState === "vs" && (
                   <motion.div key="vs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <div style={{
-                      background: 'linear-gradient(160deg, #0E0818 0%, #080C14 100%)',
+                      background: 'linear-gradient(160deg, #0A1628 0%, #091525 100%)',
                       border: '1px solid rgba(227,179,65,0.4)',
                       borderRadius: '16px',
                       padding: '48px 24px',
@@ -333,7 +333,7 @@ export default function Blitz() {
                 {matchState === "matched" && tournamentId && (
                   <motion.div key="matched" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
                     <div style={{
-                      background: 'linear-gradient(160deg, #0A1F14 0%, #080C14 100%)',
+                      background: 'linear-gradient(160deg, #0A2018 0%, #091A25 100%)',
                       border: '1px solid rgba(40,199,111,0.4)',
                       borderRadius: '16px',
                       textAlign: 'center', padding: '48px 24px',

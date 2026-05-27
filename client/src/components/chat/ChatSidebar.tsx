@@ -198,7 +198,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                     ) : null;
                   })()}
                   {isCurrentUser && (
-                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#E3B341', color: '#080C14' }}>You</Badge>
+                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#E3B341', color: '#091525' }}>You</Badge>
                   )}
                   <span className="text-xs" style={{ color: '#94A3B8' }}>
                     {formatTimestamp(msg.createdAt)}
@@ -449,7 +449,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#1E2D3F', borderLeft: '2px solid #0E2040' }}
     >
             {/* Header */}
-            <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #0E2040', backgroundColor: '#080C14' }}>
+            <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #0E2040', backgroundColor: 'transparent' }}>
               <div className="flex items-center space-x-2">
                 <MessageSquare className="w-4 h-4" style={{ color: '#E3B341' }} />
                 <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{t('globalChat')}</span>
@@ -466,7 +466,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
             {/* Messages Area */}
             <div className="flex-1 overflow-hidden">
-              <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(8, 12, 20, 0.5)' }}>
+              <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(10, 22, 44, 0.5)' }}>
                 <div className="space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
@@ -501,7 +501,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             </div>
 
             {/* Message Input */}
-            <div className="p-3 relative" style={{ borderTop: '1px solid #0E2040', backgroundColor: 'rgba(8, 12, 20, 0.9)' }}>
+            <div className="p-3 relative" style={{ borderTop: '1px solid #0E2040', backgroundColor: 'rgba(10, 18, 38, 0.92)' }}>
               {/* Mention Autocomplete Dropdown */}
               {showMentions && mentionSuggestions.length > 0 && (
                 <div
@@ -549,7 +549,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   size="sm"
                   disabled={!newMessage.trim() || sendMessageMutation.isPending}
                   className="px-3 h-9"
-                  style={{ backgroundColor: '#E3B341', color: '#080C14' }}
+                  style={{ backgroundColor: '#E3B341', color: '#091525' }}
                 >
                   <Send className="w-4 h-4" />
                 </Button>
@@ -566,7 +566,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
           <DialogHeader>
             <div className="flex items-center space-x-3 mb-2">
               <div className="p-2 rounded-lg" style={{ backgroundColor: '#10B981' }}>
-                <DollarSign className="w-5 h-5" style={{ color: '#080C14' }} />
+                <DollarSign className="w-5 h-5" style={{ color: '#091525' }} />
               </div>
               <div>
                 <DialogTitle style={{ color: '#F1F5F9' }}>{t('sendTipTo')} {selectedUser?.username}</DialogTitle>

@@ -185,7 +185,7 @@ export default function Deposit() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#06121F',
+      background: 'transparent',
       padding: '40px 20px',
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -238,7 +238,7 @@ export default function Deposit() {
                 <div
                   key={deposit.payment_id}
                   style={{
-                    background: '#06121F',
+                    background: 'transparent',
                     border: '1px solid #2B3A4C',
                     borderRadius: '8px',
                     padding: '16px',
@@ -261,7 +261,7 @@ export default function Deposit() {
                       style={{
                         padding: '8px 16px',
                         background: '#E3B341',
-                        color: '#06121F',
+                        color: '#091525',
                         border: 'none',
                         borderRadius: '6px',
                         fontSize: '14px',
@@ -413,7 +413,7 @@ export default function Deposit() {
                   style={{
                     width: '100%',
                     padding: '14px 16px',
-                    background: '#06121F',
+                    background: 'transparent',
                     border: '2px solid #2B3A4C',
                     borderRadius: '8px',
                     color: '#C9D1E2',
@@ -451,7 +451,7 @@ export default function Deposit() {
                       onClick={() => setSelectedCurrency(option.value)}
                       style={{
                         padding: '16px',
-                        background: selectedCurrency === option.value ? 'rgba(227, 179, 65, 0.1)' : '#06121F',
+                        background: selectedCurrency === option.value ? 'rgba(227, 179, 65, 0.1)' : '#091525',
                         border: `2px solid ${selectedCurrency === option.value ? '#E3B341' : '#2B3A4C'}`,
                         borderRadius: '8px',
                         color: selectedCurrency === option.value ? '#E3B341' : '#C9D1E2',
@@ -488,7 +488,7 @@ export default function Deposit() {
                   width: '100%',
                   padding: '16px',
                   background: loading || !amount || parseFloat(amount) < minimumAmount ? '#2B3A4C' : '#E3B341',
-                  color: loading || !amount || parseFloat(amount) < minimumAmount ? '#8A93A6' : '#06121F',
+                  color: loading || !amount || parseFloat(amount) < minimumAmount ? '#8A93A6' : '#091525',
                   border: 'none',
                   borderRadius: '8px',
                   fontSize: '16px',
@@ -586,7 +586,7 @@ export default function Deposit() {
                 Deposit Address
               </label>
               <div style={{
-                background: '#06121F',
+                background: 'transparent',
                 border: '1px solid #2B3A4C',
                 borderRadius: '8px',
                 padding: '14px 16px',
@@ -634,7 +634,7 @@ export default function Deposit() {
                 Amount to Send
               </label>
               <div style={{
-                background: '#06121F',
+                background: 'transparent',
                 border: '2px solid #E3B341',
                 borderRadius: '8px',
                 padding: '16px',

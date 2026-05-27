@@ -7,7 +7,7 @@ export function PageLoader() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center"
-      style={{ background: '#06121F' }}
+      style={{ background: 'transparent' }}
     >
       {/* Logo mark */}
       <motion.div
@@ -20,7 +20,7 @@ export function PageLoader() {
           boxShadow: '0 8px 32px rgba(227, 179, 65, 0.3)',
         }}
       >
-        <span style={{ fontSize: '28px', fontWeight: '900', color: '#06121F' }}>T</span>
+        <span style={{ fontSize: '28px', fontWeight: '900', color: '#091525' }}>T</span>
       </motion.div>
 
       {/* Brand name */}

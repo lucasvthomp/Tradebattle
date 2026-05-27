@@ -201,7 +201,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
 
         <div className="space-y-4">
           {/* User Info Header with Status Badges */}
-          <div className="p-4 rounded-lg" style={{ background: '#06121F' }}>
+          <div className="p-4 rounded-lg" style={{ background: 'transparent' }}>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
                 <span style={{ color: '#8A93A6' }}>User ID:</span>
@@ -256,7 +256,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
             <TabsContent value="actions" className="space-y-4">
               <div className="space-y-4">
                 {/* Ban / Unban */}
-                <div className="p-4 rounded-lg" style={{ background: '#06121F', border: '1px solid #2B3A4C' }}>
+                <div className="p-4 rounded-lg" style={{ background: 'transparent', border: '1px solid #2B3A4C' }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Ban className="h-5 w-5" style={{ color: user.banned ? '#FF4F58' : '#8A93A6' }} />
@@ -290,7 +290,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 </div>
 
                 {/* Freeze Withdrawals */}
-                <div className="p-4 rounded-lg" style={{ background: '#06121F', border: '1px solid #2B3A4C' }}>
+                <div className="p-4 rounded-lg" style={{ background: 'transparent', border: '1px solid #2B3A4C' }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Wallet className="h-5 w-5" style={{ color: user.withdrawalFrozen ? '#FF8C00' : '#8A93A6' }} />
@@ -312,7 +312,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 </div>
 
                 {/* Freeze Deposits */}
-                <div className="p-4 rounded-lg" style={{ background: '#06121F', border: '1px solid #2B3A4C' }}>
+                <div className="p-4 rounded-lg" style={{ background: 'transparent', border: '1px solid #2B3A4C' }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <DollarSign className="h-5 w-5" style={{ color: user.depositFrozen ? '#FF8C00' : '#8A93A6' }} />
@@ -334,7 +334,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 </div>
 
                 {/* Restrict Tournaments */}
-                <div className="p-4 rounded-lg" style={{ background: '#06121F', border: '1px solid #2B3A4C' }}>
+                <div className="p-4 rounded-lg" style={{ background: 'transparent', border: '1px solid #2B3A4C' }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <Trophy className="h-5 w-5" style={{ color: user.tournamentRestricted ? '#E3B341' : '#8A93A6' }} />
