@@ -263,10 +263,9 @@ html {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
-    background: radial-gradient(ellipse at 15% 0%, rgba(37, 99, 235, 0.55) 0%, transparent 48%),
-                radial-gradient(ellipse at 85% 100%, rgba(29, 78, 216, 0.45) 0%, transparent 44%),
-                radial-gradient(ellipse at 50% 50%, rgba(30, 64, 175, 0.18) 0%, transparent 65%),
-                #0C1A30 !important;
+    background: radial-gradient(ellipse at 15% 0%, rgba(14, 32, 64, 0.9) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 100%, rgba(10, 24, 54, 0.7) 0%, transparent 50%),
+                #080C14 !important;
     background-attachment: fixed !important;
     min-height: 100vh;
     overscroll-behavior-y: none;
