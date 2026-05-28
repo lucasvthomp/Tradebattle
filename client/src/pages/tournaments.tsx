@@ -4,8 +4,6 @@ import { useLocation as useRouterLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -97,7 +95,10 @@ function ParticipantAvatarStack({ participants, totalCount }: {
           {p.profilePicture && (
             <AvatarImage src={p.profilePicture} className="object-cover" />
           )}
-          <AvatarFallback className="text-[9px] font-semibold" style={{ backgroundColor: '#0C1829', color: '#00A3FF' }}>
+          <AvatarFallback
+            className="text-[9px] font-semibold"
+            style={{ backgroundColor: '#081729', color: '#00A3FF', border: '2px solid #0A1F3D' }}
+          >
             {p.username.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
@@ -105,7 +106,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {overflow > 0 && (
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
-          style={{ backgroundColor: '#0C1829', color: '#00A3FF', border: '2px solid #0C1A2E' }}
+          style={{ backgroundColor: '#081729', color: '#00A3FF', border: '2px solid #0A1F3D' }}
         >
           +{overflow}
         </div>
@@ -170,7 +171,6 @@ export default function TournamentsPage() {
     const joinParam = params.get('join');
 
     if (joinParam) {
-      // Fetch tournament by code
       apiRequest('GET', `/api/tournaments/code/${joinParam}`)
         .then(response => response.json())
         .then((result: any) => {
@@ -184,7 +184,6 @@ export default function TournamentsPage() {
             setTournamentToJoin(tournament);
             setJoinConfirmationOpen(true);
           }
-          // Clean URL
           navigate('/tournaments', { replace: true });
         })
         .catch(error => {
@@ -221,12 +220,10 @@ export default function TournamentsPage() {
   // Join tournament by ID or code mutation
   const joinTournamentMutation = useMutation({
     mutationFn: async (tournamentIdOrCode: number | string) => {
-      // If it's a string (code), use the code endpoint
       if (typeof tournamentIdOrCode === 'string') {
         const res = await apiRequest("POST", `/api/tournaments/code/${tournamentIdOrCode}/join`, {});
         return res.json();
       }
-      // Otherwise use the ID endpoint
       const res = await apiRequest("POST", `/api/tournaments/${tournamentIdOrCode}/join`, {});
       return res.json();
     },
@@ -251,7 +248,6 @@ export default function TournamentsPage() {
   const confirmJoinTournament = () => {
     if (tournamentToJoin) {
       joinTournamentMutation.mutate(tournamentToJoin.code || tournamentToJoin.id);
-      // Don't close immediately - let onSuccess handle it
     }
   };
 
@@ -355,23 +351,22 @@ export default function TournamentsPage() {
     return (
       <div className="h-[calc(100vh-4rem)] flex items-center justify-center" style={{ background: 'transparent' }}>
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2" style={{ color: '#F1F5F9' }}>Please Log In</h2>
-          <p style={{ color: '#94A3B8' }}>You need to be logged in to view tournaments.</p>
+          <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#00A3FF', filter: 'drop-shadow(0 0 12px rgba(0,163,255,0.4))' }} />
+          <h2 className="text-xl font-black mb-2" style={{ color: '#C9D1E2', letterSpacing: '-0.02em' }}>Please Log In</h2>
+          <p style={{ color: '#4B6080' }}>You need to be logged in to view tournaments.</p>
         </div>
       </div>
     );
   }
 
-  const getTabCount = () => {
-    switch (activeTab) {
-      case 'upcoming': return upcomingTournaments.length;
-      case 'live': return liveTournaments.length;
-      default: return 0;
-    }
-  };
-
   return (
-    <div className="h-[calc(100vh-4rem)] overflow-auto" style={{ background: 'transparent' }}>
+    <div
+      className="h-[calc(100vh-4rem)] overflow-auto"
+      style={{
+        background: 'transparent',
+        backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
+      }}
+    >
       <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(16px, 3vh, 40px) clamp(16px, 2vw, 32px)' }}>
         <motion.div
           initial="initial"
@@ -380,109 +375,258 @@ export default function TournamentsPage() {
           className="space-y-6"
         >
           {/* Header */}
-          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center mb-3" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
-                <Trophy style={{ width: 'clamp(28px, 3vw, 48px)', height: 'clamp(28px, 3vw, 48px)', color: '#00A3FF' }} />
-                <h1 className="font-black" style={{ fontSize: 'clamp(1.5rem, 4vw, 3.75rem)', color: '#F1F5F9' }}>
-                  Tournaments
-                </h1>
-              </div>
-            </div>
-            <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 16px)' }}>
-              <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="rounded-lg border-0" style={{
-                    height: 'clamp(44px, 2.5vh, 48px)',
-                    padding: '0 clamp(12px, 1.5vw, 20px)',
-                    fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-                    backgroundColor: '#0C1829',
-                    color: '#F1F5F9',
-                  }}>
-                    <Lock style={{ width: 'clamp(14px, 1.2vw, 20px)', height: 'clamp(14px, 1.2vw, 20px)', marginRight: '8px' }} />
-                    Join Private
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-[95vw] md:max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
-                  <DialogHeader>
-                    <DialogTitle style={{ color: '#F1F5F9' }}>Join Private Tournament</DialogTitle>
-                  </DialogHeader>
-                  <div className="space-y-4">
-                    <div>
-                      <Label htmlFor="join-code" className="text-base md:text-sm" style={{ color: '#F1F5F9' }}>Tournament Code</Label>
-                      <Input
-                        id="join-code"
-                        value={joinCode}
-                        onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                        placeholder="Enter 8-character code"
-                        maxLength={8}
-                        className="text-base md:text-sm min-h-[44px]"
-                        style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
-                      />
-                    </div>
-                    <Button
-                      onClick={() => joinByCodeMutation.mutate(joinCode)}
-                      disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
-                      className="w-full border-0 min-h-[44px] text-base md:text-sm"
-                      style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
-                    >
-                      {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-
-              <TournamentCreationDialog
-                isOpen={createDialogOpen}
-                onClose={() => setCreateDialogOpen(false)}
+          <motion.div variants={fadeInUp}>
+            <div
+              style={{
+                position: 'relative',
+                overflow: 'hidden',
+                borderBottom: '1px solid rgba(0,163,255,0.08)',
+                marginBottom: '20px',
+                paddingBottom: '20px',
+              }}
+            >
+              {/* Scanline texture strip */}
+              <div
+                aria-hidden="true"
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
+                  background: 'linear-gradient(180deg, rgba(0,163,255,0.04) 0%, transparent 100%)',
+                  pointerEvents: 'none',
+                  zIndex: 0,
+                }}
               />
-              <Button onClick={() => setCreateDialogOpen(true)} className="rounded-lg border-0" style={{
-                height: 'clamp(44px, 2.5vh, 48px)',
-                padding: '0 clamp(12px, 1.5vw, 20px)',
-                fontSize: 'clamp(0.875rem, 1vw, 1rem)',
-                background: 'linear-gradient(135deg, #0D1E35, #334155)',
-                color: '#FFFFFF'
-              }}>
-                <Plus style={{ width: 'clamp(14px, 1.2vw, 20px)', height: 'clamp(14px, 1.2vw, 20px)', marginRight: '8px' }} />
-                Create Tournament
-              </Button>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ position: 'relative', zIndex: 1 }}>
+                <div>
+                  <div className="flex items-center mb-1" style={{ gap: 'clamp(10px, 1.2vw, 18px)' }}>
+                    {/* Trophy icon in glowing container */}
+                    <div style={{
+                      width: 'clamp(40px, 4vw, 60px)',
+                      height: 'clamp(40px, 4vw, 60px)',
+                      borderRadius: '14px',
+                      background: 'rgba(0,163,255,0.1)',
+                      border: '1px solid rgba(0,163,255,0.25)',
+                      boxShadow: '0 0 20px rgba(0,163,255,0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}>
+                      <Trophy style={{
+                        width: 'clamp(20px, 2vw, 30px)',
+                        height: 'clamp(20px, 2vw, 30px)',
+                        color: '#00A3FF',
+                        filter: 'drop-shadow(0 0 8px rgba(0,163,255,0.6))',
+                      }} />
+                    </div>
+                    <h1
+                      style={{
+                        fontSize: 'clamp(2rem, 5vw, 4rem)',
+                        color: '#FFFFFF',
+                        letterSpacing: '-0.03em',
+                        fontWeight: 900,
+                        textShadow: '0 0 32px rgba(0,163,255,0.4), 0 0 64px rgba(0,163,255,0.15)',
+                        lineHeight: 1,
+                        margin: 0,
+                      }}
+                    >
+                      Tournaments
+                    </h1>
+                  </div>
+                  <p style={{
+                    color: '#4B6080',
+                    fontSize: '0.7rem',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    marginLeft: 'calc(clamp(40px,4vw,60px) + clamp(10px,1.2vw,18px))',
+                  }}>
+                    Compete &amp; Win
+                  </p>
+                </div>
+
+                <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 12px)' }}>
+                  {/* Join Private Button */}
+                  <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
+                    <DialogTrigger asChild>
+                      <button
+                        style={{
+                          height: 'clamp(40px, 2.5vh, 46px)',
+                          padding: '0 clamp(12px, 1.5vw, 20px)',
+                          fontSize: 'clamp(0.8rem, 0.9vw, 0.9rem)',
+                          background: 'rgba(0,163,255,0.08)',
+                          border: '1px solid rgba(0,163,255,0.2)',
+                          borderRadius: '10px',
+                          color: '#8A93A6',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                          transition: 'all 0.2s',
+                          whiteSpace: 'nowrap',
+                        }}
+                        onMouseEnter={e => {
+                          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,163,255,0.14)';
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,163,255,0.35)';
+                          (e.currentTarget as HTMLButtonElement).style.color = '#00A3FF';
+                        }}
+                        onMouseLeave={e => {
+                          (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,163,255,0.08)';
+                          (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,163,255,0.2)';
+                          (e.currentTarget as HTMLButtonElement).style.color = '#8A93A6';
+                        }}
+                      >
+                        <Lock style={{ width: 'clamp(13px, 1.1vw, 16px)', height: 'clamp(13px, 1.1vw, 16px)' }} />
+                        Join Private
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent
+                      className="max-w-[95vw] md:max-w-md"
+                      style={{
+                        background: '#0A1F3D',
+                        border: '1px solid rgba(0,163,255,0.2)',
+                        borderRadius: '16px',
+                        boxShadow: '0 0 40px rgba(0,163,255,0.08)',
+                      }}
+                    >
+                      <DialogHeader>
+                        <DialogTitle style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em' }}>Join Private Tournament</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <div>
+                          <Label
+                            htmlFor="join-code"
+                            className="text-base md:text-sm"
+                            style={{ color: '#8A93A6', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em' }}
+                          >
+                            Tournament Code
+                          </Label>
+                          <Input
+                            id="join-code"
+                            value={joinCode}
+                            onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                            placeholder="Enter 8-character code"
+                            maxLength={8}
+                            className="text-base md:text-sm min-h-[44px] mt-1.5"
+                            style={{
+                              background: 'rgba(0,163,255,0.06)',
+                              border: '1px solid rgba(0,163,255,0.15)',
+                              borderRadius: '10px',
+                              color: '#C9D1E2',
+                              letterSpacing: '0.1em',
+                            }}
+                          />
+                        </div>
+                        <button
+                          onClick={() => joinByCodeMutation.mutate(joinCode)}
+                          disabled={joinCode.length !== 8 || joinByCodeMutation.isPending}
+                          className="w-full min-h-[44px] text-base md:text-sm"
+                          style={{
+                            background: joinCode.length === 8 && !joinByCodeMutation.isPending
+                              ? 'linear-gradient(135deg, #00A3FF, #0077CC)'
+                              : 'rgba(0,163,255,0.06)',
+                            border: '1px solid rgba(0,163,255,0.2)',
+                            borderRadius: '10px',
+                            color: joinCode.length === 8 && !joinByCodeMutation.isPending ? '#FFFFFF' : '#4B6080',
+                            fontWeight: 900,
+                            cursor: joinCode.length === 8 && !joinByCodeMutation.isPending ? 'pointer' : 'not-allowed',
+                            boxShadow: joinCode.length === 8 && !joinByCodeMutation.isPending ? '0 0 16px rgba(0,163,255,0.3)' : 'none',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
+                        </button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+
+                  {/* Create Tournament */}
+                  <TournamentCreationDialog
+                    isOpen={createDialogOpen}
+                    onClose={() => setCreateDialogOpen(false)}
+                  />
+                  <button
+                    onClick={() => setCreateDialogOpen(true)}
+                    style={{
+                      height: 'clamp(40px, 2.5vh, 46px)',
+                      padding: '0 clamp(12px, 1.5vw, 20px)',
+                      fontSize: 'clamp(0.8rem, 0.9vw, 0.9rem)',
+                      background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
+                      borderRadius: '10px',
+                      color: '#FFFFFF',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      fontWeight: 900,
+                      boxShadow: '0 0 20px rgba(0,163,255,0.3)',
+                      border: 'none',
+                      whiteSpace: 'nowrap',
+                      transition: 'all 0.2s',
+                    }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 28px rgba(0,163,255,0.5)';
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 20px rgba(0,163,255,0.3)';
+                    }}
+                  >
+                    <Plus style={{ width: 'clamp(14px, 1.2vw, 18px)', height: 'clamp(14px, 1.2vw, 18px)' }} />
+                    Create Tournament
+                  </button>
+                </div>
+              </div>
             </div>
           </motion.div>
 
-          {/* Search and Filter Controls - Mobile Responsive */}
+          {/* Search and Filter Controls */}
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 flex-1">
-              {/* Search - Full width on mobile */}
+              {/* Search */}
               <div className="relative flex-1 sm:flex-initial">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: '#94A3B8' }} />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2" style={{ color: '#4B6080' }} />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search tournaments..."
                   className="pl-9 w-full sm:w-64"
-                  style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
+                  style={{
+                    background: 'rgba(0,163,255,0.06)',
+                    border: '1px solid rgba(0,163,255,0.12)',
+                    borderRadius: '12px',
+                    color: '#C9D1E2',
+                  }}
                 />
               </div>
-              {/* Type Filter - Responsive width */}
+              {/* Type Filter */}
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-full sm:w-40" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}>
+                <SelectTrigger
+                  className="w-full sm:w-40"
+                  style={{
+                    background: '#0A1F3D',
+                    borderColor: 'rgba(0,163,255,0.15)',
+                    borderRadius: '12px',
+                    color: '#C9D1E2',
+                  }}
+                >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
+                <SelectContent style={{ background: '#0A1F3D', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
                   <SelectItem value="all">All Types</SelectItem>
                   <SelectItem value="stocks">Stocks Only</SelectItem>
                   <SelectItem value="crypto">Crypto Only</SelectItem>
                 </SelectContent>
               </Select>
-              {/* Checkboxes - Hidden on mobile, shown on md+ */}
-              <div className="hidden md:flex items-center gap-3">
+              {/* Checkboxes */}
+              <div className="hidden md:flex items-center gap-4">
                 <div className="flex items-center space-x-1.5">
                   <Checkbox
                     id="my-tournaments"
                     checked={showMyTournaments}
                     onCheckedChange={(checked) => setShowMyTournaments(checked === true)}
                   />
-                  <label htmlFor="my-tournaments" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                  <label htmlFor="my-tournaments" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#8A93A6' }}>
                     My Tournaments
                   </label>
                 </div>
@@ -492,7 +636,7 @@ export default function TournamentsPage() {
                     checked={showJoinable}
                     onCheckedChange={(checked) => setShowJoinable(checked === true)}
                   />
-                  <label htmlFor="joinable" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                  <label htmlFor="joinable" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#8A93A6' }}>
                     Joinable
                   </label>
                 </div>
@@ -502,18 +646,26 @@ export default function TournamentsPage() {
                     checked={showWithFriends}
                     onCheckedChange={(checked) => setShowWithFriends(checked === true)}
                   />
-                  <label htmlFor="with-friends" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#F1F5F9' }}>
+                  <label htmlFor="with-friends" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#8A93A6' }}>
                     With Friends
                   </label>
                 </div>
               </div>
             </div>
-            {/* Sort - Full width on mobile */}
+            {/* Sort */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-48" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}>
+              <SelectTrigger
+                className="w-full sm:w-48"
+                style={{
+                  background: '#0A1F3D',
+                  borderColor: 'rgba(0,163,255,0.15)',
+                  borderRadius: '12px',
+                  color: '#C9D1E2',
+                }}
+              >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
+              <SelectContent style={{ background: '#0A1F3D', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
                 <SelectItem value="starting-soon">Starting Soonest</SelectItem>
                 <SelectItem value="pot-high-low">Highest Pot</SelectItem>
                 <SelectItem value="pot-low-high">Lowest Pot</SelectItem>
@@ -524,45 +676,112 @@ export default function TournamentsPage() {
 
           {/* Tabs */}
           <motion.div variants={fadeInUp}>
-            <div className="flex items-center gap-1.5 p-0.5 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <div
+              className="flex items-center gap-1.5"
+              style={{
+                background: 'rgba(0,163,255,0.04)',
+                border: '1px solid rgba(0,163,255,0.08)',
+                borderRadius: '14px',
+                padding: '4px',
+              }}
+            >
+              {/* Upcoming Tab */}
               <button
                 onClick={() => setActiveTab('upcoming')}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
-                style={activeTab === 'upcoming'
-                  ? { backgroundColor: '#10B981', color: '#FFFFFF' }
-                  : { backgroundColor: 'transparent', color: '#FFFFFF' }
-                }
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 transition-all duration-300"
+                style={activeTab === 'upcoming' ? {
+                  background: 'linear-gradient(135deg, rgba(0,163,255,0.2), rgba(0,163,255,0.08))',
+                  border: '1px solid rgba(0,163,255,0.35)',
+                  color: '#00A3FF',
+                  boxShadow: '0 0 14px rgba(0,163,255,0.2)',
+                  fontWeight: 900,
+                  borderRadius: '10px',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                } : {
+                  background: 'transparent',
+                  border: '1px solid transparent',
+                  color: '#4B5975',
+                  fontWeight: 600,
+                  borderRadius: '10px',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
               >
                 <Trophy className="w-4 h-4" />
                 <span>Upcoming</span>
-                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'upcoming' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)',
-                  color: '#FFFFFF',
-                }}>
+                <span
+                  style={activeTab === 'upcoming' ? {
+                    background: 'rgba(0,163,255,0.15)',
+                    color: '#00A3FF',
+                    borderRadius: '20px',
+                    padding: '1px 7px',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                  } : {
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#4B5975',
+                    borderRadius: '20px',
+                    padding: '1px 7px',
+                    fontSize: '0.75rem',
+                  }}
+                >
                   {upcomingTournaments.length}
                 </span>
               </button>
+
+              {/* Live Tab */}
               <button
                 onClick={() => setActiveTab('live')}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg font-semibold text-sm transition-all duration-300"
-                style={activeTab === 'live'
-                  ? { background: 'linear-gradient(135deg, #10B981, #059669)', color: '#FFFFFF' }
-                  : { backgroundColor: 'transparent', color: '#FFFFFF' }
-                }
+                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 transition-all duration-300"
+                style={activeTab === 'live' ? {
+                  background: 'linear-gradient(135deg, rgba(0,255,135,0.18), rgba(0,255,135,0.06))',
+                  border: '1px solid rgba(0,255,135,0.3)',
+                  color: '#00FF87',
+                  boxShadow: '0 0 14px rgba(0,255,135,0.2)',
+                  fontWeight: 900,
+                  borderRadius: '10px',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                } : {
+                  background: 'transparent',
+                  border: '1px solid transparent',
+                  color: '#4B5975',
+                  fontWeight: 600,
+                  borderRadius: '10px',
+                  fontSize: '0.875rem',
+                  cursor: 'pointer',
+                }}
               >
-                <Play className="w-4 h-4" />
+                {activeTab === 'live' ? (
+                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#00FF87', flexShrink: 0 }} />
+                ) : (
+                  <Play className="w-4 h-4" />
+                )}
                 <span>Live</span>
-                <span className="text-xs px-1.5 py-0.5 rounded-full" style={{
-                  backgroundColor: activeTab === 'live' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.07)',
-                  color: '#FFFFFF',
-                }}>
+                <span
+                  style={activeTab === 'live' ? {
+                    background: 'rgba(0,255,135,0.15)',
+                    color: '#00FF87',
+                    borderRadius: '20px',
+                    padding: '1px 7px',
+                    fontSize: '0.75rem',
+                    fontWeight: 800,
+                  } : {
+                    background: 'rgba(255,255,255,0.05)',
+                    color: '#4B5975',
+                    borderRadius: '20px',
+                    padding: '1px 7px',
+                    fontSize: '0.75rem',
+                  }}
+                >
                   {liveTournaments.length}
                 </span>
               </button>
             </div>
 
             {/* Tab Content */}
-            <div className="mt-6">
+            <div className="mt-5">
               {activeTab === 'upcoming' && (
                 <TournamentList
                   tournaments={upcomingTournaments}
@@ -666,12 +885,33 @@ function TournamentList({
 }) {
   if (tournaments.length === 0) {
     return (
-      <div className="text-center py-12">
-        <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#94A3B8', opacity: 0.3 }} />
-        <h3 className="text-lg font-semibold mb-2" style={{ color: '#F1F5F9' }}>
+      <div
+        className="text-center"
+        style={{
+          background: 'linear-gradient(135deg, #0A1F3D, #081729)',
+          border: '1px solid rgba(0,163,255,0.12)',
+          borderRadius: '20px',
+          padding: '48px 24px',
+        }}
+      >
+        <div style={{
+          width: '64px',
+          height: '64px',
+          borderRadius: '50%',
+          background: 'rgba(0,163,255,0.08)',
+          border: '1px solid rgba(0,163,255,0.15)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          margin: '0 auto 16px',
+          boxShadow: '0 0 24px rgba(0,163,255,0.1)',
+        }}>
+          <Trophy className="w-8 h-8" style={{ color: '#00A3FF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
+        </div>
+        <h3 style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.125rem', marginBottom: '8px' }}>
           {type === "upcoming" ? "No upcoming tournaments" : "No live tournaments"}
         </h3>
-        <p style={{ color: '#94A3B8' }}>
+        <p style={{ color: '#4B6080', fontSize: '0.875rem' }}>
           {type === "upcoming"
             ? "No tournaments are waiting to start. Create your own!"
             : "No tournaments are currently live."
@@ -728,12 +968,12 @@ function HorizontalTournamentCard({
   const { user } = useAuth();
   const [, navigate] = useRouterLocation();
   const [, forceUpdate] = React.useReducer(x => x + 1, 0);
+  const [isHovered, setIsHovered] = React.useState(false);
 
   const isLive = tournament.status === "active";
   const isWaiting = tournament.status === "waiting";
   const isCreator = tournament.creatorId === user?.id;
   const isParticipant = isCreator || (Array.isArray(tournament.participantUserIds) && tournament.participantUserIds.includes(user?.id));
-  // Clicking a tournament you're playing in opens its live trading dashboard.
   const canOpenDashboard = isLive && isParticipant;
   const currentPot = tournament.currentPot || (tournament.currentPlayers * tournament.buyInAmount);
   const isHighPot = currentPot >= 10000;
@@ -780,25 +1020,57 @@ function HorizontalTournamentCard({
     return null;
   };
 
+  const getCardBorderStyle = () => {
+    if (isLive) {
+      return isHovered
+        ? { border: '1px solid rgba(0,255,135,0.45)', boxShadow: '0 0 32px rgba(0,255,135,0.15)' }
+        : { border: '1px solid rgba(0,255,135,0.25)', boxShadow: '0 0 24px rgba(0,255,135,0.08)' };
+    }
+    return isHovered
+      ? { border: '1px solid rgba(0,163,255,0.35)', boxShadow: '0 0 28px rgba(0,163,255,0.12)' }
+      : { border: '1px solid rgba(0,163,255,0.15)', boxShadow: '0 0 20px rgba(0,163,255,0.06)' };
+  };
+
   const getActionButton = () => {
     if (isLive) {
       return (
-        <Button
+        <button
           onClick={onViewLeaderboard}
-          className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-          size="sm"
-          style={{ backgroundColor: '#0C1829', color: '#10B981' }}
+          className="whitespace-nowrap"
+          style={{
+            padding: '8px 14px',
+            background: 'rgba(0,255,135,0.08)',
+            border: '1px solid rgba(0,255,135,0.25)',
+            borderRadius: '10px',
+            color: '#00FF87',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            cursor: 'pointer',
+            minHeight: '40px',
+            transition: 'all 0.2s',
+          }}
+          onMouseEnter={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,255,135,0.15)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 12px rgba(0,255,135,0.15)';
+          }}
+          onMouseLeave={e => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,255,135,0.08)';
+            (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
+          }}
         >
-          <Trophy className="w-3.5 h-3.5 mr-1.5" />
+          <Trophy className="w-3.5 h-3.5" />
           Leaderboard
-        </Button>
+        </button>
       );
     }
 
     if (isCreator && isWaiting) {
       return (
         <div className="flex gap-2">
-          <Button
+          <button
             onClick={async () => {
               try {
                 await apiRequest("POST", `/api/tournaments/${tournament.id}/start-early`);
@@ -807,43 +1079,104 @@ function HorizontalTournamentCard({
                 console.error("Failed to start tournament:", error);
               }
             }}
-            className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-            size="sm"
-            style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
+            className="whitespace-nowrap"
+            style={{
+              padding: '8px 14px',
+              background: 'linear-gradient(135deg, #00FF87, #00C853)',
+              border: 'none',
+              borderRadius: '10px',
+              color: '#041810',
+              fontSize: '0.8rem',
+              fontWeight: 900,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              minHeight: '40px',
+              boxShadow: '0 0 14px rgba(0,255,135,0.25)',
+              transition: 'all 0.2s',
+            }}
           >
-            <Play className="w-3.5 h-3.5 mr-1.5" />
+            <Play className="w-3.5 h-3.5" />
             Start
-          </Button>
-          <Button
+          </button>
+          <button
             onClick={onManage}
-            className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-            size="sm"
-            style={{ backgroundColor: '#0C1829', color: '#F1F5F9' }}
+            className="whitespace-nowrap"
+            style={{
+              padding: '8px 14px',
+              background: 'rgba(0,163,255,0.08)',
+              border: '1px solid rgba(0,163,255,0.2)',
+              borderRadius: '10px',
+              color: '#8A93A6',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              minHeight: '40px',
+              transition: 'all 0.2s',
+            }}
           >
-            <Shield className="w-3.5 h-3.5 mr-1.5" />
+            <Shield className="w-3.5 h-3.5" />
             Manage
-          </Button>
+          </button>
         </div>
       );
     }
 
     if (isWaiting) {
+      const isFull = tournament.currentPlayers >= tournament.maxPlayers;
       return (
-        <Button
+        <button
           onClick={onJoin}
-          disabled={isJoining || tournament.currentPlayers >= tournament.maxPlayers}
-          className="border-0 whitespace-nowrap min-h-[44px] md:min-h-0 text-base md:text-sm"
-          size="sm"
-          style={!(isJoining || tournament.currentPlayers >= tournament.maxPlayers)
-            ? { backgroundColor: '#10B981', color: '#FFFFFF' }
-            : { backgroundColor: '#0C1829', color: '#94A3B8' }
-          }
+          disabled={isJoining || isFull}
+          className="whitespace-nowrap"
+          style={!(isJoining || isFull) ? {
+            padding: '8px 18px',
+            background: 'linear-gradient(135deg, #00A3FF, #0066CC)',
+            border: 'none',
+            borderRadius: '10px',
+            color: '#FFFFFF',
+            fontSize: '0.8rem',
+            fontWeight: 900,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            cursor: 'pointer',
+            minHeight: '40px',
+            boxShadow: '0 0 16px rgba(0,163,255,0.3)',
+            transition: 'all 0.2s',
+          } : {
+            padding: '8px 18px',
+            background: 'rgba(75,96,128,0.1)',
+            border: '1px solid rgba(75,96,128,0.2)',
+            borderRadius: '10px',
+            color: '#4B6080',
+            fontSize: '0.8rem',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            cursor: 'not-allowed',
+            minHeight: '40px',
+          }}
+          onMouseEnter={e => {
+            if (!(isJoining || isFull)) {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 22px rgba(0,163,255,0.45)';
+            }
+          }}
+          onMouseLeave={e => {
+            if (!(isJoining || isFull)) {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 0 16px rgba(0,163,255,0.3)';
+            }
+          }}
         >
           {isJoining ? "Joining..." :
-           tournament.currentPlayers >= tournament.maxPlayers ? "Full" :
-           tournament.buyInAmount > 0 ? `Join - ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
+           isFull ? "Full" :
+           tournament.buyInAmount > 0 ? `Join — ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
           }
-        </Button>
+        </button>
       );
     }
 
@@ -855,76 +1188,179 @@ function HorizontalTournamentCard({
       variants={cardVariants}
       custom={index}
       whileHover={{ y: -1, transition: { duration: 0.15 } }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
+        className="flex items-center gap-4 p-4 transition-all duration-200"
         onClick={canOpenDashboard ? () => navigate(`/dashboard?tournament=${tournament.id}`) : undefined}
         role={canOpenDashboard ? "button" : undefined}
         title={canOpenDashboard ? "Open trading dashboard" : undefined}
         style={{
-          backgroundColor: '#0C1829',
-          border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : '#0E2040'}`,
+          background: 'linear-gradient(135deg, #0A1F3D 0%, #081729 100%)',
+          borderRadius: '20px',
           cursor: canOpenDashboard ? 'pointer' : 'default',
+          position: 'relative',
+          overflow: 'hidden',
+          ...getCardBorderStyle(),
         }}
       >
+        {/* Scanline texture overlay */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
+            pointerEvents: 'none',
+            zIndex: 0,
+            borderRadius: '20px',
+          }}
+        />
+
         {/* Left: Icon + Name + Badges + Time */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <div className="p-1.5 rounded-lg" style={{
-              backgroundColor: isLive ? 'rgba(16, 185, 129, 0.2)' : 'rgba(16, 185, 129, 0.2)',
+        <div className="flex-1 min-w-0" style={{ position: 'relative', zIndex: 1 }}>
+          <div className="flex items-center gap-2 mb-1.5">
+            {/* Type icon chip */}
+            <div style={{
+              padding: '5px',
+              borderRadius: '8px',
+              background: 'rgba(0,163,255,0.1)',
+              border: '1px solid rgba(0,163,255,0.2)',
+              flexShrink: 0,
             }}>
-              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: isLive ? '#10B981' : '#10B981' }} />
+              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: '#00A3FF' }} />
             </div>
-            <span className="font-bold text-sm truncate" style={{ color: '#F1F5F9' }}>
+
+            {/* Name */}
+            <span className="font-extrabold text-sm truncate" style={{ color: '#C9D1E2', fontWeight: 800 }}>
               {tournament.name}
             </span>
-            {isHighPot && <Crown className="w-4 h-4 flex-shrink-0" style={{ color: '#00A3FF' }} />}
+
+            {/* High pot crown */}
+            {isHighPot && (
+              <Crown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#E3B341', filter: 'drop-shadow(0 0 5px rgba(227,179,65,0.4))' }} />
+            )}
+
+            {/* LIVE badge */}
             {isLive && (
-              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(16, 185, 129, 0.2)', border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
-                <span className="text-[10px] font-bold" style={{ color: '#10B981' }}>LIVE</span>
+              <div
+                className="flex items-center gap-1 px-1.5 py-0.5 rounded-full flex-shrink-0"
+                style={{
+                  background: 'rgba(0,255,135,0.1)',
+                  border: '1px solid rgba(0,255,135,0.3)',
+                  boxShadow: '0 0 8px rgba(0,255,135,0.1)',
+                }}
+              >
+                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#00FF87' }} />
+                <span className="text-[10px] font-bold" style={{ color: '#00FF87' }}>LIVE</span>
               </div>
             )}
+
+            {/* Private badge */}
             {!tournament.isPublic && (
-              <div className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgba(100, 116, 139, 0.2)', border: '1px solid rgba(100, 116, 139, 0.3)' }}>
-                <Lock className="w-2.5 h-2.5" style={{ color: '#94A3B8' }} />
-                <span className="text-[10px] font-semibold" style={{ color: '#94A3B8' }}>Private</span>
+              <div
+                className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full flex-shrink-0"
+                style={{
+                  background: 'rgba(148,163,184,0.1)',
+                  border: '1px solid rgba(148,163,184,0.2)',
+                }}
+              >
+                <Lock className="w-2.5 h-2.5" style={{ color: '#8A93A6' }} />
+                <span className="text-[10px] font-semibold" style={{ color: '#8A93A6' }}>Private</span>
               </div>
             )}
           </div>
-          <div className="flex items-center gap-2 text-xs" style={{ color: '#94A3B8' }}>
-            <span>{tournament.tournamentType === "crypto" ? "Crypto" : "Stocks"}</span>
+
+          {/* Subline: type + time */}
+          <div className="flex items-center gap-2 text-xs">
+            <span style={{ color: '#4B6080', fontSize: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600 }}>
+              {tournament.tournamentType === "crypto" ? "Crypto" : "Stocks"}
+            </span>
             {getTimeRemaining() && (
               <>
-                <span>|</span>
-                <span style={{ color: isLive ? '#10B981' : '#10B981' }}>{getTimeRemaining()}</span>
+                <span style={{ color: 'rgba(75,96,128,0.5)' }}>|</span>
+                <span style={{
+                  color: isLive ? '#00FF87' : '#E3B341',
+                  fontWeight: 600,
+                  fontSize: '0.75rem',
+                }}>
+                  {getTimeRemaining()}
+                </span>
               </>
             )}
           </div>
         </div>
 
         {/* Center: Stats columns */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-5" style={{ position: 'relative', zIndex: 1 }}>
+          {/* Jackpot stat chip */}
           <div className="text-center">
-            <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Jackpot</div>
-            <div className="text-sm font-bold" style={{ color: '#00A3FF' }}>{formatCurrency(currentPot)}</div>
+            <div
+              style={{
+                fontSize: '0.6rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                color: '#4B6080',
+                marginBottom: '3px',
+                fontWeight: 600,
+              }}
+            >
+              Jackpot
+            </div>
+            <div
+              style={{
+                fontSize: '0.875rem',
+                fontWeight: 800,
+                color: '#E3B341',
+                textShadow: '0 0 12px rgba(227,179,65,0.4)',
+              }}
+            >
+              {formatCurrency(currentPot)}
+            </div>
           </div>
+
+          {/* Buy-in stat chip */}
           <div className="text-center">
-            <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Buy-in</div>
-            <div className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
+            <div
+              style={{
+                fontSize: '0.6rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                color: '#4B6080',
+                marginBottom: '3px',
+                fontWeight: 600,
+              }}
+            >
+              Buy-in
+            </div>
+            <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#C9D1E2' }}>
               {tournament.buyInAmount > 0 ? formatCurrency(tournament.buyInAmount) : "Free"}
             </div>
           </div>
+
+          {/* Players stat chip */}
           <div className="text-center">
-            <div className="text-[10px] uppercase font-semibold mb-0.5" style={{ color: '#94A3B8' }}>Players</div>
-            <div className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
+            <div
+              style={{
+                fontSize: '0.6rem',
+                textTransform: 'uppercase',
+                letterSpacing: '0.12em',
+                color: '#4B6080',
+                marginBottom: '3px',
+                fontWeight: 600,
+              }}
+            >
+              Players
+            </div>
+            <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#C9D1E2' }}>
               {tournament.currentPlayers}/{tournament.maxPlayers}
             </div>
           </div>
         </div>
 
         {/* Right: Avatar stack + Action */}
-        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center gap-3" style={{ position: 'relative', zIndex: 1 }} onClick={(e) => e.stopPropagation()}>
           {participantPreviews.length > 0 && (
             <div className="hidden lg:block">
               <ParticipantAvatarStack
