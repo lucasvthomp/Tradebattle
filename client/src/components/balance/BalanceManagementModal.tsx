@@ -131,11 +131,22 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const withdrawBreakdown = getWithdrawalBreakdown(currentWithdrawAmountValue);
   const presetWithdrawAmounts = [10, 25, 50, 100].filter(amt => amt <= currentBalance);
 
+  // Extract clean wallet address from pay_address (strips crypto URI schemes like bitcoin:addr?amount=X)
+  function getCleanAddress(raw: string): string {
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
+    const colonIdx = raw.indexOf(':');
+    if (colonIdx > 0 && colonIdx < 20) {
+      return raw.slice(colonIdx + 1).split('?')[0];
+    }
+    return raw;
+  }
+
   // Copy address handler
   async function copyAddress() {
     if (!payment?.pay_address) return;
     try {
-      await navigator.clipboard.writeText(payment.pay_address);
+      await navigator.clipboard.writeText(getCleanAddress(payment.pay_address));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -558,15 +569,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         flexShrink: 0,
                       }}>
                         <QRCodeSVG
-                          value={(() => {
-                            // Strip BIP21/URI scheme — keep only the raw address
-                            const raw: string = payment.pay_address || '';
-                            const colonIdx = raw.indexOf(':');
-                            if (colonIdx > 0 && colonIdx < 20) {
-                              return raw.slice(colonIdx + 1).split('?')[0];
-                            }
-                            return raw;
-                          })()}
+                          value={getCleanAddress(payment.pay_address || '')}
                           size={176}
                           level="H"
                           fgColor="#0C1829"
@@ -586,7 +589,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       borderColor: 'rgba(255,255,255,0.08)',
                     }}>
                       <code className="flex-1 text-sm font-mono break-all" style={{ color: '#C9D1E2' }}>
-                        {payment.pay_address}
+                        {getCleanAddress(payment.pay_address || '')}
                       </code>
                       <Button
                         size="sm"
