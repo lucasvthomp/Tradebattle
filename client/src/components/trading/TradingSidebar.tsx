@@ -581,7 +581,7 @@ export function TradingSidebar({
               >
                 <button
                   onClick={() => handleSideChange("buy")}
-                  className="flex-1 py-2.5 text-sm font-black text-center rounded-lg transition-all"
+                  className="flex-1 py-1.5 text-sm font-black text-center rounded-lg transition-all"
                   style={
                     orderSide === "buy"
                       ? {
@@ -597,7 +597,7 @@ export function TradingSidebar({
                 </button>
                 <button
                   onClick={() => handleSideChange("sell")}
-                  className="flex-1 py-2.5 text-sm font-black text-center rounded-lg transition-all"
+                  className="flex-1 py-1.5 text-sm font-black text-center rounded-lg transition-all"
                   style={
                     orderSide === "sell"
                       ? {
