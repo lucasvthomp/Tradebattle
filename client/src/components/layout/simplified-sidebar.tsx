@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import {
-  BarChart3,
+  Home,
   Trophy,
   Users,
   Phone,
@@ -27,7 +27,7 @@ export function SimplifiedSidebar() {
 
   const navItems = [
     ...(user ? [
-      { href: "/dashboard", label: t('dashboard'), icon: BarChart3, iconColor: '#28C76F' },
+      { href: "/hub", label: t('hub'), icon: Home, iconColor: '#28C76F' },
       { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#00A3FF' },
       { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#8B5CF6' },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#E3B341' },

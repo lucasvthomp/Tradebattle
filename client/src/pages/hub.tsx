@@ -66,7 +66,7 @@ export default function Hub() {
   ];
 
   const quickActions = [
-    { label: 'Trade Now', sub: 'Open a tournament', href: '/dashboard', color: '#28C76F', icon: TrendingUp },
+    { label: 'Trade Now', sub: 'Open a tournament', href: '/tournaments', color: '#28C76F', icon: TrendingUp },
     { label: 'Blitz', sub: '1v1 · 5 min match', href: '/blitz', color: '#8B5CF6', icon: Zap },
     { label: 'Tournaments', sub: 'Browse & join', href: '/tournaments', color: '#00A3FF', icon: Trophy },
     { label: 'Leaderboard', sub: 'See where you rank', href: '/leaderboard', color: '#06B6D4', icon: BarChart3 },

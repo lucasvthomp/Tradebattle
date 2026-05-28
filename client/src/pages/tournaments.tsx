@@ -726,12 +726,15 @@ function HorizontalTournamentCard({
 }) {
   const { formatCurrency } = useUserPreferences();
   const { user } = useAuth();
+  const [, navigate] = useRouterLocation();
   const [, forceUpdate] = React.useReducer(x => x + 1, 0);
 
   const isLive = tournament.status === "active";
   const isWaiting = tournament.status === "waiting";
   const isCreator = tournament.creatorId === user?.id;
-  const isParticipant = tournament.participants?.some((p: any) => p.userId === user?.id) || isCreator;
+  const isParticipant = isCreator || (Array.isArray(tournament.participantUserIds) && tournament.participantUserIds.includes(user?.id));
+  // Clicking a tournament you're playing in opens its live trading dashboard.
+  const canOpenDashboard = isLive && isParticipant;
   const currentPot = tournament.currentPot || (tournament.currentPlayers * tournament.buyInAmount);
   const isHighPot = currentPot >= 10000;
   const TournamentTypeIcon = tournament.tournamentType === "crypto" ? Bitcoin : TrendingUp;
@@ -855,9 +858,13 @@ function HorizontalTournamentCard({
     >
       <div
         className="flex items-center gap-4 p-4 rounded-xl transition-all duration-200"
+        onClick={canOpenDashboard ? () => navigate(`/dashboard?tournament=${tournament.id}`) : undefined}
+        role={canOpenDashboard ? "button" : undefined}
+        title={canOpenDashboard ? "Open trading dashboard" : undefined}
         style={{
           backgroundColor: '#0C1829',
           border: `1px solid ${isLive ? 'rgba(16, 185, 129, 0.3)' : '#0E2040'}`,
+          cursor: canOpenDashboard ? 'pointer' : 'default',
         }}
       >
         {/* Left: Icon + Name + Badges + Time */}
@@ -917,7 +924,7 @@ function HorizontalTournamentCard({
         </div>
 
         {/* Right: Avatar stack + Action */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
           {participantPreviews.length > 0 && (
             <div className="hidden lg:block">
               <ParticipantAvatarStack

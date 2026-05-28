@@ -30,11 +30,6 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/dashboard" className="hover:text-foreground transition-colors">
-                    {t('dashboard')}
-                  </Link>
-                </li>
-                <li>
                   <Link href="/tournaments" className="hover:text-foreground transition-colors">
                     {t('tournaments')}
                   </Link>

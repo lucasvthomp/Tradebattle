@@ -201,16 +201,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       <span className="text-base">Hub</span>
                     </Button>
                   </Link>
-                  <Link href="/dashboard">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#28C76F' }} />
-                      <span className="text-base">Dashboard</span>
-                    </Button>
-                  </Link>
                   <Link href="/tournaments">
                     <Button
                       variant="ghost"

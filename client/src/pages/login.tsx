@@ -24,7 +24,7 @@ export default function Login() {
   const [twoFAError, setTwoFAError] = useState("");
 
   if (user) {
-    navigate("/dashboard");
+    navigate("/hub");
     return null;
   }
 
@@ -53,7 +53,7 @@ export default function Login() {
       sessionStorage.removeItem("pending2FA");
       queryClient.setQueryData(["/api/user"], userData);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      navigate("/dashboard");
+      navigate("/hub");
     } catch (err: any) {
       setTwoFAError(err.message || "Invalid code");
     } finally {

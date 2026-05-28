@@ -70,7 +70,7 @@ export default function Signup() {
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
   if (user) {
-    navigate("/dashboard");
+    navigate("/hub");
     return null;
   }
 
