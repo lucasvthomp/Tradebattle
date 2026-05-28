@@ -528,35 +528,45 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   className="space-y-6"
                 >
                   {/* QR Code */}
-                  <motion.div
-                    className="p-1.5 rounded-3xl"
-                    style={{
-                      background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
-                      boxShadow: '0 8px 32px rgba(0, 163, 255, 0.35)',
-                    }}
-                    animate={{
-                      boxShadow: [
-                        '0 8px 32px rgba(0, 163, 255, 0.35)',
-                        '0 8px 40px rgba(0, 163, 255, 0.5)',
-                        '0 8px 32px rgba(0, 163, 255, 0.35)',
-                      ],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: "easeInOut",
-                    }}
-                  >
-                    <div className="bg-white p-8 rounded-[20px] flex justify-center">
-                      <QRCodeSVG
-                        value={payment.pay_address}
-                        size={256}
-                        level="H"
-                        fgColor="#00A3FF"
-                        bgColor="transparent"
-                      />
-                    </div>
-                  </motion.div>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <motion.div
+                      style={{
+                        padding: '6px',
+                        borderRadius: '16px',
+                        background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
+                        boxShadow: '0 8px 32px rgba(0, 163, 255, 0.35)',
+                        display: 'inline-flex',
+                      }}
+                      animate={{
+                        boxShadow: [
+                          '0 8px 32px rgba(0, 163, 255, 0.35)',
+                          '0 8px 40px rgba(0, 163, 255, 0.5)',
+                          '0 8px 32px rgba(0, 163, 255, 0.35)',
+                        ],
+                      }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    >
+                      <div style={{
+                        background: '#ffffff',
+                        borderRadius: '12px',
+                        padding: '12px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '200px',
+                        height: '200px',
+                        flexShrink: 0,
+                      }}>
+                        <QRCodeSVG
+                          value={payment.pay_address}
+                          size={176}
+                          level="H"
+                          fgColor="#0C1829"
+                          bgColor="#ffffff"
+                        />
+                      </div>
+                    </motion.div>
+                  </div>
 
                   {/* Address */}
                   <div className="space-y-2">

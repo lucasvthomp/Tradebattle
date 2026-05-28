@@ -40,28 +40,11 @@ export async function getMinimumAmount(currency: string) {
     const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
     console.log(`[NOWPayments] Minimum for ${currency}:`, data);
 
-    // Set minimums to ABSOLUTE LOWEST possible
-    // Ignore network fees and confirmation times
-    // Let NOWPayments reject if truly too low - we'll show their error
-    // Goal: Make deposits as accessible as possible
-
-    const fixedMinimums: Record<string, number> = {
-      'usdttrc20': 1,   // USDT on Tron - try $1
-      'usdterc20': 1,   // USDT on Ethereum - try $1
-      'btc': 1,         // Bitcoin - try $1
-      'eth': 1,         // Ethereum - try $1
-      'ltc': 1,         // Litecoin - try $1
-    };
-
-    const fixedMin = fixedMinimums[currency.toLowerCase()];
-
-    if (fixedMin) {
-      console.log(`[NOWPayments] Using fixed minimum $${fixedMin} for ${currency} (API returned $${data.min_amount})`);
-      return fixedMin;
-    }
-
-    // For other currencies, use API minimum or $5 default
-    return data.min_amount || 5;
+    // Cap all minimums at $5 — never return more than that regardless of what NOWPayments says.
+    // NOWPayments may reject if network fees make the amount truly unworkable, but we let
+    // them surface that error rather than blocking users with a high UI minimum.
+    const apiMin = typeof data.min_amount === "number" ? data.min_amount : 5;
+    return Math.min(apiMin, 5);
   } catch (error) {
     console.error(`Failed to get minimum for ${currency}:`, error);
     return 5;
