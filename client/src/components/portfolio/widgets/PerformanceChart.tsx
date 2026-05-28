@@ -1,15 +1,15 @@
 /*
- * TRADINGVIEW LIGHTWEIGHT CHARTS COMPONENT
- * =======================================
- * 
+ * PERFORMANCE CHART COMPONENT
+ * ===========================
+ *
  * Features:
- * - Professional price charts using TradingView's Lightweight Charts
+ * - Price charts using Lightweight Charts
  * - Integrates with portfolio holdings and Yahoo Finance API
  * - Dark theme optimized styling
  * - Manual data mode for custom testing/development
  * - Responsive design with timeframe dropdown
  * - Multiple timeframe support (1D, 5D, 1M, 3M, 6M, 1Y)
- * 
+ *
  * Usage:
  * - Select symbol from your portfolio holdings or default stocks
  * - Choose timeframe from dropdown menu
@@ -155,7 +155,7 @@ export function PerformanceChart({ selectedStock }: PerformanceChartProps = {}) 
     }
   };
 
-  // Initialize TradingView chart
+  // Initialize chart
   const initializeChart = () => {
     if (!chartContainerRef.current) return;
 

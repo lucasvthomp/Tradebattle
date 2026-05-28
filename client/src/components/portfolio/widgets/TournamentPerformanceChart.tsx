@@ -1,15 +1,15 @@
 /*
  * TOURNAMENT PERFORMANCE CHART COMPONENT
- * =====================================
- * 
+ * =======================================
+ *
  * Features:
- * - Professional price charts using TradingView's Lightweight Charts
+ * - Price charts using Lightweight Charts
  * - Tournament-specific data integration
  * - Dark theme optimized styling
  * - Responsive design with timeframe dropdown
  * - Multiple timeframe support (1D, 5D, 1M, 3M, 6M, 1Y)
  * - Search functionality for stocks and crypto
- * 
+ *
  * Usage:
  * - Displays charts for tournament trading
  * - Search and select symbols to view their charts
