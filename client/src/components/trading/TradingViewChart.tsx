@@ -86,7 +86,10 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
       ro.observe(container);
       roRef.current = ro;
 
-      loadData(symbol, timeframe);
+      // Capture refs at call time so cleanup doesn't interfere with the fetch
+      const capturedSeries = series;
+      const capturedChart = chart;
+      loadData(symbol, timeframe, capturedSeries, capturedChart);
     }, 50);
 
     return () => {
@@ -100,26 +103,25 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
 
   // Reload data when timeframe changes (no chart rebuild)
   useEffect(() => {
-    if (symbol && seriesRef.current) {
-      loadData(symbol, timeframe);
+    if (symbol && seriesRef.current && chartRef.current) {
+      loadData(symbol, timeframe, seriesRef.current, chartRef.current);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [timeframe]);
 
-  async function loadData(sym: string, tf: TF) {
-    if (!seriesRef.current) return;
+  async function loadData(sym: string, tf: TF, series: any, chart: any) {
     setLoading(true);
     setError(null);
     try {
       const res = await fetch(`/api/historical/${encodeURIComponent(sym)}?timeframe=${tf}`);
       if (!res.ok) {
         const text = await res.text();
-        throw new Error(`${res.status}: ${text.slice(0, 100)}`);
+        throw new Error(`HTTP ${res.status}: ${text.slice(0, 80)}`);
       }
       const json = await res.json();
       const raw: any[] = json.data || [];
 
-      if (raw.length === 0) throw new Error("No data returned");
+      if (raw.length === 0) throw new Error("No data returned from API");
 
       // Convert to lightweight-charts candle format
       // For intraday (1D): date is a unix timestamp in seconds
@@ -152,19 +154,30 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
 
       if (chartData.length === 0) throw new Error("No valid candles after filtering");
 
-      if (seriesRef.current) {
-        seriesRef.current.setData(chartData);
-        chartRef.current?.timeScale().fitContent();
-      }
+      // Ensure OHLC values are internally consistent (lw-charts rejects bad candles)
+      const validCandles = chartData.filter((d) => {
+        const realHigh = Math.max(d.open, d.close, d.high);
+        const realLow = Math.min(d.open, d.close, d.low);
+        return realHigh > 0 && realLow > 0 && realHigh >= realLow;
+      }).map((d) => ({
+        ...d,
+        high: Math.max(d.open, d.close, d.high),
+        low: Math.min(d.open, d.close, d.low),
+      }));
 
-      const first = chartData[0];
-      const last = chartData[chartData.length - 1];
+      if (validCandles.length === 0) throw new Error("All candles invalid after OHLC check");
+
+      series.setData(validCandles);
+      chart.timeScale().fitContent();
+
+      const first = validCandles[0];
+      const last = validCandles[validCandles.length - 1];
       const change = last.close - first.open;
       const changePct = first.open !== 0 ? (change / first.open) * 100 : 0;
       setPriceInfo({ price: last.close, change, changePct });
     } catch (e: any) {
       console.error("[Chart] loadData error:", e);
-      setError("Could not load chart data");
+      setError(e?.message ? String(e.message).slice(0, 80) : "Could not load chart data");
     } finally {
       setLoading(false);
     }
