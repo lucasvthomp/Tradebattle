@@ -29,7 +29,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const [, navigate] = useLocation();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(15, 32, 54, 0.90)', borderBottom: '1px solid rgba(255, 255, 255, 0.07)', boxShadow: '0 1px 12px rgba(0, 0, 0, 0.25)' }}>
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(11, 38, 72, 0.92)', borderBottom: '1px solid rgba(255, 255, 255, 0.07)', boxShadow: '0 1px 12px rgba(0, 0, 0, 0.25)' }}>
       <div className="container mx-auto px-4">
         <nav className="flex items-center h-16 relative">
           {/* Left side - Logo and Market Status */}
@@ -158,7 +158,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
 
       {/* Mobile Menu Panel - show only on mobile */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border" style={{ backgroundColor: 'rgba(15, 32, 54, 0.97)' }}>
+        <div className="md:hidden border-t border-border" style={{ backgroundColor: 'rgba(11, 38, 72, 0.97)' }}>
           <div className="container mx-auto px-4 py-6 space-y-4">
             {user ? (
               <>
@@ -190,7 +190,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 </div>
 
                 {/* Navigation Section */}
-                <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(17, 34, 58, 0.5)' }}>
+                <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(18, 46, 84, 0.5)' }}>
                   <Link href="/hub">
                     <Button
                       variant="ghost"
@@ -279,7 +279,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 )}
 
                 {/* User Section */}
-                <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(17, 34, 58, 0.5)' }}>
+                <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(18, 46, 84, 0.5)' }}>
                   <div className="flex items-center gap-3 px-4 py-3">
                     <User className="w-5 h-5" />
                     <span className="font-medium text-base">{user?.username || "User"}</span>
