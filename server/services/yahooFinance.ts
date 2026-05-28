@@ -62,7 +62,7 @@ export function getAssetType(symbol: string): 'crypto' | 'stock' {
 }
 
 // Define timeframe options
-export type TimeFrame = '1H' | '1D' | '5D' | '1W' | '1M' | '3M' | '6M' | 'YTD' | '1Y' | '5Y';
+export type TimeFrame = '1H' | '1D' | '1D15' | '1D30' | '1D1H' | '5D' | '5D1H' | '5D1D' | '1W' | '1M' | '1M1H' | '3M' | '3M1W' | '6M' | '6M1W' | 'YTD' | '1Y' | '1Y1W' | '5Y' | '5Y1M';
 
 // Helper function to calculate date ranges
 export function getDateRange(timeFrame: TimeFrame): { period1: string; period2: string; interval: string } {

@@ -101,7 +101,7 @@ router.get('/historical/:symbol', asyncHandler(async (req: any, res: any) => {
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1H', '1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1H', '1D', '1D15', '1D30', '1D1H', '5D', '5D1H', '5D1D', '1W', '1M', '1M1H', '3M', '3M1W', '6M', '6M1W', 'YTD', '1Y', '1Y1W', '5Y', '5Y1M'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
@@ -133,7 +133,7 @@ router.get('/historical/:symbol/:timeframe', asyncHandler(async (req: any, res: 
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1H', '1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1H', '1D', '1D15', '1D30', '1D1H', '5D', '5D1H', '5D1D', '1W', '1M', '1M1H', '3M', '3M1W', '6M', '6M1W', 'YTD', '1Y', '1Y1W', '5Y', '5Y1M'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
@@ -163,7 +163,7 @@ router.get('/performance/:symbol/:timeframe', asyncHandler(async (req, res) => {
   }
 
   // Validate timeframe
-  const validTimeframes: TimeFrame[] = ['1H', '1D', '5D', '1W', '1M', '3M', '6M', 'YTD', '1Y', '5Y'];
+  const validTimeframes: TimeFrame[] = ['1H', '1D', '1D15', '1D30', '1D1H', '5D', '5D1H', '5D1D', '1W', '1M', '1M1H', '3M', '3M1W', '6M', '6M1W', 'YTD', '1Y', '1Y1W', '5Y', '5Y1M'];
   if (!validTimeframes.includes(timeFrame)) {
     throw new ValidationError('Invalid timeframe. Valid timeframes: ' + validTimeframes.join(', '));
   }
