@@ -50,107 +50,115 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
   const [error, setError] = useState<string | null>(null);
   const [portfolioChange, setPortfolioChange] = useState<{ change: number; pct: number } | null>(null);
 
+  // Track previous values to know when a full rebuild is needed vs just a data reload
+  const prevSymbolRef = useRef<string>("");
+  const prevModeRef = useRef<ChartMode>("candle");
+  const prevTournamentRef = useRef<number | undefined>(undefined);
+
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
     if (mode === "candle" && !symbol) return;
     if (mode === "portfolio" && !tournamentId) return;
 
-    if (roRef.current) { roRef.current.disconnect(); roRef.current = null; }
-    if (chartRef.current) { chartRef.current.remove(); chartRef.current = null; }
-    seriesRef.current = null;
-    setPriceInfo(null);
-    setPortfolioChange(null);
-    setError(null);
+    const needsRebuild =
+      symbol !== prevSymbolRef.current ||
+      mode !== prevModeRef.current ||
+      tournamentId !== prevTournamentRef.current ||
+      !chartRef.current;
+
+    prevSymbolRef.current = symbol;
+    prevModeRef.current = mode;
+    prevTournamentRef.current = tournamentId;
+
+    if (needsRebuild) {
+      if (roRef.current) { roRef.current.disconnect(); roRef.current = null; }
+      if (chartRef.current) { chartRef.current.remove(); chartRef.current = null; }
+      seriesRef.current = null;
+      setPriceInfo(null);
+      setPortfolioChange(null);
+      setError(null);
+    }
 
     const t = setTimeout(() => {
-      const w = container.clientWidth || 600;
-      const h = container.clientHeight || 400;
+      // Full chart creation if needed
+      if (!chartRef.current) {
+        const w = container.clientWidth || 600;
+        const h = container.clientHeight || 400;
 
-      const chart = createChart(container, {
-        layout: {
-          background: { type: ColorType.Solid, color: "transparent" },
-          textColor: "#7B8FA8",
-          fontSize: 11,
-          fontFamily: "'Inter', system-ui, sans-serif",
-          attributionLogo: false,
-        },
-        grid: {
-          vertLines: { color: "rgba(0,163,255,0.06)" },
-          horzLines: { color: "rgba(0,163,255,0.06)" },
-        },
-        crosshair: {
-          mode: 1,
-          vertLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0C1829" },
-          horzLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0C1829" },
-        },
-        rightPriceScale: {
-          borderColor: "rgba(0,163,255,0.12)",
-          textColor: "#7B8FA8",
-        },
-        timeScale: {
-          borderColor: "rgba(0,163,255,0.12)",
-          timeVisible: false,
-          secondsVisible: false,
-        },
-        width: w,
-        height: h,
-      });
-
-      chartRef.current = chart;
-
-      if (mode === "candle") {
-        const series = chart.addCustomSeries(new RoundedCandleSeriesView(), {
-          upColor:      UP_COLOR,
-          downColor:    DOWN_COLOR,
-          wickUpColor:  UP_COLOR,
-          wickDownColor: DOWN_COLOR,
-          radius: 4,
-          wickWidth: 1,
+        const chart = createChart(container, {
+          layout: {
+            background: { type: ColorType.Solid, color: "transparent" },
+            textColor: "#7B8FA8",
+            fontSize: 11,
+            fontFamily: "'Inter', system-ui, sans-serif",
+            attributionLogo: false,
+          },
+          grid: {
+            vertLines: { color: "rgba(0,163,255,0.06)" },
+            horzLines: { color: "rgba(0,163,255,0.06)" },
+          },
+          crosshair: {
+            mode: 1,
+            vertLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0C1829" },
+            horzLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0C1829" },
+          },
+          rightPriceScale: { borderColor: "rgba(0,163,255,0.12)", textColor: "#7B8FA8" },
+          timeScale: { borderColor: "rgba(0,163,255,0.12)", timeVisible: false, secondsVisible: false },
+          width: w,
+          height: h,
         });
-        seriesRef.current = series;
-        loadCandleData(symbol, intervalKey, series, chart);
-      } else {
-        const series = chart.addSeries(LineSeries, {
-          color: UP_COLOR,
-          lineWidth: 2,
-          crosshairMarkerVisible: true,
-          crosshairMarkerRadius: 5,
-          crosshairMarkerBorderColor: "#0C1829",
-          crosshairMarkerBackgroundColor: UP_COLOR,
-          lastValueVisible: true,
-          priceLineVisible: false,
+
+        chartRef.current = chart;
+
+        if (mode === "candle") {
+          seriesRef.current = chart.addCustomSeries(new RoundedCandleSeriesView(), {
+            upColor: UP_COLOR, downColor: DOWN_COLOR,
+            wickUpColor: UP_COLOR, wickDownColor: DOWN_COLOR,
+            radius: 4, wickWidth: 1,
+          });
+        } else {
+          seriesRef.current = chart.addSeries(LineSeries, {
+            color: UP_COLOR, lineWidth: 2,
+            crosshairMarkerVisible: true, crosshairMarkerRadius: 5,
+            crosshairMarkerBorderColor: "#0C1829",
+            crosshairMarkerBackgroundColor: UP_COLOR,
+            lastValueVisible: true, priceLineVisible: false,
+          });
+        }
+
+        const ro = new ResizeObserver(() => {
+          if (!chartRef.current || !container) return;
+          chartRef.current.applyOptions({
+            width: container.clientWidth || 600,
+            height: container.clientHeight || 400,
+          });
         });
-        seriesRef.current = series;
-        loadPortfolioData(tournamentId!, series, chart);
+        ro.observe(container);
+        roRef.current = ro;
       }
 
-      const ro = new ResizeObserver(() => {
-        if (!chartRef.current || !container) return;
-        chartRef.current.applyOptions({
-          width: container.clientWidth || 600,
-          height: container.clientHeight || 400,
-        });
-      });
-      ro.observe(container);
-      roRef.current = ro;
+      // Always reload data (handles both rebuild and interval-only change)
+      if (mode === "candle") {
+        loadCandleData(symbol, intervalKey, seriesRef.current, chartRef.current!);
+      } else {
+        loadPortfolioData(tournamentId!, seriesRef.current, chartRef.current!);
+      }
     }, 50);
 
     return () => {
       clearTimeout(t);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [symbol, mode, tournamentId, intervalKey]);
+
+  useEffect(() => {
+    return () => {
       if (roRef.current) { roRef.current.disconnect(); roRef.current = null; }
       if (chartRef.current) { chartRef.current.remove(); chartRef.current = null; }
       seriesRef.current = null;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [symbol, mode, tournamentId]);
-
-  useEffect(() => {
-    if (mode === "candle" && symbol && seriesRef.current && chartRef.current) {
-      loadCandleData(symbol, intervalKey, seriesRef.current, chartRef.current);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [intervalKey]);
+  }, []);
 
   async function loadCandleData(sym: string, tf: string, series: any, chart: any) {
     setLoading(true);
