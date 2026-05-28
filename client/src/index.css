@@ -32,7 +32,7 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B1F38;
+  background: #122A4A;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -48,13 +48,13 @@ html {
   /* Clean Modern Game Color System */
 
   /* Primary Background */
-  --background: 213 76% 16%;  /* #0D2543 */
+  --background: 213 72% 22%;  /* #152E52 */
   --foreground: 210 20% 90%;  /* #E2E8F0 */
 
   /* Card & Panel Hierarchy */
-  --card: 213 72% 18%;  /* #0F2848 */
+  --card: 213 70% 25%;  /* #183460 */
   --card-foreground: 215 20% 85%;  /* #CBD5E1 */
-  --popover: 213 72% 18%;
+  --popover: 213 70% 25%;
   --popover-foreground: 215 20% 85%;
 
   /* Primary - Blue (main interaction color) */
@@ -65,12 +65,12 @@ html {
   --gold: 43 71% 57%;  /* #E3B341 */
 
   /* Secondary */
-  --secondary: 213 70% 20%;  /* #112B4E */
+  --secondary: 213 68% 27%;  /* #193762 */
   --secondary-foreground: 215 20% 85%;
 
   /* Muted */
-  --muted: 213 68% 22%;  /* #122E54 */
-  --muted-foreground: 215 16% 62%;  /* #94A3B8 */
+  --muted: 213 66% 29%;  /* #1A3A68 */
+  --muted-foreground: 215 16% 72%;  /* slightly lighter for readability */
 
   /* Accent - Cyan (interactive elements) */
   --accent: 189 94% 43%;  /* #06B6D4 */
@@ -81,13 +81,13 @@ html {
   --destructive-foreground: 0 0% 100%;
 
   /* Borders & Inputs */
-  --border: 213 65% 26%;  /* #163460 */
-  --input: 213 72% 18%;  /* #0F2848 */
+  --border: 213 60% 32%;  /* #1C3E72 */
+  --input: 213 70% 25%;  /* #183460 */
   --ring: 204 100% 50%;  /* Blue focus ring */
   --radius: 0.875rem;
 
   /* Extended Palette */
-  --sidebar-bg: 213 76% 13%;  /* #0B1F38 */
+  --sidebar-bg: 213 72% 18%;  /* #112944 */
   --hover-overlay: 222 33% 11%;  /* #111827 */
   --secondary-text: 215 16% 62%;  /* #94A3B8 */
   --disabled-text: 215 12% 42%;
@@ -160,22 +160,22 @@ html {
 .dark {
   /* Clean Modern Game - Dark Mode */
 
-  --background: 213 76% 13%;  /* #0B1F38 */
+  --background: 213 72% 20%;  /* #122A4A */
   --foreground: 0 0% 100%;
 
-  --card: 213 72% 18%;  /* #0F2848 */
-  --card-foreground: 215 16% 62%;  /* #94A3B8 */
-  --popover: 213 72% 18%;
-  --popover-foreground: 215 16% 62%;
+  --card: 213 70% 25%;  /* #183460 */
+  --card-foreground: 215 16% 72%;
+  --popover: 213 70% 25%;
+  --popover-foreground: 215 16% 72%;
 
   --primary: 204 100% 50%;  /* #00A3FF */
   --primary-foreground: 0 0% 100%;
 
-  --secondary: 213 70% 20%;  /* #112B4E */
-  --secondary-foreground: 215 16% 62%;
+  --secondary: 213 68% 27%;  /* #193762 */
+  --secondary-foreground: 215 16% 72%;
 
-  --muted: 213 68% 22%;  /* #122E54 */
-  --muted-foreground: 215 16% 62%;
+  --muted: 213 66% 29%;  /* #1A3A68 */
+  --muted-foreground: 215 16% 72%;
 
   --accent: 189 94% 43%;  /* #06B6D4 */
   --accent-foreground: 222 47% 5%;
@@ -183,8 +183,8 @@ html {
   --destructive: 0 84% 60%;  /* #EF4444 */
   --destructive-foreground: 0 0% 100%;
 
-  --border: 213 65% 26%;  /* #163460 */
-  --input: 213 72% 18%;  /* #0F2848 */
+  --border: 213 60% 32%;  /* #1C3E72 */
+  --input: 213 70% 25%;  /* #183460 */
   --ring: 189 94% 43%;  /* Cyan */
 }
 
@@ -270,7 +270,7 @@ html {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
-    background: linear-gradient(160deg, #0E2D56 0%, #0A2550 50%, #0C284F 100%) !important;
+    background: linear-gradient(160deg, #163B68 0%, #122F5E 50%, #153462 100%) !important;
     background-attachment: fixed !important;
     min-height: 100vh;
     min-height: 100dvh;
@@ -402,7 +402,7 @@ html {
 
   /* Backgrounds */
   .bg-sidebar {
-    background-color: #0B1F38;
+    background-color: #112944;
   }
 
   .bg-hover {
@@ -557,8 +557,8 @@ html {
 
   /* Game card — slightly elevated with blue tint border */
   .game-card {
-    background: #0F2848;
-    border: 1px solid rgba(0, 163, 255, 0.16);
+    background: #183460;
+    border: 1px solid rgba(0, 163, 255, 0.18);
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.04);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
