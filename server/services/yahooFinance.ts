@@ -479,174 +479,80 @@ export async function searchStocks(query: string): Promise<SearchResult[]> {
 export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '1M'): Promise<HistoricalDataPoint[]> {
   const cacheKey = `historical_${symbol}_${timeFrame}`;
   const cached = getCachedData(cacheKey);
-  
-  if (cached) {
-    return cached;
-  }
+  if (cached) return cached;
+
+  // Map timeframe to Yahoo Finance v8 chart API range + interval
+  const tfMap: Record<string, { range: string; interval: string }> = {
+    '1D':  { range: '1d',  interval: '5m'  },
+    '5D':  { range: '5d',  interval: '30m' },
+    '1W':  { range: '5d',  interval: '1d'  },
+    '1M':  { range: '1mo', interval: '1d'  },
+    '3M':  { range: '3mo', interval: '1d'  },
+    '6M':  { range: '6mo', interval: '1d'  },
+    'YTD': { range: 'ytd', interval: '1d'  },
+    '1Y':  { range: '1y',  interval: '1d'  },
+    '5Y':  { range: '5y',  interval: '1wk' },
+    '1H':  { range: '1d',  interval: '1m'  },
+  };
+
+  const { range, interval } = tfMap[timeFrame] ?? { range: '1mo', interval: '1d' };
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?range=${range}&interval=${interval}&includePrePost=false`;
 
   try {
-    // For 1D timeframe, get data from last trading day (excluding weekends)
-    if (timeFrame === '1D') {
-      try {
-        // Function to get the most recent trading day
-        const getLastTradingDay = (): Date => {
-          const now = new Date();
-          const dayOfWeek = now.getDay(); // Sunday = 0, Monday = 1, ..., Saturday = 6
-          
-          if (dayOfWeek === 0) { // Sunday
-            const friday = new Date(now);
-            friday.setDate(now.getDate() - 2); // Go back to Friday
-            return friday;
-          } else if (dayOfWeek === 6) { // Saturday
-            const friday = new Date(now);
-            friday.setDate(now.getDate() - 1); // Go back to Friday
-            return friday;
-          } else if (dayOfWeek === 1) { // Monday
-            // If it's early Monday (before market open), might want Friday's data
-            const currentHour = now.getHours();
-            if (currentHour < 9 || (currentHour === 9 && now.getMinutes() < 30)) {
-              const friday = new Date(now);
-              friday.setDate(now.getDate() - 3); // Go back to Friday
-              return friday;
-            }
-          }
-          
-          // For Tuesday-Friday or Monday after market open, use current day
-          return now;
-        };
-
-        const lastTradingDay = getLastTradingDay();
-        
-        // Get data from 7 days ago to ensure we have enough trading days
-        const sevenDaysAgo = new Date(lastTradingDay);
-        sevenDaysAgo.setDate(lastTradingDay.getDate() - 7);
-        
-        // Use the next day as period2 to ensure we get the full trading day
-        const nextDay = new Date(lastTradingDay);
-        nextDay.setDate(lastTradingDay.getDate() + 1);
-        
-        const chartResult = await yahooFinance.chart(symbol, {
-          period1: sevenDaysAgo.toISOString().split('T')[0],
-          period2: nextDay.toISOString().split('T')[0],
-          interval: '5m' as any,
-          includePrePost: false
-        });
-
-        if (chartResult && chartResult.quotes && chartResult.quotes.length > 0) {
-          // Get the target date in YYYY-MM-DD format for comparison
-          const targetDateStr = lastTradingDay.toISOString().split('T')[0];
-          
-          const intradayData: HistoricalDataPoint[] = chartResult.quotes
-            .filter((quote: any) => {
-              const quoteDate = new Date(quote.date);
-              const quoteDateStr = quoteDate.toISOString().split('T')[0];
-              const quoteDayOfWeek = quoteDate.getDay();
-              
-              // Exclude weekends (Saturday = 6, Sunday = 0)
-              if (quoteDayOfWeek === 0 || quoteDayOfWeek === 6) {
-                return false;
-              }
-              
-              // Filter for market hours only (9:30 AM to 4:00 PM Eastern)
-              // Market hours in UTC: 13:30 to 20:00 (assuming EDT, UTC-4)
-              const quoteHour = quoteDate.getUTCHours();
-              const quoteMinute = quoteDate.getUTCMinutes();
-              const utcTime = quoteHour + (quoteMinute / 60);
-              
-              // Market hours in UTC: 13:30 (9:30 AM ET) to just before 20:00 (4:00 PM ET)
-              const isMarketHours = utcTime >= 13.5 && utcTime <= 20.0;
-              
-              // Include data from the specific last trading day during market hours
-              return quoteDateStr === targetDateStr && 
-                     quote.close !== null && 
-                     quote.close !== undefined &&
-                     isMarketHours;
-            })
-            .map((quote: any) => ({
-              date: Math.floor(quote.date.getTime() / 1000), // Convert to Unix timestamp
-              open: quote.open || quote.close || 0,
-              high: quote.high || quote.close || 0,
-              low: quote.low || quote.close || 0,
-              close: quote.close || 0,
-              volume: quote.volume || 0,
-            }));
-
-          if (intradayData.length > 0) {
-            setCachedData(cacheKey, intradayData, CACHE_TTL.HISTORICAL_MINUTE);
-            return intradayData;
-          }
-        }
-      } catch (error) {
-        console.log(`1D chart data failed for ${symbol}, trying historical fallback`);
-      }
-      
-      // Fallback to recent daily data if chart API fails
-      try {
-        const fiveDaysAgo = new Date();
-        fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
-        
-        const historicalResult = await yahooFinance.historical(symbol, {
-          period1: fiveDaysAgo.toISOString().split('T')[0],
-          period2: new Date().toISOString().split('T')[0],
-          interval: '1d' as any,
-          events: 'history'
-        });
-
-        if (historicalResult && Array.isArray(historicalResult) && historicalResult.length > 0) {
-          // Return the most recent trading days
-          const recentData: HistoricalDataPoint[] = historicalResult
-            .slice(-2) // Get last 2 days
-            .map((item: any) => ({
-              date: item.date.toISOString().split('T')[0],
-              open: item.open || item.close || 0,
-              high: item.high || item.close || 0,
-              low: item.low || item.close || 0,
-              close: item.close || 0,
-              volume: item.volume || 0,
-            }));
-
-          setCachedData(cacheKey, recentData, CACHE_TTL.HISTORICAL_MINUTE);
-          return recentData;
-        }
-      } catch (error) {
-        console.log(`Historical fallback also failed for ${symbol}`);
-      }
-    }
-
-    // For all other timeframes or 1D fallback, use regular historical data
-    const { period1, period2, interval } = getDateRange(timeFrame);
-    
-    const result = await yahooFinance.historical(symbol, {
-      period1,
-      period2,
-      interval: interval as any,
-      events: 'history'
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+      },
     });
 
-    if (!result || !Array.isArray(result) || result.length === 0) {
-      throw new Error(`No historical data found for symbol: ${symbol}`);
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance returned ${response.status} for ${symbol}`);
     }
 
-    const historicalData: HistoricalDataPoint[] = result
-      .filter((item: any) => item.close !== null && item.close !== undefined)
-      .map((item: any) => ({
-        date: item.date.toISOString().split('T')[0],
-        open: item.open || item.close || 0,
-        high: item.high || item.close || 0,
-        low: item.low || item.close || 0,
-        close: item.close || 0,
-        volume: item.volume || 0,
-      }));
+    const data = await response.json() as any;
+    const result = data?.chart?.result?.[0];
 
-    // Use different cache TTL based on data granularity
-    const cacheTTL = timeFrame === '1D' ? CACHE_TTL.HISTORICAL_MINUTE :
-                     timeFrame === '5D' ? CACHE_TTL.HISTORICAL_30MIN :
-                     CACHE_TTL.HISTORICAL;
+    if (!result) {
+      const errMsg = data?.chart?.error?.description || 'No result in response';
+      throw new Error(errMsg);
+    }
+
+    const timestamps: number[] = result.timestamp || [];
+    const quote = result.indicators?.quote?.[0] || {};
+    const opens: number[] = quote.open || [];
+    const highs: number[] = quote.high || [];
+    const lows: number[] = quote.low || [];
+    const closes: number[] = quote.close || [];
+    const volumes: number[] = quote.volume || [];
+
+    if (timestamps.length === 0) {
+      throw new Error(`No candles returned for ${symbol}/${timeFrame}`);
+    }
+
+    const isIntraday = interval === '1m' || interval === '5m' || interval === '30m';
+
+    const historicalData: HistoricalDataPoint[] = timestamps
+      .map((ts, i) => ({
+        date: isIntraday ? ts : new Date(ts * 1000).toISOString().split('T')[0],
+        open:   opens[i]   ?? closes[i] ?? 0,
+        high:   highs[i]   ?? closes[i] ?? 0,
+        low:    lows[i]    ?? closes[i] ?? 0,
+        close:  closes[i]  ?? 0,
+        volume: volumes[i] ?? 0,
+      }))
+      .filter((d) => d.close != null && d.close > 0);
+
+    if (historicalData.length === 0) {
+      throw new Error(`All candles null/zero for ${symbol}/${timeFrame}`);
+    }
+
+    const cacheTTL = isIntraday ? CACHE_TTL.HISTORICAL_MINUTE : CACHE_TTL.HISTORICAL;
     setCachedData(cacheKey, historicalData, cacheTTL);
     return historicalData;
   } catch (error) {
-    console.error(`Error fetching historical data for ${symbol}:`, error);
-    throw new Error(`Failed to fetch historical data for ${symbol}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    console.error(`[getHistoricalData] ${symbol}/${timeFrame}:`, error);
+    throw new Error(`Failed to fetch historical data for ${symbol}: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 

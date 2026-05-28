@@ -114,7 +114,9 @@ router.get('/historical/:symbol', asyncHandler(async (req: any, res: any) => {
       timeFrame,
     });
   } catch (error) {
-    throw new NotFoundError(`Historical data not found for symbol: ${symbol}`);
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error(`[historical] ${symbol}/${timeFrame} failed:`, msg);
+    throw new NotFoundError(`Historical data not found for symbol: ${symbol} — ${msg}`);
   }
 }));
 
