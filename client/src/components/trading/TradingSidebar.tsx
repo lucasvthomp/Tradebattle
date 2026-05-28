@@ -30,6 +30,12 @@ interface TradingSidebarProps {
   ownedShares: number;
   onOrderExecuted: () => void;
   startingBalance: number;
+  // Pre-computed from dashboard for the game header
+  totalValue?: number;
+  pctChange?: number;
+  totalPL?: number;
+  plIsUp?: boolean;
+  isUp?: boolean;
 }
 
 type ActiveView = "positions" | "history" | "trade";
@@ -50,6 +56,11 @@ export function TradingSidebar({
   ownedShares,
   onOrderExecuted,
   startingBalance,
+  totalValue: totalValueProp,
+  pctChange: pctChangeProp,
+  totalPL: totalPLProp,
+  plIsUp: plIsUpProp,
+  isUp: isUpProp,
 }: TradingSidebarProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -105,9 +116,11 @@ export function TradingSidebar({
   }, [portfolioData]);
 
   const invested = holdings.reduce((sum: number, h: any) => sum + (h.currentValue || 0), 0);
-  const totalPL = holdings.reduce((sum: number, h: any) => sum + (h.profitLoss || 0), 0);
-  const totalValue = buyingPower + invested;
-  const pctChange = startingBalance > 0 ? ((totalValue - startingBalance) / startingBalance) * 100 : 0;
+  const totalPL = totalPLProp ?? holdings.reduce((sum: number, h: any) => sum + (h.profitLoss || 0), 0);
+  const totalValue = totalValueProp ?? (buyingPower + invested);
+  const pctChange = pctChangeProp ?? (startingBalance > 0 ? ((totalValue - startingBalance) / startingBalance) * 100 : 0);
+  const isProfit = plIsUpProp ?? totalPL >= 0;
+  const _isUp = isUpProp ?? pctChange >= 0;
 
   const formatMoney = (val: number) => {
     const abs = Math.abs(val);
@@ -193,19 +206,31 @@ export function TradingSidebar({
     return `${orderSide === "buy" ? "BUY" : "SELL"} ${selectedSymbol || "—"}`;
   })();
 
-  const isProfit = pctChange >= 0;
+  const fmtMoney = (n: number) => "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
     <div
       data-tour="trading-sidebar"
       className="flex flex-col h-full min-h-0"
-      style={{ backgroundColor: "#0E2440" }}
+      style={{ backgroundColor: "transparent" }}
     >
-      {/* ── HEADER: Tournament selector ── */}
+      {/* ── GAME HEADER: Big balance + P&L ── */}
       <div
-        className="px-3 pt-3 pb-2 shrink-0"
-        style={{ borderBottom: "1px solid rgba(0,163,255,0.12)" }}
+        className="shrink-0 px-4 pt-4 pb-3 relative overflow-hidden"
+        style={{
+          background: isProfit
+            ? "linear-gradient(160deg, rgba(0,255,135,0.07) 0%, rgba(10,31,61,0.6) 60%)"
+            : "linear-gradient(160deg, rgba(255,61,90,0.07) 0%, rgba(10,31,61,0.6) 60%)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+        }}
       >
+        {/* Subtle scanline texture */}
+        <div style={{
+          position: "absolute", inset: 0, pointerEvents: "none",
+          backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
+        }} />
+
+        {/* Tournament selector */}
         <Select
           value={selectedTournament?.id?.toString() || ""}
           onValueChange={(value) => {
@@ -214,11 +239,11 @@ export function TradingSidebar({
           }}
         >
           <SelectTrigger
-            className="h-8 text-xs font-bold"
+            className="h-7 text-[11px] font-bold mb-3 relative z-10"
             style={{
-              backgroundColor: "rgba(0,163,255,0.08)",
-              borderColor: "rgba(0,163,255,0.2)",
-              color: "#00A3FF",
+              backgroundColor: "rgba(0,0,0,0.3)",
+              borderColor: "rgba(255,255,255,0.1)",
+              color: "#8A93A6",
             }}
           >
             <SelectValue placeholder="Select Tournament" />
@@ -231,6 +256,63 @@ export function TradingSidebar({
             ))}
           </SelectContent>
         </Select>
+
+        {/* Big balance */}
+        <div className="relative z-10">
+          <div style={{ color: "#4B6080", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>
+            Tournament Balance
+          </div>
+          <div style={{
+            color: "#FFFFFF",
+            fontSize: "1.9rem",
+            fontWeight: 900,
+            letterSpacing: "-0.03em",
+            lineHeight: 1,
+            textShadow: isProfit ? "0 0 30px rgba(0,255,135,0.3)" : "0 0 30px rgba(255,61,90,0.3)",
+            fontVariantNumeric: "tabular-nums",
+          }}>
+            {fmtMoney(totalValue)}
+          </div>
+
+          {/* P/L row */}
+          <div className="flex items-center gap-2 mt-2">
+            <div style={{
+              display: "inline-flex", alignItems: "center", gap: 4,
+              background: isProfit ? "rgba(0,255,135,0.12)" : "rgba(255,61,90,0.12)",
+              border: `1px solid ${isProfit ? "rgba(0,255,135,0.3)" : "rgba(255,61,90,0.3)"}`,
+              borderRadius: 6,
+              padding: "2px 8px",
+              fontSize: "0.75rem",
+              fontWeight: 800,
+              color: isProfit ? "#00FF87" : "#FF3D5A",
+              boxShadow: isProfit ? "0 0 12px rgba(0,255,135,0.2)" : "0 0 12px rgba(255,61,90,0.2)",
+            }}>
+              {isProfit ? "▲" : "▼"} {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
+            </div>
+            <span style={{
+              fontSize: "0.75rem",
+              fontWeight: 700,
+              color: isProfit ? "#00FF87" : "#FF3D5A",
+            }}>
+              {totalPL >= 0 ? "+" : ""}{fmtMoney(totalPL)}
+            </span>
+
+            {/* Cash chip */}
+            <div style={{
+              marginLeft: "auto",
+              display: "inline-flex", alignItems: "center", gap: 3,
+              background: "rgba(0,163,255,0.1)",
+              border: "1px solid rgba(0,163,255,0.2)",
+              borderRadius: 6,
+              padding: "2px 7px",
+              fontSize: "0.7rem",
+              fontWeight: 700,
+              color: "#00A3FF",
+            }}>
+              💰 {fmtMoney(buyingPower)}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* ── MARKET STATUS BANNER ── */}
@@ -332,33 +414,39 @@ export function TradingSidebar({
 
       {/* ── TAB BAR ── */}
       <div
-        className="flex items-center shrink-0"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        className="flex items-center shrink-0 px-3 py-2 gap-1.5"
+        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.2)" }}
       >
-        {(["positions", "history"] as const).map((tab) => (
+        {([
+          { id: "positions", label: "📊 Positions" },
+          { id: "history",   label: "📜 History" },
+        ] as const).map(({ id, label }) => (
           <button
-            key={tab}
-            onClick={() => setActiveView(tab)}
-            className="flex-1 py-2.5 text-xs font-bold uppercase tracking-wider text-center transition-all"
+            key={id}
+            onClick={() => setActiveView(id)}
+            className="flex-1 py-1.5 text-[11px] font-bold rounded-lg text-center transition-all"
             style={{
-              color: activeView === tab ? "#00A3FF" : "#4B5563",
-              borderBottom: activeView === tab ? "2px solid #00A3FF" : "2px solid transparent",
-              background: activeView === tab ? "rgba(0,163,255,0.05)" : "transparent",
+              color: activeView === id ? "#C9D1E2" : "#4B5975",
+              background: activeView === id ? "rgba(0,163,255,0.12)" : "transparent",
+              border: activeView === id ? "1px solid rgba(0,163,255,0.25)" : "1px solid transparent",
             }}
           >
-            {tab}
+            {label}
           </button>
         ))}
         <button
           onClick={() => { setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
-          className="px-4 py-2.5 text-xs font-black uppercase tracking-wider transition-all"
+          className="flex-1 py-1.5 text-[11px] font-black rounded-lg text-center transition-all"
           style={{
-            color: activeView === "trade" ? "#28C76F" : "#4B5563",
-            borderBottom: activeView === "trade" ? "2px solid #28C76F" : "2px solid transparent",
-            background: activeView === "trade" ? "rgba(40,199,111,0.05)" : "transparent",
+            color: activeView === "trade" ? "#001a0d" : "#28a05a",
+            background: activeView === "trade"
+              ? "linear-gradient(135deg, #1db95f, #28C76F)"
+              : "transparent",
+            border: activeView === "trade" ? "1px solid rgba(40,199,111,0.5)" : "1px solid rgba(40,199,111,0.2)",
+            boxShadow: activeView === "trade" ? "0 0 16px rgba(40,199,111,0.3)" : "none",
           }}
         >
-          Trade
+          ⚡ Trade
         </button>
       </div>
 
