@@ -62,8 +62,9 @@ export function SimplifiedSidebar() {
           isActive(item.href) ? "sidebar-active-indicator" : "hover:bg-[#1A3A68] hover:text-white"
         }`}
         style={{
-          height: '48px',
+          height: '44px',
           paddingLeft: '14px',
+          flexShrink: 0,
           ...(isActive(item.href)
             ? { backgroundColor: 'rgba(0, 163, 255, 0.1)', color: '#00A3FF' }
             : { color: '#8A93A6' }),
@@ -95,7 +96,7 @@ export function SimplifiedSidebar() {
     <>
       <div
         data-tour="sidebar"
-        className="hidden md:block fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40"
+        className="hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40"
         style={{
           width: expanded ? '256px' : '64px',
           backgroundColor: '#142E5A',
@@ -105,12 +106,12 @@ export function SimplifiedSidebar() {
         }}
       >
         {/* Menu Toggle Button at top */}
-        <div className="p-2 border-b" style={{ borderColor: '#1C3E72' }}>
+        <div className="flex-shrink-0 p-2 border-b" style={{ borderColor: '#1C3E72' }}>
           <button
             onClick={() => setExpanded(!expanded)}
             className="flex items-center hover:bg-[#1A3A68] rounded-lg transition-colors duration-200"
             style={{
-              height: '48px',
+              height: '44px',
               width: '100%',
               paddingLeft: '14px',
               color: '#C9D1E2',
@@ -136,46 +137,59 @@ export function SimplifiedSidebar() {
           </button>
         </div>
 
-        {/* Navigation Items */}
-        <nav className="p-2 space-y-1">
-          {navItems.map(renderNavItem)}
-        </nav>
-
-        {/* Separator */}
-        {user && (
-          <div className="mx-2 my-2 h-px" style={{ backgroundColor: '#1C3E72' }} />
-        )}
-
-        {/* User Actions */}
-        {user && (
+        {/* Scrollable Navigation Area */}
+        <div
+          className="flex-1 overflow-y-auto overflow-x-hidden"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+          }}
+        >
+          {/* Navigation Items */}
           <nav className="p-2 space-y-1">
-            {userItems.map(renderNavItem)}
+            {navItems.map(renderNavItem)}
           </nav>
-        )}
 
-        {/* Code Redemption - Bottom */}
+          {/* Separator */}
+          {user && (
+            <div className="mx-2 my-2 h-px" style={{ backgroundColor: '#1C3E72' }} />
+          )}
+
+          {/* User Actions */}
+          {user && (
+            <nav className="p-2 space-y-1">
+              {userItems.map(renderNavItem)}
+            </nav>
+          )}
+        </div>
+
+        {/* Code Redemption - Pinned at bottom, never overlaps */}
         {user && (
-          <div className="absolute bottom-4 left-2 right-2">
+          <div className="flex-shrink-0 p-2 border-t" style={{ borderColor: '#1C3E72' }}>
             <Button
               onClick={() => setCodeDialogOpen(true)}
-              className={`transition-all duration-200 hover:brightness-110 ${
-                expanded ? 'w-full px-4 py-3' : 'w-12 h-12 p-0 mx-auto'
-              }`}
+              className="transition-all duration-200 hover:brightness-110 w-full"
               style={{
                 background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
                 color: '#FFFFFF',
+                height: '44px',
+                padding: expanded ? '0 16px' : '0',
+                justifyContent: 'center',
               }}
             >
-              {expanded ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <Gift className="w-5 h-5" style={{ color: '#FFFFFF' }} />
-                  <span className="text-base font-semibold">Redeem Code</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-center">
-                  <Gift className="w-5 h-5" style={{ color: '#FFFFFF' }} />
-                </div>
-              )}
+              <div className="flex items-center justify-center gap-2">
+                <Gift className="w-5 h-5 flex-shrink-0" style={{ color: '#FFFFFF' }} />
+                <span
+                  className="text-base font-semibold whitespace-nowrap overflow-hidden"
+                  style={{
+                    opacity: expanded ? 1 : 0,
+                    maxWidth: expanded ? '140px' : '0',
+                    transition: 'opacity 200ms ease, max-width 300ms ease',
+                  }}
+                >
+                  Redeem Code
+                </span>
+              </div>
             </Button>
           </div>
         )}
