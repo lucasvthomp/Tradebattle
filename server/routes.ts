@@ -6,7 +6,7 @@ import { storage } from "./storage";
 import { db } from "./db";
 import { users } from "@shared/schema";
 import * as schema from "@shared/schema";
-import { eq, desc, count, sum, and, ne, asc, lt, inArray, sql } from "drizzle-orm";
+import { eq, desc, count, sum, and, ne, asc, lt, gt, or, inArray, sql } from "drizzle-orm";
 import { setupAuth, requireAuth, hashPassword } from "./auth";
 import { insertContactSchema, insertWatchlistSchema, insertStockPurchaseSchema, registerSchema, loginSchema } from "@shared/schema";
 import apiRoutes from "./routes/api.js";
@@ -1934,7 +1934,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // transaction-scoped advisory lock, so two concurrent requests can never
   // double-match the same player.
   const BLITZ_LOCK_KEY = 911911;
-  const BLITZ_STALE_MS = 2 * 60 * 1000; // abandon idle queue entries after 2 min
+  // The client polls /status every 2s, which refreshes a player's joinedAt
+  // "heartbeat". We only match players whose heartbeat is fresh, so someone who
+  // closed the tab / navigated away is never offered as a (ghost) opponent.
+  const BLITZ_FRESH_MS = 12 * 1000;          // only match opponents seen in the last 12s
+  const BLITZ_STALE_MS = 25 * 1000;          // delete abandoned waiting/claiming rows after 25s
+  const BLITZ_MATCHED_TTL_MS = 2 * 60 * 1000; // delete uncollected match results after 2 min
 
   type BlitzDecision =
     | { kind: "matched"; tournamentId: number }
@@ -1947,11 +1952,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const decision: BlitzDecision = await db.transaction(async (tx) => {
       await tx.execute(sql`SELECT pg_advisory_xact_lock(${BLITZ_LOCK_KEY})`);
 
-      // Drop abandoned entries (closed tabs, crashed matches).
+      // Drop abandoned entries: stale waiting/claiming rows (closed tabs, crashed
+      // matches) and match results nobody ever collected.
+      const nowMs = Date.now();
       await tx.delete(schema.blitzQueue).where(
-        and(
-          ne(schema.blitzQueue.status, "matched"),
-          lt(schema.blitzQueue.joinedAt, new Date(Date.now() - BLITZ_STALE_MS)),
+        or(
+          and(
+            ne(schema.blitzQueue.status, "matched"),
+            lt(schema.blitzQueue.joinedAt, new Date(nowMs - BLITZ_STALE_MS)),
+          ),
+          and(
+            eq(schema.blitzQueue.status, "matched"),
+            lt(schema.blitzQueue.joinedAt, new Date(nowMs - BLITZ_MATCHED_TTL_MS)),
+          ),
         ),
       );
 
@@ -1967,9 +1980,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return { kind: "queued" };
       }
 
+      // Only match an opponent whose heartbeat is fresh (still actively polling).
       const opponent = await tx.select().from(schema.blitzQueue)
-        .where(and(eq(schema.blitzQueue.status, "waiting"), ne(schema.blitzQueue.userId, userId)))
-        .orderBy(asc(schema.blitzQueue.joinedAt)).limit(1);
+        .where(and(
+          eq(schema.blitzQueue.status, "waiting"),
+          ne(schema.blitzQueue.userId, userId),
+          gt(schema.blitzQueue.joinedAt, new Date(Date.now() - BLITZ_FRESH_MS)),
+        ))
+        .orderBy(asc(schema.blitzQueue.id)).limit(1);
 
       if (!opponent[0]) {
         // No opponent yet — (re)join the queue.
@@ -2023,7 +2041,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Opponent discovers the match on their next status poll; requester now.
       await db.update(schema.blitzQueue)
-        .set({ status: "matched", matchedTournamentId: tournament.id })
+        .set({ status: "matched", matchedTournamentId: tournament.id, joinedAt: new Date() })
         .where(eq(schema.blitzQueue.userId, opponentId));
       await db.delete(schema.blitzQueue).where(eq(schema.blitzQueue.userId, userId));
 

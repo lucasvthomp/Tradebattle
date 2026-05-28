@@ -80,7 +80,13 @@ export default function Blitz() {
     timerRef.current = null;
   }
 
-  useEffect(() => () => clearPolling(), []);
+  useEffect(() => () => {
+    clearPolling();
+    // Leave the matchmaking queue when navigating away so we don't linger as a
+    // "ghost" opponent for the next player. (No-op once a match was made, since
+    // the server already removed our queue row at that point.)
+    apiRequest("DELETE", "/api/blitz/queue").catch(() => {});
+  }, []);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
