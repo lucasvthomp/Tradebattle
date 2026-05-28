@@ -148,7 +148,7 @@ export default function Dashboard() {
         className="w-full md:w-[270px] md:max-w-[270px] md:min-w-[230px] flex flex-col h-[60vh] md:h-full"
         style={{
           backgroundColor: "#0C1829",
-          borderLeft: "1px solid rgba(227,179,65,0.12)",
+          borderLeft: "1px solid rgba(0,163,255,0.1)",
         }}
       >
         <TradingSidebar

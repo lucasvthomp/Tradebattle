@@ -15,7 +15,7 @@ export function PortfolioGrid({ selectedChartStock, onSelectStock }: PortfolioGr
     <div className="w-full space-y-6">
       {/* Portfolio Performance Chart - Full Width */}
       <div className="w-full min-h-[500px]">
-        <TradingViewChart symbol={selectedChartStock || "AAPL"} />
+        <TradingViewChart symbol={selectedChartStock || ""} />
       </div>
 
       {/* Stock Purchase Search */}
