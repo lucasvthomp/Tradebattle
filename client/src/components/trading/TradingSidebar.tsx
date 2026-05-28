@@ -202,7 +202,7 @@ export function TradingSidebar({
 
   const buttonLabel = (() => {
     if (isSubmitting) return "Placing Order...";
-    if (awaitingConfirm) return `⚡ Confirm ${orderSide === "buy" ? "BUY" : "SELL"}`;
+    if (awaitingConfirm) return `Confirm ${orderSide === "buy" ? "BUY" : "SELL"}`;
     return `${orderSide === "buy" ? "BUY" : "SELL"} ${selectedSymbol || "—"}`;
   })();
 
@@ -309,7 +309,7 @@ export function TradingSidebar({
               fontWeight: 700,
               color: "#00A3FF",
             }}>
-              💰 {fmtMoney(buyingPower)}
+              Cash {fmtMoney(buyingPower)}
             </div>
           </div>
         </div>
@@ -418,8 +418,8 @@ export function TradingSidebar({
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.2)" }}
       >
         {([
-          { id: "positions", label: "📊 Positions" },
-          { id: "history",   label: "📜 History" },
+          { id: "positions", label: "Positions" },
+          { id: "history",   label: "History" },
         ] as const).map(({ id, label }) => (
           <button
             key={id}
@@ -446,7 +446,7 @@ export function TradingSidebar({
             boxShadow: activeView === "trade" ? "0 0 16px rgba(40,199,111,0.3)" : "none",
           }}
         >
-          ⚡ Trade
+          Trade
         </button>
       </div>
 
@@ -472,7 +472,7 @@ export function TradingSidebar({
 
               {holdings.length === 0 ? (
                 <div className="py-8 text-center">
-                  <div className="text-2xl mb-2">📈</div>
+                  <TrendingUp className="w-8 h-8 mx-auto mb-2" style={{ color: "#2D3748" }} />
                   <p className="text-sm font-semibold" style={{ color: "#4B5563" }}>No positions yet</p>
                   <p className="text-xs mt-1" style={{ color: "#2D3748" }}>
                     Search a ticker above to get started
@@ -781,7 +781,7 @@ export function TradingSidebar({
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
                   style={{ backgroundColor: "rgba(255,79,88,0.1)", color: "#FF4F58", border: "1px solid rgba(255,79,88,0.2)" }}
                 >
-                  ⚠ Exceeds buying power by {formatCurrency(estimatedTotal - buyingPower)}
+                  Exceeds buying power by {formatCurrency(estimatedTotal - buyingPower)}
                 </div>
               )}
               {orderSide === "sell" && effectiveQuantity > ownedShares && ownedShares > 0 && (
@@ -789,7 +789,7 @@ export function TradingSidebar({
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
                   style={{ backgroundColor: "rgba(255,79,88,0.1)", color: "#FF4F58", border: "1px solid rgba(255,79,88,0.2)" }}
                 >
-                  ⚠ You only own {ownedShares} shares
+                  You only own {ownedShares} shares
                 </div>
               )}
 
