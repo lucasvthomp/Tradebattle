@@ -257,8 +257,12 @@ html {
   html {
     background: transparent !important;
     min-height: 100%;
+    min-height: 100dvh;
     overscroll-behavior: none;
+    overscroll-behavior-y: none;
     font-size: 16px;
+    /* Prevent iOS Safari toolbar from shifting layout */
+    height: -webkit-fill-available;
   }
 
   body {
@@ -269,6 +273,22 @@ html {
     background: linear-gradient(160deg, #0E2D56 0%, #0A2550 50%, #0C284F 100%) !important;
     background-attachment: fixed !important;
     min-height: 100vh;
+    min-height: 100dvh;
+    overscroll-behavior: none;
+    overscroll-behavior-y: none;
+    /* Prevents rubber-band scrolling from revealing browser chrome */
+    position: fixed;
+    width: 100%;
+  }
+
+  /* Restore scrolling on #root so pages still scroll normally */
+  #root {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* iOS momentum scrolling */
+    -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: none;
   }
 
@@ -287,11 +307,7 @@ html {
     letter-spacing: -0.02em;
   }
 
-  #root {
-    background: transparent;
-    min-height: 100vh;
-    position: relative;
-  }
+  /* #root scroll container is defined above in the html/body block */
 
   /* Scrollbar styling */
   ::-webkit-scrollbar {
@@ -1060,7 +1076,11 @@ textarea:focus-visible {
    still handle their own stacking/sizing; this just prevents stray overflow
    and keeps embedded media within their containers. */
 @media (max-width: 768px) {
-  html, body, #root {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+  #root {
     overflow-x: hidden;
     max-width: 100%;
   }

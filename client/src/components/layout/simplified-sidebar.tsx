@@ -95,7 +95,7 @@ export function SimplifiedSidebar() {
     <>
       <div
         data-tour="sidebar"
-        className="hidden md:block fixed left-0 top-16 h-[calc(100vh-4rem)] backdrop-blur-md border-r z-40"
+        className="hidden md:block fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40"
         style={{
           width: expanded ? '256px' : '64px',
           backgroundColor: '#0B2244',

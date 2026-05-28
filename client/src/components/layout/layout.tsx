@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps) {
   const { chatOpen, toggleChat } = useChatContext();
 
   return (
-    <div className="min-h-screen flex" style={{ backgroundColor: 'transparent' }}>
+    <div className="min-h-dvh flex" style={{ backgroundColor: 'transparent' }}>
       {/* Simplified Sidebar - Only for authenticated users */}
       {user && <SimplifiedSidebar />}
 
@@ -28,7 +28,7 @@ export default function Layout({ children }: LayoutProps) {
         {/* Main Content Area with Chat */}
         <div className="flex flex-1 pt-16 min-h-0">
           {/* Main Content with Page Transitions */}
-          <main className={`flex-1 min-h-screen transition-all duration-300 px-2 md:px-0 overflow-x-hidden ${
+          <main className={`flex-1 min-h-dvh transition-all duration-300 px-2 md:px-0 overflow-x-hidden ${
             user ? 'md:ml-16' : ''
           } ${
             user && chatOpen ? 'md:mr-80' : ''
@@ -40,7 +40,7 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Chat Sidebar - fixed position, independent of page scroll - Hidden on mobile portrait */}
           {user && chatOpen && (
-            <div className="hidden md:block fixed right-0 top-16 w-80 h-[calc(100vh-4rem)] z-40">
+            <div className="hidden md:block fixed right-0 top-16 w-80 h-[calc(100dvh-4rem)] z-40">
               <Suspense fallback={null}>
                 <ChatSidebar
                   isOpen={chatOpen}
