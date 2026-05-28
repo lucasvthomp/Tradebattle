@@ -558,7 +558,15 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         flexShrink: 0,
                       }}>
                         <QRCodeSVG
-                          value={payment.pay_address}
+                          value={(() => {
+                            // Strip BIP21/URI scheme — keep only the raw address
+                            const raw: string = payment.pay_address || '';
+                            const colonIdx = raw.indexOf(':');
+                            if (colonIdx > 0 && colonIdx < 20) {
+                              return raw.slice(colonIdx + 1).split('?')[0];
+                            }
+                            return raw;
+                          })()}
                           size={176}
                           level="H"
                           fgColor="#0C1829"
