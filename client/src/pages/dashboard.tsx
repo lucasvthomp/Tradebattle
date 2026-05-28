@@ -150,7 +150,7 @@ export default function Dashboard() {
           style={{ flex: 1, minWidth: 0, minHeight: 0, display: "flex", flexDirection: "column" }}
           className="min-h-[260px] md:min-h-0"
         >
-          <TradingViewChart symbol={selectedSymbol} />
+          <TradingViewChart symbol={selectedSymbol} tournamentId={selectedTournament?.id} />
         </div>
 
         {/* ── RIGHT: GAME PANEL ── */}

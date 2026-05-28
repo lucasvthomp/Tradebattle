@@ -1117,6 +1117,117 @@ router.get('/portfolio/tournament/:id', requireAuth, asyncHandler(async (req, re
 }));
 
 /**
+ * GET /api/portfolio/tournament/:id/performance
+ * Reconstruct daily portfolio value from trade history + historical prices
+ */
+router.get('/portfolio/tournament/:id/performance', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  const userId = req.user.id;
+
+  if (isNaN(tournamentId)) throw new ValidationError('Invalid tournament ID');
+
+  const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) throw new NotFoundError('Tournament not found');
+
+  const startingBalance = parseFloat(tournament.startingBalance as any) || 10000;
+  const startDate = tournament.startedAt ? new Date(tournament.startedAt) : new Date(tournament.createdAt as any);
+
+  // Get ALL trades (no limit) sorted ascending by date
+  const trades = await storage.getUserTournamentTrades(userId, tournamentId, 10000);
+  const sortedTrades = [...trades].sort((a, b) =>
+    new Date(a.tradeDate as any).getTime() - new Date(b.tradeDate as any).getTime()
+  );
+
+  if (sortedTrades.length === 0) {
+    // No trades yet — return flat line from start to today
+    const today = new Date();
+    const days: { date: string; value: number }[] = [];
+    const d = new Date(startDate);
+    while (d <= today) {
+      days.push({ date: d.toISOString().slice(0, 10), value: startingBalance });
+      d.setDate(d.getDate() + 1);
+    }
+    return res.json({ success: true, data: days });
+  }
+
+  // Collect unique symbols
+  const symbols = [...new Set(sortedTrades.map(t => t.symbol))];
+
+  // Fetch 1Y historical prices for each symbol (daily close)
+  const pricesBySymbol: Record<string, Record<string, number>> = {};
+  await Promise.all(symbols.map(async (sym) => {
+    try {
+      const hist = await getHistoricalData(sym, '1Y');
+      const map: Record<string, number> = {};
+      for (const point of hist) {
+        const dateStr = typeof point.date === 'number'
+          ? new Date(point.date * 1000).toISOString().slice(0, 10)
+          : String(point.date).slice(0, 10);
+        map[dateStr] = point.close;
+      }
+      pricesBySymbol[sym] = map;
+    } catch {
+      pricesBySymbol[sym] = {};
+    }
+  }));
+
+  // Walk day by day from tournament start to today
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+  const result: { date: string; value: number }[] = [];
+
+  let cash = startingBalance;
+  const shares: Record<string, number> = {};
+  let tradeIdx = 0;
+
+  const d = new Date(startDate);
+  d.setHours(0, 0, 0, 0);
+
+  while (d <= today) {
+    const dateStr = d.toISOString().slice(0, 10);
+
+    // Apply all trades that happened on or before this day
+    while (
+      tradeIdx < sortedTrades.length &&
+      new Date(sortedTrades[tradeIdx].tradeDate as any).toISOString().slice(0, 10) <= dateStr
+    ) {
+      const t = sortedTrades[tradeIdx];
+      const s = parseFloat(t.shares as any);
+      const p = parseFloat(t.price as any);
+      if (t.tradeType === 'buy') {
+        cash -= s * p;
+        shares[t.symbol] = (shares[t.symbol] || 0) + s;
+      } else {
+        cash += s * p;
+        shares[t.symbol] = Math.max(0, (shares[t.symbol] || 0) - s);
+      }
+      tradeIdx++;
+    }
+
+    // Sum current holdings value using closest available price
+    let holdingsValue = 0;
+    for (const [sym, qty] of Object.entries(shares)) {
+      if (qty <= 0) continue;
+      const symPrices = pricesBySymbol[sym] || {};
+      // Use exact date price, or walk back up to 5 days to find last known close
+      let price = 0;
+      for (let back = 0; back <= 5; back++) {
+        const checkDate = new Date(d);
+        checkDate.setDate(checkDate.getDate() - back);
+        const checkStr = checkDate.toISOString().slice(0, 10);
+        if (symPrices[checkStr]) { price = symPrices[checkStr]; break; }
+      }
+      holdingsValue += qty * price;
+    }
+
+    result.push({ date: dateStr, value: parseFloat((cash + holdingsValue).toFixed(2)) });
+    d.setDate(d.getDate() + 1);
+  }
+
+  res.json({ success: true, data: result });
+}));
+
+/**
  * POST /api/tournaments/:id/sell
  * Sell stock in a tournament
  */
