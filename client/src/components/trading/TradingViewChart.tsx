@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, memo } from "react";
-import { createChart, ColorType, CandlestickSeries } from "lightweight-charts";
+import { createChart, ColorType } from "lightweight-charts";
 import { Search, TrendingUp, TrendingDown, Zap } from "lucide-react";
+import { RoundedCandleSeriesView, type OhlcData } from "./RoundedCandleSeries";
 
 interface TradingViewChartProps {
   symbol: string;
@@ -49,6 +50,7 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
           textColor: "#7B8FA8",
           fontSize: 11,
           fontFamily: "'Inter', system-ui, sans-serif",
+          attributionLogo: false,
         },
         grid: {
           vertLines: { color: "rgba(0,163,255,0.06)" },
@@ -72,13 +74,13 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
         height: h,
       });
 
-      const series = chart.addSeries(CandlestickSeries, {
-        upColor:        UP_COLOR,
-        downColor:      DOWN_COLOR,
-        borderUpColor:  UP_COLOR,
-        borderDownColor: DOWN_COLOR,
-        wickUpColor:    UP_COLOR,
-        wickDownColor:  DOWN_COLOR,
+      const series = chart.addCustomSeries(new RoundedCandleSeriesView(), {
+        upColor:      UP_COLOR,
+        downColor:    DOWN_COLOR,
+        wickUpColor:  UP_COLOR,
+        wickDownColor: DOWN_COLOR,
+        radius: 4,
+        wickWidth: 1,
       });
 
       chartRef.current = chart;
@@ -128,7 +130,7 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
       if (raw.length === 0) throw new Error("No data returned from API");
 
       const seen = new Set<any>();
-      const chartData = raw
+      const chartData: OhlcData[] = raw
         .map((item) => {
           const t = typeof item.date === "number"
             ? item.date
@@ -155,7 +157,7 @@ function TradingViewChartInner({ symbol }: TradingViewChartProps) {
 
       if (chartData.length === 0) throw new Error("No valid candles after filtering");
 
-      const validCandles = chartData.filter((d) => {
+      const validCandles: OhlcData[] = chartData.filter((d) => {
         const hi = Math.max(d.open, d.close, d.high);
         const lo = Math.min(d.open, d.close, d.low);
         return hi > 0 && lo > 0 && hi >= lo;
