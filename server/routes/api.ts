@@ -1153,22 +1153,33 @@ router.get('/portfolio/tournament/:id/performance', requireAuth, asyncHandler(as
   // Collect unique symbols
   const symbols = [...new Set(sortedTrades.map(t => t.symbol))];
 
-  // Fetch 1Y historical prices for each symbol (daily close)
+  // Fetch 1Y historical prices + live quote for each symbol
   const pricesBySymbol: Record<string, Record<string, number>> = {};
   await Promise.all(symbols.map(async (sym) => {
+    const map: Record<string, number> = {};
     try {
       const hist = await getHistoricalData(sym, '1Y');
-      const map: Record<string, number> = {};
       for (const point of hist) {
         const dateStr = typeof point.date === 'number'
           ? new Date(point.date * 1000).toISOString().slice(0, 10)
           : String(point.date).slice(0, 10);
         map[dateStr] = point.close;
       }
-      pricesBySymbol[sym] = map;
-    } catch {
-      pricesBySymbol[sym] = {};
-    }
+    } catch { /* will rely on live quote below */ }
+    // Inject live quote as today's price so recent trades reflect current value
+    try {
+      const quote = await getStockQuote(sym);
+      if (quote?.price) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        map[todayStr] = quote.price;
+        // Also backfill yesterday in case market is closed
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yStr = yesterday.toISOString().slice(0, 10);
+        if (!map[yStr]) map[yStr] = quote.price;
+      }
+    } catch { /* best effort */ }
+    pricesBySymbol[sym] = map;
   }));
 
   // Walk day by day from tournament start to today
