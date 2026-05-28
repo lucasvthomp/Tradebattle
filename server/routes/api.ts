@@ -820,6 +820,26 @@ router.get('/tournaments/public', requireAuth, asyncHandler(async (req, res) => 
 }));
 
 /**
+ * GET /api/tournaments/:id
+ * Get a single tournament by ID (for both participants and spectators)
+ */
+router.get('/tournaments/:id', requireAuth, asyncHandler(async (req, res) => {
+  const tournamentId = parseInt(req.params.id);
+  if (isNaN(tournamentId)) throw new ValidationError('Invalid tournament ID');
+
+  const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) throw new NotFoundError('Tournament not found');
+
+  const participantPreviews = await storage.getTournamentParticipantPreviews(tournamentId);
+  const participantUserIds = await storage.getTournamentParticipantUserIds(tournamentId);
+
+  res.json({
+    success: true,
+    data: { ...tournament, participantPreviews, participantUserIds },
+  });
+}));
+
+/**
  * GET /api/tournaments/:id/leaderboard
  * Get tournament leaderboard with rankings and portfolio values
  */

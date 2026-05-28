@@ -26,6 +26,23 @@ function getRankTitle(level: number) {
   return { title: "Rookie", color: "#8A93A6" };
 }
 
+// Scanline texture overlay — placed absolutely inside any card
+function ScanlineOverlay() {
+  return (
+    <div
+      style={{
+        position: "absolute",
+        inset: 0,
+        borderRadius: "inherit",
+        backgroundImage:
+          "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
+        pointerEvents: "none",
+        zIndex: 0,
+      }}
+    />
+  );
+}
+
 export default function Hub() {
   const { user } = useAuth();
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -53,9 +70,17 @@ export default function Hub() {
   };
 
   const cardBase = {
-    background: '#0C1829',
-    border: '1px solid #1E3050',
-    borderRadius: '12px',
+    background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
+    border: "1px solid rgba(0,163,255,0.12)",
+    borderRadius: "16px",
+  };
+
+  const sectionLabel = {
+    fontSize: "0.6rem",
+    fontWeight: 700,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase" as const,
+    color: "#4B6080",
   };
 
   const stats = [
@@ -84,24 +109,51 @@ export default function Hub() {
       <div style={{ maxWidth: '900px', margin: '0 auto' }}>
 
         {/* Header + Level Bar */}
-        <motion.div className="tour-hub-hero" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '28px' }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
+        <motion.div
+          className="tour-hub-hero"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ marginBottom: '28px', position: 'relative', overflow: 'hidden', borderRadius: '16px', padding: '20px 22px' }}
+        >
+          {/* Radial blue glow */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: "radial-gradient(ellipse at 30% 50%, rgba(0,163,255,0.08) 0%, transparent 70%)",
+            pointerEvents: 'none',
+            zIndex: 0,
+          }} />
+          <ScanlineOverlay />
+
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
             <div>
-              <h1 style={{ fontSize: 'clamp(20px, 5vw, 26px)', fontWeight: '700', color: '#E2E8F0', margin: '0 0 4px' }}>
+              <h1 style={{
+                fontSize: 'clamp(1.4rem, 4vw, 2.2rem)',
+                fontWeight: 900,
+                letterSpacing: '-0.03em',
+                color: '#FFFFFF',
+                margin: '0 0 6px',
+                textShadow: '0 0 30px rgba(0,163,255,0.2)',
+              }}>
                 {getGreeting()}, {user?.username}
               </h1>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ fontSize: '13px', color: '#64748B' }}>
+                <span style={{ fontSize: '13px', color: '#4B6080', fontWeight: 600 }}>
                   {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                 </span>
                 {activeTournaments.length > 0 && (
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', gap: '5px',
                     padding: '3px 10px', borderRadius: '20px',
-                    background: 'rgba(40,199,111,0.12)', border: '1px solid rgba(40,199,111,0.3)',
-                    fontSize: '12px', fontWeight: '600', color: '#28C76F',
+                    background: 'rgba(0,255,135,0.1)', border: '1px solid rgba(0,255,135,0.25)',
+                    fontSize: '12px', fontWeight: '600', color: '#00FF87',
                   }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#28C76F', display: 'inline-block' }} />
+                    <span style={{
+                      width: '6px', height: '6px', borderRadius: '50%',
+                      background: '#00FF87', display: 'inline-block',
+                      boxShadow: '0 0 6px rgba(0,255,135,0.8)',
+                      animation: 'hubPulse 1.4s ease-in-out infinite',
+                    }} />
                     {activeTournaments.length} live
                   </span>
                 )}
@@ -111,23 +163,23 @@ export default function Hub() {
             {/* Level badge */}
             <div style={{
               padding: '12px 16px', borderRadius: '12px', minWidth: '160px',
-              background: '#0C1829', border: `1px solid ${rankColor}40`,
+              background: 'linear-gradient(135deg, #0A1F3D, #081729)',
+              border: `1px solid rgba(${rankColor === '#FF4F58' ? '255,79,88' : rankColor === '#00A3FF' ? '0,163,255' : rankColor === '#8B5CF6' ? '139,92,246' : rankColor === '#06B6D4' ? '6,182,212' : rankColor === '#28C76F' ? '40,199,111' : '138,147,166'},0.3)`,
+              boxShadow: `0 0 20px rgba(${rankColor === '#FF4F58' ? '255,79,88' : rankColor === '#00A3FF' ? '0,163,255' : rankColor === '#8B5CF6' ? '139,92,246' : rankColor === '#06B6D4' ? '6,182,212' : rankColor === '#28C76F' ? '40,199,111' : '138,147,166'},0.1)`,
             }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <span style={{ fontSize: '11px', fontWeight: '700', color: rankColor, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {rankTitle}
-                </span>
+                <span style={{ ...sectionLabel, color: rankColor }}>{rankTitle}</span>
                 <span style={{ fontSize: '13px', fontWeight: '800', color: '#E2E8F0' }}>Lv.{level}</span>
               </div>
-              <div style={{ height: '5px', borderRadius: '3px', background: '#1E3050', overflow: 'hidden' }}>
+              <div style={{ height: '5px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
-                  style={{ height: '100%', borderRadius: '3px', background: rankColor }}
+                  style={{ height: '100%', borderRadius: '3px', background: rankColor, boxShadow: `0 0 8px ${rankColor}88` }}
                 />
               </div>
-              <div style={{ fontSize: '10px', color: '#64748B', marginTop: '5px' }}>{xp} XP · {progress}% to Lv.{level + 1}</div>
+              <div style={{ ...sectionLabel, marginTop: '5px' }}>{xp} XP · {progress}% to Lv.{level + 1}</div>
             </div>
           </div>
         </motion.div>
@@ -141,13 +193,23 @@ export default function Hub() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.06 }}
               whileHover={{ y: -2 }}
-              style={{ ...cardBase, padding: '16px', cursor: 'default' }}
+              style={{
+                background: 'linear-gradient(135deg, #0A1F3D 0%, #081729 100%)',
+                border: `1px solid rgba(${s.color === '#00A3FF' ? '0,163,255' : s.color === '#28C76F' ? '40,199,111' : s.color === '#8B5CF6' ? '139,92,246' : '6,182,212'},0.2)`,
+                boxShadow: `0 0 16px rgba(${s.color === '#00A3FF' ? '0,163,255' : s.color === '#28C76F' ? '40,199,111' : s.color === '#8B5CF6' ? '139,92,246' : '6,182,212'},0.06)`,
+                borderRadius: '16px',
+                padding: '16px',
+                cursor: 'default',
+              }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '10px' }}>
-                <span style={{ fontSize: '11px', fontWeight: '600', color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{s.label}</span>
-                <s.icon size={15} style={{ color: s.color, opacity: 0.7 }} />
+                <span style={sectionLabel}>{s.label}</span>
+                <s.icon size={15} style={{ color: s.color, opacity: 0.8 }} />
               </div>
-              <div style={{ fontSize: '24px', fontWeight: '700', color: s.color }}>{s.value}</div>
+              <div style={{
+                fontSize: '1.6rem', fontWeight: 900, color: s.color,
+                textShadow: `0 0 20px rgba(${s.color === '#00A3FF' ? '0,163,255' : s.color === '#28C76F' ? '40,199,111' : s.color === '#8B5CF6' ? '139,92,246' : '6,182,212'},0.4)`,
+              }}>{s.value}</div>
             </motion.div>
           ))}
         </div>
@@ -160,31 +222,33 @@ export default function Hub() {
 
             {/* Quick Actions */}
             <div style={{ ...cardBase, padding: '20px' }}>
-              <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2', marginBottom: '14px' }}>Quick Actions</h2>
+              <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#C9D1E2', marginBottom: '14px', letterSpacing: '-0.01em' }}>Quick Actions</h2>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                 {quickActions.map((a) => (
-                  <Link key={a.href} href={a.href}>
+                  <Link key={a.href + a.label} href={a.href}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       style={{
                         display: 'flex', alignItems: 'center', gap: '12px',
-                        padding: '14px', borderRadius: '10px', cursor: 'pointer',
-                        background: `${a.color}0D`,
-                        border: `1px solid ${a.color}30`,
+                        padding: '14px', borderRadius: '14px', cursor: 'pointer',
+                        background: `linear-gradient(135deg, rgba(${a.color === '#28C76F' ? '40,199,111' : a.color === '#8B5CF6' ? '139,92,246' : a.color === '#00A3FF' ? '0,163,255' : '6,182,212'},0.08), rgba(${a.color === '#28C76F' ? '40,199,111' : a.color === '#8B5CF6' ? '139,92,246' : a.color === '#00A3FF' ? '0,163,255' : '6,182,212'},0.03))`,
+                        border: `1px solid rgba(${a.color === '#28C76F' ? '40,199,111' : a.color === '#8B5CF6' ? '139,92,246' : a.color === '#00A3FF' ? '0,163,255' : '6,182,212'},0.2)`,
                       }}
                     >
                       <div style={{
-                        width: '36px', height: '36px', borderRadius: '8px', flexShrink: 0,
-                        background: `${a.color}20`,
+                        width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+                        background: `rgba(${a.color === '#28C76F' ? '40,199,111' : a.color === '#8B5CF6' ? '139,92,246' : a.color === '#00A3FF' ? '0,163,255' : '6,182,212'},0.15)`,
+                        border: `1px solid rgba(${a.color === '#28C76F' ? '40,199,111' : a.color === '#8B5CF6' ? '139,92,246' : a.color === '#00A3FF' ? '0,163,255' : '6,182,212'},0.25)`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center',
                       }}>
                         <a.icon size={16} style={{ color: a.color }} />
                       </div>
-                      <div style={{ minWidth: 0 }}>
-                        <div style={{ fontSize: '13px', fontWeight: '700', color: '#E2E8F0' }}>{a.label}</div>
-                        <div style={{ fontSize: '11px', color: '#64748B', marginTop: '1px' }}>{a.sub}</div>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ fontSize: '13px', fontWeight: 800, color: '#C9D1E2' }}>{a.label}</div>
+                        <div style={{ fontSize: '11px', color: '#4B6080', marginTop: '1px' }}>{a.sub}</div>
                       </div>
+                      <ArrowRight size={13} style={{ color: `rgba(${a.color === '#28C76F' ? '40,199,111' : a.color === '#8B5CF6' ? '139,92,246' : a.color === '#00A3FF' ? '0,163,255' : '6,182,212'},0.5)`, flexShrink: 0 }} />
                     </motion.div>
                   </Link>
                 ))}
@@ -195,11 +259,11 @@ export default function Hub() {
             <div style={{ ...cardBase, padding: '20px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
                 <Flame size={15} style={{ color: '#FF7A00' }} />
-                <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2', margin: 0 }}>Daily Challenges</h2>
+                <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#C9D1E2', margin: 0, letterSpacing: '-0.01em' }}>Daily Challenges</h2>
                 <span style={{
                   marginLeft: 'auto', fontSize: '11px', fontWeight: '600', color: '#FF7A00',
-                  padding: '2px 8px', borderRadius: '20px', background: 'rgba(255,122,0,0.1)',
-                  border: '1px solid rgba(255,122,0,0.2)',
+                  padding: '2px 8px', borderRadius: '20px',
+                  background: 'rgba(255,122,0,0.1)', border: '1px solid rgba(255,122,0,0.25)',
                 }}>
                   Resets in {24 - currentTime.getHours()}h
                 </span>
@@ -213,32 +277,34 @@ export default function Hub() {
                     transition={{ delay: i * 0.07 }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: '12px',
-                      padding: '12px 14px', borderRadius: '10px',
-                      background: c.done ? `${c.color}0C` : '#0C1829',
-                      border: `1px solid ${c.done ? c.color + '30' : '#1E3050'}`,
+                      padding: '12px 14px', borderRadius: '12px',
+                      background: `rgba(${c.color === '#28C76F' ? '40,199,111' : c.color === '#00A3FF' ? '0,163,255' : '139,92,246'},0.05)`,
+                      border: `1px solid rgba(${c.color === '#28C76F' ? '40,199,111' : c.color === '#00A3FF' ? '0,163,255' : '139,92,246'},0.15)`,
                       opacity: c.done ? 0.6 : 1,
                     }}
                   >
                     <div style={{
                       width: '32px', height: '32px', borderRadius: '8px', flexShrink: 0,
-                      background: `${c.color}18`,
+                      background: `rgba(${c.color === '#28C76F' ? '40,199,111' : c.color === '#00A3FF' ? '0,163,255' : '139,92,246'},0.15)`,
+                      border: `1px solid rgba(${c.color === '#28C76F' ? '40,199,111' : c.color === '#00A3FF' ? '0,163,255' : '139,92,246'},0.25)`,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}>
                       <c.icon size={14} style={{ color: c.color }} />
                     </div>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '13px', fontWeight: '600', color: c.done ? '#64748B' : '#E2E8F0', textDecoration: c.done ? 'line-through' : 'none' }}>
+                      <div style={{ fontSize: '13px', fontWeight: '600', color: c.done ? '#4B6080' : '#C9D1E2', textDecoration: c.done ? 'line-through' : 'none' }}>
                         {c.label}
                       </div>
                     </div>
                     <div style={{
-                      fontSize: '11px', fontWeight: '700', color: c.done ? '#64748B' : '#00A3FF',
+                      fontSize: '11px', fontWeight: 800, color: c.done ? '#4B6080' : '#00A3FF',
                       padding: '3px 8px', borderRadius: '20px',
                       background: c.done ? 'transparent' : 'rgba(0,163,255,0.1)',
+                      border: c.done ? 'none' : '1px solid rgba(0,163,255,0.2)',
                     }}>
                       +{c.xpReward} XP
                     </div>
-                    {c.done && <span style={{ fontSize: '12px' }}>✓</span>}
+                    {c.done && <span style={{ fontSize: '12px', color: '#4B6080' }}>✓</span>}
                   </motion.div>
                 ))}
               </div>
@@ -248,14 +314,14 @@ export default function Hub() {
             {activeTournaments.length > 0 && (
               <div style={{ ...cardBase, padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2' }}>Live Now</h2>
+                  <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#C9D1E2', letterSpacing: '-0.01em' }}>Live Now</h2>
                   <Link href="/tournaments">
-                    <span style={{ fontSize: '12px', color: '#00A3FF', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
+                    <span style={{ fontSize: '12px', color: '#00A3FF', cursor: 'pointer', fontWeight: 600 }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
                   </Link>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {activeTournaments.slice(0, 3).map((t: any, i: number) => (
-                    <Link key={t.id} href="/tournaments">
+                    <Link key={t.id} href={`/tournament/${t.id}`}>
                       <motion.div
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -263,19 +329,20 @@ export default function Hub() {
                         whileHover={{ x: 4 }}
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          padding: '12px 14px', borderRadius: '8px', cursor: 'pointer',
-                          background: 'rgba(40,199,111,0.06)', border: '1px solid rgba(40,199,111,0.15)',
+                          padding: '12px 14px', borderRadius: '10px', cursor: 'pointer',
+                          background: 'rgba(0,255,135,0.05)', border: '1px solid rgba(0,255,135,0.15)',
                         }}
                       >
                         <div>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#E2E8F0' }}>{t.name}</div>
-                          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#C9D1E2' }}>{t.name}</div>
+                          <div style={{ fontSize: '11px', color: '#4B6080', marginTop: '2px' }}>
                             {t.participantCount || 0}/{t.maxPlayers} players · ${Number(t.buyInAmount || 0).toFixed(0)} buy-in
                           </div>
                         </div>
                         <div style={{
                           padding: '3px 8px', borderRadius: '20px',
-                          background: 'rgba(40,199,111,0.15)', fontSize: '11px', fontWeight: '700', color: '#28C76F',
+                          background: 'rgba(0,255,135,0.12)', border: '1px solid rgba(0,255,135,0.25)',
+                          fontSize: '11px', fontWeight: 800, color: '#00FF87',
                         }}>LIVE</div>
                       </motion.div>
                     </Link>
@@ -288,14 +355,14 @@ export default function Hub() {
             {upcomingTournaments.length > 0 && (
               <div style={{ ...cardBase, padding: '20px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-                  <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#C9D1E2' }}>Upcoming</h2>
+                  <h2 style={{ fontSize: '14px', fontWeight: 800, color: '#C9D1E2', letterSpacing: '-0.01em' }}>Upcoming</h2>
                   <Link href="/tournaments">
-                    <span style={{ fontSize: '12px', color: '#00A3FF', cursor: 'pointer' }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
+                    <span style={{ fontSize: '12px', color: '#00A3FF', cursor: 'pointer', fontWeight: 600 }}>View all <ChevronRight size={12} style={{ display: 'inline' }} /></span>
                   </Link>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {upcomingTournaments.slice(0, 3).map((t: any, i: number) => (
-                    <Link key={t.id} href="/tournaments">
+                    <Link key={t.id} href={`/tournament/${t.id}`}>
                       <motion.div
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -303,17 +370,17 @@ export default function Hub() {
                         whileHover={{ x: 4 }}
                         style={{
                           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                          padding: '12px 14px', borderRadius: '8px', cursor: 'pointer',
-                          background: '#0C1829', border: '1px solid #1E3050',
+                          padding: '12px 14px', borderRadius: '10px', cursor: 'pointer',
+                          background: 'rgba(0,163,255,0.04)', border: '1px solid rgba(0,163,255,0.1)',
                         }}
                       >
                         <div>
-                          <div style={{ fontSize: '13px', fontWeight: '600', color: '#E2E8F0' }}>{t.name}</div>
-                          <div style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#C9D1E2' }}>{t.name}</div>
+                          <div style={{ fontSize: '11px', color: '#4B6080', marginTop: '2px' }}>
                             {t.participantCount || 0}/{t.maxPlayers} · ${Number(t.buyInAmount || 0).toFixed(0)} buy-in
                           </div>
                         </div>
-                        <Clock size={14} style={{ color: '#64748B' }} />
+                        <Clock size={14} style={{ color: '#4B6080' }} />
                       </motion.div>
                     </Link>
                   ))}
@@ -323,18 +390,26 @@ export default function Hub() {
 
             {activeTournaments.length === 0 && upcomingTournaments.length === 0 && (
               <div style={{ ...cardBase, padding: '32px', textAlign: 'center' }}>
-                <Trophy size={32} style={{ color: '#1E3050', margin: '0 auto 12px' }} />
-                <p style={{ fontSize: '14px', color: '#C9D1E2', marginBottom: '4px' }}>No tournaments active</p>
-                <p style={{ fontSize: '13px', color: '#64748B', marginBottom: '16px' }}>Create one or join an existing tournament</p>
+                <div style={{
+                  width: '56px', height: '56px', borderRadius: '16px', margin: '0 auto 16px',
+                  background: 'rgba(0,163,255,0.08)', border: '1px solid rgba(0,163,255,0.15)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 0 20px rgba(0,163,255,0.1)',
+                }}>
+                  <Trophy size={28} style={{ color: '#00A3FF', opacity: 0.7 }} />
+                </div>
+                <p style={{ fontSize: '14px', fontWeight: 700, color: '#C9D1E2', marginBottom: '4px' }}>No tournaments active</p>
+                <p style={{ fontSize: '13px', color: '#4B6080', marginBottom: '16px' }}>Create one or join an existing tournament</p>
                 <Link href="/tournaments">
                   <motion.button
                     whileHover={{ scale: 1.03 }}
                     whileTap={{ scale: 0.97 }}
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
-                      padding: '10px 20px', borderRadius: '8px',
+                      padding: '10px 20px', borderRadius: '10px',
                       background: 'linear-gradient(135deg, #00A3FF, #0090E0)',
                       border: 'none', color: '#FFFFFF', fontWeight: '700', fontSize: '13px', cursor: 'pointer',
+                      boxShadow: '0 0 20px rgba(0,163,255,0.3)',
                     }}
                   >
                     <Plus size={14} /> Browse Tournaments
@@ -352,29 +427,35 @@ export default function Hub() {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 style={{
-                  borderRadius: '12px', padding: '20px', cursor: 'pointer',
-                  background: 'linear-gradient(135deg, #1A1040 0%, #0F1428 100%)',
-                  border: '1px solid rgba(139,92,246,0.35)',
+                  borderRadius: '16px', padding: '20px', cursor: 'pointer',
+                  position: 'relative', overflow: 'hidden',
+                  background: 'linear-gradient(135deg, #130D2A, #0A1020)',
+                  border: '1px solid rgba(139,92,246,0.3)',
+                  boxShadow: '0 0 30px rgba(139,92,246,0.06)',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                  <div style={{
-                    width: '34px', height: '34px', borderRadius: '8px',
-                    background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  }}>
-                    <Zap size={16} color="#fff" />
+                <ScanlineOverlay />
+                <div style={{ position: 'relative', zIndex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{
+                      width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
+                      background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      boxShadow: '0 0 20px rgba(139,92,246,0.4)',
+                    }}>
+                      <Zap size={16} color="#fff" />
+                    </div>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: 900, color: '#E2E8F0', letterSpacing: '-0.02em' }}>Blitz Mode</div>
+                      <div style={{ fontSize: '11px', color: '#8B5CF6' }}>1v1 · 5 minutes</div>
+                    </div>
                   </div>
-                  <div>
-                    <div style={{ fontSize: '14px', fontWeight: '700', color: '#E2E8F0' }}>Blitz Mode</div>
-                    <div style={{ fontSize: '11px', color: '#8B5CF6' }}>1v1 · 5 minutes</div>
+                  <p style={{ fontSize: '12px', color: '#8A93A6', lineHeight: '1.5', margin: '0 0 12px' }}>
+                    Instant matchmaking. Trade against a real opponent for 5 minutes — highest portfolio wins.
+                  </p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 800, color: '#8B5CF6' }}>
+                    Find a match <ArrowRight size={12} />
                   </div>
-                </div>
-                <p style={{ fontSize: '12px', color: '#8A93A6', lineHeight: '1.5', margin: '0 0 12px' }}>
-                  Instant matchmaking. Trade against a real opponent for 5 minutes — highest portfolio wins.
-                </p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: '600', color: '#8B5CF6' }}>
-                  Find a match <ArrowRight size={12} />
                 </div>
               </motion.div>
             </Link>
@@ -382,11 +463,12 @@ export default function Hub() {
             {/* Rank card */}
             <div style={{ ...cardBase, padding: '18px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#C9D1E2', margin: 0 }}>Your Rank</h3>
+                <h3 style={{ fontSize: '13px', fontWeight: 800, color: '#C9D1E2', margin: 0, letterSpacing: '-0.01em' }}>Your Rank</h3>
                 <span style={{
                   fontSize: '11px', fontWeight: '700', color: rankColor,
                   padding: '2px 8px', borderRadius: '12px',
-                  background: `${rankColor}18`, border: `1px solid ${rankColor}30`,
+                  background: `rgba(${rankColor === '#FF4F58' ? '255,79,88' : rankColor === '#00A3FF' ? '0,163,255' : rankColor === '#8B5CF6' ? '139,92,246' : rankColor === '#06B6D4' ? '6,182,212' : rankColor === '#28C76F' ? '40,199,111' : '138,147,166'},0.12)`,
+                  border: `1px solid rgba(${rankColor === '#FF4F58' ? '255,79,88' : rankColor === '#00A3FF' ? '0,163,255' : rankColor === '#8B5CF6' ? '139,92,246' : rankColor === '#06B6D4' ? '6,182,212' : rankColor === '#28C76F' ? '40,199,111' : '138,147,166'},0.25)`,
                 }}>
                   {rankTitle}
                 </span>
@@ -394,23 +476,25 @@ export default function Hub() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                 <div style={{
                   width: '48px', height: '48px', borderRadius: '12px', flexShrink: 0,
-                  background: `${rankColor}20`, border: `2px solid ${rankColor}40`,
+                  background: `rgba(${rankColor === '#FF4F58' ? '255,79,88' : rankColor === '#00A3FF' ? '0,163,255' : rankColor === '#8B5CF6' ? '139,92,246' : rankColor === '#06B6D4' ? '6,182,212' : rankColor === '#28C76F' ? '40,199,111' : '138,147,166'},0.15)`,
+                  border: `2px solid rgba(${rankColor === '#FF4F58' ? '255,79,88' : rankColor === '#00A3FF' ? '0,163,255' : rankColor === '#8B5CF6' ? '139,92,246' : rankColor === '#06B6D4' ? '6,182,212' : rankColor === '#28C76F' ? '40,199,111' : '138,147,166'},0.35)`,
+                  boxShadow: `0 0 16px rgba(${rankColor === '#FF4F58' ? '255,79,88' : rankColor === '#00A3FF' ? '0,163,255' : rankColor === '#8B5CF6' ? '139,92,246' : rankColor === '#06B6D4' ? '6,182,212' : rankColor === '#28C76F' ? '40,199,111' : '138,147,166'},0.2)`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '20px', fontWeight: '900', color: rankColor,
                 }}>
                   {level}
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: '11px', color: '#64748B', marginBottom: '4px' }}>Level {level} · {xp} XP total</div>
-                  <div style={{ height: '6px', borderRadius: '3px', background: '#1E3050', overflow: 'hidden' }}>
+                  <div style={{ ...sectionLabel, marginBottom: '4px' }}>Level {level} · {xp} XP total</div>
+                  <div style={{ height: '6px', borderRadius: '3px', background: 'rgba(255,255,255,0.06)', overflow: 'hidden' }}>
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${progress}%` }}
                       transition={{ duration: 0.8, ease: 'easeOut', delay: 0.4 }}
-                      style={{ height: '100%', borderRadius: '3px', background: rankColor }}
+                      style={{ height: '100%', borderRadius: '3px', background: rankColor, boxShadow: `0 0 8px ${rankColor}88` }}
                     />
                   </div>
-                  <div style={{ fontSize: '10px', color: '#64748B', marginTop: '3px' }}>{progress}% to Lv.{level + 1}</div>
+                  <div style={{ ...sectionLabel, marginTop: '3px' }}>{progress}% to Lv.{level + 1}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -419,7 +503,7 @@ export default function Hub() {
                   { label: 'Total Trades', value: String(trades), color: '#06B6D4' },
                 ].map(row => (
                   <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ fontSize: '12px', color: '#64748B' }}>{row.label}</span>
+                    <span style={{ fontSize: '12px', color: '#4B6080' }}>{row.label}</span>
                     <span style={{ fontSize: '13px', fontWeight: '600', color: row.color }}>{row.value}</span>
                   </div>
                 ))}
@@ -429,9 +513,9 @@ export default function Hub() {
                   whileHover={{ scale: 1.02 }}
                   style={{
                     width: '100%', marginTop: '14px', padding: '9px',
-                    borderRadius: '8px', border: '1px solid rgba(0,163,255,0.25)',
-                    background: 'rgba(0,163,255,0.06)', color: '#00A3FF',
-                    fontSize: '12px', fontWeight: '600', cursor: 'pointer',
+                    borderRadius: '8px', border: '1px solid rgba(0,163,255,0.2)',
+                    background: 'rgba(0,163,255,0.08)', color: '#00A3FF',
+                    fontSize: '12px', fontWeight: 700, cursor: 'pointer',
                   }}
                 >
                   Deposit Funds
@@ -441,7 +525,7 @@ export default function Hub() {
 
             {/* Market status */}
             <div style={{ ...cardBase, padding: '16px' }}>
-              <h3 style={{ fontSize: '13px', fontWeight: '700', color: '#C9D1E2', marginBottom: '10px' }}>Market</h3>
+              <h3 style={{ fontSize: '13px', fontWeight: 800, color: '#C9D1E2', marginBottom: '10px', letterSpacing: '-0.01em' }}>Market</h3>
               {(() => {
                 const hour = currentTime.getHours();
                 const day = currentTime.getDay();
@@ -451,15 +535,17 @@ export default function Hub() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <div style={{
                       width: '8px', height: '8px', borderRadius: '50%',
-                      background: isOpen ? '#28C76F' : '#EF4444',
+                      background: isOpen ? '#00FF87' : '#FF4F58',
+                      boxShadow: isOpen ? '0 0 8px rgba(0,255,135,0.7)' : '0 0 8px rgba(255,79,88,0.7)',
+                      animation: isOpen ? 'hubPulse 1.4s ease-in-out infinite' : 'none',
                     }} />
-                    <span style={{ fontSize: '13px', color: isOpen ? '#28C76F' : '#EF4444', fontWeight: '600' }}>
+                    <span style={{ fontSize: '13px', color: isOpen ? '#00FF87' : '#FF4F58', fontWeight: '600' }}>
                       {isOpen ? 'Market Open' : 'Market Closed'}
                     </span>
                   </div>
                 );
               })()}
-              <p style={{ fontSize: '11px', color: '#64748B', marginTop: '6px' }}>Mon–Fri 9:30 AM – 4:00 PM ET</p>
+              <p style={{ ...sectionLabel, marginTop: '6px', display: 'block' }}>Mon–Fri 9:30 AM – 4:00 PM ET</p>
             </div>
 
           </div>
@@ -470,6 +556,10 @@ export default function Hub() {
         @media (max-width: 768px) {
           .hub-stats { grid-template-columns: repeat(2, 1fr) !important; }
           .hub-grid { grid-template-columns: 1fr !important; }
+        }
+        @keyframes hubPulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(1.2); }
         }
       `}</style>
     </div>

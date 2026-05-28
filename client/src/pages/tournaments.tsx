@@ -1035,7 +1035,7 @@ function HorizontalTournamentCard({
     if (isLive) {
       return (
         <button
-          onClick={onViewLeaderboard}
+          onClick={(e) => { e.stopPropagation(); navigate(`/tournament/${tournament.id}`); }}
           className="whitespace-nowrap"
           style={{
             padding: '8px 14px',
@@ -1193,13 +1193,13 @@ function HorizontalTournamentCard({
     >
       <div
         className="flex items-center gap-4 p-4 transition-all duration-200"
-        onClick={canOpenDashboard ? () => navigate(`/dashboard?tournament=${tournament.id}`) : undefined}
-        role={canOpenDashboard ? "button" : undefined}
-        title={canOpenDashboard ? "Open trading dashboard" : undefined}
+        onClick={() => navigate(`/tournament/${tournament.id}`)}
+        role="button"
+        title="View tournament"
         style={{
           background: 'linear-gradient(135deg, #0A1F3D 0%, #081729 100%)',
           borderRadius: '20px',
-          cursor: canOpenDashboard ? 'pointer' : 'default',
+          cursor: 'pointer',
           position: 'relative',
           overflow: 'hidden',
           ...getCardBorderStyle(),

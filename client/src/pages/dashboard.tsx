@@ -8,7 +8,12 @@ import { TradingSidebar } from "@/components/trading/TradingSidebar";
 import { WebsiteTour } from "@/components/tour/WebsiteTour";
 import { Trophy, Swords } from "lucide-react";
 
-export default function Dashboard() {
+interface DashboardProps {
+  forcedTournamentId?: number;
+  [key: string]: any;
+}
+
+export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
@@ -17,10 +22,11 @@ export default function Dashboard() {
 
   const search = useSearch();
   const requestedTournamentId = useMemo(() => {
+    if (forcedTournamentId) return forcedTournamentId;
     const raw = new URLSearchParams(search).get("tournament");
     const id = raw ? parseInt(raw) : NaN;
     return Number.isNaN(id) ? null : id;
-  }, [search]);
+  }, [search, forcedTournamentId]);
 
   const { data: quoteResponse } = useQuery({
     queryKey: ["/api/quote", selectedSymbol],

@@ -31,6 +31,7 @@ import Profile from "@/pages/profile";
 import Admin from "@/pages/admin";
 import Archive from "@/pages/archive";
 import ArchiveDetail from "@/pages/archive-detail";
+import TournamentView from "@/pages/tournament-view";
 import ForgotPassword from "@/pages/forgot-password";
 import ResetPassword from "@/pages/reset-password";
 import Transactions from "@/pages/transactions";
@@ -77,7 +78,7 @@ function Router() {
   }
 
   // Hide footer on dashboard and portfolio pages (dashboard route)
-  const shouldShowFooter = !['/dashboard', '/portfolio'].includes(location) || !user;
+  const shouldShowFooter = (!['/dashboard', '/portfolio'].includes(location) && !location.startsWith('/tournament/')) || !user;
 
   return (
     <>
@@ -108,6 +109,7 @@ function Router() {
               <Route path="/blitz" component={Blitz} />
               <Route path="/dashboard" component={Dashboard} />
               <Route path="/portfolio" component={Dashboard} />
+              <Route path="/tournament/:id" component={TournamentView} />
               <Route path="/tournaments" component={Tournaments} />
               <Route path="/leaderboard" component={Leaderboard} />
               <Route path="/people" component={People} />
