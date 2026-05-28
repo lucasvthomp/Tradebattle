@@ -266,7 +266,7 @@ html {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-feature-settings: 'cv11', 'ss01';
     font-variation-settings: 'opsz' 32;
-    background: linear-gradient(160deg, #14263F 0%, #0D1F38 50%, #122038 100%) !important;
+    background: linear-gradient(160deg, #162B48 0%, #0F2444 50%, #142540 100%) !important;
     background-attachment: fixed !important;
     min-height: 100vh;
     overscroll-behavior-y: none;
