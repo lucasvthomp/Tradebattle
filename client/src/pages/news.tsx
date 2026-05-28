@@ -42,7 +42,7 @@ export default function NewsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <section className="py-16 bg-white">
+      <section className="py-10 md:py-16 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto text-center">
             <motion.div
@@ -50,8 +50,8 @@ export default function NewsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-5xl font-bold text-black mb-6">Market News & Analysis</h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <h1 className="text-3xl md:text-5xl font-bold text-black mb-6">Market News & Analysis</h1>
+              <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto">
                 Stay informed with our curated news and expert analysis. Real-time updates on market movements and research insights.
               </p>
             </motion.div>

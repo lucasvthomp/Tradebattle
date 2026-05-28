@@ -87,7 +87,7 @@ export default function Hub() {
         <motion.div className="tour-hub-hero" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '16px', flexWrap: 'wrap' }}>
             <div>
-              <h1 style={{ fontSize: '26px', fontWeight: '700', color: '#E2E8F0', margin: '0 0 4px' }}>
+              <h1 style={{ fontSize: 'clamp(20px, 5vw, 26px)', fontWeight: '700', color: '#E2E8F0', margin: '0 0 4px' }}>
                 {getGreeting()}, {user?.username}
               </h1>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

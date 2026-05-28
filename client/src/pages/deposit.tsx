@@ -188,7 +188,7 @@ export default function Deposit() {
     <div style={{
       minHeight: '100vh',
       background: 'transparent',
-      padding: '40px 20px',
+      padding: 'clamp(24px, 5vw, 40px) clamp(16px, 4vw, 20px)',
     }}>
       <div style={{ maxWidth: '800px', margin: '0 auto' }}>
         {/* Header */}
@@ -202,7 +202,7 @@ export default function Deposit() {
             <Wallet size={32} color="#00A3FF" />
             <h1 style={{
               color: '#C9D1E2',
-              fontSize: '32px',
+              fontSize: 'clamp(18px, 6vw, 32px)',
               fontWeight: '700',
               margin: 0,
             }}>
@@ -247,6 +247,8 @@ export default function Deposit() {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
+                    flexWrap: 'wrap',
+                    gap: '12px',
                   }}
                 >
                   <div>
@@ -366,7 +368,7 @@ export default function Deposit() {
               background: '#0C1829',
               border: '1px solid #0E2040',
               borderRadius: '12px',
-              padding: '32px',
+              padding: 'clamp(20px, 5vw, 32px)',
             }}>
               <h3 style={{
                 color: '#C9D1E2',
@@ -531,7 +533,7 @@ export default function Deposit() {
               background: '#0C1829',
               border: '1px solid #FF4F58',
               borderRadius: '12px',
-              padding: '32px',
+              padding: 'clamp(20px, 5vw, 32px)',
               textAlign: 'center',
             }}>
               <AlertCircle size={48} color="#FF4F58" style={{ marginBottom: '16px' }} />
@@ -549,7 +551,7 @@ export default function Deposit() {
             background: '#0C1829',
             border: '1px solid #0E2040',
             borderRadius: '12px',
-            padding: '32px',
+            padding: 'clamp(20px, 5vw, 32px)',
           }}>
             <h3 style={{
               color: '#C9D1E2',
@@ -644,8 +646,9 @@ export default function Deposit() {
               }}>
                 <div style={{
                   color: '#00A3FF',
-                  fontSize: '28px',
+                  fontSize: 'clamp(18px, 6vw, 28px)',
                   fontWeight: '700',
+                  wordBreak: 'break-word',
                 }}>
                   {payment.pay_amount} {payment.pay_currency.toUpperCase()}
                 </div>

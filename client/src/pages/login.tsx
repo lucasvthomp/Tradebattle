@@ -82,7 +82,7 @@ export default function Login() {
         </div>
 
         {/* Feature Pills */}
-        <div className="flex justify-center gap-6">
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
             <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Paper Trading</span>
@@ -99,7 +99,7 @@ export default function Login() {
 
         {/* Form */}
         {is2FA ? (
-          <form onSubmit={handle2FASubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
+          <form onSubmit={handle2FASubmit} className="space-y-5 p-6 sm:p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
 
             <div className="text-center space-y-2">
@@ -158,7 +158,7 @@ export default function Login() {
             </button>
           </form>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5 p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
+          <form onSubmit={handleSubmit} className="space-y-5 p-6 sm:p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
 
             <div className="space-y-2">

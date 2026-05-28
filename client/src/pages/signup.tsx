@@ -238,7 +238,7 @@ export default function Signup() {
             return (
               <div key={i} className="flex items-center">
                 {i > 0 && (
-                  <div className="w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#00A3FF' : '#0E2040' }} />
+                  <div className="w-5 sm:w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#00A3FF' : '#0E2040' }} />
                 )}
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"

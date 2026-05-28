@@ -64,7 +64,7 @@ export default function UnauthenticatedHome() {
 
       {/* Hero Section */}
       <section style={{
-        padding: '120px 20px 60px',
+        padding: 'clamp(80px,18vw,120px) 20px 60px',
         maxWidth: '1200px',
         margin: '0 auto',
         textAlign: 'center',
@@ -89,7 +89,7 @@ export default function UnauthenticatedHome() {
         </div>
 
         <h1 style={{
-          fontSize: '64px',
+          fontSize: 'clamp(36px, 9vw, 64px)',
           fontWeight: '800',
           lineHeight: '1.1',
           marginBottom: '24px',
@@ -112,7 +112,7 @@ export default function UnauthenticatedHome() {
         </h1>
 
         <p style={{
-          fontSize: '22px',
+          fontSize: 'clamp(16px, 4vw, 22px)',
           color: '#8A93A6',
           marginBottom: '40px',
           maxWidth: '700px',
@@ -223,7 +223,7 @@ export default function UnauthenticatedHome() {
           background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.1) 0%, rgba(147, 51, 234, 0.05) 100%)',
           border: '2px solid rgba(0, 163, 255, 0.25)',
           borderRadius: '20px',
-          padding: '48px 32px',
+          padding: 'clamp(28px,6vw,48px) clamp(20px,5vw,32px)',
           textAlign: 'center',
           position: 'relative',
           overflow: 'hidden',
@@ -247,7 +247,7 @@ export default function UnauthenticatedHome() {
           }}>
             <Trophy size={32} color="#00A3FF" />
             <h2 style={{
-              fontSize: '28px',
+              fontSize: 'clamp(18px, 5vw, 28px)',
               fontWeight: '700',
               color: '#C9D1E2',
             }}>
@@ -255,7 +255,7 @@ export default function UnauthenticatedHome() {
             </h2>
           </div>
           <div style={{
-            fontSize: '72px',
+            fontSize: 'clamp(40px, 11vw, 72px)',
             fontWeight: '800',
             background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
             WebkitBackgroundClip: 'text',
@@ -271,7 +271,7 @@ export default function UnauthenticatedHome() {
             background: 'rgba(34, 197, 94, 0.1)',
             border: '2px solid rgba(34, 197, 94, 0.3)',
             borderRadius: '12px',
-            padding: '16px 32px',
+            padding: '16px clamp(20px,5vw,32px)',
           }}>
             <div style={{
               fontSize: '14px',
@@ -287,7 +287,7 @@ export default function UnauthenticatedHome() {
               Next Tournament Starts In
             </div>
             <div style={{
-              fontSize: '32px',
+              fontSize: 'clamp(24px, 7vw, 32px)',
               fontWeight: '800',
               color: '#22C55E',
               fontFamily: 'monospace',
@@ -307,7 +307,7 @@ export default function UnauthenticatedHome() {
         margin: '0 auto',
       }}>
         <h2 style={{
-          fontSize: '40px',
+          fontSize: 'clamp(26px, 7vw, 40px)',
           fontWeight: '700',
           textAlign: 'center',
           marginBottom: '56px',
@@ -326,7 +326,7 @@ export default function UnauthenticatedHome() {
             background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
             border: '2px solid rgba(227, 179, 65, 0.5)',
             borderRadius: '20px',
-            padding: '40px',
+            padding: 'clamp(24px,6vw,40px)',
             position: 'relative',
             overflow: 'hidden',
             transition: 'all 0.3s',
@@ -392,7 +392,7 @@ export default function UnauthenticatedHome() {
             background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
             border: '2px solid rgba(34, 197, 94, 0.5)',
             borderRadius: '20px',
-            padding: '40px',
+            padding: 'clamp(24px,6vw,40px)',
             position: 'relative',
             overflow: 'hidden',
             transition: 'all 0.3s',
@@ -458,7 +458,7 @@ export default function UnauthenticatedHome() {
             background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
             border: '2px solid rgba(147, 51, 234, 0.5)',
             borderRadius: '20px',
-            padding: '40px',
+            padding: 'clamp(24px,6vw,40px)',
             position: 'relative',
             overflow: 'hidden',
             transition: 'all 0.3s',
@@ -531,11 +531,11 @@ export default function UnauthenticatedHome() {
           background: 'linear-gradient(135deg, #0C1829 0%, #2D3748 100%)',
           border: '2px solid rgba(0, 163, 255, 0.25)',
           borderRadius: '20px',
-          padding: '56px 40px',
+          padding: 'clamp(32px,7vw,56px) clamp(20px,5vw,40px)',
           textAlign: 'center',
         }}>
           <h2 style={{
-            fontSize: '32px',
+            fontSize: 'clamp(22px, 6vw, 32px)',
             fontWeight: '700',
             marginBottom: '48px',
             color: '#C9D1E2',
@@ -549,7 +549,7 @@ export default function UnauthenticatedHome() {
           }}>
             <div>
               <div style={{
-                fontSize: '52px',
+                fontSize: 'clamp(34px, 9vw, 52px)',
                 fontWeight: '800',
                 background: 'linear-gradient(135deg, #00A3FF 0%, #0090E0 100%)',
                 WebkitBackgroundClip: 'text',
@@ -568,7 +568,7 @@ export default function UnauthenticatedHome() {
             </div>
             <div>
               <div style={{
-                fontSize: '52px',
+                fontSize: 'clamp(34px, 9vw, 52px)',
                 fontWeight: '800',
                 background: 'linear-gradient(135deg, #22C55E 0%, #10B981 100%)',
                 WebkitBackgroundClip: 'text',
@@ -587,7 +587,7 @@ export default function UnauthenticatedHome() {
             </div>
             <div>
               <div style={{
-                fontSize: '52px',
+                fontSize: 'clamp(34px, 9vw, 52px)',
                 fontWeight: '800',
                 background: 'linear-gradient(135deg, #A78BFA 0%, #9333EA 100%)',
                 WebkitBackgroundClip: 'text',
@@ -619,7 +619,7 @@ export default function UnauthenticatedHome() {
           background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.12) 0%, rgba(245, 158, 11, 0.1) 100%)',
           border: '2px solid rgba(227, 179, 65, 0.4)',
           borderRadius: '24px',
-          padding: '56px 40px',
+          padding: 'clamp(32px,7vw,56px) clamp(20px,5vw,40px)',
           position: 'relative',
           overflow: 'hidden',
         }}>
@@ -635,7 +635,7 @@ export default function UnauthenticatedHome() {
             pointerEvents: 'none',
           }} />
           <h2 style={{
-            fontSize: '44px',
+            fontSize: 'clamp(28px, 7.5vw, 44px)',
             fontWeight: '800',
             marginBottom: '20px',
             color: '#C9D1E2',

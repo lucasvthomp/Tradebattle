@@ -572,7 +572,7 @@ export default function Profile() {
         >
           {/* Header */}
           <motion.div className="mb-8" variants={fadeInUp}>
-            <h1 className="text-3xl font-bold text-foreground mb-2">My Account</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">My Account</h1>
           </motion.div>
 
           {/* User Overview Card */}
@@ -580,7 +580,7 @@ export default function Profile() {
             <Card className="mb-8 shadow-lg" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}>
 
               <CardContent className="p-6 relative z-10">
-                <div className="flex items-center space-x-4">
+                <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-0 md:space-x-4">
                   <div
                     className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden relative"
                     style={{ border: '2px solid #0E2040' }}
@@ -713,7 +713,7 @@ export default function Profile() {
           {/* Main Content */}
           <motion.div variants={fadeInUp}>
             <Tabs defaultValue="account" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4 gap-1">
+              <TabsList className="grid w-full h-auto grid-cols-2 md:grid-cols-4 gap-1">
                 <TabsTrigger value="transactions" className="flex items-center space-x-2">
                   <CreditCard className="w-4 h-4" />
                   <span>Transactions</span>

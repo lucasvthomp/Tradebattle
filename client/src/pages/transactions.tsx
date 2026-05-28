@@ -59,7 +59,7 @@ export default function Transactions() {
     <div className="container mx-auto py-6 md:py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold" style={{ color: '#C9D1E2' }}>Transaction History</h1>
+          <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#C9D1E2' }}>Transaction History</h1>
           <p className="text-sm mt-1" style={{ color: '#8A93A6' }}>View all your account transactions</p>
         </div>
         <Button
@@ -111,6 +111,7 @@ export default function Transactions() {
               <p className="text-sm" style={{ color: '#8A93A6' }}>No transactions found</p>
             </div>
           ) : (
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow style={{ borderColor: '#0E2040' }}>
@@ -174,6 +175,7 @@ export default function Transactions() {
                 })}
               </TableBody>
             </Table>
+            </div>
           )}
         </CardContent>
       </Card>

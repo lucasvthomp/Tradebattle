@@ -182,25 +182,25 @@ export default function ArchiveDetailPage() {
                   return (
                     <div
                       key={participant.userId}
-                      className="flex items-center justify-between p-3 rounded-lg"
+                      className="flex items-center justify-between gap-2 p-3 rounded-lg"
                       style={{
                         backgroundColor: isWinner ? '#E3B34110' : '#091525',
                         border: isWinner ? '1px solid #E3B34140' : '1px solid #0E2040',
                       }}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 text-center">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-8 text-center shrink-0">
                           {getPositionIcon(participant.position) || (
                             <span className="text-sm font-bold" style={{ color: '#94A3B8' }}>
                               #{participant.position}
                             </span>
                           )}
                         </div>
-                        <span className="font-semibold text-sm" style={{ color: '#F1F5F9' }}>
+                        <span className="font-semibold text-sm truncate" style={{ color: '#F1F5F9' }}>
                           {participant.name}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4">
+                      <div className="flex items-center gap-3 sm:gap-4 shrink-0">
                         {payout !== null && payout > 0 && (
                           <div className="text-right">
                             <p className="text-sm font-bold" style={{ color: '#10B981' }}>

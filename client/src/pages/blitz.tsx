@@ -107,7 +107,7 @@ export default function Blitz() {
               <Zap size={20} color="#00A3FF" />
             </div>
             <div>
-              <h1 style={{ fontSize: '26px', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.02em' }}>Blitz Mode</h1>
+              <h1 style={{ fontSize: 'clamp(20px, 6vw, 26px)', fontWeight: '900', color: '#F1F5F9', margin: 0, letterSpacing: '-0.02em' }}>Blitz Mode</h1>
               <p style={{ fontSize: '12px', color: '#4B5563', margin: 0 }}>1v1 · 5-minute matches · instant matchmaking</p>
             </div>
           </div>
@@ -115,7 +115,7 @@ export default function Blitz() {
 
         {/* Auth gate */}
         {!user ? (
-          <div style={{ ...cardStyle, textAlign: 'center', padding: '48px 24px' }}>
+          <div style={{ ...cardStyle, textAlign: 'center', padding: 'clamp(28px, 7vw, 48px) 24px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>⚔️</div>
             <h2 style={{ fontSize: '20px', fontWeight: '900', color: '#F1F5F9', marginBottom: '8px' }}>Sign in to play Blitz</h2>
             <p style={{ fontSize: '14px', color: '#4B5563', marginBottom: '24px' }}>Create an account to compete in 1v1 trading matches.</p>
@@ -143,7 +143,7 @@ export default function Blitz() {
                       background: 'linear-gradient(160deg, #0C1E35 0%, #091525 100%)',
                       border: '1px solid rgba(0,163,255,0.2)',
                       borderRadius: '16px',
-                      textAlign: 'center', padding: '48px 24px',
+                      textAlign: 'center', padding: 'clamp(28px, 7vw, 48px) 24px',
                     }}>
                       <motion.div
                         animate={{ scale: [1, 1.06, 1], boxShadow: ['0 0 0 0 rgba(0,163,255,0)', '0 0 0 20px rgba(0,163,255,0.06)', '0 0 0 0 rgba(0,163,255,0)'] }}
@@ -158,7 +158,7 @@ export default function Blitz() {
                       >
                         ⚔️
                       </motion.div>
-                      <h2 style={{ fontSize: '24px', fontWeight: '900', color: '#F1F5F9', marginBottom: '8px', letterSpacing: '-0.02em' }}>
+                      <h2 style={{ fontSize: 'clamp(20px, 6vw, 24px)', fontWeight: '900', color: '#F1F5F9', marginBottom: '8px', letterSpacing: '-0.02em' }}>
                         Ready to battle?
                       </h2>
                       <p style={{ fontSize: '14px', color: '#4B5563', maxWidth: '320px', margin: '0 auto 28px' }}>
@@ -191,7 +191,7 @@ export default function Blitz() {
                       background: 'linear-gradient(160deg, #0C1E35 0%, #091525 100%)',
                       border: '1px solid rgba(0,163,255,0.2)',
                       borderRadius: '16px',
-                      textAlign: 'center', padding: '48px 24px',
+                      textAlign: 'center', padding: 'clamp(28px, 7vw, 48px) 24px',
                     }}>
                       <div style={{ position: 'relative', width: '80px', height: '80px', margin: '0 auto 24px' }}>
                         <motion.div
@@ -226,7 +226,7 @@ export default function Blitz() {
                         Searching for opponent...
                       </h2>
                       <motion.p
-                        style={{ fontSize: '32px', fontWeight: '900', color: '#00A3FF', marginBottom: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}
+                        style={{ fontSize: 'clamp(24px, 7vw, 32px)', fontWeight: '900', color: '#00A3FF', marginBottom: '24px', fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}
                         animate={{ opacity: [1, 0.5, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       >
@@ -256,13 +256,13 @@ export default function Blitz() {
                       background: 'linear-gradient(160deg, #0A1628 0%, #091525 100%)',
                       border: '1px solid rgba(0,163,255,0.4)',
                       borderRadius: '16px',
-                      padding: '48px 24px',
+                      padding: 'clamp(28px, 7vw, 48px) 24px',
                       textAlign: 'center',
                       position: 'relative',
                       overflow: 'hidden',
                     }}>
                       {/* VS layout */}
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '32px', marginBottom: '32px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 'clamp(16px, 5vw, 32px)', marginBottom: '32px' }}>
                         {/* You */}
                         <motion.div
                           initial={{ x: -60, opacity: 0 }}
@@ -289,7 +289,7 @@ export default function Blitz() {
                           initial={{ scale: 0, rotate: -10 }}
                           animate={{ scale: 1, rotate: 0 }}
                           transition={{ duration: 0.35, delay: 0.2, ease: 'backOut' }}
-                          style={{ fontSize: '36px', fontWeight: '900', color: '#00A3FF', lineHeight: 1 }}
+                          style={{ fontSize: 'clamp(24px, 7vw, 36px)', fontWeight: '900', color: '#00A3FF', lineHeight: 1 }}
                         >
                           VS
                         </motion.div>
@@ -320,7 +320,7 @@ export default function Blitz() {
                         initial={{ scale: 1.6, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.3 }}
-                        style={{ fontSize: '52px', fontWeight: '900', color: vsCountdown === 0 ? '#28C76F' : '#00A3FF', lineHeight: 1 }}
+                        style={{ fontSize: 'clamp(30px, 9vw, 52px)', fontWeight: '900', color: vsCountdown === 0 ? '#28C76F' : '#00A3FF', lineHeight: 1 }}
                       >
                         {vsCountdown === 0 ? 'FIGHT!' : vsCountdown}
                       </motion.div>
@@ -336,7 +336,7 @@ export default function Blitz() {
                       background: 'linear-gradient(160deg, #0A2018 0%, #091A25 100%)',
                       border: '1px solid rgba(40,199,111,0.4)',
                       borderRadius: '16px',
-                      textAlign: 'center', padding: '48px 24px',
+                      textAlign: 'center', padding: 'clamp(28px, 7vw, 48px) 24px',
                     }}>
                       <motion.div
                         animate={{ scale: [1, 1.1, 1] }}

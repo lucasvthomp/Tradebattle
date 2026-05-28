@@ -1024,6 +1024,29 @@ textarea:focus-visible {
   box-shadow: 0 0 8px rgba(227, 179, 65, 0.4);
 }
 
+/* ───────────────────────── Mobile guardrails ─────────────────────────
+   Safety net so no page can scroll sideways on phones. Per-page layouts
+   still handle their own stacking/sizing; this just prevents stray overflow
+   and keeps embedded media within their containers. */
+@media (max-width: 768px) {
+  html, body, #root {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  img, video, iframe {
+    max-width: 100%;
+  }
+
+  /* Wide tables scroll within their own box instead of stretching the page */
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 /* Admin badge animated gradient */
 @keyframes gradientShift {
   0% {

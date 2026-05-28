@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus, Menu, X, BarChart3, Trophy, Users as UsersIcon, Phone, Gift, Settings, Archive, Calendar, Swords } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus, Menu, X, BarChart3, Trophy, Users as UsersIcon, Phone, Gift, Settings, Archive, Calendar, Swords, Zap } from "lucide-react";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 interface HeaderProps {
   chatOpen?: boolean;
@@ -219,6 +219,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     >
                       <Swords className="w-5 h-5 mr-3" style={{ color: '#00A3FF' }} />
                       <span className="text-base">Tournaments</span>
+                    </Button>
+                  </Link>
+                  <Link href="/blitz">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Zap className="w-5 h-5 mr-3" style={{ color: '#8B5CF6' }} />
+                      <span className="text-base">Blitz</span>
                     </Button>
                   </Link>
                   <Link href="/leaderboard">

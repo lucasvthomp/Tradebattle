@@ -63,7 +63,7 @@ export default function Shop() {
         >
           <div className="flex items-center gap-3 mb-2">
             <Gift className="w-7 h-7" style={{ color: '#00A3FF' }} />
-            <h1 className="text-3xl font-bold" style={{ color: '#C9D1E2' }}>
+            <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: '#C9D1E2' }}>
               Rewards Center
             </h1>
           </div>

@@ -99,7 +99,7 @@ export default function ArchivePage() {
                       Completed
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-xs" style={{ color: '#94A3B8' }}>
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: '#94A3B8' }}>
                     <span className="flex items-center gap-1">
                       <Users className="w-3 h-3" />
                       {tournament.currentPlayers}/{tournament.maxPlayers}

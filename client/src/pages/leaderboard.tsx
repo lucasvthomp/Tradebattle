@@ -118,7 +118,7 @@ export default function Leaderboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + idx * 0.08 }}
               className="flex flex-col items-center"
-              style={{ flex: rank === 1 ? '0 0 120px' : '0 0 96px' }}
+              style={{ flex: rank === 1 ? '1 1 96px' : '1 1 80px', maxWidth: rank === 1 ? '120px' : '96px', minWidth: 0 }}
             >
               <Avatar style={{ width: rank === 1 ? '64px' : '52px', height: rank === 1 ? '64px' : '52px', marginBottom: '8px' }}>
                 <AvatarFallback className="font-bold" style={{
