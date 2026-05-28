@@ -483,16 +483,26 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
 
   // Map timeframe to Yahoo Finance v8 chart API range + interval
   const tfMap: Record<string, { range: string; interval: string }> = {
-    '1D':  { range: '1d',  interval: '5m'  },
-    '5D':  { range: '5d',  interval: '30m' },
-    '1W':  { range: '5d',  interval: '1d'  },
-    '1M':  { range: '1mo', interval: '1d'  },
-    '3M':  { range: '3mo', interval: '1d'  },
-    '6M':  { range: '6mo', interval: '1d'  },
-    'YTD': { range: 'ytd', interval: '1d'  },
-    '1Y':  { range: '1y',  interval: '1d'  },
-    '5Y':  { range: '5y',  interval: '1wk' },
-    '1H':  { range: '1d',  interval: '1m'  },
+    '1H':   { range: '1d',  interval: '1m'  },
+    '1D':   { range: '1d',  interval: '5m'  },
+    '1D15': { range: '1d',  interval: '15m' },
+    '1D30': { range: '1d',  interval: '30m' },
+    '1D1H': { range: '1d',  interval: '60m' },
+    '5D':   { range: '5d',  interval: '30m' },
+    '5D1H': { range: '5d',  interval: '60m' },
+    '5D1D': { range: '5d',  interval: '1d'  },
+    '1W':   { range: '5d',  interval: '1d'  },
+    '1M':   { range: '1mo', interval: '1d'  },
+    '1M1H': { range: '1mo', interval: '60m' },
+    '3M':   { range: '3mo', interval: '1d'  },
+    '3M1W': { range: '3mo', interval: '1wk' },
+    '6M':   { range: '6mo', interval: '1d'  },
+    '6M1W': { range: '6mo', interval: '1wk' },
+    'YTD':  { range: 'ytd', interval: '1d'  },
+    '1Y':   { range: '1y',  interval: '1d'  },
+    '1Y1W': { range: '1y',  interval: '1wk' },
+    '5Y':   { range: '5y',  interval: '1wk' },
+    '5Y1M': { range: '5y',  interval: '1mo' },
   };
 
   const { range, interval } = tfMap[timeFrame] ?? { range: '1mo', interval: '1d' };

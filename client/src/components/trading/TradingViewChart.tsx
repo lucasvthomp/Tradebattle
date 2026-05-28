@@ -10,8 +10,22 @@ interface TradingViewChartProps {
 
 type ChartMode = "candle" | "portfolio";
 
-const TIMEFRAMES = ["1D", "5D", "1M", "3M", "6M", "1Y"] as const;
-type TF = (typeof TIMEFRAMES)[number];
+const RANGES = ["1D", "5D", "1M", "3M", "6M", "1Y"] as const;
+type Range = (typeof RANGES)[number];
+
+// Valid candle intervals per range
+const INTERVALS: Record<Range, { label: string; key: string }[]> = {
+  "1D":  [{ label: "1m",  key: "1H"   }, { label: "5m",  key: "1D"   }, { label: "15m", key: "1D15" }, { label: "30m", key: "1D30" }, { label: "1h",  key: "1D1H" }],
+  "5D":  [{ label: "30m", key: "5D"   }, { label: "1h",  key: "5D1H" }, { label: "1d",  key: "5D1D" }],
+  "1M":  [{ label: "1h",  key: "1M1H" }, { label: "1d",  key: "1M"   }],
+  "3M":  [{ label: "1d",  key: "3M"   }, { label: "1wk", key: "3M1W" }],
+  "6M":  [{ label: "1d",  key: "6M"   }, { label: "1wk", key: "6M1W" }],
+  "1Y":  [{ label: "1d",  key: "1Y"   }, { label: "1wk", key: "1Y1W" }],
+};
+
+const DEFAULT_INTERVAL: Record<Range, string> = {
+  "1D": "1D", "5D": "5D", "1M": "1M", "3M": "3M", "6M": "6M", "1Y": "1Y",
+};
 
 interface PriceInfo {
   price: number;
@@ -29,7 +43,8 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
   const roRef = useRef<ResizeObserver | null>(null);
 
   const [mode, setMode] = useState<ChartMode>("candle");
-  const [timeframe, setTimeframe] = useState<TF>("1M");
+  const [range, setRange] = useState<Range>("1M");
+  const [intervalKey, setIntervalKey] = useState<string>("1M");
   const [loading, setLoading] = useState(false);
   const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -94,7 +109,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           wickWidth: 1,
         });
         seriesRef.current = series;
-        loadCandleData(symbol, timeframe, series, chart);
+        loadCandleData(symbol, intervalKey, series, chart);
       } else {
         const series = chart.addSeries(LineSeries, {
           color: UP_COLOR,
@@ -132,12 +147,12 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
 
   useEffect(() => {
     if (mode === "candle" && symbol && seriesRef.current && chartRef.current) {
-      loadCandleData(symbol, timeframe, seriesRef.current, chartRef.current);
+      loadCandleData(symbol, intervalKey, seriesRef.current, chartRef.current);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [timeframe]);
+  }, [intervalKey]);
 
-  async function loadCandleData(sym: string, tf: TF, series: any, chart: any) {
+  async function loadCandleData(sym: string, tf: string, series: any, chart: any) {
     setLoading(true);
     setError(null);
     try {
@@ -457,36 +472,71 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           )}
         </div>
 
-        {/* Right: mode toggle + timeframe pills */}
+        {/* Right: mode toggle + range + interval selectors */}
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           {renderModeToggle()}
 
           {mode === "candle" && (
-            <div style={{ display: "flex", gap: "4px" }}>
-              {TIMEFRAMES.map((tf) => {
-                const active = timeframe === tf;
-                return (
-                  <button
-                    key={tf}
-                    onClick={() => setTimeframe(tf)}
-                    style={{
-                      padding: "4px 11px", borderRadius: "10px",
-                      fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
-                      cursor: "pointer",
-                      transition: "all 0.15s",
-                      border: active ? "1px solid rgba(0,163,255,0.4)" : "1px solid transparent",
-                      background: active
-                        ? "linear-gradient(135deg, rgba(0,163,255,0.22), rgba(0,163,255,0.1))"
-                        : "transparent",
-                      color: active ? "#00C8FF" : "#4B5975",
-                      boxShadow: active ? "0 0 10px rgba(0,163,255,0.2)" : "none",
-                    }}
-                  >
-                    {tf}
-                  </button>
-                );
-              })}
-            </div>
+            <>
+              {/* Range pills */}
+              <div style={{ display: "flex", gap: "3px" }}>
+                {RANGES.map((r) => {
+                  const active = range === r;
+                  return (
+                    <button
+                      key={r}
+                      onClick={() => {
+                        setRange(r);
+                        const def = DEFAULT_INTERVAL[r];
+                        setIntervalKey(def);
+                      }}
+                      style={{
+                        padding: "4px 10px", borderRadius: "10px",
+                        fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
+                        cursor: "pointer", transition: "all 0.15s",
+                        border: active ? "1px solid rgba(0,163,255,0.4)" : "1px solid transparent",
+                        background: active
+                          ? "linear-gradient(135deg, rgba(0,163,255,0.22), rgba(0,163,255,0.1))"
+                          : "transparent",
+                        color: active ? "#00C8FF" : "#4B5975",
+                        boxShadow: active ? "0 0 10px rgba(0,163,255,0.2)" : "none",
+                      }}
+                    >
+                      {r}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Separator */}
+              <div style={{ width: "1px", height: "18px", background: "rgba(255,255,255,0.08)" }} />
+
+              {/* Candle interval pills */}
+              <div style={{ display: "flex", gap: "3px" }}>
+                {INTERVALS[range].map(({ label, key }) => {
+                  const active = intervalKey === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setIntervalKey(key)}
+                      style={{
+                        padding: "4px 9px", borderRadius: "10px",
+                        fontSize: "11px", fontWeight: 700, letterSpacing: "0.02em",
+                        cursor: "pointer", transition: "all 0.15s",
+                        border: active ? "1px solid rgba(227,179,65,0.45)" : "1px solid transparent",
+                        background: active
+                          ? "linear-gradient(135deg, rgba(227,179,65,0.18), rgba(227,179,65,0.07))"
+                          : "transparent",
+                        color: active ? "#E3B341" : "#4B5975",
+                        boxShadow: active ? "0 0 8px rgba(227,179,65,0.2)" : "none",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
