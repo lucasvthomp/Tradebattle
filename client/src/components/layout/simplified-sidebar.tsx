@@ -168,28 +168,33 @@ export function SimplifiedSidebar() {
           <div className="flex-shrink-0 p-2 border-t" style={{ borderColor: '#1C3E72' }}>
             <Button
               onClick={() => setCodeDialogOpen(true)}
-              className="transition-all duration-200 hover:brightness-110 w-full"
+              className="transition-all duration-200 hover:brightness-110 w-full flex items-center"
               style={{
                 background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
-                color: '#FFFFFF',
                 height: '44px',
-                padding: expanded ? '0 16px' : '0',
-                justifyContent: 'center',
+                paddingLeft: '14px',
+                paddingRight: '8px',
+                justifyContent: 'flex-start',
               }}
             >
-              <div className="flex items-center justify-center gap-2">
-                <Gift className="w-5 h-5 flex-shrink-0" style={{ color: '#FFFFFF' }} />
-                <span
-                  className="text-base font-semibold whitespace-nowrap overflow-hidden"
-                  style={{
-                    opacity: expanded ? 1 : 0,
-                    maxWidth: expanded ? '140px' : '0',
-                    transition: 'opacity 200ms ease, max-width 300ms ease',
-                  }}
-                >
-                  Redeem Code
-                </span>
-              </div>
+              <Gift
+                className="w-5 h-5 flex-shrink-0"
+                style={{
+                  marginRight: expanded ? '12px' : '0',
+                  transition: 'margin 300ms ease',
+                }}
+              />
+              <span
+                className="text-base font-medium whitespace-nowrap overflow-hidden"
+                style={{
+                  opacity: expanded ? 1 : 0,
+                  maxWidth: expanded ? '140px' : '0',
+                  transition: 'opacity 200ms ease, max-width 300ms ease',
+                  color: '#C9D1E2',
+                }}
+              >
+                Redeem Code
+              </span>
             </Button>
           </div>
         )}
