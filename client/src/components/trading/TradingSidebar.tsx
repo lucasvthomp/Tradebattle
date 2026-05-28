@@ -199,11 +199,11 @@ export function TradingSidebar({
     <div
       data-tour="trading-sidebar"
       className="flex flex-col h-full min-h-0"
-      style={{ backgroundColor: "#0C1829" }}
+      style={{ backgroundColor: "#0E2440" }}
     >
-      {/* ── HEADER: Tournament selector + portfolio scorecard ── */}
+      {/* ── HEADER: Tournament selector ── */}
       <div
-        className="p-3 shrink-0 space-y-2"
+        className="px-3 pt-3 pb-2 shrink-0"
         style={{ borderBottom: "1px solid rgba(0,163,255,0.12)" }}
       >
         <Select
@@ -214,16 +214,16 @@ export function TradingSidebar({
           }}
         >
           <SelectTrigger
-            className="h-9 text-xs font-bold"
+            className="h-8 text-xs font-bold"
             style={{
-              backgroundColor: "rgba(0,163,255,0.06)",
-              borderColor: "rgba(227,179,65,0.25)",
+              backgroundColor: "rgba(0,163,255,0.08)",
+              borderColor: "rgba(0,163,255,0.2)",
               color: "#00A3FF",
             }}
           >
             <SelectValue placeholder="Select Tournament" />
           </SelectTrigger>
-          <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(0,163,255,0.15)" }}>
+          <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.2)" }}>
             {activeTournaments.map((t: any) => (
               <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
                 {t.name}
@@ -231,46 +231,6 @@ export function TradingSidebar({
             ))}
           </SelectContent>
         </Select>
-
-        {/* Portfolio scorecard — inline under tournament selector */}
-        <div
-          className="rounded-lg p-2.5 space-y-2"
-          style={{
-            background: `linear-gradient(135deg, ${isProfit ? "rgba(40,199,111,0.05)" : "rgba(255,79,88,0.05)"}, rgba(13,17,23,0.6))`,
-            border: `1px solid ${isProfit ? "rgba(40,199,111,0.12)" : "rgba(255,79,88,0.12)"}`,
-          }}
-        >
-          <div className="flex items-end justify-between">
-            <div>
-              <div className="text-[9px] font-bold uppercase tracking-wider" style={{ color: "#4B5563" }}>Portfolio</div>
-              <div className="text-lg font-black" style={{ color: "#F1F5F9", letterSpacing: "-0.02em" }}>
-                {formatMoney(totalValue)}
-              </div>
-            </div>
-            <div
-              className="flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-black"
-              style={{
-                backgroundColor: isProfit ? "rgba(40,199,111,0.12)" : "rgba(255,79,88,0.12)",
-                color: isProfit ? "#28C76F" : "#FF4F58",
-              }}
-            >
-              {isProfit ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-              {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-1.5">
-            {[
-              { label: "Cash", value: formatMoney(buyingPower), color: "#C9D1E2" },
-              { label: "Invested", value: formatMoney(invested), color: "#C9D1E2" },
-              { label: "P / L", value: (totalPL >= 0 ? "+" : "") + formatMoney(totalPL), color: totalPL >= 0 ? "#28C76F" : "#FF4F58" },
-            ].map((s) => (
-              <div key={s.label} className="rounded-lg p-1.5 text-center" style={{ backgroundColor: "rgba(255,255,255,0.04)" }}>
-                <div className="text-[8px] font-bold uppercase tracking-wider mb-0.5" style={{ color: "#4B5563" }}>{s.label}</div>
-                <div className="text-[10px] font-bold truncate" style={{ color: s.color }}>{s.value}</div>
-              </div>
-            ))}
-          </div>
-        </div>
       </div>
 
       {/* ── MARKET STATUS BANNER ── */}
@@ -332,7 +292,7 @@ export function TradingSidebar({
           <div
             style={{
               position: "absolute", left: "12px", right: "12px", zIndex: 9999, top: "calc(100% + 2px)",
-              backgroundColor: "#0F1E33", border: "1px solid rgba(227,179,65,0.25)",
+              backgroundColor: "#0A1930", border: "1px solid rgba(0,163,255,0.2)",
               borderRadius: "12px", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
             }}
           >
@@ -528,38 +488,40 @@ export function TradingSidebar({
             {/* BUY / SELL arcade toggle */}
             <div className="px-3 pt-3 pb-2">
               <div
-                className="flex rounded-lg overflow-hidden p-0.5 gap-0.5"
-                style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
+                className="flex rounded-xl overflow-hidden gap-1.5"
+                style={{ padding: "4px", backgroundColor: "rgba(0,0,0,0.25)", border: "1px solid rgba(255,255,255,0.06)" }}
               >
                 <button
                   onClick={() => handleSideChange("buy")}
-                  className="flex-1 py-1.5 text-xs font-black text-center rounded-lg transition-all"
+                  className="flex-1 py-2.5 text-sm font-black text-center rounded-lg transition-all"
                   style={
                     orderSide === "buy"
                       ? {
-                          background: "linear-gradient(135deg, #28C76F, #20a35a)",
-                          color: "#000000",
-                          boxShadow: "0 0 20px rgba(40,199,111,0.35)",
+                          background: "linear-gradient(135deg, #1db95f, #28C76F)",
+                          color: "#001a0d",
+                          boxShadow: "0 0 28px rgba(40,199,111,0.45), inset 0 1px 0 rgba(255,255,255,0.15)",
+                          letterSpacing: "0.06em",
                         }
-                      : { backgroundColor: "transparent", color: "#4B5563" }
+                      : { backgroundColor: "transparent", color: "#3a5040" }
                   }
                 >
-                  📈 BUY
+                  ▲ BUY
                 </button>
                 <button
                   onClick={() => handleSideChange("sell")}
-                  className="flex-1 py-1.5 text-xs font-black text-center rounded-lg transition-all"
+                  className="flex-1 py-2.5 text-sm font-black text-center rounded-lg transition-all"
                   style={
                     orderSide === "sell"
                       ? {
-                          background: "linear-gradient(135deg, #FF4F58, #cc3f46)",
+                          background: "linear-gradient(135deg, #d93f47, #FF4F58)",
                           color: "#FFFFFF",
-                          boxShadow: "0 0 20px rgba(255,79,88,0.35)",
+                          boxShadow: "0 0 28px rgba(255,79,88,0.45), inset 0 1px 0 rgba(255,255,255,0.1)",
+                          letterSpacing: "0.06em",
                         }
-                      : { backgroundColor: "transparent", color: "#4B5563" }
+                      : { backgroundColor: "transparent", color: "#503a3b" }
                   }
                 >
-                  📉 SELL
+                  ▼ SELL
                 </button>
               </div>
             </div>
@@ -584,7 +546,7 @@ export function TradingSidebar({
                   >
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(0,163,255,0.15)" }}>
+                  <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.15)" }}>
                     <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
                     <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
                     <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
@@ -645,7 +607,7 @@ export function TradingSidebar({
                   <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#00A3FF" }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#0F1E33", borderColor: "rgba(0,163,255,0.15)" }}>
+                  <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.15)" }}>
                     <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
                       {isCryptoTournament ? "Units" : "Shares"}
                     </SelectItem>
@@ -747,11 +709,13 @@ export function TradingSidebar({
               <div className="flex gap-2 pt-2 pb-4">
                 <button
                   onClick={() => { setAwaitingConfirm(false); setActiveView("positions"); }}
-                  className="flex-1 py-2 rounded-xl text-sm font-bold transition-colors"
+                  className="py-3 rounded-xl text-sm font-bold transition-colors"
                   style={{
-                    backgroundColor: "rgba(255,255,255,0.05)",
+                    width: "72px",
+                    backgroundColor: "rgba(255,255,255,0.04)",
                     color: "#8A93A6",
-                    border: "1px solid rgba(255,255,255,0.08)",
+                    border: "1px solid rgba(255,255,255,0.07)",
+                    flexShrink: 0,
                   }}
                 >
                   Cancel
@@ -759,31 +723,33 @@ export function TradingSidebar({
                 <button
                   onClick={handleSubmit}
                   disabled={!canSubmit || isSubmitting}
-                  className="flex-1 py-2 rounded-xl text-sm font-black transition-all disabled:opacity-30"
+                  className="flex-1 py-3 rounded-xl text-sm font-black transition-all disabled:opacity-30"
                   style={
                     canSubmit
                       ? orderSide === "buy"
                         ? {
                             background: awaitingConfirm
                               ? "linear-gradient(135deg, #0d9668, #0d7e58)"
-                              : "linear-gradient(135deg, #28C76F, #20a35a)",
-                            color: "#000000",
+                              : "linear-gradient(135deg, #1db95f, #28C76F)",
+                            color: awaitingConfirm ? "#aaffcc" : "#001a0d",
                             boxShadow: awaitingConfirm
-                              ? "0 0 24px rgba(40,199,111,0.6)"
-                              : "0 0 16px rgba(40,199,111,0.3)",
-                            border: awaitingConfirm ? "2px solid rgba(40,199,111,0.8)" : "none",
+                              ? "0 0 32px rgba(40,199,111,0.7)"
+                              : "0 0 20px rgba(40,199,111,0.4)",
+                            border: awaitingConfirm ? "2px solid rgba(40,199,111,0.9)" : "1px solid rgba(40,199,111,0.3)",
+                            letterSpacing: "0.05em",
                           }
                         : {
                             background: awaitingConfirm
-                              ? "linear-gradient(135deg, #cc3f46, #a83338)"
-                              : "linear-gradient(135deg, #FF4F58, #cc3f46)",
+                              ? "linear-gradient(135deg, #a83338, #cc3f46)"
+                              : "linear-gradient(135deg, #d93f47, #FF4F58)",
                             color: "#FFFFFF",
                             boxShadow: awaitingConfirm
-                              ? "0 0 24px rgba(255,79,88,0.6)"
-                              : "0 0 16px rgba(255,79,88,0.3)",
-                            border: awaitingConfirm ? "2px solid rgba(255,79,88,0.8)" : "none",
+                              ? "0 0 32px rgba(255,79,88,0.7)"
+                              : "0 0 20px rgba(255,79,88,0.4)",
+                            border: awaitingConfirm ? "2px solid rgba(255,79,88,0.9)" : "1px solid rgba(255,79,88,0.3)",
+                            letterSpacing: "0.05em",
                           }
-                      : { backgroundColor: "rgba(255,255,255,0.08)", color: "#4B5563" }
+                      : { backgroundColor: "rgba(255,255,255,0.06)", color: "#4B5563", border: "1px solid transparent" }
                   }
                 >
                   {buttonLabel}
