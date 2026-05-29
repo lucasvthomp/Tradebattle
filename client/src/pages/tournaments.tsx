@@ -121,7 +121,6 @@ export default function TournamentsPage() {
   const { toast } = useToast();
   const [location, navigate] = useRouterLocation();
 
-  const [activeTab, setActiveTab] = useState("upcoming");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [joinCodeDialogOpen, setJoinCodeDialogOpen] = useState(false);
   const [managementDialogOpen, setManagementDialogOpen] = useState(false);
@@ -153,10 +152,10 @@ export default function TournamentsPage() {
     refetchInterval: 30000,
   });
 
-  // Fetch archived tournaments (for Past and History tabs)
+  // Fetch archived tournaments (disabled — not shown in this layout)
   const { data: archivedTournaments } = useQuery<{data: any[]}>({
     queryKey: ['/api/tournaments/archived'],
-    enabled: false, // archived tournaments not shown in new 2-tab layout
+    enabled: false,
   });
 
   // Fetch friends for "With Friends" filter
@@ -271,9 +270,12 @@ export default function TournamentsPage() {
     return Array.from(tournamentMap.values());
   }, [publicTournaments, userTournaments, user?.id]);
 
-  // Apply checkbox filters helper
-  const applyCheckboxFilters = (tournaments: any[]) => {
-    let filtered = tournaments;
+  // Apply base text/type/checkbox filters
+  const applyBaseFilters = (tournaments: any[]) => {
+    let filtered = tournaments.filter((t: any) =>
+      (filterType === "all" || t.tournamentType === filterType) &&
+      (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
     if (showMyTournaments) {
       filtered = filtered.filter((t: any) =>
         t.creatorId === user?.id || t.participantUserIds?.includes(user?.id)
@@ -292,19 +294,13 @@ export default function TournamentsPage() {
     return filtered;
   };
 
-  // Upcoming tab: waiting tournaments
-  const upcomingTournaments = useMemo(() => {
-    let filtered = allTournaments.filter((t: any) =>
-      t.status === "waiting" &&
-      (filterType === "all" || t.tournamentType === filterType) &&
-      (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
-    );
-    filtered = applyCheckboxFilters(filtered);
-
-    return [...filtered].sort((a, b) => {
+  // Sort helper within a group
+  const applySortBy = (tournaments: any[]) => {
+    return [...tournaments].sort((a, b) => {
       switch (sortBy) {
         case "starting-soon":
-          return new Date(a.scheduledStartTime || a.createdAt).getTime() - new Date(b.scheduledStartTime || b.createdAt).getTime();
+          return new Date(a.scheduledStartTime || a.startedAt || a.createdAt).getTime() -
+                 new Date(b.scheduledStartTime || b.startedAt || b.createdAt).getTime();
         case "pot-high-low":
           return (b.currentPlayers * b.buyInAmount) - (a.currentPlayers * a.buyInAmount);
         case "pot-low-high":
@@ -315,37 +311,30 @@ export default function TournamentsPage() {
           return 0;
       }
     });
-  }, [allTournaments, filterType, searchQuery, sortBy, user?.id, showMyTournaments, showJoinable, showWithFriends, friendIds]);
+  };
 
-  // Live tab: active tournaments
-  const liveTournaments = useMemo(() => {
-    let filtered = allTournaments.filter((t: any) =>
-      t.status === "active" &&
-      (filterType === "all" || t.tournamentType === filterType) &&
-      (searchQuery === "" || t.name.toLowerCase().includes(searchQuery.toLowerCase()))
+  // Build the three priority groups
+  const { myActiveTournaments, otherLiveTournaments, upcomingTournaments } = useMemo(() => {
+    const filtered = applyBaseFilters(allTournaments);
+
+    const active = filtered.filter((t: any) => t.status === "active");
+    const waiting = filtered.filter((t: any) => t.status === "waiting");
+
+    const myActive = active.filter((t: any) =>
+      t.creatorId === user?.id || t.participantUserIds?.includes(user?.id)
     );
-    filtered = applyCheckboxFilters(filtered);
+    const otherLive = active.filter((t: any) =>
+      t.creatorId !== user?.id && !t.participantUserIds?.includes(user?.id)
+    );
 
-    return [...filtered].sort((a, b) => {
-      const aIsParticipating = a.creatorId === user?.id || a.participantUserIds?.includes(user?.id);
-      const bIsParticipating = b.creatorId === user?.id || b.participantUserIds?.includes(user?.id);
-      if (aIsParticipating && !bIsParticipating) return -1;
-      if (!aIsParticipating && bIsParticipating) return 1;
-
-      switch (sortBy) {
-        case "starting-soon":
-          return new Date(a.startedAt || a.createdAt).getTime() - new Date(b.startedAt || b.createdAt).getTime();
-        case "pot-high-low":
-          return (b.currentPlayers * b.buyInAmount) - (a.currentPlayers * a.buyInAmount);
-        case "pot-low-high":
-          return (a.currentPlayers * a.buyInAmount) - (b.currentPlayers * b.buyInAmount);
-        case "most-recent":
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        default:
-          return 0;
-      }
-    });
+    return {
+      myActiveTournaments: applySortBy(myActive),
+      otherLiveTournaments: applySortBy(otherLive),
+      upcomingTournaments: applySortBy(waiting),
+    };
   }, [allTournaments, filterType, searchQuery, sortBy, user?.id, showMyTournaments, showJoinable, showWithFriends, friendIds]);
+
+  const totalCount = myActiveTournaments.length + otherLiveTournaments.length + upcomingTournaments.length;
 
   if (!user) {
     return (
@@ -358,6 +347,19 @@ export default function TournamentsPage() {
       </div>
     );
   }
+
+  const sharedListProps = {
+    onManage: (tournament: any) => {
+      setSelectedTournament(tournament);
+      setManagementDialogOpen(true);
+    },
+    onJoinTournament: handleJoinTournament,
+    onViewLeaderboard: (tournament: any) => {
+      setSelectedLeaderboardTournament(tournament);
+      setLeaderboardDialogOpen(true);
+    },
+    isJoining: joinTournamentMutation.isPending,
+  };
 
   return (
     <div
@@ -674,145 +676,106 @@ export default function TournamentsPage() {
             </Select>
           </motion.div>
 
-          {/* Tabs */}
+          {/* Unified Tournament List */}
           <motion.div variants={fadeInUp}>
-            <div
-              className="flex items-center gap-1.5"
-              style={{
-                background: 'rgba(0,163,255,0.04)',
-                border: '1px solid rgba(0,163,255,0.08)',
-                borderRadius: '14px',
-                padding: '4px',
-              }}
-            >
-              {/* Upcoming Tab */}
-              <button
-                onClick={() => setActiveTab('upcoming')}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 transition-all duration-300"
-                style={activeTab === 'upcoming' ? {
-                  background: 'linear-gradient(135deg, rgba(0,163,255,0.2), rgba(0,163,255,0.08))',
-                  border: '1px solid rgba(0,163,255,0.35)',
-                  color: '#00A3FF',
-                  boxShadow: '0 0 14px rgba(0,163,255,0.2)',
-                  fontWeight: 900,
-                  borderRadius: '10px',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                } : {
-                  background: 'transparent',
-                  border: '1px solid transparent',
-                  color: '#4B5975',
-                  fontWeight: 600,
-                  borderRadius: '10px',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                }}
-              >
-                <Trophy className="w-4 h-4" />
-                <span>Upcoming</span>
-                <span
-                  style={activeTab === 'upcoming' ? {
-                    background: 'rgba(0,163,255,0.15)',
-                    color: '#00A3FF',
+            <div className="mt-2">
+              {totalCount === 0 ? (
+                <div
+                  className="text-center"
+                  style={{
+                    background: 'linear-gradient(135deg, #0A1F3D, #081729)',
+                    border: '1px solid rgba(0,163,255,0.12)',
                     borderRadius: '20px',
-                    padding: '1px 7px',
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                  } : {
-                    background: 'rgba(255,255,255,0.05)',
-                    color: '#4B5975',
-                    borderRadius: '20px',
-                    padding: '1px 7px',
-                    fontSize: '0.75rem',
+                    padding: '48px 24px',
                   }}
                 >
-                  {upcomingTournaments.length}
-                </span>
-              </button>
-
-              {/* Live Tab */}
-              <button
-                onClick={() => setActiveTab('live')}
-                className="flex-1 flex items-center justify-center gap-2 py-2 px-4 transition-all duration-300"
-                style={activeTab === 'live' ? {
-                  background: 'linear-gradient(135deg, rgba(0,255,135,0.18), rgba(0,255,135,0.06))',
-                  border: '1px solid rgba(0,255,135,0.3)',
-                  color: '#00FF87',
-                  boxShadow: '0 0 14px rgba(0,255,135,0.2)',
-                  fontWeight: 900,
-                  borderRadius: '10px',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                } : {
-                  background: 'transparent',
-                  border: '1px solid transparent',
-                  color: '#4B5975',
-                  fontWeight: 600,
-                  borderRadius: '10px',
-                  fontSize: '0.875rem',
-                  cursor: 'pointer',
-                }}
-              >
-                {activeTab === 'live' ? (
-                  <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#00FF87', flexShrink: 0 }} />
-                ) : (
-                  <Play className="w-4 h-4" />
-                )}
-                <span>Live</span>
-                <span
-                  style={activeTab === 'live' ? {
-                    background: 'rgba(0,255,135,0.15)',
-                    color: '#00FF87',
-                    borderRadius: '20px',
-                    padding: '1px 7px',
-                    fontSize: '0.75rem',
-                    fontWeight: 800,
-                  } : {
-                    background: 'rgba(255,255,255,0.05)',
-                    color: '#4B5975',
-                    borderRadius: '20px',
-                    padding: '1px 7px',
-                    fontSize: '0.75rem',
-                  }}
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '50%',
+                    background: 'rgba(0,163,255,0.08)',
+                    border: '1px solid rgba(0,163,255,0.15)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 16px',
+                    boxShadow: '0 0 24px rgba(0,163,255,0.1)',
+                  }}>
+                    <Trophy className="w-8 h-8" style={{ color: '#00A3FF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
+                  </div>
+                  <h3 style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.125rem', marginBottom: '8px' }}>
+                    No tournaments found
+                  </h3>
+                  <p style={{ color: '#4B6080', fontSize: '0.875rem' }}>
+                    Try adjusting your filters, or create your own tournament!
+                  </p>
+                </div>
+              ) : (
+                <motion.div
+                  className="flex flex-col gap-3"
+                  variants={staggerChildren}
+                  initial="initial"
+                  animate="animate"
                 >
-                  {liveTournaments.length}
-                </span>
-              </button>
-            </div>
+                  <AnimatePresence mode="popLayout">
+                    {/* Priority 1: Your Active Tournaments */}
+                    {myActiveTournaments.length > 0 && (
+                      <>
+                        <SectionDivider label="YOUR ACTIVE TOURNAMENTS" color="#00FF87" />
+                        {myActiveTournaments.map((tournament, index) => (
+                          <HorizontalTournamentCard
+                            key={tournament.id}
+                            tournament={tournament}
+                            index={index}
+                            type="live"
+                            onJoin={() => handleJoinTournament(tournament)}
+                            isJoining={joinTournamentMutation.isPending}
+                            onManage={() => sharedListProps.onManage(tournament)}
+                            onViewLeaderboard={() => sharedListProps.onViewLeaderboard(tournament)}
+                          />
+                        ))}
+                      </>
+                    )}
 
-            {/* Tab Content */}
-            <div className="mt-5">
-              {activeTab === 'upcoming' && (
-                <TournamentList
-                  tournaments={upcomingTournaments}
-                  type="upcoming"
-                  onManage={(tournament) => {
-                    setSelectedTournament(tournament);
-                    setManagementDialogOpen(true);
-                  }}
-                  onJoinTournament={handleJoinTournament}
-                  onViewLeaderboard={(tournament) => {
-                    setSelectedLeaderboardTournament(tournament);
-                    setLeaderboardDialogOpen(true);
-                  }}
-                  isJoining={joinTournamentMutation.isPending}
-                />
-              )}
-              {activeTab === 'live' && (
-                <TournamentList
-                  tournaments={liveTournaments}
-                  type="live"
-                  onManage={(tournament) => {
-                    setSelectedTournament(tournament);
-                    setManagementDialogOpen(true);
-                  }}
-                  onJoinTournament={handleJoinTournament}
-                  onViewLeaderboard={(tournament) => {
-                    setSelectedLeaderboardTournament(tournament);
-                    setLeaderboardDialogOpen(true);
-                  }}
-                  isJoining={joinTournamentMutation.isPending}
-                />
+                    {/* Priority 2: Other Live Tournaments */}
+                    {otherLiveTournaments.length > 0 && (
+                      <>
+                        <SectionDivider label="LIVE" color="#00A3FF" />
+                        {otherLiveTournaments.map((tournament, index) => (
+                          <HorizontalTournamentCard
+                            key={tournament.id}
+                            tournament={tournament}
+                            index={index}
+                            type="live"
+                            onJoin={() => handleJoinTournament(tournament)}
+                            isJoining={joinTournamentMutation.isPending}
+                            onManage={() => sharedListProps.onManage(tournament)}
+                            onViewLeaderboard={() => sharedListProps.onViewLeaderboard(tournament)}
+                          />
+                        ))}
+                      </>
+                    )}
+
+                    {/* Priority 3: Upcoming Tournaments */}
+                    {upcomingTournaments.length > 0 && (
+                      <>
+                        <SectionDivider label="UPCOMING" color="#8A93A6" />
+                        {upcomingTournaments.map((tournament, index) => (
+                          <HorizontalTournamentCard
+                            key={tournament.id}
+                            tournament={tournament}
+                            index={index}
+                            type="upcoming"
+                            onJoin={() => handleJoinTournament(tournament)}
+                            isJoining={joinTournamentMutation.isPending}
+                            onManage={() => sharedListProps.onManage(tournament)}
+                            onViewLeaderboard={() => sharedListProps.onViewLeaderboard(tournament)}
+                          />
+                        ))}
+                      </>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               )}
             </div>
           </motion.div>
@@ -867,81 +830,38 @@ export default function TournamentsPage() {
   );
 }
 
-// Tournament List Component - renders vertical list of horizontal cards
-function TournamentList({
-  tournaments,
-  type,
-  onManage,
-  onJoinTournament,
-  onViewLeaderboard,
-  isJoining
-}: {
-  tournaments: any[];
-  type: "upcoming" | "live";
-  onManage: (tournament: any) => void;
-  onJoinTournament: (tournament: any) => void;
-  onViewLeaderboard: (tournament: any) => void;
-  isJoining: boolean;
-}) {
-  if (tournaments.length === 0) {
-    return (
-      <div
-        className="text-center"
-        style={{
-          background: 'linear-gradient(135deg, #0A1F3D, #081729)',
-          border: '1px solid rgba(0,163,255,0.12)',
-          borderRadius: '20px',
-          padding: '48px 24px',
-        }}
-      >
-        <div style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '50%',
-          background: 'rgba(0,163,255,0.08)',
-          border: '1px solid rgba(0,163,255,0.15)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 16px',
-          boxShadow: '0 0 24px rgba(0,163,255,0.1)',
-        }}>
-          <Trophy className="w-8 h-8" style={{ color: '#00A3FF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
-        </div>
-        <h3 style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.125rem', marginBottom: '8px' }}>
-          {type === "upcoming" ? "No upcoming tournaments" : "No live tournaments"}
-        </h3>
-        <p style={{ color: '#4B6080', fontSize: '0.875rem' }}>
-          {type === "upcoming"
-            ? "No tournaments are waiting to start. Create your own!"
-            : "No tournaments are currently live."
-          }
-        </p>
-      </div>
-    );
-  }
-
+// Section divider with label
+function SectionDivider({ label, color }: { label: string; color: string }) {
   return (
     <motion.div
-      className="flex flex-col gap-3"
-      variants={staggerChildren}
-      initial="initial"
-      animate="animate"
+      variants={cardVariants}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        paddingTop: '8px',
+        paddingBottom: '2px',
+      }}
     >
-      <AnimatePresence mode="popLayout">
-        {tournaments.map((tournament, index) => (
-          <HorizontalTournamentCard
-            key={tournament.id}
-            tournament={tournament}
-            index={index}
-            type={type}
-            onJoin={() => onJoinTournament(tournament)}
-            isJoining={isJoining}
-            onManage={() => onManage(tournament)}
-            onViewLeaderboard={() => onViewLeaderboard(tournament)}
-          />
-        ))}
-      </AnimatePresence>
+      <span
+        style={{
+          fontSize: '0.65rem',
+          fontWeight: 700,
+          letterSpacing: '0.1em',
+          color,
+          textTransform: 'uppercase',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {label}
+      </span>
+      <div
+        style={{
+          flex: 1,
+          height: '1px',
+          background: `linear-gradient(to right, ${color}33, transparent)`,
+        }}
+      />
     </motion.div>
   );
 }
