@@ -160,6 +160,18 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
     };
   }, []);
 
+  // Poll portfolio data every 30 seconds while in portfolio mode
+  useEffect(() => {
+    if (mode !== "portfolio" || !tournamentId) return;
+    const interval = setInterval(() => {
+      if (seriesRef.current && chartRef.current) {
+        loadPortfolioData(tournamentId, seriesRef.current, chartRef.current);
+      }
+    }, 30_000);
+    return () => clearInterval(interval);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, tournamentId]);
+
   async function loadCandleData(sym: string, tf: string, series: any, chart: any) {
     setLoading(true);
     setError(null);
@@ -241,32 +253,25 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
       }
       const json = await res.json();
       const raw: { date: string; value: number }[] = json.data || [];
+      // Server now returns startingBalance explicitly; fall back to first data point
+      const startingBalance: number = typeof json.startingBalance === "number"
+        ? json.startingBalance
+        : (raw[0]?.value ?? 0);
 
       if (raw.length === 0) throw new Error("No portfolio data");
 
-      // Filter weekdays only to avoid flat weekend segments looking weird
-      const lineData = raw
-        .filter((d) => {
-          const day = new Date(d.date + "T00:00:00Z").getUTCDay();
-          return day !== 0 && day !== 6;
-        })
-        .map((d) => ({ time: d.date as any, value: d.value }));
+      // Server already filters out weekends — map directly to chart format
+      const lineData = raw.map((d) => ({ time: d.date as any, value: d.value }));
 
-      if (lineData.length === 0) {
-        // fallback: use all data
-        series.setData(raw.map((d) => ({ time: d.date as any, value: d.value })));
-      } else {
-        series.setData(lineData);
-      }
+      series.setData(lineData);
       chart.timeScale().fitContent();
 
-      const first = raw[0];
-      const last  = raw[raw.length - 1];
-      const change = last.value - first.value;
-      const pct = first.value !== 0 ? (change / first.value) * 100 : 0;
+      const last = raw[raw.length - 1];
+      const change = last.value - startingBalance;
+      const pct = startingBalance !== 0 ? (change / startingBalance) * 100 : 0;
       setPortfolioChange({ change, pct });
 
-      // Colour line green/red based on performance
+      // Colour line green/red based on performance vs starting balance
       const lineColor = change >= 0 ? UP_COLOR : DOWN_COLOR;
       series.applyOptions({
         color: lineColor,
@@ -451,11 +456,11 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
                   {isPositive
                     ? <TrendingUp  style={{ width: "13px", height: "13px", color: priceColor }} />
                     : <TrendingDown style={{ width: "13px", height: "13px", color: priceColor }} />}
-                  <span style={{ color: priceColor, fontSize: "12px", fontWeight: 800 }}>
-                    {isPositive ? "+" : ""}{portfolioChange.pct.toFixed(2)}%
+                  <span style={{ color: priceColor, fontSize: "14px", fontWeight: 900, letterSpacing: "-0.01em" }}>
+                    {isPositive ? "+" : "-"}${Math.abs(portfolioChange.change).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
-                  <span style={{ color: "#4B5975", fontSize: "11px", fontWeight: 600 }}>
-                    ({isPositive ? "+" : ""}${Math.abs(portfolioChange.change).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })})
+                  <span style={{ color: "#7B8FA8", fontSize: "11px", fontWeight: 600 }}>
+                    ({isPositive ? "+" : ""}{portfolioChange.pct.toFixed(2)}%)
                   </span>
                 </div>
               )}

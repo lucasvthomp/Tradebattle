@@ -1159,15 +1159,9 @@ router.get('/portfolio/tournament/:id/performance', requireAuth, asyncHandler(as
   );
 
   if (sortedTrades.length === 0) {
-    // No trades yet — return flat line from start to today
-    const today = new Date();
-    const days: { date: string; value: number }[] = [];
-    const d = new Date(startDate);
-    while (d <= today) {
-      days.push({ date: d.toISOString().slice(0, 10), value: startingBalance });
-      d.setDate(d.getDate() + 1);
-    }
-    return res.json({ success: true, data: days });
+    // No trades yet — return single point for today
+    const todayStr = new Date().toISOString().slice(0, 10);
+    return res.json({ success: true, data: [{ date: todayStr, value: startingBalance }], startingBalance });
   }
 
   // Collect unique symbols
@@ -1202,17 +1196,41 @@ router.get('/portfolio/tournament/:id/performance', requireAuth, asyncHandler(as
     pricesBySymbol[sym] = map;
   }));
 
-  // Walk day by day from tournament start to today
+  // Helper: is a Date a trading day (Mon–Fri)?
+  function isTradingDay(date: Date): boolean {
+    const dow = date.getUTCDay(); // 0=Sun, 6=Sat
+    return dow !== 0 && dow !== 6;
+  }
+
+  // Helper: step back to the nearest trading day (in-place mutates, returns same ref)
+  function prevTradingDay(date: Date): Date {
+    const d2 = new Date(date);
+    d2.setUTCDate(d2.getUTCDate() - 1);
+    while (!isTradingDay(d2)) d2.setUTCDate(d2.getUTCDate() - 1);
+    return d2;
+  }
+
+  // Start from the date of the first trade (not tournament start)
+  const firstTradeDate = new Date(sortedTrades[0].tradeDate as any);
+  firstTradeDate.setUTCHours(0, 0, 0, 0);
+
+  // Optionally prepend one point at the previous trading day with value = startingBalance
+  const prependDate = prevTradingDay(firstTradeDate);
+  const prependStr = prependDate.toISOString().slice(0, 10);
+
   const today = new Date();
   today.setHours(23, 59, 59, 999);
   const result: { date: string; value: number }[] = [];
+
+  // Add the "before first trade" baseline point
+  result.push({ date: prependStr, value: startingBalance });
 
   let cash = startingBalance;
   const shares: Record<string, number> = {};
   let tradeIdx = 0;
 
-  const d = new Date(startDate);
-  d.setHours(0, 0, 0, 0);
+  const d = new Date(firstTradeDate);
+  d.setUTCHours(0, 0, 0, 0);
 
   while (d <= today) {
     const dateStr = d.toISOString().slice(0, 10);
@@ -1235,27 +1253,33 @@ router.get('/portfolio/tournament/:id/performance', requireAuth, asyncHandler(as
       tradeIdx++;
     }
 
-    // Sum current holdings value using closest available price
-    let holdingsValue = 0;
-    for (const [sym, qty] of Object.entries(shares)) {
-      if (qty <= 0) continue;
-      const symPrices = pricesBySymbol[sym] || {};
-      // Use exact date price, or walk back up to 5 days to find last known close
-      let price = 0;
-      for (let back = 0; back <= 5; back++) {
-        const checkDate = new Date(d);
-        checkDate.setDate(checkDate.getDate() - back);
-        const checkStr = checkDate.toISOString().slice(0, 10);
-        if (symPrices[checkStr]) { price = symPrices[checkStr]; break; }
+    // Only emit datapoints for trading days (Mon–Fri)
+    if (isTradingDay(d)) {
+      // Sum current holdings value using closest available price
+      let holdingsValue = 0;
+      for (const [sym, qty] of Object.entries(shares)) {
+        if (qty <= 0) continue;
+        const symPrices = pricesBySymbol[sym] || {};
+        // Use exact date price, or walk back up to 5 days to find last known close
+        let price = 0;
+        for (let back = 0; back <= 5; back++) {
+          const checkDate = new Date(d);
+          checkDate.setUTCDate(checkDate.getUTCDate() - back);
+          const checkStr = checkDate.toISOString().slice(0, 10);
+          if (symPrices[checkStr]) { price = symPrices[checkStr]; break; }
+        }
+        holdingsValue += qty * price;
       }
-      holdingsValue += qty * price;
+
+      result.push({ date: dateStr, value: parseFloat((cash + holdingsValue).toFixed(2)) });
     }
 
-    result.push({ date: dateStr, value: parseFloat((cash + holdingsValue).toFixed(2)) });
-    d.setDate(d.getDate() + 1);
+    d.setUTCDate(d.getUTCDate() + 1);
   }
 
-  res.json({ success: true, data: result });
+  // Ensure the last point is always "today" (already included above if today is a trading day;
+  // if today is a weekend the last trading day's value is the most recent)
+  res.json({ success: true, data: result, startingBalance });
 }));
 
 /**
