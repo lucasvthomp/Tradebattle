@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { UserProfileModal } from "@/components/profile/UserProfileModal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,7 +9,6 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
 
 interface ChatMessage {
   id: number;
@@ -38,7 +38,7 @@ const formatTimestamp = (timestamp: string) => {
 function renderMessageWithMentions(
   text: string,
   users: { id: number; username: string }[],
-  navigate: (path: string) => void
+  onMentionClick: (userId: string) => void
 ): React.ReactNode {
   const mentionRegex = /@([a-zA-Z0-9_]+)/g;
   const parts: React.ReactNode[] = [];
@@ -64,7 +64,7 @@ function renderMessageWithMentions(
           style={{ color: '#00A3FF' }}
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/people/${mentionedUser.id}`);
+            onMentionClick(String(mentionedUser.id));
           }}
         >
           @{mentionedUser.username}
@@ -89,12 +89,12 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
   message,
   isCurrentUser,
   users,
-  navigate,
+  onMentionClick,
 }: {
   message: ChatMessage;
   isCurrentUser: boolean;
   users: { id: number; username: string }[];
-  navigate: (path: string) => void;
+  onMentionClick: (userId: string) => void;
 }) {
   return (
     <div className="flex space-x-2">
@@ -122,7 +122,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
             wordBreak: 'break-word',
             overflowWrap: 'break-word'
           }}>
-            {renderMessageWithMentions(message.message, users, navigate)}
+            {renderMessageWithMentions(message.message, users, onMentionClick)}
           </p>
         </div>
       </div>
@@ -133,9 +133,9 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
 function TournamentChat({ tournamentId, className }: TournamentChatProps) {
   const { user } = useAuth();
   const [newMessage, setNewMessage] = useState("");
+  const [profileUserId, setProfileUserId] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
-  const [, navigate] = useLocation();
 
   const { data: chatResponse, isLoading } = useQuery<any>({
     queryKey: ['/api/chat/tournament', tournamentId],
@@ -185,6 +185,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
   }, [messages]);
 
   return (
+    <>
     <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden">
@@ -208,7 +209,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
                   message={message}
                   isCurrentUser={message.userId === user?.id}
                   users={users}
-                  navigate={navigate}
+                  onMentionClick={(userId) => setProfileUserId(userId)}
                 />
               ))
             )}
@@ -243,6 +244,8 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
         </div>
       </div>
     </div>
+    <UserProfileModal userId={profileUserId} onClose={() => setProfileUserId(null)} />
+    </>
   );
 }
 

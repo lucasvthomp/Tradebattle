@@ -25,7 +25,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { apiRequest } from "@/lib/queryClient";
-import { useLocation } from "wouter";
+import { UserProfileModal } from "@/components/profile/UserProfileModal";
 
 interface ChatMessage {
   id: number;
@@ -65,7 +65,7 @@ const formatTimestamp = (timestamp: string) => {
 function renderMessageWithMentions(
   text: string,
   users: { id: number; username: string }[],
-  navigate: (path: string) => void
+  onMentionClick: (userId: string) => void
 ): React.ReactNode {
   const mentionRegex = /@([a-zA-Z0-9_]+)/g;
   const parts: React.ReactNode[] = [];
@@ -91,7 +91,7 @@ function renderMessageWithMentions(
           style={{ color: '#00A3FF' }}
           onClick={(e) => {
             e.stopPropagation();
-            navigate(`/people/${mentionedUser.id}`);
+            onMentionClick(String(mentionedUser.id));
           }}
         >
           @{mentionedUser.username}
@@ -120,7 +120,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
   onViewProfile,
   onSendTip,
   users,
-  navigate,
+  onMentionClick,
   shiftHeld,
 }: {
   group: MessageGroup;
@@ -128,7 +128,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
   onViewProfile: (userId: number) => void;
   onSendTip: (user: { id: number; username: string }) => void;
   users: { id: number; username: string }[];
-  navigate: (path: string) => void;
+  onMentionClick: (userId: string) => void;
   shiftHeld: boolean;
 }) {
   return (
@@ -212,7 +212,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                     wordBreak: 'break-word',
                     overflowWrap: 'break-word'
                   }}>
-                    {renderMessageWithMentions(msg.message, users, navigate)}
+                    {renderMessageWithMentions(msg.message, users, onMentionClick)}
                   </p>
                 </div>
                 {/* Shift-hover timestamp for subsequent messages */}
@@ -237,10 +237,10 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
   const [tipDialogOpen, setTipDialogOpen] = useState(false);
   const [tipAmount, setTipAmount] = useState("");
   const [selectedUser, setSelectedUser] = useState<{ id: number; username: string } | null>(null);
+  const [profileUserId, setProfileUserId] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
-  const [, navigate] = useLocation();
 
   // Mention autocomplete state
   const [showMentions, setShowMentions] = useState(false);
@@ -485,13 +485,13 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       key={`group-${group.messages[0].id}`}
                       group={group}
                       isCurrentUser={group.userId === user?.id}
-                      onViewProfile={(userId) => navigate(`/people/${userId}`)}
+                      onViewProfile={(userId) => setProfileUserId(String(userId))}
                       onSendTip={(tipUser) => {
                         setSelectedUser(tipUser);
                         setTipDialogOpen(true);
                       }}
                       users={allUsers}
-                      navigate={navigate}
+                      onMentionClick={(userId) => setProfileUserId(userId)}
                       shiftHeld={shiftHeld}
                     />
                   ))
@@ -559,6 +559,9 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 <span>{newMessage.length}/500</span>
               </div>
             </div>
+
+      {/* Profile Modal */}
+      <UserProfileModal userId={profileUserId} onClose={() => setProfileUserId(null)} />
 
       {/* Tip Dialog */}
       <Dialog open={tipDialogOpen} onOpenChange={setTipDialogOpen}>
