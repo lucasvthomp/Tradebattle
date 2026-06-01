@@ -143,13 +143,13 @@ export default function TournamentsPage() {
   // Fetch public tournaments
   const { data: publicTournaments, isLoading: publicLoading } = useQuery<{data: any[]}>({
     queryKey: ['/api/tournaments/public'],
-    refetchInterval: 30000,
+    refetchInterval: 10000,
   });
 
   // Fetch user's tournaments
   const { data: userTournaments, isLoading: userLoading } = useQuery<{data: any[]}>({
     queryKey: ['/api/tournaments'],
-    refetchInterval: 30000,
+    refetchInterval: 10000,
   });
 
   // Fetch archived tournaments (disabled — not shown in this layout)
@@ -196,6 +196,13 @@ export default function TournamentsPage() {
     }
   }, [location, navigate, toast]);
 
+  useEffect(() => {
+    if (joinConfirmationOpen) {
+      setJoinConfirmationOpen(false);
+      setTournamentToJoin(null);
+    }
+  }, [location]);
+
   const tournamentsLoading = publicLoading || userLoading;
 
   // Join tournament by code mutation
@@ -240,6 +247,7 @@ export default function TournamentsPage() {
   });
 
   const handleJoinTournament = (tournament: any) => {
+    if (joinTournamentMutation.isPending) return;
     setTournamentToJoin(tournament);
     setJoinConfirmationOpen(true);
   };
@@ -886,9 +894,11 @@ function HorizontalTournamentCard({
 }) {
   const { formatCurrency } = useUserPreferences();
   const { user } = useAuth();
+  const { toast } = useToast();
   const [, navigate] = useRouterLocation();
   const [, forceUpdate] = React.useReducer(x => x + 1, 0);
   const [isHovered, setIsHovered] = React.useState(false);
+  const [isStarting, setIsStarting] = React.useState(false);
 
   const isLive = tournament.status === "active";
   const isWaiting = tournament.status === "waiting";
@@ -992,17 +1002,26 @@ function HorizontalTournamentCard({
         <div className="flex gap-2">
           <button
             onClick={async () => {
+              setIsStarting(true);
               try {
                 await apiRequest("POST", `/api/tournaments/${tournament.id}/start-early`);
-                window.location.reload();
+                queryClient.invalidateQueries({ queryKey: ['/api/tournaments'] });
+                queryClient.invalidateQueries({ queryKey: ['/api/tournaments/public'] });
               } catch (error: any) {
-                console.error("Failed to start tournament:", error);
+                toast({
+                  title: "Failed to start tournament",
+                  description: error.message,
+                  variant: "destructive",
+                });
+              } finally {
+                setIsStarting(false);
               }
             }}
+            disabled={isStarting}
             className="whitespace-nowrap"
             style={{
               padding: '8px 14px',
-              background: 'linear-gradient(135deg, #00FF87, #00C853)',
+              background: isStarting ? 'rgba(0,255,135,0.4)' : 'linear-gradient(135deg, #00FF87, #00C853)',
               border: 'none',
               borderRadius: '10px',
               color: '#041810',
@@ -1011,14 +1030,15 @@ function HorizontalTournamentCard({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              cursor: 'pointer',
+              cursor: isStarting ? 'not-allowed' : 'pointer',
               minHeight: '40px',
               boxShadow: '0 0 14px rgba(0,255,135,0.25)',
               transition: 'all 0.2s',
+              opacity: isStarting ? 0.7 : 1,
             }}
           >
             <Play className="w-3.5 h-3.5" />
-            Start
+            {isStarting ? "Starting..." : "Start"}
           </button>
           <button
             onClick={onManage}

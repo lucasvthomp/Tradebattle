@@ -24,9 +24,9 @@ export default function Leaderboard() {
   const { formatCurrency } = useUserPreferences();
   const [activeTab, setActiveTab] = useState("highwager");
 
-  const { data: highWagerData, isLoading: loadingHighWager } = useQuery({ queryKey: ['/api/leaderboard/highest-wager'] });
-  const { data: growthData, isLoading: loadingGrowth } = useQuery({ queryKey: ['/api/leaderboard/most-growth'] });
-  const { data: activeData, isLoading: loadingActive } = useQuery({ queryKey: ['/api/leaderboard/most-active'] });
+  const { data: highWagerData, isLoading: loadingHighWager } = useQuery({ queryKey: ['/api/leaderboard/highest-wager'], refetchInterval: 30000 });
+  const { data: growthData, isLoading: loadingGrowth } = useQuery({ queryKey: ['/api/leaderboard/most-growth'], refetchInterval: 30000 });
+  const { data: activeData, isLoading: loadingActive } = useQuery({ queryKey: ['/api/leaderboard/most-active'], refetchInterval: 30000 });
 
   const highWagerRankings = (highWagerData as any)?.data?.rankings || [];
   const growthRankings = (growthData as any)?.data?.rankings || [];

@@ -80,6 +80,7 @@ export default function Blitz() {
   const [queueSeconds, setQueueSeconds] = useState(0);
   const [vsCountdown, setVsCountdown] = useState(3);
   const [opponentName, setOpponentName] = useState<string>("Opponent");
+  const [queueExpired, setQueueExpired] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -160,6 +161,18 @@ export default function Blitz() {
     clearPolling();
     apiRequest("DELETE", "/api/blitz/queue").catch(() => {});
   }, []);
+
+  // Auto-cancel queue after 5 minutes with no match
+  useEffect(() => {
+    if (matchState === "queued" && queueSeconds >= 300) {
+      clearPolling();
+      apiRequest("DELETE", "/api/blitz/queue").catch(() => {});
+      setMatchState("idle");
+      setQueueSeconds(0);
+      setQueueExpired(true);
+      setTimeout(() => setQueueExpired(false), 5000);
+    }
+  }, [queueSeconds, matchState]);
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
@@ -385,8 +398,17 @@ export default function Blitz() {
                         Trade against a real opponent for 5 minutes. Highest portfolio wins.
                       </p>
 
+                      {queueExpired && (
+                        <div style={{
+                          marginBottom: "16px", padding: "10px 18px", borderRadius: "10px",
+                          background: "rgba(255,61,90,0.1)", border: "1px solid rgba(255,61,90,0.25)",
+                          color: "#FF4F58", fontSize: "13px", fontWeight: 600,
+                        }}>
+                          No match found — queue expired after 5 minutes. Try again.
+                        </div>
+                      )}
                       <motion.button
-                        onClick={() => queueMutation.mutate()}
+                        onClick={() => { setQueueExpired(false); queueMutation.mutate(); }}
                         disabled={queueMutation.isPending}
                         whileHover={{ scale: 1.05, boxShadow: "0 0 48px rgba(0,163,255,0.5)" }}
                         whileTap={{ scale: 0.96 }}
