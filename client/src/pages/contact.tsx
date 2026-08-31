@@ -124,10 +124,10 @@ export default function Support() {
   })).filter(cat => cat.questions.length > 0);
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: "transparent" }}>
+    <div className="arena-page min-h-[calc(100dvh-4rem)]">
       {/* Header */}
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", backgroundColor: "rgba(13,17,23,0.6)" }}>
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-10">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-9">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #00A3FF, #0077CC)" }}>
               <MessageSquare className="w-5 h-5" style={{ color: "#000" }} />
@@ -138,9 +138,9 @@ export default function Support() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-12">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 py-7 md:py-10">
         {/* Search */}
-        <div className="mb-10">
+        <div className="mb-7">
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#4B5563" }} />
             <Input

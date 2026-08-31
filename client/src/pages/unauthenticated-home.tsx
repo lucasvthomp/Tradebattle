@@ -7,6 +7,57 @@ const formatTime = (total: number) => [Math.floor(total / 3600), Math.floor((tot
   .map((part) => String(part).padStart(2, "0"))
   .join(":");
 
+function MarketChartBackground() {
+  return (
+    <div className="market-chart-bg" aria-hidden="true">
+      <svg viewBox="0 0 1440 620" preserveAspectRatio="none" role="presentation">
+        <defs>
+          <linearGradient id="market-area-fill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0" stopColor="#67e7bf" stopOpacity="0.22" />
+            <stop offset="0.62" stopColor="#67e7bf" stopOpacity="0.04" />
+            <stop offset="1" stopColor="#67e7bf" stopOpacity="0" />
+          </linearGradient>
+          <linearGradient id="market-line-glow" x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stopColor="#4b9fcb" stopOpacity="0.2" />
+            <stop offset="0.48" stopColor="#67e7bf" stopOpacity="0.92" />
+            <stop offset="1" stopColor="#b2ffe7" stopOpacity="0.74" />
+          </linearGradient>
+          <filter id="market-line-blur" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="7" />
+          </filter>
+        </defs>
+
+        <g className="market-chart-guides">
+          <path d="M0 102 H1440 M0 210 H1440 M0 318 H1440 M0 426 H1440 M0 534 H1440" />
+          <path d="M126 0 V620 M348 0 V620 M570 0 V620 M792 0 V620 M1014 0 V620 M1236 0 V620" />
+        </g>
+
+        <path
+          className="market-chart-shadow"
+          pathLength={1}
+          d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127"
+        />
+        <path
+          className="market-chart-area"
+          d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127 V620 H-30 Z"
+        />
+        <path
+          className="market-chart-line"
+          pathLength={1}
+          d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127"
+        />
+        <path className="market-chart-highlight" d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127" />
+        <path className="market-chart-scanner" d="M980 80 V565" />
+        <circle className="market-chart-node" cx="1124" cy="230" r="6" />
+        <circle className="market-chart-node market-chart-node-secondary" cx="982" cy="269" r="4" />
+      </svg>
+
+      <div className="market-chart-readout market-chart-readout-top"><span>TB / MARKET TAPE</span><strong>+4.82%</strong></div>
+      <div className="market-chart-readout market-chart-readout-bottom"><span>OPEN</span><strong>LIVE DATA</strong></div>
+    </div>
+  );
+}
+
 function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href?: string }) {
   return <Link href={href} className="arena-primary-link">{children}<ArrowRight size={18} aria-hidden="true" /></Link>;
 }
@@ -52,7 +103,7 @@ export default function UnauthenticatedHome() {
   return (
     <main className="arena-page">
       <section className="arena-hero" aria-labelledby="arena-hero-title">
-        <div className="arena-grid" aria-hidden="true" />
+        <MarketChartBackground />
         <div className="arena-glow arena-glow-one" aria-hidden="true" />
         <div className="arena-glow arena-glow-two" aria-hidden="true" />
 

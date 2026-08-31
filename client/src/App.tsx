@@ -8,8 +8,7 @@ import { ThemeProvider } from "@/hooks/use-theme";
 import { TourProvider } from "@/hooks/useTour";
 import { UserPreferencesProvider } from "@/contexts/UserPreferencesContext";
 import { ChatProvider } from "@/contexts/ChatContext";
-import { useState, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import { PageLoader } from "@/components/ui/page-loader";
 import NotFound from "@/pages/not-found";
 import UnauthenticatedHome from "@/pages/unauthenticated-home";
@@ -60,18 +59,7 @@ function AutoTourStarter() {
 function Router() {
   const { user, isLoading } = useAuth();
   const [location] = useLocation();
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const { announcements, dismissAnnouncement } = useAnnouncements();
-
-  // Handle page transitions
-  useEffect(() => {
-    setIsTransitioning(true);
-    const timer = setTimeout(() => {
-      setIsTransitioning(false);
-    }, 400); // 400ms transition
-
-    return () => clearTimeout(timer);
-  }, [location]);
 
   if (isLoading) {
     return <PageLoader />;
@@ -82,10 +70,6 @@ function Router() {
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {isTransitioning && <PageLoader key="loader" />}
-      </AnimatePresence>
-
       <Layout>
         <Switch>
           {!user ? (

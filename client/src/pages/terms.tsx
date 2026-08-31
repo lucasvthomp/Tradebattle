@@ -16,9 +16,9 @@ const staggerChildren = {
 
 export default function Terms() {
   return (
-    <div className="min-h-screen">
+    <div className="arena-page min-h-[calc(100dvh-4rem)]">
       <motion.div
-        className="max-w-4xl mx-auto py-20 px-4"
+        className="max-w-4xl mx-auto py-12 md:py-16 px-4"
         initial="initial"
         animate="animate"
         variants={staggerChildren}
@@ -33,12 +33,12 @@ export default function Terms() {
         <motion.div className="prose prose-lg prose-invert max-w-none" variants={fadeInUp}>
           <div className="text-muted-foreground space-y-8">
             <div>
-              <h2 className="text-2xl font-bold mb-4 text-foreground">TERMS OF SERVICE OF PROFOLIO</h2>
+              <h2 className="text-2xl font-bold mb-4 text-foreground">TERMS OF SERVICE OF TRADEBATTLE</h2>
               <p className="mb-2">(Operated by ORSATH Holdings LLC)</p>
               <p className="mb-4"><strong>Effective Date:</strong> 11/10/2025</p>
               <p className="mb-4">
                 This Terms of Service ("Agreement") is a binding contract between the user ("User," "you") and ORSATH Holdings LLC,
-                doing business as Profolio ("Profolio," "Company," "we," "us," or "our"). By accessing or using the Profolio website,
+                doing business as Tradebattle ("Tradebattle," "Company," "we," "us," or "our"). By accessing or using the Tradebattle website,
                 mobile applications, or services (collectively, the "Platform"), creating an account, joining or creating a tournament,
                 depositing funds, or receiving a payout, you agree to be bound by this Agreement.
               </p>
@@ -48,7 +48,7 @@ export default function Terms() {
               <h2 className="text-2xl font-bold mb-4 text-foreground">1. ACCEPTANCE; INCORPORATED POLICIES</h2>
               <p className="mb-2"><strong>1.1. Agreement to Terms.</strong> By using the Platform, you accept and agree to this Agreement and the policies incorporated by reference, including the Privacy Policy, Community & Chat Rules, DMCA Policy, and any posted tournament rules (collectively, the "Policies").</p>
               <p className="mb-2"><strong>1.2. Updates.</strong> We may modify this Agreement from time to time. The current version will be posted on the Platform. Your continued use after the effective date constitutes acceptance of the changes.</p>
-              <p className="mb-4"><strong>1.3. Educational/Entertainment Purpose.</strong> Profolio provides educational/entertainment, skill-based simulated stock-trading competitions. We are not a broker-dealer, investment adviser, exchange, or ATS, and no real securities transactions occur on the Platform.</p>
+              <p className="mb-4"><strong>1.3. Educational/Entertainment Purpose.</strong> Tradebattle provides educational/entertainment, skill-based simulated stock-trading competitions. We are not a broker-dealer, investment adviser, exchange, or ATS, and no real securities transactions occur on the Platform.</p>
             </section>
 
             <section>
@@ -59,7 +59,7 @@ export default function Terms() {
               <p className="mb-2"><strong>2.4.</strong> "Funds" means fiat or cryptocurrency deposited for permitted Platform uses (e.g., tournament entry fees or sending tips) and eligible for withdrawal subject to requirements.</p>
               <p className="mb-2"><strong>2.5.</strong> "Fraudulent Conduct" means any conduct described in Section 12 (including hacking, collusion, automation, misappropriation, chargeback abuse, or market data manipulation).</p>
               <p className="mb-2"><strong>2.6.</strong> "Sanctioned Person" means any person or entity on OFAC's Specially Designated Nationals and Blocked Persons List or otherwise subject to U.S. economic sanctions or export control restrictions.</p>
-              <p className="mb-4"><strong>2.7.</strong> "Services" means access to the Platform, simulated market data, tournaments, leaderboards, chat, and any related features provided by Profolio.</p>
+              <p className="mb-4"><strong>2.7.</strong> "Services" means access to the Platform, simulated market data, tournaments, leaderboards, chat, and any related features provided by Tradebattle.</p>
             </section>
 
             <section>
@@ -117,7 +117,7 @@ export default function Terms() {
               <h2 className="text-2xl font-bold mb-4 text-foreground">9. COMMUNITY & CHAT RULES</h2>
               <p className="mb-2"><strong>9.1. Conduct.</strong> Users must not engage in harassment, hate speech, doxxing, threats, obscene/NSFW content, spam, solicitation, or impersonation. We may remove content, limit chat, or suspend/terminate accounts for violations.</p>
               <p className="mb-2"><strong>9.2. Moderation & Records.</strong> We may monitor, log, and moderate chat to enforce this Agreement and the Policies. We may report unlawful content to appropriate authorities.</p>
-              <p className="mb-4"><strong>9.3. No Endorsement.</strong> User opinions in chat or forums are those of the users and are not endorsed by Profolio.</p>
+              <p className="mb-4"><strong>9.3. No Endorsement.</strong> User opinions in chat or forums are those of the users and are not endorsed by Tradebattle.</p>
             </section>
 
             <section>
@@ -225,7 +225,7 @@ export default function Terms() {
             </section>
 
             <div className="mt-12 pt-8 border-t border-border">
-              <p className="mb-2"><strong>Support:</strong> support@profolio.com</p>
+              <p className="mb-2"><strong>Support:</strong> support@tradebattle.gg</p>
               <p className="mb-2"><strong>Legal/DMCA/Arbitration Opt-Out:</strong> legal@orsath.com</p>
 
               <p className="mb-4">
@@ -234,7 +234,7 @@ export default function Terms() {
               </p>
 
               <p className="font-bold">
-                ORSATH HOLDINGS LLC d/b/a Profolio
+                ORSATH HOLDINGS LLC d/b/a Tradebattle
               </p>
             </div>
           </div>

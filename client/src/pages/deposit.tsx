@@ -186,7 +186,7 @@ export default function Deposit() {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      minHeight: 'calc(100dvh - 4rem)',
       background: 'transparent',
       padding: 'clamp(24px, 5vw, 40px) clamp(16px, 4vw, 20px)',
     }}>

@@ -28,7 +28,7 @@ export default function Layout({ children }: LayoutProps) {
         {/* Main Content Area with Chat */}
         <div className="flex flex-1 pt-16 min-h-0">
           {/* Main Content with Page Transitions */}
-          <main className={`flex-1 min-h-dvh transition-all duration-300 ${user ? 'px-2 md:px-0' : 'px-0'} overflow-x-hidden ${
+          <main className={`flex-1 min-h-[calc(100dvh-4rem)] transition-all duration-300 ${user ? 'px-2 md:px-0' : 'px-0'} overflow-x-hidden ${
             user ? 'md:ml-16' : ''
           } ${
             user && chatOpen ? 'md:mr-80' : ''

@@ -179,7 +179,7 @@ export default function Blitz() {
   const countdownColor = vsCountdown === 1 ? "#FF3D5A" : vsCountdown === 2 ? "#FFB020" : "#00A3FF";
 
   return (
-    <div style={{ minHeight: "100vh", padding: "32px 20px 60px", background: "transparent" }}>
+    <div style={{ minHeight: "calc(100dvh - 4rem)", padding: "32px 20px 60px", background: "transparent" }}>
       <div style={{ maxWidth: "680px", margin: "0 auto" }}>
 
         {/* ── Header ── */}

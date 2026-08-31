@@ -42,7 +42,7 @@ export default function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'transparent' }}>
+      <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-10">
         <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
           <CardHeader>
             <CardTitle style={{ color: '#C9D1E2' }}>Invalid Link</CardTitle>
@@ -64,7 +64,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ backgroundColor: 'transparent' }}>
+    <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
         <CardHeader>
           <CardTitle style={{ color: '#C9D1E2' }}>

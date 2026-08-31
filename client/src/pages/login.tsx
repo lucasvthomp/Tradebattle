@@ -62,7 +62,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 relative overflow-hidden" style={{ backgroundColor: 'transparent' }}>
+    <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center py-10 px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #00A3FF 0%, transparent 70%)' }} />
@@ -74,7 +74,7 @@ export default function Login() {
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#00A3FF', boxShadow: '0 0 40px rgba(0, 163, 255, 0.25), 0 0 80px rgba(0, 163, 255, 0.1)' }}>
-              <span className="font-black text-4xl" style={{ color: '#091525' }}>O</span>
+              <span className="font-black text-4xl" style={{ color: '#091525' }}>T</span>
             </div>
           </div>
           <h1 className="text-4xl font-black tracking-tight" style={{ color: '#F1F5F9' }}>Welcome back</h1>

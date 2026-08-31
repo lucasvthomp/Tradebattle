@@ -16,9 +16,9 @@ const staggerChildren = {
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
+    <div className="arena-page min-h-[calc(100dvh-4rem)]">
       <motion.div
-        className="max-w-4xl mx-auto py-20 px-4"
+        className="max-w-4xl mx-auto py-12 md:py-16 px-4"
         initial="initial"
         animate="animate"
         variants={staggerChildren}

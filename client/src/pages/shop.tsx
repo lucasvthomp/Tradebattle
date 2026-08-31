@@ -52,7 +52,7 @@ export default function Shop() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
+    <div className="min-h-[calc(100dvh-4rem)]" style={{ backgroundColor: 'transparent' }}>
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Header */}
         <motion.div

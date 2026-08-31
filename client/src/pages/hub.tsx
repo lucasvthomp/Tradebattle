@@ -105,7 +105,7 @@ export default function Hub() {
   return (
     <div
       style={{
-        minHeight: "100vh",
+        minHeight: "calc(100dvh - 4rem)",
         background: "#040D18",
         display: "flex",
         flexDirection: "column",

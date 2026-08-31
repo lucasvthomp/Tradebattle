@@ -1,198 +1,124 @@
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Award, Brain, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, BarChart3, Swords, Trophy, Users } from "lucide-react";
+import { Link } from "wouter";
 
-const founders = [
+const pillars = [
   {
-    name: "Marcus Orellana",
-    role: "CEO & Chief Investment Officer",
-    description: "Former Goldman Sachs analyst with 15+ years in qualitative research. Specializes in technology and healthcare sectors.",
-    expertise: ["Tech Analysis", "Healthcare", "M&A Research"]
+    icon: Swords,
+    eyebrow: "01 / COMPETE",
+    title: "Make every decision count.",
+    description: "Trade with a virtual balance, build a position, and see how your strategy holds up when the clock is running.",
   },
   {
-    name: "Isabella Santos",
-    role: "CTO & Head of Research",
-    description: "Previously at McKinsey & Company, leading digital transformation in financial services. Expert in emerging markets analysis.",
-    expertise: ["Emerging Markets", "Digital Finance", "ESG Analysis"]
+    icon: BarChart3,
+    eyebrow: "02 / IMPROVE",
+    title: "Turn reps into instincts.",
+    description: "Review your moves, compare performance, and build a repeatable process without risking real capital.",
   },
   {
-    name: "Alexander Thompson",
-    role: "Head of Client Relations",
-    description: "Former institutional sales director at Morgan Stanley. Focused on building long-term client relationships and custom research solutions.",
-    expertise: ["Institutional Sales", "Client Strategy", "Custom Research"]
-  }
+    icon: Users,
+    eyebrow: "03 / CONNECT",
+    title: "Find your edge together.",
+    description: "Join a competitive community, follow the leaderboard, and learn from the traders you keep chasing.",
+  },
 ];
 
-const values = [
-  {
-    icon: <Brain className="w-8 h-8" />,
-    title: "Qualitative Focus",
-    description: "We believe the best investment decisions come from understanding the human factors behind market movements, not just the numbers."
-  },
-  {
-    icon: <TrendingUp className="w-8 h-8" />,
-    title: "Independent Research",
-    description: "Our research is completely independent, unbiased, and focused solely on providing value to our subscribers."
-  },
-  {
-    icon: <Users className="w-8 h-8" />,
-    title: "Client-Centric",
-    description: "Every piece of research is designed with our clients' investment success in mind, delivered with clarity and actionable insights."
-  },
-  {
-    icon: <Award className="w-8 h-8" />,
-    title: "Excellence Standard",
-    description: "We maintain the highest standards in research quality, ensuring every analysis meets institutional-grade requirements."
-  }
+const principles = [
+  { label: "Virtual capital", value: "$10K" },
+  { label: "Market data", value: "LIVE" },
+  { label: "The goal", value: "SKILL" },
 ];
-
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
-};
-
-const staggerChildren = {
-  animate: {
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <motion.section 
-        className="py-20 px-4"
-        initial="initial"
-        animate="animate"
-        variants={staggerChildren}
-      >
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.h1 
-            className="text-4xl md:text-5xl font-bold mb-6 text-black"
-            variants={fadeInUp}
-          >
-            About ORSATH
-          </motion.h1>
-        </div>
-      </motion.section>
-
-      {/* Mission Section */}
-      <motion.section 
-        className="py-16 px-4 bg-gray-50"
-        initial="initial"
-        animate="animate"
-        variants={staggerChildren}
-      >
-        <div className="max-w-6xl mx-auto">
-          <motion.div className="text-center mb-12" variants={fadeInUp}>
-            <h2 className="text-3xl font-bold mb-6 text-black">Our Mission</h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Card className="h-full border-0 bg-white shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <CardHeader className="text-center pb-4">
-                    <div className="flex justify-center mb-4">
-                      <div className="p-3 rounded-full bg-black text-white">
-                        {value.icon}
-                      </div>
-                    </div>
-                    <CardTitle className="text-xl font-bold text-black">
-                      {value.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-gray-600 text-center">{value.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+    <div className="arena-page min-h-[calc(100dvh-4rem)] overflow-hidden">
+      <section className="arena-shell about-hero">
+        <div className="about-hero-copy">
+          <div className="arena-kicker"><span className="arena-status-dot" /> Built for the next move</div>
+          <h1>Trading is more fun when there&apos;s something to prove.</h1>
+          <p>
+            Tradebattle is a skill-first trading competition platform. Practice with virtual capital,
+            compete in focused formats, and build the confidence to trust your process.
+          </p>
+          <div className="about-hero-actions">
+            <Link href="/signup" className="arena-primary-link">Enter the arena <ArrowRight size={17} /></Link>
+            <Link href="/#how-it-works" className="arena-secondary-link">See how it works</Link>
           </div>
         </div>
-      </motion.section>
 
-      {/* Team Section */}
-      <motion.section 
-        className="py-20 px-4"
-        initial="initial"
-        animate="animate"
-        variants={staggerChildren}
-      >
-        <div className="max-w-6xl mx-auto">
-          <motion.div className="text-center mb-16" variants={fadeInUp}>
-            <h2 className="text-3xl font-bold mb-6 text-black">Meet the Founders</h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {founders.map((founder, index) => (
-              <motion.div key={index} variants={fadeInUp}>
-                <Card className="h-full border-2 border-gray-200 hover:border-black transition-colors duration-300">
-                  <CardHeader className="text-center pb-4">
-                    <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <Users className="w-12 h-12 text-gray-400" />
-                    </div>
-                    <CardTitle className="text-xl font-bold text-black">
-                      {founder.name}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600 font-medium">
-                      {founder.role}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-0">
-                    <p className="text-gray-600 mb-4">{founder.description}</p>
-                    <div className="flex flex-wrap gap-2">
-                      {founder.expertise.map((skill, skillIndex) => (
-                        <Badge key={skillIndex} variant="secondary" className="bg-gray-100">
-                          {skill}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+        <div className="about-score-card" aria-label="Tradebattle platform summary">
+          <div className="about-score-top">
+            <span className="match-live"><i /> PLATFORM BRIEF</span>
+            <span className="about-score-code">TB / 001</span>
+          </div>
+          <div className="about-score-title">Play the market.<br /><strong>Sharpen the player.</strong></div>
+          <div className="about-chart" aria-hidden="true">
+            <div className="about-chart-grid" />
+            <svg viewBox="0 0 420 150" role="presentation">
+              <defs>
+                <linearGradient id="about-chart-fill" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0" stopColor="#67e7bf" stopOpacity="0.24" />
+                  <stop offset="1" stopColor="#67e7bf" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+              <path d="M0 126 C35 124 45 112 76 116 S122 98 148 105 S189 88 214 92 S248 58 276 71 S310 54 338 48 S376 26 420 12 V150 H0Z" fill="url(#about-chart-fill)" />
+              <path d="M0 126 C35 124 45 112 76 116 S122 98 148 105 S189 88 214 92 S248 58 276 71 S310 54 338 48 S376 26 420 12" fill="none" stroke="#67e7bf" strokeWidth="3" strokeLinecap="round" />
+              <circle cx="420" cy="12" r="5" fill="#67e7bf" />
+            </svg>
+          </div>
+          <div className="about-score-stats">
+            <div><span>MODE</span><strong>SKILL-BASED</strong></div>
+            <div><span>RISK</span><strong>VIRTUAL ONLY</strong></div>
+            <div><span>PACE</span><strong>YOUR CALL</strong></div>
           </div>
         </div>
-      </motion.section>
+      </section>
 
-      {/* Stats Section */}
-      <motion.section 
-        className="py-16 px-4 bg-black text-white"
-        initial="initial"
-        animate="animate"
-        variants={staggerChildren}
-      >
-        <div className="max-w-6xl mx-auto">
-          <motion.div className="text-center mb-12" variants={fadeInUp}>
-            <h2 className="text-3xl font-bold mb-6">Our Impact</h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-4 gap-8 text-center">
-            <motion.div variants={fadeInUp}>
-              <div className="text-4xl font-bold mb-2">500+</div>
-              <div className="text-gray-300">Research Studies</div>
-            </motion.div>
-            <motion.div variants={fadeInUp}>
-              <div className="text-4xl font-bold mb-2">10k+</div>
-              <div className="text-gray-300">Active Subscribers</div>
-            </motion.div>
-            <motion.div variants={fadeInUp}>
-              <div className="text-4xl font-bold mb-2">95%</div>
-              <div className="text-gray-300">Client Satisfaction</div>
-            </motion.div>
-            <motion.div variants={fadeInUp}>
-              <div className="text-4xl font-bold mb-2">24/7</div>
-              <div className="text-gray-300">Research Coverage</div>
-            </motion.div>
-          </div>
+      <section className="about-principles" aria-label="Tradebattle principles">
+        <div className="arena-shell about-principles-row">
+          {principles.map((principle) => (
+            <div key={principle.label} className="about-principle">
+              <span>{principle.label}</span>
+              <strong>{principle.value}</strong>
+            </div>
+          ))}
+          <div className="about-principle-note">No real-money trades. Just real competition.</div>
         </div>
-      </motion.section>
+      </section>
+
+      <section className="arena-shell about-pillars">
+        <div className="about-section-heading">
+          <div>
+            <div className="arena-kicker">Why Tradebattle</div>
+            <h2>A cleaner way to get better at trading.</h2>
+          </div>
+          <p>Less noise. Better reps. A leaderboard that gives your next session a reason to matter.</p>
+        </div>
+        <div className="about-pillar-grid">
+          {pillars.map(({ icon: Icon, eyebrow, title, description }) => (
+            <motion.article
+              key={eyebrow}
+              className="about-pillar-card"
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.18 }}
+            >
+              <div className="about-pillar-icon"><Icon size={19} /></div>
+              <div className="about-pillar-eyebrow">{eyebrow}</div>
+              <h3>{title}</h3>
+              <p>{description}</p>
+            </motion.article>
+          ))}
+        </div>
+      </section>
+
+      <section className="arena-shell about-closer">
+        <div className="about-closer-mark"><Trophy size={20} /></div>
+        <div>
+          <div className="arena-kicker">Your next move starts here</div>
+          <h2>Bring a strategy.<br /><span>Leave with a sharper one.</span></h2>
+        </div>
+        <Link href="/signup" className="arena-primary-link">Create free account <ArrowRight size={17} /></Link>
+      </section>
     </div>
   );
 }

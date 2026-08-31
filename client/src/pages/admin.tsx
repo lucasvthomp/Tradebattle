@@ -759,7 +759,7 @@ export default function Admin() {
   // Show loading state
   if (authLoading || usersLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-3">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] gap-3">
         <div className="animate-spin rounded-full h-10 w-10 border-2 border-t-transparent" style={{ borderColor: '#00A3FF', borderTopColor: 'transparent' }}></div>
         <span className="text-sm font-medium" style={{ color: '#8A93A6' }}>Loading admin data...</span>
       </div>

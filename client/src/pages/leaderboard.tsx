@@ -154,7 +154,7 @@ export default function Leaderboard() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'transparent' }}>
+    <div className="min-h-[calc(100dvh-4rem)]" style={{ background: 'transparent' }}>
       <div className="container mx-auto px-4 py-8 max-w-3xl">
 
         {/* Header */}
