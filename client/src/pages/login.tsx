@@ -1,14 +1,33 @@
 import { useState } from "react";
-import { useLocation, useSearch } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
+import { Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/hooks/use-auth";
-import { Link } from "wouter";
-import { Loader2, Eye, EyeOff, TrendingUp, Trophy, Users, ShieldCheck } from "lucide-react";
-import { apiRequest } from "@/lib/queryClient";
-import { useQueryClient } from "@tanstack/react-query";
 import { WalletConnect } from "@/components/auth/WalletConnect";
+import { apiRequest } from "@/lib/queryClient";
+import { useAuth } from "@/hooks/use-auth";
+import "./auth.css";
+
+function AuthMarketTrace() {
+  return (
+    <div className="auth-market" aria-hidden="true">
+      <svg viewBox="0 0 520 180" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="authMarketFill" x1="0" x2="0" y1="0" y2="1">
+            <stop offset="0%" stopColor="#20d8c2" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#20d8c2" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        <path className="auth-market-grid" d="M0 35H520M0 90H520M0 145H520M100 0V180M220 0V180M340 0V180M460 0V180" />
+        <path className="auth-market-area" d="M0 146C24 137 34 142 56 126S88 92 112 106s37 31 58 14 36-61 61-45 29 25 49 13 37-62 61-45 39 55 61 37 36-62 59-50 35 23 59 10v140H0Z" />
+        <path className="auth-market-line" d="M0 146C24 137 34 142 56 126S88 92 112 106s37 31 58 14 36-61 61-45 29 25 49 13 37-62 61-45 39 55 61 37 36-62 59-50 35 23 59 10" />
+        <circle className="auth-market-dot" cx="480" cy="40" r="5" />
+      </svg>
+    </div>
+  );
+}
 
 export default function Login() {
   const [, navigate] = useLocation();
@@ -62,205 +81,146 @@ export default function Login() {
   };
 
   return (
-    <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center py-10 px-4 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #00A3FF 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#00A3FF 1px, transparent 1px), linear-gradient(90deg, #00A3FF 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-      </div>
-
-      <div className="max-w-md w-full space-y-8 relative z-10">
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#00A3FF', boxShadow: '0 0 40px rgba(0, 163, 255, 0.25), 0 0 80px rgba(0, 163, 255, 0.1)' }}>
-              <span className="font-black text-4xl" style={{ color: '#091525' }}>T</span>
-            </div>
-          </div>
-          <h1 className="text-4xl font-black tracking-tight" style={{ color: '#F1F5F9' }}>Back in the arena</h1>
-          <p className="mt-3 text-lg font-medium" style={{ color: '#00A3FF' }}>Read the tape. Beat the field.</p>
-        </div>
-
-        {/* Feature Pills */}
-        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-          <div className="flex items-center gap-2">
-            <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
-            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Virtual Capital</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4" style={{ color: '#00A3FF' }} />
-            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Arenas</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users className="w-4 h-4" style={{ color: '#3B82F6' }} />
-            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>The Field</span>
-          </div>
-        </div>
-
-        {/* Form */}
-        {is2FA ? (
-          <form onSubmit={handle2FASubmit} className="space-y-5 p-6 sm:p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
-
-            <div className="text-center space-y-2">
-              <ShieldCheck className="w-10 h-10 mx-auto" style={{ color: '#00A3FF' }} />
-              <h2 className="text-lg font-bold" style={{ color: '#F1F5F9' }}>Two-step verification</h2>
-              <p className="text-sm" style={{ color: '#94A3B8' }}>Enter the 6-digit code from your authenticator</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="2fa-code" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Arena code</Label>
-              <Input
-                id="2fa-code"
-                type="text"
-                required
-                maxLength={6}
-                value={twoFACode}
-                onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
-                placeholder="000000"
-                className="h-12 rounded-xl text-center text-2xl tracking-[0.5em] font-mono transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
-                style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040' }}
-              />
-            </div>
-
-            {twoFAError && (
-              <div className="p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
-                <p className="text-sm font-medium" style={{ color: '#EF4444' }}>{twoFAError}</p>
-              </div>
-            )}
-
-            <Button
-              type="submit"
-              disabled={twoFALoading || twoFACode.length !== 6}
-              className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: '#00A3FF', color: '#091525', boxShadow: '0 4px 20px rgba(0, 163, 255, 0.25)' }}
-            >
-              {twoFALoading ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                "Verify & Enter"
-              )}
-            </Button>
-
-            <button
-              type="button"
-              className="w-full text-sm text-center transition-colors hover:underline"
-              style={{ color: '#94A3B8' }}
-              onClick={() => {
-                sessionStorage.removeItem("pending2FA");
-                navigate("/login");
-              }}
-            >
-              Back to entry
-            </button>
-          </form>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-5 p-6 sm:p-8 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(0, 163, 255, 0.15)' }}>
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
-
-            <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Player name</Label>
-              <Input
-                id="username"
-                type="text"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your player name"
-                className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
-                style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Passcode</Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your passcode"
-                  className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
-                  style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 flex items-center pr-4 transition-opacity hover:opacity-80"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" style={{ color: '#94A3B8' }} />
-                  ) : (
-                    <Eye className="h-5 w-5" style={{ color: '#94A3B8' }} />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loginMutation.isPending}
-              className="w-full h-12 font-bold text-base rounded-xl transition-all duration-200 hover:brightness-110"
-              style={{ backgroundColor: '#00A3FF', color: '#091525', boxShadow: '0 4px 20px rgba(0, 163, 255, 0.25)' }}
-            >
-              {loginMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Opening the gate...
-                </>
-              ) : (
-                "Enter arena"
-              )}
-            </Button>
-
-            {loginMutation.isError && (
-              <div className="p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
-                <p className="text-sm font-medium" style={{ color: '#EF4444' }}>
-                  {(loginMutation.error as any)?.message || "Entry failed. Check your player name and passcode."}
-                </p>
-              </div>
-            )}
-
-            <div className="text-center">
-              <Link href="/forgot-password" className="text-sm transition-colors hover:underline" style={{ color: '#94A3B8' }}>
-                Forgot your passcode?
-              </Link>
-            </div>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" style={{ borderColor: '#0E2040' }} />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="px-3 text-xs font-medium" style={{ backgroundColor: '#0C1A2E', color: '#94A3B8' }}>
-                  Or enter with
-                </span>
-              </div>
-            </div>
-
-            <WalletConnect
-              onSuccess={() => {
-                navigate("/hub");
-              }}
-              onNewUser={({ address, signature }) => {
-                navigate(`/signup?wallet=${encodeURIComponent(address)}&signature=${encodeURIComponent(signature)}`);
-              }}
-            />
-          </form>
-        )}
-
-        {/* Create profile link */}
-        <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
-          New to the arena?{" "}
-          <Link href="/signup" className="font-semibold hover:underline transition-colors" style={{ color: '#00A3FF' }}>
-            Create player profile
+    <div className="auth-screen auth-login-screen">
+      <div className="auth-shell">
+        <aside className="auth-briefing">
+          <Link href="/" className="auth-brand">
+            <span className="auth-brand-mark">T</span>
+            <span>TRADEBATTLE</span>
           </Link>
-        </p>
+
+          <div className="auth-briefing-copy">
+            <div className="auth-eyebrow">The market is open</div>
+            <h1>Think fast.<br />Play the tape.</h1>
+            <p>Step back into a competitive trading arena built for sharp reads, clean decisions, and bragging rights.</p>
+          </div>
+
+          <AuthMarketTrace />
+
+          <div className="auth-signal-list">
+            <div className="auth-signal"><strong>$100K</strong><span>Virtual capital</span></div>
+            <div className="auth-signal"><strong>5 MIN</strong><span>Blitz rounds</span></div>
+            <div className="auth-signal"><strong>0 RISK</strong><span>Practice mode</span></div>
+          </div>
+        </aside>
+
+        <section className="auth-panel">
+          <div className="auth-panel-top">
+            <Link href="/">← Back to home</Link>
+            {!is2FA && <span className="auth-kicker">Player access</span>}
+          </div>
+
+          {is2FA ? (
+            <form onSubmit={handle2FASubmit} className="auth-twofa-card">
+              <div className="auth-form-heading compact">
+                <div className="auth-twofa-icon"><ShieldCheck size={24} /></div>
+                <div className="auth-eyebrow">Security checkpoint</div>
+                <h2>One more read.</h2>
+                <p>Enter the six-digit code from your authenticator to finish entering the arena.</p>
+              </div>
+
+              <div className="auth-field">
+                <Label htmlFor="2fa-code">Verification code</Label>
+                <Input
+                  id="2fa-code"
+                  type="text"
+                  required
+                  maxLength={6}
+                  value={twoFACode}
+                  onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="000000"
+                  className="auth-input auth-twofa-input"
+                  autoComplete="one-time-code"
+                />
+              </div>
+
+              {twoFAError && <div className="auth-error">{twoFAError}</div>}
+
+              <Button type="submit" disabled={twoFALoading || twoFACode.length !== 6} className="auth-primary-button">
+                {twoFALoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking code...</> : "Verify and enter"}
+              </Button>
+
+              <button
+                type="button"
+                className="auth-secondary-button"
+                onClick={() => {
+                  sessionStorage.removeItem("pending2FA");
+                  navigate("/login");
+                }}
+              >
+                Use a different entry
+              </button>
+            </form>
+          ) : (
+            <>
+              <div className="auth-form-heading">
+                <div className="auth-eyebrow">Welcome back, competitor</div>
+                <h2>Resume your run.</h2>
+                <p>Your next move is waiting. Sign in to pick up where you left off.</p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="auth-form">
+                <div className="auth-field">
+                  <Label htmlFor="username">Player name</Label>
+                  <Input
+                    id="username"
+                    type="text"
+                    required
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your player name"
+                    className="auth-input"
+                    autoComplete="username"
+                  />
+                </div>
+
+                <div className="auth-field">
+                  <Label htmlFor="password">Passcode</Label>
+                  <div className="auth-password-wrap">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your passcode"
+                      className="auth-input"
+                      autoComplete="current-password"
+                    />
+                    <button type="button" className="auth-icon-button" aria-label={showPassword ? "Hide passcode" : "Show passcode"} onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                </div>
+
+                <Button type="submit" disabled={loginMutation.isPending} className="auth-primary-button">
+                  {loginMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening the gate...</> : "Enter the arena"}
+                </Button>
+
+                {loginMutation.isError && (
+                  <div className="auth-error">
+                    {(loginMutation.error as any)?.message || "Entry failed. Check your player name and passcode."}
+                  </div>
+                )}
+
+                <Link href="/forgot-password" className="auth-panel-link" style={{ textAlign: "center" }}>Forgot your passcode?</Link>
+
+                <div className="auth-divider">Or use a wallet</div>
+
+                <div className="auth-wallet">
+                  <WalletConnect
+                    onSuccess={() => navigate("/hub")}
+                    onNewUser={({ address, signature }) => {
+                      navigate(`/signup?wallet=${encodeURIComponent(address)}&signature=${encodeURIComponent(signature)}`);
+                    }}
+                  />
+                </div>
+              </form>
+
+              <p className="auth-footer-link">New to the arena? <Link href="/signup">Build a player profile</Link></p>
+            </>
+          )}
+        </section>
       </div>
     </div>
   );

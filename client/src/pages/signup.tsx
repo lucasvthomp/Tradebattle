@@ -1,16 +1,15 @@
 import { useState, useEffect } from "react";
-import { useLocation, useSearch } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
+import { Loader2, Eye, EyeOff, CheckCircle, XCircle, ArrowRight, ArrowLeft, User, Lock, Globe, Rocket, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useAuth } from "@/hooks/use-auth";
-import { Link } from "wouter";
-import { Loader2, Eye, EyeOff, CheckCircle, XCircle, ArrowRight, ArrowLeft, User, Lock, Globe, Rocket, Check } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import "./auth.css";
 
-// Country and language mappings
 const countries = {
   "United States": { language: "English", currency: "USD", code: "US" },
   "Canada": { language: "English", currency: "CAD", code: "CA" },
@@ -38,10 +37,10 @@ const countries = {
 };
 
 const steps = [
-  { icon: User, label: "Player card", title: "Build your player card", subtitle: "Pick your player name and email" },
-  { icon: Lock, label: "Defense", title: "Lock in your entry", subtitle: "Create a strong passcode" },
-  { icon: Globe, label: "Home base", title: "Set your home base", subtitle: "Choose your country" },
-  { icon: Rocket, label: "Launch", title: "Ready for the opening bell", subtitle: "Review your player card" },
+  { icon: User, label: "Identity", subtitle: "Player card", title: "Claim your player card", description: "Choose the name the field will remember." },
+  { icon: Lock, label: "Defense", subtitle: "Secure entry", title: "Lock in your entry", description: "Set a passcode that keeps your seat yours." },
+  { icon: Globe, label: "Home base", subtitle: "Local settings", title: "Set your home base", description: "Tune the arena to your region and currency." },
+  { icon: Rocket, label: "Launch", subtitle: "Final check", title: "Ready for the opening bell", description: "Review your player card and take your seat." },
 ];
 
 export default function Signup() {
@@ -49,11 +48,9 @@ export default function Signup() {
   const searchString = useSearch();
   const { registerMutation, user } = useAuth();
   const { toast } = useToast();
-
-  // Detect wallet registration from URL params
   const params = new URLSearchParams(searchString);
-  const walletAddress = params.get('wallet');
-  const walletSignature = params.get('signature');
+  const walletAddress = params.get("wallet");
+  const walletSignature = params.get("signature");
   const isWalletRegistration = !!walletAddress && !!walletSignature;
 
   const [step, setStep] = useState(1);
@@ -74,7 +71,6 @@ export default function Signup() {
     return null;
   }
 
-  // Debounced username check
   useEffect(() => {
     if (!username || username.length < 3) {
       setUsernameStatus({ checking: false, available: null });
@@ -107,13 +103,12 @@ export default function Signup() {
     e?.preventDefault();
 
     if (isWalletRegistration) {
-      // Wallet registration flow
       setIsSubmitting(true);
       try {
-        const response = await fetch('/api/auth/wallet/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
+        const response = await fetch("/api/auth/wallet/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             walletAddress,
             signature: walletSignature,
@@ -127,26 +122,18 @@ export default function Signup() {
 
         if (!response.ok) {
           const error = await response.json();
-          throw new Error(error.error || 'Registration failed');
+          throw new Error(error.error || "Registration failed");
         }
 
         const { user } = await response.json();
-        toast({
-          title: 'Registration successful',
-          description: `Welcome to Tradebattle, ${user.username}!`,
-        });
-        window.location.href = '/hub';
+        toast({ title: "Registration successful", description: `Welcome to Tradebattle, ${user.username}!` });
+        window.location.href = "/hub";
       } catch (error: any) {
-        toast({
-          title: 'Registration failed',
-          description: error.message,
-          variant: 'destructive',
-        });
+        toast({ title: "Registration failed", description: error.message, variant: "destructive" });
       } finally {
         setIsSubmitting(false);
       }
     } else {
-      // Traditional password registration
       registerMutation.mutate({
         email,
         password,
@@ -154,409 +141,241 @@ export default function Signup() {
         country: selectedCountry,
         language: selectedLanguage,
         currency: selectedCurrency,
-      }, {
-        onSuccess: () => navigate("/dashboard"),
-      });
+      }, { onSuccess: () => navigate("/dashboard") });
     }
   };
 
-  // Password validation (skip for wallet users)
   const hasMinLength = password.length >= 8;
   const hasUppercase = /[A-Z]/.test(password);
   const hasNumber = /[0-9]/.test(password);
   const passwordValid = hasMinLength && hasUppercase && hasNumber;
-
   const usernameValid = username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
   const emailValid = email.includes("@") && email.includes(".");
 
-  // Step validation (adjusted for wallet registration)
   const canProceed = () => {
     switch (step) {
       case 1:
-        // For wallet users, only username is required (email optional)
-        if (isWalletRegistration) {
-          return usernameValid && usernameStatus.available === true;
-        }
-        // For password users, both username and email required
+        if (isWalletRegistration) return usernameValid && usernameStatus.available === true;
         return usernameValid && usernameStatus.available === true && emailValid;
-      case 2:
-        // Skip password step for wallet users
-        return isWalletRegistration ? true : passwordValid;
+      case 2: return isWalletRegistration ? true : passwordValid;
       case 3: return !!selectedCountry;
-      case 4: return acceptedToS && acceptedPrivacy; // Must accept both legal agreements
+      case 4: return acceptedToS && acceptedPrivacy;
       default: return false;
     }
   };
 
   const nextStep = () => {
     if (step < 4 && canProceed()) {
-      // Skip password step for wallet users
-      if (isWalletRegistration && step === 1) {
-        setStep(3); // Skip to location
-      } else {
-        setStep(step + 1);
-      }
+      setStep(isWalletRegistration && step === 1 ? 3 : step + 1);
     }
   };
 
   const prevStep = () => {
-    if (step > 1) {
-      // Skip password step when going back for wallet users
-      if (isWalletRegistration && step === 3) {
-        setStep(1);
-      } else {
-        setStep(step - 1);
-      }
-    }
+    if (step > 1) setStep(isWalletRegistration && step === 3 ? 1 : step - 1);
   };
 
+  const currentStep = steps[step - 1];
+  const CurrentIcon = currentStep.icon;
+
   return (
-    <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center py-10 px-4 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #00A3FF 0%, transparent 70%)' }} />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#00A3FF 1px, transparent 1px), linear-gradient(90deg, #00A3FF 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
-      </div>
+    <div className="auth-screen auth-signup-screen">
+      <div className="auth-shell signup-shell">
+        <aside className="auth-briefing signup-briefing">
+          <Link href="/" className="auth-brand">
+            <span className="auth-brand-mark">T</span>
+            <span>TRADEBATTLE</span>
+          </Link>
 
-      <div className="max-w-md w-full space-y-6 relative z-10">
-        {/* Logo */}
-        <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ backgroundColor: '#00A3FF', boxShadow: '0 0 40px rgba(0, 163, 255, 0.25)' }}>
-              <span className="font-black text-3xl" style={{ color: '#091525' }}>T</span>
-            </div>
+          <div>
+            <div className="auth-eyebrow">New player setup</div>
+            <h1 className="signup-rail-title">Build a card<br />worth watching.</h1>
+            <p className="signup-rail-copy">A quick setup gets you from the lobby to your first decision with a full stack of virtual capital.</p>
           </div>
-        </div>
 
-        {/* Progress Indicator */}
-        <div className="flex items-center justify-center gap-2 px-4">
-          {steps.map((s, i) => {
-            const StepIcon = s.icon;
-            const stepNum = i + 1;
-            const isActive = stepNum === step;
-            const isCompleted = stepNum < step;
-            return (
-              <div key={i} className="flex items-center">
-                {i > 0 && (
-                  <div className="w-5 sm:w-8 h-[2px] mx-1" style={{ backgroundColor: isCompleted ? '#00A3FF' : '#0E2040' }} />
-                )}
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
-                  style={{
-                    backgroundColor: isActive ? '#00A3FF' : isCompleted ? '#00A3FF30' : '#0C1A2E',
-                    border: `2px solid ${isActive ? '#00A3FF' : isCompleted ? '#00A3FF' : '#0E2040'}`,
-                  }}
-                >
-                  {isCompleted ? (
-                    <Check className="w-4 h-4" style={{ color: '#00A3FF' }} />
-                  ) : (
-                    <StepIcon className="w-4 h-4" style={{ color: isActive ? '#091525' : '#94A3B8' }} />
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Step Title */}
-        <div className="text-center">
-          <h1 className="text-2xl font-black" style={{ color: '#F1F5F9' }}>{steps[step - 1].title}</h1>
-          <p className="mt-1 text-sm" style={{ color: '#94A3B8' }}>{steps[step - 1].subtitle}</p>
-        </div>
-
-        {/* Form Card */}
-        <div className="p-6 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5)' }}>
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
-
-          {/* Step 1: Player name & email */}
-          {step === 1 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Player name</Label>
-                <div className="relative">
-                  <Input
-                    id="username"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Choose your player name"
-                    maxLength={20}
-                    className="pr-10 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
-                    style={{
-                      backgroundColor: 'transparent',
-                      color: '#F1F5F9',
-                      borderColor: usernameStatus.available === true ? '#10B981' : usernameStatus.available === false ? '#EF4444' : '#0E2040',
-                      fontSize: '15px',
-                    }}
-                  />
-                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    {usernameStatus.checking && <Loader2 className="h-4 w-4 animate-spin" style={{ color: '#94A3B8' }} />}
-                    {usernameStatus.available === true && <CheckCircle className="h-4 w-4" style={{ color: '#10B981' }} />}
-                    {usernameStatus.available === false && <XCircle className="h-4 w-4" style={{ color: '#EF4444' }} />}
+          <div className="signup-steps" aria-label="Profile setup progress">
+            {steps.map((item, index) => {
+              const StepIcon = item.icon;
+              const stepNumber = index + 1;
+              const isActive = stepNumber === step;
+              const isComplete = stepNumber < step;
+              const isSkipped = isWalletRegistration && stepNumber === 2;
+              return (
+                <div key={item.label} className={`signup-step ${isActive ? "active" : ""} ${isComplete ? "complete" : ""} ${isSkipped ? "skipped" : ""}`}>
+                  <div className="signup-step-icon">{isComplete ? <Check size={15} /> : <StepIcon size={15} />}</div>
+                  <div>
+                    <span className="signup-step-label">{item.label}</span>
+                    <span className="signup-step-subtitle">{isSkipped ? "Wallet secured" : item.subtitle}</span>
                   </div>
                 </div>
-                {usernameStatus.available === false && usernameStatus.reason && (
-                  <p className="text-xs" style={{ color: '#EF4444' }}>{usernameStatus.reason}</p>
-                )}
-                {username && username.length < 3 && (
-                  <p className="text-xs" style={{ color: '#EF4444' }}>Player name needs at least 3 characters</p>
-                )}
-                {usernameStatus.available === true && (
-                  <p className="text-xs" style={{ color: '#10B981' }}>Player name is open!</p>
-                )}
-              </div>
+              );
+            })}
+          </div>
 
-              {!isWalletRegistration && (
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Contact email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Where should we send updates?"
-                    className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
-                    style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
-                  />
-                </div>
-              )}
+          <div className="signup-briefing-note">
+            <strong>Every move is simulated.</strong>
+            <p>No deposits, no pressure. Just a cleaner way to sharpen your market instincts.</p>
+          </div>
+        </aside>
 
-              {isWalletRegistration && (
-                <div className="p-3 rounded-xl" style={{ backgroundColor: '#00A3FF10', border: '1px solid #00A3FF30' }}>
-                  <p className="text-xs text-center" style={{ color: '#00A3FF' }}>
-                    Wallet: {walletAddress?.slice(0, 6)}...{walletAddress?.slice(-4)}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+        <section className="auth-panel signup-panel">
+          <div className="signup-panel-top">
+            <Link href="/" className="auth-brand">
+              <span className="auth-brand-mark">T</span>
+              <span>TRADEBATTLE</span>
+            </Link>
+            <Link href="/login" className="auth-panel-link">Already a player? Sign in</Link>
+          </div>
 
-          {/* Step 2: Passcode */}
-          {step === 2 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Passcode</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? "text" : "password"}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Create your passcode"
-                    className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
-                    style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 flex items-center pr-4"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5" style={{ color: '#94A3B8' }} />
-                    ) : (
-                      <Eye className="h-5 w-5" style={{ color: '#94A3B8' }} />
-                    )}
-                  </button>
-                </div>
-              </div>
+          <div className="signup-progress" aria-hidden="true"><span style={{ width: `${(step / steps.length) * 100}%` }} /></div>
 
-              {/* Password Strength Bar */}
-              <div className="space-y-2">
-                <div className="flex gap-1">
-                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasMinLength ? '#10B981' : '#0E2040' }} />
-                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasUppercase ? '#10B981' : '#0E2040' }} />
-                  <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasNumber ? '#10B981' : '#0E2040' }} />
-                </div>
-                <p className="text-xs font-medium" style={{ color: passwordValid ? '#10B981' : '#94A3B8' }}>
-                  {passwordValid ? 'Passcode locked in' : 'Passcode strength'}
-                </p>
-              </div>
+          <div className="signup-form-heading">
+            <div className="auth-eyebrow"><CurrentIcon size={12} style={{ display: "inline", marginRight: 6, verticalAlign: "-2px" }} /> Move {String(step).padStart(2, "0")} / 04</div>
+            <h1>{currentStep.title}</h1>
+            <p>{currentStep.description}</p>
+          </div>
 
-              {/* Requirements Checklist */}
-              <div className="space-y-2 p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
-                {[
-                  { met: hasMinLength, text: "At least 8 characters" },
-                  { met: hasUppercase, text: "One uppercase letter" },
-                  { met: hasNumber, text: "One number" },
-                ].map((req, i) => (
-                  <div key={i} className="flex items-center gap-2">
-                    <div className="w-5 h-5 rounded-full flex items-center justify-center transition-colors duration-300" style={{ backgroundColor: req.met ? '#10B98130' : '#0E2040' }}>
-                      {req.met ? (
-                        <Check className="w-3 h-3" style={{ color: '#10B981' }} />
-                      ) : (
-                        <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#94A3B8' }} />
-                      )}
+          <div className="signup-form-card">
+            {step === 1 && (
+              <div className="auth-form">
+                <div className="auth-field">
+                  <Label htmlFor="username">Player name</Label>
+                  <div className="auth-username-wrap">
+                    <Input
+                      id="username"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="e.g. closingbell"
+                      maxLength={20}
+                      className="auth-input"
+                      autoComplete="username"
+                      style={{ borderColor: usernameStatus.available === true ? "#20d8c2" : usernameStatus.available === false ? "#ef6b75" : undefined }}
+                    />
+                    <div className="auth-icon-button" aria-hidden="true">
+                      {usernameStatus.checking && <Loader2 size={16} className="animate-spin" />}
+                      {usernameStatus.available === true && <CheckCircle size={16} style={{ color: "#20d8c2" }} />}
+                      {usernameStatus.available === false && <XCircle size={16} style={{ color: "#ef6b75" }} />}
                     </div>
-                    <span className="text-xs transition-colors duration-300" style={{ color: req.met ? '#10B981' : '#94A3B8' }}>{req.text}</span>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Step 3: Home base */}
-          {step === 3 && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Home base</Label>
-                <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="h-12 rounded-xl" style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040' }}>
-                    <SelectValue placeholder="Choose your home base" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(countries).map((country) => (
-                      <SelectItem key={country} value={country}>{country}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {selectedCountry && (
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
-                    <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Play language</p>
-                    <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedLanguage}</p>
-                  </div>
-                  <div className="p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
-                    <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Currency</p>
-                    <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedCurrency}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Step 4: Review */}
-          {step === 4 && (
-            <div className="space-y-5">
-              <div className="space-y-3">
-                {[
-                  { label: "Player name", value: username, color: '#00A3FF' },
-                  { label: "Contact email", value: email, color: '#3B82F6' },
-                  { label: "Home base", value: selectedCountry, color: '#10B981' },
-                  { label: "Play language", value: selectedLanguage, color: '#94A3B8' },
-                  { label: "Display currency", value: selectedCurrency, color: '#94A3B8' },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
-                    <span className="text-xs" style={{ color: '#94A3B8' }}>{item.label}</span>
-                    <span className="text-sm font-semibold" style={{ color: item.color }}>{item.value}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Legal Agreements */}
-              <div className="space-y-4 p-4 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="tos"
-                    checked={acceptedToS}
-                    onCheckedChange={(checked) => setAcceptedToS(checked as boolean)}
-                    className="mt-1"
-                    style={{ borderColor: acceptedToS ? '#10B981' : '#0E2040' }}
-                  />
-                  <div className="flex-1">
-                    <label htmlFor="tos" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
-                      I agree to the{' '}
-                      <Link href="/terms" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#00A3FF' }}>
-                        Arena Terms
-                      </Link>
-                      <span className="text-red-500 ml-1">*</span>
-                    </label>
-                  </div>
+                  {usernameStatus.available === false && usernameStatus.reason && <div className="signup-field-note error">{usernameStatus.reason}</div>}
+                  {username && username.length < 3 && <div className="signup-field-note error">Player name needs at least 3 characters.</div>}
+                  {usernameStatus.available === true && <div className="signup-field-note success">That player name is open.</div>}
                 </div>
 
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="privacy"
-                    checked={acceptedPrivacy}
-                    onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)}
-                    className="mt-1"
-                    style={{ borderColor: acceptedPrivacy ? '#10B981' : '#0E2040' }}
-                  />
-                  <div className="flex-1">
-                    <label htmlFor="privacy" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
-                      I have read and accept the{' '}
-                      <Link href="/privacy" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#00A3FF' }}>
-                        Privacy Rules
-                      </Link>
-                      <span className="text-red-500 ml-1">*</span>
-                    </label>
+                {!isWalletRegistration && (
+                  <div className="auth-field">
+                    <Label htmlFor="email">Contact email</Label>
+                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Where should we send updates?" className="auth-input" autoComplete="email" />
+                    <div className="signup-field-note">Used for account recovery and important arena updates.</div>
                   </div>
-                </div>
+                )}
 
-                <p className="text-xs pt-2" style={{ color: '#5f6b7a', borderTop: '1px solid #0E2040' }}>
-                  By joining, you confirm you are 18+ and agree to receive important updates about your player card.
-                </p>
+                {isWalletRegistration && <div className="signup-wallet-card">Wallet seat connected · {walletAddress?.slice(0, 7)}...{walletAddress?.slice(-5)}</div>}
               </div>
-            </div>
-          )}
-
-          {/* Navigation Buttons */}
-          <div className="flex justify-between items-center mt-6">
-            {step > 1 ? (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={prevStep}
-                className="h-11 rounded-xl px-5"
-                style={{ borderColor: '#0E2040', color: '#F1F5F9' }}
-              >
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Previous move
-              </Button>
-            ) : (
-              <div />
             )}
+
+            {step === 2 && (
+              <div className="auth-form">
+                <div className="auth-field">
+                  <Label htmlFor="password">Passcode</Label>
+                  <div className="auth-password-wrap">
+                    <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create your passcode" className="auth-input" autoComplete="new-password" />
+                    <button type="button" className="auth-icon-button" aria-label={showPassword ? "Hide passcode" : "Show passcode"} onClick={() => setShowPassword(!showPassword)}>
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="signup-strength">
+                  <div className="signup-strength-bars"><span className={hasMinLength ? "met" : ""} /><span className={hasUppercase ? "met" : ""} /><span className={hasNumber ? "met" : ""} /></div>
+                  <div className={`signup-field-note ${passwordValid ? "success" : ""}`}>{passwordValid ? "Passcode locked in." : "Three checks keep your player card secure."}</div>
+                </div>
+
+                <div className="signup-requirements">
+                  {[
+                    { met: hasMinLength, text: "At least 8 characters" },
+                    { met: hasUppercase, text: "One uppercase letter" },
+                    { met: hasNumber, text: "One number" },
+                  ].map((requirement) => (
+                    <div key={requirement.text} className={`signup-requirement ${requirement.met ? "met" : ""}`}>
+                      <span className="signup-requirement-icon">{requirement.met ? <Check size={11} /> : <span style={{ width: 4, height: 4, borderRadius: "50%", background: "currentColor" }} />}</span>
+                      <span>{requirement.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="auth-form">
+                <div className="auth-field">
+                  <Label className="auth-field-label">Home base</Label>
+                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                    <SelectTrigger className="auth-input">
+                      <SelectValue placeholder="Choose your home base" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.keys(countries).map((country) => <SelectItem key={country} value={country}>{country}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <div className="signup-field-note">We use this to set the right language and display currency.</div>
+                </div>
+
+                {selectedCountry ? (
+                  <div className="signup-location-meta">
+                    <div className="signup-meta-card"><span>Play language</span><strong>{selectedLanguage}</strong></div>
+                    <div className="signup-meta-card"><span>Display currency</span><strong>{selectedCurrency}</strong></div>
+                  </div>
+                ) : (
+                  <div className="signup-wallet-card">Your settings stay flexible. You can update them later from your profile.</div>
+                )}
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="auth-form">
+                <div className="signup-review-list">
+                  {[
+                    { label: "Player name", value: username },
+                    { label: "Contact email", value: email || "Wallet account" },
+                    { label: "Home base", value: selectedCountry },
+                    { label: "Language / currency", value: `${selectedLanguage} · ${selectedCurrency}` },
+                  ].map((item) => (
+                    <div key={item.label} className="signup-review-row"><span>{item.label}</span><strong>{item.value}</strong></div>
+                  ))}
+                </div>
+
+                <div className="signup-legal">
+                  <div className="signup-legal-row">
+                    <Checkbox id="tos" checked={acceptedToS} onCheckedChange={(checked) => setAcceptedToS(checked as boolean)} />
+                    <label htmlFor="tos">I agree to the <Link href="/terms" target="_blank">Arena Terms</Link>.</label>
+                  </div>
+                  <div className="signup-legal-row">
+                    <Checkbox id="privacy" checked={acceptedPrivacy} onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)} />
+                    <label htmlFor="privacy">I accept the <Link href="/privacy" target="_blank">Privacy Rules</Link>.</label>
+                  </div>
+                  <p className="signup-legal-note">By joining, you confirm you are 18+ and agree to receive essential updates about your player card.</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="signup-navigation">
+            {step > 1 ? (
+              <Button type="button" variant="outline" onClick={prevStep} className="auth-secondary-button"><ArrowLeft size={15} /> Previous</Button>
+            ) : <span />}
 
             {step < 4 ? (
-              <Button
-                type="button"
-                onClick={nextStep}
-                disabled={!canProceed()}
-                className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
-                style={{ backgroundColor: canProceed() ? '#00A3FF' : '#0E2040', color: canProceed() ? '#FFFFFF' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(0, 163, 255, 0.25)' : 'none' }}
-              >
-                Next move
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+              <Button type="button" onClick={nextStep} disabled={!canProceed()} className="auth-primary-button">Continue <ArrowRight size={15} className="ml-2" /></Button>
             ) : (
-              <Button
-                type="button"
-                onClick={() => handleSubmit()}
-                disabled={registerMutation.isPending || !canProceed()}
-                className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
-                style={{ backgroundColor: canProceed() ? '#10B981' : '#0E2040', color: '#FFFFFF', boxShadow: canProceed() ? '0 4px 20px rgba(16, 185, 129, 0.3)' : 'none' }}
-              >
-                {registerMutation.isPending ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Building your player card...
-                  </>
-                ) : (
-                  <>
-                    <Rocket className="w-4 h-4 mr-2" />
-                    Create player profile
-                  </>
-                )}
+              <Button type="button" onClick={() => handleSubmit()} disabled={registerMutation.isPending || isSubmitting || !canProceed()} className="auth-primary-button launch">
+                {registerMutation.isPending || isSubmitting ? <><Loader2 size={15} className="mr-2 animate-spin" /> Building card...</> : <><Rocket size={15} className="mr-2" /> Take my seat</>}
               </Button>
             )}
           </div>
 
-          {registerMutation.isError && (
-            <div className="mt-4 p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
-              <p className="text-sm font-medium" style={{ color: '#EF4444' }}>
-                {(registerMutation.error as any)?.message || "Registration failed"}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Sign In Link */}
-        <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
-          Already have a player profile?{" "}
-          <Link href="/login" className="font-semibold hover:underline transition-colors" style={{ color: '#00A3FF' }}>
-            Enter the arena
-          </Link>
-        </p>
+          {registerMutation.isError && <div className="auth-error signup-error">{(registerMutation.error as any)?.message || "Registration failed"}</div>}
+          <p className="auth-footer-link signup-footer">Already have a player profile? <Link href="/login">Enter the arena</Link></p>
+        </section>
       </div>
     </div>
   );
