@@ -1,20 +1,23 @@
 import { Link } from "wouter";
 import { FaInstagram, FaFacebook, FaTwitter, FaTiktok } from "react-icons/fa";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Footer() {
   const { t } = useUserPreferences();
+  const { user } = useAuth();
+  const isPublicSite = !user;
   return (
-    <footer className="bg-card border-t border-border py-12">
+    <footer className="bg-card border-t border-border py-12" style={isPublicSite ? { background: '#07111f', borderColor: 'rgba(98, 228, 189, 0.12)' } : undefined}>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #00A3FF, #0077CC)', boxShadow: '0 0 12px rgba(0, 163, 255, 0.12)' }}>
-                  <span className="text-primary-foreground font-black text-sm">O</span>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: isPublicSite ? 'linear-gradient(135deg, #9af1d1, #42c99f)' : 'linear-gradient(135deg, #00A3FF, #0077CC)', boxShadow: isPublicSite ? '0 0 16px rgba(98, 228, 189, 0.16)' : '0 0 12px rgba(0, 163, 255, 0.12)' }}>
+                  <span className="font-black text-sm" style={{ color: isPublicSite ? '#06151c' : undefined }}>{isPublicSite ? 'T' : 'O'}</span>
                 </div>
-                <span className="text-xl font-display font-bold text-foreground tracking-tight">{t('brandName')}</span>
+                  <span className="text-xl font-display font-bold tracking-tight" style={isPublicSite ? { color: '#F2FBF8' } : undefined}>{isPublicSite ? 'TRADEBATTLE' : t('brandName')}</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 {t('tagline')}
@@ -25,18 +28,18 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-4 text-foreground">Platform</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/hub" className="hover:text-foreground transition-colors">
-                    {t('hub')}
+                  <Link href={isPublicSite ? "/#how-it-works" : "/hub"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'How it works' : t('hub')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/tournaments" className="hover:text-foreground transition-colors">
-                    {t('tournaments')}
+                  <Link href={isPublicSite ? "/#modes" : "/tournaments"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Game modes' : t('tournaments')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/leaderboard" className="hover:text-foreground transition-colors">
-                    {t('leaderboard')}
+                  <Link href={isPublicSite ? "/signup" : "/leaderboard"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Start competing' : t('leaderboard')}
                   </Link>
                 </li>
               </ul>
@@ -46,18 +49,18 @@ export default function Footer() {
               <h4 className="text-lg font-semibold mb-4 text-foreground">{t('community')}</h4>
               <ul className="space-y-2 text-muted-foreground">
                 <li>
-                  <Link href="/people" className="hover:text-foreground transition-colors">
-                    {t('people')}
+                  <Link href={isPublicSite ? "/about" : "/people"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'About Tradebattle' : t('people')}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/shop" className="hover:text-foreground transition-colors">
-                    Shop
+                  <Link href={isPublicSite ? "/contact" : "/shop"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Support' : 'Shop'}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/analytics" className="hover:text-foreground transition-colors">
-                    {t('analytics')}
+                  <Link href={isPublicSite ? "/signup" : "/analytics"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Create an account' : t('analytics')}
                   </Link>
                 </li>
               </ul>
@@ -72,18 +75,18 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/archive" className="hover:text-foreground transition-colors">
-                    Transaction Archive
+                  <Link href={isPublicSite ? "/privacy" : "/archive"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Privacy Policy' : 'Transaction Archive'}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/pricing" className="hover:text-white transition-colors">
-                    Pricing
+                  <Link href={isPublicSite ? "/login" : "/pricing"} className="hover:text-white transition-colors">
+                    {isPublicSite ? 'Log in' : 'Pricing'}
                   </Link>
                 </li>
                 <li>
-                  <Link href="/withdraw" className="hover:text-foreground transition-colors">
-                    Withdraw Funds
+                  <Link href={isPublicSite ? "/signup" : "/withdraw"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Sign up' : 'Withdraw Funds'}
                   </Link>
                 </li>
               </ul>

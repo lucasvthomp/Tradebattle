@@ -27,24 +27,25 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const [balanceModalTab, setBalanceModalTab] = useState<'deposit' | 'withdraw'>('deposit');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, navigate] = useLocation();
+  const isPublicSite = !user;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(20, 46, 88, 0.92)', borderBottom: '1px solid rgba(255, 255, 255, 0.07)', boxShadow: '0 1px 12px rgba(0, 0, 0, 0.25)' }}>
+    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: isPublicSite ? 'rgba(5, 17, 31, 0.84)' : 'rgba(20, 46, 88, 0.92)', borderBottom: isPublicSite ? '1px solid rgba(98, 228, 189, 0.14)' : '1px solid rgba(255, 255, 255, 0.07)', boxShadow: isPublicSite ? '0 8px 30px rgba(0, 0, 0, 0.18)' : '0 1px 12px rgba(0, 0, 0, 0.25)' }}>
       <div className="container mx-auto px-4">
         <nav className="flex items-center h-16 relative">
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #00A3FF, #0077CC)', boxShadow: '0 0 16px rgba(0, 163, 255, 0.25)' }}>
-                <span className="font-black text-sm" style={{ color: '#FFFFFF' }}>O</span>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: isPublicSite ? 'linear-gradient(135deg, #9af1d1, #42c99f)' : 'linear-gradient(135deg, #00A3FF, #0077CC)', boxShadow: isPublicSite ? '0 0 18px rgba(98, 228, 189, 0.2)' : '0 0 16px rgba(0, 163, 255, 0.25)' }}>
+                <span className="font-black text-sm" style={{ color: isPublicSite ? '#06151c' : '#FFFFFF' }}>{isPublicSite ? 'T' : 'O'}</span>
               </div>
-              <span className="text-xl font-display font-bold text-foreground tracking-tight">ORSATH</span>
+              <span className="text-xl font-display font-bold tracking-tight" style={{ color: isPublicSite ? '#F2FBF8' : undefined }}>{isPublicSite ? 'TRADEBATTLE' : 'ORSATH'}</span>
             </Link>
 
             {/* Market Status Clock - hide on mobile */}
-            <div className="hidden md:block">
+            {user && <div className="hidden md:block">
               <MarketStatus variant="clock" />
-            </div>
+            </div>}
           </div>
 
           {/* Center - Balance (absolutely centered in the bar) */}
@@ -135,7 +136,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="px-4 py-2 text-white transition-transform hover:scale-105" style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
+                  <Button className="px-4 py-2 transition-transform hover:scale-105" style={{ background: isPublicSite ? '#62E4BD' : 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: isPublicSite ? '#06151c' : '#FFFFFF', boxShadow: isPublicSite ? '0 8px 22px rgba(98, 228, 189, 0.18)' : undefined }}>
                     <UserPlus className="w-4 h-4 mr-2" />
                     Sign Up
                   </Button>
@@ -148,7 +149,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           <Button
             variant="ghost"
             aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-            className="md:hidden w-10 h-10 p-0 min-w-[44px] min-h-[44px]"
+            className="md:hidden ml-auto w-10 h-10 p-0 min-w-[44px] min-h-[44px]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -158,7 +159,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
 
       {/* Mobile Menu Panel - show only on mobile */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border" style={{ backgroundColor: 'rgba(20, 46, 88, 0.97)' }}>
+        <div className="md:hidden border-t" style={{ backgroundColor: isPublicSite ? 'rgba(5, 17, 31, 0.98)' : 'rgba(20, 46, 88, 0.97)', borderColor: isPublicSite ? 'rgba(98, 228, 189, 0.14)' : undefined }}>
           <div className="container mx-auto px-4 py-6 space-y-4">
             {user ? (
               <>
@@ -349,12 +350,12 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 </Link>
                 <Link href="/signup">
                   <Button
-                    className="w-full justify-start h-12 text-white px-4"
-                    style={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
+                    className="w-full justify-start h-12 px-4"
+                    style={{ background: isPublicSite ? '#62E4BD' : 'linear-gradient(135deg, #6366F1, #8B5CF6)', color: isPublicSite ? '#06151c' : '#FFFFFF' }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <UserPlus className="w-5 h-5 mr-3" />
-                    <span className="text-base">Sign Up</span>
+                    <span className="text-base" style={{ color: isPublicSite ? '#06151c' : undefined }}>Sign Up</span>
                   </Button>
                 </Link>
               </>
