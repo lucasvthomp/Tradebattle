@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, ArrowLeft, CheckCircle } from "lucide-react";
 import { Link, useSearch } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import "./auth.css";
 
 export default function ResetPassword() {
   const searchString = useSearch();
@@ -42,104 +42,73 @@ export default function ResetPassword() {
 
   if (!token) {
     return (
-      <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-10">
-        <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
-          <CardHeader>
-            <CardTitle style={{ color: '#C9D1E2' }}>Link expired</CardTitle>
-            <CardDescription style={{ color: '#8A93A6' }}>
-              This recovery link is no longer active.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+      <div className="auth-screen auth-simple auth-recovery-screen">
+        <div className="auth-simple-wrap">
+          <div className="auth-simple-top">
+            <Link href="/login" className="auth-panel-link">Back to entry</Link>
+          </div>
+          <section className="auth-simple-card auth-recovery-card">
+            <div className="auth-simple-card-head">
+              <div>
+                <div className="auth-eyebrow">Account recovery</div>
+                <h1>Link expired.</h1>
+                <p>This recovery link is no longer active. Request a fresh one to continue.</p>
+              </div>
+            </div>
             <Link href="/forgot-password">
-              <Button variant="outline" className="w-full">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Request a fresh link
-              </Button>
+              <Button type="button" className="auth-primary-button">Request a fresh link</Button>
             </Link>
-          </CardContent>
-        </Card>
+          </section>
+          <p className="auth-simple-note">Your player profile is still safe.</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
-        <CardHeader>
-          <CardTitle style={{ color: '#C9D1E2' }}>
-            {success ? "Passcode updated" : "Set a new passcode"}
-          </CardTitle>
-          <CardDescription style={{ color: '#8A93A6' }}>
-            {success
-              ? "Your new passcode is locked in."
-              : "Choose a new passcode below."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="auth-screen auth-simple auth-recovery-screen">
+      <div className="auth-simple-wrap">
+        <div className="auth-simple-top">
+          <Link href="/login" className="auth-panel-link">Back to entry</Link>
+        </div>
+
+        <section className="auth-simple-card auth-recovery-card">
+          <div className="auth-simple-card-head">
+            <div>
+              <div className="auth-eyebrow">Account recovery</div>
+              <h1>{success ? "Passcode updated." : "Set a new passcode."}</h1>
+              <p>{success ? "Your new passcode is locked in. You can return to the arena now." : "Choose a new passcode for your player profile."}</p>
+            </div>
+          </div>
+
           {success ? (
-            <div className="space-y-4 text-center">
-              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(40, 199, 111, 0.15)' }}>
-                <CheckCircle className="w-8 h-8" style={{ color: '#28C76F' }} />
-              </div>
-              <p className="text-sm" style={{ color: '#8A93A6' }}>
-                You can now enter the arena with your new passcode.
-              </p>
+            <div className="auth-recovery-success">
+              <div className="auth-twofa-icon"><CheckCircle size={22} /></div>
               <Link href="/login">
-                <Button
-                  className="w-full text-black font-bold"
-                  style={{ background: '#00A3FF' }}
-                >
-                  Return to entry
-                </Button>
+                <Button type="button" className="auth-primary-button">Return to entry</Button>
               </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-              <Label htmlFor="password" style={{ color: '#C9D1E2' }}>New passcode</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
-                />
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="auth-field">
+                <Label htmlFor="password">New passcode</Label>
+                <Input id="password" type="password" placeholder="At least 8 characters" value={password} onChange={e => setPassword(e.target.value)} required className="auth-input" autoComplete="new-password" />
               </div>
-              <div className="space-y-2">
-              <Label htmlFor="confirmPassword" style={{ color: '#C9D1E2' }}>Confirm passcode</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={e => setConfirmPassword(e.target.value)}
-                  required
-                  style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
-                />
+              <div className="auth-field">
+                <Label htmlFor="confirmPassword">Confirm passcode</Label>
+                <Input id="confirmPassword" type="password" placeholder="Repeat your passcode" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required className="auth-input" autoComplete="new-password" />
               </div>
-              {error && <p className="text-sm" style={{ color: '#FF4F58' }}>{error}</p>}
-              <Button
-                type="submit"
-                className="w-full text-black font-bold"
-                style={{ background: '#00A3FF' }}
-                disabled={loading || !password || !confirmPassword}
-              >
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Update passcode
+              {error && <div className="auth-error">{error}</div>}
+              <Button type="submit" className="auth-primary-button" disabled={loading || !password || !confirmPassword}>
+                {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Updating passcode...</> : "Update passcode"}
               </Button>
-              <Link href="/login">
-                <Button variant="ghost" className="w-full" style={{ color: '#8A93A6' }}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to entry
-                </Button>
-              </Link>
+              <Link href="/login" className="auth-panel-link" style={{ textAlign: "center" }}><ArrowLeft size={14} style={{ display: "inline", verticalAlign: "-2px", marginRight: 5 }} /> Back to entry</Link>
             </form>
           )}
-        </CardContent>
-      </Card>
+        </section>
+
+        <p className="auth-simple-note">Use a passcode you’ll remember between rounds.</p>
+      </div>
     </div>
   );
 }

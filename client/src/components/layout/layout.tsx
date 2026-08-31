@@ -4,6 +4,7 @@ import { useChatContext } from "@/contexts/ChatContext";
 import Header from "./header";
 import { SimplifiedSidebar } from "./simplified-sidebar";
 import { PageTransition } from "@/components/ui/page-transition";
+import "@/styles/site-theme.css";
 
 const ChatSidebar = React.lazy(() => import("@/components/chat/ChatSidebar"));
 
@@ -16,7 +17,7 @@ export default function Layout({ children }: LayoutProps) {
   const { chatOpen, toggleChat } = useChatContext();
 
   return (
-    <div className={`min-h-dvh flex ${user ? 'arena-app' : ''}`} style={{ backgroundColor: 'transparent' }}>
+    <div className={`min-h-dvh flex tradebattle-site ${user ? 'arena-app' : ''}`} style={{ backgroundColor: 'transparent' }}>
       {/* Simplified Sidebar - Only for authenticated users */}
       {user && <SimplifiedSidebar />}
 
@@ -33,9 +34,11 @@ export default function Layout({ children }: LayoutProps) {
           } ${
             user && chatOpen ? 'md:mr-80' : ''
           }`}>
-            <PageTransition>
-              {children}
-            </PageTransition>
+            <div className="tradebattle-route">
+              <PageTransition>
+                {children}
+              </PageTransition>
+            </div>
           </main>
 
           {/* Chat Sidebar - fixed position, independent of page scroll - Hidden on mobile portrait */}

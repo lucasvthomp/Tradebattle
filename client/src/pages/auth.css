@@ -994,3 +994,237 @@
     transition: none;
   }
 }
+
+/* Focused auth variant: one clear decision at a time. */
+.auth-simple {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100dvh - 4rem);
+  background: #06111f;
+}
+
+.auth-simple::before {
+  opacity: 0.08;
+  background-size: 96px 96px;
+  mask-image: linear-gradient(135deg, black, transparent 68%);
+}
+
+.auth-simple::after {
+  display: none;
+}
+
+.auth-simple-wrap {
+  width: min(640px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 34px 0 28px;
+}
+
+.auth-simple-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 18px;
+  margin-bottom: 15px;
+}
+
+.auth-simple-top .auth-brand {
+  font-size: 12px;
+}
+
+.auth-simple-top .auth-brand-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: 15px;
+}
+
+.auth-simple-card {
+  padding: 28px 30px 25px;
+  border: 1px solid rgba(118, 169, 198, 0.2);
+  border-radius: 16px;
+  background: #0b1b2a;
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.22), inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.auth-simple-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.auth-simple-card-head h1 {
+  margin: 10px 0 0;
+  color: #f3f8fb;
+  font-size: clamp(1.8rem, 4vw, 2.35rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.auth-simple-card-head p {
+  max-width: 430px;
+  margin: 10px 0 0;
+  color: #879caf;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.auth-simple-counter {
+  flex: 0 0 auto;
+  padding-top: 2px;
+  color: #71869c;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.auth-simple-stepper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px;
+  margin: 24px 0 25px;
+}
+
+.auth-simple-step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 9px 7px 8px;
+  border-top: 2px solid rgba(118, 169, 198, 0.18);
+  color: #6f8499;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.auth-simple-step.active {
+  border-top-color: #67e7bf;
+  color: #e5f7f2;
+}
+
+.auth-simple-step.complete {
+  border-top-color: rgba(103, 231, 191, 0.5);
+  color: #99d9c6;
+}
+
+.auth-simple-step.skipped {
+  opacity: 0.52;
+}
+
+.auth-simple-step-number {
+  color: inherit;
+  font-family: "Courier New", monospace;
+  font-size: 9px;
+}
+
+.auth-simple-card .signup-form-card {
+  min-height: 0;
+  gap: 18px;
+}
+
+.auth-simple-card .auth-form {
+  gap: 17px;
+}
+
+.auth-recovery-card .auth-primary-button {
+  margin-top: 18px;
+}
+
+.auth-recovery-success {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+  margin-top: 25px;
+}
+
+.auth-recovery-success .auth-twofa-icon {
+  margin: 0;
+  color: var(--auth-cyan);
+  border-color: rgba(103, 231, 191, 0.25);
+  background: rgba(103, 231, 191, 0.09);
+}
+
+.auth-simple-card .auth-input,
+.auth-simple-card .auth-panel input.auth-input,
+.auth-simple-card .auth-panel button.auth-input {
+  min-height: 48px;
+  border-radius: 9px;
+}
+
+.auth-simple-card .signup-navigation {
+  margin-top: 22px;
+}
+
+.auth-simple-card .auth-primary-button {
+  background: #67e7bf;
+  box-shadow: 0 10px 22px rgba(43, 187, 150, 0.16);
+}
+
+.auth-simple-card .auth-primary-button:hover:not(:disabled) {
+  box-shadow: 0 12px 28px rgba(43, 187, 150, 0.25);
+}
+
+.auth-simple-card .auth-footer-link {
+  margin-top: 20px;
+}
+
+.auth-simple-note {
+  margin: 13px 0 0;
+  color: #62788f;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 560px) {
+  .auth-simple-wrap {
+    width: min(100% - 24px, 640px);
+    padding: 18px 0 25px;
+  }
+
+  .auth-simple-top {
+    margin-bottom: 12px;
+  }
+
+  .auth-simple-top .auth-panel-link {
+    font-size: 11px;
+  }
+
+  .auth-simple-card {
+    padding: 22px 18px 21px;
+    border-radius: 14px;
+  }
+
+  .auth-simple-card-head {
+    gap: 12px;
+  }
+
+  .auth-simple-card-head h1 {
+    font-size: 1.75rem;
+  }
+
+  .auth-simple-card-head p {
+    font-size: 12px;
+  }
+
+  .auth-simple-stepper {
+    gap: 3px;
+    margin: 20px 0 22px;
+  }
+
+  .auth-simple-step {
+    display: block;
+    padding: 8px 3px 7px;
+    overflow: hidden;
+    font-size: 9px;
+    text-overflow: ellipsis;
+  }
+
+  .auth-simple-step-number {
+    display: block;
+    margin-bottom: 3px;
+  }
+}

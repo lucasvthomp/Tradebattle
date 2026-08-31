@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, ArrowLeft, Mail } from "lucide-react";
 import { Link } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
+import "./auth.css";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
@@ -28,66 +28,45 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-10">
-      <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
-        <CardHeader>
-          <CardTitle style={{ color: '#C9D1E2' }}>Recover your entry</CardTitle>
-          <CardDescription style={{ color: '#8A93A6' }}>
-            {sent
-              ? "Check your inbox for your recovery link."
-              : "Drop your email and we’ll send a link to get you back in."}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+    <div className="auth-screen auth-simple auth-recovery-screen">
+      <div className="auth-simple-wrap">
+        <div className="auth-simple-top">
+          <Link href="/login" className="auth-panel-link">Back to entry</Link>
+        </div>
+
+        <section className="auth-simple-card auth-recovery-card">
+          <div className="auth-simple-card-head">
+            <div>
+              <div className="auth-eyebrow">Account recovery</div>
+              <h1>{sent ? "Check your inbox." : "Reset your entry."}</h1>
+              <p>{sent ? "If that account exists, a recovery link is on the way." : "Enter your contact email and we’ll send a link to get you back in."}</p>
+            </div>
+          </div>
+
           {sent ? (
-            <div className="space-y-4 text-center">
-              <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(0, 163, 255, 0.12)' }}>
-                <Mail className="w-8 h-8" style={{ color: '#00A3FF' }} />
-              </div>
-              <p className="text-sm" style={{ color: '#8A93A6' }}>
-                If that account exists, a recovery link is on the way.
-              </p>
+            <div className="auth-recovery-success">
+              <div className="auth-twofa-icon"><Mail size={22} /></div>
               <Link href="/login">
-                <Button variant="outline" className="w-full">
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to entry
-                </Button>
+                <Button type="button" className="auth-primary-button">Return to entry</Button>
               </Link>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" style={{ color: '#C9D1E2' }}>Contact email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                  style={{ backgroundColor: 'transparent', borderColor: '#0E2040', color: '#C9D1E2' }}
-                />
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="auth-field">
+                <Label htmlFor="email">Contact email</Label>
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)} required className="auth-input" autoComplete="email" />
               </div>
-              {error && <p className="text-sm" style={{ color: '#FF4F58' }}>{error}</p>}
-              <Button
-                type="submit"
-                className="w-full text-black font-bold"
-                style={{ background: '#00A3FF' }}
-                disabled={loading || !email}
-              >
-                {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Send recovery link
+              {error && <div className="auth-error">{error}</div>}
+              <Button type="submit" className="auth-primary-button" disabled={loading || !email}>
+                {loading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Sending link...</> : "Send recovery link"}
               </Button>
-              <Link href="/login">
-                <Button variant="ghost" className="w-full" style={{ color: '#8A93A6' }}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to entry
-                </Button>
-              </Link>
+              <Link href="/login" className="auth-panel-link" style={{ textAlign: "center" }}>Remembered your passcode?</Link>
             </form>
           )}
-        </CardContent>
-      </Card>
+        </section>
+
+        <p className="auth-simple-note">We only use your email to help you recover your player profile.</p>
+      </div>
     </div>
   );
 }

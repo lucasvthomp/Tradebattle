@@ -10,25 +10,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import "./auth.css";
 
-function AuthMarketTrace() {
-  return (
-    <div className="auth-market" aria-hidden="true">
-      <svg viewBox="0 0 520 180" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="authMarketFill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#20d8c2" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#20d8c2" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <path className="auth-market-grid" d="M0 35H520M0 90H520M0 145H520M100 0V180M220 0V180M340 0V180M460 0V180" />
-        <path className="auth-market-area" d="M0 146C24 137 34 142 56 126S88 92 112 106s37 31 58 14 36-61 61-45 29 25 49 13 37-62 61-45 39 55 61 37 36-62 59-50 35 23 59 10v140H0Z" />
-        <path className="auth-market-line" d="M0 146C24 137 34 142 56 126S88 92 112 106s37 31 58 14 36-61 61-45 29 25 49 13 37-62 61-45 39 55 61 37 36-62 59-50 35 23 59 10" />
-        <circle className="auth-market-dot" cx="480" cy="40" r="5" />
-      </svg>
-    </div>
-  );
-}
-
 export default function Login() {
   const [, navigate] = useLocation();
   const searchString = useSearch();
@@ -81,42 +62,22 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-screen auth-login-screen">
-      <div className="auth-shell">
-        <aside className="auth-briefing">
-          <Link href="/" className="auth-brand">
-            <span className="auth-brand-mark">T</span>
-            <span>TRADEBATTLE</span>
-          </Link>
+    <div className="auth-screen auth-login-screen auth-simple">
+      <div className="auth-simple-wrap">
+        <div className="auth-simple-top">
+          {!is2FA && <Link href="/signup" className="auth-panel-link">New here? Create a profile</Link>}
+        </div>
 
-          <div className="auth-briefing-copy">
-            <div className="auth-eyebrow">The market is open</div>
-            <h1>Think fast.<br />Play the tape.</h1>
-            <p>Step back into a competitive trading arena built for sharp reads, clean decisions, and bragging rights.</p>
-          </div>
-
-          <AuthMarketTrace />
-
-          <div className="auth-signal-list">
-            <div className="auth-signal"><strong>$100K</strong><span>Virtual capital</span></div>
-            <div className="auth-signal"><strong>5 MIN</strong><span>Blitz rounds</span></div>
-            <div className="auth-signal"><strong>0 RISK</strong><span>Practice mode</span></div>
-          </div>
-        </aside>
-
-        <section className="auth-panel">
-          <div className="auth-panel-top">
-            <Link href="/">← Back to home</Link>
-            {!is2FA && <span className="auth-kicker">Player access</span>}
-          </div>
-
+        <section className="auth-simple-card auth-login-card">
           {is2FA ? (
             <form onSubmit={handle2FASubmit} className="auth-twofa-card">
-              <div className="auth-form-heading compact">
-                <div className="auth-twofa-icon"><ShieldCheck size={24} /></div>
-                <div className="auth-eyebrow">Security checkpoint</div>
-                <h2>One more read.</h2>
-                <p>Enter the six-digit code from your authenticator to finish entering the arena.</p>
+              <div className="auth-simple-card-head auth-twofa-head">
+                <div>
+                  <div className="auth-twofa-icon"><ShieldCheck size={22} /></div>
+                  <div className="auth-eyebrow">Security checkpoint</div>
+                  <h1>One more read.</h1>
+                  <p>Enter the six-digit code from your authenticator to finish entering the arena.</p>
+                </div>
               </div>
 
               <div className="auth-field">
@@ -153,10 +114,12 @@ export default function Login() {
             </form>
           ) : (
             <>
-              <div className="auth-form-heading">
-                <div className="auth-eyebrow">Welcome back, competitor</div>
-                <h2>Resume your run.</h2>
-                <p>Your next move is waiting. Sign in to pick up where you left off.</p>
+              <div className="auth-simple-card-head">
+                <div>
+                  <div className="auth-eyebrow">Player access</div>
+                  <h1>Resume your run.</h1>
+                  <p>Your next move is waiting. Sign in to pick up where you left off.</p>
+                </div>
               </div>
 
               <form onSubmit={handleSubmit} className="auth-form">
@@ -217,10 +180,12 @@ export default function Login() {
                 </div>
               </form>
 
-              <p className="auth-footer-link">New to the arena? <Link href="/signup">Build a player profile</Link></p>
+              <p className="auth-footer-link">New to the arena? <Link href="/signup">Create a player profile</Link></p>
             </>
           )}
         </section>
+
+        <p className="auth-simple-note">Virtual capital only · Your progress stays yours.</p>
       </div>
     </div>
   );

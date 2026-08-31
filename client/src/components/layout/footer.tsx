@@ -59,8 +59,8 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href={isPublicSite ? "/signup" : "/analytics"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Create player profile' : t('analytics')}
+                  <Link href={isPublicSite ? "/signup" : "/leaderboard"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Create player profile' : t('leaderboard')}
                   </Link>
                 </li>
               </ul>
@@ -80,13 +80,13 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href={isPublicSite ? "/login" : "/pricing"} className="hover:text-white transition-colors">
-                    {isPublicSite ? 'Enter arena' : 'Game plans'}
+                  <Link href={isPublicSite ? "/login" : "/deposit"} className="hover:text-white transition-colors">
+                    {isPublicSite ? 'Enter arena' : 'Add arena cash'}
                   </Link>
                 </li>
                 <li>
-                  <Link href={isPublicSite ? "/signup" : "/withdraw"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Create profile' : 'Cash out'}
+                  <Link href={isPublicSite ? "/signup" : "/deposit"} className="hover:text-foreground transition-colors">
+                    {isPublicSite ? 'Create profile' : 'Manage arena cash'}
                   </Link>
                 </li>
               </ul>

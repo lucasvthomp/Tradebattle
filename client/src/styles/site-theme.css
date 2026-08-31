@@ -1,0 +1,224 @@
+.tradebattle-site {
+  --site-bg: #06111f;
+  --site-panel: #0b1b2a;
+  --site-panel-raised: #102638;
+  --site-edge: rgba(118, 169, 198, 0.18);
+  --site-text: #eef6fa;
+  --site-muted: #8da2b5;
+  --site-mint: #67e7bf;
+  min-height: 100dvh;
+  background: var(--site-bg) !important;
+  color: var(--site-text);
+}
+
+.tradebattle-site main,
+.tradebattle-route,
+.tradebattle-route > .arena-page,
+.tradebattle-route > .arena-page-shell {
+  background: transparent !important;
+}
+
+.tradebattle-route {
+  min-height: calc(100dvh - 4rem);
+  position: relative;
+}
+
+.tradebattle-route::before {
+  content: "";
+  position: fixed;
+  inset: 4rem 0 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle at 82% 0%, rgba(45, 126, 155, 0.12), transparent 32rem),
+    radial-gradient(circle at 8% 90%, rgba(30, 117, 104, 0.07), transparent 28rem);
+}
+
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .arena-page {
+  color: var(--site-text);
+}
+
+/* Keep old utility-based surfaces legible when a less-traveled route renders. */
+.tradebattle-site .tradebattle-route > .bg-white,
+.tradebattle-site .tradebattle-route > .bg-gray-50,
+.tradebattle-site .tradebattle-route > .bg-gray-100 {
+  background: transparent !important;
+}
+
+.tradebattle-site .tradebattle-route > .bg-white .bg-white,
+.tradebattle-site .tradebattle-route > .bg-gray-50 .bg-white,
+.tradebattle-site .tradebattle-route > .bg-gray-100 .bg-white {
+  background: var(--site-panel) !important;
+  border-color: var(--site-edge) !important;
+}
+
+.tradebattle-site .tradebattle-route > .bg-white .text-black,
+.tradebattle-site .tradebattle-route > .bg-gray-50 .text-black,
+.tradebattle-site .tradebattle-route > .bg-gray-100 .text-black {
+  color: var(--site-text) !important;
+}
+
+.tradebattle-site .tradebattle-route > .bg-white [class*="text-gray-"],
+.tradebattle-site .tradebattle-route > .bg-gray-50 [class*="text-gray-"],
+.tradebattle-site .tradebattle-route > .bg-gray-100 [class*="text-gray-"] {
+  color: var(--site-muted) !important;
+}
+
+.tradebattle-site .tradebattle-route .card,
+.tradebattle-site .tradebattle-route [data-slot="card"] {
+  border-color: var(--site-edge);
+}
+
+.tradebattle-site .tradebattle-route :focus-visible {
+  outline: 2px solid var(--site-mint);
+  outline-offset: 3px;
+}
+
+.not-found-page {
+  display: grid;
+  min-height: calc(100dvh - 4rem);
+  place-items: center;
+  padding: 32px 20px 64px;
+}
+
+.not-found-wrap {
+  width: min(620px, 100%);
+}
+
+.not-found-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px 2px;
+  color: var(--site-mint);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.not-found-card {
+  overflow: hidden;
+  border: 1px solid var(--site-edge);
+  border-radius: 16px;
+  background: var(--site-panel);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2), inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+.not-found-chart {
+  height: 135px;
+  border-bottom: 1px solid var(--site-edge);
+  background: rgba(5, 17, 31, 0.55);
+}
+
+.not-found-chart svg {
+  width: 100%;
+  height: 100%;
+}
+
+.not-found-grid {
+  fill: none;
+  stroke: rgba(118, 169, 198, 0.1);
+  stroke-width: 1;
+}
+
+.not-found-line {
+  fill: none;
+  stroke: #ef8f9a;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.not-found-dot {
+  fill: #ffb1b8;
+  stroke: rgba(239, 143, 154, 0.3);
+  stroke-width: 8;
+}
+
+.not-found-copy {
+  padding: 26px 28px 0;
+}
+
+.not-found-code {
+  color: #ef8f9a;
+  font-family: "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.not-found-copy h1 {
+  margin: 10px 0 0;
+  color: var(--site-text);
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  line-height: 1;
+}
+
+.not-found-copy p {
+  max-width: 450px;
+  margin: 11px 0 0;
+  color: var(--site-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.not-found-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 24px 28px 28px;
+}
+
+.not-found-actions .arena-primary-link {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.not-found-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  color: var(--site-muted);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.not-found-back:hover {
+  color: var(--site-mint);
+}
+
+@media (max-width: 640px) {
+  .tradebattle-route::before {
+    background: radial-gradient(circle at 90% 0%, rgba(45, 126, 155, 0.11), transparent 22rem);
+  }
+
+  .not-found-card {
+    border-radius: 13px;
+  }
+
+  .not-found-copy {
+    padding: 22px 20px 0;
+  }
+
+  .not-found-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+    padding: 21px 20px 23px;
+  }
+
+  .not-found-actions .arena-primary-link {
+    width: 100%;
+  }
+
+  .not-found-back {
+    justify-content: center;
+  }
+}

@@ -175,63 +175,36 @@ export default function Signup() {
   };
 
   const currentStep = steps[step - 1];
-  const CurrentIcon = currentStep.icon;
-
   return (
-    <div className="auth-screen auth-signup-screen">
-      <div className="auth-shell signup-shell">
-        <aside className="auth-briefing signup-briefing">
-          <Link href="/" className="auth-brand">
-            <span className="auth-brand-mark">T</span>
-            <span>TRADEBATTLE</span>
-          </Link>
+    <div className="auth-screen auth-signup-screen auth-simple">
+      <div className="auth-simple-wrap">
+        <div className="auth-simple-top">
+          <Link href="/login" className="auth-panel-link">Already a player? Sign in</Link>
+        </div>
 
-          <div>
-            <div className="auth-eyebrow">New player setup</div>
-            <h1 className="signup-rail-title">Build a card<br />worth watching.</h1>
-            <p className="signup-rail-copy">A quick setup gets you from the lobby to your first decision with a full stack of virtual capital.</p>
+        <section className="auth-simple-card">
+          <div className="auth-simple-card-head">
+            <div>
+              <div className="auth-eyebrow">Player setup</div>
+              <h1>{currentStep.title}</h1>
+              <p>{currentStep.description}</p>
+            </div>
+            <span className="auth-simple-counter">{String(step).padStart(2, "0")} / 04</span>
           </div>
 
-          <div className="signup-steps" aria-label="Profile setup progress">
+          <div className="auth-simple-stepper" aria-label="Profile setup progress">
             {steps.map((item, index) => {
-              const StepIcon = item.icon;
               const stepNumber = index + 1;
               const isActive = stepNumber === step;
               const isComplete = stepNumber < step;
               const isSkipped = isWalletRegistration && stepNumber === 2;
               return (
-                <div key={item.label} className={`signup-step ${isActive ? "active" : ""} ${isComplete ? "complete" : ""} ${isSkipped ? "skipped" : ""}`}>
-                  <div className="signup-step-icon">{isComplete ? <Check size={15} /> : <StepIcon size={15} />}</div>
-                  <div>
-                    <span className="signup-step-label">{item.label}</span>
-                    <span className="signup-step-subtitle">{isSkipped ? "Wallet secured" : item.subtitle}</span>
-                  </div>
+                <div key={item.label} className={`auth-simple-step ${isActive ? "active" : ""} ${isComplete ? "complete" : ""} ${isSkipped ? "skipped" : ""}`}>
+                  <span className="auth-simple-step-number">0{stepNumber}</span>
+                  <span>{isSkipped ? "Wallet" : item.label}</span>
                 </div>
               );
             })}
-          </div>
-
-          <div className="signup-briefing-note">
-            <strong>Every move is simulated.</strong>
-            <p>No deposits, no pressure. Just a cleaner way to sharpen your market instincts.</p>
-          </div>
-        </aside>
-
-        <section className="auth-panel signup-panel">
-          <div className="signup-panel-top">
-            <Link href="/" className="auth-brand">
-              <span className="auth-brand-mark">T</span>
-              <span>TRADEBATTLE</span>
-            </Link>
-            <Link href="/login" className="auth-panel-link">Already a player? Sign in</Link>
-          </div>
-
-          <div className="signup-progress" aria-hidden="true"><span style={{ width: `${(step / steps.length) * 100}%` }} /></div>
-
-          <div className="signup-form-heading">
-            <div className="auth-eyebrow"><CurrentIcon size={12} style={{ display: "inline", marginRight: 6, verticalAlign: "-2px" }} /> Move {String(step).padStart(2, "0")} / 04</div>
-            <h1>{currentStep.title}</h1>
-            <p>{currentStep.description}</p>
           </div>
 
           <div className="signup-form-card">
@@ -374,8 +347,10 @@ export default function Signup() {
           </div>
 
           {registerMutation.isError && <div className="auth-error signup-error">{(registerMutation.error as any)?.message || "Registration failed"}</div>}
-          <p className="auth-footer-link signup-footer">Already have a player profile? <Link href="/login">Enter the arena</Link></p>
+          <p className="auth-footer-link signup-footer">Virtual capital only · <Link href="/login">Already have a player profile?</Link></p>
         </section>
+
+        <p className="auth-simple-note">Practice with simulated markets. No deposits, no pressure.</p>
       </div>
     </div>
   );
