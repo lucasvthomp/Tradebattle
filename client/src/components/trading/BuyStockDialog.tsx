@@ -105,18 +105,18 @@ export function BuyStockDialog({ open, onOpenChange, stock }: BuyStockDialogProp
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="current-price">Current Price</Label>
+            <Label htmlFor="current-price">Live quote</Label>
             <div className="text-2xl font-bold text-green-600">
               {formatCurrency(stock.price)}
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="shares">Number of Shares</Label>
+            <Label htmlFor="shares">Number of units</Label>
             <Input
               id="shares"
               type="number"
-              placeholder="Enter number of shares"
+              placeholder="Enter number of units"
               value={shares}
               onChange={(e) => setShares(e.target.value)}
               min="0.01"
@@ -130,20 +130,20 @@ export function BuyStockDialog({ open, onOpenChange, stock }: BuyStockDialogProp
             <div className="p-4 bg-muted/30 rounded-lg border">
               <div className="flex items-center space-x-2 mb-2">
                 <Calculator className="h-4 w-4" />
-                <span className="font-medium">Order Summary</span>
+                <span className="font-medium">Order setup</span>
               </div>
               <div className="space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <span>Shares:</span>
+                  <span>Units:</span>
                   <span>{sharesNumber}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Price per share:</span>
+                  <span>Entry price per unit:</span>
                   <span>{formatCurrency(stock.price)}</span>
                 </div>
                 <div className="border-t pt-1 mt-2">
                   <div className="flex justify-between font-bold">
-                    <span>Total Cost:</span>
+                    <span>Total cost:</span>
                     <span>{formatCurrency(totalCost)}</span>
                   </div>
                 </div>
@@ -165,7 +165,7 @@ export function BuyStockDialog({ open, onOpenChange, stock }: BuyStockDialogProp
               disabled={!shares || sharesNumber <= 0 || isSubmitting}
               className="bg-green-600 hover:bg-green-700"
             >
-              {isSubmitting ? "Processing..." : `Buy ${formatCurrency(totalCost)}`}
+              {isSubmitting ? "Locking in..." : `Buy ${formatCurrency(totalCost)}`}
             </Button>
           </DialogFooter>
         </form>

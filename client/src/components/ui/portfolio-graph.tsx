@@ -25,7 +25,7 @@ export function PortfolioGraph({
   userId, 
   portfolioType = 'personal', 
   tournamentId, 
-  title = 'Portfolio Performance',
+  title = 'Run Performance',
   height = 300,
   showStats = true,
   className = ''

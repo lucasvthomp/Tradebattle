@@ -23,7 +23,7 @@ function getRankTitle(level: number) {
   if (level >= 30) return { title: "Elite", color: "#00A3FF" };
   if (level >= 20) return { title: "Expert", color: "#8B5CF6" };
   if (level >= 12) return { title: "Veteran", color: "#06B6D4" };
-  if (level >= 6) return { title: "Trader", color: "#28C76F" };
+  if (level >= 6) return { title: "Market Runner", color: "#28C76F" };
   return { title: "Rookie", color: "#8A93A6" };
 }
 
@@ -87,20 +87,20 @@ export default function Hub() {
 
   // Dynamic tagline
   const getTagline = () => {
-    if (!trades) return "Ready to make your first move?";
+    if (!trades) return "Ready for your first move?";
     if (activeTournaments.length > 0)
-      return `You're in ${activeTournaments.length} live tournament${activeTournaments.length > 1 ? "s" : ""}. Go trade.`;
-    return "The market's open. What are you waiting for?";
+      return `You’re in ${activeTournaments.length} live arena${activeTournaments.length > 1 ? "s" : ""}. Make it count.`;
+    return "The board is live. What’s your call?";
   };
 
-  const ctaLabel = activeTournaments.length > 0 ? "Open Trading Floor" : "Browse Tournaments";
+  const ctaLabel = activeTournaments.length > 0 ? "Open the trading floor" : "Scout arenas";
   const ctaHref = activeTournaments.length > 0 ? "/dashboard" : "/tournaments";
 
   const stats = [
-    { label: "BALANCE", value: `$${balance}`, color: "#00A3FF" },
+    { label: "BUYING POWER", value: `$${balance}`, color: "#00A3FF" },
     { label: "WINS", value: String(wins), color: "#28C76F" },
-    { label: "LIVE TOURNAMENTS", value: String(activeTournaments.length), color: "#E3B341" },
-    { label: "TOTAL TRADES", value: String(trades), color: "#06B6D4" },
+    { label: "LIVE ARENAS", value: String(activeTournaments.length), color: "#E3B341" },
+    { label: "TOTAL REPS", value: String(trades), color: "#06B6D4" },
   ];
 
   return (
@@ -316,7 +316,7 @@ export default function Hub() {
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                  <span style={{ fontSize: "17px", fontWeight: 800, color: "#F0F4FF" }}>Tournaments</span>
+                  <span style={{ fontSize: "17px", fontWeight: 800, color: "#F0F4FF" }}>Arenas</span>
                   {activeTournaments.length > 0 && (
                     <span
                       style={{
@@ -334,7 +334,7 @@ export default function Hub() {
                   )}
                 </div>
                 <p style={{ fontSize: "13px", color: "#4B5563", margin: 0 }}>
-                  Compete for prize pools
+                  Compete for the prize pool
                 </p>
               </motion.div>
             </Link>
@@ -498,7 +498,7 @@ export default function Hub() {
                     }}
                   >
                     <span style={{ fontSize: "12px", color: "#00A3FF", fontWeight: 700 }}>
-                      See all {activeTournaments.length} tournaments →
+                      See all {activeTournaments.length} arenas →
                     </span>
                   </div>
                 </Link>

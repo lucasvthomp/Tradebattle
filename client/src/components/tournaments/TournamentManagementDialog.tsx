@@ -76,8 +76,8 @@ export function TournamentManagementDialog({
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       queryClient.invalidateQueries({ queryKey: [`/api/tournaments/${tournament.id}/participants`] });
       toast({
-        title: "Success",
-        description: "Participant removed from tournament",
+        title: "Player removed",
+        description: "The player was removed from the arena.",
       });
     },
     onError: (error: Error) => {
@@ -98,8 +98,8 @@ export function TournamentManagementDialog({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       toast({
-        title: "Success",
-        description: "Tournament started successfully!",
+        title: "Arena live",
+        description: "The arena is now on the board.",
       });
       onClose();
     },
@@ -122,8 +122,8 @@ export function TournamentManagementDialog({
       setCancelDialogOpen(false);
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       toast({
-        title: "Success",
-        description: "Tournament cancelled successfully",
+        title: "Arena cancelled",
+        description: "The arena was cancelled successfully.",
       });
       onClose();
     },
@@ -163,7 +163,7 @@ export function TournamentManagementDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
               <Crown className="w-5 h-5 text-yellow-500" />
-              <span>Manage Tournament: {tournament.name}</span>
+              <span>Manage arena: {tournament.name}</span>
             </DialogTitle>
           </DialogHeader>
 
@@ -194,7 +194,7 @@ export function TournamentManagementDialog({
                   <div className="flex items-center space-x-2">
                     {isPrivate && <Shield className="w-4 h-4 text-blue-500" />}
                     <span className="text-sm font-medium">
-                      {isPrivate ? "Private" : "Public"} Tournament
+                      {isPrivate ? "Closed" : "Open"} arena
                     </span>
                   </div>
                 </div>
@@ -223,7 +223,7 @@ export function TournamentManagementDialog({
                       <div className="flex items-center space-x-2 col-span-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
                         <Shield className="w-4 h-4 text-blue-600" />
                         <div className="flex-1">
-                          <span className="font-medium text-blue-800 dark:text-blue-200">Join Code: </span>
+                          <span className="font-medium text-blue-800 dark:text-blue-200">Arena code: </span>
                           <code className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-900 dark:text-blue-100 font-mono text-sm">
                             {tournament.code || 'CODE_NOT_FOUND'}
                           </code>
@@ -236,13 +236,13 @@ export function TournamentManagementDialog({
                             if (tournament.code) {
                               navigator.clipboard.writeText(tournament.code);
                               toast({
-                                title: "Copied!",
-                                description: "Tournament code copied to clipboard",
+                                title: "Copied",
+                                description: "Arena code copied to clipboard",
                               });
                             } else {
                               toast({
                                 title: "Error",
-                                description: "No tournament code available to copy",
+                                description: "No arena code available to copy",
                                 variant: "destructive",
                               });
                             }
@@ -259,15 +259,15 @@ export function TournamentManagementDialog({
 
                 {/* Creator Powers */}
                 <div className="space-y-4">
-                  <h3 className="font-semibold">Creator Actions</h3>
+              <h3 className="font-semibold">Arena controls</h3>
 
                   {/* Tournament Powers - Available for all creators */}
                   {isWaiting && (
                     <div className="space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium">Invite Friends</p>
-                          <p className="text-sm text-muted-foreground">Send tournament invites to your friends</p>
+                          <p className="font-medium">Invite your crew</p>
+                          <p className="text-sm text-muted-foreground">Send arena invites to your friends</p>
                         </div>
                         <Button
                           onClick={() => setInviteModalOpen(true)}
@@ -285,8 +285,8 @@ export function TournamentManagementDialog({
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-medium">Start Tournament Early</p>
-                          <p className="text-sm text-muted-foreground">Begin the tournament immediately</p>
+                          <p className="font-medium">Open the arena early</p>
+                          <p className="text-sm text-muted-foreground">Start the arena immediately</p>
                         </div>
                         <Button
                           onClick={() => startEarlyMutation.mutate()}
@@ -294,15 +294,15 @@ export function TournamentManagementDialog({
                           className="bg-green-600 hover:bg-green-700"
                         >
                           <Play className="w-4 h-4 mr-2" />
-                          {startEarlyMutation.isPending ? "Starting..." : "Start Now"}
+                          {startEarlyMutation.isPending ? "Opening..." : "Open now"}
                         </Button>
                       </div>
 
                       {isPrivate && (
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="font-medium">Cancel Tournament</p>
-                            <p className="text-sm text-muted-foreground">Delete the tournament before it starts</p>
+                            <p className="font-medium">Cancel arena</p>
+                            <p className="text-sm text-muted-foreground">Delete the arena before it starts</p>
                           </div>
                           <Button
                             onClick={() => setCancelDialogOpen(true)}
@@ -310,7 +310,7 @@ export function TournamentManagementDialog({
                             variant="destructive"
                           >
                             <X className="w-4 h-4 mr-2" />
-                            Cancel Tournament
+                            Cancel arena
                           </Button>
                         </div>
                       )}
@@ -321,8 +321,8 @@ export function TournamentManagementDialog({
                   {isPrivate && isWaiting && (
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <p className="font-medium">Manage Participants</p>
-                        <Badge variant="outline">{tournament.currentPlayers} participants</Badge>
+                        <p className="font-medium">Manage players</p>
+                        <Badge variant="outline">{tournament.currentPlayers} players</Badge>
                       </div>
 
                       <div className="space-y-2 max-h-40 overflow-auto">
@@ -359,9 +359,9 @@ export function TournamentManagementDialog({
                     <div className="flex items-center space-x-2 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg">
                       <AlertTriangle className="w-5 h-5 text-blue-600" />
                       <div>
-                        <p className="font-medium text-blue-800 dark:text-blue-200">Tournament in Progress</p>
+                        <p className="font-medium text-blue-800 dark:text-blue-200">Arena in progress</p>
                         <p className="text-sm text-blue-600 dark:text-blue-300">
-                          Management options are limited once a tournament has started
+                          Arena controls are limited once play has started
                         </p>
                       </div>
                     </div>
@@ -389,10 +389,10 @@ export function TournamentManagementDialog({
       <AlertDialog open={kickDialogOpen} onOpenChange={setKickDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Remove Participant</AlertDialogTitle>
+            <AlertDialogTitle>Remove player</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to remove "{selectedParticipant?.displayName || selectedParticipant?.username}" from this tournament?
-              They will need to rejoin using the tournament code.
+              Are you sure you want to remove "{selectedParticipant?.displayName || selectedParticipant?.username}" from this arena?
+              They will need to rejoin using the arena code.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -402,7 +402,7 @@ export function TournamentManagementDialog({
               disabled={kickParticipantMutation.isPending}
               className="bg-red-600 hover:bg-red-700"
             >
-              {kickParticipantMutation.isPending ? "Removing..." : "Remove Participant"}
+              {kickParticipantMutation.isPending ? "Removing..." : "Remove player"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -412,19 +412,19 @@ export function TournamentManagementDialog({
       <AlertDialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Cancel Tournament</AlertDialogTitle>
+          <AlertDialogTitle>Cancel arena</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to cancel "{tournament.name}"? This action cannot be undone and all participants will be notified.
+              Are you sure you want to cancel "{tournament.name}"? This action cannot be undone and all players will be notified.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Keep Tournament</AlertDialogCancel>
+            <AlertDialogCancel>Keep arena</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => cancelTournamentMutation.mutate()}
               disabled={cancelTournamentMutation.isPending}
               className="bg-red-600 hover:bg-red-700"
             >
-              {cancelTournamentMutation.isPending ? "Cancelling..." : "Cancel Tournament"}
+              {cancelTournamentMutation.isPending ? "Cancelling..." : "Cancel arena"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

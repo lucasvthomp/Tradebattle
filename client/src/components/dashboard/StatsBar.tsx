@@ -37,7 +37,7 @@ export function StatsBar({
       <div className="flex items-center justify-between gap-8">
         {/* Left: Title and Tournament Selector */}
         <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold text-foreground whitespace-nowrap">Trading Dashboard</h1>
+          <h1 className="text-xl font-bold text-foreground whitespace-nowrap">Trading Floor</h1>
 
           {tournaments.length > 0 && selectedTournament && (
             <div className="flex items-center gap-2">
@@ -47,7 +47,7 @@ export function StatsBar({
                 onValueChange={onTournamentChange}
               >
                 <SelectTrigger className="w-[200px] h-8">
-                  <SelectValue placeholder="Select tournament" />
+                  <SelectValue placeholder="Select arena" />
                 </SelectTrigger>
                 <SelectContent>
                   {tournaments.map((tournament: any) => (
@@ -76,7 +76,7 @@ export function StatsBar({
         <div className="flex items-center gap-2">
           <DollarSign className="w-4 h-4 text-muted-foreground" />
           <div>
-            <div className="text-xs text-muted-foreground">Portfolio</div>
+            <div className="text-xs text-muted-foreground">Board value</div>
             <div className="text-lg font-bold">{formatCurrency(portfolioValue)}</div>
           </div>
         </div>
@@ -100,7 +100,7 @@ export function StatsBar({
         <div className="flex items-center gap-2">
           <Activity className="w-4 h-4 text-muted-foreground" />
           <div>
-            <div className="text-xs text-muted-foreground">Total P/L</div>
+            <div className="text-xs text-muted-foreground">Run P/L</div>
             <div className={`text-lg font-bold ${isProfitPositive ? 'text-green-500' : 'text-red-500'}`}>
               {isProfitPositive ? '+' : ''}{formatCurrency(profitLoss)} ({isProfitPositive ? '+' : ''}{profitLossPercent.toFixed(2)}%)
             </div>
@@ -111,7 +111,7 @@ export function StatsBar({
         <div className="flex items-center gap-2">
           <DollarSign className="w-4 h-4 text-muted-foreground" />
           <div>
-            <div className="text-xs text-muted-foreground">Cash</div>
+            <div className="text-xs text-muted-foreground">Buying power</div>
             <div className="text-lg font-bold">{formatCurrency(cashBalance)}</div>
           </div>
         </div>

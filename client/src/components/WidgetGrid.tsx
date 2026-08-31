@@ -41,7 +41,7 @@ const availableWidgets: Widget[] = [
   {
     id: "portfolio-graph",
     type: "portfolio-graph",
-    title: "Portfolio Performance",
+    title: "Run Performance",
     component: PortfolioGraphWidget,
     icon: BarChart3,
     defaultSize: { w: 6, h: 4 }

@@ -166,7 +166,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
             }}
           >
             <div className="space-y-2">
-              <div className="font-semibold" style={{ color: '#F1F5F9' }}>Market Hours (NYSE)</div>
+              <div className="font-semibold" style={{ color: '#F1F5F9' }}>Market window (NYSE)</div>
               <div className="text-xs space-y-1" style={{ color: '#C9D1E2' }}>
                 <div>Monday - Friday</div>
                 <div>9:30 AM - 4:00 PM ET</div>

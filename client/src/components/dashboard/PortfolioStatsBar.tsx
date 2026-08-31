@@ -76,7 +76,7 @@ export function PortfolioStatsBar({
               onValueChange={onTournamentChange}
             >
               <SelectTrigger className="w-[200px] h-9 border-0" style={{ backgroundColor: '#0C1A2E', color: '#F1F5F9' }}>
-                <SelectValue placeholder="Select tournament" />
+                <SelectValue placeholder="Select arena" />
               </SelectTrigger>
               <SelectContent style={{ backgroundColor: 'transparent', borderColor: '#0E2040' }}>
                 {activeTournaments.map((tournament: any) => (
@@ -93,8 +93,8 @@ export function PortfolioStatsBar({
         <div className="flex items-center gap-3">
           <div className="text-xl font-bold text-white">{formatCurrency(portfolioValue)}</div>
           <div className="flex flex-col text-xs leading-tight" style={{ color: '#94A3B8' }}>
-            <div>Cash: {formatCurrency(cashBalance)}</div>
-            <div>Stock: {formatCurrency(stockHoldingsValue)}</div>
+            <div>Buying power: {formatCurrency(cashBalance)}</div>
+            <div>Positions: {formatCurrency(stockHoldingsValue)}</div>
           </div>
         </div>
 
@@ -113,7 +113,7 @@ export function PortfolioStatsBar({
         {/* Current Rank */}
         {rank && totalPlayers && (
           <div className="text-base font-semibold" style={{ color: '#E3B341' }}>
-            Rank #{rank}/{totalPlayers}
+            Place #{rank}/{totalPlayers}
           </div>
         )}
       </div>

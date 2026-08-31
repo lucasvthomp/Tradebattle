@@ -63,14 +63,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], data);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
-        title: "Welcome back!",
+        title: "Back in the arena",
         description: `Good to see you again, ${data.username || data.email}`,
       });
       navigate("/hub");
     },
     onError: (error: Error) => {
       toast({
-        title: "Login failed",
+        title: "Entry failed",
         description: error.message,
         variant: "destructive",
       });
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Account created!",
-        description: `Welcome to ORSATH, ${user.username}`,
+        description: `Welcome to Tradebattle, ${user.username}`,
       });
       navigate("/hub");
     },

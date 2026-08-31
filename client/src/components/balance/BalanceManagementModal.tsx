@@ -240,15 +240,15 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
       pollWithdrawalStatus(data.withdrawalId);
 
       toast({
-        title: "Withdrawal Initiated",
-        description: `Your withdrawal is being processed. This may take a few minutes.`,
+        title: "Cash out started",
+        description: `Your cash out is being processed. This may take a few minutes.`,
       });
     },
     onError: (error: any) => {
       console.error('[Withdraw] Error:', error);
       toast({
-        title: "Withdrawal Failed",
-        description: error.message || "Failed to process withdrawal",
+        title: "Cash out failed",
+        description: error.message || "Couldn’t process that cash out",
         variant: "destructive",
       });
       setWithdrawStep('amount');
@@ -270,7 +270,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
           clearInterval(interval);
           queryClient.invalidateQueries({ queryKey: ['/api/user'] });
           toast({
-            title: "Withdrawal Complete!",
+            title: "Cash out complete",
             description: `Your crypto has been sent to your wallet.`,
           });
 
@@ -281,8 +281,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         } else if (data.status === 'failed') {
           clearInterval(interval);
           toast({
-            title: "Withdrawal Failed",
-            description: data.errorMessage || "The withdrawal could not be completed.",
+            title: "Cash out failed",
+            description: data.errorMessage || "That cash out could not be completed.",
             variant: "destructive",
           });
           setWithdrawStep('amount');
@@ -335,10 +335,10 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
             </div>
             <div>
               <DialogTitle className="text-lg font-black" style={{ color: '#F1F5F9', letterSpacing: '-0.01em' }}>
-                Wallet
+                Arena cash
               </DialogTitle>
               <p className="text-xs mt-0.5" style={{ color: '#4B5563' }}>
-                Balance: <span className="font-black" style={{ color: '#00A3FF' }}>{formatCurrency(currentBalance)}</span>
+                Buying power: <span className="font-black" style={{ color: '#00A3FF' }}>{formatCurrency(currentBalance)}</span>
               </p>
             </div>
           </div>
@@ -352,7 +352,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
               style={{ color: activeTab === 'deposit' ? '#000' : '#4B5563' }}
             >
               <TrendingUp className="w-4 h-4" />
-              Deposit
+              Add cash
             </TabsTrigger>
             <TabsTrigger
               value="withdraw"
@@ -360,7 +360,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
               style={{ color: activeTab === 'withdraw' ? '#000' : '#4B5563' }}
             >
               <TrendingDown className="w-4 h-4" />
-              Withdraw
+              Cash out
             </TabsTrigger>
           </TabsList>
 
@@ -388,7 +388,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   className="space-y-4"
                 >
                   <p className="text-sm" style={{ color: '#8A93A6' }}>
-                    Select a cryptocurrency to deposit
+                    Choose a crypto rail for your cash add
                   </p>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
                     {currencies.map((currency) => (
@@ -522,10 +522,10 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     {depositLoading ? (
                       <>
                         <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Creating Payment...
+                        Preparing payment...
                       </>
                     ) : (
-                      'Continue to Payment'
+                      'Continue to payment'
                     )}
                   </Button>
                 </motion.div>
@@ -724,11 +724,11 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         borderColor: 'rgba(255,255,255,0.08)',
                       }}>
                         <h4 className="font-bold mb-4" style={{ color: '#C9D1E2' }}>
-                          Withdrawal Breakdown
+                          Cash out breakdown
                         </h4>
                         <div className="space-y-3">
                           <div className="flex justify-between text-sm">
-                            <span style={{ color: '#8A93A6' }}>Withdrawal Amount:</span>
+                            <span style={{ color: '#8A93A6' }}>Cash out amount:</span>
                             <span className="font-semibold" style={{ color: '#C9D1E2' }}>
                               {formatCurrency(withdrawBreakdown.originalAmount)}
                             </span>
@@ -754,7 +754,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   {(selectedWithdrawAmount || parseFloat(withdrawAmount)) > currentBalance && (
                     <Alert variant="destructive">
                       <AlertDescription>
-                        Withdrawal amount cannot exceed your current balance of {formatCurrency(currentBalance)}.
+                        Cash out cannot exceed your buying power of {formatCurrency(currentBalance)}.
                       </AlertDescription>
                     </Alert>
                   )}
@@ -784,7 +784,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         : '0 4px 20px rgba(255, 79, 88, 0.3)',
                     }}
                   >
-                    Next: Enter Wallet Address
+                    Next: add wallet address
                   </Button>
                 </motion.div>
               )}
@@ -806,13 +806,13 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     style={{ color: '#8A93A6' }}
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Amount
+                    Back to amount
                   </Button>
 
                   {/* Select Currency */}
                   <div className="space-y-3">
                     <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
-                      Select Cryptocurrency
+                      Select cash-out rail
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                       {currencies.map((currency) => (
@@ -878,7 +878,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         : '#FFFFFF',
                     }}
                   >
-                    Next: Review & Confirm
+                    Next: review and confirm
                   </Button>
                 </motion.div>
               )}
@@ -900,7 +900,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     style={{ color: '#8A93A6' }}
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Address
+                    Back to address
                   </Button>
 
                   <Card className="p-6 border-2" style={{
@@ -908,7 +908,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     borderColor: '#00A3FF',
                   }}>
                     <h3 className="text-xl font-bold mb-6" style={{ color: '#00A3FF' }}>
-                      Confirm Withdrawal
+                      Confirm cash out
                     </h3>
 
                     <div className="space-y-4">
@@ -971,7 +971,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         Processing...
                       </>
                     ) : (
-                      'Confirm Withdrawal'
+                      'Confirm cash out'
                     )}
                   </Button>
                 </motion.div>
@@ -994,10 +994,10 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
 
                   <div>
                     <h3 className="text-2xl font-bold mb-2" style={{ color: '#00A3FF' }}>
-                      Withdrawal Processing
+                      Cash out processing
                     </h3>
                     <p className="text-sm" style={{ color: '#8A93A6' }}>
-                      Your withdrawal is being sent to the blockchain. This may take a few minutes.
+                      Your cash out is being sent to the blockchain. This may take a few minutes.
                     </p>
                   </div>
 
@@ -1011,7 +1011,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
 
                   <Alert style={{ background: 'rgba(0, 163, 255, 0.1)', borderColor: '#00A3FF' }}>
                     <AlertDescription style={{ color: '#8A93A6' }}>
-                      You'll receive a notification when your withdrawal is complete. You can safely close this window.
+                      You’ll receive an alert when your cash out is complete. You can safely close this window.
                     </AlertDescription>
                   </Alert>
                 </motion.div>

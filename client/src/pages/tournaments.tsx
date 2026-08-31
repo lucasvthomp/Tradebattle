@@ -176,8 +176,8 @@ export default function TournamentsPage() {
           const tournament = result.data ?? result;
           if (tournament.alreadyJoined) {
             toast({
-              title: "Already Joined",
-              description: `You're already in ${tournament.name}`,
+              title: "Already in the arena",
+              description: `You’re already on the ${tournament.name} board`,
             });
           } else {
             setTournamentToJoin(tournament);
@@ -187,8 +187,8 @@ export default function TournamentsPage() {
         })
         .catch(error => {
           toast({
-            title: "Tournament Not Found",
-            description: error.message || "Invalid tournament code",
+            title: "Arena not found",
+            description: error.message || "That entry code didn’t match an arena",
             variant: "destructive"
           });
           navigate('/tournaments', { replace: true });
@@ -216,10 +216,10 @@ export default function TournamentsPage() {
       setJoinCode("");
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
-      toast({ title: "Success", description: "Successfully joined tournament!" });
+      toast({ title: "Locked in", description: "You’re in — good luck on the board!" });
     },
     onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Couldn’t complete that move", description: error.message, variant: "destructive" });
     },
   });
 
@@ -239,10 +239,10 @@ export default function TournamentsPage() {
       setAgreementChecked(false);
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
-      toast({ title: "Success", description: "Successfully joined tournament!" });
+      toast({ title: "Locked in", description: "You’re in — good luck on the board!" });
     },
     onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Couldn’t complete that move", description: error.message, variant: "destructive" });
     },
   });
 
@@ -349,8 +349,8 @@ export default function TournamentsPage() {
       <div className="h-[calc(100vh-4rem)] flex items-center justify-center" style={{ background: 'transparent' }}>
         <div className="text-center">
           <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#00A3FF', filter: 'drop-shadow(0 0 12px rgba(0,163,255,0.4))' }} />
-          <h2 className="text-xl font-black mb-2" style={{ color: '#C9D1E2', letterSpacing: '-0.02em' }}>Please Log In</h2>
-          <p style={{ color: '#4B6080' }}>You need to be logged in to view tournaments.</p>
+          <h2 className="text-xl font-black mb-2" style={{ color: '#C9D1E2', letterSpacing: '-0.02em' }}>Enter the arena</h2>
+          <p style={{ color: '#4B6080' }}>Sign in to see open arenas.</p>
         </div>
       </div>
     );
@@ -441,7 +441,7 @@ export default function TournamentsPage() {
                         margin: 0,
                       }}
                     >
-                      Tournaments
+                      Arenas
                     </h1>
                   </div>
                   <p style={{
@@ -488,7 +488,7 @@ export default function TournamentsPage() {
                         }}
                       >
                         <Lock style={{ width: 'clamp(13px, 1.1vw, 16px)', height: 'clamp(13px, 1.1vw, 16px)' }} />
-                        Join Private
+                        Enter by code
                       </button>
                     </DialogTrigger>
                     <DialogContent
@@ -501,7 +501,7 @@ export default function TournamentsPage() {
                       }}
                     >
                       <DialogHeader>
-                        <DialogTitle style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em' }}>Join Private Tournament</DialogTitle>
+                        <DialogTitle style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em' }}>Enter a private arena</DialogTitle>
                       </DialogHeader>
                       <div className="space-y-4">
                         <div>
@@ -510,7 +510,7 @@ export default function TournamentsPage() {
                             className="text-base md:text-sm"
                             style={{ color: '#8A93A6', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.12em' }}
                           >
-                            Tournament Code
+                            Arena code
                           </Label>
                           <Input
                             id="join-code"
@@ -545,7 +545,7 @@ export default function TournamentsPage() {
                             transition: 'all 0.2s',
                           }}
                         >
-                          {joinByCodeMutation.isPending ? "Joining..." : "Join Tournament"}
+                          {joinByCodeMutation.isPending ? "Joining the board..." : "Enter arena"}
                         </button>
                       </div>
                     </DialogContent>
@@ -583,7 +583,7 @@ export default function TournamentsPage() {
                     }}
                   >
                     <Plus style={{ width: 'clamp(14px, 1.2vw, 18px)', height: 'clamp(14px, 1.2vw, 18px)' }} />
-                    Create Tournament
+                    Open arena
                   </button>
                 </div>
               </div>
@@ -599,7 +599,7 @@ export default function TournamentsPage() {
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search tournaments..."
+                  placeholder="Scout arenas..."
                   className="pl-9 w-full sm:w-64"
                   style={{
                     background: 'rgba(0,163,255,0.06)',
@@ -623,9 +623,9 @@ export default function TournamentsPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent style={{ background: '#0A1F3D', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="stocks">Stocks Only</SelectItem>
-                  <SelectItem value="crypto">Crypto Only</SelectItem>
+                  <SelectItem value="all">All arenas</SelectItem>
+                  <SelectItem value="stocks">Stock arenas</SelectItem>
+                  <SelectItem value="crypto">Crypto arenas</SelectItem>
                 </SelectContent>
               </Select>
               {/* Checkboxes */}
@@ -637,7 +637,7 @@ export default function TournamentsPage() {
                     onCheckedChange={(checked) => setShowMyTournaments(checked === true)}
                   />
                   <label htmlFor="my-tournaments" className="text-sm cursor-pointer whitespace-nowrap" style={{ color: '#8A93A6' }}>
-                    My Tournaments
+                    My arenas
                   </label>
                 </div>
                 <div className="flex items-center space-x-1.5">
@@ -676,10 +676,10 @@ export default function TournamentsPage() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent style={{ background: '#0A1F3D', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
-                <SelectItem value="starting-soon">Starting Soonest</SelectItem>
-                <SelectItem value="pot-high-low">Highest Pot</SelectItem>
-                <SelectItem value="pot-low-high">Lowest Pot</SelectItem>
-                <SelectItem value="most-recent">Most Recent</SelectItem>
+                <SelectItem value="starting-soon">Opening soon</SelectItem>
+                <SelectItem value="pot-high-low">Biggest prize pool</SelectItem>
+                <SelectItem value="pot-low-high">Smallest prize pool</SelectItem>
+                <SelectItem value="most-recent">Newest arenas</SelectItem>
               </SelectContent>
             </Select>
           </motion.div>
@@ -712,10 +712,10 @@ export default function TournamentsPage() {
                     <Trophy className="w-8 h-8" style={{ color: '#00A3FF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
                   </div>
                   <h3 style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.125rem', marginBottom: '8px' }}>
-                    No tournaments found
+                    No arenas on the board
                   </h3>
                   <p style={{ color: '#4B6080', fontSize: '0.875rem' }}>
-                    Try adjusting your filters, or create your own tournament!
+                    Change the filters or open your own arena.
                   </p>
                 </div>
               ) : (
@@ -729,7 +729,7 @@ export default function TournamentsPage() {
                     {/* Priority 1: Your Active Tournaments */}
                     {myActiveTournaments.length > 0 && (
                       <>
-                        <SectionDivider label="YOUR ACTIVE TOURNAMENTS" color="#00FF87" />
+                        <SectionDivider label="YOUR LIVE ARENAS" color="#00FF87" />
                         {myActiveTournaments.map((tournament, index) => (
                           <HorizontalTournamentCard
                             key={tournament.id}
@@ -748,7 +748,7 @@ export default function TournamentsPage() {
                     {/* Priority 2: Other Live Tournaments */}
                     {otherLiveTournaments.length > 0 && (
                       <>
-                        <SectionDivider label="LIVE" color="#00A3FF" />
+                        <SectionDivider label="LIVE ON THE BOARD" color="#00A3FF" />
                         {otherLiveTournaments.map((tournament, index) => (
                           <HorizontalTournamentCard
                             key={tournament.id}
@@ -767,7 +767,7 @@ export default function TournamentsPage() {
                     {/* Priority 3: Upcoming Tournaments */}
                     {upcomingTournaments.length > 0 && (
                       <>
-                        <SectionDivider label="UPCOMING" color="#8A93A6" />
+                        <SectionDivider label="NEXT UP" color="#8A93A6" />
                         {upcomingTournaments.map((tournament, index) => (
                           <HorizontalTournamentCard
                             key={tournament.id}
@@ -992,7 +992,7 @@ function HorizontalTournamentCard({
           }}
         >
           <Trophy className="w-3.5 h-3.5" />
-          Leaderboard
+                  Standings
         </button>
       );
     }
@@ -1009,7 +1009,7 @@ function HorizontalTournamentCard({
                 queryClient.invalidateQueries({ queryKey: ['/api/tournaments/public'] });
               } catch (error: any) {
                 toast({
-                  title: "Failed to start tournament",
+                  title: "Couldn’t start the arena",
                   description: error.message,
                   variant: "destructive",
                 });
@@ -1112,9 +1112,9 @@ function HorizontalTournamentCard({
             }
           }}
         >
-          {isJoining ? "Joining..." :
+          {isJoining ? "Joining the board..." :
            isFull ? "Full" :
-           tournament.buyInAmount > 0 ? `Join — ${formatCurrency(tournament.buyInAmount)}` : "Join Free"
+           tournament.buyInAmount > 0 ? `Enter — ${formatCurrency(tournament.buyInAmount)}` : "Enter free"
           }
         </button>
       );
@@ -1207,7 +1207,7 @@ function HorizontalTournamentCard({
                 }}
               >
                 <Lock className="w-2.5 h-2.5" style={{ color: '#8A93A6' }} />
-                <span className="text-[10px] font-semibold" style={{ color: '#8A93A6' }}>Private</span>
+                <span className="text-[10px] font-semibold" style={{ color: '#8A93A6' }}>Closed entry</span>
               </div>
             )}
           </div>
@@ -1260,7 +1260,7 @@ function HorizontalTournamentCard({
             </div>
           </div>
 
-          {/* Buy-in stat chip */}
+          {/* Entry fee stat chip */}
           <div className="text-center">
             <div
               style={{
@@ -1272,7 +1272,7 @@ function HorizontalTournamentCard({
                 fontWeight: 600,
               }}
             >
-              Buy-in
+              Entry fee
             </div>
             <div style={{ fontSize: '0.875rem', fontWeight: 700, color: '#C9D1E2' }}>
               {tournament.buyInAmount > 0 ? formatCurrency(tournament.buyInAmount) : "Free"}

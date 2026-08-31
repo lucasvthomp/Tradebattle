@@ -162,7 +162,7 @@ export function CodeRedemptionDialog({ open, onOpenChange }: CodeRedemptionDialo
               </div>
               <div className="flex items-center gap-2">
                 <Trophy className="w-4 h-4 text-yellow-500" />
-                <span>Tournament Access</span>
+                <span>Arena Access</span>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="w-4 h-4 text-purple-500" />

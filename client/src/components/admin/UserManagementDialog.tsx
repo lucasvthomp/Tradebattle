@@ -143,12 +143,12 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
       return await apiRequest("PATCH", `/api/admin/users/${data.userId}/restrict-tournament`, { restricted: data.restricted });
     },
     onSuccess: (_, variables) => {
-      toast({ title: "Success", description: `Tournament access ${variables.restricted ? 'restricted' : 'restored'} successfully` });
+      toast({ title: "Arena access updated", description: `Arena access ${variables.restricted ? 'restricted' : 'restored'} successfully` });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/stats"] });
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error.message || "Failed to update tournament restriction", variant: "destructive" });
+      toast({ title: "Update failed", description: error.message || "Couldn’t update arena access", variant: "destructive" });
     },
   });
 
@@ -217,7 +217,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <div style={{ color: '#C9D1E2' }}>{user.email}</div>
               </div>
               <div>
-                <span style={{ color: '#8A93A6' }}>Site Cash:</span>
+                <span style={{ color: '#8A93A6' }}>Arena cash:</span>
                 <div className="font-mono" style={{ color: '#28C76F' }}>${parseFloat(user.siteCash || "0").toLocaleString()}</div>
               </div>
               <div>
@@ -237,7 +237,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <Badge className="text-xs" style={{ background: '#FF8C00', color: '#fff' }}>Deposits Frozen</Badge>
               )}
               {user.tournamentRestricted && (
-                <Badge className="text-xs" style={{ background: '#E3B341', color: '#000' }}>Tournament Restricted</Badge>
+                <Badge className="text-xs" style={{ background: '#E3B341', color: '#000' }}>Arena access restricted</Badge>
               )}
               {!user.banned && !user.withdrawalFrozen && !user.depositFrozen && !user.tournamentRestricted && (
                 <Badge variant="outline" className="text-xs" style={{ borderColor: '#28C76F', color: '#28C76F' }}>No Restrictions</Badge>
@@ -248,8 +248,8 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
           <Tabs defaultValue="actions" className="w-full">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="actions">Actions</TabsTrigger>
-              <TabsTrigger value="username">Username</TabsTrigger>
-              <TabsTrigger value="balance">Site Cash</TabsTrigger>
+              <TabsTrigger value="username">Player name</TabsTrigger>
+              <TabsTrigger value="balance">Arena cash</TabsTrigger>
               <TabsTrigger value="notes">Notes</TabsTrigger>
             </TabsList>
 
@@ -263,7 +263,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                       <div>
                         <div className="font-medium" style={{ color: '#C9D1E2' }}>Account Ban</div>
                         <div className="text-xs" style={{ color: '#8A93A6' }}>
-                          {user.banned ? 'User is currently banned and cannot log in' : 'User account is active'}
+                          {user.banned ? 'Player access is locked' : 'Player account is active'}
                         </div>
                       </div>
                     </div>
@@ -297,7 +297,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                       <div>
                         <div className="font-medium" style={{ color: '#C9D1E2' }}>Freeze Withdrawals</div>
                         <div className="text-xs" style={{ color: '#8A93A6' }}>
-                          Prevent user from withdrawing site cash
+                          Prevent this player from cashing out
                         </div>
                       </div>
                     </div>
@@ -319,7 +319,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                       <div>
                         <div className="font-medium" style={{ color: '#C9D1E2' }}>Freeze Deposits</div>
                         <div className="text-xs" style={{ color: '#8A93A6' }}>
-                          Prevent user from depositing site cash
+                          Prevent this player from adding arena cash
                         </div>
                       </div>
                     </div>
@@ -339,9 +339,9 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                     <div className="flex items-center gap-3">
                       <Trophy className="h-5 w-5" style={{ color: user.tournamentRestricted ? '#E3B341' : '#8A93A6' }} />
                       <div>
-                        <div className="font-medium" style={{ color: '#C9D1E2' }}>Restrict Tournaments</div>
+                        <div className="font-medium" style={{ color: '#C9D1E2' }}>Restrict arenas</div>
                         <div className="text-xs" style={{ color: '#8A93A6' }}>
-                          Prevent user from creating or joining tournaments
+                          Prevent this player from creating or entering arenas
                         </div>
                       </div>
                     </div>
@@ -359,13 +359,13 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
 
             <TabsContent value="username" className="space-y-4">
               <div className="space-y-3">
-                <Label htmlFor="new-username">Change Username</Label>
+                <Label htmlFor="new-username">Change player name</Label>
                 <div className="flex gap-2">
                   <Input
                     id="new-username"
                     value={newUsername}
                     onChange={(e) => setNewUsername(e.target.value)}
-                    placeholder="Enter new username"
+                    placeholder="Enter new player name"
                   />
                   <Button
                     onClick={handleUsernameUpdate}
@@ -383,7 +383,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
 
             <TabsContent value="balance" className="space-y-4">
               <div className="space-y-3">
-                <Label htmlFor="balance-amount">Adjust Site Cash</Label>
+                <Label htmlFor="balance-amount">Adjust arena cash</Label>
                 <div className="flex gap-2">
                   <Input
                     id="balance-amount"
@@ -412,7 +412,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                   </Button>
                 </div>
                 <p className="text-xs" style={{ color: '#8A93A6' }}>
-                  Current site cash: ${parseFloat(user.siteCash || "0").toLocaleString()}
+                  Current arena cash: ${parseFloat(user.siteCash || "0").toLocaleString()}
                 </p>
               </div>
             </TabsContent>

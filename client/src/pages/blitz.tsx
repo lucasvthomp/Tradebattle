@@ -244,10 +244,10 @@ export default function Blitz() {
                 <Swords color="#00A3FF" size={32} />
               </div>
               <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#C9D1E2", marginBottom: "8px", letterSpacing: "-0.02em" }}>
-                Sign in to battle
+                Enter the arena
               </h2>
               <p style={{ fontSize: "14px", color: "#4B6080", marginBottom: "28px" }}>
-                Create an account to compete in 1v1 trading matches.
+                Create a player card to queue for a 1v1 market duel.
               </p>
               <Link href="/login">
                 <button style={{
@@ -258,7 +258,7 @@ export default function Blitz() {
                   boxShadow: "0 0 28px rgba(0,163,255,0.35)",
                   letterSpacing: "0.02em",
                 }}>
-                  Sign In to Battle
+                  Enter the arena
                 </button>
               </Link>
             </div>
@@ -303,7 +303,7 @@ export default function Blitz() {
                 You're already in a battle!
               </h2>
               <p style={{ fontSize: "14px", color: "#4B6080", marginBottom: "28px" }}>
-                Finish your active match before starting a new one.
+                Finish your active arena before starting a new one.
               </p>
               <Link href={`/dashboard?tournament=${activeBlitz.id}`}>
                 <motion.button
@@ -319,7 +319,7 @@ export default function Blitz() {
                     letterSpacing: "0.02em",
                   }}
                 >
-                  Return to Match <ArrowRight size={18} />
+                  Return to arena <ArrowRight size={18} />
                 </motion.button>
               </Link>
             </div>
@@ -395,7 +395,7 @@ export default function Blitz() {
                         Ready to battle?
                       </h2>
                       <p style={{ fontSize: "14px", color: "#4B6080", maxWidth: "300px", margin: "0 auto 36px", lineHeight: 1.6 }}>
-                        Trade against a real opponent for 5 minutes. Highest portfolio wins.
+                        Face one opponent for five minutes. Highest board value takes it.
                       </p>
 
                       {queueExpired && (
@@ -424,7 +424,7 @@ export default function Blitz() {
                           textShadow: "0 1px 2px rgba(0,0,0,0.3)",
                         }}
                       >
-                        <Zap size={20} fill="currentColor" /> Find Match
+                        <Zap size={20} fill="currentColor" /> Find matchup
                       </motion.button>
                     </div>
                   </div>
@@ -478,7 +478,7 @@ export default function Blitz() {
                       </div>
 
                       <h2 style={{ fontSize: "20px", fontWeight: 900, color: "#C9D1E2", marginBottom: "6px" }}>
-                        Searching for opponent...
+                        Finding your matchup...
                       </h2>
 
                       {/* Queue timer */}
@@ -508,7 +508,7 @@ export default function Blitz() {
                           display: "inline-flex", alignItems: "center", gap: "6px",
                         }}
                       >
-                        <X size={13} /> Cancel
+                          <X size={13} /> Leave queue
                       </button>
                     </div>
                   </div>
@@ -600,7 +600,7 @@ export default function Blitz() {
                             {opponentName[0]?.toUpperCase() || "?"}
                           </div>
                           <div style={{ fontSize: "14px", fontWeight: 800, color: "#C9D1E2" }}>{opponentName}</div>
-                          <div style={{ fontSize: "11px", color: "#FF3D5A", fontWeight: 700, letterSpacing: "0.05em" }}>ENEMY</div>
+                          <div style={{ fontSize: "11px", color: "#FF3D5A", fontWeight: 700, letterSpacing: "0.05em" }}>OPPONENT</div>
                         </motion.div>
                       </div>
 
@@ -631,7 +631,7 @@ export default function Blitz() {
                       </div>
 
                       <p style={{ fontSize: "13px", color: "#4B6080", marginTop: "8px", fontWeight: 600 }}>
-                        Match starting…
+                        Arena starting…
                       </p>
                     </div>
                   </div>
@@ -677,10 +677,10 @@ export default function Blitz() {
                         textShadow: "0 0 24px rgba(0,255,135,0.4)",
                         letterSpacing: "-0.02em",
                       }}>
-                        Match Found!
+                        Matchup found!
                       </h2>
                       <p style={{ fontSize: "14px", color: "#4B6080", marginBottom: "32px", lineHeight: 1.6 }}>
-                        Your 5-minute battle has begun. Go trade!
+                        Your 5-minute arena is live. Make your move!
                       </p>
                       <Link href={`/dashboard?tournament=${tournamentId}`}>
                         <motion.button
@@ -697,7 +697,7 @@ export default function Blitz() {
                             letterSpacing: "0.02em",
                           }}
                         >
-                          Enter Battle <ArrowRight size={20} />
+                          Enter arena <ArrowRight size={20} />
                         </motion.button>
                       </Link>
                     </div>
@@ -724,10 +724,10 @@ export default function Blitz() {
               }}
             >
               {[
-                { icon: <Zap size={15} fill="currentColor" />, color: "#00A3FF", text: "Instant matchmaking" },
-                { icon: <Clock size={15} />, color: "#8B5CF6", text: "5-minute matches" },
-                { icon: <DollarSign size={15} />, color: "#00FF87", text: "$10k starting balance" },
-                { icon: <Trophy size={15} />, color: "#E3B341", text: "Highest portfolio wins" },
+                { icon: <Zap size={15} fill="currentColor" />, color: "#00A3FF", text: "Instant matchups" },
+                { icon: <Clock size={15} />, color: "#8B5CF6", text: "5-minute arenas" },
+                { icon: <DollarSign size={15} />, color: "#00FF87", text: "$10k starting capital" },
+                { icon: <Trophy size={15} />, color: "#E3B341", text: "Highest board value wins" },
               ].map((item, i) => (
                 <div key={i} style={{
                   display: "flex", alignItems: "center", gap: "7px",

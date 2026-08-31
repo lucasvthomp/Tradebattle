@@ -75,7 +75,7 @@ export function PortfolioSummaryWidget() {
       <div className="flex flex-col items-center text-center">
         <div className="flex items-center space-x-1 mb-1">
           <Building className="h-4 w-4 text-purple-500" />
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Holdings</span>
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Positions</span>
         </div>
         <span className="text-lg font-bold text-foreground">
           {Array.isArray(portfolio?.holdings) ? portfolio.holdings.length : 0}

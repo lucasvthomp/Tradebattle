@@ -100,14 +100,14 @@ export function NotificationDropdown() {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
       toast({
-        title: "Joined tournament!",
-        description: "You've successfully joined the tournament",
+        title: "Arena entry locked",
+        description: "You’re in. Make your move.",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Error",
-        description: error.message || "Failed to join tournament",
+        title: "Entry failed",
+        description: error.message || "Couldn’t enter that arena",
         variant: "destructive",
       });
     },
@@ -177,8 +177,8 @@ export function NotificationDropdown() {
       } catch (error) {
         console.error("Failed to fetch tournament results:", error);
         toast({
-          title: "Error",
-          description: "Failed to load tournament results",
+          title: "Results unavailable",
+          description: "Couldn’t load the final arena results",
           variant: "destructive",
         });
       }
@@ -224,7 +224,7 @@ export function NotificationDropdown() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[95vw] max-w-[380px]" style={{ background: "#0C1829", borderColor: "#0E2040" }}>
         <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid #0E2040" }}>
-          <span className="text-sm font-semibold" style={{ color: "#C9D1E2" }}>Notifications</span>
+          <span className="text-sm font-semibold" style={{ color: "#C9D1E2" }}>Alerts</span>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
@@ -242,7 +242,7 @@ export function NotificationDropdown() {
           {notifications.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <Bell className="w-8 h-8 mx-auto mb-2 opacity-30" style={{ color: "#8A93A6" }} />
-              <p className="text-sm" style={{ color: "#8A93A6" }}>No notifications yet</p>
+              <p className="text-sm" style={{ color: "#8A93A6" }}>No alerts yet</p>
             </div>
           ) : (
             <div>

@@ -57,7 +57,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
             marginBottom: "20px", background: "none", border: "none",
             color: "#4B6080", fontSize: "13px", fontWeight: 700, cursor: "pointer",
           }}>
-            <ArrowLeft size={14} /> Tournaments
+            <ArrowLeft size={14} /> Arenas
           </button>
         </Link>
 
@@ -90,7 +90,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                       background: "rgba(148,163,184,0.1)", border: "1px solid rgba(148,163,184,0.2)",
                     }}>
                       <Lock size={10} color="#8A93A6" />
-                      <span style={{ fontSize: "10px", fontWeight: 700, color: "#8A93A6" }}>Private</span>
+                      <span style={{ fontSize: "10px", fontWeight: 700, color: "#8A93A6" }}>Closed entry</span>
                     </div>
                   )}
                 </div>
@@ -110,7 +110,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                       padding: "3px 10px", borderRadius: "20px",
                       background: "rgba(0,163,255,0.1)", border: "1px solid rgba(0,163,255,0.25)",
                     }}>
-                      <span style={{ fontSize: "11px", fontWeight: 800, color: "#00A3FF" }}>WAITING TO START</span>
+                      <span style={{ fontSize: "11px", fontWeight: 800, color: "#00A3FF" }}>WAITING FOR OPENING BELL</span>
                     </div>
                   )}
                   <span style={{ fontSize: "12px", color: "#4B6080", fontWeight: 600 }}>
@@ -122,15 +122,15 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
               {/* Stats chips */}
               <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4B6080", marginBottom: "2px" }}>Jackpot</div>
+                  <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4B6080", marginBottom: "2px" }}>Prize pool</div>
                   <div style={{ fontSize: "1.1rem", fontWeight: 900, color: GOLD, textShadow: `0 0 12px rgba(227,179,65,0.4)` }}>
                     {fmt((tournament?.currentPlayers || 0) * (parseFloat(tournament?.buyInAmount) || 0))}
                   </div>
                 </div>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4B6080", marginBottom: "2px" }}>Buy-in</div>
+                  <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4B6080", marginBottom: "2px" }}>Entry fee</div>
                   <div style={{ fontSize: "1.1rem", fontWeight: 900, color: "#C9D1E2" }}>
-                    {parseFloat(tournament?.buyInAmount) > 0 ? fmt(parseFloat(tournament?.buyInAmount)) : "Free"}
+                    {parseFloat(tournament?.buyInAmount) > 0 ? fmt(parseFloat(tournament?.buyInAmount)) : "No fee"}
                   </div>
                 </div>
                 <div style={{ textAlign: "center" }}>
@@ -140,7 +140,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                   </div>
                 </div>
                 <div style={{ textAlign: "center" }}>
-                  <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4B6080", marginBottom: "2px" }}>Starting</div>
+                  <div style={{ fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: "#4B6080", marginBottom: "2px" }}>Starting capital</div>
                   <div style={{ fontSize: "1.1rem", fontWeight: 900, color: "#C9D1E2" }}>{fmt(startingBalance)}</div>
                 </div>
               </div>
@@ -165,7 +165,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Trophy size={15} color={GOLD} />
-                <span style={{ fontSize: "13px", fontWeight: 800, color: "#C9D1E2" }}>Leaderboard</span>
+                <span style={{ fontSize: "13px", fontWeight: 800, color: "#C9D1E2" }}>Standings</span>
                 {!isLoading && (
                   <span style={{
                     fontSize: "11px", fontWeight: 700, padding: "1px 8px", borderRadius: "20px",
@@ -357,7 +357,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                               <div>
                                 <div style={{ fontSize: "12px", fontWeight: 900, color: "#C9D1E2" }}>{h.symbol}</div>
                                 <div style={{ fontSize: "10px", color: "#4B6080", marginTop: "1px" }}>
-                                  {h.quantity} shares @ {fmt(h.averagePrice)}
+                                  {h.quantity} units @ {fmt(h.averagePrice)}
                                 </div>
                               </div>
                               <div style={{ textAlign: "right" }}>
@@ -415,8 +415,8 @@ export default function TournamentView() {
     return (
       <div style={{ height: "calc(100dvh - 4rem)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Please Log In</h2>
-          <p style={{ color: "#4B6080" }}>You need to be logged in to view this tournament.</p>
+          <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Enter the arena</h2>
+          <p style={{ color: "#4B6080" }}>Sign in to view this arena.</p>
         </div>
       </div>
     );
@@ -426,8 +426,8 @@ export default function TournamentView() {
     return (
       <div style={{ height: "calc(100dvh - 4rem)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Invalid Tournament</h2>
-          <Link href="/tournaments"><span style={{ color: "#00A3FF", cursor: "pointer" }}>Browse Tournaments</span></Link>
+          <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Invalid arena</h2>
+          <Link href="/tournaments"><span style={{ color: "#00A3FF", cursor: "pointer" }}>Scout arenas</span></Link>
         </div>
       </div>
     );
@@ -436,7 +436,7 @@ export default function TournamentView() {
   if (isLoading) {
     return (
       <div style={{ height: "calc(100dvh - 4rem)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ textAlign: "center", color: "#4B6080", fontSize: "14px", fontWeight: 600 }}>Loading tournament…</div>
+        <div style={{ textAlign: "center", color: "#4B6080", fontSize: "14px", fontWeight: 600 }}>Loading arena…</div>
       </div>
     );
   }
@@ -446,8 +446,8 @@ export default function TournamentView() {
       <div style={{ height: "calc(100dvh - 4rem)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
           <Trophy size={48} style={{ color: "#1C3E72", margin: "0 auto 12px", display: "block" }} />
-          <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Tournament Not Found</h2>
-          <Link href="/tournaments"><span style={{ color: "#00A3FF", cursor: "pointer" }}>Browse Tournaments</span></Link>
+          <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Arena not found</h2>
+          <Link href="/tournaments"><span style={{ color: "#00A3FF", cursor: "pointer" }}>Scout arenas</span></Link>
         </div>
       </div>
     );

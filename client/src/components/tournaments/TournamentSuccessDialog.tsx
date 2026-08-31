@@ -53,8 +53,8 @@ export function TournamentSuccessDialog({
     navigator.clipboard.writeText(tournamentLink);
     setCopied(true);
     toast({
-      title: "Copied!",
-      description: "Tournament link copied to clipboard",
+      title: "Copied",
+      description: "Arena link copied to clipboard",
     });
     setTimeout(() => setCopied(false), 2000);
   };
@@ -70,8 +70,8 @@ export function TournamentSuccessDialog({
   const handleInviteFriends = async () => {
     if (selectedFriends.length === 0) {
       toast({
-        title: "No friends selected",
-        description: "Please select at least one friend to invite",
+        title: "No crew selected",
+        description: "Select at least one player to invite",
         variant: "destructive",
       });
       return;
@@ -83,15 +83,15 @@ export function TournamentSuccessDialog({
       });
 
       toast({
-        title: "Invites sent!",
-        description: `Tournament invites sent to ${selectedFriends.length} friend${selectedFriends.length > 1 ? 's' : ''}`,
+        title: "Invites sent",
+        description: `Arena invites sent to ${selectedFriends.length} player${selectedFriends.length > 1 ? 's' : ''}`,
       });
 
       setSelectedFriends([]);
     } catch (error: any) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to send invites",
+        title: "Couldn’t send invites",
+        description: error.message || "The invites didn’t go through",
         variant: "destructive",
       });
     }
@@ -114,7 +114,7 @@ export function TournamentSuccessDialog({
               <Trophy className="w-7 h-7 md:w-8 md:h-8" style={{ color: '#FFFFFF' }} />
             </motion.div>
             <DialogTitle className="text-xl md:text-2xl font-bold mb-2" style={{ color: '#F1F5F9' }}>
-              Tournament Created!
+              Arena opened!
             </DialogTitle>
             <p className="text-sm md:text-base" style={{ color: '#94A3B8' }}>
               {tournamentName}
@@ -128,7 +128,7 @@ export function TournamentSuccessDialog({
             <div className="flex items-center space-x-2">
               <Share2 className="w-4 h-4" style={{ color: '#00A3FF' }} />
               <Label className="text-sm md:text-base font-medium" style={{ color: '#F1F5F9' }}>
-                Share Tournament Link
+                Share arena link
               </Label>
             </div>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -157,7 +157,7 @@ export function TournamentSuccessDialog({
               </Button>
             </div>
             <p className="text-xs" style={{ color: '#8A93A6' }}>
-              Anyone with this link can join your tournament using code: <span className="font-bold" style={{ color: '#00A3FF' }}>{tournamentCode}</span>
+              Anyone with this link can enter your arena using code: <span className="font-bold" style={{ color: '#00A3FF' }}>{tournamentCode}</span>
             </p>
           </div>
 
@@ -169,7 +169,7 @@ export function TournamentSuccessDialog({
               <div className="flex items-center space-x-2">
                 <UserPlus className="w-4 h-4" style={{ color: '#00A3FF' }} />
                 <Label className="text-sm md:text-base font-medium" style={{ color: '#F1F5F9' }}>
-                  Invite Friends
+                  Invite your crew
                 </Label>
               </div>
               {selectedFriends.length > 0 && (
@@ -183,7 +183,7 @@ export function TournamentSuccessDialog({
               <div className="text-center py-4">
                 <Users className="w-8 h-8 mx-auto mb-2 opacity-30" style={{ color: '#8A93A6' }} />
                 <p className="text-sm md:text-base" style={{ color: '#8A93A6' }}>
-                  No friends to invite yet
+                  No players to invite yet
                 </p>
               </div>
             ) : (
@@ -228,7 +228,7 @@ export function TournamentSuccessDialog({
                     className="w-full font-bold min-h-[44px]"
                     style={{ backgroundColor: '#10B981', color: '#FFFFFF' }}
                   >
-                    Send Invites ({selectedFriends.length})
+                    Send invites ({selectedFriends.length})
                   </Button>
                 )}
               </>
@@ -253,7 +253,7 @@ export function TournamentSuccessDialog({
               className="font-bold min-h-[44px] order-1 sm:order-2"
               style={{ backgroundColor: '#00A3FF', color: '#091525' }}
             >
-              View Tournament
+              View arena
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>
           </div>

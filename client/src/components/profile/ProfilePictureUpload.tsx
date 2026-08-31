@@ -24,7 +24,7 @@ export function ProfilePictureUpload() {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       toast({
         title: "Success",
-        description: "Profile picture updated successfully!",
+        description: "Player portrait updated successfully!",
       });
     },
     onError: (error: Error) => {
@@ -80,7 +80,7 @@ export function ProfilePictureUpload() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Profile Picture</CardTitle>
+        <CardTitle>Player portrait</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center space-x-4">
@@ -99,7 +99,7 @@ export function ProfilePictureUpload() {
 
           {/* Upload Controls */}
           <div className="flex-1 space-y-2">
-            <Label className="text-sm font-medium">Upload a new profile picture</Label>
+            <Label className="text-sm font-medium">Upload a new player portrait</Label>
             <div className="flex items-center space-x-2">
               <input
                 ref={fileInputRef}

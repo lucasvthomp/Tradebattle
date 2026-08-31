@@ -40,7 +40,7 @@ export default function Login() {
     try {
       const pending = sessionStorage.getItem("pending2FA");
       if (!pending) {
-        setTwoFAError("Session expired. Please log in again.");
+        setTwoFAError("Session expired. Please enter the arena again.");
         navigate("/login");
         return;
       }
@@ -77,23 +77,23 @@ export default function Login() {
               <span className="font-black text-4xl" style={{ color: '#091525' }}>T</span>
             </div>
           </div>
-          <h1 className="text-4xl font-black tracking-tight" style={{ color: '#F1F5F9' }}>Welcome back</h1>
-          <p className="mt-3 text-lg font-medium" style={{ color: '#00A3FF' }}>Trade. Compete. Win.</p>
+          <h1 className="text-4xl font-black tracking-tight" style={{ color: '#F1F5F9' }}>Back in the arena</h1>
+          <p className="mt-3 text-lg font-medium" style={{ color: '#00A3FF' }}>Read the tape. Beat the field.</p>
         </div>
 
         {/* Feature Pills */}
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           <div className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4" style={{ color: '#10B981' }} />
-            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Paper Trading</span>
+            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Virtual Capital</span>
           </div>
           <div className="flex items-center gap-2">
             <Trophy className="w-4 h-4" style={{ color: '#00A3FF' }} />
-            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Tournaments</span>
+            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Arenas</span>
           </div>
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4" style={{ color: '#3B82F6' }} />
-            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>Community</span>
+            <span className="text-xs font-medium" style={{ color: '#94A3B8' }}>The Field</span>
           </div>
         </div>
 
@@ -104,12 +104,12 @@ export default function Login() {
 
             <div className="text-center space-y-2">
               <ShieldCheck className="w-10 h-10 mx-auto" style={{ color: '#00A3FF' }} />
-              <h2 className="text-lg font-bold" style={{ color: '#F1F5F9' }}>Two-Factor Authentication</h2>
-              <p className="text-sm" style={{ color: '#94A3B8' }}>Enter the 6-digit code from your authenticator app</p>
+              <h2 className="text-lg font-bold" style={{ color: '#F1F5F9' }}>Two-step verification</h2>
+              <p className="text-sm" style={{ color: '#94A3B8' }}>Enter the 6-digit code from your authenticator</p>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="2fa-code" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Verification Code</Label>
+              <Label htmlFor="2fa-code" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Arena code</Label>
               <Input
                 id="2fa-code"
                 type="text"
@@ -141,7 +141,7 @@ export default function Login() {
                   Verifying...
                 </>
               ) : (
-                "Verify & Sign In"
+                "Verify & Enter"
               )}
             </Button>
 
@@ -154,7 +154,7 @@ export default function Login() {
                 navigate("/login");
               }}
             >
-              Back to login
+              Back to entry
             </button>
           </form>
         ) : (
@@ -162,21 +162,21 @@ export default function Login() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
 
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Username</Label>
+              <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Player name</Label>
               <Input
                 id="username"
                 type="text"
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter your username"
+                placeholder="Enter your player name"
                 className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                 style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Password</Label>
+              <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Passcode</Label>
               <div className="relative">
                 <Input
                   id="password"
@@ -184,7 +184,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder="Enter your passcode"
                   className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                   style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                 />
@@ -211,24 +211,24 @@ export default function Login() {
               {loginMutation.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Signing in...
+                  Opening the gate...
                 </>
               ) : (
-                "Sign In"
+                "Enter arena"
               )}
             </Button>
 
             {loginMutation.isError && (
               <div className="p-3 rounded-xl text-center" style={{ backgroundColor: '#EF444420', border: '1px solid #EF444440' }}>
                 <p className="text-sm font-medium" style={{ color: '#EF4444' }}>
-                  {(loginMutation.error as any)?.message || "Login failed. Please check your credentials."}
+                  {(loginMutation.error as any)?.message || "Entry failed. Check your player name and passcode."}
                 </p>
               </div>
             )}
 
             <div className="text-center">
               <Link href="/forgot-password" className="text-sm transition-colors hover:underline" style={{ color: '#94A3B8' }}>
-                Forgot your password?
+                Forgot your passcode?
               </Link>
             </div>
 
@@ -238,7 +238,7 @@ export default function Login() {
               </div>
               <div className="relative flex justify-center text-xs uppercase">
                 <span className="px-3 text-xs font-medium" style={{ backgroundColor: '#0C1A2E', color: '#94A3B8' }}>
-                  Or continue with
+                  Or enter with
                 </span>
               </div>
             </div>
@@ -254,11 +254,11 @@ export default function Login() {
           </form>
         )}
 
-        {/* Sign Up Link */}
+        {/* Create profile link */}
         <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
-          Don't have an account?{" "}
+          New to the arena?{" "}
           <Link href="/signup" className="font-semibold hover:underline transition-colors" style={{ color: '#00A3FF' }}>
-            Create one
+            Create player profile
           </Link>
         </p>
       </div>

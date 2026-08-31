@@ -73,7 +73,7 @@ export function RecentOrdersWidget() {
                     </Badge>
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {order.shares} shares @ {formatCurrency(order.purchasePrice)}
+                    {order.shares} units @ {formatCurrency(order.purchasePrice)}
                   </div>
                 </div>
               </div>

@@ -9,13 +9,13 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 const typeLabels: Record<string, string> = {
-  deposit: "Deposit",
-  withdrawal: "Withdrawal",
-  buy_in: "Tournament Buy-In",
-  payout: "Tournament Payout",
-  tip_sent: "Tip Sent",
-  tip_received: "Tip Received",
-  admin_adjustment: "Admin Adjustment",
+  deposit: "Capital added",
+  withdrawal: "Cash out",
+  buy_in: "Arena entry",
+  payout: "Arena payout",
+  tip_sent: "Boost sent",
+  tip_received: "Boost received",
+  admin_adjustment: "Account adjustment",
 };
 
 const statusColors: Record<string, { bg: string; text: string }> = {
@@ -45,7 +45,7 @@ export default function Transactions() {
       if (typeFilter !== "all") params.set("type", typeFilter);
       params.set("limit", "100");
       const res = await fetch(`/api/transactions?${params.toString()}`, { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to load transactions");
+      if (!res.ok) throw new Error("Failed to load the ledger");
       return res.json();
     },
   });
@@ -59,8 +59,8 @@ export default function Transactions() {
     <div className="arena-page-shell container mx-auto py-6 md:py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#C9D1E2' }}>Transaction History</h1>
-          <p className="text-sm mt-1" style={{ color: '#8A93A6' }}>View all your account transactions</p>
+          <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#C9D1E2' }}>Account ledger</h1>
+          <p className="text-sm mt-1" style={{ color: '#8A93A6' }}>Track every movement in your arena cash.</p>
         </div>
         <Button
           variant="ghost"
@@ -68,7 +68,7 @@ export default function Transactions() {
           onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/transactions"] })}
         >
           <RefreshCw className="w-4 h-4 mr-1" />
-          Refresh
+          Refresh board
         </Button>
       </div>
 
@@ -77,16 +77,16 @@ export default function Transactions() {
         <Select value={typeFilter} onValueChange={setTypeFilter}>
           <SelectTrigger className="w-[220px]" style={{ background: '#0C1829', borderColor: '#0E2040', color: '#C9D1E2' }}>
             <Filter className="h-4 w-4 mr-2" />
-            <SelectValue placeholder="Filter by type" />
+            <SelectValue placeholder="Filter the ledger" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Transactions</SelectItem>
-            <SelectItem value="deposit">Deposits</SelectItem>
-            <SelectItem value="withdrawal">Withdrawals</SelectItem>
-            <SelectItem value="buy_in">Tournament Buy-Ins</SelectItem>
-            <SelectItem value="payout">Tournament Payouts</SelectItem>
-            <SelectItem value="tip_sent">Tips Sent</SelectItem>
-            <SelectItem value="tip_received">Tips Received</SelectItem>
+            <SelectItem value="all">All ledger entries</SelectItem>
+            <SelectItem value="deposit">Capital added</SelectItem>
+            <SelectItem value="withdrawal">Cash outs</SelectItem>
+            <SelectItem value="buy_in">Arena entries</SelectItem>
+            <SelectItem value="payout">Arena payouts</SelectItem>
+            <SelectItem value="tip_sent">Boosts sent</SelectItem>
+            <SelectItem value="tip_received">Boosts received</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -96,19 +96,19 @@ export default function Transactions() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
             <DollarSign className="h-5 w-5" style={{ color: '#00A3FF' }} />
-            Transactions ({transactions.length})
+            Ledger ({transactions.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
             <div className="text-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
-              <p className="mt-3 text-sm" style={{ color: '#8A93A6' }}>Loading transactions...</p>
+              <p className="mt-3 text-sm" style={{ color: '#8A93A6' }}>Loading the ledger...</p>
             </div>
           ) : transactions.length === 0 ? (
             <div className="text-center py-12">
               <DollarSign className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8A93A6' }} />
-              <p className="text-sm" style={{ color: '#8A93A6' }}>No transactions found</p>
+              <p className="text-sm" style={{ color: '#8A93A6' }}>No ledger entries yet</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -119,7 +119,7 @@ export default function Transactions() {
                   <TableHead style={{ color: '#8A93A6' }}>Type</TableHead>
                   <TableHead style={{ color: '#8A93A6' }}>Description</TableHead>
                   <TableHead className="text-right" style={{ color: '#8A93A6' }}>Amount</TableHead>
-                  <TableHead className="text-right" style={{ color: '#8A93A6' }}>Balance</TableHead>
+                  <TableHead className="text-right" style={{ color: '#8A93A6' }}>Arena cash</TableHead>
                   <TableHead style={{ color: '#8A93A6' }}>Status</TableHead>
                 </TableRow>
               </TableHeader>

@@ -57,7 +57,7 @@ export function TradingWidget({ height = 400 }: TradingWidgetProps) {
     onSuccess: () => {
       toast({
         title: "Purchase Successful",
-        description: `Successfully purchased ${buyShares} shares of ${buySymbol}`,
+        description: `Bought ${buyShares} units of ${buySymbol}`,
       });
       setBuySymbol("");
       setBuyShares("");
@@ -86,7 +86,7 @@ export function TradingWidget({ height = 400 }: TradingWidgetProps) {
     onSuccess: () => {
       toast({
         title: "Sale Successful",
-        description: `Successfully sold ${sellShares} shares of ${sellSymbol}`,
+        description: `Sold ${sellShares} units of ${sellSymbol}`,
       });
       setSellSymbol("");
       setSellShares("");
@@ -106,7 +106,7 @@ export function TradingWidget({ height = 400 }: TradingWidgetProps) {
     if (!buySymbol || !buyShares || !(buyStockData as any)?.data?.price) {
       toast({
         title: "Invalid Input",
-        description: "Please enter a valid symbol and number of shares",
+        description: "Enter a valid ticker and number of units",
         variant: "destructive",
       });
       return;
@@ -132,7 +132,7 @@ export function TradingWidget({ height = 400 }: TradingWidgetProps) {
     if (!sellSymbol || !sellShares || !(sellStockData as any)?.data?.price) {
       toast({
         title: "Invalid Input",
-        description: "Please enter a valid symbol and number of shares",
+        description: "Enter a valid ticker and number of units",
         variant: "destructive",
       });
       return;
@@ -182,7 +182,7 @@ export function TradingWidget({ height = 400 }: TradingWidgetProps) {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="buy-shares" className="text-xs">Shares</Label>
+              <Label htmlFor="buy-shares" className="text-xs">Units</Label>
               <Input
                 id="buy-shares"
                 type="number"
@@ -233,7 +233,7 @@ export function TradingWidget({ height = 400 }: TradingWidgetProps) {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="sell-shares" className="text-xs">Shares</Label>
+              <Label htmlFor="sell-shares" className="text-xs">Units</Label>
               <Input
                 id="sell-shares"
                 type="number"

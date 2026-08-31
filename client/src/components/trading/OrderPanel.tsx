@@ -157,7 +157,7 @@ export function OrderPanel({
       <div className="p-3 space-y-2" style={{ borderBottom: "1px solid #0E2040" }}>
         <div>
           <label className="text-xs font-medium mb-1 block" style={{ color: "#94A3B8" }}>
-            Tournament
+            Arena
           </label>
           <Select
             value={selectedTournament?.id?.toString() || ""}
@@ -170,7 +170,7 @@ export function OrderPanel({
               className="h-9"
               style={{ backgroundColor: 'transparent', borderColor: "#0E2040", color: "#00A3FF" }}
             >
-              <SelectValue placeholder="Select Tournament" />
+            <SelectValue placeholder="Select arena" />
             </SelectTrigger>
             <SelectContent style={{ backgroundColor: "#0C1A2E", borderColor: "#0E2040" }}>
               {activeTournaments.map((t: any) => (
@@ -216,7 +216,7 @@ export function OrderPanel({
             style={{ color: "#94A3B8" }}
           />
           <Input
-            placeholder="Search symbol or company..."
+            placeholder="Scout ticker or company..."
             value={showSearch ? searchQuery : ""}
             onFocus={() => setShowSearch(true)}
             onChange={(e) => { setShowSearch(true); setSearchQuery(e.target.value.toUpperCase()); }}
@@ -300,7 +300,7 @@ export function OrderPanel({
             ) : (
               <div className="px-3 py-8 text-center">
                 <span className="text-xs" style={{ color: "#94A3B8" }}>
-                  No stocks found for "{searchQuery}"
+                  No tickers found for "{searchQuery}"
                 </span>
               </div>
             )}
@@ -312,7 +312,7 @@ export function OrderPanel({
           <div className="text-center">
             <Search className="w-8 h-8 mx-auto mb-2" style={{ color: "#0E2040" }} />
             <p className="text-xs" style={{ color: "#94A3B8" }}>
-              Type a symbol or company name
+              Type a ticker or company name
             </p>
             <p className="text-[10px] mt-1" style={{ color: "#64748B" }}>
               e.g. AAPL, TSLA, NVDA, Microsoft
@@ -351,7 +351,7 @@ export function OrderPanel({
         {/* Shares Input */}
         <div>
           <label className="text-xs font-medium mb-1 block" style={{ color: "#94A3B8" }}>
-            Shares
+            Units
           </label>
           <div className="flex items-center gap-2">
             <Button
@@ -447,14 +447,14 @@ export function OrderPanel({
           </div>
           {orderSide === "sell" && quantity > ownedShares && (
             <p className="text-xs mt-1.5" style={{ color: "#EF4444" }}>
-              You only own {ownedShares} shares
+              You only own {ownedShares} units
             </p>
           )}
         </div>
 
         {/* Market Price */}
         <div className="flex items-center justify-between">
-          <span className="text-xs" style={{ color: "#94A3B8" }}>Market Price</span>
+          <span className="text-xs" style={{ color: "#94A3B8" }}>Live quote</span>
           <span className="text-sm font-semibold" style={{ color: "#FFFFFF" }}>
             {formatCurrency(currentPrice)}
           </span>
@@ -463,9 +463,9 @@ export function OrderPanel({
         {/* Owned Position */}
         {ownedShares > 0 && (
           <div className="flex items-center justify-between">
-            <span className="text-xs" style={{ color: "#94A3B8" }}>You Own</span>
+            <span className="text-xs" style={{ color: "#94A3B8" }}>You hold</span>
             <span className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>
-              {ownedShares} shares
+              {ownedShares} units
             </span>
           </div>
         )}
@@ -491,7 +491,7 @@ export function OrderPanel({
         {/* After-trade balance preview */}
         {orderSide === "buy" && canSubmit && (
           <div className="flex items-center justify-between">
-            <span className="text-[10px]" style={{ color: "#64748B" }}>Remaining Power</span>
+            <span className="text-[10px]" style={{ color: "#64748B" }}>Power left</span>
             <span className="text-[10px] font-medium" style={{ color: "#94A3B8" }}>
               {formatCurrency(availableBuyingPower - estimatedTotal)}
             </span>
@@ -499,7 +499,7 @@ export function OrderPanel({
         )}
         {orderSide === "sell" && canSubmit && (
           <div className="flex items-center justify-between">
-            <span className="text-[10px]" style={{ color: "#64748B" }}>New Balance</span>
+            <span className="text-[10px]" style={{ color: "#64748B" }}>New buying power</span>
             <span className="text-[10px] font-medium" style={{ color: "#94A3B8" }}>
               {formatCurrency(availableBuyingPower + estimatedTotal)}
             </span>

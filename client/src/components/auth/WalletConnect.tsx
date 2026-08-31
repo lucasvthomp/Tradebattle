@@ -75,7 +75,7 @@ export function WalletConnect({ onSuccess, onNewUser }: WalletConnectProps) {
 
         toast({
           title: 'Authenticated',
-          description: `Welcome back, ${user.username}!`,
+          description: `Welcome back to the arena, ${user.username}!`,
         });
 
         onSuccess?.();

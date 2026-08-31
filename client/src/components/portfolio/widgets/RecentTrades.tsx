@@ -67,7 +67,7 @@ export function RecentTrades() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium">{trade.quantity} shares</div>
+                  <div className="text-sm font-medium">{trade.quantity} units</div>
                   <div className="text-xs text-muted-foreground">
                     {formatCurrency(trade.purchasePrice)}
                   </div>

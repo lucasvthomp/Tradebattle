@@ -43,12 +43,12 @@ export default function Support() {
       await apiRequest("POST", "/api/contact", data);
     },
     onSuccess: () => {
-      toast({ title: "Message sent", description: "We'll get back to you within 24 hours." });
+      toast({ title: "Message sent", description: "The pit crew will get back to you within 24 hours." });
       setFormData({ name: "", email: "", subject: "", message: "" });
       setErrors({});
     },
     onError: () => {
-      toast({ title: "Failed to send", description: "Please try again.", variant: "destructive" });
+      toast({ title: "Message didn’t send", description: "Run it back in a moment.", variant: "destructive" });
     },
   });
 
@@ -79,9 +79,9 @@ export default function Support() {
       category: "Getting Started",
       emoji: "🚀",
       questions: [
-        { question: "How do I create an account?", answer: "Click 'Sign Up' in the navigation bar and complete the registration form with your email and password." },
-        { question: "How do I reset my password?", answer: "Click 'Forgot Password' on the login page, enter your email, and follow the instructions in the reset email." },
-        { question: "How do I change my username?", answer: "Navigate to Profile > Settings > Account Settings to update your display name." },
+        { question: "How do I create my player card?", answer: "Choose 'Create profile' in the navigation and follow the short setup to pick your player name, contact email, and passcode." },
+        { question: "How do I reset my passcode?", answer: "Choose 'Forgot your passcode?' on the entry screen, enter your contact email, and follow the recovery link." },
+        { question: "How do I change my player name?", answer: "Open Player settings, update your player name, and save your player card." },
       ]
     },
     {
@@ -89,18 +89,18 @@ export default function Support() {
       emoji: "📈",
       questions: [
         { question: "Is my money at risk?", answer: "No. Tradebattle uses virtual currency for paper trading only. You never risk real money on trades." },
-        { question: "How often are prices updated?", answer: "Stock prices refresh in real-time during market hours (9:30 AM–4:00 PM EST, Mon–Fri). Crypto is 24/7." },
-        { question: "Can I sell anytime?", answer: "Yes, during market hours. Orders placed outside hours will be queued for the next open." },
+        { question: "How often are quotes updated?", answer: "Stock quotes refresh in real time during the market window (9:30 AM–4:00 PM EST, Mon–Fri). Crypto runs 24/7." },
+        { question: "Can I close a position anytime?", answer: "Yes, while the market window is live. Orders outside the window wait for the next open." },
         { question: "How are portfolio gains calculated?", answer: "Gain % = (Current Value − Starting Balance) / Starting Balance. This includes your cash and all open positions." },
       ]
     },
     {
-      category: "Tournaments",
+      category: "Arenas",
       emoji: "🏆",
       questions: [
-        { question: "How do I join a tournament?", answer: "Go to the Tournaments page, find an event you like, and click Join. Buy-in is deducted from your site wallet." },
-        { question: "How are rankings determined?", answer: "Rankings are based on portfolio percentage gain from the starting balance — highest return wins." },
-        { question: "Can I join multiple tournaments?", answer: "Yes. Each tournament has its own separate balance and portfolio." },
+        { question: "How do I enter an arena?", answer: "Open Arenas, choose a matchup, and select Enter. Any entry fee comes from your arena cash." },
+        { question: "How are standings determined?", answer: "Standings use each player’s percentage gain from starting capital — the highest return takes the top place." },
+        { question: "Can I enter multiple arenas?", answer: "Yes. Every arena has its own starting capital, positions, and standings." },
       ]
     },
     {
@@ -132,9 +132,9 @@ export default function Support() {
             <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #00A3FF, #0077CC)" }}>
               <MessageSquare className="w-5 h-5" style={{ color: "#000" }} />
             </div>
-            <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Support Center</h1>
+            <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Pit Crew HQ</h1>
           </div>
-          <p className="text-sm" style={{ color: "#4B5563" }}>Quick answers below — or send us a message and we'll respond within 24 hours.</p>
+          <p className="text-sm" style={{ color: "#4B5563" }}>Quick answers for the arena — or send us a message when you need a hand.</p>
         </div>
       </div>
 
@@ -144,7 +144,7 @@ export default function Support() {
           <div className="relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#4B5563" }} />
             <Input
-              placeholder="Search help articles..."
+              placeholder="Scout the playbooks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-11 h-11 text-sm"
@@ -206,7 +206,7 @@ export default function Support() {
             <div style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-4 h-4" style={{ color: "#00A3FF" }} />
-                <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Support</span>
+                <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Call the pit crew</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
                 {(["name", "email", "subject"] as const).map((field) => (

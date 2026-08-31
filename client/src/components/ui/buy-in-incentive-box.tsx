@@ -76,10 +76,10 @@ export function BuyInIncentiveBox({
           <Gift className={`w-5 h-5 ${getIconColor()}`} />
           <p className={`text-sm font-medium ${getTextColor()}`}>
             {variant === "creation" 
-              ? "Buy-in Tournament Benefits"
+              ? "Entry benefits"
               : variant === "join"
-              ? "Tournament Prize Pool"
-              : "Prize Pool Active"
+              ? "Arena prize pool"
+              : "Prize pool active"
             }
           </p>
           <Badge variant="secondary" className="text-xs">
@@ -95,7 +95,7 @@ export function BuyInIncentiveBox({
               {formatCurrency(currentPlayers > 0 ? currentPot : totalPot)}
             </div>
             <div className={`text-xs ${getSecondaryTextColor()}`}>
-              {currentPlayers > 0 ? "Current" : "Max"} Prize Pool
+              {currentPlayers > 0 ? "Current" : "Max"} prize pool
             </div>
           </div>
           <div className="text-center">
@@ -103,7 +103,7 @@ export function BuyInIncentiveBox({
               {formatCurrency(winnerAmount)}
             </div>
             <div className={`text-xs ${getSecondaryTextColor()}`}>
-              Winner Takes (95%)
+              Winner takes (95%)
             </div>
           </div>
         </div>
@@ -128,11 +128,11 @@ export function BuyInIncentiveBox({
           ) : (
             <>
               <div className="flex items-center justify-between">
-                <span>Entry Fee:</span>
+                <span>Entry fee:</span>
                 <span className="font-medium">{formatCurrency(buyInAmount)}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span>Platform Fee:</span>
+                <span>Platform fee:</span>
                 <span className="font-medium">{formatCurrency(platformFee)}</span>
               </div>
               <div className="flex items-center justify-between">
@@ -147,7 +147,7 @@ export function BuyInIncentiveBox({
         {currentPlayers > 0 && currentPlayers < maxPlayers && (
           <div className="mt-3">
             <div className="flex justify-between text-xs mb-1">
-              <span className={getSecondaryTextColor()}>Prize Pool Progress</span>
+              <span className={getSecondaryTextColor()}>Prize pool progress</span>
               <span className={getSecondaryTextColor()}>{Math.round((currentPlayers / maxPlayers) * 100)}%</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2">

@@ -59,11 +59,11 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
       return await apiRequest("PATCH", `/api/admin/tournaments/${data.tournamentId}/name`, { name: data.name });
     },
     onSuccess: () => {
-      toast({ title: "Success", description: "Tournament name updated successfully" });
+      toast({ title: "Arena name updated", description: "Arena name updated successfully" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/tournaments"] });
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error.message || "Failed to update tournament name", variant: "destructive" });
+      toast({ title: "Update failed", description: error.message || "Couldn’t update the arena name", variant: "destructive" });
     },
   });
 
@@ -85,12 +85,12 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
       return await apiRequest("PATCH", `/api/admin/tournaments/${data.tournamentId}/extend`, { hours: data.hours });
     },
     onSuccess: () => {
-      toast({ title: "Success", description: "Tournament extended successfully" });
+      toast({ title: "Arena extended", description: "Arena duration updated successfully" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/tournaments"] });
       setExtensionHours("");
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error.message || "Failed to extend tournament", variant: "destructive" });
+      toast({ title: "Update failed", description: error.message || "Couldn’t extend the arena", variant: "destructive" });
     },
   });
 
@@ -99,12 +99,12 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
       return await apiRequest("POST", `/api/admin/tournaments/${tournamentId}/end`);
     },
     onSuccess: () => {
-      toast({ title: "Success", description: "Tournament ended successfully" });
+      toast({ title: "Arena ended", description: "Arena results are now final" });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/tournaments"] });
       onOpenChange(false);
     },
     onError: (error: any) => {
-      toast({ title: "Error", description: error.message || "Failed to end tournament", variant: "destructive" });
+      toast({ title: "Action failed", description: error.message || "Couldn’t end the arena", variant: "destructive" });
     },
   });
 
@@ -136,7 +136,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Trophy className="h-5 w-5 text-primary" />
-            Manage Tournament: {tournament.name}
+            Manage arena: {tournament.name}
           </DialogTitle>
         </DialogHeader>
 
@@ -152,7 +152,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
           <TabsContent value="overview" className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label className="text-sm text-muted-foreground">Tournament ID</Label>
+                <Label className="text-sm text-muted-foreground">Arena ID</Label>
                 <div className="p-3 rounded-lg bg-muted">
                   <span className="font-mono font-semibold">{tournament.id}</span>
                 </div>
@@ -178,7 +178,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
                     {minutes}m
                   </span>
                 ) : (
-                  <span className="text-muted-foreground">Tournament has ended</span>
+                  <span className="text-muted-foreground">Arena has ended</span>
                 )}
               </div>
             </div>
@@ -196,7 +196,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground flex items-center gap-1">
                   <DollarSign className="h-3 w-3" />
-                  Buy-In
+                  Entry fee
                 </Label>
                 <div className="p-3 rounded-lg bg-muted">
                   <span className="font-semibold">${parseFloat(tournament.buyInAmount || 0).toFixed(2)}</span>
@@ -214,7 +214,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
             </div>
 
             <div className="space-y-2">
-              <Label className="text-sm text-muted-foreground">Tournament Code</Label>
+              <Label className="text-sm text-muted-foreground">Arena code</Label>
               <div className="p-3 rounded-lg bg-muted">
                 <code className="font-mono font-semibold">{tournament.code}</code>
               </div>
@@ -282,12 +282,12 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
           <TabsContent value="settings" className="space-y-4">
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Tournament Name</Label>
+                <Label>Arena name</Label>
                 <div className="flex gap-2">
                   <Input
                     value={newName}
                     onChange={(e) => setNewName(e.target.value)}
-                    placeholder="Enter new tournament name"
+                    placeholder="Enter new arena name"
                   />
                   <Button
                     onClick={() => updateTournamentNameMutation.mutate({ tournamentId: tournament.id, name: newName })}
@@ -347,7 +347,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
               {isActive && (
                 <>
                   <div className="space-y-2">
-                    <Label>Extend Tournament Duration</Label>
+                    <Label>Extend arena duration</Label>
                     <div className="flex gap-2">
                       <Input
                         type="number"
@@ -393,13 +393,13 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
                       }}
                     >
                       <Trophy className="h-4 w-4 mr-2" />
-                      End Tournament Now
+                      End arena now
                     </Button>
                   )}
                   <p className="text-xs text-muted-foreground">
                     {isActive
-                      ? "This will immediately end the tournament and calculate winners."
-                      : "This tournament has already ended."}
+                      ? "This will immediately end the arena and calculate winners."
+                      : "This arena has already ended."}
                   </p>
                 </div>
               </div>

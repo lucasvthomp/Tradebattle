@@ -109,7 +109,7 @@ export function ShortOrderDialog({
             <span>Short Sell {stock.symbol}</span>
           </DialogTitle>
           <DialogDescription>
-            {stock.shortName || stock.longName} • Current Price: {formatCurrency(currentPrice)}
+            {stock.shortName || stock.longName} • Live quote: {formatCurrency(currentPrice)}
             <br />
             <span className="text-xs text-yellow-600">⚠️ You profit when the price goes DOWN</span>
           </DialogDescription>
@@ -124,7 +124,7 @@ export function ShortOrderDialog({
           <TabsContent value="order" className="space-y-4 mt-4">
             {/* Shares Input */}
             <div>
-              <Label htmlFor="shares">Number of Shares to Short</Label>
+              <Label htmlFor="shares">Number of units to short</Label>
               <Input
                 id="shares"
                 type="number"
@@ -132,7 +132,7 @@ export function ShortOrderDialog({
                 step="1"
                 value={shares}
                 onChange={(e) => setShares(e.target.value)}
-                placeholder="Enter number of shares..."
+                placeholder="Enter number of units..."
               />
               {sharesNum > 0 && (
                 <p className="text-sm text-muted-foreground mt-1">
@@ -351,7 +351,7 @@ export function ShortOrderDialog({
             disabled={!shares || parseInt(shares) <= 0 || !canAfford}
             className="bg-red-600 hover:bg-red-700"
           >
-            Short {shares} Shares
+            Short {shares} units
           </Button>
         </DialogFooter>
       </DialogContent>

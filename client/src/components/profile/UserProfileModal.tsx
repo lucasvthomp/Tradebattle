@@ -391,7 +391,7 @@ export function UserProfileModal({
                                   {trade.action === "buy" ? t("bought") : t("sold")} {trade.symbol}
                                 </p>
                                 <p className="text-xs" style={{ color: "#4B5563" }}>
-                                  {trade.shares} shares @ ${parseFloat(trade.price).toFixed(2)}
+                                  {trade.shares} units @ ${parseFloat(trade.price).toFixed(2)}
                                 </p>
                               </div>
                             </div>

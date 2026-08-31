@@ -27,7 +27,7 @@ export function PortfolioGrid({ selectedChartStock, onSelectStock }: PortfolioGr
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <StockSearchBar type="purchase" placeholder="Search stocks to buy..." />
+          <StockSearchBar type="purchase" placeholder="Scout tickers to buy..." />
         </CardContent>
       </Card>
 

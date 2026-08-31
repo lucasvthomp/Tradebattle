@@ -132,13 +132,13 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 <Link href="/login">
                   <Button variant="ghost" className="px-4 py-2 hover:bg-muted/50">
                     <LogIn className="w-4 h-4 mr-2" />
-                    Log In
+                    Enter arena
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button className="px-4 py-2 transition-transform hover:scale-105" style={{ background: '#62E4BD', color: '#06151c', boxShadow: '0 8px 22px rgba(98, 228, 189, 0.18)' }}>
                     <UserPlus className="w-4 h-4 mr-2" />
-                    Sign Up
+                    Create profile
                   </Button>
                 </Link>
               </>
@@ -185,7 +185,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       <span className="font-bold text-base">
                         {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
-                      <span className="text-xs opacity-70">Tap to deposit or withdraw</span>
+                      <span className="text-xs opacity-70">Tap to add capital or cash out</span>
                     </div>
                   </Button>
                 </div>
@@ -209,7 +209,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Swords className="w-5 h-5 mr-3" style={{ color: '#00A3FF' }} />
-                      <span className="text-base">Tournaments</span>
+                      <span className="text-base">Arenas</span>
                     </Button>
                   </Link>
                   <Link href="/blitz">
@@ -229,7 +229,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Trophy className="w-5 h-5 mr-3" style={{ color: '#00A3FF' }} />
-                      <span className="text-base">Leaderboard</span>
+                      <span className="text-base">Standings</span>
                     </Button>
                   </Link>
                   <Link href="/people">
@@ -239,7 +239,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <UsersIcon className="w-5 h-5 mr-3" style={{ color: '#3B82F6' }} />
-                      <span className="text-base">People</span>
+                      <span className="text-base">Players</span>
                     </Button>
                   </Link>
                   <Link href="/shop">
@@ -249,7 +249,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Gift className="w-5 h-5 mr-3" style={{ color: '#F97316' }} />
-                      <span className="text-base">Rewards</span>
+                      <span className="text-base">Loadout</span>
                     </Button>
                   </Link>
                   <Link href="/contact">
@@ -259,7 +259,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
-                      <span className="text-base">Support</span>
+                      <span className="text-base">Pit crew</span>
                     </Button>
                   </Link>
                 </div>
@@ -292,7 +292,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Settings className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
-                      <span className="text-base">Settings</span>
+                      <span className="text-base">Player settings</span>
                     </Button>
                   </Link>
                   <Link href="/archive">
@@ -302,7 +302,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Archive className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
-                      <span className="text-base">Archive</span>
+                      <span className="text-base">Past matches</span>
                     </Button>
                   </Link>
 
@@ -345,7 +345,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <LogIn className="w-5 h-5 mr-3" />
-                    <span className="text-base">Log In</span>
+                    <span className="text-base">Enter arena</span>
                   </Button>
                 </Link>
                 <Link href="/signup">
@@ -355,7 +355,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <UserPlus className="w-5 h-5 mr-3" />
-                    <span className="text-base" style={{ color: '#06151c' }}>Sign Up</span>
+                    <span className="text-base" style={{ color: '#06151c' }}>Create profile</span>
                   </Button>
                 </Link>
               </>

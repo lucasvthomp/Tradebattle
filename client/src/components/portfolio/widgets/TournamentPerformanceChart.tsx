@@ -267,7 +267,7 @@ export function TournamentPerformanceChart({ tournamentId, selectedStock }: Tour
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg flex items-center space-x-2">
             <TrendingUp className="w-5 h-5" />
-            <span>Tournament Chart - {selectedSymbol}</span>
+            <span>Performance chart - {selectedSymbol}</span>
           </CardTitle>
           <div className="flex items-center space-x-2">
             {/* Symbol Search Bar with Autocomplete */}
@@ -280,7 +280,7 @@ export function TournamentPerformanceChart({ tournamentId, selectedStock }: Tour
                 onKeyDown={handleKeyDown}
                 onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                placeholder="Search stocks, crypto..."
+                placeholder="Scout tickers..."
                 className="pl-8 w-48 h-8"
               />
               

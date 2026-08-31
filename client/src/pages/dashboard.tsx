@@ -103,8 +103,8 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
     return (
       <div className="flex items-center justify-center" style={{ height: "calc(100dvh - 4rem)" }}>
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2" style={{ color: "#C9D1E2" }}>Please Log In</h2>
-          <p style={{ color: "#8A93A6" }}>You need to be logged in to view your trading dashboard.</p>
+          <h2 className="text-xl font-semibold mb-2" style={{ color: "#C9D1E2" }}>Enter the arena</h2>
+          <p style={{ color: "#8A93A6" }}>Sign in to open the trading floor.</p>
         </div>
       </div>
     );
@@ -119,11 +119,11 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
             <Trophy size={32} color="#E3B341" />
           </div>
           <div>
-            <h3 className="text-lg font-bold mb-1" style={{ color: "#C9D1E2" }}>No Active Tournaments</h3>
-            <p style={{ color: "#8A93A6" }}>Join a tournament to start trading</p>
+            <h3 className="text-lg font-bold mb-1" style={{ color: "#C9D1E2" }}>No live arenas</h3>
+            <p style={{ color: "#8A93A6" }}>Enter an arena to start your run</p>
           </div>
           <Button asChild style={{ background: "linear-gradient(135deg, #00A3FF, #0066CC)", color: "#fff" }}>
-            <a href="/tournaments"><Swords className="w-4 h-4 mr-2 inline" />Browse Tournaments</a>
+            <a href="/tournaments"><Swords className="w-4 h-4 mr-2 inline" />Scout arenas</a>
           </Button>
         </div>
       </div>

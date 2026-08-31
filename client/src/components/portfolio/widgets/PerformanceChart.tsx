@@ -278,7 +278,7 @@ export function PerformanceChart({ selectedStock }: PerformanceChartProps = {}) 
                 onKeyDown={handleKeyDown}
                 onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
                 onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
-                placeholder="Search stocks, crypto..."
+                placeholder="Scout tickers..."
                 className="pl-8 w-48 h-8"
               />
               

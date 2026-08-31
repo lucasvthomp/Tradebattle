@@ -107,10 +107,10 @@ export function MarketStatusDisclaimer() {
       <AlertDescription className="text-orange-800 dark:text-orange-200">
         <div className="flex items-center justify-between">
           <div>
-            <strong>Stock Market is Closed</strong> - Will reopen {marketStatus.nextOpen && formatNextOpen(marketStatus.nextOpen)}
+            <strong>Stock market is paused</strong> - Reopens {marketStatus.nextOpen && formatNextOpen(marketStatus.nextOpen)}
           </div>
           <div className="text-sm">
-            Only crypto tournaments available • Stock trades scheduled for market open
+            Only crypto arenas are available • Stock trades queue for the next open
           </div>
         </div>
       </AlertDescription>

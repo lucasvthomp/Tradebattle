@@ -101,7 +101,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
 
         if (data.payment_status === 'finished') {
           clearInterval(interval);
-          alert('Payment received! Your balance has been updated.');
+          alert('Payment received! Your arena cash has been updated.');
           window.location.reload();
         } else if (data.payment_status === 'failed' || data.payment_status === 'expired') {
           clearInterval(interval);
@@ -173,7 +173,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
             )}
             <Wallet size={24} color="#00A3FF" />
             <h2 style={{ color: '#C9D1E2', fontSize: '20px', fontWeight: '600', margin: 0 }}>
-              Deposit Funds
+              Add arena cash
             </h2>
           </div>
           <button
@@ -214,7 +214,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
           {step === 'select' && (
             <div>
               <p style={{ color: '#8A93A6', fontSize: '14px', marginBottom: '20px' }}>
-                Select a cryptocurrency to deposit
+                Choose a crypto rail for your cash add
               </p>
               <div style={{ display: 'grid', gap: '12px' }}>
                 {currencies.map((currency) => (
@@ -379,7 +379,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 {loading ? (
                   <>
                     <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
-                    Creating...
+                    Preparing payment...
                   </>
                 ) : (
                   'Continue'

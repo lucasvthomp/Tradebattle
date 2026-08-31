@@ -470,7 +470,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           {loading && (
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
               <Zap style={{ width: "12px", height: "12px", color: "#00A3FF", opacity: 0.7 }} />
-              <span style={{ color: "#4B5975", fontSize: "11px", fontWeight: 600 }}>Loading…</span>
+              <span style={{ color: "#4B5975", fontSize: "11px", fontWeight: 600 }}>Loading live chart…</span>
             </div>
           )}
           {error && (

@@ -71,7 +71,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="w-9 h-9 gradient-primary rounded-lg flex items-center justify-center neon-glow">
               <span className="text-primary-foreground font-bold text-base">O</span>
             </div>
-            <span className="text-xl font-bold gradient-text">ORSATH</span>
+            <span className="text-xl font-bold gradient-text">TRADEBATTLE</span>
           </div>
           <Button
             variant="ghost"

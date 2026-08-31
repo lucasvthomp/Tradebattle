@@ -52,7 +52,7 @@ export function PortfolioGraphWidget({ height = 300 }: PortfolioGraphWidgetProps
     return (
       <Card className="h-full">
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">Portfolio Performance</CardTitle>
+        <CardTitle className="text-sm">Run Performance</CardTitle>
         </CardHeader>
         <CardContent className="flex items-center justify-center" style={{ height: height - 80 }}>
           <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
@@ -65,7 +65,7 @@ export function PortfolioGraphWidget({ height = 300 }: PortfolioGraphWidgetProps
     <Card className="h-full">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-sm">Portfolio Performance</CardTitle>
+          <CardTitle className="text-sm">Run Performance</CardTitle>
           <div className="flex items-center gap-2">
             {change >= 0 ? (
               <TrendingUp className="w-4 h-4 text-green-500" />

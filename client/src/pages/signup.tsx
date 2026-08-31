@@ -38,10 +38,10 @@ const countries = {
 };
 
 const steps = [
-  { icon: User, label: "Identity", title: "Let's get started", subtitle: "Choose your username and email" },
-  { icon: Lock, label: "Security", title: "Secure your account", subtitle: "Create a strong password" },
-  { icon: Globe, label: "Location", title: "Where are you from?", subtitle: "Select your country" },
-  { icon: Rocket, label: "Launch", title: "You're all set!", subtitle: "Review and create your account" },
+  { icon: User, label: "Player card", title: "Build your player card", subtitle: "Pick your player name and email" },
+  { icon: Lock, label: "Defense", title: "Lock in your entry", subtitle: "Create a strong passcode" },
+  { icon: Globe, label: "Home base", title: "Set your home base", subtitle: "Choose your country" },
+  { icon: Rocket, label: "Launch", title: "Ready for the opening bell", subtitle: "Review your player card" },
 ];
 
 export default function Signup() {
@@ -268,17 +268,17 @@ export default function Signup() {
         <div className="p-6 rounded-2xl relative" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040', boxShadow: '0 0 60px rgba(0, 0, 0, 0.5)' }}>
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2/3 h-[1px]" style={{ background: 'linear-gradient(90deg, transparent, #00A3FF, transparent)' }} />
 
-          {/* Step 1: Username & Email */}
+          {/* Step 1: Player name & email */}
           {step === 1 && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Username</Label>
+                <Label htmlFor="username" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Player name</Label>
                 <div className="relative">
                   <Input
                     id="username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Choose a unique username"
+                    placeholder="Choose your player name"
                     maxLength={20}
                     className="pr-10 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                     style={{
@@ -298,22 +298,22 @@ export default function Signup() {
                   <p className="text-xs" style={{ color: '#EF4444' }}>{usernameStatus.reason}</p>
                 )}
                 {username && username.length < 3 && (
-                  <p className="text-xs" style={{ color: '#EF4444' }}>Username must be at least 3 characters</p>
+                  <p className="text-xs" style={{ color: '#EF4444' }}>Player name needs at least 3 characters</p>
                 )}
                 {usernameStatus.available === true && (
-                  <p className="text-xs" style={{ color: '#10B981' }}>Username is available!</p>
+                  <p className="text-xs" style={{ color: '#10B981' }}>Player name is open!</p>
                 )}
               </div>
 
               {!isWalletRegistration && (
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Email</Label>
+                  <Label htmlFor="email" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Contact email</Label>
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
+                    placeholder="Where should we send updates?"
                     className="h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                     style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
@@ -330,18 +330,18 @@ export default function Signup() {
             </div>
           )}
 
-          {/* Step 2: Password */}
+          {/* Step 2: Passcode */}
           {step === 2 && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Password</Label>
+                <Label htmlFor="password" className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Passcode</Label>
                 <div className="relative">
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Create a strong password"
+                    placeholder="Create your passcode"
                     className="pr-12 h-12 rounded-xl transition-all duration-200 focus:ring-1 focus:ring-[#00A3FF] focus:border-[#00A3FF]"
                     style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040', fontSize: '15px' }}
                   />
@@ -367,7 +367,7 @@ export default function Signup() {
                   <div className="h-1.5 flex-1 rounded-full transition-colors duration-300" style={{ backgroundColor: hasNumber ? '#10B981' : '#0E2040' }} />
                 </div>
                 <p className="text-xs font-medium" style={{ color: passwordValid ? '#10B981' : '#94A3B8' }}>
-                  {passwordValid ? 'Strong password!' : 'Password strength'}
+                  {passwordValid ? 'Passcode locked in' : 'Passcode strength'}
                 </p>
               </div>
 
@@ -393,14 +393,14 @@ export default function Signup() {
             </div>
           )}
 
-          {/* Step 3: Country */}
+          {/* Step 3: Home base */}
           {step === 3 && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Country</Label>
+                <Label className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Home base</Label>
                 <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                   <SelectTrigger className="h-12 rounded-xl" style={{ backgroundColor: 'transparent', color: '#F1F5F9', borderColor: '#0E2040' }}>
-                    <SelectValue placeholder="Select your country" />
+                    <SelectValue placeholder="Choose your home base" />
                   </SelectTrigger>
                   <SelectContent>
                     {Object.keys(countries).map((country) => (
@@ -413,7 +413,7 @@ export default function Signup() {
               {selectedCountry && (
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
-                    <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Language</p>
+                    <p className="text-xs mb-1" style={{ color: '#94A3B8' }}>Play language</p>
                     <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{selectedLanguage}</p>
                   </div>
                   <div className="p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
@@ -430,11 +430,11 @@ export default function Signup() {
             <div className="space-y-5">
               <div className="space-y-3">
                 {[
-                  { label: "Username", value: username, color: '#00A3FF' },
-                  { label: "Email", value: email, color: '#3B82F6' },
-                  { label: "Country", value: selectedCountry, color: '#10B981' },
-                  { label: "Language", value: selectedLanguage, color: '#94A3B8' },
-                  { label: "Currency", value: selectedCurrency, color: '#94A3B8' },
+                  { label: "Player name", value: username, color: '#00A3FF' },
+                  { label: "Contact email", value: email, color: '#3B82F6' },
+                  { label: "Home base", value: selectedCountry, color: '#10B981' },
+                  { label: "Play language", value: selectedLanguage, color: '#94A3B8' },
+                  { label: "Display currency", value: selectedCurrency, color: '#94A3B8' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center justify-between p-3 rounded-xl" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                     <span className="text-xs" style={{ color: '#94A3B8' }}>{item.label}</span>
@@ -457,7 +457,7 @@ export default function Signup() {
                     <label htmlFor="tos" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
                       I agree to the{' '}
                       <Link href="/terms" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#00A3FF' }}>
-                        Terms of Service
+                        Arena Terms
                       </Link>
                       <span className="text-red-500 ml-1">*</span>
                     </label>
@@ -476,7 +476,7 @@ export default function Signup() {
                     <label htmlFor="privacy" className="text-sm cursor-pointer" style={{ color: '#F1F5F9' }}>
                       I have read and accept the{' '}
                       <Link href="/privacy" target="_blank" className="underline font-semibold hover:opacity-80" style={{ color: '#00A3FF' }}>
-                        Privacy Policy
+                        Privacy Rules
                       </Link>
                       <span className="text-red-500 ml-1">*</span>
                     </label>
@@ -484,7 +484,7 @@ export default function Signup() {
                 </div>
 
                 <p className="text-xs pt-2" style={{ color: '#5f6b7a', borderTop: '1px solid #0E2040' }}>
-                  By creating an account, you confirm that you are at least 18 years old and agree to receive important updates about your account.
+                  By joining, you confirm you are 18+ and agree to receive important updates about your player card.
                 </p>
               </div>
             </div>
@@ -501,7 +501,7 @@ export default function Signup() {
                 style={{ borderColor: '#0E2040', color: '#F1F5F9' }}
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Back
+                Previous move
               </Button>
             ) : (
               <div />
@@ -515,7 +515,7 @@ export default function Signup() {
                 className="h-11 rounded-xl px-6 font-bold transition-all duration-200 hover:brightness-110"
                 style={{ backgroundColor: canProceed() ? '#00A3FF' : '#0E2040', color: canProceed() ? '#FFFFFF' : '#94A3B8', boxShadow: canProceed() ? '0 4px 20px rgba(0, 163, 255, 0.25)' : 'none' }}
               >
-                Next
+                Next move
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             ) : (
@@ -529,12 +529,12 @@ export default function Signup() {
                 {registerMutation.isPending ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Creating...
+                    Building your player card...
                   </>
                 ) : (
                   <>
                     <Rocket className="w-4 h-4 mr-2" />
-                    Create Account
+                    Create player profile
                   </>
                 )}
               </Button>
@@ -552,9 +552,9 @@ export default function Signup() {
 
         {/* Sign In Link */}
         <p className="text-center text-sm" style={{ color: '#94A3B8' }}>
-          Already have an account?{" "}
+          Already have a player profile?{" "}
           <Link href="/login" className="font-semibold hover:underline transition-colors" style={{ color: '#00A3FF' }}>
-            Sign in
+            Enter the arena
           </Link>
         </p>
       </div>

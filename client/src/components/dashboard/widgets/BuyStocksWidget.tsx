@@ -21,7 +21,7 @@ export function BuyStocksWidget({
     >
       <StockSearchBar
         type="purchase"
-        placeholder="Search stocks to buy..."
+        placeholder="Scout tickers to buy..."
         tournamentId={tournamentId}
         onStockSelect={onStockSelect}
       />

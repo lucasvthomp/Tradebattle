@@ -206,11 +206,11 @@ export default function Deposit() {
               fontWeight: '700',
               margin: 0,
             }}>
-              Deposit Funds
+              Add arena cash
             </h1>
           </div>
           <p style={{ color: '#8A93A6', fontSize: '16px', margin: 0 }}>
-            Add funds to your Tradebattle account using cryptocurrency
+            Add arena cash with cryptocurrency
           </p>
         </div>
 
@@ -233,7 +233,7 @@ export default function Deposit() {
               gap: '8px',
             }}>
               <Clock size={18} />
-              Pending Deposits ({pendingDeposits.length})
+              Pending cash adds ({pendingDeposits.length})
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {pendingDeposits.map((deposit) => (
@@ -376,7 +376,7 @@ export default function Deposit() {
                 fontWeight: '600',
                 marginBottom: '24px',
               }}>
-                Create Deposit
+                Set up a cash add
               </h3>
 
               {error && (
@@ -433,7 +433,7 @@ export default function Deposit() {
                   fontSize: '12px',
                   color: '#8A93A6',
                 }}>
-                  Minimum deposit: ${minimumAmount.toFixed(2)} • Maximum: $10,000
+                  Minimum add: ${minimumAmount.toFixed(2)} • Maximum: $10,000
                 </div>
               </div>
 
@@ -518,12 +518,12 @@ export default function Deposit() {
                 {loading ? (
                   <>
                     <Loader2 size={20} className="animate-spin" style={{ animation: 'spin 1s linear infinite' }} />
-                    Creating Payment...
+                    Preparing payment...
                   </>
                 ) : (
                   <>
                     <Wallet size={20} />
-                    Create Deposit
+                    Add arena cash
                   </>
                 )}
               </button>
@@ -538,10 +538,10 @@ export default function Deposit() {
             }}>
               <AlertCircle size={48} color="#FF4F58" style={{ marginBottom: '16px' }} />
               <h3 style={{ color: '#C9D1E2', fontSize: '20px', marginBottom: '8px' }}>
-                Payment System Unavailable
+                Cash add unavailable
               </h3>
               <p style={{ color: '#8A93A6', margin: 0 }}>
-                The crypto payment system is not configured. Please contact support.
+                The crypto payment rail is not configured yet. Call the Pit Crew for help.
               </p>
             </div>
           )
@@ -563,7 +563,7 @@ export default function Deposit() {
               gap: '8px',
             }}>
               <Clock size={24} color="#00A3FF" />
-              Send Payment
+              Send payment
             </h3>
 
             {/* QR Code */}
@@ -587,7 +587,7 @@ export default function Deposit() {
                 marginBottom: '8px',
                 display: 'block',
               }}>
-                Deposit Address
+                Payment address
               </label>
               <div style={{
                 background: 'transparent',
@@ -635,7 +635,7 @@ export default function Deposit() {
                 marginBottom: '8px',
                 display: 'block',
               }}>
-                Amount to Send
+                Amount to send
               </label>
               <div style={{
                 background: 'transparent',
@@ -669,10 +669,10 @@ export default function Deposit() {
               <Loader2 size={20} color="#00A3FF" style={{ animation: 'spin 1s linear infinite' }} />
               <div style={{ flex: 1 }}>
                 <div style={{ color: '#00A3FF', fontWeight: '600', marginBottom: '4px' }}>
-                  Waiting for payment...
+                  Waiting on the payment...
                 </div>
                 <div style={{ color: '#8A93A6', fontSize: '14px' }}>
-                  You can close this page and return later. Your deposit will be saved for 24 hours.
+                  You can close this page and return later. This payment stays on the board for 24 hours.
                 </div>
               </div>
             </div>
@@ -697,7 +697,7 @@ export default function Deposit() {
               }}
             >
               <X size={16} />
-              Back to Deposit Menu
+              Back to cash menu
             </button>
           </div>
         )}

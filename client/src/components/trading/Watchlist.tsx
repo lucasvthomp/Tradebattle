@@ -90,7 +90,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
             style={{ color: "#94A3B8" }}
           />
           <Input
-            placeholder="Search stocks..."
+            placeholder="Scout tickers..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value.toUpperCase())}
             className="h-8 pl-8 text-xs"
@@ -141,7 +141,7 @@ export function Watchlist({ selectedSymbol, onSymbolSelect, tournamentId }: Watc
             ) : (
               <div className="px-3 py-3 text-center">
                 <span className="text-xs" style={{ color: "#94A3B8" }}>
-                  No stocks found
+                No tickers found
                 </span>
               </div>
             )}

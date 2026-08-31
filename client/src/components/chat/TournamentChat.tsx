@@ -199,7 +199,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
               <div className="text-center py-8">
                 <MessageSquare className="w-10 h-10 mx-auto mb-3" style={{ color: '#94A3B8', opacity: 0.5 }} />
                 <p className="text-sm" style={{ color: '#94A3B8' }}>
-                  No tournament messages yet. Start the conversation!
+                  No arena messages yet. Start the conversation!
                 </p>
               </div>
             ) : (
@@ -223,7 +223,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
-            placeholder="Message tournament..."
+              placeholder="Message the arena..."
             className="flex-1 text-sm h-9"
             style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
             maxLength={500}

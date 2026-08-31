@@ -39,7 +39,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/signup" : "/leaderboard"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Start competing' : t('leaderboard')}
+                    {isPublicSite ? 'Enter the arena' : t('leaderboard')}
                   </Link>
                 </li>
               </ul>
@@ -55,12 +55,12 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/contact" : "/shop"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Support' : 'Shop'}
+                    {isPublicSite ? 'Pit crew' : 'Loadout'}
                   </Link>
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/signup" : "/analytics"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Create an account' : t('analytics')}
+                    {isPublicSite ? 'Create player profile' : t('analytics')}
                   </Link>
                 </li>
               </ul>
@@ -71,22 +71,22 @@ export default function Footer() {
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="/contact" className="hover:text-foreground transition-colors">
-                    Help Center
+                    Pit Crew HQ
                   </Link>
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/privacy" : "/archive"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Privacy Policy' : 'Transaction Archive'}
+                    {isPublicSite ? 'Privacy Rules' : 'Past Matches'}
                   </Link>
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/login" : "/pricing"} className="hover:text-white transition-colors">
-                    {isPublicSite ? 'Log in' : 'Pricing'}
+                    {isPublicSite ? 'Enter arena' : 'Game plans'}
                   </Link>
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/signup" : "/withdraw"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Sign up' : 'Withdraw Funds'}
+                    {isPublicSite ? 'Create profile' : 'Cash out'}
                   </Link>
                 </li>
               </ul>

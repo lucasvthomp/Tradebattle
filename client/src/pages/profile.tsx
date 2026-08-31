@@ -60,7 +60,7 @@ function TransactionHistory({ userId, formatCurrency }: { userId: number; format
     return (
       <Card>
         <CardContent className="p-6 text-center">
-          <p className="text-muted-foreground">Loading transactions...</p>
+          <p className="text-muted-foreground">Loading the ledger...</p>
         </CardContent>
       </Card>
     );
@@ -73,14 +73,14 @@ function TransactionHistory({ userId, formatCurrency }: { userId: number; format
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <CreditCard className="w-5 h-5" />
-          <span>Transaction History</span>
+          <span>Account ledger</span>
         </CardTitle>
       </CardHeader>
       <CardContent>
         {txns.length === 0 ? (
           <div className="text-center py-8">
             <CreditCard className="w-12 h-12 mx-auto mb-3 opacity-30 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground">No transactions yet</p>
+            <p className="text-sm text-muted-foreground">No ledger entries yet</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -133,7 +133,7 @@ function ChangePasswordSection() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      toast({ title: "Password Changed", description: "Your password has been updated successfully." });
+      toast({ title: "Passcode changed", description: "Your passcode is updated." });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message || "Failed to change password", variant: "destructive" });
@@ -142,7 +142,7 @@ function ChangePasswordSection() {
 
   const handleSubmit = () => {
     if (newPassword !== confirmPassword) {
-      toast({ title: "Error", description: "New passwords don't match", variant: "destructive" });
+      toast({ title: "Error", description: "New passcodes don’t match", variant: "destructive" });
       return;
     }
     changePasswordMutation.mutate({ currentPassword, newPassword });
@@ -150,17 +150,17 @@ function ChangePasswordSection() {
 
   return (
     <div>
-      <h4 className="font-medium text-foreground mb-2">Change Password</h4>
+      <h4 className="font-medium text-foreground mb-2">Change passcode</h4>
       <div className="space-y-3">
-        <Input type="password" placeholder="Current password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
-        <Input type="password" placeholder="New password (min 6 chars, 1 uppercase, 1 number)" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
-        <Input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
+        <Input type="password" placeholder="Current passcode" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
+        <Input type="password" placeholder="New passcode (min 6 chars, 1 uppercase, 1 number)" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+        <Input type="password" placeholder="Confirm new passcode" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} />
         <Button
           variant="outline"
           onClick={handleSubmit}
           disabled={!currentPassword || !newPassword || !confirmPassword || changePasswordMutation.isPending}
         >
-          {changePasswordMutation.isPending ? "Updating..." : "Update Password"}
+          {changePasswordMutation.isPending ? "Updating..." : "Update passcode"}
         </Button>
       </div>
     </div>
@@ -199,7 +199,7 @@ function TwoFactorSection({ user }: { user: any }) {
       setSetupData(null);
       setVerifyCode("");
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({ title: "2FA Enabled", description: "Two-factor authentication is now active on your account." });
+          toast({ title: "Two-step verification on", description: "Two-factor authentication is now active on your account." });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message || "Invalid code", variant: "destructive" });
@@ -214,7 +214,7 @@ function TwoFactorSection({ user }: { user: any }) {
       setShowDisable(false);
       setDisableCode("");
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
-      toast({ title: "2FA Disabled", description: "Two-factor authentication has been removed." });
+      toast({ title: "Two-step verification off", description: "Two-factor authentication has been removed." });
     },
     onError: (error: any) => {
       toast({ title: "Error", description: error.message || "Invalid code", variant: "destructive" });
@@ -233,16 +233,16 @@ function TwoFactorSection({ user }: { user: any }) {
         )}
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
-            <p className="text-sm" style={{ color: '#10B981' }}>2FA is enabled on your account</p>
+            <h4 className="font-medium text-foreground">Two-step verification</h4>
+            <p className="text-sm" style={{ color: '#10B981' }}>Two-step verification is on</p>
           </div>
           <Button variant="outline" onClick={() => setShowDisable(!showDisable)}>
-            Disable 2FA
+            Turn off verification
           </Button>
         </div>
         {showDisable && (
           <div className="mt-3 space-y-2">
-            <p className="text-sm text-muted-foreground">Enter your authenticator code to disable 2FA:</p>
+            <p className="text-sm text-muted-foreground">Enter your authenticator code to turn off verification:</p>
             <div className="flex gap-2">
               <Input
                 placeholder="6-digit code"
@@ -275,12 +275,12 @@ function TwoFactorSection({ user }: { user: any }) {
       )}
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="font-medium text-foreground">Two-Factor Authentication</h4>
+          <h4 className="font-medium text-foreground">Two-step verification</h4>
           <p className="text-sm text-muted-foreground">Add an extra layer of security to your account</p>
         </div>
         {!setupData && (
           <Button variant="outline" onClick={() => setupMutation.mutate()} disabled={twoFactorDisabled || setupMutation.isPending}>
-            {setupMutation.isPending ? "Setting up..." : "Enable 2FA"}
+            {setupMutation.isPending ? "Setting up..." : "Turn on verification"}
           </Button>
         )}
       </div>
@@ -377,8 +377,8 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       queryClient.invalidateQueries({ queryKey: ["/api/users/public"] });
       toast({
-        title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
+        title: "Player card updated",
+        description: "Your player card is up to date.",
       });
     },
     onError: (error: any) => {
@@ -468,8 +468,8 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ["/api/users/public"] });
 
       toast({
-        title: "Profile picture updated",
-        description: "Your profile picture has been successfully updated.",
+        title: "Player portrait updated",
+        description: "Your player portrait is up to date.",
       });
     } catch (error: any) {
       toast({
@@ -492,14 +492,14 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       setAddAmount("");
       toast({
-        title: "Money Added",
-        description: "The amount has been added to your account balance.",
+        title: "Capital added",
+        description: "The amount has been added to your arena cash.",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Failed to Add Money",
-        description: error.message || "An error occurred while adding money to your account.",
+        title: "Couldn’t add capital",
+        description: error.message || "We couldn’t add that amount to your arena cash.",
         variant: "destructive",
       });
     },
@@ -513,14 +513,14 @@ export default function Profile() {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       setWithdrawAmount("");
       toast({
-        title: "Money Withdrawn",
-        description: "The amount has been withdrawn from your account balance.",
+        title: "Cash out complete",
+        description: "The amount has been withdrawn from your arena cash.",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "Failed to Withdraw Money",
-        description: error.message || "An error occurred while withdrawing money from your account.",
+        title: "Couldn’t cash out",
+        description: error.message || "We couldn’t withdraw that amount from your arena cash.",
         variant: "destructive",
       });
     },
@@ -554,7 +554,7 @@ export default function Profile() {
       <div className="min-h-[calc(100dvh-4rem)] flex items-center justify-center">
         <Card className="w-96">
           <CardContent className="p-6 text-center">
-            <p className="text-muted-foreground">Please log in to view your profile.</p>
+            <p className="text-muted-foreground">Enter the arena to view your player card.</p>
           </CardContent>
         </Card>
       </div>
@@ -572,7 +572,7 @@ export default function Profile() {
         >
           {/* Header */}
           <motion.div className="mb-8" variants={fadeInUp}>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">My Account</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Player card</h1>
           </motion.div>
 
           {/* User Overview Card */}
@@ -716,11 +716,11 @@ export default function Profile() {
               <TabsList className="grid w-full h-auto grid-cols-2 md:grid-cols-4 gap-1">
                 <TabsTrigger value="transactions" className="flex items-center space-x-2">
                   <CreditCard className="w-4 h-4" />
-                  <span>Transactions</span>
+                  <span>Ledger</span>
                 </TabsTrigger>
                 <TabsTrigger value="account" className="flex items-center space-x-2">
                   <Settings className="w-4 h-4" />
-                  <span>Account</span>
+                  <span>Player card</span>
                 </TabsTrigger>
                 <TabsTrigger value="preferences" className="flex items-center space-x-2">
                   <Languages className="w-4 h-4" />
@@ -743,7 +743,7 @@ export default function Profile() {
                 
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle>Account Settings</CardTitle>
+                    <CardTitle>Player settings</CardTitle>
                     <CardDescription>
                       Manage your account information and public profile
                     </CardDescription>
@@ -752,7 +752,7 @@ export default function Profile() {
                     <form onSubmit={form.handleSubmit(handleSaveProfile)} className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="username">Username</Label>
+                          <Label htmlFor="username">Player name</Label>
                           <Input
                             id="username"
                             {...form.register("username")}
@@ -769,7 +769,7 @@ export default function Profile() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor="email">Email Address</Label>
+                          <Label htmlFor="email">Contact email</Label>
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                             <Input
@@ -777,7 +777,7 @@ export default function Profile() {
                               type="email"
                               {...form.register("email")}
                               className="pl-10"
-                              placeholder="Enter your email"
+                              placeholder="Enter your contact email"
                             />
                           </div>
                           {form.formState.errors.email && (
@@ -791,7 +791,7 @@ export default function Profile() {
                         type="submit"
                         disabled={updateProfileMutation.isPending}
                       >
-                        {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+                        {updateProfileMutation.isPending ? "Saving..." : "Save player card"}
                       </Button>
                     </form>
                   </CardContent>
@@ -802,10 +802,10 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                       <DollarSign className="w-5 h-5" />
-                      <span>Balance Management (Testing)</span>
+                      <span>Arena cash (test mode)</span>
                     </CardTitle>
                     <CardDescription>
-                      Add or withdraw money from your account balance for testing purposes. This represents real money that can be cashed out.
+                      Add or withdraw arena cash in test mode. This balance is separate from live market positions.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -813,7 +813,7 @@ export default function Profile() {
                     <div className="bg-muted/50 p-4 rounded-lg">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-muted-foreground">Current Account Balance</p>
+                          <p className="text-sm text-muted-foreground">Current arena cash</p>
                           <p className="text-2xl font-bold text-foreground">{formatCurrency(Number(user?.siteCash || 0))}</p>
                         </div>
                         <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -829,12 +829,12 @@ export default function Profile() {
                         <CardHeader className="pb-3">
                           <CardTitle className="text-lg flex items-center space-x-2">
                             <Plus className="w-4 h-4 text-green-600" />
-                            <span>Add Money</span>
+                            <span>Add capital</span>
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
                           <div className="space-y-2">
-                            <Label htmlFor="addAmount">Amount to Add</Label>
+                            <Label htmlFor="addAmount">Amount to add</Label>
                             <Input
                               id="addAmount"
                               type="number"
@@ -850,7 +850,7 @@ export default function Profile() {
                             onClick={handleAddMoney}
                             disabled={!addAmount || parseFloat(addAmount) <= 0 || addMoneyMutation.isPending}
                           >
-                            {addMoneyMutation.isPending ? "Adding..." : "Add Money"}
+                            {addMoneyMutation.isPending ? "Adding..." : "Add capital"}
                           </Button>
                         </CardContent>
                       </Card>
@@ -860,12 +860,12 @@ export default function Profile() {
                         <CardHeader className="pb-3">
                           <CardTitle className="text-lg flex items-center space-x-2">
                             <DollarSign className="w-4 h-4 text-red-600" />
-                            <span>Withdraw Money</span>
+                            <span>Cash out</span>
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">
                           <div className="space-y-2">
-                            <Label htmlFor="withdrawAmount">Amount to Withdraw</Label>
+                            <Label htmlFor="withdrawAmount">Amount to cash out</Label>
                             <Input
                               id="withdrawAmount"
                               type="number"
@@ -881,7 +881,7 @@ export default function Profile() {
                             onClick={handleWithdrawMoney}
                             disabled={!withdrawAmount || parseFloat(withdrawAmount) <= 0 || withdrawMoneyMutation.isPending}
                           >
-                            {withdrawMoneyMutation.isPending ? "Withdrawing..." : "Withdraw Money"}
+                            {withdrawMoneyMutation.isPending ? "Cashing out..." : "Cash out"}
                           </Button>
                         </CardContent>
                       </Card>
@@ -892,9 +892,9 @@ export default function Profile() {
                       <div className="flex items-start space-x-3">
                         <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
                         <div>
-                          <h4 className="font-medium text-amber-800 dark:text-amber-200">Testing Environment Notice</h4>
+                          <h4 className="font-medium text-amber-800 dark:text-amber-200">Test arena notice</h4>
                           <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                            This balance management system is for testing purposes only. In production, money would be processed through secure payment gateways and banking systems.
+                            This cash panel is for testing purposes only. Market play uses virtual capital and does not risk real money.
                           </p>
                         </div>
                       </div>
@@ -969,13 +969,13 @@ export default function Profile() {
                     <div className="space-y-4">
                       <h4 className="font-semibold text-foreground flex items-center">
                         <Bell className="w-4 h-4 mr-2" />
-                        Notifications
+                        Alerts
                       </h4>
                       <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-foreground">Tournament Updates</h4>
-                          <p className="text-sm text-muted-foreground">Get notified about tournament results and new competitions</p>
+                          <h4 className="font-medium text-foreground">Arena updates</h4>
+                          <p className="text-sm text-muted-foreground">Get notified about arena results and new matchups</p>
                         </div>
                         <Switch defaultChecked />
                       </div>
@@ -990,16 +990,16 @@ export default function Profile() {
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-foreground">Watchlist Updates</h4>
-                          <p className="text-sm text-muted-foreground">Changes to companies in your watchlist</p>
+                          <h4 className="font-medium text-foreground">Scout list updates</h4>
+                          <p className="text-sm text-muted-foreground">Changes to companies on your scout list</p>
                         </div>
                         <Switch defaultChecked />
                       </div>
                       
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-foreground">Marketing Emails</h4>
-                          <p className="text-sm text-muted-foreground">Product updates and promotional content</p>
+                          <h4 className="font-medium text-foreground">Player updates</h4>
+                          <p className="text-sm text-muted-foreground">Product updates and arena drops</p>
                         </div>
                         <Switch />
                       </div>
@@ -1009,10 +1009,10 @@ export default function Profile() {
                     <Separator />
 
                     <div className="space-y-4">
-                      <h4 className="font-semibold text-foreground">Display Settings</h4>
+                      <h4 className="font-semibold text-foreground">Display settings</h4>
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="font-medium text-foreground">Dark Mode</h4>
+                          <h4 className="font-medium text-foreground">Dark arena</h4>
                           <p className="text-sm text-muted-foreground">Switch between light and dark themes</p>
                         </div>
                         <Switch 
@@ -1026,7 +1026,7 @@ export default function Profile() {
 
 
 
-                    <Button>Save Preferences</Button>
+                    <Button>Save play preferences</Button>
                   </CardContent>
                 </Card>
               </TabsContent>

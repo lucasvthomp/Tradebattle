@@ -802,7 +802,7 @@ export default function Admin() {
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-9 mb-2" style={{ background: '#142E5A', border: '1px solid #1C3E72' }}>
               <TabsTrigger value="overview" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Overview</TabsTrigger>
               <TabsTrigger value="users" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Users</TabsTrigger>
-              <TabsTrigger value="tournaments" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Tournaments</TabsTrigger>
+              <TabsTrigger value="tournaments" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Arenas</TabsTrigger>
               <TabsTrigger value="announcements" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Announce</TabsTrigger>
               <TabsTrigger value="revenue" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Revenue</TabsTrigger>
               <TabsTrigger value="transactions" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Txns</TabsTrigger>
@@ -824,14 +824,14 @@ export default function Admin() {
                   </CardHeader>
                   <CardContent>
                     <div className="text-3xl font-black" style={{ color: '#C9D1E2' }}>{adminStats.totalUsers || allUsers.length || 0}</div>
-                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>Registered accounts</p>
+                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>Player profiles</p>
                   </CardContent>
                 </Card>
 
                 <Card style={{ background: 'linear-gradient(135deg, #142E5A 0%, #1A3A68 100%)', borderColor: '#1C3E72', overflow: 'hidden', position: 'relative' }}>
                   <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(40,199,111,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Total Site Cash</CardTitle>
+                    <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Total arena cash</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(40,199,111,0.15)' }}>
                       <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
                     </div>
@@ -840,7 +840,7 @@ export default function Admin() {
                     <div className="text-3xl font-black" style={{ color: '#28C76F' }}>
                       ${(adminStats.totalSiteCash || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
-                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>Across all users</p>
+                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>Across all players</p>
                   </CardContent>
                 </Card>
 
@@ -856,14 +856,14 @@ export default function Admin() {
                     <div className="text-3xl font-black" style={{ color: '#00A3FF' }}>
                       ${(adminStats.activeWagered || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
-                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>In active tournament pots</p>
+                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>In active arena prize pools</p>
                   </CardContent>
                 </Card>
 
                 <Card style={{ background: 'linear-gradient(135deg, #142E5A 0%, #1A3A68 100%)', borderColor: '#1C3E72', overflow: 'hidden', position: 'relative' }}>
                   <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(227,179,65,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Active Tournaments</CardTitle>
+                    <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Live arenas</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(227,179,65,0.15)' }}>
                       <Trophy className="h-4 w-4" style={{ color: '#E3B341' }} />
                     </div>
@@ -903,13 +903,13 @@ export default function Admin() {
                 </Card>
               </div>
 
-              {/* Active Tournaments Quick View */}
+              {/* Live arenas quick view */}
               {allTournaments.length > 0 && (
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                       <Trophy className="h-5 w-5" style={{ color: '#00A3FF' }} />
-                      Active Tournaments
+                      Live arenas
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
@@ -926,7 +926,7 @@ export default function Admin() {
                             </div>
                             <div className="flex items-center gap-4 text-sm">
                               <span style={{ color: '#8A93A6' }}>
-                                Buy-in: ${parseFloat(tournament.buyInAmount || 0).toFixed(2)}
+                                Entry fee: ${parseFloat(tournament.buyInAmount || 0).toFixed(2)}
                               </span>
                               <span style={{ color: '#00A3FF' }}>
                                 Pot: ${parseFloat(tournament.currentPot || 0).toFixed(2)}
@@ -995,7 +995,7 @@ export default function Admin() {
                         <TableHead className="w-16" style={{ color: '#8A93A6' }}>ID</TableHead>
                         <TableHead className="w-32" style={{ color: '#8A93A6' }}>Username</TableHead>
                         <TableHead className="w-48" style={{ color: '#8A93A6' }}>Email</TableHead>
-                        <TableHead className="w-24" style={{ color: '#8A93A6' }}>Site Cash</TableHead>
+                        <TableHead className="w-24" style={{ color: '#8A93A6' }}>Arena cash</TableHead>
                         <TableHead className="w-40" style={{ color: '#8A93A6' }}>Status</TableHead>
                         <TableHead className="w-16" style={{ color: '#8A93A6' }}>Trades</TableHead>
                         <TableHead className="w-16" style={{ color: '#8A93A6' }}>Actions</TableHead>
@@ -1077,7 +1077,7 @@ export default function Admin() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Tournaments</CardTitle>
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total arenas</CardTitle>
                     <Trophy className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
@@ -1095,7 +1095,7 @@ export default function Admin() {
                     <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
                       {allTournaments.reduce((total: number, tournament: any) => total + (tournament.memberCount || 0), 0) || 0}
                     </div>
-                    <p className="text-xs" style={{ color: '#8A93A6' }}>Tournament participants</p>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Arena players</p>
                   </CardContent>
                 </Card>
 
@@ -1108,13 +1108,13 @@ export default function Admin() {
                     <div className="text-2xl font-bold" style={{ color: '#28C76F' }}>
                       ${allTournaments.reduce((total: number, t: any) => total + parseFloat(t.currentPot || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </div>
-                    <p className="text-xs" style={{ color: '#8A93A6' }}>Combined tournament pots</p>
+                    <p className="text-xs" style={{ color: '#8A93A6' }}>Combined prize pools</p>
                   </CardContent>
                 </Card>
 
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Tournaments</CardTitle>
+                    <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Live arenas</CardTitle>
                     <Activity className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
@@ -1131,10 +1131,10 @@ export default function Admin() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                     <Trophy className="h-5 w-5" style={{ color: '#00A3FF' }} />
-                    Tournament Management
+                    Arena management
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
-                    Manage active tournaments and competitions
+                    Manage live arenas and matchups
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1142,7 +1142,7 @@ export default function Admin() {
                     {tournamentsLoading ? (
                       <div className="text-center py-8">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
-                        <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading tournaments...</p>
+                        <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading arenas...</p>
                       </div>
                     ) : (
                       <div className="rounded-lg" style={{ border: '1px solid #0E2040' }}>
@@ -1150,7 +1150,7 @@ export default function Admin() {
                           <div>ID</div>
                           <div>Name</div>
                           <div>Members</div>
-                          <div>Buy-In</div>
+                          <div>Entry fee</div>
                           <div>Pot</div>
                           <div>Time Left</div>
                           <div>Status</div>
@@ -1253,7 +1253,7 @@ export default function Admin() {
                     Create System-Wide Announcement
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
-                    Send messages that appear when users log in. Add custom visual effects!
+                    Send messages that appear when players enter. Add custom visual effects!
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">

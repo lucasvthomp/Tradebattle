@@ -21,11 +21,11 @@ export default function ResetPassword() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError("Passcodes do not match");
       return;
     }
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      setError("Passcode must be at least 8 characters");
       return;
     }
     setLoading(true);
@@ -45,16 +45,16 @@ export default function ResetPassword() {
       <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-10">
         <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
           <CardHeader>
-            <CardTitle style={{ color: '#C9D1E2' }}>Invalid Link</CardTitle>
+            <CardTitle style={{ color: '#C9D1E2' }}>Link expired</CardTitle>
             <CardDescription style={{ color: '#8A93A6' }}>
-              This password reset link is invalid or has expired.
+              This recovery link is no longer active.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Link href="/forgot-password">
               <Button variant="outline" className="w-full">
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Request a New Link
+                Request a fresh link
               </Button>
             </Link>
           </CardContent>
@@ -68,12 +68,12 @@ export default function ResetPassword() {
       <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
         <CardHeader>
           <CardTitle style={{ color: '#C9D1E2' }}>
-            {success ? "Password Reset" : "Set New Password"}
+            {success ? "Passcode updated" : "Set a new passcode"}
           </CardTitle>
           <CardDescription style={{ color: '#8A93A6' }}>
             {success
-              ? "Your password has been successfully reset."
-              : "Enter your new password below."}
+              ? "Your new passcode is locked in."
+              : "Choose a new passcode below."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -83,21 +83,21 @@ export default function ResetPassword() {
                 <CheckCircle className="w-8 h-8" style={{ color: '#28C76F' }} />
               </div>
               <p className="text-sm" style={{ color: '#8A93A6' }}>
-                You can now sign in with your new password.
+                You can now enter the arena with your new passcode.
               </p>
               <Link href="/login">
                 <Button
                   className="w-full text-black font-bold"
                   style={{ background: '#00A3FF' }}
                 >
-                  Go to Login
+                  Return to entry
                 </Button>
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="password" style={{ color: '#C9D1E2' }}>New Password</Label>
+              <Label htmlFor="password" style={{ color: '#C9D1E2' }}>New passcode</Label>
                 <Input
                   id="password"
                   type="password"
@@ -109,7 +109,7 @@ export default function ResetPassword() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" style={{ color: '#C9D1E2' }}>Confirm Password</Label>
+              <Label htmlFor="confirmPassword" style={{ color: '#C9D1E2' }}>Confirm passcode</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -128,12 +128,12 @@ export default function ResetPassword() {
                 disabled={loading || !password || !confirmPassword}
               >
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Reset Password
+                Update passcode
               </Button>
               <Link href="/login">
                 <Button variant="ghost" className="w-full" style={{ color: '#8A93A6' }}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Login
+                  Back to entry
                 </Button>
               </Link>
             </form>

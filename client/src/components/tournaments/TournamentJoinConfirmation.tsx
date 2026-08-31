@@ -55,7 +55,7 @@ export function TournamentJoinConfirmation({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl" style={{ color: '#00A3FF' }}>
             <ShieldAlert className="w-8 h-8" />
-            Confirm Tournament Entry
+            Confirm arena entry
           </DialogTitle>
         </DialogHeader>
 
@@ -70,7 +70,7 @@ export function TournamentJoinConfirmation({
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <DollarSign className="w-4 h-4" style={{ color: '#FF4F58' }} />
-                  <span className="text-sm" style={{ color: '#8A93A6' }}>Buy-In</span>
+                  <span className="text-sm" style={{ color: '#8A93A6' }}>Entry fee</span>
                 </div>
                 <p className="text-xl font-bold" style={{ color: '#FF4F58' }}>
                   ${tournament.buyIn.toFixed(2)}
@@ -80,7 +80,7 @@ export function TournamentJoinConfirmation({
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <Trophy className="w-4 h-4" style={{ color: '#00A3FF' }} />
-                  <span className="text-sm" style={{ color: '#8A93A6' }}>Prize Pool</span>
+                  <span className="text-sm" style={{ color: '#8A93A6' }}>Prize pool</span>
                 </div>
                 <p className="text-xl font-bold" style={{ color: '#00A3FF' }}>
                   ${tournament.prizePool.toLocaleString()}
@@ -90,7 +90,7 @@ export function TournamentJoinConfirmation({
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <DollarSign className="w-4 h-4" style={{ color: '#28C76F' }} />
-                  <span className="text-sm" style={{ color: '#8A93A6' }}>Starting Balance</span>
+                  <span className="text-sm" style={{ color: '#8A93A6' }}>Starting capital</span>
                 </div>
                 <p className="text-xl font-bold" style={{ color: '#28C76F' }}>
                   ${tournament.startingBalance.toLocaleString()}
@@ -119,10 +119,10 @@ export function TournamentJoinConfirmation({
             <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: '#FF4F58' }} />
             <div>
               <p className="font-semibold mb-1" style={{ color: '#FF4F58' }}>
-                Buy-In Amount Will Be Deducted
+                Entry fee will be deducted
               </p>
               <p className="text-sm" style={{ color: '#C9D1E2' }}>
-                ${tournament.buyIn.toFixed(2)} will be immediately deducted from your account balance upon confirmation. This fee is non-refundable.
+                ${tournament.buyIn.toFixed(2)} will be immediately deducted from your arena cash when you confirm. This fee is non-refundable.
               </p>
             </div>
           </motion.div>
@@ -143,9 +143,9 @@ export function TournamentJoinConfirmation({
               >
                 I agree to the{' '}
                 <a href="/terms" target="_blank" className="underline font-semibold" style={{ color: '#00A3FF' }}>
-                  Terms of Service
+                  Arena Terms
                 </a>{' '}
-                and understand that the buy-in fee is non-refundable.
+                and understand that the entry fee is non-refundable.
               </label>
             </div>
 
@@ -163,7 +163,7 @@ export function TournamentJoinConfirmation({
               >
                 I have read and agree to the{' '}
                 <span className="font-semibold" style={{ color: '#00A3FF' }}>
-                  Trading Tournament Guidelines
+                  Arena playbook
                 </span>
                 , including fair play rules and trading restrictions.
               </label>
@@ -193,7 +193,7 @@ export function TournamentJoinConfirmation({
                 opacity: canConfirm ? 1 : 0.6,
               }}
             >
-              {isLoading ? 'Joining...' : `Confirm & Pay $${tournament.buyIn.toFixed(2)}`}
+              {isLoading ? 'Joining the board...' : `Confirm entry · $${tournament.buyIn.toFixed(2)}`}
             </Button>
           </div>
         </div>

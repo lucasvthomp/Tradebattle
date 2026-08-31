@@ -96,7 +96,7 @@ export function PositionsWidget({ height = 300 }: PositionsWidgetProps) {
                       {position.symbol}
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      {position.totalShares} shares
+                      {position.totalShares} units
                     </div>
                   </div>
                   <div className="text-right">

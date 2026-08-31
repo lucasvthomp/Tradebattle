@@ -246,7 +246,7 @@ export function TradingSidebar({
               color: "#8A93A6",
             }}
           >
-            <SelectValue placeholder="Select Tournament" />
+            <SelectValue placeholder="Select arena" />
           </SelectTrigger>
           <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.2)" }}>
             {activeTournaments.map((t: any) => (
@@ -352,7 +352,7 @@ export function TradingSidebar({
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "#4B5563" }} />
           <Input
-            placeholder={selectedSymbol ? `${selectedSymbol} — change symbol` : "Search symbol..."}
+            placeholder={selectedSymbol ? `${selectedSymbol} — change ticker` : "Scout ticker..."}
             value={showSearch ? searchQuery : ""}
             onFocus={() => setShowSearch(true)}
             onChange={(e) => { setShowSearch(true); setSearchQuery(e.target.value.toUpperCase()); }}
@@ -460,7 +460,7 @@ export function TradingSidebar({
             <div className="px-3 py-2">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#4B5563" }}>
-                  Holdings
+                  Positions
                 </span>
                 <span
                   className="text-[10px] font-black px-2 py-0.5 rounded-full"
@@ -506,7 +506,7 @@ export function TradingSidebar({
                               className="text-[9px] font-bold px-1.5 py-0.5 rounded"
                               style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "#8A93A6" }}
                             >
-                              {h.shares} {isCryptoTournament ? "units" : "sh"}
+                              {h.shares} units
                             </span>
                           </div>
                           <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>
@@ -697,7 +697,7 @@ export function TradingSidebar({
                   </SelectTrigger>
                   <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.15)" }}>
                     <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
-                      {isCryptoTournament ? "Units" : "Shares"}
+                      Units
                     </SelectItem>
                     <SelectItem value="dollars" style={{ color: "#F1F5F9" }}>Dollars</SelectItem>
                   </SelectContent>
@@ -710,7 +710,7 @@ export function TradingSidebar({
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-                  {buyInMode === "shares" ? (isCryptoTournament ? "Units" : "Shares") : "Amount"}
+                  {buyInMode === "shares" ? "Units" : "Amount"}
                 </span>
                 {buyInMode === "shares" ? (
                   <Input
@@ -738,7 +738,7 @@ export function TradingSidebar({
 
               {buyInMode === "dollars" && effectiveQuantity > 0 && (
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-[10px]" style={{ color: "#4B5563" }}>Est. Shares</span>
+                  <span className="text-[10px]" style={{ color: "#4B5563" }}>Est. units</span>
                   <span className="text-[10px] font-bold" style={{ color: "#8A93A6" }}>{effectiveQuantity}</span>
                 </div>
               )}
@@ -749,7 +749,7 @@ export function TradingSidebar({
                 style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs" style={{ color: "#4B5563" }}>Market Price</span>
+              <span className="text-xs" style={{ color: "#4B5563" }}>Live quote</span>
                   <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>{formatCurrency(currentPrice)}</span>
                 </div>
                 <div className="flex items-center justify-between">
@@ -789,7 +789,7 @@ export function TradingSidebar({
                   className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold"
                   style={{ backgroundColor: "rgba(255,79,88,0.1)", color: "#FF4F58", border: "1px solid rgba(255,79,88,0.2)" }}
                 >
-                  You only own {ownedShares} shares
+                  You only own {ownedShares} units
                 </div>
               )}
 

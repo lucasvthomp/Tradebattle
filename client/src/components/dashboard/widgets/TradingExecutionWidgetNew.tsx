@@ -74,7 +74,7 @@ export function TradingExecutionWidget({
       <div className="p-3 border-b border-border/20">
         <StockSearchBar
           type="purchase"
-          placeholder="Search stocks..."
+          placeholder="Scout tickers..."
           tournamentId={tournamentId}
           onStockSelect={handleStockSelect}
         />
@@ -136,7 +136,7 @@ export function TradingExecutionWidget({
                 value={quantity}
                 onChange={(e) => setQuantity(e.target.value)}
                 className="h-8"
-                placeholder="Shares"
+                placeholder="Units"
               />
               <Select value={orderType} onValueChange={(value: any) => setOrderType(value)}>
                 <SelectTrigger className="h-8">

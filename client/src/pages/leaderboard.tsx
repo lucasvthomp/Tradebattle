@@ -161,7 +161,7 @@ export default function Leaderboard() {
         <div className="flex items-center gap-3 mb-8">
           <Trophy className="w-7 h-7" style={{ color: '#E3B341' }} />
           <div>
-            <h1 className="text-2xl font-bold" style={{ color: '#F1F5F9' }}>Leaderboard</h1>
+            <h1 className="text-2xl font-bold" style={{ color: '#F1F5F9' }}>Standings</h1>
             <p className="text-sm" style={{ color: '#8A93A6' }}>
               {highWagerRankings.length > 0 ? `${highWagerRankings.length} ranked players` : 'No rankings yet'}
             </p>
@@ -173,15 +173,15 @@ export default function Leaderboard() {
           <TabsList className="grid w-full grid-cols-3 h-10 mb-6" style={{ background: '#0C1829', border: '1px solid #0E2040' }}>
             <TabsTrigger value="highwager" className="text-sm font-semibold data-[state=active]:bg-[#E3B341] data-[state=active]:text-[#06121F]">
               <DollarSign className="w-4 h-4 mr-1.5" />
-              Top Wager
+              Biggest Board
             </TabsTrigger>
             <TabsTrigger value="growth" className="text-sm font-semibold data-[state=active]:bg-[#28C76F] data-[state=active]:text-[#06121F]">
               <TrendingUp className="w-4 h-4 mr-1.5" />
-              Growth
+              Best Run
             </TabsTrigger>
             <TabsTrigger value="active" className="text-sm font-semibold data-[state=active]:bg-[#60A5FA] data-[state=active]:text-[#06121F]">
               <Zap className="w-4 h-4 mr-1.5" />
-              Active
+              Most Reps
             </TabsTrigger>
           </TabsList>
 
@@ -189,7 +189,7 @@ export default function Leaderboard() {
             {loadingHighWager ? <LoadingSkeleton /> : highWagerRankings.length === 0 ? (
               <div className="text-center py-16">
                 <Trophy className="w-12 h-12 mx-auto mb-3" style={{ color: '#0E2040' }} />
-                <p style={{ color: '#8A93A6' }}>No rankings yet. Be the first!</p>
+                <p style={{ color: '#8A93A6' }}>No scores yet. Make the first move.</p>
               </div>
             ) : (
               <>
@@ -210,7 +210,7 @@ export default function Leaderboard() {
             {loadingGrowth ? <LoadingSkeleton /> : growthRankings.length === 0 ? (
               <div className="text-center py-16">
                 <TrendingUp className="w-12 h-12 mx-auto mb-3" style={{ color: '#0E2040' }} />
-                <p style={{ color: '#8A93A6' }}>No rankings yet. Start trading!</p>
+                <p style={{ color: '#8A93A6' }}>No scores yet. Make the first move.</p>
               </div>
             ) : (
               <div className="space-y-1.5">
@@ -228,13 +228,13 @@ export default function Leaderboard() {
             {loadingActive ? <LoadingSkeleton /> : activeRankings.length === 0 ? (
               <div className="text-center py-16">
                 <Zap className="w-12 h-12 mx-auto mb-3" style={{ color: '#0E2040' }} />
-                <p style={{ color: '#8A93A6' }}>No rankings yet. Join tournaments!</p>
+                <p style={{ color: '#8A93A6' }}>No scores yet. Enter an arena.</p>
               </div>
             ) : (
               <div className="space-y-1.5">
                 {activeRankings.slice(0, 20).map((player: any, idx: number) => (
                   <RankingRow key={player.userId} player={player} rank={idx + 1}
-                    showValue={`${player.tournamentsEntered || 0} played`}
+                    showValue={`${player.tournamentsEntered || 0} arena${player.tournamentsEntered === 1 ? '' : 's'}`}
                     valueIcon={<Users className="w-4 h-4" style={{ color: getRankColor(idx + 1) }} />}
                   />
                 ))}

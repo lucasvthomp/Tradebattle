@@ -118,15 +118,15 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
         }
       } else {
         toast({
-          title: "Stock not found",
-          description: "Please check the symbol and try again",
+          title: "Ticker not found",
+          description: "Check the ticker and run it again",
           variant: "destructive"
         });
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to get stock price",
+        description: "Couldn’t load that quote",
         variant: "destructive"
       });
     }
@@ -187,7 +187,7 @@ export function StockSearchBar({ type, placeholder, tournamentId, onStockSelect 
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           ref={inputRef}
-          placeholder={placeholder || `Search stocks to ${type === 'purchase' ? 'buy' : 'watch'}...`}
+          placeholder={placeholder || `Scout tickers to ${type === 'purchase' ? 'buy' : 'watch'}...`}
           value={searchQuery}
           onChange={handleInputChange}
           onKeyDown={handleKeyPress}

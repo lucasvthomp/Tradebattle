@@ -20,7 +20,7 @@ export const tourSteps: TourStep[] = [
     id: "balance",
     title: "Your Balance",
     description:
-      "This is your site cash. Use it to buy into tournaments. Tap to deposit or withdraw.",
+      "This is your arena cash. Use it to enter arenas, then tap to add capital or cash out.",
     targetSelector: '[data-tour="balance"]',
     cardPosition: "bottom",
   },
@@ -28,21 +28,21 @@ export const tourSteps: TourStep[] = [
     id: "sidebar",
     title: "Navigate Around",
     description:
-      "Use the sidebar to jump between Dashboard, Tournaments, Leaderboard, and more.",
+      "Use the sidebar to jump between the Trading Floor, Arenas, Standings, and more.",
     targetSelector: '[data-tour="sidebar"]',
     cardPosition: "right",
   },
   {
     id: "tournaments",
-    title: "Join a Tournament",
+    title: "Enter an arena",
     description:
-      "Browse tournaments, pay the buy-in, and compete for payouts. This is where the action starts!",
+      "Browse arenas, lock in your entry, and compete for the payout. This is where the action starts!",
     targetSelector: '[data-tour="nav-tournaments"]',
     cardPosition: "right",
   },
   {
     id: "chart",
-    title: "Trading Dashboard",
+    title: "Trading Floor",
     description:
       "Your command center. View live charts, track positions, and execute trades.",
     targetSelector: '[data-tour="chart-area"]',

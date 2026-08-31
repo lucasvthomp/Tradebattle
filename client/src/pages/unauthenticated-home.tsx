@@ -7,8 +7,7 @@ const formatTime = (total: number) => [Math.floor(total / 3600), Math.floor((tot
   .map((part) => String(part).padStart(2, "0"))
   .join(":");
 
-const marketPath = "M-30 366 C18 330 49 353 91 292 S161 348 213 272 S280 183 337 238 S407 327 462 243 S540 166 606 207 S663 291 720 234 S787 151 847 186 S916 258 969 201 S1032 126 1086 157 S1147 239 1203 184 S1276 223 1331 163 S1392 91 1470 139";
-const rivalPath = "M-30 420 C43 401 70 441 129 390 S215 365 272 405 S341 315 404 351 S472 408 536 346 S612 299 675 337 S741 388 803 326 S878 270 934 319 S1007 367 1061 295 S1130 254 1187 291 S1255 330 1317 275 S1396 218 1470 250";
+const marketPath = "M-30 348 C18 326 47 360 86 330 S143 286 184 314 S227 350 273 306 S330 266 370 292 S416 320 456 277 S506 251 544 272 S582 326 621 294 S664 242 704 261 S744 312 786 279 S833 227 875 245 S912 287 953 260 S1002 214 1041 236 S1074 278 1116 248 S1160 195 1203 218 S1245 259 1286 226 S1330 178 1371 202 S1426 174 1470 188";
 
 function MarketChartBackground() {
   return (
@@ -35,44 +34,12 @@ function MarketChartBackground() {
           <path d="M126 0 V620 M348 0 V620 M570 0 V620 M792 0 V620 M1014 0 V620 M1236 0 V620" />
         </g>
 
-        <g className="market-volume-bars">
-          <rect x="55" y="510" width="18" height="54" rx="3" />
-          <rect x="145" y="474" width="18" height="90" rx="3" />
-          <rect x="235" y="528" width="18" height="36" rx="3" />
-          <rect x="325" y="438" width="18" height="126" rx="3" />
-          <rect x="415" y="493" width="18" height="71" rx="3" />
-          <rect x="505" y="405" width="18" height="159" rx="3" />
-          <rect x="595" y="468" width="18" height="96" rx="3" />
-          <rect x="685" y="388" width="18" height="176" rx="3" />
-          <rect x="775" y="456" width="18" height="108" rx="3" />
-          <rect x="865" y="364" width="18" height="200" rx="3" />
-          <rect x="955" y="428" width="18" height="136" rx="3" />
-          <rect x="1045" y="337" width="18" height="227" rx="3" />
-          <rect x="1135" y="411" width="18" height="153" rx="3" />
-          <rect x="1225" y="298" width="18" height="266" rx="3" />
-          <rect x="1315" y="350" width="18" height="214" rx="3" />
-        </g>
-        <path className="market-chart-rival" pathLength={1} d={rivalPath} />
         <path className="market-chart-shadow" pathLength={1} d={marketPath} />
         <path className="market-chart-area" d={`${marketPath} V620 H-30 Z`} />
         <path className="market-chart-line" pathLength={1} d={marketPath} />
         <path className="market-chart-highlight" d={marketPath} />
-        <path className="market-chart-scanner" d="M980 80 V565" />
-        <circle className="market-chart-node" cx="1086" cy="157" r="6" />
-        <circle className="market-chart-node market-chart-node-secondary" cx="969" cy="201" r="4" />
-        <circle className="market-chart-node market-chart-node-rival" cx="1061" cy="295" r="4" />
+        <circle className="market-chart-node" cx="1116" cy="248" r="5" />
       </svg>
-
-      <div className="market-chart-readout market-chart-readout-top"><span>TB / MARKET TAPE</span><strong>+4.82%</strong></div>
-      <div className="market-chart-readout market-chart-readout-bottom"><span>OPEN</span><strong>LIVE DATA</strong></div>
-      <div className="market-chart-console">
-        <span className="market-console-label"><i /> LIVE MATCH TELEMETRY</span>
-        <div className="market-console-items">
-          <span><strong>YOU</strong><b>+8.4%</b></span>
-          <span><strong>FIELD</strong><b>48</b></span>
-          <span><strong>EDGE</strong><b>ACTIVE</b></span>
-        </div>
-      </div>
     </div>
   );
 }
@@ -82,8 +49,8 @@ function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href
 }
 
 const steps = [
-  { number: "01", icon: <Swords aria-hidden="true" />, title: "Choose a format", body: "Enter an open tournament or go head-to-head in Blitz." },
-  { number: "02", icon: <TrendingUp aria-hidden="true" />, title: "Trade the board", body: "Build your portfolio with live market data and virtual cash." },
+  { number: "01", icon: <Swords aria-hidden="true" />, title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
+  { number: "02", icon: <TrendingUp aria-hidden="true" />, title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
   { number: "03", icon: <Crown aria-hidden="true" />, title: "Take the win", body: "Finish above the field when the clock hits zero." },
 ];
 
@@ -92,10 +59,10 @@ const modes = [
     className: "mode-tournament",
     icon: <Trophy aria-hidden="true" />,
     label: "MULTIPLAYER",
-    title: "Tournaments",
+    title: "Arenas",
     body: "The full field experience. Read the market, make your move, and climb the board.",
     stats: ["Open field", "Free entry"],
-    link: "Enter tournaments",
+    link: "Enter arenas",
   },
   {
     className: "mode-blitz",
@@ -138,15 +105,15 @@ export default function UnauthenticatedHome() {
             <div className="arena-copy">
               <p className="arena-eyebrow"><Swords size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
               <h1 id="arena-hero-title">Trade smarter.<br /><em>Win the board.</em></h1>
-              <p className="arena-lede">A live-market strategy game where every decision moves you up — or down — the leaderboard.</p>
+              <p className="arena-lede">A live-market strategy game where every decision moves you up — or down — the standings.</p>
               <div className="arena-actions">
                 <PrimaryLink>Enter the arena</PrimaryLink>
-                <Link href="/login" className="arena-secondary-link">I have an account <ChevronRight size={17} aria-hidden="true" /></Link>
+                <Link href="/login" className="arena-secondary-link">I already play <ChevronRight size={17} aria-hidden="true" /></Link>
               </div>
               <div className="arena-reassurance"><ShieldCheck size={16} aria-hidden="true" /> Virtual cash only · $10,000 starting balance</div>
             </div>
 
-            <aside className="match-card" aria-label="Next tournament">
+            <aside className="match-card" aria-label="Next arena">
               <div className="match-card-top">
                 <span className="match-live"><i aria-hidden="true" /> NEXT MATCH</span>
                 <span className="match-level">OPEN</span>
@@ -154,7 +121,7 @@ export default function UnauthenticatedHome() {
 
               <div className="match-title">
                 <span className="match-trophy"><Trophy size={26} aria-hidden="true" /></span>
-                <div><strong>Opening Bell</strong><small>Daily tournament · Open field</small></div>
+                <div><strong>Opening Bell</strong><small>Daily arena · Open field</small></div>
               </div>
 
               <div className="match-countdown">

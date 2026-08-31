@@ -42,13 +42,13 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Wallet className="w-5 h-5 text-primary" />
-            Manage Balance
+            Manage arena cash
           </DialogTitle>
         </DialogHeader>
 
         {/* Current Balance Display */}
         <Card className="p-6 border-primary/20">
-          <p className="text-sm text-muted-foreground mb-2">Available Balance</p>
+          <p className="text-sm text-muted-foreground mb-2">Buying power</p>
           <p className="text-4xl font-bold text-primary">
             {formatCurrency(currentBalance)}
           </p>
@@ -62,7 +62,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
             size="lg"
           >
             <Bitcoin className="w-5 h-5 mr-2" />
-            Deposit Crypto
+            Add arena cash
             <ArrowRight className="w-4 h-4 ml-auto" />
           </Button>
 
@@ -73,7 +73,7 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
             size="lg"
           >
             <Wallet className="w-5 h-5 mr-2" />
-            Withdraw Funds
+            Cash out
             <ArrowRight className="w-4 h-4 ml-auto" />
           </Button>
         </div>
@@ -82,8 +82,8 @@ export function BalanceDialog({ open, onOpenChange, currentBalance }: BalanceDia
         <Alert>
           <Info className="h-4 w-4" />
           <AlertDescription className="text-sm">
-            <strong>Deposits:</strong> Fast crypto deposits with QR codes<br />
-            <strong>Withdrawals:</strong> Subject to admin approval (28% fee)
+            <strong>Cash adds:</strong> Crypto deposits with QR codes<br />
+            <strong>Cash outs:</strong> Subject to admin approval (28% fee)
           </AlertDescription>
         </Alert>
       </DialogContent>

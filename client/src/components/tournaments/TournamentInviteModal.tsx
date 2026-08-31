@@ -117,7 +117,7 @@ export default function TournamentInviteModal({
             <div className="text-center py-8" style={{ color: '#8A93A6' }}>
               <Users size={48} className="mx-auto mb-3 opacity-50" />
               <p>No friends to invite</p>
-              <p className="text-sm mt-1">Add friends to invite them to tournaments</p>
+              <p className="text-sm mt-1">Add crew members to invite them to the arena</p>
             </div>
           ) : (
             <>
@@ -223,7 +223,7 @@ export default function TournamentInviteModal({
               }}
             >
               <Send className="mr-2" size={16} />
-              {inviteMutation.isPending ? 'Sending...' : `Invite ${selectedFriends.length || ''}`}
+              {inviteMutation.isPending ? 'Sending...' : `Invite crew ${selectedFriends.length || ''}`}
             </Button>
           </div>
         )}

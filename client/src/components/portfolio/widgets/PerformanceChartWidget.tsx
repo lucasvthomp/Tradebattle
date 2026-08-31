@@ -19,7 +19,7 @@ export function PerformanceChartWidget() {
   return (
     <div className="p-4 h-full flex flex-col">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-medium text-foreground">Portfolio Performance</h3>
+        <h3 className="text-sm font-medium text-foreground">Run Performance</h3>
         <div className="flex gap-1">
           {['1D', '1W', '1M', '3M', '1Y'].map((period) => (
             <button

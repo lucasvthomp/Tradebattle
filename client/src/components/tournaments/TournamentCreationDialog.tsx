@@ -132,13 +132,13 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
       setBuyInRaw("0");
     },
     onError: (error: Error) => {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+      toast({ title: "Couldn’t open the arena", description: error.message, variant: "destructive" });
     },
   });
 
   const handleSubmit = () => {
     const errs: Record<string, string> = {};
-    if (!form.name.trim()) errs.name = "Name is required";
+    if (!form.name.trim()) errs.name = "Arena name is required";
     if (form.maxPlayers < 2 || form.maxPlayers > 50) errs.maxPlayers = "2–50 players";
     if (form.startingBalance < 1000) errs.startingBalance = "Min $1,000";
     if (form.buyInAmount > 0) {
@@ -168,7 +168,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,163,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Trophy size={16} color="#00A3FF" />
               </div>
-              Create Tournament
+              Open arena
             </DialogTitle>
           </DialogHeader>
 
@@ -176,10 +176,10 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
             {/* Name */}
             <div>
-              <label style={labelStyle}>Tournament Name</label>
+              <label style={labelStyle}>Arena name</label>
               <input
                 style={{ ...inputStyle, borderColor: errors.name ? '#EF4444' : '#1E3050' }}
-                placeholder="e.g. Friday Night Stocks"
+                placeholder="e.g. Friday Night Tape"
                 value={form.name}
                 onChange={e => set('name', e.target.value)}
               />
@@ -217,7 +217,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             {/* Players + Balance */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
               <div>
-                <label style={labelStyle}>Max Players</label>
+                <label style={labelStyle}>Player cap</label>
                 <input
                   type="number" min="2" max="50"
                   style={{ ...inputStyle, borderColor: errors.maxPlayers ? '#EF4444' : '#1E3050' }}
@@ -227,7 +227,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 {errors.maxPlayers && <p style={{ fontSize: '11px', color: '#EF4444', marginTop: '4px' }}>{errors.maxPlayers}</p>}
               </div>
               <div>
-                <label style={labelStyle}>Starting Cash</label>
+                <label style={labelStyle}>Starting capital</label>
                 <input
                   type="number" min="1000" step="1000"
                   style={{ ...inputStyle, borderColor: errors.startingBalance ? '#EF4444' : '#1E3050' }}
@@ -270,7 +270,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
             {form.startDelay === 'custom' && (
               <div>
-                <label style={labelStyle}>Custom Start Time</label>
+                <label style={labelStyle}>Custom opening time</label>
                 <input
                   type="datetime-local"
                   style={inputStyle}
@@ -283,7 +283,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
 
             {/* Buy-in */}
             <div>
-              <label style={labelStyle}>Buy-in Amount (optional)</label>
+              <label style={labelStyle}>Entry fee (optional)</label>
               <input
                 type="number" min="0" step="0.01"
                 style={{ ...inputStyle, borderColor: errors.buyInAmount ? '#EF4444' : '#1E3050' }}
@@ -364,7 +364,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                   fontSize: '13px', fontWeight: '700', cursor: createMutation.isPending ? 'not-allowed' : 'pointer',
                 }}
               >
-                {createMutation.isPending ? 'Creating...' : 'Create Tournament'}
+                {createMutation.isPending ? 'Opening...' : 'Open arena'}
               </button>
             </div>
           </div>

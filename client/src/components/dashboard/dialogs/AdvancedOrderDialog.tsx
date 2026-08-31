@@ -136,7 +136,7 @@ export function AdvancedOrderDialog({
             <span>{getActionLabel()} {stock.symbol}</span>
           </DialogTitle>
           <DialogDescription>
-            {stock.shortName || stock.longName} • Current Price: {formatCurrency(currentPrice)}
+            {stock.shortName || stock.longName} • Live quote: {formatCurrency(currentPrice)}
           </DialogDescription>
         </DialogHeader>
 
@@ -149,7 +149,7 @@ export function AdvancedOrderDialog({
           <TabsContent value="order" className="space-y-4 mt-4">
             {/* Shares Input */}
             <div>
-              <Label htmlFor="shares">Number of Shares</Label>
+              <Label htmlFor="shares">Number of units</Label>
               <Input
                 id="shares"
                 type="number"
@@ -157,7 +157,7 @@ export function AdvancedOrderDialog({
                 step="1"
                 value={shares}
                 onChange={(e) => setShares(e.target.value)}
-                placeholder="Enter number of shares..."
+                placeholder="Enter number of units..."
               />
               {sharesNum > 0 && (
                 <p className="text-sm text-muted-foreground mt-1">
@@ -378,7 +378,7 @@ export function AdvancedOrderDialog({
               'bg-blue-600 hover:bg-blue-700'
             }
           >
-            {getActionLabel()} {shares} Shares
+            {getActionLabel()} {shares} units
           </Button>
         </DialogFooter>
       </DialogContent>

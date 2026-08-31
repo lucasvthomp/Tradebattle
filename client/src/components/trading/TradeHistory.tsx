@@ -77,7 +77,7 @@ export function TradeHistory({ tournamentId }: TradeHistoryProps) {
                   </div>
                   <div className="flex items-center justify-between mt-0.5">
                     <span className="text-[10px]" style={{ color: "#64748B" }}>
-                      {trade.shares} shares @ {formatCurrency(price)}
+                      {trade.shares} units @ {formatCurrency(price)}
                     </span>
                     <span className="text-[10px]" style={{ color: "#64748B" }}>
                       {timeAgo}

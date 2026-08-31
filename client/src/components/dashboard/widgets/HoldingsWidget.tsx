@@ -29,7 +29,7 @@ export function HoldingsWidget({
       <div className="flex items-center justify-between px-3 py-2 border-b flex-shrink-0" style={{ borderColor: '#0E2040', backgroundColor: 'transparent' }}>
         <div className="flex items-center gap-2">
           <Coins className="w-4 h-4" style={{ color: '#00A3FF' }} />
-          <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Holdings</span>
+          <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>Positions</span>
         </div>
         {onToggleView && (
           <Button
@@ -47,7 +47,7 @@ export function HoldingsWidget({
             ) : (
               <>
                 <LayoutList className="w-3 h-3 mr-1" />
-                Holdings
+                Positions
               </>
             )}
           </Button>
@@ -59,12 +59,12 @@ export function HoldingsWidget({
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <RefreshCw className="w-4 h-4 animate-spin mr-2" style={{ color: '#94A3B8' }} />
-            <span className="text-xs" style={{ color: '#94A3B8' }}>Loading...</span>
+            <span className="text-xs" style={{ color: '#94A3B8' }}>Loading positions...</span>
           </div>
         ) : holdings.length === 0 ? (
           <div className="text-center py-8">
             <Coins className="w-10 h-10 mx-auto mb-3 opacity-50" style={{ color: '#94A3B8' }} />
-            <h3 className="text-sm font-semibold mb-1" style={{ color: '#F1F5F9' }}>No Holdings</h3>
+            <h3 className="text-sm font-semibold mb-1" style={{ color: '#F1F5F9' }}>No open positions</h3>
             <p className="text-[10px]" style={{ color: '#94A3B8' }}>
               Start trading to build your portfolio
             </p>
@@ -88,7 +88,7 @@ export function HoldingsWidget({
                   <div className="flex justify-between items-center mb-1">
                     <div className="flex items-baseline gap-2">
                       <div className="font-semibold text-sm" style={{ color: '#00A3FF' }}>{holding.symbol}</div>
-                      <div className="text-[10px]" style={{ color: '#94A3B8' }}>{holding.shares.toLocaleString('en-US')} sh</div>
+                      <div className="text-[10px]" style={{ color: '#94A3B8' }}>{holding.shares.toLocaleString('en-US')} units</div>
                     </div>
                     <div className="text-right">
                       <div className="font-semibold text-xs" style={{ color: '#F1F5F9' }}>

@@ -73,13 +73,13 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
               <p className="font-medium">{maxShares}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">Current price:</span>
+              <span className="text-muted-foreground">Live quote:</span>
               <p className="font-medium">{formatCurrency(stock.currentPrice || stock.purchasePrice || 0)}</p>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="shares">Shares to sell</Label>
+            <Label htmlFor="shares">Units to close</Label>
             <Input
               id="shares"
               type="number"
@@ -87,13 +87,13 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
               max={maxShares}
               value={shares}
               onChange={(e) => setShares(e.target.value)}
-              placeholder="Enter number of shares"
+              placeholder="Enter number of units"
             />
           </div>
 
           {shares && parseInt(shares) > 0 && (
             <div className="p-3 bg-muted/50 rounded-lg">
-              <div className="text-sm text-muted-foreground">Estimated proceeds:</div>
+              <div className="text-sm text-muted-foreground">Estimated return:</div>
               <div className="text-lg font-semibold text-foreground">
                 {formatCurrency(estimatedValue)}
               </div>
@@ -113,7 +113,7 @@ export function SellStockDialog({ open, onOpenChange, stock }: SellStockDialogPr
               disabled={!shares || parseInt(shares) <= 0 || parseInt(shares) > maxShares || sellMutation.isPending}
               className="flex-1"
             >
-              {sellMutation.isPending ? "Selling..." : "Sell Stock"}
+              {sellMutation.isPending ? "Closing..." : "Close position"}
             </Button>
           </div>
         </div>

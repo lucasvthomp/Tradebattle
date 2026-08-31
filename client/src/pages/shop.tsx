@@ -31,15 +31,15 @@ export default function Shop() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['/api/user'] });
       toast({
-        title: "Code Redeemed!",
+        title: "Code locked in",
         description: data.message,
       });
       setPromoCode("");
     },
     onError: (error: any) => {
       toast({
-        title: "Failed to Redeem",
-        description: error.message || "Invalid or expired code",
+        title: "Couldn’t redeem that code",
+        description: error.message || "That code is invalid or expired",
         variant: "destructive",
       });
     },
@@ -64,11 +64,11 @@ export default function Shop() {
           <div className="flex items-center gap-3 mb-2">
             <Gift className="w-7 h-7" style={{ color: '#00A3FF' }} />
             <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: '#C9D1E2' }}>
-              Rewards Center
+              Loadout
             </h1>
           </div>
           <p className="text-sm" style={{ color: '#8A93A6' }}>
-            Redeem codes, track your stats, and unlock upcoming rewards.
+            Use codes, track your run, and keep an eye on what’s next.
           </p>
         </motion.div>
 
@@ -80,9 +80,9 @@ export default function Shop() {
           className="grid grid-cols-3 gap-4 mb-10"
         >
           {[
-            { icon: DollarSign, label: 'Balance', value: `$${user?.siteCash || '0.00'}`, color: '#00A3FF' },
+            { icon: DollarSign, label: 'Buying power', value: `$${user?.siteCash || '0.00'}`, color: '#00A3FF' },
             { icon: Trophy, label: 'Wins', value: user?.tournamentWins ?? 0, color: '#28C76F' },
-            { icon: Zap, label: 'Trades', value: user?.totalTrades ?? 0, color: '#8B5CF6' },
+            { icon: Zap, label: 'Reps', value: user?.totalTrades ?? 0, color: '#8B5CF6' },
           ].map(({ icon: Icon, label, value, color }) => (
             <motion.div
               key={label}
@@ -109,11 +109,11 @@ export default function Shop() {
               <div className="flex items-center gap-2">
                 <Tag className="w-5 h-5" style={{ color: '#00A3FF' }} />
                 <CardTitle className="text-lg" style={{ color: '#C9D1E2' }}>
-                  Redeem a Code
+                  Enter a reward code
                 </CardTitle>
               </div>
               <CardDescription style={{ color: '#8A93A6' }}>
-                Got a promo code? Enter it below to claim your reward.
+                Got a code? Drop it below to claim what’s yours.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -146,13 +146,13 @@ export default function Shop() {
 
               <div className="rounded-lg p-3" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}>
                 <p className="text-xs font-semibold mb-2" style={{ color: '#8A93A6' }}>
-                  Where to find codes
+                  Where codes show up
                 </p>
                 <ul className="text-sm space-y-1" style={{ color: '#C9D1E2' }}>
-                  <li>Follow us on social media</li>
-                  <li>Join our Discord server</li>
-                  <li>Special event giveaways</li>
-                  <li>Newsletter subscribers</li>
+                  <li>Follow the field</li>
+                  <li>Join the crew on Discord</li>
+                  <li>Special event drops</li>
+                  <li>Player updates</li>
                 </ul>
               </div>
             </CardContent>
@@ -169,14 +169,14 @@ export default function Shop() {
           {[
             {
               icon: Star,
-              title: 'Daily Rewards',
-              desc: 'Login every day for streak bonuses',
+              title: 'Daily drops',
+              desc: 'Check in every day for streak bonuses',
               color: '#28C76F',
             },
             {
               icon: Users,
-              title: 'Referral Program',
-              desc: 'Invite friends and earn cash rewards',
+              title: 'Crew rewards',
+              desc: 'Bring friends in and earn arena rewards',
               color: '#8B5CF6',
             },
           ].map(({ icon: Icon, title, desc, color }) => (

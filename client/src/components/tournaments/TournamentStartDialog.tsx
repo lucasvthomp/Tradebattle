@@ -102,7 +102,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Tournament Started! 🎉
+              Arena live! 🎉
             </motion.h1>
 
             <motion.p
@@ -127,7 +127,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
               <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(0, 163, 255, 0.1), rgba(0, 163, 255, 0.05))' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <DollarSign className="w-5 h-5" style={{ color: '#00A3FF' }} />
-                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Starting Balance</span>
+                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Starting capital</span>
                 </div>
                 <p className="text-2xl font-black" style={{ color: '#00A3FF' }}>
                   ${tournament.startingBalance.toLocaleString()}
@@ -137,7 +137,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
               <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(40, 199, 111, 0.1), rgba(40, 199, 111, 0.05))' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <Trophy className="w-5 h-5" style={{ color: '#28C76F' }} />
-                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Prize Pool</span>
+                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Prize pool</span>
                 </div>
                 <p className="text-2xl font-black" style={{ color: '#28C76F' }}>
                   ${tournament.prizePool.toLocaleString()}
@@ -147,7 +147,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
               <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05))' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <Clock className="w-5 h-5" style={{ color: '#6366F1' }} />
-                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Time Remaining</span>
+                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>On the clock</span>
                 </div>
                 <p className="text-2xl font-black" style={{ color: '#6366F1' }}>
                   {formatTime(tournament.endsAt)}
@@ -157,7 +157,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
               <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(255, 79, 88, 0.1), rgba(255, 79, 88, 0.05))' }}>
                 <div className="flex items-center gap-2 mb-2">
                   <Users className="w-5 h-5" style={{ color: '#FF4F58' }} />
-                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Competitors</span>
+                  <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Players</span>
                 </div>
                 <p className="text-2xl font-black" style={{ color: '#FF4F58' }}>
                   {tournament.participantCount}
@@ -169,24 +169,24 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
             <div className="p-6 rounded-xl mb-6" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-5 h-5" style={{ color: '#00A3FF' }} />
-                <h3 className="text-lg font-bold" style={{ color: '#00A3FF' }}>Quick Guidelines</h3>
+                <h3 className="text-lg font-bold" style={{ color: '#00A3FF' }}>Arena playbook</h3>
               </div>
               <ul className="space-y-3 text-sm" style={{ color: '#C9D1E2' }}>
                 <li className="flex items-start gap-2">
                   <TrendingUp className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#28C76F' }} />
-                  <span>Trade stocks to grow your portfolio above your starting balance</span>
+                  <span>Trade stocks to push your board value above starting capital</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Trophy className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#00A3FF' }} />
-                  <span>The trader with the highest portfolio value at the end wins</span>
+                  <span>The player with the highest board value at the end wins</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Clock className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6366F1' }} />
-                  <span>All trades must be completed before the tournament ends</span>
+                  <span>All trades must be complete before the arena ends</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <DollarSign className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#00A3FF' }} />
-                  <span>Your tournament balance is separate from your main account</span>
+                  <span>Your arena balance is separate from your main account</span>
                 </li>
               </ul>
             </div>
@@ -200,7 +200,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                 color: '#091525',
               }}
             >
-              Let's Trade! 🚀
+              Make your move! 🚀
             </Button>
           </motion.div>
         </div>

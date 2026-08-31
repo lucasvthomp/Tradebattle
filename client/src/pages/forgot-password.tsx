@@ -31,11 +31,11 @@ export default function ForgotPassword() {
     <div className="arena-page arena-auth min-h-[calc(100dvh-4rem)] flex items-center justify-center px-4 py-10">
       <Card className="w-full max-w-md" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
         <CardHeader>
-          <CardTitle style={{ color: '#C9D1E2' }}>Reset Password</CardTitle>
+          <CardTitle style={{ color: '#C9D1E2' }}>Recover your entry</CardTitle>
           <CardDescription style={{ color: '#8A93A6' }}>
             {sent
-              ? "Check your email for a password reset link."
-              : "Enter your email address and we'll send you a link to reset your password."}
+              ? "Check your inbox for your recovery link."
+              : "Drop your email and we’ll send a link to get you back in."}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -45,19 +45,19 @@ export default function ForgotPassword() {
                 <Mail className="w-8 h-8" style={{ color: '#00A3FF' }} />
               </div>
               <p className="text-sm" style={{ color: '#8A93A6' }}>
-                If an account with that email exists, you will receive a password reset link shortly.
+                If that account exists, a recovery link is on the way.
               </p>
               <Link href="/login">
                 <Button variant="outline" className="w-full">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Login
+                  Back to entry
                 </Button>
               </Link>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" style={{ color: '#C9D1E2' }}>Email Address</Label>
+                <Label htmlFor="email" style={{ color: '#C9D1E2' }}>Contact email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -76,12 +76,12 @@ export default function ForgotPassword() {
                 disabled={loading || !email}
               >
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                Send Reset Link
+                Send recovery link
               </Button>
               <Link href="/login">
                 <Button variant="ghost" className="w-full" style={{ color: '#8A93A6' }}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Login
+                  Back to entry
                 </Button>
               </Link>
             </form>

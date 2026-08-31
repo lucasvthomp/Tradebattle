@@ -86,7 +86,7 @@ export function TournamentLeaderboardDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Trophy className="w-5 h-5" />
-            <span>{tournament.name} - Leaderboard</span>
+            <span>{tournament.name} - Standings</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -95,7 +95,7 @@ export function TournamentLeaderboardDialog({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Prize Pool</CardTitle>
+                <CardTitle className="text-sm font-medium">Prize pool</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
                 <p className="text-2xl font-bold text-green-600">
@@ -106,7 +106,7 @@ export function TournamentLeaderboardDialog({
             
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Participants</CardTitle>
+                <CardTitle className="text-sm font-medium">Players</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
                 <p className="text-2xl font-bold">{tournament.currentPlayers}</p>
@@ -115,7 +115,7 @@ export function TournamentLeaderboardDialog({
             
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium">Time Remaining</CardTitle>
+                <CardTitle className="text-sm font-medium">On the clock</CardTitle>
               </CardHeader>
               <CardContent className="pt-0">
                 <p className="text-2xl font-bold">{getTimeRemaining()}</p>
@@ -127,7 +127,7 @@ export function TournamentLeaderboardDialog({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold flex items-center space-x-2">
               <TrendingUp className="w-5 h-5" />
-              <span>Current Rankings</span>
+              <span>Live standings</span>
             </h3>
 
             {isLoading ? (
@@ -139,7 +139,7 @@ export function TournamentLeaderboardDialog({
             ) : participants.length === 0 ? (
               <div className="text-center py-8">
                 <User className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                <p className="text-muted-foreground">No participants data available</p>
+                <p className="text-muted-foreground">No player data available yet</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -166,7 +166,7 @@ export function TournamentLeaderboardDialog({
                               <div>
                                 <p className="font-medium">{participant.firstName || participant.username || `User ${participant.userId}`}</p>
                                 <p className="text-sm text-muted-foreground">
-                                  Portfolio: {formatCurrency(portfolioValue)}
+                                  Board value: {formatCurrency(portfolioValue)}
                                 </p>
                               </div>
                             </div>
@@ -195,15 +195,15 @@ export function TournamentLeaderboardDialog({
 
           {/* Tournament Info */}
           <div className="p-4 bg-muted/30 rounded-lg">
-            <h4 className="font-medium mb-2">Tournament Details</h4>
+            <h4 className="font-medium mb-2">Arena details</h4>
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="space-y-1">
                 <p><span className="text-muted-foreground">Type:</span> {tournament.tournamentType === "crypto" ? "Cryptocurrency" : "Stock Market"}</p>
-                <p><span className="text-muted-foreground">Starting Balance:</span> {formatCurrency(tournament.startingBalance)}</p>
+                <p><span className="text-muted-foreground">Starting capital:</span> {formatCurrency(tournament.startingBalance)}</p>
               </div>
               <div className="space-y-1">
-                <p><span className="text-muted-foreground">Buy-in:</span> {tournament.buyInAmount > 0 ? formatCurrency(tournament.buyInAmount) : "Free"}</p>
-                <p><span className="text-muted-foreground">Status:</span> <Badge variant={tournament.isPublic ? "secondary" : "outline"}>{tournament.isPublic ? "Public" : "Private"}</Badge></p>
+                <p><span className="text-muted-foreground">Entry fee:</span> {tournament.buyInAmount > 0 ? formatCurrency(tournament.buyInAmount) : "No fee"}</p>
+                <p><span className="text-muted-foreground">Entry:</span> <Badge variant={tournament.isPublic ? "secondary" : "outline"}>{tournament.isPublic ? "Open" : "Closed"}</Badge></p>
               </div>
             </div>
           </div>

@@ -42,7 +42,7 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-bold" style={{ color: "#F1F5F9" }}>
-          Your Holdings
+          Your positions
         </h3>
         <span
           className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
@@ -86,10 +86,10 @@ export function HoldingsList({ tournamentId, selectedSymbol, onSelectStock }: Ho
       ) : holdings.length === 0 ? (
         <div className="py-6 text-center">
           <p className="text-sm" style={{ color: "#94A3B8" }}>
-            No holdings yet
+            No open positions yet
           </p>
           <p className="text-xs mt-1" style={{ color: "#64748B" }}>
-            Search for a stock and buy shares to get started
+            Scout a ticker and open a position to get started
           </p>
         </div>
       ) : (

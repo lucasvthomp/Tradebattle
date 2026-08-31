@@ -109,9 +109,9 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
               {/* Table Header */}
               <div className="grid grid-cols-4 md:grid-cols-7 gap-3 md:gap-2 px-3 py-2 text-sm md:text-xs font-medium text-muted-foreground border-b" style={{ minWidth: '600px' }}>
                 <div>Symbol</div>
-                <div className="hidden md:block">Shares</div>
+                <div className="hidden md:block">Units</div>
                 <div className="hidden md:block">Purchase Price</div>
-                <div>Current Price</div>
+                <div>Live price</div>
                 <div className="hidden md:block">Change</div>
                 <div>Value</div>
                 <div>Actions</div>

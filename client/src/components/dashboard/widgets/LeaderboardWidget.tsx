@@ -15,7 +15,7 @@ export function LeaderboardWidget({
 }: LeaderboardWidgetProps) {
   return (
     <WidgetWrapper
-      title="Leaderboard"
+      title="Standings"
       icon={<Trophy className="w-4 h-4" />}
       onRemove={onRemove}
     >

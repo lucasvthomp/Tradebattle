@@ -97,7 +97,7 @@ export function TradingExecutionWidget({
       <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: '#0E2040', backgroundColor: 'transparent' }}>
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>
-            {showHoldings ? "Holdings" : "Trade"}
+            {showHoldings ? "Positions" : "Trade"}
           </h3>
           {selectedStock && (
             <div className="flex items-baseline gap-2 ml-2 pl-2 border-l" style={{ borderColor: '#0E2040' }}>
@@ -122,7 +122,7 @@ export function TradingExecutionWidget({
             ) : (
               <>
                 <LayoutList className="w-3 h-3 mr-1" />
-                Holdings
+                Positions
               </>
             )}
           </Button>
@@ -133,7 +133,7 @@ export function TradingExecutionWidget({
       <div className="p-2 border-b" style={{ borderColor: '#0E2040' }}>
         <StockSearchBar
           type="purchase"
-          placeholder="Search symbol..."
+          placeholder="Scout ticker..."
           tournamentId={tournamentId}
           onStockSelect={handleStockSelect}
         />
@@ -195,7 +195,7 @@ export function TradingExecutionWidget({
               </div>
 
               <div className="space-y-0.5">
-                <label className="text-[10px]" style={{ color: '#94A3B8' }}>Shares</label>
+                <label className="text-[10px]" style={{ color: '#94A3B8' }}>Units</label>
                 <Input
                   type="number"
                   min="0"

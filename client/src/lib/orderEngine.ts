@@ -70,6 +70,6 @@ export async function executeOrder(order: OrderRequest): Promise<OrderResult> {
     executedPrice: executionPrice,
     executedShares: order.quantity,
     totalValue,
-    message: `${order.side === "buy" ? "Bought" : "Sold"} ${order.quantity} shares of ${order.symbol} at $${executionPrice.toFixed(2)}`,
+    message: `${order.side === "buy" ? "Bought" : "Sold"} ${order.quantity} units of ${order.symbol} at $${executionPrice.toFixed(2)}`,
   };
 }
