@@ -45,6 +45,7 @@ function hexToRgb(hex: string): string {
 function ScanlineOverlay() {
   return (
     <div
+      className="arena-page-shell"
       style={{
         position: "absolute",
         inset: 0,

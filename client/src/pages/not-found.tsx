@@ -27,7 +27,7 @@ const ticker = [
 export default function NotFound() {
   return (
     <div
-      className="min-h-[calc(100dvh-4rem)] w-full flex flex-col items-center justify-center px-4"
+      className="arena-page-shell min-h-[calc(100dvh-4rem)] w-full flex flex-col items-center justify-center px-4"
       style={{ backgroundColor: 'transparent' }}
     >
       {/* Ticker tape */}

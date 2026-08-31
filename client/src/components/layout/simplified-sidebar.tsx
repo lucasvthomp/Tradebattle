@@ -28,11 +28,11 @@ export function SimplifiedSidebar() {
   const navItems = [
     ...(user ? [
       { href: "/hub", label: t('hub'), icon: Home, iconColor: '#28C76F' },
-      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#00A3FF' },
-      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#8B5CF6' },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#67E7BF' },
+      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#F2C76A' },
       { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#E3B341' },
-      { href: "/people", label: t('people'), icon: Users, iconColor: '#3B82F6' },
-      { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F97316' },
+      { href: "/people", label: t('people'), icon: Users, iconColor: '#8EB6D1' },
+      { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F2C76A' },
       { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
     ] : [
       { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
@@ -66,8 +66,8 @@ export function SimplifiedSidebar() {
           paddingLeft: '14px',
           flexShrink: 0,
           ...(isActive(item.href)
-            ? { backgroundColor: 'rgba(0, 163, 255, 0.1)', color: '#00A3FF' }
-            : { color: '#8A93A6' }),
+            ? { backgroundColor: 'rgba(103, 231, 191, 0.1)', color: '#67E7BF' }
+            : { color: '#8A9CAF' }),
         }}
       >
         <item.icon
@@ -99,14 +99,14 @@ export function SimplifiedSidebar() {
         className="hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40"
         style={{
           width: expanded ? '256px' : '64px',
-          backgroundColor: '#142E5A',
-          borderColor: '#1C3E72',
+          backgroundColor: '#071522',
+          borderColor: 'rgba(103, 231, 191, 0.13)',
           transition: 'width 300ms ease',
           overflow: 'hidden',
         }}
       >
         {/* Menu Toggle Button at top */}
-        <div className="flex-shrink-0 p-2 border-b" style={{ borderColor: '#1C3E72' }}>
+        <div className="flex-shrink-0 p-2 border-b" style={{ borderColor: 'rgba(103, 231, 191, 0.13)' }}>
           <button
             onClick={() => setExpanded(!expanded)}
             className="flex items-center hover:bg-[#1A3A68] rounded-lg transition-colors duration-200"
@@ -152,7 +152,7 @@ export function SimplifiedSidebar() {
 
           {/* Separator */}
           {user && (
-            <div className="mx-2 my-2 h-px" style={{ backgroundColor: '#1C3E72' }} />
+            <div className="mx-2 my-2 h-px" style={{ backgroundColor: 'rgba(103, 231, 191, 0.13)' }} />
           )}
 
           {/* User Actions */}
@@ -165,12 +165,12 @@ export function SimplifiedSidebar() {
 
         {/* Code Redemption - Pinned at bottom, never overlaps */}
         {user && (
-          <div className="flex-shrink-0 p-2 border-t" style={{ borderColor: '#1C3E72' }}>
+          <div className="flex-shrink-0 p-2 border-t" style={{ borderColor: 'rgba(103, 231, 191, 0.13)' }}>
             <Button
               onClick={() => setCodeDialogOpen(true)}
               className="transition-all duration-200 hover:brightness-110 w-full flex items-center"
               style={{
-                background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
+                background: 'linear-gradient(135deg, #67E7BF, #2EBF9A)',
                 height: '44px',
                 paddingLeft: '14px',
                 paddingRight: '8px',

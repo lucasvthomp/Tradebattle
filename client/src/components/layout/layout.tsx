@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps) {
   const { chatOpen, toggleChat } = useChatContext();
 
   return (
-    <div className="min-h-dvh flex" style={{ backgroundColor: 'transparent' }}>
+    <div className={`min-h-dvh flex ${user ? 'arena-app' : ''}`} style={{ backgroundColor: 'transparent' }}>
       {/* Simplified Sidebar - Only for authenticated users */}
       {user && <SimplifiedSidebar />}
 

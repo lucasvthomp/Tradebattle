@@ -197,7 +197,7 @@ function PaymentsDebugTab() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="arena-page-shell space-y-6">
       <Card style={{ backgroundColor: '#142E5A', borderColor: '#1C3E72' }}>
         <CardHeader>
           <CardTitle style={{ color: '#00A3FF' }}>Crypto Payment Debugger</CardTitle>

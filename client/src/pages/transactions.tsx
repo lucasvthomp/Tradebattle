@@ -56,7 +56,7 @@ export default function Transactions() {
     ["deposit", "payout", "tip_received", "admin_adjustment"].includes(type);
 
   return (
-    <div className="container mx-auto py-6 md:py-8 space-y-6">
+    <div className="arena-page-shell container mx-auto py-6 md:py-8 space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold" style={{ color: '#C9D1E2' }}>Transaction History</h1>

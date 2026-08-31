@@ -141,6 +141,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
     <>
       <WebsiteTour />
       <div
+        className="arena-page-shell"
         style={{
           height: "calc(100dvh - 4rem)",
           overflow: "hidden",

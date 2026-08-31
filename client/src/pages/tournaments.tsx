@@ -371,7 +371,7 @@ export default function TournamentsPage() {
 
   return (
     <div
-      className="h-[calc(100vh-4rem)] overflow-auto"
+      className="arena-page-shell h-[calc(100vh-4rem)] overflow-auto"
       style={{
         background: 'transparent',
         backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",

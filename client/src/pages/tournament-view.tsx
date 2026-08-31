@@ -47,7 +47,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
   const TypeIcon = typeIcon;
 
   return (
-    <div style={{ minHeight: "calc(100dvh - 4rem)", background: "transparent", padding: "24px 20px 48px" }}>
+    <div className="arena-page-shell" style={{ minHeight: "calc(100dvh - 4rem)", background: "transparent", padding: "24px 20px 48px" }}>
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
 
         {/* Back */}

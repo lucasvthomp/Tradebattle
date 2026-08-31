@@ -8,16 +8,16 @@ export default function Footer() {
   const { user } = useAuth();
   const isPublicSite = !user;
   return (
-    <footer className="bg-card border-t border-border py-12" style={isPublicSite ? { background: '#07111f', borderColor: 'rgba(98, 228, 189, 0.12)' } : undefined}>
+    <footer className="bg-card border-t border-border py-12" style={{ background: '#07111f', borderColor: 'rgba(98, 228, 189, 0.12)' }}>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: isPublicSite ? 'linear-gradient(135deg, #9af1d1, #42c99f)' : 'linear-gradient(135deg, #00A3FF, #0077CC)', boxShadow: isPublicSite ? '0 0 16px rgba(98, 228, 189, 0.16)' : '0 0 12px rgba(0, 163, 255, 0.12)' }}>
-                  <span className="font-black text-sm" style={{ color: isPublicSite ? '#06151c' : undefined }}>{isPublicSite ? 'T' : 'O'}</span>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #9af1d1, #42c99f)', boxShadow: '0 0 16px rgba(98, 228, 189, 0.16)' }}>
+                  <span className="font-black text-sm" style={{ color: '#06151c' }}>T</span>
                 </div>
-                  <span className="text-xl font-display font-bold tracking-tight" style={isPublicSite ? { color: '#F2FBF8' } : undefined}>{isPublicSite ? 'TRADEBATTLE' : t('brandName')}</span>
+                  <span className="text-xl font-display font-bold tracking-tight" style={{ color: '#F2FBF8' }}>TRADEBATTLE</span>
               </div>
               <p className="text-muted-foreground text-sm">
                 {t('tagline')}
@@ -96,7 +96,7 @@ export default function Footer() {
           <div className="mt-8 pt-8" style={{ borderTop: '1px solid #0E2040' }}>
             <div className="flex flex-col md:flex-row items-center justify-between">
               <p className="text-sm" style={{ color: '#8A93A6' }}>
-                © 2026 ORSATH Holdings, LLC. All rights reserved.
+                © 2026 Tradebattle. All rights reserved.
               </p>
               <div className="flex items-center space-x-6 mt-4 md:mt-0">
                 <div className="flex items-center space-x-4 mr-6">

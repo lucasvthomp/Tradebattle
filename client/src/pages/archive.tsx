@@ -47,7 +47,7 @@ export default function ArchivePage() {
   );
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
+    <div className="arena-page-shell container mx-auto p-4 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2" style={{ color: '#F1F5F9' }}>
           <Archive className="w-6 h-6" style={{ color: '#00A3FF' }} />

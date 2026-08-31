@@ -48,7 +48,7 @@ export default function People() {
   })();
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)]" style={{ backgroundColor: "transparent" }}>
+    <div className="arena-page-shell min-h-[calc(100dvh-4rem)]" style={{ backgroundColor: "transparent" }}>
       <div className="container mx-auto py-6 lg:py-8">
         <motion.div initial="initial" animate="animate" variants={{ animate: { transition: { staggerChildren: 0.08 } } }}>
 

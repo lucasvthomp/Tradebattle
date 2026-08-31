@@ -118,6 +118,9 @@
 .market-chart-bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(6, 17, 31, 0.8) 0%, rgba(6, 17, 31, 0.28) 46%, rgba(6, 17, 31, 0.06) 100%); }
 .market-chart-bg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .market-chart-guides { fill: none; stroke: rgba(112, 174, 221, 0.13); stroke-width: 1; stroke-dasharray: 3 10; }
+.market-volume-bars { fill: rgba(103, 231, 191, 0.08); transform-origin: center bottom; animation: market-volume-pulse 4.8s ease-in-out infinite; }
+.market-volume-bars rect:nth-child(3n) { fill: rgba(242, 199, 106, 0.08); }
+.market-chart-rival { fill: none; stroke: rgba(235, 148, 169, 0.38); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 7 12; animation: market-rival-drift 8s linear infinite; }
 .market-chart-shadow { fill: none; stroke: rgba(103, 231, 191, 0.22); stroke-width: 18; stroke-linecap: round; filter: url("#market-line-blur"); stroke-dasharray: 1; stroke-dashoffset: 1; animation: market-chart-draw 7s ease-in-out infinite alternate; }
 .market-chart-area { fill: url("#market-area-fill"); opacity: 0.7; transform-origin: center; animation: market-chart-breathe 6s ease-in-out infinite; }
 .market-chart-line { fill: none; stroke: url("#market-line-glow"); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; animation: market-chart-draw 7s ease-in-out infinite alternate; }
@@ -125,16 +128,27 @@
 .market-chart-scanner { fill: none; stroke: rgba(103, 231, 191, 0.48); stroke-width: 1; stroke-dasharray: 5 8; animation: market-chart-scan 5.5s ease-in-out infinite; }
 .market-chart-node { fill: #b2ffe7; stroke: rgba(103, 231, 191, 0.3); stroke-width: 10; animation: market-chart-node 2.6s ease-in-out infinite; }
 .market-chart-node-secondary { fill: #67e7bf; animation-delay: 1.2s; }
+.market-chart-node-rival { fill: #ef98ad; stroke: rgba(239, 152, 173, 0.24); animation-delay: 0.65s; }
 .market-chart-readout { position: absolute; z-index: 1; color: #7f9bb3; font-size: 9px; font-weight: 900; letter-spacing: 0.14em; display: flex; align-items: center; gap: 10px; }
 .market-chart-readout strong { color: var(--arena-mint); font-size: 11px; }
 .market-chart-readout-top { top: 74px; right: 8%; }
 .market-chart-readout-bottom { bottom: 92px; left: 7%; opacity: 0.68; }
+.market-chart-console { position: absolute; z-index: 1; left: 7%; bottom: 134px; width: min(330px, 38vw); padding: 12px 14px; border: 1px solid rgba(103, 231, 191, 0.2); border-radius: 7px; background: rgba(5, 17, 31, 0.54); box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255,255,255,0.035); backdrop-filter: blur(8px); animation: market-console-float 6s ease-in-out infinite; }
+.market-console-label { color: #8ca9bc; display: flex; align-items: center; gap: 8px; font-size: 9px; font-weight: 900; letter-spacing: 0.12em; }
+.market-console-label i { width: 6px; height: 6px; border-radius: 50%; background: #67e7bf; box-shadow: 0 0 10px #67e7bf; }
+.market-console-items { display: flex; gap: 18px; margin-top: 9px; }
+.market-console-items span { display: flex; align-items: center; gap: 6px; color: #7892a8; font-size: 9px; letter-spacing: 0.08em; }
+.market-console-items strong { color: #c4d5e2; font-size: 9px; }
+.market-console-items b { color: #67e7bf; font-size: 10px; }
 
 @keyframes market-chart-draw { 0% { stroke-dashoffset: 1; } 42%, 100% { stroke-dashoffset: 0; } }
 @keyframes market-chart-highlight { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -1; } }
 @keyframes market-chart-scan { 0%, 100% { transform: translateX(-240px); opacity: 0; } 15% { opacity: 0.28; } 72% { opacity: 0.8; } 88% { opacity: 0; } }
 @keyframes market-chart-node { 0%, 100% { opacity: 0.72; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.14); } }
 @keyframes market-chart-breathe { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.82; } }
+@keyframes market-volume-pulse { 0%, 100% { opacity: 0.48; transform: scaleY(0.92); } 50% { opacity: 0.78; transform: scaleY(1.04); } }
+@keyframes market-rival-drift { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -120; } }
+@keyframes market-console-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
 
 @media (max-width: 980px) {
   .arena-hero { min-height: 0; padding-top: 50px; }
@@ -168,13 +182,15 @@
   .arena-final { padding: 86px 16px; }
   .market-chart-readout-top { top: 32px; right: 7%; }
   .market-chart-readout-bottom { bottom: 56px; left: 6%; }
+  .market-chart-console { left: 16px; right: 16px; bottom: 92px; width: auto; }
+  .market-console-items { justify-content: space-between; gap: 8px; }
   .market-chart-bg::after { background: linear-gradient(90deg, rgba(6, 17, 31, 0.9) 0%, rgba(6, 17, 31, 0.45) 65%, rgba(6, 17, 31, 0.12) 100%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .arena-primary-link { transition: none; }
   .arena-primary-link:hover { transform: none; }
-  .market-chart-shadow, .market-chart-area, .market-chart-line, .market-chart-highlight, .market-chart-scanner, .market-chart-node { animation: none; }
+  .market-chart-shadow, .market-chart-area, .market-chart-line, .market-chart-highlight, .market-chart-scanner, .market-chart-node, .market-chart-rival, .market-volume-bars, .market-chart-console { animation: none; }
 }
 
 /* Shared public-page treatment */

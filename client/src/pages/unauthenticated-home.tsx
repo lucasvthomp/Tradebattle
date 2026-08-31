@@ -7,6 +7,9 @@ const formatTime = (total: number) => [Math.floor(total / 3600), Math.floor((tot
   .map((part) => String(part).padStart(2, "0"))
   .join(":");
 
+const marketPath = "M-30 366 C18 330 49 353 91 292 S161 348 213 272 S280 183 337 238 S407 327 462 243 S540 166 606 207 S663 291 720 234 S787 151 847 186 S916 258 969 201 S1032 126 1086 157 S1147 239 1203 184 S1276 223 1331 163 S1392 91 1470 139";
+const rivalPath = "M-30 420 C43 401 70 441 129 390 S215 365 272 405 S341 315 404 351 S472 408 536 346 S612 299 675 337 S741 388 803 326 S878 270 934 319 S1007 367 1061 295 S1130 254 1187 291 S1255 330 1317 275 S1396 218 1470 250";
+
 function MarketChartBackground() {
   return (
     <div className="market-chart-bg" aria-hidden="true">
@@ -32,28 +35,44 @@ function MarketChartBackground() {
           <path d="M126 0 V620 M348 0 V620 M570 0 V620 M792 0 V620 M1014 0 V620 M1236 0 V620" />
         </g>
 
-        <path
-          className="market-chart-shadow"
-          pathLength={1}
-          d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127"
-        />
-        <path
-          className="market-chart-area"
-          d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127 V620 H-30 Z"
-        />
-        <path
-          className="market-chart-line"
-          pathLength={1}
-          d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127"
-        />
-        <path className="market-chart-highlight" d="M-30 487 C45 470 70 500 128 462 S205 420 264 445 S346 375 410 395 S500 334 565 365 S635 314 706 334 S779 278 842 300 S913 238 982 269 S1056 201 1124 230 S1194 162 1251 183 S1343 97 1470 127" />
+        <g className="market-volume-bars">
+          <rect x="55" y="510" width="18" height="54" rx="3" />
+          <rect x="145" y="474" width="18" height="90" rx="3" />
+          <rect x="235" y="528" width="18" height="36" rx="3" />
+          <rect x="325" y="438" width="18" height="126" rx="3" />
+          <rect x="415" y="493" width="18" height="71" rx="3" />
+          <rect x="505" y="405" width="18" height="159" rx="3" />
+          <rect x="595" y="468" width="18" height="96" rx="3" />
+          <rect x="685" y="388" width="18" height="176" rx="3" />
+          <rect x="775" y="456" width="18" height="108" rx="3" />
+          <rect x="865" y="364" width="18" height="200" rx="3" />
+          <rect x="955" y="428" width="18" height="136" rx="3" />
+          <rect x="1045" y="337" width="18" height="227" rx="3" />
+          <rect x="1135" y="411" width="18" height="153" rx="3" />
+          <rect x="1225" y="298" width="18" height="266" rx="3" />
+          <rect x="1315" y="350" width="18" height="214" rx="3" />
+        </g>
+        <path className="market-chart-rival" pathLength={1} d={rivalPath} />
+        <path className="market-chart-shadow" pathLength={1} d={marketPath} />
+        <path className="market-chart-area" d={`${marketPath} V620 H-30 Z`} />
+        <path className="market-chart-line" pathLength={1} d={marketPath} />
+        <path className="market-chart-highlight" d={marketPath} />
         <path className="market-chart-scanner" d="M980 80 V565" />
-        <circle className="market-chart-node" cx="1124" cy="230" r="6" />
-        <circle className="market-chart-node market-chart-node-secondary" cx="982" cy="269" r="4" />
+        <circle className="market-chart-node" cx="1086" cy="157" r="6" />
+        <circle className="market-chart-node market-chart-node-secondary" cx="969" cy="201" r="4" />
+        <circle className="market-chart-node market-chart-node-rival" cx="1061" cy="295" r="4" />
       </svg>
 
       <div className="market-chart-readout market-chart-readout-top"><span>TB / MARKET TAPE</span><strong>+4.82%</strong></div>
       <div className="market-chart-readout market-chart-readout-bottom"><span>OPEN</span><strong>LIVE DATA</strong></div>
+      <div className="market-chart-console">
+        <span className="market-console-label"><i /> LIVE MATCH TELEMETRY</span>
+        <div className="market-console-items">
+          <span><strong>YOU</strong><b>+8.4%</b></span>
+          <span><strong>FIELD</strong><b>48</b></span>
+          <span><strong>EDGE</strong><b>ACTIVE</b></span>
+        </div>
+      </div>
     </div>
   );
 }
