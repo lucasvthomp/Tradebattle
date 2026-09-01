@@ -4,7 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, BarChart3, Clock3, DollarSign, Flag, LayoutGrid, Timer, X } from "lucide-react";
+import { ArrowRight, Clock3, DollarSign, X } from "lucide-react";
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 
 type MatchState = "idle" | "queued" | "vs" | "matched";
 
@@ -113,7 +114,7 @@ export default function Blitz() {
         <div className="blitz-shell">
           <BlitzHeader />
           <section className="blitz-card blitz-auth-card">
-            <div className="blitz-icon-box"><LayoutGrid size={25} /></div>
+            <div className="blitz-icon-box"><TradebattleIcon name="arena" size={25} /></div>
             <p className="blitz-kicker">Private match queue</p>
             <h2>Step into Blitz.</h2>
             <p>Sign in to find a live opponent and play a focused five-minute market round.</p>
@@ -139,13 +140,13 @@ export default function Blitz() {
         <section className="blitz-card blitz-stage-card" aria-live="polite">
           {matchState === "idle" && (
             <div className="blitz-stage-content">
-              <div className="blitz-icon-box"><Timer size={25} /></div>
+              <div className="blitz-icon-box"><TradebattleIcon name="blitz" size={25} /></div>
               <p className="blitz-kicker">One opponent · five minutes</p>
               <h2>Ready for a clean read?</h2>
               <p>Get matched with one player. The board opens with $10,000 in virtual capital and closes when the clock runs out.</p>
               {queueExpired && <div className="blitz-alert">No match found this time. The queue is open again.</div>}
               <button type="button" className="blitz-primary-button" onClick={startQueue} disabled={queueMutation.isPending}>
-                <LayoutGrid size={17} /> {queueMutation.isPending ? "Opening queue…" : "Find a matchup"}
+                <TradebattleIcon name="arena" size={17} /> {queueMutation.isPending ? "Opening queue…" : "Find a matchup"}
               </button>
             </div>
           )}
@@ -176,7 +177,7 @@ export default function Blitz() {
 
           {matchState === "matched" && tournamentId && (
             <div className="blitz-stage-content">
-              <div className="blitz-icon-box blitz-icon-success"><Flag size={25} /></div>
+              <div className="blitz-icon-box blitz-icon-success"><TradebattleIcon name="success" size={25} /></div>
               <p className="blitz-kicker">The board is live</p>
               <h2>Matchup found.</h2>
               <p>Your five-minute arena is ready. Make the first move count.</p>
@@ -187,8 +188,8 @@ export default function Blitz() {
 
         <div className="blitz-info-grid">
           <BlitzInfo icon={<Clock3 size={16} />} label="Round timer" value="5 minutes" />
-          <BlitzInfo icon={<DollarSign size={16} />} label="Starting stack" value="$10,000 virtual" />
-          <BlitzInfo icon={<BarChart3 size={16} />} label="Win line" value="Highest board value" />
+          <BlitzInfo icon={<TradebattleIcon name="cash" size={16} />} label="Starting stack" value="$10,000 virtual" />
+          <BlitzInfo icon={<TradebattleIcon name="rankings" size={16} />} label="Win line" value="Highest board value" />
         </div>
       </div>
     </div>
@@ -199,7 +200,7 @@ function BlitzHeader() {
   return (
     <header className="blitz-header">
       <div><p className="blitz-kicker">LIVE FORMAT</p><h1>Blitz</h1><p>One board. One rival. Five minutes.</p></div>
-      <div className="blitz-header-mark"><Timer size={19} /></div>
+      <div className="blitz-header-mark"><TradebattleIcon name="blitz" size={19} /></div>
     </header>
   );
 }
