@@ -4,15 +4,15 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import {
   Home,
-  Trophy,
+  BarChart3,
   Users,
-  Phone,
+  CircleHelp,
   Gift,
   Settings,
   Archive,
   Shield,
-  Swords,
-  Zap,
+  LayoutGrid,
+  Timer,
   Menu
 } from "lucide-react";
 import { useState } from "react";
@@ -28,14 +28,14 @@ export function SimplifiedSidebar() {
   const navItems = [
     ...(user ? [
       { href: "/hub", label: t('hub'), icon: Home, iconColor: '#67E7BF' },
-      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#67E7BF' },
-      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#F2C76A' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#F2C76A' },
+      { href: "/tournaments", label: t('tournaments'), icon: LayoutGrid, iconColor: '#67E7BF' },
+      { href: "/blitz", label: "Blitz", icon: Timer, iconColor: '#F2C76A' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: BarChart3, iconColor: '#F2C76A' },
       { href: "/people", label: t('people'), icon: Users, iconColor: '#8EB6D1' },
       { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F2C76A' },
-      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
+      { href: "/contact", label: t('support'), icon: CircleHelp, iconColor: '#94A3B8' },
     ] : [
-      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
+      { href: "/contact", label: t('support'), icon: CircleHelp, iconColor: '#94A3B8' },
     ]),
   ];
 
