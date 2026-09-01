@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
-import { Users, Search, Crown, ArrowUpRight, RefreshCw } from "lucide-react";
+import { Users, Search, ShieldCheck, ArrowUpRight, RefreshCw } from "lucide-react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { UserProfileModal } from "@/components/profile/UserProfileModal";
 
@@ -87,7 +87,7 @@ export default function People() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="truncate text-sm font-bold" style={{ color: "#eef6fa" }}>{person.username}</span>
-                  {person.subscriptionTier === "administrator" && <Crown size={13} style={{ color: "#f2c76a" }} />}
+                  {person.subscriptionTier === "administrator" && <ShieldCheck size={13} style={{ color: "#f2c76a" }} />}
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: "rgba(118,169,198,.14)" }}>
                   <div><span className="block text-[9px] font-black uppercase tracking-wider" style={{ color: "#6f879d" }}>Trades</span><strong className="font-mono text-sm" style={{ color: "#c9d9e2" }}>{person.totalTrades || 0}</strong></div>
