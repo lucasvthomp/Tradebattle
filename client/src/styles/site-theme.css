@@ -2164,3 +2164,167 @@
     height: 54px;
   }
 }
+
+
+/* Final modern icon pass: thin strokes, quiet surfaces, no fantasy gloss. */
+.tradebattle-site svg.lucide {
+  stroke-width: 1.6 !important;
+  filter: none !important;
+}
+
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .hub-panel,
+.tradebattle-site .hub-launch-card,
+.tradebattle-site .blitz-card,
+.tradebattle-site .blitz-info-item,
+.tradebattle-site .tournament-card-surface,
+.tradebattle-site .people-page button,
+.tradebattle-site .reward-icon-3d {
+  box-shadow: none !important;
+}
+
+.tradebattle-site .hub-stat-card::before,
+.tradebattle-site .hub-live-dot,
+.tradebattle-site .tournament-live-dot,
+.tradebattle-site .blitz-live-dot,
+.tradebattle-site .arena-status-dot,
+.tradebattle-site .match-live i {
+  box-shadow: none !important;
+}
+
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .hub-panel,
+.tradebattle-site .blitz-card,
+.tradebattle-site .tournament-card-surface,
+.tradebattle-site .people-page button {
+  background: #0b1b2a !important;
+  border-color: var(--site-edge) !important;
+}
+
+.tradebattle-site .hub-stat-card::before {
+  height: 1px;
+}
+
+.tradebattle-site .hub-rank-chip,
+.tradebattle-site .hub-live-chip {
+  border-radius: 8px;
+  background: rgba(103, 231, 191, 0.06);
+  border-color: var(--site-edge);
+  color: #a8d8cd;
+}
+
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .hub-panel {
+  border-radius: 12px;
+}
+
+.tradebattle-site .hub-screen {
+  padding-top: 28px;
+  padding-bottom: 42px;
+}
+
+.tradebattle-site .hub-stat-grid {
+  padding: 16px 0;
+  gap: 12px;
+}
+
+.tradebattle-site .hub-main-grid,
+.tradebattle-site .hub-lower-grid {
+  gap: 14px;
+}
+
+.tradebattle-site [role="dialog"] {
+  border: 1px solid var(--site-edge) !important;
+  border-radius: 14px !important;
+  background: #0b1b2a !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34) !important;
+}
+
+.tradebattle-site [role="dialog"] [role="tablist"] {
+  border: 1px solid var(--site-edge) !important;
+  border-radius: 9px !important;
+  background: #081622 !important;
+}
+
+.tradebattle-site [role="dialog"] [role="tab"] {
+  border-radius: 7px !important;
+  color: #91a6ba !important;
+  box-shadow: none !important;
+}
+
+.tradebattle-site [role="dialog"] [role="tab"][data-state="active"] {
+  background: var(--site-mint) !important;
+  color: #06151c !important;
+}
+
+.tradebattle-site [role="dialog"] button,
+.tradebattle-site [role="dialog"] input,
+.tradebattle-site [role="dialog"] textarea,
+.tradebattle-site [role="dialog"] [role="combobox"] {
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.tradebattle-chat {
+  border-left: 1px solid var(--site-edge) !important;
+  background: #091522 !important;
+  box-shadow: -18px 0 38px rgba(0, 0, 0, 0.22) !important;
+}
+
+.tradebattle-chat > div:first-child {
+  padding: 15px 16px !important;
+  background: #0b1b2a !important;
+  border-bottom: 1px solid var(--site-edge) !important;
+}
+
+.tradebattle-chat > div:nth-child(2) {
+  background: #081622 !important;
+}
+
+.tradebattle-chat .backdrop-blur-sm {
+  background: #0b1b2a !important;
+  border: 1px solid rgba(118, 169, 198, 0.14) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.tradebattle-chat .backdrop-blur-sm p {
+  color: #d9e7ec !important;
+}
+
+.tradebattle-chat input {
+  background: #081622 !important;
+  border-color: var(--site-edge) !important;
+}
+
+.tradebattle-chat form button {
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+
+.tradebattle-site .shop-spotlight-mark {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  background: rgba(103, 231, 191, 0.05);
+}
+
+.tradebattle-site .rankings-podium-trophy-icon {
+  color: var(--site-mint);
+  stroke-width: 1.35 !important;
+  filter: none !important;
+}
+
+.tradebattle-site .people-header-art {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .tradebattle-site .hub-screen {
+    padding: 22px 14px 34px;
+  }
+
+  .tradebattle-site .hub-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
