@@ -6,12 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Gift, KeyRound, Trophy, Zap, WalletCards, Users, ArrowRight, Check } from "lucide-react";
+import { KeyRound, ArrowRight, Check } from "lucide-react";
+import { TradebattleIcon, type TradebattleIconName } from "@/components/tradebattle-icons";
 
 const statItems = [
-  { label: "Buying power", key: "cash", icon: WalletCards },
-  { label: "Arena wins", key: "wins", icon: Trophy },
-  { label: "Trade reps", key: "trades", icon: Zap },
+  { label: "Buying power", key: "cash", icon: "cash" as TradebattleIconName },
+  { label: "Arena wins", key: "wins", icon: "rankings" as TradebattleIconName },
+  { label: "Trade reps", key: "trades", icon: "trend" as TradebattleIconName },
 ] as const;
 
 export default function Shop() {
@@ -77,15 +78,15 @@ export default function Shop() {
             <span>Redeem codes, collect virtual cash, and show up ready for the next round.</span>
             <div className="shop-spotlight-pills"><strong>FREE TO CLAIM</strong><strong>NO DEPOSITS</strong></div>
           </div>
-          <div className="shop-spotlight-mark" aria-hidden="true"><Gift size={26} /></div>
+          <div className="shop-spotlight-mark" aria-hidden="true"><TradebattleIcon name="rewards" size={26} /></div>
         </section>
 
         <section className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Player totals">
-          {statItems.map(({ label, key, icon: Icon }) => (
+          {statItems.map(({ label, key, icon }) => (
             <div key={key} className="rounded-lg border p-4" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
               <div className="mb-5 flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: "#7890a4" }}>{label}</span>
-                <span className="reward-icon-3d flex h-8 w-8 items-center justify-center rounded-md"><Icon size={16} style={{ color: "#67e7bf" }} /></span>
+                <span className="reward-icon-3d flex h-8 w-8 items-center justify-center rounded-md"><TradebattleIcon name={icon} size={16} style={{ color: "#67e7bf" }} /></span>
               </div>
               <strong className="font-mono text-xl" style={{ color: "#eef6fa" }}>{statValue(key)}</strong>
             </div>
@@ -129,7 +130,7 @@ export default function Shop() {
 
           <aside className="rounded-lg border p-5" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
             <div className="reward-icon-3d mb-5 flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
-              <Users size={19} />
+              <TradebattleIcon name="players" size={19} />
             </div>
             <h2 className="text-lg font-extrabold" style={{ color: "#eef6fa" }}>Build your crew</h2>
             <p className="mt-2 text-sm leading-6" style={{ color: "#8da2b5" }}>The best rewards are easier to find when you stay close to the players you compete with.</p>
