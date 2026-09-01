@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { Activity, ArrowUpRight, BarChart3, ChevronRight, DollarSign, LayoutGrid, Timer, WalletCards } from "lucide-react";
+import { ArrowUpRight, BarChart3, ChevronRight, LayoutGrid, Timer } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import "./hub.css";
 
