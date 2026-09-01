@@ -44,7 +44,7 @@ export default function Leaderboard() {
               <span className="rankings-podium-kicker">THE TOP TABLE</span>
               <h2 id="podium-title">Own the board.</h2>
               <p>The players setting the pace this round.</p>
-              <img className="rankings-podium-trophy" src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" />
+              <Trophy className="rankings-podium-trophy-icon" size={72} aria-hidden="true" />
             </div>
             <div className="rankings-podium-stage">
               {[1, 0, 2].map((index) => {
