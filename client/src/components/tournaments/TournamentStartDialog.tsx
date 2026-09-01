@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -86,7 +87,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                     ease: "easeInOut",
                   }}
                 />
-                <Trophy className="w-20 h-20 relative z-10" style={{ color: '#67E7BF' }} />
+                <TradebattleIcon name="rankings" className="w-20 h-20 relative z-10" style={{ color: '#67E7BF' }} />
               </div>
             </motion.div>
 
@@ -136,7 +137,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
 
               <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(40, 199, 111, 0.1), rgba(40, 199, 111, 0.05))' }}>
                 <div className="flex items-center gap-2 mb-2">
-                  <Trophy className="w-5 h-5" style={{ color: '#67E7BF' }} />
+                  <TradebattleIcon name="rankings" className="w-5 h-5" style={{ color: '#67E7BF' }} />
                   <span className="text-sm font-semibold" style={{ color: '#8A93A6' }}>Prize pool</span>
                 </div>
                 <p className="text-2xl font-black" style={{ color: '#67E7BF' }}>
@@ -168,7 +169,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
             {/* Guidelines */}
             <div className="p-6 rounded-xl mb-6" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-5 h-5" style={{ color: '#67E7BF' }} />
+                <TradebattleIcon name="blitz" className="w-5 h-5" style={{ color: '#67E7BF' }} />
                 <h3 className="text-lg font-bold" style={{ color: '#67E7BF' }}>Arena playbook</h3>
               </div>
               <ul className="space-y-3 text-sm" style={{ color: '#C9D1E2' }}>
@@ -177,7 +178,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                   <span>Trade stocks to push your board value above starting capital</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <Trophy className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#67E7BF' }} />
+                  <TradebattleIcon name="rankings" className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#67E7BF' }} />
                   <span>The player with the highest board value at the end wins</span>
                 </li>
                 <li className="flex items-start gap-2">
