@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import React, { useState, Suspense } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -162,7 +163,7 @@ export function TournamentManagementDialog({
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center space-x-2">
-              <Crown className="w-5 h-5 text-yellow-500" />
+              <TradebattleIcon name="rankings" className="w-5 h-5 text-yellow-500" />
               <span>Manage arena: {tournament.name}</span>
             </DialogTitle>
           </DialogHeader>
@@ -331,7 +332,7 @@ export function TournamentManagementDialog({
                             <div className="flex items-center space-x-2">
                               <span className="font-medium">{participant.displayName || participant.username}</span>
                               {participant.id === tournament.creatorId && (
-                                <Crown className="w-4 h-4 text-yellow-500" />
+                                <TradebattleIcon name="rankings" className="w-4 h-4 text-yellow-500" />
                               )}
                             </div>
                             {participant.id !== tournament.creatorId && (
