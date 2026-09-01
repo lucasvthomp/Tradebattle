@@ -11,16 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  BarChart3,
   Plus,
   Search,
   TrendingUp,
   Bitcoin,
   Shield,
   Lock,
-  ShieldCheck,
   Play
 } from "lucide-react";
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
@@ -344,7 +343,7 @@ export default function TournamentsPage() {
     return (
       <div className="h-[calc(100vh-4rem)] flex items-center justify-center" style={{ background: 'transparent' }}>
         <div className="text-center">
-          <BarChart3 className="w-16 h-16 mx-auto mb-4" style={{ color: '#67E7BF', filter: 'drop-shadow(0 0 12px rgba(0,163,255,0.4))' }} />
+          <TradebattleIcon name="arena" className="w-16 h-16 mx-auto mb-4" style={{ color: '#67E7BF', filter: 'drop-shadow(0 0 12px rgba(0,163,255,0.4))' }} />
           <h2 className="text-xl font-black mb-2" style={{ color: '#C9D1E2', letterSpacing: '-0.02em' }}>Enter the arena</h2>
           <p style={{ color: '#4B6080' }}>Sign in to see open arenas.</p>
         </div>
@@ -418,7 +417,7 @@ export default function TournamentsPage() {
                       justifyContent: 'center',
                       flexShrink: 0,
                     }}>
-                      <BarChart3 style={{
+                      <TradebattleIcon name="arena" style={{
                         width: 'clamp(20px, 2vw, 30px)',
                         height: 'clamp(20px, 2vw, 30px)',
                         color: '#67E7BF',
@@ -704,7 +703,7 @@ export default function TournamentsPage() {
                     margin: '0 auto 16px',
                     boxShadow: '0 0 24px rgba(0,163,255,0.1)',
                   }}>
-                    <BarChart3 className="w-8 h-8" style={{ color: '#67E7BF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
+                    <TradebattleIcon name="arena" className="w-8 h-8" style={{ color: '#67E7BF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
                   </div>
                   <h3 style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.125rem', marginBottom: '8px' }}>
                     No arenas on the board
@@ -986,7 +985,7 @@ function HorizontalTournamentCard({
             (e.currentTarget as HTMLButtonElement).style.boxShadow = 'none';
           }}
         >
-          <BarChart3 className="w-3.5 h-3.5" />
+          <TradebattleIcon name="arena" className="w-3.5 h-3.5" />
                   Rankings
         </button>
       );
@@ -1174,7 +1173,7 @@ function HorizontalTournamentCard({
 
             {/* High pot crown */}
             {isHighPot && (
-              <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#F2C76A', filter: 'drop-shadow(0 0 5px rgba(227,179,65,0.4))' }} />
+              <TradebattleIcon name="admin" className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#F2C76A', filter: 'drop-shadow(0 0 5px rgba(227,179,65,0.4))' }} />
             )}
 
             {/* LIVE badge */}
