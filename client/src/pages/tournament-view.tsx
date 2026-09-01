@@ -4,7 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import Dashboard from "./dashboard";
 import {
-  Lock, ArrowLeft
+  Trophy, Users, Clock, TrendingUp, TrendingDown, Crown,
+  Bitcoin, Lock, ArrowLeft, RefreshCw, DollarSign, BarChart2
 } from "lucide-react";
 import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { motion } from "framer-motion";
@@ -43,7 +44,8 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
 
   const selectedParticipant = participants.find(p => p.userId === selectedUserId);
 
-  const typeIcon = tournament?.tournamentType === "crypto" ? "market" : "trend";
+  const typeIcon = tournament?.tournamentType === "crypto" ? Bitcoin : TrendingUp;
+  const TypeIcon = typeIcon;
 
   return (
     <div className="arena-page-shell tournament-view-page" style={{ minHeight: "calc(100dvh - 4rem)", background: "transparent", padding: "24px 20px 48px" }}>
@@ -77,7 +79,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                     padding: "6px", borderRadius: "10px",
                     background: "rgba(0,163,255,0.1)", border: "1px solid rgba(0,163,255,0.2)",
                   }}>
-                    <TradebattleIcon name={typeIcon} size={16} style={{ color: "#67E7BF" }} />
+                    <TypeIcon size={16} color="#67E7BF" />
                   </div>
                   <h1 style={{ fontSize: "clamp(1.2rem, 3vw, 1.8rem)", fontWeight: 900, color: "#FFFFFF", margin: 0, letterSpacing: "-0.02em" }}>
                     {tournament?.name}
