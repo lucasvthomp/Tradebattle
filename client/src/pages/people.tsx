@@ -41,11 +41,10 @@ export default function People() {
               <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><Users size={20} /></div>
               <div>
                 <h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Players</h1>
-                <p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>{visibleUsers.length} {visibleUsers.length === 1 ? t("personUnit") : t("peopleUnit")} in the field</p>
+                <p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>Find players, compare records, and open a profile.</p>
               </div>
             </div>
           </div>
-          <div className="people-header-art" aria-hidden="true"><img src="/assets/tradebattle-chest-medal-v2.png" alt="" /></div>
         </header>
 
         <section className="mb-6 flex flex-col gap-3 rounded-lg border p-3 md:flex-row" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }} aria-label="Find players">
