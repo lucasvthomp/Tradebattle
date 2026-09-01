@@ -24,7 +24,8 @@ export type TradebattleIconName =
   | "timer"
   | "bell"
   | "flag"
-  | "info";
+  | "info"
+  | "menu";
 
 type TradebattleIconProps = Omit<SVGProps<SVGSVGElement>, "name"> & {
   name: TradebattleIconName;
@@ -186,6 +187,12 @@ const iconShapes: Record<TradebattleIconName, ReactNode> = {
     <g>
       <path d="M6.3 20V4.2M6.3 5.1c3.3-2 5.3 2 9.7 0v7.1c-4.4 2-6.4-2-9.7 0" />
       <path className="tradebattle-custom-icon-accent" d="M6.3 17.2h4.1" />
+    </g>
+  ),
+  menu: (
+    <g>
+      <path d="M5 7.2h14M5 12h14M5 16.8h14" />
+      <path className="tradebattle-custom-icon-accent" d="M5 7.2h3M16 12h3M5 16.8h3" />
     </g>
   ),
   info: (
