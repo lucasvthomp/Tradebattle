@@ -105,7 +105,7 @@ export default function UnauthenticatedHome() {
             <div className="arena-copy">
               <p className="arena-eyebrow"><Swords size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
               <h1 id="arena-hero-title">Trade smarter.<br /><em>Win the board.</em></h1>
-              <p className="arena-lede">A live-market strategy game where every decision moves you up — or down — the standings.</p>
+              <p className="arena-lede">A live-market strategy game where every decision moves you up — or down — the rankings.</p>
               <div className="arena-actions">
                 <PrimaryLink>Enter the arena</PrimaryLink>
                 <Link href="/login" className="arena-secondary-link">I already play <ChevronRight size={17} aria-hidden="true" /></Link>

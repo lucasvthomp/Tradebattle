@@ -43,7 +43,7 @@ export default function ArchivePage() {
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Past arenas / 01</p>
             <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><Archive size={20} /></div><div><h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>{t("archive")}</h1><p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>Review finished rounds and the players who took the board.</p></div></div>
           </div>
-          <span className="hidden items-center gap-2 text-xs sm:flex" style={{ color: "#7890a4" }}><Trophy size={14} style={{ color: "#f2c76a" }} /> Final standings</span>
+          <span className="hidden items-center gap-2 text-xs sm:flex" style={{ color: "#7890a4" }}><Trophy size={14} style={{ color: "#f2c76a" }} /> Final rankings</span>
         </header>
 
         <div className="relative mb-5"><Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" size={16} style={{ color: "#6f879d" }} /><Input placeholder={t("searchTournaments")} value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} className="h-11 pl-10" /></div>

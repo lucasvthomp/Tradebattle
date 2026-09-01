@@ -28,7 +28,7 @@ export const tourSteps: TourStep[] = [
     id: "sidebar",
     title: "Navigate Around",
     description:
-      "Use the sidebar to jump between the Trading Floor, Arenas, Standings, and more.",
+      "Use the sidebar to jump between the Trading Floor, Arenas, Rankings, and more.",
     targetSelector: '[data-tour="sidebar"]',
     cardPosition: "right",
   },

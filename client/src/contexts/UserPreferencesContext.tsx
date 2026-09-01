@@ -7,13 +7,13 @@ export const translations = {
     // Navigation
     dashboard: "Trading Floor",
     portfolio: "Positions",
-    leaderboard: "Standings",
+    leaderboard: "Rankings",
     people: "Players",
     plans: "Game Plans",
     about: "The Game",
-    contact: "Pit Crew",
-    settings: "Player Settings",
-    archive: "Past Matches",
+    contact: "Help",
+    settings: "Settings",
+    archive: "Archive",
     logout: "Exit Arena",
     
     // Common terms
@@ -64,7 +64,7 @@ export const translations = {
     subscriptionTier: "Subscription Tier",
     
     // Account settings
-    accountSettings: "Player Settings",
+    accountSettings: "Settings",
     personalInformation: "Player Profile",
     preferences: "Play Preferences",
     updateProfile: "Save Profile",
@@ -106,11 +106,11 @@ export const translations = {
     loggingIn: "Checking your entry...",
     
     // Support
-    support: "Pit Crew",
-    helpCenter: "Pit Crew HQ",
+    support: "Help",
+    helpCenter: "Help HQ",
     faq: "Quick Answers",
     guides: "Playbooks",
-    contactUs: "Call the Pit Crew",
+    contactUs: "Contact Help",
     
     // Trading Actions
     buy: "Buy",
@@ -165,7 +165,7 @@ export const translations = {
     participantCount: "Players",
     timeLeft: "Clock",
     tournamentRules: "Arena Rules",
-    leaderboardPosition: "Standings Place",
+    leaderboardPosition: "Ranking place",
     
     // Account & Profile
     profile: "Player Card",
@@ -243,7 +243,7 @@ export const translations = {
     
     // Navigation & Layout
     home: "Arena Home",
-    hub: "Control Room",
+    hub: "Home",
     menu: "Menu",
     sidebar: "Sidebar",
     header: "Header",
@@ -323,7 +323,7 @@ export const translations = {
     // Errors & Issues
     errorOccurred: "We hit a rough patch",
     tryAgain: "Run it back",
-    contactSupport: "Call the Pit Crew",
+    contactSupport: "Contact Help",
     pageNotFound: "That page left the board",
     accessDenied: "That area is locked",
     sessionExpired: "Your session timed out",
@@ -359,7 +359,7 @@ export const translations = {
     // Hub specific
     hubWelcomeMessage: "The board is live. What’s your next move?",
     dashboardDescription: "Read the tape, manage your positions, and make the call",
-    joinTournamentDescription: "Enter the field and climb the standings",
+    joinTournamentDescription: "Enter the field and climb the rankings",
     leaderboardDescription: "See who has the sharpest run right now",
     events: "Match Events",
     
@@ -370,7 +370,7 @@ export const translations = {
     enterUsername: "Choose your player name",
     currentHoldings: "Open Positions",
     adminRole: "Match Director",
-    supportTeam: "Pit Crew",
+    supportTeam: "Help",
     invalidShares: "Enter a valid number of units",
     stockPurchased: "Opened position",
     sharesUnit: "units",
@@ -421,11 +421,11 @@ export const translations = {
     searchTournaments: "Scout arenas...",
     noMatchingTournaments: "No arenas match that search",
     noCompletedTournaments: "No finished arenas yet",
-    backToArchive: "Back to Past Matches",
+    backToArchive: "Back to Archive",
     startingCash: "Starting Capital",
     duration: "Match Length",
     ended: "Final Bell",
-    finalLeaderboard: "Final Standings",
+    finalLeaderboard: "Final Rankings",
     noParticipantsRecorded: "No players recorded",
     tournamentNotFound: "Arena not found",
     goBack: "Back to safety",

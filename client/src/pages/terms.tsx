@@ -94,7 +94,7 @@ export default function Terms() {
               <h2 className="text-2xl font-bold mb-4 text-foreground">6. TOURNAMENTS; PARAMETERS; PRIVATE TOURNAMENTS</h2>
               <p className="mb-2"><strong>6.1. Creation & Parameters.</strong> Eligible users may create Tournaments and set parameters including entry fee amount, starting virtual balance, duration (from ten (10) minutes up to two (2) weeks), maximum participants, and public/private designation.</p>
               <p className="mb-2"><strong>6.2. Private Tournament Controls.</strong> Prior to the start time, private Tournament creators may (a) remove a registrant (entry fee auto-refunded), or (b) cancel the Tournament (all entry fees auto-refunded).</p>
-              <p className="mb-2"><strong>6.3. Outcomes & Finality.</strong> At the end of a Tournament, winner(s) are determined by the highest final Virtual Portfolio value per Platform results. Our posted standings are authoritative. We may correct obvious errors or void/adjust results in the event of data or system errors materially affecting results.</p>
+              <p className="mb-2"><strong>6.3. Outcomes & Finality.</strong> At the end of a Tournament, winner(s) are determined by the highest final Virtual Portfolio value per Platform results. Our posted rankings are authoritative. We may correct obvious errors or void/adjust results in the event of data or system errors materially affecting results.</p>
               <p className="mb-4"><strong>6.4. Fees & Payouts.</strong> For paid Tournaments, ninety-five percent (95%) of the entry fee pool is awarded to winner(s) per the posted structure; five percent (5%) is retained as the Platform fee.</p>
             </section>
 

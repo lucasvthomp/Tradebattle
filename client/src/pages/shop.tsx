@@ -56,7 +56,7 @@ export default function Shop() {
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Player rewards / 01</p>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
+              <div className="reward-icon-3d flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
                 <Gift size={21} />
               </div>
               <div>
@@ -75,7 +75,7 @@ export default function Shop() {
             <div key={key} className="rounded-lg border p-4" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
               <div className="mb-5 flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: "#7890a4" }}>{label}</span>
-                <Icon size={16} style={{ color: "#67e7bf" }} />
+                <span className="reward-icon-3d flex h-8 w-8 items-center justify-center rounded-md"><Icon size={16} style={{ color: "#67e7bf" }} /></span>
               </div>
               <strong className="font-mono text-xl" style={{ color: "#eef6fa" }}>{statValue(key)}</strong>
             </div>
@@ -118,7 +118,7 @@ export default function Shop() {
           </section>
 
           <aside className="rounded-lg border p-5" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
-            <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
+            <div className="reward-icon-3d mb-5 flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
               <Users size={19} />
             </div>
             <h2 className="text-lg font-extrabold" style={{ color: "#eef6fa" }}>Build your crew</h2>
@@ -126,7 +126,7 @@ export default function Shop() {
             <div className="mt-6 space-y-3 border-t pt-5" style={{ borderColor: "var(--site-edge)" }}>
               <div className="flex items-center gap-3 text-sm" style={{ color: "#c9d9e2" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#67e7bf" }} />Share a match recap</div>
               <div className="flex items-center gap-3 text-sm" style={{ color: "#c9d9e2" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#67e7bf" }} />Invite a new player</div>
-              <div className="flex items-center gap-3 text-sm" style={{ color: "#c9d9e2" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#67e7bf" }} />Watch the standings</div>
+              <div className="flex items-center gap-3 text-sm" style={{ color: "#c9d9e2" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#67e7bf" }} />Watch the rankings</div>
             </div>
           </aside>
         </div>

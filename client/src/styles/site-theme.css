@@ -567,3 +567,217 @@
     justify-content: center;
   }
 }
+
+/* Admin is an operator deck: clear, compact, and easy to scan. */
+.tradebattle-site.arena-app .admin-page {
+  width: min(1240px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 56px;
+}
+
+.admin-page .admin-page-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--site-edge);
+}
+
+.admin-page .admin-page-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid rgba(103, 231, 191, 0.32);
+  border-radius: 10px;
+  background: rgba(103, 231, 191, 0.09);
+  color: var(--site-mint);
+}
+
+.admin-page .admin-page-kicker {
+  margin: 0 0 4px;
+  color: var(--site-mint);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.admin-page .admin-tab-list {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 3px;
+  height: auto !important;
+  padding: 4px;
+  border: 1px solid var(--site-edge) !important;
+  border-radius: 10px;
+  background: #0b1b2a !important;
+}
+
+.admin-page .admin-tab-list > button {
+  min-height: 34px;
+  border-radius: 7px;
+  color: #91a6ba !important;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.admin-page .admin-tab-list > button[data-state="active"] {
+  background: var(--site-mint) !important;
+  color: #06151c !important;
+  box-shadow: none !important;
+}
+
+.admin-page .card,
+.admin-page [data-slot="card"] {
+  border-color: var(--site-edge) !important;
+  border-radius: 10px;
+  background: #0b1b2a !important;
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.12), inset 0 1px rgba(255, 255, 255, 0.025) !important;
+}
+
+.admin-page .card-header {
+  border-bottom: 1px solid rgba(118, 169, 198, 0.12);
+}
+
+.admin-page .card-title { color: #eaf3f7 !important; }
+.admin-page .card-description { color: #8da2b5 !important; }
+.admin-page button:hover { transform: none; }
+.admin-page .animate-pulse { animation: none; }
+
+/* Settings tabs stay visible in every state, including keyboard focus and mobile. */
+.profile-page [role="tablist"] {
+  display: grid;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--site-edge) !important;
+  border-radius: 10px;
+  background: #0b1b2a !important;
+}
+
+.profile-page [role="tab"] {
+  min-height: 38px;
+  border-radius: 7px;
+  color: #91a6ba !important;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.profile-page [role="tab"][data-state="active"] {
+  background: var(--site-mint) !important;
+  color: #06151c !important;
+  box-shadow: none !important;
+}
+
+.profile-page [role="tab"]:focus-visible,
+.admin-page .admin-tab-list > button:focus-visible {
+  outline: 2px solid var(--site-mint);
+  outline-offset: 2px;
+}
+
+/* Competition surfaces use the available viewport without creating a second empty page. */
+.tradebattle-site.arena-app .tournaments-page {
+  min-height: calc(100dvh - 4rem);
+  overflow: visible;
+}
+
+.tournaments-page > .container {
+  width: min(1180px, calc(100% - 32px));
+  max-width: none;
+  padding: 24px 0 52px !important;
+}
+
+.tournaments-page h1 {
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+  text-shadow: none !important;
+}
+
+.tournaments-page [style*="rgba(0,163,255"] {
+  box-shadow: none !important;
+}
+
+.tournament-create-dialog,
+.tournament-join-dialog {
+  border: 1px solid var(--site-edge) !important;
+  border-radius: 12px !important;
+  background: #0b1b2a !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3) !important;
+}
+
+.tournament-create-dialog input,
+.tournament-create-dialog [role="combobox"],
+.tournament-join-dialog input {
+  border-color: rgba(118, 169, 198, 0.2) !important;
+  border-radius: 8px !important;
+  background: #081622 !important;
+  color: #eaf3f7 !important;
+}
+
+.tournament-create-dialog input:focus,
+.tournament-create-dialog [role="combobox"]:focus,
+.tournament-join-dialog input:focus {
+  border-color: var(--site-mint) !important;
+  box-shadow: 0 0 0 2px rgba(103, 231, 191, 0.12) !important;
+}
+
+.tournament-create-dialog button:hover,
+.tournament-join-dialog button:hover { transform: none; }
+
+.tournaments-page .grid {
+  gap: 12px !important;
+}
+
+/* Trading stays dense and readable: the chart earns the space, the controls stay calm. */
+.tradebattle-site.arena-app .trading-page {
+  min-height: calc(100dvh - 4rem);
+  background: #06111f !important;
+}
+
+.trading-page > div:first-child {
+  border-right-color: var(--site-edge) !important;
+}
+
+.trading-page button:hover { transform: none; }
+
+.trading-page [style*="repeating-linear-gradient"] { display: none !important; }
+.trading-page [style*="rgba(0,163,255"] { border-color: rgba(103, 231, 191, 0.22) !important; }
+
+.reward-icon-3d {
+  border: 1px solid rgba(103, 231, 191, 0.22);
+  background: linear-gradient(145deg, rgba(103, 231, 191, 0.2), rgba(103, 231, 191, 0.05)) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.16), 0 6px 14px rgba(0, 0, 0, 0.16);
+  filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.15));
+}
+
+/* Player presence is a small badge, not an ornament hidden behind the frame. */
+.tradebattle-avatar-status {
+  pointer-events: none;
+}
+
+@media (max-width: 760px) {
+  .tradebattle-site.arena-app .admin-page {
+    width: calc(100% - 24px);
+    padding: 20px 0 36px;
+  }
+
+  .admin-page .admin-tab-list,
+  .profile-page [role="tablist"] {
+    display: flex !important;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .admin-page .admin-tab-list::-webkit-scrollbar,
+  .profile-page [role="tablist"]::-webkit-scrollbar { display: none; }
+
+  .admin-page .admin-tab-list > button,
+  .profile-page [role="tab"] { flex: 0 0 auto; }
+
+  .tournaments-page > .container {
+    width: calc(100% - 24px);
+    padding-top: 18px !important;
+  }
+}

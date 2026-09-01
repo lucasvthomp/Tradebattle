@@ -165,7 +165,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <Trophy size={15} color={GOLD} />
-                <span style={{ fontSize: "13px", fontWeight: 800, color: "#C9D1E2" }}>Standings</span>
+                <span style={{ fontSize: "13px", fontWeight: 800, color: "#C9D1E2" }}>Rankings</span>
                 {!isLoading && (
                   <span style={{
                     fontSize: "11px", fontWeight: 700, padding: "1px 8px", borderRadius: "20px",

@@ -713,7 +713,7 @@ export default function Profile() {
           {/* Main Content */}
           <motion.div variants={fadeInUp}>
             <Tabs defaultValue="account" className="space-y-6">
-              <TabsList className="grid w-full h-auto grid-cols-2 md:grid-cols-4 gap-1">
+              <TabsList className="settings-tabs grid w-full h-auto grid-cols-2 md:grid-cols-4 gap-1">
                 <TabsTrigger value="transactions" className="flex items-center space-x-2">
                   <CreditCard className="w-4 h-4" />
                   <span>Ledger</span>
@@ -743,7 +743,7 @@ export default function Profile() {
                 
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle>Player settings</CardTitle>
+                    <CardTitle>Settings</CardTitle>
                     <CardDescription>
                       Manage your account information and public profile
                     </CardDescription>

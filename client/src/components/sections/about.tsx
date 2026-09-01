@@ -5,7 +5,7 @@ export default function About() {
   const features = [
     "Zero financial risk - trade with virtual money",
     "Real market data and live stock prices",
-    "Live standings and player rankings",
+    "Live rankings and player stats",
     "Personal portfolio tracking and analytics",
     "Arena system with automated match ends",
     "Advanced trading analytics and insights",
@@ -25,7 +25,7 @@ export default function About() {
               <h2 className="text-4xl font-bold text-foreground mb-6">Why Choose Our Platform</h2>
               <p className="text-muted-foreground mb-6">
                 Master the art of trading without risking real money. Enter competitive arenas,
-                track your progress through achievements, and climb the standings while learning
+                track your progress through achievements, and climb the rankings while learning
                 from experienced traders in a completely safe environment.
               </p>
               <div className="space-y-4">

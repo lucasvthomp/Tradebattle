@@ -46,7 +46,7 @@ export function AvatarWithStatus({
       style={showBorder ? {
         border: `${borderWidth} solid #67E7BF`,
         borderRadius: borderRadius,
-        overflow: 'hidden'
+        overflow: 'visible'
       } : undefined}
     >
       <Avatar className="w-full h-full" style={{ borderRadius: borderRadius }}>
@@ -56,11 +56,11 @@ export function AvatarWithStatus({
         </AvatarFallback>
       </Avatar>
 
-      {/* Status indicator positioned at bottom-right, on top of frame and picture */}
-      <div className="absolute bottom-0 right-0 z-10" style={{ transform: 'translate(15%, 15%)' }}>
+      {/* Keep presence visible at the top edge instead of hiding it beneath the avatar frame. */}
+      <div className="tradebattle-avatar-status absolute top-0 right-0 z-10" style={{ transform: 'translate(24%, -24%)' }}>
         <div
           className="rounded-full flex items-center justify-center"
-          style={{ backgroundColor: '#0B1B2A', padding: '2px' }}
+          style={{ backgroundColor: '#071522', padding: '3px', border: '1px solid rgba(103,231,191,.22)' }}
         >
           <StatusIndicator status={userStatus} size={statusSize} />
         </div>

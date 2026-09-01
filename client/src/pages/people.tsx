@@ -81,7 +81,7 @@ export default function People() {
             {visibleUsers.map((person: any) => (
               <button key={person.id} type="button" onClick={() => setSelectedUserId(String(person.id))} className="group rounded-lg border p-4 text-left transition-colors hover:border-[rgba(103,231,191,.4)]" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
                 <div className="mb-5 flex items-start justify-between">
-                  <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg" style={{ background: "#081622" }}>
+                  <div className="player-avatar-frame flex h-12 w-12 items-center justify-center rounded-lg" style={{ background: "#081622" }}>
                     <AvatarWithStatus className="h-12 w-12" src={person.profilePicture} alt={person.username} fallback={`${person.username?.[0]?.toUpperCase() || ""}${person.username?.[1]?.toUpperCase() || ""}`} lastActivity={person.lastActivity} statusSize="sm" />
                   </div>
                   <ArrowUpRight size={15} className="opacity-0 transition-opacity group-hover:opacity-100" style={{ color: "#67e7bf" }} />

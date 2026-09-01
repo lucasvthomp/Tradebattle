@@ -17,7 +17,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  const [selectedSymbol, setSelectedSymbol] = useState<string>("");
+  const [selectedSymbol, setSelectedSymbol] = useState<string>("AAPL");
   const [selectedTournament, setSelectedTournament] = useState<any>(null);
 
   const search = useSearch();

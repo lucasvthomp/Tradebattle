@@ -86,7 +86,7 @@ export function TournamentLeaderboardDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Trophy className="w-5 h-5" />
-            <span>{tournament.name} - Standings</span>
+            <span>{tournament.name} - Rankings</span>
           </DialogTitle>
         </DialogHeader>
 
@@ -127,7 +127,7 @@ export function TournamentLeaderboardDialog({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold flex items-center space-x-2">
               <TrendingUp className="w-5 h-5" />
-              <span>Live standings</span>
+              <span>Live rankings</span>
             </h3>
 
             {isLoading ? (

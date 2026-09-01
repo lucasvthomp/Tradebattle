@@ -772,7 +772,7 @@ export default function Admin() {
   }
 
   return (
-    <div className="container mx-auto py-6 md:py-8">
+    <div className="arena-page-shell admin-page container mx-auto py-6 md:py-8">
       <motion.div
         initial="initial"
         animate="animate"
@@ -781,17 +781,11 @@ export default function Admin() {
       >
         {/* Header */}
         <motion.div variants={fadeInUp}>
-          <div className="flex items-center gap-4 mb-2">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #67E7BF, #2EBF9A)', boxShadow: '0 0 24px rgba(0, 163, 255, 0.4)' }}>
-              <Shield className="w-6 h-6 text-white" />
-            </div>
+          <div className="admin-page-heading">
+            <div className="admin-page-mark"><Shield className="h-5 w-5" /></div>
             <div>
-              <h1 className="text-3xl font-black tracking-tight" style={{ color: '#C9D1E2' }}>Admin Dashboard</h1>
-              <p className="text-sm" style={{ color: '#8A93A6' }}>Comprehensive site management and diagnostics</p>
-            </div>
-            <div className="ml-auto hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: 'rgba(0, 163, 255, 0.12)', border: '1px solid rgba(0, 163, 255, 0.3)', color: '#67E7BF' }}>
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#67E7BF' }} />
-              ADMIN ACCESS
+              <p className="admin-page-kicker">Operator deck</p>
+              <h1 className="text-3xl font-black tracking-tight" style={{ color: '#C9D1E2' }}>Admin</h1>
             </div>
           </div>
         </motion.div>
@@ -799,15 +793,15 @@ export default function Admin() {
         {/* Admin Tabs */}
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-9 mb-2" style={{ background: '#142E5A', border: '1px solid #1C3E72' }}>
+            <TabsList className="admin-tab-list grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-9 mb-2" style={{ background: '#142E5A', border: '1px solid #1C3E72' }}>
               <TabsTrigger value="overview" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Overview</TabsTrigger>
               <TabsTrigger value="users" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Users</TabsTrigger>
               <TabsTrigger value="tournaments" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Arenas</TabsTrigger>
-              <TabsTrigger value="announcements" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Announce</TabsTrigger>
+              <TabsTrigger value="announcements" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>News</TabsTrigger>
               <TabsTrigger value="revenue" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Revenue</TabsTrigger>
-              <TabsTrigger value="transactions" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Txns</TabsTrigger>
+              <TabsTrigger value="transactions" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Ledger</TabsTrigger>
               <TabsTrigger value="payments" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Payments</TabsTrigger>
-              <TabsTrigger value="promo-codes" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Promos</TabsTrigger>
+              <TabsTrigger value="promo-codes" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Rewards</TabsTrigger>
               <TabsTrigger value="system" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>System</TabsTrigger>
             </TabsList>
 
@@ -847,7 +841,7 @@ export default function Admin() {
                 <Card style={{ background: 'linear-gradient(135deg, #142E5A 0%, #1A3A68 100%)', borderColor: '#1C3E72', overflow: 'hidden', position: 'relative' }}>
                   <div style={{ position: 'absolute', top: 0, right: 0, width: '80px', height: '80px', background: 'radial-gradient(circle, rgba(0,163,255,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Active Wagered</CardTitle>
+                    <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Capital in play</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,163,255,0.15)' }}>
                       <TrendingUp className="h-4 w-4" style={{ color: '#67E7BF' }} />
                     </div>
@@ -856,7 +850,7 @@ export default function Admin() {
                     <div className="text-3xl font-black" style={{ color: '#67E7BF' }}>
                       ${(adminStats.activeWagered || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
-                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>In active arena prize pools</p>
+                    <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>Across active arena pools</p>
                   </CardContent>
                 </Card>
 

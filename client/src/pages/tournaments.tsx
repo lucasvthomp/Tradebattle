@@ -371,7 +371,7 @@ export default function TournamentsPage() {
 
   return (
     <div
-      className="arena-page-shell tournaments-page h-[calc(100vh-4rem)] overflow-auto"
+      className="arena-page-shell tournaments-page min-h-[calc(100dvh-4rem)]"
       style={{
         background: 'transparent',
         backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
@@ -492,7 +492,7 @@ export default function TournamentsPage() {
                       </button>
                     </DialogTrigger>
                     <DialogContent
-                      className="max-w-[95vw] md:max-w-md"
+                      className="tournament-join-dialog max-w-[95vw] md:max-w-md"
                       style={{
                         background: '#0A1C2C',
                         border: '1px solid rgba(0,163,255,0.2)',
@@ -992,7 +992,7 @@ function HorizontalTournamentCard({
           }}
         >
           <Trophy className="w-3.5 h-3.5" />
-                  Standings
+                  Rankings
         </button>
       );
     }

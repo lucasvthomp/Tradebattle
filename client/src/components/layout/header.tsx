@@ -4,7 +4,6 @@ import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BalanceManagementModal } from "@/components/balance/BalanceManagementModal";
-import { ChatSidebar } from "@/components/chat/ChatSidebar";
 import { MarketStatus } from "@/components/market-status";
 import {
   DropdownMenu,
@@ -13,8 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Plus, Minus, Menu, X, BarChart3, Trophy, Users as UsersIcon, Phone, Gift, Settings, Archive, Calendar, Swords, Zap } from "lucide-react";
-import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Menu, X, BarChart3, Trophy, Users as UsersIcon, Phone, Gift, Settings, Archive, Swords, Zap } from "lucide-react";
 interface HeaderProps {
   chatOpen?: boolean;
   onChatToggle?: () => void;
@@ -79,9 +77,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           <div className="hidden md:flex items-center space-x-3 ml-auto">
             {user ? (
               <>
-                {/* Notifications Bell */}
-                <NotificationDropdown />
-
                 {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -115,17 +110,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* Chat Button - only show for authenticated users */}
-                {onChatToggle && (
-                  <Button
-                    onClick={onChatToggle}
-                    variant="ghost"
-                    aria-label="Toggle chat"
-                    className="h-10 w-10 p-0 flex items-center justify-center hover:bg-muted/50 transition-colors"
-                  >
-                    <MessageSquare className="w-4 h-4" />
-                  </Button>
-                )}
               </>
             ) : (
               <>
@@ -199,7 +183,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
-                      <span className="text-base">Hub</span>
+                      <span className="text-base">Home</span>
                     </Button>
                   </Link>
                   <Link href="/tournaments">
@@ -229,7 +213,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Trophy className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
-                      <span className="text-base">Standings</span>
+                      <span className="text-base">Rankings</span>
                     </Button>
                   </Link>
                   <Link href="/people">
@@ -259,7 +243,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
-                      <span className="text-base">Pit crew</span>
+                      <span className="text-base">Help</span>
                     </Button>
                   </Link>
                 </div>
@@ -292,7 +276,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Settings className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
-                      <span className="text-base">Player settings</span>
+                      <span className="text-base">Settings</span>
                     </Button>
                   </Link>
                   <Link href="/archive">
@@ -302,7 +286,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Archive className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
-                      <span className="text-base">Past matches</span>
+                      <span className="text-base">Archive</span>
                     </Button>
                   </Link>
 

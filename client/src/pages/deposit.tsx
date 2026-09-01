@@ -541,7 +541,7 @@ export default function Deposit() {
                 Cash add unavailable
               </h3>
               <p style={{ color: '#8A93A6', margin: 0 }}>
-                The crypto payment rail is not configured yet. Call the Pit Crew for help.
+                The crypto payment rail is not configured yet. Contact Help if you need a hand.
               </p>
             </div>
           )

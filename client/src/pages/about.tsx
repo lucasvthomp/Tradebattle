@@ -19,7 +19,7 @@ const pillars = [
     icon: Users,
     eyebrow: "03 / CONNECT",
     title: "Find your edge together.",
-    description: "Join a competitive community, follow the standings, and learn from the players you keep chasing.",
+    description: "Join a competitive community, follow the rankings, and learn from the players you keep chasing.",
   },
 ];
 
@@ -92,7 +92,7 @@ export default function About() {
             <div className="arena-kicker">Why Tradebattle</div>
             <h2>A cleaner way to get better at trading.</h2>
           </div>
-          <p>Less noise. Better reps. Standings that give your next session a reason to matter.</p>
+          <p>Less noise. Better reps. Rankings that give your next session a reason to matter.</p>
         </div>
         <div className="about-pillar-grid">
           {pillars.map(({ icon: Icon, eyebrow, title, description }) => (

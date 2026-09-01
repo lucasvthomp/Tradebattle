@@ -161,6 +161,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
     <>
       <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
         <DialogContent
+          className="tournament-create-dialog"
           style={{ background: '#0D1B2E', border: '1px solid #1E3050', borderRadius: '14px', padding: '24px', maxWidth: '440px', width: '95vw' }}
         >
           <DialogHeader>

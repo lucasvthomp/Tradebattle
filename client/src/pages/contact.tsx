@@ -43,7 +43,7 @@ export default function Support() {
       await apiRequest("POST", "/api/contact", data);
     },
     onSuccess: () => {
-      toast({ title: "Message sent", description: "The pit crew will get back to you within 24 hours." });
+      toast({ title: "Message sent", description: "Help will get back to you within 24 hours." });
       setFormData({ name: "", email: "", subject: "", message: "" });
       setErrors({});
     },
@@ -81,7 +81,7 @@ export default function Support() {
       questions: [
         { question: "How do I create my player card?", answer: "Choose 'Create profile' in the navigation and follow the short setup to pick your player name, contact email, and passcode." },
         { question: "How do I reset my passcode?", answer: "Choose 'Forgot your passcode?' on the entry screen, enter your contact email, and follow the recovery link." },
-        { question: "How do I change my player name?", answer: "Open Player settings, update your player name, and save your player card." },
+        { question: "How do I change my player name?", answer: "Open Settings, update your player name, and save your player card." },
       ]
     },
     {
@@ -99,8 +99,8 @@ export default function Support() {
       emoji: "🏆",
       questions: [
         { question: "How do I enter an arena?", answer: "Open Arenas, choose a matchup, and select Enter. Any entry fee comes from your arena cash." },
-        { question: "How are standings determined?", answer: "Standings use each player’s percentage gain from starting capital — the highest return takes the top place." },
-        { question: "Can I enter multiple arenas?", answer: "Yes. Every arena has its own starting capital, positions, and standings." },
+        { question: "How are rankings determined?", answer: "Rankings use each player’s percentage gain from starting capital — the highest return takes the top place." },
+        { question: "Can I enter multiple arenas?", answer: "Yes. Every arena has its own starting capital, positions, and rankings." },
       ]
     },
     {
@@ -132,7 +132,7 @@ export default function Support() {
               <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "rgba(103,231,191,.12)" }}>
               <MessageSquare className="w-5 h-5" style={{ color: "#67E7BF" }} />
             </div>
-            <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Pit Crew HQ</h1>
+            <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Help HQ</h1>
           </div>
           <p className="text-sm" style={{ color: "#4B5563" }}>Quick answers for the arena — or send us a message when you need a hand.</p>
         </div>
@@ -206,7 +206,7 @@ export default function Support() {
             <div style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-4 h-4" style={{ color: "#67E7BF" }} />
-                <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Call the pit crew</span>
+                <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Help</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
                 {(["name", "email", "subject"] as const).map((field) => (

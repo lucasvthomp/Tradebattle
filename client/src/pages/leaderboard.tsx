@@ -34,7 +34,7 @@ export default function Leaderboard() {
       <div className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6 md:py-12">
         <header className="mb-7 border-b pb-7" style={{ borderColor: "var(--site-edge)" }}>
           <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Competitive record / 01</p>
-          <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><Trophy size={20} /></div><div><h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Standings</h1><p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>{rankings.length ? `${rankings.length} players on the board` : "Track the players setting the pace."}</p></div></div>
+          <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><Trophy size={20} /></div><div><h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rankings</h1><p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>{rankings.length ? `${rankings.length} players on the board` : "Track the players setting the pace."}</p></div></div>
         </header>
 
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as BoardType)}>

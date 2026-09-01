@@ -55,7 +55,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/contact" : "/shop"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Pit crew' : 'Loadout'}
+                    {isPublicSite ? 'Help' : 'Loadout'}
                   </Link>
                 </li>
                 <li>
@@ -71,12 +71,12 @@ export default function Footer() {
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="/contact" className="hover:text-foreground transition-colors">
-                    Pit Crew HQ
+                    Help HQ
                   </Link>
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/privacy" : "/archive"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Privacy Rules' : 'Past Matches'}
+                    {isPublicSite ? 'Privacy Rules' : 'Archive'}
                   </Link>
                 </li>
                 <li>
