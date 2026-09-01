@@ -1,7 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowUpRight, BarChart3, ChevronRight, LayoutGrid, Timer } from "lucide-react";
+import { ArrowUpRight, ChevronRight } from "lucide-react";
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useAuth } from "@/hooks/use-auth";
 import "./hub.css";
 
@@ -117,7 +118,7 @@ export default function Hub() {
           <motion.section className="hub-panel hub-market-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.12 }}>
             <div className="hub-panel-heading">
               <div><h2>Market pulse</h2><p>Read the rhythm before you choose a mode.</p></div>
-              <BarChart3 size={18} style={{ color: "#20d8c2" }} />
+              <TradebattleIcon name="market" size={18} style={{ color: "#20d8c2" }} />
             </div>
             <div className="hub-market-readout"><strong className="hub-market-number">71.42</strong><span className="hub-market-change">+8.42%</span></div>
             <HubMarketChart />
@@ -131,12 +132,12 @@ export default function Hub() {
             </div>
             <div className="hub-launch-list">
               <Link href="/tournaments" className="hub-launch-card">
-                <span className="hub-launch-icon gold"><LayoutGrid size={18} /></span>
+                <span className="hub-launch-icon gold"><TradebattleIcon name="arena" size={18} /></span>
                 <span className="hub-launch-copy"><strong>Arenas</strong><span>Compete for the prize pool · {activeTournaments.length} live</span></span>
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
-                <span className="hub-launch-icon purple"><Timer size={18} /></span>
+                <span className="hub-launch-icon purple"><TradebattleIcon name="blitz" size={18} /></span>
                 <span className="hub-launch-copy"><strong>Blitz</strong><span>1v1 rounds · 5 minutes · instant</span></span>
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
