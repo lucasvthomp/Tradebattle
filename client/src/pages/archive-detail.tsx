@@ -3,12 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Calendar,
-  DollarSign,
-  Clock,
-  ChevronRight,
-} from "lucide-react";
+import { Calendar, ChevronRight } from "lucide-react";
 import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { format } from "date-fns";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
