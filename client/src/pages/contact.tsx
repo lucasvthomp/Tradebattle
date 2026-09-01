@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Mail, Clock, Search, MessageSquare, Zap, Rocket, BarChart3, Trophy, Settings2 } from "lucide-react";
+import { Mail, Clock, Search, MessageSquare, Timer, Rocket, BarChart3, Trophy, Settings2 } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -205,7 +205,7 @@ export default function Support() {
             {/* Contact form */}
             <div style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-4 h-4" style={{ color: "#67E7BF" }} />
+                <Timer className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Help</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
