@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { Activity, ArrowUpRight, BarChart3, ChevronRight, DollarSign, Trophy, WalletCards, Zap } from "lucide-react";
+import { Activity, ArrowUpRight, BarChart3, ChevronRight, DollarSign, LayoutGrid, Timer, WalletCards } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import "./hub.css";
 
@@ -131,12 +131,12 @@ export default function Hub() {
             </div>
             <div className="hub-launch-list">
               <Link href="/tournaments" className="hub-launch-card">
-                <span className="hub-launch-icon gold"><Trophy size={18} /></span>
+                <span className="hub-launch-icon gold"><LayoutGrid size={18} /></span>
                 <span className="hub-launch-copy"><strong>Arenas</strong><span>Compete for the prize pool · {activeTournaments.length} live</span></span>
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
-                <span className="hub-launch-icon purple"><Zap size={18} /></span>
+                <span className="hub-launch-icon purple"><Timer size={18} /></span>
                 <span className="hub-launch-copy"><strong>Blitz</strong><span>1v1 rounds · 5 minutes · instant</span></span>
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
