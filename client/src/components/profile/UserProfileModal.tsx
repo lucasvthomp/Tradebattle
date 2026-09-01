@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -230,7 +231,7 @@ export function UserProfileModal({
                           color: "#67E7BF",
                         },
                         {
-                          icon: <Trophy className="w-3.5 h-3.5" style={{ color: "#67E7BF" }} />,
+                          icon: <TradebattleIcon name="rankings" className="w-3.5 h-3.5" style={{ color: "#67E7BF" }} />,
                           label: t("tournamentsJoined"),
                           value: profileData?.tournamentCount || 0,
                           color: "#67E7BF",
