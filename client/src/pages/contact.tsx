@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { TradebattleIcon, type TradebattleIconName } from "@/components/tradebattle-icons";
+import { Mail, Clock } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -205,7 +206,7 @@ export default function Support() {
             {/* Contact form */}
             <div style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
-                <TradebattleIcon name="timer" className="w-4 h-4" style={{ color: "#67E7BF" }} />
+                <Clock className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Help</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
@@ -249,7 +250,7 @@ export default function Support() {
             <div style={cardStyle} className="p-4 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(0,163,255,0.1)" }}>
-                  <TradebattleIcon name="support" className="w-4 h-4" style={{ color: "#67E7BF" }} />
+                  <Mail className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 </div>
                 <div>
                   <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Email</div>
