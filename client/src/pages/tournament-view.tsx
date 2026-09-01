@@ -4,9 +4,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
 import Dashboard from "./dashboard";
 import {
-  Trophy, Users, Clock, TrendingUp, TrendingDown, Crown,
-  Bitcoin, Lock, ArrowLeft, RefreshCw, DollarSign, BarChart2
+  Lock, ArrowLeft
 } from "lucide-react";
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 
@@ -164,7 +164,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
               background: "rgba(0,163,255,0.04)",
             }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Trophy size={15} color={GOLD} />
+                <TradebattleIcon name="rankings" size={15} color={GOLD} />
                 <span style={{ fontSize: "13px", fontWeight: 800, color: "#C9D1E2" }}>Rankings</span>
                 {!isLoading && (
                   <span style={{
@@ -185,7 +185,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                   opacity: isFetching ? 0.5 : 1,
                 }}
               >
-                <RefreshCw size={12} style={{ animation: isFetching ? "spin 1s linear infinite" : "none" }} />
+                <TradebattleIcon name="refresh" size={12} style={{ animation: isFetching ? "spin 1s linear infinite" : "none" }} />
                 Refresh
               </button>
             </div>
@@ -195,7 +195,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
               <div style={{ padding: "40px", textAlign: "center", color: "#4B6080", fontSize: "13px" }}>Loading…</div>
             ) : participants.length === 0 ? (
               <div style={{ padding: "40px", textAlign: "center" }}>
-                <Users size={32} style={{ color: "#1C3E72", margin: "0 auto 12px", display: "block" }} />
+                <TradebattleIcon name="players" size={32} style={{ color: "#1C3E72", margin: "0 auto 12px", display: "block" }} />
                 <p style={{ color: "#4B6080", fontSize: "13px", fontWeight: 600 }}>No participants yet</p>
               </div>
             ) : (
@@ -227,7 +227,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                         width: "28px", textAlign: "center", flexShrink: 0,
                         fontSize: i < 3 ? "16px" : "13px", fontWeight: 900, color: rankColor,
                       }}>
-                        {i === 0 ? <Crown size={18} color={GOLD} /> : `#${i + 1}`}
+                        {i === 0 ? <TradebattleIcon name="rankings" size={18} color={GOLD} /> : `#${i + 1}`}
                       </div>
 
                       {/* Avatar */}
@@ -262,7 +262,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                           background: isUp ? "rgba(0,255,135,0.1)" : "rgba(255,61,90,0.1)",
                           border: `1px solid ${isUp ? "rgba(0,255,135,0.25)" : "rgba(255,61,90,0.25)"}`,
                         }}>
-                          {isUp ? <TrendingUp size={10} color={UP} /> : <TrendingDown size={10} color={DOWN} />}
+                          {isUp ? <TradebattleIcon name="trend" size={10} color={UP} /> : <TradebattleIcon name="trend" size={10} color={DOWN} />}
                           <span style={{ fontSize: "10px", fontWeight: 800, color: isUp ? UP : DOWN }}>
                             {isUp ? "+" : ""}{pctChange.toFixed(2)}%
                           </span>
@@ -445,7 +445,7 @@ export default function TournamentView() {
     return (
       <div style={{ height: "calc(100dvh - 4rem)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
-          <Trophy size={48} style={{ color: "#1C3E72", margin: "0 auto 12px", display: "block" }} />
+          <TradebattleIcon name="rankings" size={48} style={{ color: "#1C3E72", margin: "0 auto 12px", display: "block" }} />
           <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Arena not found</h2>
           <Link href="/tournaments"><span style={{ color: "#67E7BF", cursor: "pointer" }}>Scout arenas</span></Link>
         </div>
