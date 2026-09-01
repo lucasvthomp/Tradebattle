@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +35,7 @@ export function MarketOverview() {
     <Card className="h-full">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center space-x-2">
-          <BarChart3 className="w-5 h-5" />
+          <TradebattleIcon name="market" className="w-5 h-5" />
           <span>Market Overview</span>
         </CardTitle>
       </CardHeader>
