@@ -207,7 +207,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <LayoutGrid className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
+                      <TradebattleIcon name="arena" className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Arenas</span>
                     </Button>
                   </Link>
