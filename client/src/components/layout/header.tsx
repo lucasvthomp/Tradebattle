@@ -13,7 +13,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn } from "lucide-react";
 import { TradebattleIcon } from "@/components/tradebattle-icons";
 interface HeaderProps {
   chatOpen?: boolean;
@@ -97,11 +96,11 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 flex items-center space-x-2 px-3 border border-border/30 hover:bg-muted/50 transition-colors">
-                      <User className="w-4 h-4" />
+                      <TradebattleIcon name="user" className="w-4 h-4" />
                       <span className="text-sm font-medium">
                         {user?.username || "User"}
                       </span>
-                      <ChevronDown className="w-4 h-4" />
+                      <TradebattleIcon name="chevron-down" className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -120,7 +119,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     <DropdownMenuItem onClick={() => {
                       logoutMutation.mutate();
                     }}>
-                      <LogOut className="w-4 h-4 mr-2" />
+                      <TradebattleIcon name="logout" className="w-4 h-4 mr-2" />
                       {t('logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -131,13 +130,13 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               <>
                 <Link href="/login">
                   <Button variant="ghost" className="px-4 py-2 hover:bg-muted/50">
-                    <LogIn className="w-4 h-4 mr-2" />
+                    <TradebattleIcon name="login" className="w-4 h-4 mr-2" />
                     Enter arena
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button className="px-4 py-2 transition-transform hover:scale-105" style={{ background: '#62E4BD', color: '#06151c', boxShadow: '0 8px 22px rgba(98, 228, 189, 0.18)' }}>
-                    <UserPlus className="w-4 h-4 mr-2" />
+                    <TradebattleIcon name="user"Plus className="w-4 h-4 mr-2" />
                     Create profile
                   </Button>
                 </Link>
@@ -282,7 +281,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* User Section */}
                 <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(10, 30, 43, 0.82)', border: '1px solid rgba(103, 231, 191, 0.1)' }}>
                   <div className="flex items-center gap-3 px-4 py-3">
-                    <User className="w-5 h-5" />
+                    <TradebattleIcon name="user" className="w-5 h-5" />
                     <span className="font-medium text-base">{user?.username || "User"}</span>
                   </div>
                   <Link href="/profile">
@@ -331,7 +330,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       setMobileMenuOpen(false);
                     }}
                   >
-                    <LogOut className="w-5 h-5 mr-3" />
+                    <TradebattleIcon name="logout" className="w-5 h-5 mr-3" />
                     <span className="text-base">{t('logout')}</span>
                   </Button>
                 </div>
@@ -344,7 +343,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <LogIn className="w-5 h-5 mr-3" />
+                    <TradebattleIcon name="login" className="w-5 h-5 mr-3" />
                     <span className="text-base">Enter arena</span>
                   </Button>
                 </Link>
@@ -354,7 +353,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     style={{ background: '#62E4BD', color: '#06151c' }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <UserPlus className="w-5 h-5 mr-3" />
+                    <TradebattleIcon name="user"Plus className="w-5 h-5 mr-3" />
                     <span className="text-base" style={{ color: '#06151c' }}>Create profile</span>
                   </Button>
                 </Link>
