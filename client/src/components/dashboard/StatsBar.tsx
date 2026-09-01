@@ -56,7 +56,7 @@ export function StatsBar({
                       <div className="flex items-center gap-2">
                         <span>{tournament.name}</span>
                         <Badge variant={tournament.tournamentType === "crypto" ? "secondary" : "default"} className="text-xs">
-                          {tournament.tournamentType === "crypto" ? "🪙" : "📈"}
+                          {tournament.tournamentType === "crypto" ? <TradebattleIcon name="market" size={14} /> : <TradebattleIcon name="trend" size={14} />}
                         </Badge>
                       </div>
                     </SelectItem>
@@ -64,7 +64,7 @@ export function StatsBar({
                 </SelectContent>
               </Select>
               <Badge variant="outline" className="text-xs">
-                <Users className="w-3 h-3 mr-1" />
+                <TradebattleIcon name="players" className="w-3 h-3 mr-1" />
                 {selectedTournament.currentPlayers}
               </Badge>
             </div>
@@ -75,7 +75,7 @@ export function StatsBar({
         <div className="flex items-center gap-6">
         {/* Portfolio Value */}
         <div className="flex items-center gap-2">
-          <DollarSign className="w-4 h-4 text-muted-foreground" />
+          <TradebattleIcon name="cash" className="w-4 h-4 text-muted-foreground" />
           <div>
             <div className="text-xs text-muted-foreground">Board value</div>
             <div className="text-lg font-bold">{formatCurrency(portfolioValue)}</div>
@@ -85,9 +85,9 @@ export function StatsBar({
         {/* 4h Change */}
         <div className="flex items-center gap-2">
           {is4hPositive ? (
-            <TrendingUp className="w-4 h-4 text-green-500" />
+            <TradebattleIcon name="trend" className="w-4 h-4 text-green-500" />
           ) : (
-            <TrendingDown className="w-4 h-4 text-red-500" />
+            <TradebattleIcon name="trend" className="w-4 h-4 text-red-500" />
           )}
           <div>
             <div className="text-xs text-muted-foreground">4h Change</div>
@@ -99,7 +99,7 @@ export function StatsBar({
 
         {/* Total P/L */}
         <div className="flex items-center gap-2">
-          <Activity className="w-4 h-4 text-muted-foreground" />
+          <TradebattleIcon name="trend" className="w-4 h-4 text-muted-foreground" />
           <div>
             <div className="text-xs text-muted-foreground">Run P/L</div>
             <div className={`text-lg font-bold ${isProfitPositive ? 'text-green-500' : 'text-red-500'}`}>
@@ -110,7 +110,7 @@ export function StatsBar({
 
         {/* Cash Balance */}
         <div className="flex items-center gap-2">
-          <DollarSign className="w-4 h-4 text-muted-foreground" />
+          <TradebattleIcon name="cash" className="w-4 h-4 text-muted-foreground" />
           <div>
             <div className="text-xs text-muted-foreground">Buying power</div>
             <div className="text-lg font-bold">{formatCurrency(cashBalance)}</div>
