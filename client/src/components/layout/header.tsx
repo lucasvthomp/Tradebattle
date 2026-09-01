@@ -13,7 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Menu, X, BarChart3, Timer, Users as UsersIcon, CircleHelp, Gift, Settings, Archive, LayoutGrid } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn } from "lucide-react";
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 interface HeaderProps {
   chatOpen?: boolean;
   onChatToggle?: () => void;
@@ -66,7 +67,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   setBalanceModalOpen(true);
                 }}
               >
-                <DollarSign className="w-4 h-4 mr-1" />
+                <TradebattleIcon name="cash" className="w-4 h-4 mr-1" />
                 <span className="text-sm font-bold">
                   {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
@@ -87,7 +88,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     className={`h-10 w-10 p-0 ${chatOpen ? "bg-primary/10" : ""}`}
                     style={{ color: chatOpen ? "#67E7BF" : "#AFC2D0" }}
                   >
-                    <MessageSquare className="w-4 h-4" />
+                    <TradebattleIcon name="chat" className="w-4 h-4" />
                   </Button>
                 )}
                 <NotificationDropdown />
@@ -109,7 +110,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                         <DropdownMenuSeparator />
                         <Link href="/admin">
                           <DropdownMenuItem>
-                            <Shield className="w-4 h-4 mr-2" />
+                            <TradebattleIcon name="admin" className="w-4 h-4 mr-2" />
                             Admin
                           </DropdownMenuItem>
                         </Link>
@@ -151,7 +152,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
             className="md:hidden ml-auto w-10 h-10 p-0 min-w-[44px] min-h-[44px]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileMenuOpen ? <TradebattleIcon name="close" className="w-5 h-5" /> : <TradebattleIcon name="menu" className="w-5 h-5" />}
           </Button>
         </nav>
       </div>
@@ -179,7 +180,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       setMobileMenuOpen(false);
                     }}
                   >
-                    <DollarSign className="w-5 h-5 mr-3" />
+                    <TradebattleIcon name="cash" className="w-5 h-5 mr-3" />
                     <div className="flex flex-col items-start">
                       <span className="font-bold text-base">
                         {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -197,7 +198,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
+                      <TradebattleIcon name="rankings" className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Home</span>
                     </Button>
                   </Link>
@@ -217,7 +218,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Timer className="w-5 h-5 mr-3" style={{ color: '#9AB5C2' }} />
+                      <TradebattleIcon name="blitz" className="w-5 h-5 mr-3" style={{ color: '#9AB5C2' }} />
                       <span className="text-base">Blitz</span>
                     </Button>
                   </Link>
@@ -227,7 +228,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
+                      <TradebattleIcon name="rankings" className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Rankings</span>
                     </Button>
                   </Link>
@@ -237,7 +238,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <UsersIcon className="w-5 h-5 mr-3" style={{ color: '#3B82F6' }} />
+                      <TradebattleIcon name="players" className="w-5 h-5 mr-3" style={{ color: '#3B82F6' }} />
                       <span className="text-base">Players</span>
                     </Button>
                   </Link>
@@ -247,7 +248,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Gift className="w-5 h-5 mr-3" style={{ color: '#F97316' }} />
+                      <TradebattleIcon name="rewards" className="w-5 h-5 mr-3" style={{ color: '#F97316' }} />
                       <span className="text-base">Loadout</span>
                     </Button>
                   </Link>
@@ -257,7 +258,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <CircleHelp className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <TradebattleIcon name="support" className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Help</span>
                     </Button>
                   </Link>
@@ -273,7 +274,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     variant="ghost"
                     className="w-full justify-start h-12 border border-border/30 hover:bg-muted/50 px-4"
                   >
-                    <MessageSquare className="w-5 h-5 mr-3" />
+                    <TradebattleIcon name="chat" className="w-5 h-5 mr-3" />
                     <span className="text-base">Chat</span>
                   </Button>
                 )}
@@ -290,7 +291,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Settings className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <TradebattleIcon name="settings" className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Settings</span>
                     </Button>
                   </Link>
@@ -300,7 +301,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Archive className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <TradebattleIcon name="archive" className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Archive</span>
                     </Button>
                   </Link>
@@ -313,7 +314,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                         className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <Shield className="w-5 h-5 mr-3" />
+                        <TradebattleIcon name="admin" className="w-5 h-5 mr-3" />
                         <span className="text-base">Admin</span>
                       </Button>
                     </Link>
