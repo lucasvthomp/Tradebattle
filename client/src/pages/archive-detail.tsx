@@ -4,17 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Trophy,
-  Users,
   Calendar,
   DollarSign,
   Clock,
-  Crown,
-  Medal,
-  Award,
   ChevronRight,
-  Archive,
 } from "lucide-react";
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { format } from "date-fns";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 
@@ -58,7 +53,7 @@ export default function ArchiveDetailPage() {
     return (
       <div className="arena-page-shell min-h-[calc(100dvh-4rem)] flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
         <div className="text-center">
-          <Archive className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8' }} />
+          <TradebattleIcon name="archive" className="w-12 h-12 mx-auto mb-4" style={{ color: '#94A3B8' }} />
           <p className="text-lg mb-4" style={{ color: '#F1F5F9' }}>{t('tournamentNotFound')}</p>
           <Button onClick={() => window.history.back()} variant="outline">
             {t('goBack')}
@@ -70,9 +65,9 @@ export default function ArchiveDetailPage() {
 
   const getPositionIcon = (position: number) => {
     switch (position) {
-      case 1: return <Crown className="w-5 h-5" style={{ color: '#F2C76A' }} />;
-      case 2: return <Medal className="w-5 h-5" style={{ color: '#94A3B8' }} />;
-      case 3: return <Award className="w-5 h-5" style={{ color: '#D97706' }} />;
+      case 1: return <TradebattleIcon name="rankings" size={20} style={{ color: '#F2C76A' }} />;
+      case 2: return <TradebattleIcon name="rankings" size={20} style={{ color: '#94A3B8' }} />;
+      case 3: return <TradebattleIcon name="rankings" size={20} style={{ color: '#D97706' }} />;
       default: return null;
     }
   };
@@ -101,13 +96,13 @@ export default function ArchiveDetailPage() {
                 Completed
               </Badge>
             </div>
-            <Trophy className="w-8 h-8" style={{ color: '#F2C76A' }} />
+            <TradebattleIcon name="rankings" className="w-8 h-8" style={{ color: '#F2C76A' }} />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
-                <Users className="w-4 h-4" style={{ color: '#F2C76A' }} />
+                <TradebattleIcon name="players" className="w-4 h-4" style={{ color: '#F2C76A' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('players')}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: '#F1F5F9' }}>
@@ -117,7 +112,7 @@ export default function ArchiveDetailPage() {
 
             <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
-                <DollarSign className="w-4 h-4" style={{ color: '#10B981' }} />
+                <TradebattleIcon name="cash" className="w-4 h-4" style={{ color: '#10B981' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('startingCash')}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: '#F1F5F9' }}>
@@ -127,7 +122,7 @@ export default function ArchiveDetailPage() {
 
             <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
-                <Clock className="w-4 h-4" style={{ color: '#06B6D4' }} />
+                <TradebattleIcon name="timer" className="w-4 h-4" style={{ color: '#06B6D4' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('duration')}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: '#F1F5F9' }}>
@@ -152,14 +147,14 @@ export default function ArchiveDetailPage() {
       <Card style={{ backgroundColor: '#0C1A2E', borderColor: '#0E2040' }}>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2" style={{ color: '#F1F5F9' }}>
-            <Trophy className="w-5 h-5" style={{ color: '#F2C76A' }} />
+            <TradebattleIcon name="rankings" className="w-5 h-5" style={{ color: '#F2C76A' }} />
             {t('finalLeaderboard')}
           </CardTitle>
         </CardHeader>
         <CardContent>
           {!tournament.participants || tournament.participants.length === 0 ? (
             <div className="text-center py-6">
-              <Users className="w-8 h-8 mx-auto mb-2" style={{ color: '#94A3B8', opacity: 0.5 }} />
+              <TradebattleIcon name="players" className="w-8 h-8 mx-auto mb-2" style={{ color: '#94A3B8', opacity: 0.5 }} />
               <p className="text-sm" style={{ color: '#94A3B8' }}>{t('noParticipantsRecorded')}</p>
             </div>
           ) : (
