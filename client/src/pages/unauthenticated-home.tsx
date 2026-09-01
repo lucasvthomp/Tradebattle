@@ -1,5 +1,6 @@
 import { Link } from "wouter";
-import { ArrowRight, ArrowUpRight, BarChart3, Bell, ChevronRight, DollarSign, Flag, LayoutGrid, ShieldCheck, Timer, TrendingUp } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ChevronRight } from "lucide-react";
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { type ReactNode } from "react";
 import "./unauthenticated-home.css";
 
@@ -45,15 +46,15 @@ function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href
 }
 
 const steps = [
-  { number: "01", icon: <LayoutGrid aria-hidden="true" />, title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
-  { number: "02", icon: <TrendingUp aria-hidden="true" />, title: "Trade the board", body: "Build your positions with market data and virtual capital." },
-  { number: "03", icon: <Flag aria-hidden="true" />, title: "Take the win", body: "Finish above the field when the clock hits zero." },
+  { number: "01", icon: <TradebattleIcon name="arena" aria-hidden="true" />, title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
+  { number: "02", icon: <TradebattleIcon name="trend" aria-hidden="true" />, title: "Trade the board", body: "Build your positions with market data and virtual capital." },
+  { number: "03", icon: <TradebattleIcon name="flag" aria-hidden="true" />, title: "Take the win", body: "Finish above the field when the clock hits zero." },
 ];
 
 const modes = [
   {
     className: "mode-tournament",
-    icon: <BarChart3 aria-hidden="true" />,
+    icon: <TradebattleIcon name="arena" aria-hidden="true" />,
     label: "MULTIPLAYER",
     title: "Arenas",
     body: "The full field experience. Read the market, make your move, and climb the board.",
@@ -62,7 +63,7 @@ const modes = [
   },
   {
     className: "mode-blitz",
-    icon: <Timer aria-hidden="true" />,
+    icon: <TradebattleIcon name="timer" aria-hidden="true" />,
     label: "HEAD-TO-HEAD",
     title: "Blitz",
     body: "A fast, focused matchup. Five minutes on the clock and one opponent to beat.",
@@ -108,14 +109,14 @@ export default function UnauthenticatedHome() {
         <div className="arena-shell">
           <div className="arena-hero-layout">
             <div className="arena-copy">
-              <p className="arena-eyebrow"><BarChart3 size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
+              <p className="arena-eyebrow"><TradebattleIcon name="market" size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
               <h1 id="arena-hero-title">Trade the market.<br /><em>Play to win.</em></h1>
               <p className="arena-lede">Build a virtual portfolio, make your read, and compete for the top of the rankings.</p>
               <div className="arena-actions">
                 <Link href="/login" className="arena-primary-link">Log in <ArrowRight size={18} aria-hidden="true" /></Link>
                 <Link href="/signup" className="arena-secondary-link">Sign up <ChevronRight size={17} aria-hidden="true" /></Link>
               </div>
-              <div className="arena-reassurance"><ShieldCheck size={16} aria-hidden="true" /> Virtual cash only · No deposits required</div>
+              <div className="arena-reassurance"><TradebattleIcon name="success" size={16} aria-hidden="true" /> Virtual cash only · No deposits required</div>
             </div>
 
             <div className="arena-hero-signal" aria-label="A simulated market chart">
@@ -128,8 +129,8 @@ export default function UnauthenticatedHome() {
                 </svg>
               </div>
               <div className="arena-signal-caption">
-                <span><TrendingUp size={15} aria-hidden="true" /> Read the tape</span>
-                <span><BarChart3 size={15} aria-hidden="true" /> Climb the rankings</span>
+                <span><TradebattleIcon name="trend" size={15} aria-hidden="true" /> Read the tape</span>
+                <span><TradebattleIcon name="rankings" size={15} aria-hidden="true" /> Climb the rankings</span>
               </div>
             </div>
           </div>
@@ -167,11 +168,11 @@ export default function UnauthenticatedHome() {
           <h2 id="collectibles-title">Read the board. Bring the right energy.</h2>
         </div>
         <div className="arena-collectibles-items">
-          <div className="arena-collectible"><TrendingUp size={18} aria-hidden="true" /><span>Read</span></div>
+          <div className="arena-collectible"><TradebattleIcon name="trend" size={18} aria-hidden="true" /><span>Read</span></div>
           <div className="arena-collectible"><ArrowUpRight size={18} aria-hidden="true" /><span>React</span></div>
-          <div className="arena-collectible"><DollarSign size={18} aria-hidden="true" /><span>Stack</span></div>
-          <div className="arena-collectible"><BarChart3 size={18} aria-hidden="true" /><span>Win</span></div>
-          <div className="arena-collectible"><Bell size={18} aria-hidden="true" /><span>Ring in</span></div>
+          <div className="arena-collectible"><TradebattleIcon name="cash" size={18} aria-hidden="true" /><span>Stack</span></div>
+          <div className="arena-collectible"><TradebattleIcon name="rankings" size={18} aria-hidden="true" /><span>Win</span></div>
+          <div className="arena-collectible"><TradebattleIcon name="bell" size={18} aria-hidden="true" /><span>Ring in</span></div>
         </div>
       </section>
 
@@ -211,7 +212,7 @@ export default function UnauthenticatedHome() {
 
       <section className="arena-final" aria-labelledby="final-title">
         <div className="arena-final-content">
-          <p><Timer size={15} aria-hidden="true" /> YOUR FIRST MATCH IS FREE</p>
+          <p><TradebattleIcon name="timer" size={15} aria-hidden="true" /> YOUR FIRST MATCH IS FREE</p>
           <h2 id="final-title">Make your first move.</h2>
           <PrimaryLink>Start playing free</PrimaryLink>
         </div>
