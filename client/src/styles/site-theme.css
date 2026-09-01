@@ -2122,3 +2122,45 @@
     transition: none !important;
   }
 }
+
+
+/* Keep the new line-icon replacements aligned inside their existing cards. */
+.tradebattle-site .hub-loadout-item > svg,
+.tradebattle-site .arena-collectible > svg {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  color: var(--site-mint);
+  stroke-width: 1.6;
+}
+
+.tradebattle-site .hub-loadout-item > svg {
+  margin-bottom: 12px;
+}
+
+.tradebattle-site .arena-collectible > svg {
+  margin-bottom: 12px;
+}
+
+.tradebattle-site .shop-spotlight-mark {
+  position: absolute;
+  top: 50%;
+  right: 58px;
+  display: grid;
+  width: 68px;
+  height: 68px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid rgba(103, 231, 191, 0.24);
+  border-radius: 14px;
+  background: rgba(103, 231, 191, 0.06);
+  color: var(--site-mint);
+}
+
+@media (max-width: 780px) {
+  .tradebattle-site .shop-spotlight-mark {
+    right: 28px;
+    width: 54px;
+    height: 54px;
+  }
+}
