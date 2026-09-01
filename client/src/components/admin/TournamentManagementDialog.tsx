@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -135,7 +136,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-primary" />
+            <TradebattleIcon name="rankings" className="h-5 w-5 text-primary" />
             Manage arena: {tournament.name}
           </DialogTitle>
         </DialogHeader>
@@ -204,7 +205,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
               </div>
               <div className="space-y-2">
                 <Label className="text-sm text-muted-foreground flex items-center gap-1">
-                  <Trophy className="h-3 w-3" />
+                  <TradebattleIcon name="rankings" className="h-3 w-3" />
                   Prize Pot
                 </Label>
                 <div className="p-3 rounded-lg bg-muted">
@@ -251,7 +252,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
                         <TableCell>${parseFloat(participant.balance || 0).toFixed(2)}</TableCell>
                         <TableCell>
                           <Badge variant={index === 0 ? "default" : "outline"}>
-                            {index === 0 && <Crown className="h-3 w-3 mr-1" />}
+                            {index === 0 && <TradebattleIcon name="admin" className="h-3 w-3 mr-1" />}
                             #{index + 1}
                           </Badge>
                         </TableCell>
@@ -392,7 +393,7 @@ export function TournamentManagementDialog({ tournament, open, onOpenChange }: T
                         }
                       }}
                     >
-                      <Trophy className="h-4 w-4 mr-2" />
+                      <TradebattleIcon name="rankings" className="h-4 w-4 mr-2" />
                       End arena now
                     </Button>
                   )}
