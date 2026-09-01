@@ -25,7 +25,11 @@ export type TradebattleIconName =
   | "bell"
   | "flag"
   | "info"
-  | "menu";
+  | "menu"
+  | "user"
+  | "login"
+  | "logout"
+  | "chevron-down";
 
 type TradebattleIconProps = Omit<SVGProps<SVGSVGElement>, "name"> & {
   name: TradebattleIconName;
@@ -194,6 +198,30 @@ const iconShapes: Record<TradebattleIconName, ReactNode> = {
       <path d="M5 7.2h14M5 12h14M5 16.8h14" />
       <path className="tradebattle-custom-icon-accent" d="M5 7.2h3M16 12h3M5 16.8h3" />
     </g>
+  ),
+  user: (
+    <g>
+      <circle cx="12" cy="8.3" r="3" />
+      <path d="M5.2 19c.4-3.3 2.7-5.3 6.8-5.3s6.4 2 6.8 5.3" />
+      <path className="tradebattle-custom-icon-accent" d="M9.8 8.3h4.4" />
+    </g>
+  ),
+  login: (
+    <g>
+      <path d="M14.8 4.2h3.7a1.3 1.3 0 0 1 1.3 1.3v13a1.3 1.3 0 0 1-1.3 1.3h-3.7" />
+      <path d="M4.2 12h11.2" />
+      <path className="tradebattle-custom-icon-accent" d="m11.8 8.4 3.8 3.6-3.8 3.6" />
+    </g>
+  ),
+  logout: (
+    <g>
+      <path d="M9.2 4.2H5.5a1.3 1.3 0 0 0-1.3 1.3v13a1.3 1.3 0 0 0 1.3 1.3h3.7" />
+      <path d="M19.8 12H8.6" />
+      <path className="tradebattle-custom-icon-accent" d="m12.2 8.4-3.8 3.6 3.8 3.6" />
+    </g>
+  ),
+  "chevron-down": (
+    <path className="tradebattle-custom-icon-accent" d="m6.2 9 5.8 5.8L17.8 9" />
   ),
   info: (
     <g>
