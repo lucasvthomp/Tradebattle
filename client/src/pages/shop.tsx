@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { KeyRound, ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { TradebattleIcon, type TradebattleIconName } from "@/components/tradebattle-icons";
 
 const statItems = [
@@ -58,7 +58,7 @@ export default function Shop() {
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Player rewards / 01</p>
             <div className="flex items-center gap-3">
               <div className="reward-icon-3d flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
-                <KeyRound size={18} aria-hidden="true" />
+                <TradebattleIcon name="rewards" size={18} aria-hidden="true" />
               </div>
               <div>
                 <h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rewards desk</h1>
@@ -103,7 +103,7 @@ export default function Shop() {
             <div className="space-y-5 p-5">
               <div className="flex flex-col gap-3 sm:flex-row">
                 <div className="relative flex-1">
-                  <KeyRound className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" size={16} style={{ color: "#6f879d" }} />
+                  <TradebattleIcon name="rewards" className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" size={16} style={{ color: "#6f879d" }} />
                   <Input
                     value={promoCode}
                     onChange={(event) => setPromoCode(event.target.value.toUpperCase())}
