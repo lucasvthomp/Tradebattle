@@ -445,7 +445,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 30, stiffness: 300 }}
-      className="h-full w-full backdrop-blur-md shadow-xl flex flex-col overflow-hidden"
+      className="tradebattle-chat h-full w-full flex flex-col overflow-hidden"
       style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#0B1B2A', borderLeft: '2px solid #0E2040' }}
     >
             {/* Header */}
