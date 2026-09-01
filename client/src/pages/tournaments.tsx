@@ -12,14 +12,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   BarChart3,
-  Users,
-  Clock,
-  DollarSign,
   Plus,
   Search,
   TrendingUp,
   Bitcoin,
-  Timer,
   Shield,
   Lock,
   ShieldCheck,
