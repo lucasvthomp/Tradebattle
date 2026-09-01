@@ -87,7 +87,7 @@ export function CodeRedemptionDialog({ open, onOpenChange }: CodeRedemptionDialo
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Gift className="w-5 h-5 text-purple-600" />
+            <TradebattleIcon name="rewards" className="w-5 h-5 text-purple-600" />
             Redeem Code
           </DialogTitle>
         </DialogHeader>
@@ -141,7 +141,7 @@ export function CodeRedemptionDialog({ open, onOpenChange }: CodeRedemptionDialo
               </>
             ) : (
               <>
-                <Gift className="w-4 h-4 mr-2" />
+                <TradebattleIcon name="rewards" className="w-4 h-4 mr-2" />
                 Redeem Code
               </>
             )}
