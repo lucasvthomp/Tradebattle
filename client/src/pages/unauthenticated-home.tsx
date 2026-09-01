@@ -1,11 +1,7 @@
 import { Link } from "wouter";
-import { ArrowRight, ArrowUpRight, Bell, ChevronRight, Crown, DollarSign, ShieldCheck, Swords, Target, Timer, TrendingUp, Trophy, Users, Zap } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { ArrowRight, ArrowUpRight, Bell, ChevronRight, Crown, DollarSign, ShieldCheck, Swords, TrendingUp, Trophy, Zap } from "lucide-react";
+import { type ReactNode } from "react";
 import "./unauthenticated-home.css";
-
-const formatTime = (total: number) => [Math.floor(total / 3600), Math.floor((total % 3600) / 60), total % 60]
-  .map((part) => String(part).padStart(2, "0"))
-  .join(":");
 
 const marketPath = "M-30 348 C18 326 47 360 86 330 S143 286 184 314 S227 350 273 306 S330 266 370 292 S416 320 456 277 S506 251 544 272 S582 326 621 294 S664 242 704 261 S744 312 786 279 S833 227 875 245 S912 287 953 260 S1002 214 1041 236 S1074 278 1116 248 S1160 195 1203 218 S1245 259 1286 226 S1330 178 1371 202 S1426 174 1470 188";
 
@@ -103,76 +99,45 @@ const promoCards = [
 ];
 
 export default function UnauthenticatedHome() {
-  const [seconds, setSeconds] = useState(2 * 60 * 60 + 34 * 60 + 12);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setSeconds((current) => current > 0 ? current - 1 : 3 * 60 * 60);
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, []);
 
   return (
     <main className="arena-page">
-      <section className="arena-hero" aria-labelledby="arena-hero-title">
+      <section className="arena-hero arena-hero-simple" aria-labelledby="arena-hero-title">
         <MarketChartBackground />
-        <div className="arena-glow arena-glow-one" aria-hidden="true" />
-        <div className="arena-glow arena-glow-two" aria-hidden="true" />
 
         <div className="arena-shell">
-          <div className="arena-status">
-            <span className="arena-status-dot" aria-hidden="true" />
-            <span>ARENA LIVE</span>
-            <span className="arena-status-divider" aria-hidden="true" />
-            <span className="arena-status-secondary">2,903 PLAYERS ONLINE</span>
-          </div>
-
           <div className="arena-hero-layout">
             <div className="arena-copy">
               <p className="arena-eyebrow"><Swords size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
-              <h1 id="arena-hero-title">Trade smarter.<br /><em>Win the board.</em></h1>
-              <p className="arena-lede">A live-market strategy game where every decision moves you up — or down — the rankings.</p>
+              <h1 id="arena-hero-title">Trade the market.<br /><em>Play to win.</em></h1>
+              <p className="arena-lede">Build a virtual portfolio, make your read, and compete for the top of the rankings.</p>
               <div className="arena-actions">
-                <PrimaryLink>Enter the arena</PrimaryLink>
-                <Link href="/login" className="arena-secondary-link">I already play <ChevronRight size={17} aria-hidden="true" /></Link>
+                <Link href="/login" className="arena-primary-link">Log in <ArrowRight size={18} aria-hidden="true" /></Link>
+                <Link href="/signup" className="arena-secondary-link">Sign up <ChevronRight size={17} aria-hidden="true" /></Link>
               </div>
-              <div className="arena-reassurance"><ShieldCheck size={16} aria-hidden="true" /> Virtual cash only · $10,000 starting balance</div>
+              <div className="arena-reassurance"><ShieldCheck size={16} aria-hidden="true" /> Virtual cash only · No deposits required</div>
             </div>
 
-            <div className="arena-hero-visual">
-              <aside className="match-card" aria-label="Next arena">
-              <div className="match-card-top">
-                <span className="match-live"><i aria-hidden="true" /> NEXT MATCH</span>
-                <span className="match-level">OPEN</span>
+            <div className="arena-hero-signal" aria-label="A simulated market chart">
+              <div className="arena-signal-top"><span>TRADEBATTLE / MARKET BOARD</span><span>SIMULATED</span></div>
+              <div className="arena-signal-plot">
+                <svg viewBox="0 0 620 280" preserveAspectRatio="none" role="presentation">
+                  <path className="arena-signal-grid" d="M0 50H620M0 110H620M0 170H620M0 230H620M80 0V280M200 0V280M320 0V280M440 0V280M560 0V280" />
+                  <path className="arena-signal-line" d="M0 214C38 207 52 222 82 194S129 154 158 176s35 44 68 22 42-84 75-55 42 63 76 43 43-77 78-57 42 57 77 30 42-61 77-42 36 30 51 12" />
+                  <circle className="arena-signal-dot" cx="610" cy="117" r="5" />
+                </svg>
               </div>
-
-              <div className="match-title">
-                <span className="match-trophy"><Trophy size={21} aria-hidden="true" /></span>
-                <div><strong>Opening Bell</strong><small>Daily arena · Open field</small></div>
+              <div className="arena-signal-caption">
+                <span><TrendingUp size={15} aria-hidden="true" /> Read the tape</span>
+                <span><Trophy size={15} aria-hidden="true" /> Climb the rankings</span>
               </div>
-
-              <div className="match-countdown">
-                <span>STARTS IN</span>
-                <strong>{formatTime(seconds)}</strong>
-              </div>
-
-              <div className="match-board">
-                <div className="match-board-heading"><span>LIVE BOARD</span><span>VALUE</span></div>
-                <div className="match-board-row"><span><Users size={16} aria-hidden="true" /> Players</span><strong>48 / 100</strong></div>
-                <div className="match-board-row"><span><Target size={16} aria-hidden="true" /> Entry</span><strong>FREE</strong></div>
-                <div className="match-board-row"><span><Crown size={16} aria-hidden="true" /> Prize pool</span><strong>$2,500</strong></div>
-              </div>
-
-              <Link href="/signup" className="match-join">Claim your spot <ArrowRight size={16} aria-hidden="true" /></Link>
-              </aside>
             </div>
           </div>
 
-          <div className="arena-score-strip" aria-label="Arena stats">
-            <div><span><TrendingUp size={16} aria-hidden="true" /> MARKET STATUS</span><strong className="positive">OPEN</strong></div>
-            <div><span><Timer size={16} aria-hidden="true" /> ACTIVE ARENAS</span><strong>12</strong></div>
-            <div><span><Trophy size={16} aria-hidden="true" /> PAID OUT THIS MONTH</span><strong>$125K+</strong></div>
+          <div className="arena-hero-proof" aria-label="How Tradebattle works">
+            <div><span>01</span><strong>Choose a format</strong><small>Arenas or Blitz</small></div>
+            <div><span>02</span><strong>Trade the board</strong><small>Virtual market data</small></div>
+            <div><span>03</span><strong>Make your run</strong><small>Build your record</small></div>
           </div>
         </div>
       </section>
