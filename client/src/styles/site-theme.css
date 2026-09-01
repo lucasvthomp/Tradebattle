@@ -2447,3 +2447,40 @@
     padding: 28px 18px;
   }
 }
+
+
+/* Tradebattle custom icon language: geometric, owned, and lightly dimensional. */
+.tradebattle-custom-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  overflow: visible;
+  color: currentColor;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.45;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vertical-align: middle;
+}
+.tradebattle-custom-icon-accent {
+  stroke: var(--tradebattle-icon-accent, #67e7bf) !important;
+}
+.tradebattle-custom-icon-accent-fill {
+  fill: var(--tradebattle-icon-accent, #67e7bf) !important;
+  stroke: none !important;
+}
+.tradebattle-custom-icon-rewards,
+.tradebattle-custom-icon-rankings {
+  --tradebattle-icon-accent: #f2c76a;
+}
+.tradebattle-custom-icon-blitz,
+.tradebattle-custom-icon-timer {
+  --tradebattle-icon-accent: #8fe6ff;
+}
+.tradebattle-custom-icon-cash {
+  --tradebattle-icon-accent: #f2c76a;
+}
+.tradebattle-custom-icon[data-icon="tradebattle"] {
+  filter: none !important;
+  box-shadow: none !important;
+}
