@@ -74,7 +74,7 @@ export function BuyInIncentiveBox({
     <Card className={`border ${getVariantStyles()}`}>
       <CardContent className="p-4">
         <div className="flex items-center space-x-2 mb-3">
-          <Gift className={`w-5 h-5 ${getIconColor()}`} />
+          <TradebattleIcon name="rewards" className={`w-5 h-5 ${getIconColor()}`} />
           <p className={`text-sm font-medium ${getTextColor()}`}>
             {variant === "creation" 
               ? "Entry benefits"
