@@ -13,7 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Menu, X, BarChart3, Trophy, Users as UsersIcon, Phone, Gift, Settings, Archive, Swords, Zap } from "lucide-react";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Menu, X, BarChart3, Timer, Users as UsersIcon, CircleHelp, Gift, Settings, Archive, LayoutGrid } from "lucide-react";
 interface HeaderProps {
   chatOpen?: boolean;
   onChatToggle?: () => void;
@@ -207,7 +207,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Swords className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
+                      <LayoutGrid className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Arenas</span>
                     </Button>
                   </Link>
@@ -217,7 +217,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Zap className="w-5 h-5 mr-3" style={{ color: '#9AB5C2' }} />
+                      <Timer className="w-5 h-5 mr-3" style={{ color: '#9AB5C2' }} />
                       <span className="text-base">Blitz</span>
                     </Button>
                   </Link>
@@ -227,7 +227,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Trophy className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
+                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Rankings</span>
                     </Button>
                   </Link>
@@ -257,7 +257,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <CircleHelp className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Help</span>
                     </Button>
                   </Link>
