@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -28,11 +29,11 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
   const getRankIcon = (position: number) => {
     switch (position) {
       case 1:
-        return <Crown className="w-4 h-4 text-yellow-500" />;
+        return <TradebattleIcon name="rankings" className="w-4 h-4 text-yellow-500" />;
       case 2:
-        return <Medal className="w-4 h-4 text-gray-400" />;
+        return <TradebattleIcon name="rankings" className="w-4 h-4 text-gray-400" />;
       case 3:
-        return <Award className="w-4 h-4 text-amber-600" />;
+        return <TradebattleIcon name="rankings" className="w-4 h-4 text-amber-600" />;
       default:
         return <span className="w-4 h-4 flex items-center justify-center text-xs font-bold text-muted-foreground">#{position}</span>;
     }
@@ -43,7 +44,7 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-lg">
-            <Trophy className="w-4 h-4" />
+            <TradebattleIcon name="rankings" className="w-4 h-4" />
             <span>{t('leaderboard')}</span>
           </CardTitle>
         </CardHeader>
@@ -63,7 +64,7 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center space-x-2 text-lg">
-            <Trophy className="w-4 h-4" />
+            <TradebattleIcon name="rankings" className="w-4 h-4" />
             <span>{t('leaderboard')}</span>
           </CardTitle>
         </CardHeader>
@@ -82,7 +83,7 @@ export function TournamentLeaderboard({ tournamentId, onViewFullLeaderboard }: T
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center space-x-2 text-lg">
-            <Trophy className="w-4 h-4" />
+            <TradebattleIcon name="rankings" className="w-4 h-4" />
             <span>{t('leaderboard')}</span>
           </CardTitle>
           {participants.length > 5 && (
