@@ -176,7 +176,7 @@ export function SimplifiedSidebar() {
                 justifyContent: 'flex-start',
               }}
             >
-              <Gift
+              <TradebattleIcon name="rewards"
                 className="w-5 h-5 flex-shrink-0"
                 style={{
                   marginRight: expanded ? '12px' : '0',
