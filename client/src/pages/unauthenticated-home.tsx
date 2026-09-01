@@ -75,6 +75,36 @@ const modes = [
   },
 ];
 
+const promoCards = [
+  {
+    href: "/tournaments",
+    className: "promo-arena",
+    label: "MULTIPLAYER",
+    title: "Take the field",
+    body: "Join an open arena and outplay the board.",
+    cta: "Enter arenas",
+    art: "/assets/tradebattle-matchup.png",
+  },
+  {
+    href: "/blitz",
+    className: "promo-blitz",
+    label: "HEAD-TO-HEAD",
+    title: "Beat the clock",
+    body: "Five minutes. One rival. Make it count.",
+    cta: "Play Blitz",
+    art: "/assets/tradebattle-mascot.png",
+  },
+  {
+    href: "/shop",
+    className: "promo-rewards",
+    label: "PLAYER REWARDS",
+    title: "Stack your edge",
+    body: "Unlock perks for your next run.",
+    cta: "Visit rewards",
+    art: "/assets/tradebattle-reward-chest.png",
+  },
+];
+
 export default function UnauthenticatedHome() {
   const [seconds, setSeconds] = useState(2 * 60 * 60 + 34 * 60 + 12);
 
@@ -113,7 +143,10 @@ export default function UnauthenticatedHome() {
               <div className="arena-reassurance"><ShieldCheck size={16} aria-hidden="true" /> Virtual cash only · $10,000 starting balance</div>
             </div>
 
-            <aside className="match-card" aria-label="Next arena">
+            <div className="arena-hero-visual">
+              <div className="arena-hero-art-glow" aria-hidden="true" />
+              <img className="arena-hero-mascot" src="/assets/tradebattle-mascot.png" alt="" aria-hidden="true" />
+              <aside className="match-card" aria-label="Next arena">
               <div className="match-card-top">
                 <span className="match-live"><i aria-hidden="true" /> NEXT MATCH</span>
                 <span className="match-level">OPEN</span>
@@ -137,7 +170,8 @@ export default function UnauthenticatedHome() {
               </div>
 
               <Link href="/signup" className="match-join">Claim your spot <ArrowRight size={16} aria-hidden="true" /></Link>
-            </aside>
+              </aside>
+            </div>
           </div>
 
           <div className="arena-score-strip" aria-label="Arena stats">
@@ -145,6 +179,26 @@ export default function UnauthenticatedHome() {
             <div><span><Timer size={16} aria-hidden="true" /> ACTIVE ARENAS</span><strong>12</strong></div>
             <div><span><Trophy size={16} aria-hidden="true" /> PAID OUT THIS MONTH</span><strong>$125K+</strong></div>
           </div>
+        </div>
+      </section>
+
+      <section className="arena-promo-rail" aria-labelledby="promo-title">
+        <div className="arena-promo-heading">
+          <div><p>THE TRADEBATTLE ARCADE</p><h2 id="promo-title">Choose your next move.</h2></div>
+          <span>Three ways in.</span>
+        </div>
+        <div className="arena-promo-grid">
+          {promoCards.map((card) => (
+            <Link key={card.title} href={card.href} className={`arena-promo-card ${card.className}`}>
+              <div className="arena-promo-copy">
+                <span className="arena-promo-label">{card.label}</span>
+                <h3>{card.title}</h3>
+                <p>{card.body}</p>
+                <strong>{card.cta}<ArrowRight size={15} aria-hidden="true" /></strong>
+              </div>
+              <div className="arena-promo-art" aria-hidden="true"><img src={card.art} alt="" /></div>
+            </Link>
+          ))}
         </div>
       </section>
 

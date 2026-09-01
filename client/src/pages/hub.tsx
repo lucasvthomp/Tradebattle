@@ -91,11 +91,20 @@ export default function Hub() {
           </div>
           <div className="hub-top-actions">
             <span className="hub-rank-chip">{rankTitle} · LV.{level}</span>
-            <button type="button" className="hub-primary-action" onClick={() => navigate(ctaHref)}>
+          </div>
+        </motion.header>
+
+        <motion.section className="hub-feature-banner" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.04 }}>
+          <div className="hub-feature-copy">
+            <p className="hub-feature-kicker"><span className="hub-live-dot" /> READY ROOM / NEXT RUN</p>
+            <h2>{activeTournaments.length ? "The board is moving." : "Your next run starts here."}</h2>
+            <p>Pick a mode, build your line, and make the first move count.</p>
+            <button type="button" className="hub-feature-action" onClick={() => navigate(ctaHref)}>
               {ctaLabel}<ArrowUpRight size={15} />
             </button>
           </div>
-        </motion.header>
+          <img className="hub-feature-art" src="/assets/tradebattle-matchup.png" alt="" aria-hidden="true" />
+        </motion.section>
 
         <motion.section className="hub-stat-grid" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.06 }} aria-label="Player stats">
           {stats.map((stat) => (

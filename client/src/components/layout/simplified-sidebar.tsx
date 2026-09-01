@@ -58,6 +58,7 @@ export function SimplifiedSidebar() {
       <Link
         href={item.href}
         {...(item.href === "/tournaments" ? { "data-tour": "nav-tournaments" } : {})}
+        title={expanded ? undefined : item.label}
         className={`group flex items-center rounded-lg transition-colors duration-200 ${
           isActive(item.href) ? "sidebar-active-indicator" : "hover:bg-[#1A3A68] hover:text-white"
         }`}
@@ -96,7 +97,7 @@ export function SimplifiedSidebar() {
     <>
       <div
         data-tour="sidebar"
-        className="tradebattle-sidebar hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40"
+        className={`tradebattle-sidebar ${expanded ? 'sidebar-expanded' : 'sidebar-collapsed'} hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40`}
         style={{
           width: expanded ? '256px' : '64px',
           backgroundColor: '#071522',
@@ -166,6 +167,16 @@ export function SimplifiedSidebar() {
         {/* Code Redemption - Pinned at bottom, never overlaps */}
         {user && (
           <div className="flex-shrink-0 p-2 border-t" style={{ borderColor: 'rgba(103, 231, 191, 0.13)' }}>
+            <div className="sidebar-player-card" aria-label={`Player ${user.username}`}>
+              <div className="sidebar-player-avatar" aria-hidden="true">
+                {user.username?.slice(0, 1).toUpperCase() || 'P'}
+              </div>
+              <div className="sidebar-player-copy">
+                <span>LIVE PLAYER</span>
+                <strong>{user.username || 'Player'}</strong>
+                <small>{user.tournamentWins || 0} wins · {user.totalTrades || 0} reps</small>
+              </div>
+            </div>
             <Button
               onClick={() => setCodeDialogOpen(true)}
               className="transition-all duration-200 hover:brightness-110 w-full flex items-center"
@@ -190,7 +201,7 @@ export function SimplifiedSidebar() {
                   opacity: expanded ? 1 : 0,
                   maxWidth: expanded ? '140px' : '0',
                   transition: 'opacity 200ms ease, max-width 300ms ease',
-                  color: '#C9D1E2',
+                  color: '#06151c',
                 }}
               >
                 Redeem Code

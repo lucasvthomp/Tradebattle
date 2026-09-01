@@ -219,6 +219,85 @@
   }
 }
 
+/* Keep the collapsed shell useful without turning it into a second dashboard. */
+.tradebattle-sidebar .sidebar-player-card {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  padding: 10px;
+  border: 1px solid rgba(103, 231, 191, 0.18);
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(103, 231, 191, 0.1), rgba(16, 38, 56, 0.84));
+}
+
+.tradebattle-sidebar .sidebar-player-avatar {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  background: #67e7bf;
+  color: #06151c;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.tradebattle-sidebar .sidebar-player-copy {
+  min-width: 0;
+  max-width: 0;
+  opacity: 0;
+  transition: opacity 200ms ease, max-width 300ms ease;
+}
+
+.tradebattle-sidebar.sidebar-expanded .sidebar-player-copy {
+  max-width: 180px;
+  opacity: 1;
+}
+
+.tradebattle-sidebar.sidebar-collapsed .sidebar-player-card {
+  justify-content: center;
+  padding-right: 0;
+  padding-left: 0;
+}
+
+.tradebattle-sidebar .sidebar-player-copy span,
+.tradebattle-sidebar .sidebar-player-copy strong,
+.tradebattle-sidebar .sidebar-player-copy small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tradebattle-sidebar .sidebar-player-copy span {
+  color: #67e7bf;
+  font-family: "Courier New", monospace;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+}
+
+.tradebattle-sidebar .sidebar-player-copy strong {
+  margin-top: 3px;
+  color: #edf8f5;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.tradebattle-sidebar .sidebar-player-copy small {
+  margin-top: 3px;
+  color: #7993a3;
+  font-size: 9px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tradebattle-sidebar .sidebar-player-copy { transition: none; }
+}
+
 /* Keep old utility-based surfaces legible when a less-traveled route renders. */
 .tradebattle-site .tradebattle-route > .bg-white,
 .tradebattle-site .tradebattle-route > .bg-gray-50,
