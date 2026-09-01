@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState, useEffect } from "react";
 import {
   Dialog,
@@ -37,11 +38,11 @@ export function TournamentLeaderboardDialog({
   const getRankIcon = (position: number) => {
     switch (position) {
       case 1:
-        return <Crown className="w-5 h-5 text-yellow-500" />;
+        return <TradebattleIcon name="rankings" className="w-5 h-5 text-yellow-500" />;
       case 2:
-        return <Medal className="w-5 h-5 text-gray-400" />;
+        return <TradebattleIcon name="rankings" className="w-5 h-5 text-gray-400" />;
       case 3:
-        return <Award className="w-5 h-5 text-amber-600" />;
+        return <TradebattleIcon name="rankings" className="w-5 h-5 text-amber-600" />;
       default:
         return <span className="w-5 h-5 flex items-center justify-center text-sm font-bold text-muted-foreground">#{position}</span>;
     }
@@ -85,7 +86,7 @@ export function TournamentLeaderboardDialog({
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
-            <Trophy className="w-5 h-5" />
+            <TradebattleIcon name="rankings" className="w-5 h-5" />
             <span>{tournament.name} - Rankings</span>
           </DialogTitle>
         </DialogHeader>
