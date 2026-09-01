@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { Coins, BarChart3, RefreshCw, LayoutList, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -106,7 +107,7 @@ export function HoldingsWidget({
                       className="text-[10px] px-1.5 py-0.5 h-6 flex-1"
                       style={{ backgroundColor: '#0C1A2E', borderColor: '#0E2040', color: '#F1F5F9', border: '1px solid #0E2040' }}
                     >
-                      <BarChart3 className="h-3 w-3 mr-0.5" />
+                      <TradebattleIcon name="market" className="h-3 w-3 mr-0.5" />
                       Chart
                     </Button>
                     <Button
