@@ -1996,3 +1996,129 @@
     opacity: .58;
   }
 }
+
+
+/* Minimal icon language
+   Keep the game identity in the layout and color system; let icons stay quiet,
+   consistent, and readable at a glance. */
+.tradebattle-site svg {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tradebattle-site button > svg,
+.tradebattle-site a > svg,
+.tradebattle-site [role="tab"] > svg,
+.tradebattle-site .hub-panel-heading > svg,
+.tradebattle-site .hub-panel-heading svg,
+.tradebattle-site .blitz-info-icon svg,
+.tradebattle-site .blitz-icon-box svg,
+.tradebattle-site .blitz-header-mark svg,
+.tradebattle-site .blitz-queue-mark svg,
+.tradebattle-site .about-pillar-icon svg,
+.tradebattle-site .about-closer-mark svg,
+.tradebattle-site .how-step-icon svg,
+.tradebattle-site .mode-card-art svg,
+.tradebattle-site .match-board-row svg,
+.tradebattle-site .match-trophy svg,
+.tradebattle-site .auth-twofa-icon svg,
+.tradebattle-site .auth-icon-button svg,
+.tradebattle-site .reward-icon-3d svg,
+.tradebattle-site .sidebar-player-card svg {
+  stroke-width: 1.65;
+  filter: none !important;
+}
+
+.tradebattle-site .hub-launch-icon,
+.tradebattle-site .blitz-header-mark,
+.tradebattle-site .blitz-icon-box,
+.tradebattle-site .blitz-queue-mark,
+.tradebattle-site .blitz-info-icon,
+.tradebattle-site .about-pillar-icon,
+.tradebattle-site .about-closer-mark,
+.tradebattle-site .how-step-icon,
+.tradebattle-site .mode-card-art,
+.tradebattle-site .match-trophy,
+.tradebattle-site .auth-twofa-icon,
+.tradebattle-site .auth-icon-button,
+.tradebattle-site .reward-icon-3d {
+  border-radius: 8px;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+.tradebattle-site .hub-launch-icon,
+.tradebattle-site .blitz-header-mark,
+.tradebattle-site .blitz-icon-box,
+.tradebattle-site .blitz-queue-mark,
+.tradebattle-site .blitz-info-icon,
+.tradebattle-site .about-pillar-icon,
+.tradebattle-site .how-step-icon,
+.tradebattle-site .auth-twofa-icon,
+.tradebattle-site .reward-icon-3d {
+  border: 1px solid var(--site-edge) !important;
+  background: rgba(118, 169, 198, 0.07) !important;
+}
+
+.tradebattle-site .about-closer-mark,
+.tradebattle-site .mode-card-art,
+.tradebattle-site .match-trophy,
+.tradebattle-site .auth-icon-button {
+  background: rgba(118, 169, 198, 0.07) !important;
+}
+
+.tradebattle-site .reward-icon-3d {
+  background: rgba(103, 231, 191, 0.07) !important;
+}
+
+.tradebattle-site .hub-launch-icon.gold,
+.tradebattle-site .hub-launch-icon.purple,
+.tradebattle-site .blitz-icon-success {
+  color: var(--site-mint);
+  background: rgba(103, 231, 191, 0.07) !important;
+}
+
+.tradebattle-site .hub-feature-art,
+.tradebattle-site .hub-launch-art,
+.tradebattle-site .arena-hero-mascot,
+.tradebattle-site .arena-hero-art-glow,
+.tradebattle-site .arena-promo-art img,
+.tradebattle-site .tournament-hero-art,
+.tradebattle-site .shop-header-art,
+.tradebattle-site .shop-spotlight-art,
+.tradebattle-site .support-header-art {
+  filter: none !important;
+}
+
+.tradebattle-site .hub-feature-art,
+.tradebattle-site .arena-hero-mascot,
+.tradebattle-site .shop-spotlight-art {
+  opacity: 0.22;
+}
+
+.tradebattle-site .hub-launch-art,
+.tradebattle-site .tournament-hero-art,
+.tradebattle-site .support-header-art {
+  opacity: 0.18;
+}
+
+.tradebattle-site .arena-promo-art img,
+.tradebattle-site .shop-header-art {
+  opacity: 0.25;
+}
+
+.tradebattle-site .tradebattle-avatar-status {
+  box-shadow: none !important;
+}
+
+.tradebattle-site .tradebattle-avatar-status::before,
+.tradebattle-site .tradebattle-avatar-status::after {
+  box-shadow: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tradebattle-site svg,
+  .tradebattle-site img {
+    transition: none !important;
+  }
+}
