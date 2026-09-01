@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -161,7 +162,7 @@ export function CodeRedemptionDialog({ open, onOpenChange }: CodeRedemptionDialo
                 <span>Balance Boosts</span>
               </div>
               <div className="flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-yellow-500" />
+                <TradebattleIcon name="rankings" className="w-4 h-4 text-yellow-500" />
                 <span>Arena Access</span>
               </div>
               <div className="flex items-center gap-2">
