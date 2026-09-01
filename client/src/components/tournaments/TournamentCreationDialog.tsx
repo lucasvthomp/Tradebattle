@@ -166,7 +166,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <DialogHeader>
             <DialogTitle style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#E2E8F0', fontSize: '16px', fontWeight: '700' }}>
               <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,163,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Trophy size={16} color="#00A3FF" />
+                <Trophy size={16} color="#67E7BF" />
               </div>
               Open arena
             </DialogTitle>
@@ -192,7 +192,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                 {[
                   { value: 'stocks', label: 'Stocks', sub: 'Market hours', icon: <TrendingUp size={15} />, color: '#3B82F6' },
-                  { value: 'crypto', label: 'Crypto', sub: '24/7 trading', icon: <Bitcoin size={15} />, color: '#00A3FF' },
+                  { value: 'crypto', label: 'Crypto', sub: '24/7 trading', icon: <Bitcoin size={15} />, color: '#67E7BF' },
                 ].map(opt => (
                   <div
                     key={opt.value}
@@ -298,7 +298,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               />
               {errors.buyInAmount && <p style={{ fontSize: '11px', color: '#EF4444', marginTop: '4px' }}>{errors.buyInAmount}</p>}
               {form.buyInAmount > 0 && (
-                <p style={{ fontSize: '11px', color: '#28C76F', marginTop: '4px' }}>
+                <p style={{ fontSize: '11px', color: '#67E7BF', marginTop: '4px' }}>
                   Prize pool: {formatCurrency(form.buyInAmount * form.maxPlayers * 0.95)} (5% platform fee)
                 </p>
               )}
@@ -328,8 +328,8 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     {form.isPublic
-                      ? <Globe size={13} color="#28C76F" />
-                      : <Shield size={13} color="#00A3FF" />
+                      ? <Globe size={13} color="#67E7BF" />
+                      : <Shield size={13} color="#67E7BF" />
                     }
                     <span style={{ fontSize: '13px', color: '#E2E8F0' }}>
                       {form.isPublic ? 'Public' : 'Private'}
@@ -358,7 +358,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
                 disabled={createMutation.isPending}
                 style={{
                   flex: 2, padding: '10px',
-                  background: createMutation.isPending ? '#1E3050' : '#00A3FF',
+                  background: createMutation.isPending ? '#1E3050' : '#67E7BF',
                   border: 'none', borderRadius: '8px',
                   color: createMutation.isPending ? '#8A93A6' : '#091628',
                   fontSize: '13px', fontWeight: '700', cursor: createMutation.isPending ? 'not-allowed' : 'pointer',

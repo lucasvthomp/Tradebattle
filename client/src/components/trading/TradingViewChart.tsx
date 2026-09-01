@@ -33,7 +33,7 @@ interface PriceInfo {
   changePct: number;
 }
 
-const UP_COLOR   = "#00FF87";
+const UP_COLOR   = "#67E7BF";
 const DOWN_COLOR = "#FF3D5A";
 
 function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) {
@@ -100,8 +100,8 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           },
           crosshair: {
             mode: 1,
-            vertLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0C1829" },
-            horzLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0C1829" },
+            vertLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0B1B2A" },
+            horzLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0B1B2A" },
           },
           rightPriceScale: { borderColor: "rgba(0,163,255,0.12)", textColor: "#7B8FA8" },
           timeScale: { borderColor: "rgba(0,163,255,0.12)", timeVisible: false, secondsVisible: false },
@@ -121,7 +121,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           seriesRef.current = chart.addSeries(LineSeries, {
             color: UP_COLOR, lineWidth: 2,
             crosshairMarkerVisible: true, crosshairMarkerRadius: 5,
-            crosshairMarkerBorderColor: "#0C1829",
+            crosshairMarkerBorderColor: "#0B1B2A",
             crosshairMarkerBackgroundColor: UP_COLOR,
             lastValueVisible: true, priceLineVisible: false,
           });
@@ -309,7 +309,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             boxShadow: "0 0 24px rgba(0,163,255,0.15), inset 0 1px 0 rgba(255,255,255,0.06)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <Search style={{ width: "28px", height: "28px", color: "#00A3FF" }} />
+            <Search style={{ width: "28px", height: "28px", color: "#67E7BF" }} />
           </div>
           <div style={{ textAlign: "center" }}>
             <div style={{ color: "#C9D1E2", fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em" }}>
@@ -469,7 +469,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
 
           {loading && (
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <Zap style={{ width: "12px", height: "12px", color: "#00A3FF", opacity: 0.7 }} />
+              <Zap style={{ width: "12px", height: "12px", color: "#67E7BF", opacity: 0.7 }} />
               <span style={{ color: "#4B5975", fontSize: "11px", fontWeight: 600 }}>Loading live chart…</span>
             </div>
           )}
@@ -540,7 +540,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
                         background: active
                           ? "linear-gradient(135deg, rgba(227,179,65,0.18), rgba(227,179,65,0.07))"
                           : "transparent",
-                        color: active ? "#E3B341" : "#4B5975",
+                        color: active ? "#F2C76A" : "#4B5975",
                         boxShadow: active ? "0 0 8px rgba(227,179,65,0.2)" : "none",
                       }}
                     >

@@ -61,7 +61,7 @@ function renderMessageWithMentions(
         <span
           key={`mention-${match.index}`}
           className="font-semibold cursor-pointer hover:underline"
-          style={{ color: '#00A3FF' }}
+          style={{ color: '#67E7BF' }}
           onClick={(e) => {
             e.stopPropagation();
             onMentionClick(String(mentionedUser.id));
@@ -99,7 +99,7 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
   return (
     <div className="flex space-x-2">
       <Avatar className="w-8 h-8">
-        <AvatarFallback style={{ backgroundColor: '#0C1829' }}>
+        <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
           <UserCircle className="w-4 h-4" style={{ color: '#4B5563' }} />
         </AvatarFallback>
       </Avatar>
@@ -110,13 +110,13 @@ const ChatMessageItem = React.memo(function ChatMessageItem({
             {message.username}
           </span>
           {isCurrentUser && (
-            <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#00A3FF', color: '#091525' }}>You</Badge>
+            <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#67E7BF', color: '#091525' }}>You</Badge>
           )}
           <span className="text-xs" style={{ color: '#94A3B8' }}>
             {formatTimestamp(message.createdAt)}
           </span>
         </div>
-        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
+        <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#0B1B2A', border: '1px solid #0E2040' }}>
           <p className="text-sm whitespace-pre-wrap leading-normal" style={{
             color: '#F1F5F9',
             wordBreak: 'break-word',
@@ -186,14 +186,14 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
 
   return (
     <>
-    <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
+    <div className={`flex flex-col h-[400px] rounded-lg overflow-hidden ${className || ''}`} style={{ backgroundColor: '#0B1B2A', border: '1px solid #0E2040' }}>
       {/* Messages Area */}
       <div className="flex-1 overflow-hidden">
         <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(10, 22, 44, 0.5)' }}>
           <div className="space-y-2">
             {isLoading ? (
               <div className="text-center py-4">
-                <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#00A3FF', borderTopColor: 'transparent' }} />
+                <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#67E7BF', borderTopColor: 'transparent' }} />
               </div>
             ) : messages.length === 0 ? (
               <div className="text-center py-8">
@@ -225,7 +225,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
             onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Message the arena..."
             className="flex-1 text-sm h-9"
-            style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
+            style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040', color: '#F1F5F9' }}
             maxLength={500}
           />
           <Button
@@ -233,7 +233,7 @@ function TournamentChat({ tournamentId, className }: TournamentChatProps) {
             size="sm"
             disabled={!newMessage.trim() || sendMessageMutation.isPending}
             className="px-3 h-9"
-            style={{ backgroundColor: '#00A3FF', color: '#091525' }}
+            style={{ backgroundColor: '#67E7BF', color: '#091525' }}
           >
             <Send className="w-4 h-4" />
           </Button>

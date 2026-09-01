@@ -1,22 +1,18 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Gift,
-  Tag,
-  Users,
-  Trophy,
-  Zap,
-  DollarSign,
-  Star,
-} from "lucide-react";
+import { Gift, KeyRound, Trophy, Zap, WalletCards, Users, ArrowRight, Check } from "lucide-react";
+
+const statItems = [
+  { label: "Buying power", key: "cash", icon: WalletCards },
+  { label: "Arena wins", key: "wins", icon: Trophy },
+  { label: "Trade reps", key: "trades", icon: Zap },
+] as const;
 
 export default function Shop() {
   const { user } = useAuth();
@@ -29,173 +25,111 @@ export default function Shop() {
       return response.json();
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['/api/user'] });
-      toast({
-        title: "Code locked in",
-        description: data.message,
-      });
+      queryClient.invalidateQueries({ queryKey: ["/api/user"] });
+      toast({ title: "Reward added", description: data.message });
       setPromoCode("");
     },
     onError: (error: any) => {
       toast({
-        title: "Couldn’t redeem that code",
-        description: error.message || "That code is invalid or expired",
+        title: "That code did not work",
+        description: error.message || "Check the code and try again.",
         variant: "destructive",
       });
     },
   });
 
   const handleRedeem = () => {
-    if (promoCode.trim()) {
-      redeemMutation.mutate(promoCode.trim().toUpperCase());
-    }
+    const code = promoCode.trim().toUpperCase();
+    if (code) redeemMutation.mutate(code);
+  };
+
+  const statValue = (key: (typeof statItems)[number]["key"]) => {
+    if (key === "cash") return `$${Number(user?.siteCash || 0).toFixed(2)}`;
+    if (key === "wins") return String(user?.tournamentWins || 0);
+    return String(user?.totalTrades || 0);
   };
 
   return (
-    <div className="arena-page-shell min-h-[calc(100dvh-4rem)]" style={{ backgroundColor: 'transparent' }}>
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-10"
-        >
-          <div className="flex items-center gap-3 mb-2">
-            <Gift className="w-7 h-7" style={{ color: '#00A3FF' }} />
-            <h1 className="text-2xl sm:text-3xl font-bold" style={{ color: '#C9D1E2' }}>
-              Loadout
-            </h1>
+    <div className="arena-page-shell shop-page min-h-[calc(100dvh-4rem)]">
+      <div className="mx-auto w-full max-w-5xl px-4 py-8 md:px-6 md:py-12">
+        <header className="mb-8 flex flex-col gap-4 border-b pb-7 md:flex-row md:items-end md:justify-between" style={{ borderColor: "var(--site-edge)" }}>
+          <div>
+            <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Player rewards / 01</p>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
+                <Gift size={21} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rewards desk</h1>
+                <p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>Keep your edge stocked between arenas.</p>
+              </div>
+            </div>
           </div>
-          <p className="text-sm" style={{ color: '#8A93A6' }}>
-            Use codes, track your run, and keep an eye on what’s next.
-          </p>
-        </motion.div>
+          <Badge variant="outline" className="w-fit font-mono text-[10px] uppercase tracking-wider" style={{ borderColor: "rgba(103,231,191,.25)", color: "#a8ead5" }}>
+            Virtual perks only
+          </Badge>
+        </header>
 
-        {/* Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.1 }}
-          className="grid grid-cols-3 gap-4 mb-10"
-        >
-          {[
-            { icon: DollarSign, label: 'Buying power', value: `$${user?.siteCash || '0.00'}`, color: '#00A3FF' },
-            { icon: Trophy, label: 'Wins', value: user?.tournamentWins ?? 0, color: '#28C76F' },
-            { icon: Zap, label: 'Reps', value: user?.totalTrades ?? 0, color: '#8B5CF6' },
-          ].map(({ icon: Icon, label, value, color }) => (
-            <motion.div
-              key={label}
-              whileHover={{ y: -2 }}
-              className="rounded-xl p-4 text-center"
-              style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}
-            >
-              <Icon className="w-5 h-5 mx-auto mb-2" style={{ color }} />
-              <div className="text-xl font-bold" style={{ color }}>{value}</div>
-              <div className="text-xs mt-0.5" style={{ color: '#8A93A6' }}>{label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Code Redemption */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.15 }}
-          className="mb-8"
-        >
-          <Card style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2">
-                <Tag className="w-5 h-5" style={{ color: '#00A3FF' }} />
-                <CardTitle className="text-lg" style={{ color: '#C9D1E2' }}>
-                  Enter a reward code
-                </CardTitle>
+        <section className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Player totals">
+          {statItems.map(({ label, key, icon: Icon }) => (
+            <div key={key} className="rounded-lg border p-4" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
+              <div className="mb-5 flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: "#7890a4" }}>{label}</span>
+                <Icon size={16} style={{ color: "#67e7bf" }} />
               </div>
-              <CardDescription style={{ color: '#8A93A6' }}>
-                Got a code? Drop it below to claim what’s yours.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  value={promoCode}
-                  onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                  placeholder="ENTER CODE"
-                  className="h-11 font-mono tracking-widest text-center"
-                  style={{
-                    backgroundColor: '#0C1A2E',
-                    borderColor: '#0E2040',
-                    color: '#C9D1E2',
-                  }}
-                  maxLength={20}
-                  onKeyDown={(e) => e.key === 'Enter' && handleRedeem()}
-                />
-                <Button
-                  onClick={handleRedeem}
-                  disabled={!promoCode.trim() || redeemMutation.isPending}
-                  className="h-11 px-6 font-semibold"
-                  style={{
-                    backgroundColor: '#00A3FF',
-                    color: '#091525',
-                  }}
-                >
-                  Redeem
-                </Button>
-              </div>
-
-              <div className="rounded-lg p-3" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}>
-                <p className="text-xs font-semibold mb-2" style={{ color: '#8A93A6' }}>
-                  Where codes show up
-                </p>
-                <ul className="text-sm space-y-1" style={{ color: '#C9D1E2' }}>
-                  <li>Follow the field</li>
-                  <li>Join the crew on Discord</li>
-                  <li>Special event drops</li>
-                  <li>Player updates</li>
-                </ul>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Coming Soon */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.2 }}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-        >
-          {[
-            {
-              icon: Star,
-              title: 'Daily drops',
-              desc: 'Check in every day for streak bonuses',
-              color: '#28C76F',
-            },
-            {
-              icon: Users,
-              title: 'Crew rewards',
-              desc: 'Bring friends in and earn arena rewards',
-              color: '#8B5CF6',
-            },
-          ].map(({ icon: Icon, title, desc, color }) => (
-            <div
-              key={title}
-              className="rounded-xl p-4 flex items-center gap-4 opacity-60"
-              style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}
-            >
-              <Icon className="w-6 h-6 flex-shrink-0" style={{ color }} />
-              <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold" style={{ color: '#C9D1E2' }}>{title}</div>
-                <div className="text-xs" style={{ color: '#8A93A6' }}>{desc}</div>
-              </div>
-              <Badge className="text-xs flex-shrink-0" style={{ backgroundColor: '#0E2040', color: '#8A93A6', border: 'none' }}>
-                Soon
-              </Badge>
+              <strong className="font-mono text-xl" style={{ color: "#eef6fa" }}>{statValue(key)}</strong>
             </div>
           ))}
-        </motion.div>
+        </section>
+
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.35fr)_minmax(280px,.65fr)]">
+          <section className="rounded-lg border" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
+            <div className="border-b px-5 py-5" style={{ borderColor: "var(--site-edge)" }}>
+              <p className="mb-2 text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: "#67e7bf" }}>Claim a drop</p>
+              <h2 className="text-lg font-extrabold" style={{ color: "#eef6fa" }}>Enter a reward code</h2>
+              <p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>Codes can unlock virtual cash, cosmetics, or arena boosts.</p>
+            </div>
+            <div className="space-y-5 p-5">
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="relative flex-1">
+                  <KeyRound className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" size={16} style={{ color: "#6f879d" }} />
+                  <Input
+                    value={promoCode}
+                    onChange={(event) => setPromoCode(event.target.value.toUpperCase())}
+                    onKeyDown={(event) => event.key === "Enter" && handleRedeem()}
+                    placeholder="ENTER CODE"
+                    maxLength={20}
+                    className="h-11 pl-10 font-mono tracking-[0.18em]"
+                    aria-label="Reward code"
+                  />
+                </div>
+                <Button onClick={handleRedeem} disabled={!promoCode.trim() || redeemMutation.isPending} className="h-11 px-6">
+                  {redeemMutation.isPending ? "Checking…" : "Redeem"}<ArrowRight size={16} />
+                </Button>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {["Follow the field", "Join the player crew", "Special event drops", "Product updates"].map((item) => (
+                  <div key={item} className="flex items-center gap-2 rounded-md border px-3 py-2.5 text-xs" style={{ background: "#081622", borderColor: "rgba(118,169,198,.14)", color: "#afc2d0" }}>
+                    <Check size={14} style={{ color: "#67e7bf" }} />{item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <aside className="rounded-lg border p-5" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
+            <div className="mb-5 flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
+              <Users size={19} />
+            </div>
+            <h2 className="text-lg font-extrabold" style={{ color: "#eef6fa" }}>Build your crew</h2>
+            <p className="mt-2 text-sm leading-6" style={{ color: "#8da2b5" }}>The best rewards are easier to find when you stay close to the players you compete with.</p>
+            <div className="mt-6 space-y-3 border-t pt-5" style={{ borderColor: "var(--site-edge)" }}>
+              <div className="flex items-center gap-3 text-sm" style={{ color: "#c9d9e2" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#67e7bf" }} />Share a match recap</div>
+              <div className="flex items-center gap-3 text-sm" style={{ color: "#c9d9e2" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#67e7bf" }} />Invite a new player</div>
+              <div className="flex items-center gap-3 text-sm" style={{ color: "#c9d9e2" }}><span className="h-1.5 w-1.5 rounded-full" style={{ background: "#67e7bf" }} />Watch the standings</div>
+            </div>
+          </aside>
+        </div>
       </div>
     </div>
   );

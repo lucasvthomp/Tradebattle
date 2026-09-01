@@ -28,9 +28,9 @@ export interface RoundedCandleOptions extends CustomSeriesOptions {
 
 const defaultOptions: RoundedCandleOptions = {
   ...customSeriesDefaultOptions,
-  upColor:    "#00FF87",
+  upColor:    "#67E7BF",
   downColor:  "#FF3D5A",
-  wickUpColor:   "#00FF87",
+  wickUpColor:   "#67E7BF",
   wickDownColor: "#FF3D5A",
   radius: 3,
   wickWidth: 2,

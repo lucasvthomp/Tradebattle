@@ -274,8 +274,8 @@ export function TournamentManagementDialog({
                           variant="outline"
                           style={{
                             background: 'rgba(0, 163, 255, 0.1)',
-                            color: '#00A3FF',
-                            border: '1px solid #00A3FF'
+                            color: '#67E7BF',
+                            border: '1px solid #67E7BF'
                           }}
                         >
                           <UserPlus className="w-4 h-4 mr-2" />
@@ -374,7 +374,7 @@ export function TournamentManagementDialog({
               {activeTab === "chat" && (
                 <Suspense fallback={
                   <div className="flex items-center justify-center h-[400px]" style={{ backgroundColor: 'transparent' }}>
-                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#00A3FF', borderTopColor: 'transparent' }} />
+                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#67E7BF', borderTopColor: 'transparent' }} />
                   </div>
                 }>
                   <TournamentChat tournamentId={tournament.id} />

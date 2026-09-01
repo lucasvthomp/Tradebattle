@@ -168,7 +168,7 @@ export function OrderPanel({
           >
             <SelectTrigger
               className="h-9"
-              style={{ backgroundColor: 'transparent', borderColor: "#0E2040", color: "#00A3FF" }}
+              style={{ backgroundColor: 'transparent', borderColor: "#0E2040", color: "#67E7BF" }}
             >
             <SelectValue placeholder="Select arena" />
             </SelectTrigger>
@@ -183,7 +183,7 @@ export function OrderPanel({
         </div>
         <div className="flex items-center justify-between">
           <span className="text-xs" style={{ color: "#94A3B8" }}>Buying Power</span>
-          <span className="text-sm font-semibold" style={{ color: "#00A3FF" }}>
+          <span className="text-sm font-semibold" style={{ color: "#67E7BF" }}>
             {formatCurrency(availableBuyingPower)}
           </span>
         </div>
@@ -403,7 +403,7 @@ export function OrderPanel({
                     className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
                     style={{
                       backgroundColor: quantity === maxBuyShares ? "rgba(16, 185, 129, 0.2)" : "#091525",
-                      color: quantity === maxBuyShares ? "#10B981" : "#00A3FF",
+                      color: quantity === maxBuyShares ? "#10B981" : "#67E7BF",
                       border: `1px solid ${quantity === maxBuyShares ? "#10B981" : "#0E2040"}`,
                     }}
                   >
@@ -434,7 +434,7 @@ export function OrderPanel({
                       className="flex-1 text-[10px] py-1 rounded font-medium transition-colors"
                       style={{
                         backgroundColor: quantity === ownedShares ? "rgba(239, 68, 68, 0.2)" : "#091525",
-                        color: quantity === ownedShares ? "#EF4444" : "#00A3FF",
+                        color: quantity === ownedShares ? "#EF4444" : "#67E7BF",
                         border: `1px solid ${quantity === ownedShares ? "#EF4444" : "#0E2040"}`,
                       }}
                     >

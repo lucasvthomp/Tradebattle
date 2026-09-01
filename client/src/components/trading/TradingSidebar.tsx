@@ -284,7 +284,7 @@ export function TradingSidebar({
               padding: "2px 8px",
               fontSize: "0.75rem",
               fontWeight: 800,
-              color: isProfit ? "#00FF87" : "#FF3D5A",
+              color: isProfit ? "#67E7BF" : "#FF3D5A",
               boxShadow: isProfit ? "0 0 12px rgba(0,255,135,0.2)" : "0 0 12px rgba(255,61,90,0.2)",
             }}>
               {isProfit ? "▲" : "▼"} {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
@@ -292,7 +292,7 @@ export function TradingSidebar({
             <span style={{
               fontSize: "0.75rem",
               fontWeight: 700,
-              color: isProfit ? "#00FF87" : "#FF3D5A",
+              color: isProfit ? "#67E7BF" : "#FF3D5A",
             }}>
               {totalPL >= 0 ? "+" : ""}{fmtMoney(totalPL)}
             </span>
@@ -307,7 +307,7 @@ export function TradingSidebar({
               padding: "2px 7px",
               fontSize: "0.7rem",
               fontWeight: 700,
-              color: "#00A3FF",
+              color: "#67E7BF",
             }}>
               Cash {fmtMoney(buyingPower)}
             </div>
@@ -339,8 +339,8 @@ export function TradingSidebar({
             borderBottom: "1px solid rgba(40,199,111,0.2)",
           }}
         >
-          <Zap className="w-3.5 h-3.5 shrink-0" style={{ color: "#28C76F" }} />
-          <span className="text-xs font-bold" style={{ color: "#28C76F" }}>Crypto — 24/7 Open</span>
+          <Zap className="w-3.5 h-3.5 shrink-0" style={{ color: "#67E7BF" }} />
+          <span className="text-xs font-bold" style={{ color: "#67E7BF" }}>Crypto — 24/7 Open</span>
         </div>
       )}
 
@@ -360,7 +360,7 @@ export function TradingSidebar({
             style={{
               backgroundColor: "rgba(255,255,255,0.04)",
               borderColor: "rgba(255,255,255,0.08)",
-              color: "#00A3FF",
+              color: "#67E7BF",
             }}
           />
           {showSearch && (
@@ -393,7 +393,7 @@ export function TradingSidebar({
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
                   <div>
-                    <span className="text-sm font-black" style={{ color: "#00A3FF" }}>{result.symbol}</span>
+                    <span className="text-sm font-black" style={{ color: "#67E7BF" }}>{result.symbol}</span>
                     {result.name && (
                       <div className="text-xs mt-0.5 truncate" style={{ color: "#64748B" }}>{result.name}</div>
                     )}
@@ -440,7 +440,7 @@ export function TradingSidebar({
           style={{
             color: activeView === "trade" ? "#001a0d" : "#28a05a",
             background: activeView === "trade"
-              ? "linear-gradient(135deg, #1db95f, #28C76F)"
+              ? "linear-gradient(135deg, #1db95f, #67E7BF)"
               : "transparent",
             border: activeView === "trade" ? "1px solid rgba(40,199,111,0.5)" : "1px solid rgba(40,199,111,0.2)",
             boxShadow: activeView === "trade" ? "0 0 16px rgba(40,199,111,0.3)" : "none",
@@ -464,7 +464,7 @@ export function TradingSidebar({
                 </span>
                 <span
                   className="text-[10px] font-black px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: "rgba(227,179,65,0.12)", color: "#00A3FF" }}
+                  style={{ backgroundColor: "rgba(227,179,65,0.12)", color: "#67E7BF" }}
                 >
                   {holdings.length}
                 </span>
@@ -499,7 +499,7 @@ export function TradingSidebar({
                       >
                         <div className="text-left">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-black" style={{ color: isSelected ? "#00A3FF" : "#F1F5F9" }}>
+                            <span className="text-sm font-black" style={{ color: isSelected ? "#67E7BF" : "#F1F5F9" }}>
                               {h.symbol}
                             </span>
                             <span
@@ -520,7 +520,7 @@ export function TradingSidebar({
                             </div>
                             <div
                               className="text-xs font-black"
-                              style={{ color: isPositive ? "#28C76F" : "#FF4F58" }}
+                              style={{ color: isPositive ? "#67E7BF" : "#FF4F58" }}
                             >
                               {isPositive ? "+" : ""}{changePercent.toFixed(1)}%
                             </div>
@@ -564,7 +564,7 @@ export function TradingSidebar({
                       <span className="text-xs truncate" style={{ color: "#4B5563" }}>{companyName}</span>
                     )}
                   </div>
-                  <div className="text-lg font-black" style={{ color: "#00A3FF", letterSpacing: "-0.02em" }}>
+                  <div className="text-lg font-black" style={{ color: "#67E7BF", letterSpacing: "-0.02em" }}>
                     {formatCurrency(currentPrice)}
                   </div>
                 </div>
@@ -585,7 +585,7 @@ export function TradingSidebar({
                   style={
                     orderSide === "buy"
                       ? {
-                          background: "linear-gradient(135deg, #1db95f, #28C76F)",
+                          background: "linear-gradient(135deg, #1db95f, #67E7BF)",
                           color: "#001a0d",
                           boxShadow: "0 0 28px rgba(40,199,111,0.45), inset 0 1px 0 rgba(255,255,255,0.15)",
                           letterSpacing: "0.06em",
@@ -630,7 +630,7 @@ export function TradingSidebar({
                 >
                   <SelectTrigger
                     className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold"
-                    style={{ color: "#00A3FF" }}
+                    style={{ color: "#67E7BF" }}
                   >
                     <SelectValue />
                   </SelectTrigger>
@@ -658,7 +658,7 @@ export function TradingSidebar({
                     onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
                     placeholder="0.00"
                     className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#00A3FF" }}
+                    style={{ color: "#67E7BF" }}
                   />
                 </div>
               )}
@@ -678,7 +678,7 @@ export function TradingSidebar({
                     onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
                     placeholder="0.00"
                     className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#00A3FF" }}
+                    style={{ color: "#67E7BF" }}
                   />
                 </div>
               )}
@@ -692,7 +692,7 @@ export function TradingSidebar({
                   Buy In
                 </span>
                 <Select value={buyInMode} onValueChange={(v) => { setBuyInMode(v as BuyInMode); setAwaitingConfirm(false); }}>
-                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#00A3FF" }}>
+                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#67E7BF" }}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.15)" }}>
@@ -818,7 +818,7 @@ export function TradingSidebar({
                         ? {
                             background: awaitingConfirm
                               ? "linear-gradient(135deg, #0d9668, #0d7e58)"
-                              : "linear-gradient(135deg, #1db95f, #28C76F)",
+                              : "linear-gradient(135deg, #1db95f, #67E7BF)",
                             color: awaitingConfirm ? "#aaffcc" : "#001a0d",
                             boxShadow: awaitingConfirm
                               ? "0 0 32px rgba(40,199,111,0.7)"

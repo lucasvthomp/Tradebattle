@@ -97,7 +97,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
           )}
           <AvatarFallback
             className="text-[9px] font-semibold"
-            style={{ backgroundColor: '#081729', color: '#00A3FF', border: '2px solid #0A1F3D' }}
+            style={{ backgroundColor: '#081622', color: '#67E7BF', border: '2px solid #0A1C2C' }}
           >
             {p.username.slice(0, 2).toUpperCase()}
           </AvatarFallback>
@@ -106,7 +106,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {overflow > 0 && (
         <div
           className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold"
-          style={{ backgroundColor: '#081729', color: '#00A3FF', border: '2px solid #0A1F3D' }}
+          style={{ backgroundColor: '#081622', color: '#67E7BF', border: '2px solid #0A1C2C' }}
         >
           +{overflow}
         </div>
@@ -348,7 +348,7 @@ export default function TournamentsPage() {
     return (
       <div className="h-[calc(100vh-4rem)] flex items-center justify-center" style={{ background: 'transparent' }}>
         <div className="text-center">
-          <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#00A3FF', filter: 'drop-shadow(0 0 12px rgba(0,163,255,0.4))' }} />
+          <Trophy className="w-16 h-16 mx-auto mb-4" style={{ color: '#67E7BF', filter: 'drop-shadow(0 0 12px rgba(0,163,255,0.4))' }} />
           <h2 className="text-xl font-black mb-2" style={{ color: '#C9D1E2', letterSpacing: '-0.02em' }}>Enter the arena</h2>
           <p style={{ color: '#4B6080' }}>Sign in to see open arenas.</p>
         </div>
@@ -371,7 +371,7 @@ export default function TournamentsPage() {
 
   return (
     <div
-      className="arena-page-shell h-[calc(100vh-4rem)] overflow-auto"
+      className="arena-page-shell tournaments-page h-[calc(100vh-4rem)] overflow-auto"
       style={{
         background: 'transparent',
         backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
@@ -426,7 +426,7 @@ export default function TournamentsPage() {
                       <Trophy style={{
                         width: 'clamp(20px, 2vw, 30px)',
                         height: 'clamp(20px, 2vw, 30px)',
-                        color: '#00A3FF',
+                        color: '#67E7BF',
                         filter: 'drop-shadow(0 0 8px rgba(0,163,255,0.6))',
                       }} />
                     </div>
@@ -479,7 +479,7 @@ export default function TournamentsPage() {
                         onMouseEnter={e => {
                           (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,163,255,0.14)';
                           (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(0,163,255,0.35)';
-                          (e.currentTarget as HTMLButtonElement).style.color = '#00A3FF';
+                          (e.currentTarget as HTMLButtonElement).style.color = '#67E7BF';
                         }}
                         onMouseLeave={e => {
                           (e.currentTarget as HTMLButtonElement).style.background = 'rgba(0,163,255,0.08)';
@@ -494,7 +494,7 @@ export default function TournamentsPage() {
                     <DialogContent
                       className="max-w-[95vw] md:max-w-md"
                       style={{
-                        background: '#0A1F3D',
+                        background: '#0A1C2C',
                         border: '1px solid rgba(0,163,255,0.2)',
                         borderRadius: '16px',
                         boxShadow: '0 0 40px rgba(0,163,255,0.08)',
@@ -534,7 +534,7 @@ export default function TournamentsPage() {
                           className="w-full min-h-[44px] text-base md:text-sm"
                           style={{
                             background: joinCode.length === 8 && !joinByCodeMutation.isPending
-                              ? 'linear-gradient(135deg, #00A3FF, #0077CC)'
+                              ? 'linear-gradient(135deg, #67E7BF, #2EBF9A)'
                               : 'rgba(0,163,255,0.06)',
                             border: '1px solid rgba(0,163,255,0.2)',
                             borderRadius: '10px',
@@ -562,7 +562,7 @@ export default function TournamentsPage() {
                       height: 'clamp(40px, 2.5vh, 46px)',
                       padding: '0 clamp(12px, 1.5vw, 20px)',
                       fontSize: 'clamp(0.8rem, 0.9vw, 0.9rem)',
-                      background: 'linear-gradient(135deg, #00A3FF, #0077CC)',
+                      background: 'linear-gradient(135deg, #67E7BF, #2EBF9A)',
                       borderRadius: '10px',
                       color: '#FFFFFF',
                       display: 'flex',
@@ -614,7 +614,7 @@ export default function TournamentsPage() {
                 <SelectTrigger
                   className="w-full sm:w-40"
                   style={{
-                    background: '#0A1F3D',
+                    background: '#0A1C2C',
                     borderColor: 'rgba(0,163,255,0.15)',
                     borderRadius: '12px',
                     color: '#C9D1E2',
@@ -622,7 +622,7 @@ export default function TournamentsPage() {
                 >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent style={{ background: '#0A1F3D', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
+                <SelectContent style={{ background: '#0A1C2C', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
                   <SelectItem value="all">All arenas</SelectItem>
                   <SelectItem value="stocks">Stock arenas</SelectItem>
                   <SelectItem value="crypto">Crypto arenas</SelectItem>
@@ -667,7 +667,7 @@ export default function TournamentsPage() {
               <SelectTrigger
                 className="w-full sm:w-48"
                 style={{
-                  background: '#0A1F3D',
+                  background: '#0A1C2C',
                   borderColor: 'rgba(0,163,255,0.15)',
                   borderRadius: '12px',
                   color: '#C9D1E2',
@@ -675,7 +675,7 @@ export default function TournamentsPage() {
               >
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent style={{ background: '#0A1F3D', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
+              <SelectContent style={{ background: '#0A1C2C', borderColor: 'rgba(0,163,255,0.2)', borderRadius: '12px' }}>
                 <SelectItem value="starting-soon">Opening soon</SelectItem>
                 <SelectItem value="pot-high-low">Biggest prize pool</SelectItem>
                 <SelectItem value="pot-low-high">Smallest prize pool</SelectItem>
@@ -691,7 +691,7 @@ export default function TournamentsPage() {
                 <div
                   className="text-center"
                   style={{
-                    background: 'linear-gradient(135deg, #0A1F3D, #081729)',
+                    background: 'linear-gradient(135deg, #0A1C2C, #081622)',
                     border: '1px solid rgba(0,163,255,0.12)',
                     borderRadius: '20px',
                     padding: '48px 24px',
@@ -709,7 +709,7 @@ export default function TournamentsPage() {
                     margin: '0 auto 16px',
                     boxShadow: '0 0 24px rgba(0,163,255,0.1)',
                   }}>
-                    <Trophy className="w-8 h-8" style={{ color: '#00A3FF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
+                    <Trophy className="w-8 h-8" style={{ color: '#67E7BF', opacity: 0.5, filter: 'drop-shadow(0 0 6px rgba(0,163,255,0.3))' }} />
                   </div>
                   <h3 style={{ color: '#C9D1E2', fontWeight: 800, letterSpacing: '-0.02em', fontSize: '1.125rem', marginBottom: '8px' }}>
                     No arenas on the board
@@ -729,7 +729,7 @@ export default function TournamentsPage() {
                     {/* Priority 1: Your Active Tournaments */}
                     {myActiveTournaments.length > 0 && (
                       <>
-                        <SectionDivider label="YOUR LIVE ARENAS" color="#00FF87" />
+                        <SectionDivider label="YOUR LIVE ARENAS" color="#67E7BF" />
                         {myActiveTournaments.map((tournament, index) => (
                           <HorizontalTournamentCard
                             key={tournament.id}
@@ -748,7 +748,7 @@ export default function TournamentsPage() {
                     {/* Priority 2: Other Live Tournaments */}
                     {otherLiveTournaments.length > 0 && (
                       <>
-                        <SectionDivider label="LIVE ON THE BOARD" color="#00A3FF" />
+                        <SectionDivider label="LIVE ON THE BOARD" color="#67E7BF" />
                         {otherLiveTournaments.map((tournament, index) => (
                           <HorizontalTournamentCard
                             key={tournament.id}
@@ -972,7 +972,7 @@ function HorizontalTournamentCard({
             background: 'rgba(0,255,135,0.08)',
             border: '1px solid rgba(0,255,135,0.25)',
             borderRadius: '10px',
-            color: '#00FF87',
+            color: '#67E7BF',
             fontSize: '0.8rem',
             fontWeight: 700,
             display: 'flex',
@@ -1021,7 +1021,7 @@ function HorizontalTournamentCard({
             className="whitespace-nowrap"
             style={{
               padding: '8px 14px',
-              background: isStarting ? 'rgba(0,255,135,0.4)' : 'linear-gradient(135deg, #00FF87, #00C853)',
+              background: isStarting ? 'rgba(0,255,135,0.4)' : 'linear-gradient(135deg, #67E7BF, #00C853)',
               border: 'none',
               borderRadius: '10px',
               color: '#041810',
@@ -1075,7 +1075,7 @@ function HorizontalTournamentCard({
           className="whitespace-nowrap"
           style={!(isJoining || isFull) ? {
             padding: '8px 18px',
-            background: 'linear-gradient(135deg, #00A3FF, #0066CC)',
+            background: 'linear-gradient(135deg, #67E7BF, #2EBF9A)',
             border: 'none',
             borderRadius: '10px',
             color: '#FFFFFF',
@@ -1137,7 +1137,7 @@ function HorizontalTournamentCard({
         role="button"
         title="View tournament"
         style={{
-          background: 'linear-gradient(135deg, #0A1F3D 0%, #081729 100%)',
+          background: 'linear-gradient(135deg, #0A1C2C 0%, #081622 100%)',
           borderRadius: '20px',
           cursor: 'pointer',
           position: 'relative',
@@ -1169,7 +1169,7 @@ function HorizontalTournamentCard({
               border: '1px solid rgba(0,163,255,0.2)',
               flexShrink: 0,
             }}>
-              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: '#00A3FF' }} />
+              <TournamentTypeIcon className="w-3.5 h-3.5" style={{ color: '#67E7BF' }} />
             </div>
 
             {/* Name */}
@@ -1179,7 +1179,7 @@ function HorizontalTournamentCard({
 
             {/* High pot crown */}
             {isHighPot && (
-              <Crown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#E3B341', filter: 'drop-shadow(0 0 5px rgba(227,179,65,0.4))' }} />
+              <Crown className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#F2C76A', filter: 'drop-shadow(0 0 5px rgba(227,179,65,0.4))' }} />
             )}
 
             {/* LIVE badge */}
@@ -1192,8 +1192,8 @@ function HorizontalTournamentCard({
                   boxShadow: '0 0 8px rgba(0,255,135,0.1)',
                 }}
               >
-                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#00FF87' }} />
-                <span className="text-[10px] font-bold" style={{ color: '#00FF87' }}>LIVE</span>
+                <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#67E7BF' }} />
+                <span className="text-[10px] font-bold" style={{ color: '#67E7BF' }}>LIVE</span>
               </div>
             )}
 
@@ -1221,7 +1221,7 @@ function HorizontalTournamentCard({
               <>
                 <span style={{ color: 'rgba(75,96,128,0.5)' }}>|</span>
                 <span style={{
-                  color: isLive ? '#00FF87' : '#E3B341',
+                  color: isLive ? '#67E7BF' : '#F2C76A',
                   fontWeight: 600,
                   fontSize: '0.75rem',
                 }}>
@@ -1252,7 +1252,7 @@ function HorizontalTournamentCard({
               style={{
                 fontSize: '0.875rem',
                 fontWeight: 800,
-                color: '#E3B341',
+                color: '#F2C76A',
                 textShadow: '0 0 12px rgba(227,179,65,0.4)',
               }}
             >

@@ -146,7 +146,7 @@ export function UserProfileModal({
             <div
               className="w-full max-w-md overflow-hidden"
               style={{
-                backgroundColor: "#0C1829",
+                backgroundColor: "#0B1B2A",
                 border: "1px solid rgba(255,255,255,0.1)",
                 borderRadius: "16px",
               }}
@@ -155,7 +155,7 @@ export function UserProfileModal({
                 <div className="flex items-center justify-center py-16">
                   <div
                     className="animate-spin rounded-full h-8 w-8 border-b-2"
-                    style={{ borderColor: "#00A3FF" }}
+                    style={{ borderColor: "#67E7BF" }}
                   />
                 </div>
               ) : (
@@ -182,7 +182,7 @@ export function UserProfileModal({
                                 className="text-xs font-bold px-2 py-0.5 rounded-full"
                                 style={{
                                   backgroundColor: "rgba(0,163,255,0.12)",
-                                  color: "#00A3FF",
+                                  color: "#67E7BF",
                                 }}
                               >
                                 Admin
@@ -218,7 +218,7 @@ export function UserProfileModal({
                     <div className="grid grid-cols-3 gap-2 mt-4">
                       {[
                         {
-                          icon: <Activity className="w-3.5 h-3.5" style={{ color: "#00A3FF" }} />,
+                          icon: <Activity className="w-3.5 h-3.5" style={{ color: "#67E7BF" }} />,
                           label: t("totalTrades"),
                           value: profileData?.totalTrades || 0,
                           color: "#C9D1E2",
@@ -227,13 +227,13 @@ export function UserProfileModal({
                           icon: <Flame className="w-3.5 h-3.5" style={{ color: "#FF4F58" }} />,
                           label: t("tradingStreak"),
                           value: `${profileData?.tradingStreak || 0}d`,
-                          color: "#00A3FF",
+                          color: "#67E7BF",
                         },
                         {
-                          icon: <Trophy className="w-3.5 h-3.5" style={{ color: "#28C76F" }} />,
+                          icon: <Trophy className="w-3.5 h-3.5" style={{ color: "#67E7BF" }} />,
                           label: t("tournamentsJoined"),
                           value: profileData?.tournamentCount || 0,
-                          color: "#28C76F",
+                          color: "#67E7BF",
                         },
                       ].map((stat) => (
                         <div
@@ -264,7 +264,7 @@ export function UserProfileModal({
                             disabled={sendFriendRequestMutation.isPending}
                             className="w-full py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
                             style={{
-                              background: "linear-gradient(135deg, #28C76F, #20a35a)",
+                              background: "linear-gradient(135deg, #67E7BF, #20a35a)",
                               color: "#000",
                             }}
                           >
@@ -290,7 +290,7 @@ export function UserProfileModal({
                               disabled={acceptFriendRequestMutation.isPending}
                               className="flex-1 py-2 rounded-lg text-sm font-bold"
                               style={{
-                                background: "linear-gradient(135deg, #28C76F, #20a35a)",
+                                background: "linear-gradient(135deg, #67E7BF, #20a35a)",
                                 color: "#000",
                               }}
                             >
@@ -318,7 +318,7 @@ export function UserProfileModal({
                           <div className="flex items-center justify-between">
                             <span
                               className="text-sm font-semibold flex items-center gap-1.5"
-                              style={{ color: "#28C76F" }}
+                              style={{ color: "#67E7BF" }}
                             >
                               <UserCheck className="w-4 h-4" />
                               Friends
@@ -339,7 +339,7 @@ export function UserProfileModal({
                   {/* Recent Trades */}
                   <div className="p-5 max-h-64 overflow-y-auto">
                     <div className="flex items-center gap-2 mb-3">
-                      <ArrowRightLeft className="w-3.5 h-3.5" style={{ color: "#00A3FF" }} />
+                      <ArrowRightLeft className="w-3.5 h-3.5" style={{ color: "#67E7BF" }} />
                       <span
                         className="text-xs font-bold uppercase tracking-wider"
                         style={{ color: "#4B5563" }}
@@ -377,7 +377,7 @@ export function UserProfileModal({
                                 {trade.action === "buy" ? (
                                   <TrendingUp
                                     className="w-3.5 h-3.5"
-                                    style={{ color: "#28C76F" }}
+                                    style={{ color: "#67E7BF" }}
                                   />
                                 ) : (
                                   <TrendingDown
@@ -399,7 +399,7 @@ export function UserProfileModal({
                               <p
                                 className="text-sm font-bold"
                                 style={{
-                                  color: trade.action === "buy" ? "#FF4F58" : "#28C76F",
+                                  color: trade.action === "buy" ? "#FF4F58" : "#67E7BF",
                                 }}
                               >
                                 {trade.action === "buy" ? "-" : "+"}$

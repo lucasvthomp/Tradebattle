@@ -191,7 +191,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {user.subscriptionTier === 'administrator' ? (
-              <Crown className="h-5 w-5" style={{ color: '#E3B341' }} />
+              <Crown className="h-5 w-5" style={{ color: '#F2C76A' }} />
             ) : (
               <User className="h-5 w-5" />
             )}
@@ -208,7 +208,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <div className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                   {user.id}
                   {user.subscriptionTier === 'administrator' && (
-                    <Crown className="h-4 w-4" style={{ color: '#E3B341' }} />
+                    <Crown className="h-4 w-4" style={{ color: '#F2C76A' }} />
                   )}
                 </div>
               </div>
@@ -218,7 +218,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
               </div>
               <div>
                 <span style={{ color: '#8A93A6' }}>Arena cash:</span>
-                <div className="font-mono" style={{ color: '#28C76F' }}>${parseFloat(user.siteCash || "0").toLocaleString()}</div>
+                <div className="font-mono" style={{ color: '#67E7BF' }}>${parseFloat(user.siteCash || "0").toLocaleString()}</div>
               </div>
               <div>
                 <span style={{ color: '#8A93A6' }}>Member Since:</span>
@@ -237,10 +237,10 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <Badge className="text-xs" style={{ background: '#FF8C00', color: '#fff' }}>Deposits Frozen</Badge>
               )}
               {user.tournamentRestricted && (
-                <Badge className="text-xs" style={{ background: '#E3B341', color: '#000' }}>Arena access restricted</Badge>
+                <Badge className="text-xs" style={{ background: '#F2C76A', color: '#000' }}>Arena access restricted</Badge>
               )}
               {!user.banned && !user.withdrawalFrozen && !user.depositFrozen && !user.tournamentRestricted && (
-                <Badge variant="outline" className="text-xs" style={{ borderColor: '#28C76F', color: '#28C76F' }}>No Restrictions</Badge>
+                <Badge variant="outline" className="text-xs" style={{ borderColor: '#67E7BF', color: '#67E7BF' }}>No Restrictions</Badge>
               )}
             </div>
           </div>
@@ -272,7 +272,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                       disabled={banUserMutation.isPending || unbanUserMutation.isPending}
                       variant={user.banned ? "default" : "destructive"}
                       size="sm"
-                      style={user.banned ? { background: '#28C76F' } : {}}
+                      style={user.banned ? { background: '#67E7BF' } : {}}
                     >
                       {user.banned ? (
                         <>
@@ -337,7 +337,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <div className="p-4 rounded-lg" style={{ background: 'transparent', border: '1px solid #0E2040' }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Trophy className="h-5 w-5" style={{ color: user.tournamentRestricted ? '#E3B341' : '#8A93A6' }} />
+                      <Trophy className="h-5 w-5" style={{ color: user.tournamentRestricted ? '#F2C76A' : '#8A93A6' }} />
                       <div>
                         <div className="font-medium" style={{ color: '#C9D1E2' }}>Restrict arenas</div>
                         <div className="text-xs" style={{ color: '#8A93A6' }}>

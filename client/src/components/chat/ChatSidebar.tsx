@@ -88,7 +88,7 @@ function renderMessageWithMentions(
         <span
           key={`mention-${match.index}`}
           className="font-semibold cursor-pointer hover:underline"
-          style={{ color: '#00A3FF' }}
+          style={{ color: '#67E7BF' }}
           onClick={(e) => {
             e.stopPropagation();
             onMentionClick(String(mentionedUser.id));
@@ -141,19 +141,19 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
               {group.profilePicture && (
                 <AvatarImage src={group.profilePicture} className="object-cover" />
               )}
-              <AvatarFallback style={{ backgroundColor: '#0C1829' }}>
+              <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
                 <UserCircle className="w-5 h-5" style={{ color: '#4B5563' }} />
               </AvatarFallback>
             </Avatar>
           </div>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
+        <DropdownMenuContent align="start" style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040' }}>
           <DropdownMenuItem
             onClick={() => onViewProfile(group.userId)}
             className="cursor-pointer"
             style={{ color: '#F1F5F9' }}
           >
-            <UserCircle className="w-4 h-4 mr-2" style={{ color: '#00A3FF' }} />
+            <UserCircle className="w-4 h-4 mr-2" style={{ color: '#67E7BF' }} />
             View Full Profile
           </DropdownMenuItem>
           {!isCurrentUser && (
@@ -198,7 +198,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                     ) : null;
                   })()}
                   {isCurrentUser && (
-                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#00A3FF', color: '#091525' }}>You</Badge>
+                    <Badge variant="secondary" className="text-xs px-1.5 py-0.5" style={{ backgroundColor: '#67E7BF', color: '#091525' }}>You</Badge>
                   )}
                   <span className="text-xs" style={{ color: '#94A3B8' }}>
                     {formatTimestamp(msg.createdAt)}
@@ -206,7 +206,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                 </div>
               )}
               <div className="group/msg flex items-center gap-1.5">
-                <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}>
+                <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#0B1B2A', border: '1px solid #0E2040' }}>
                   <p className="text-sm whitespace-pre-wrap leading-normal" style={{
                     color: '#F1F5F9',
                     wordBreak: 'break-word',
@@ -446,12 +446,12 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 30, stiffness: 300 }}
       className="h-full w-full backdrop-blur-md shadow-xl flex flex-col overflow-hidden"
-      style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#0C1829', borderLeft: '2px solid #0E2040' }}
+      style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#0B1B2A', borderLeft: '2px solid #0E2040' }}
     >
             {/* Header */}
             <div className="flex items-center justify-between p-3" style={{ borderBottom: '1px solid #0E2040', backgroundColor: 'transparent' }}>
               <div className="flex items-center space-x-2">
-                <MessageSquare className="w-4 h-4" style={{ color: '#00A3FF' }} />
+                <MessageSquare className="w-4 h-4" style={{ color: '#67E7BF' }} />
                 <span className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{t('globalChat')}</span>
               </div>
               <Button
@@ -470,7 +470,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 <div className="space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
-                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#00A3FF', borderTopColor: 'transparent' }} />
+                    <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#67E7BF', borderTopColor: 'transparent' }} />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="text-center py-8">
@@ -506,7 +506,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
               {showMentions && mentionSuggestions.length > 0 && (
                 <div
                   className="absolute bottom-full left-3 right-3 mb-1 rounded-md overflow-hidden shadow-lg z-50"
-                  style={{ backgroundColor: '#0C1829', border: '1px solid #0E2040' }}
+                  style={{ backgroundColor: '#0B1B2A', border: '1px solid #0E2040' }}
                 >
                   {mentionSuggestions.map((u, i) => (
                     <div
@@ -523,11 +523,11 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       onMouseEnter={() => setMentionIndex(i)}
                     >
                       <Avatar className="w-5 h-5">
-                        <AvatarFallback style={{ backgroundColor: '#0C1829' }}>
+                        <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
                           <UserCircle className="w-3 h-3" style={{ color: '#4B5563' }} />
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-medium" style={{ color: '#00A3FF' }}>@{u.username}</span>
+                      <span className="font-medium" style={{ color: '#67E7BF' }}>@{u.username}</span>
                     </div>
                   ))}
                 </div>
@@ -541,7 +541,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   onKeyDown={handleKeyDown}
                   placeholder={t('messageEveryone')}
                   className="flex-1 text-sm h-9"
-                  style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
+                  style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040', color: '#F1F5F9' }}
                   maxLength={500}
                 />
                 <Button
@@ -549,7 +549,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                   size="sm"
                   disabled={!newMessage.trim() || sendMessageMutation.isPending}
                   className="px-3 h-9"
-                  style={{ backgroundColor: '#00A3FF', color: '#091525' }}
+                  style={{ backgroundColor: '#67E7BF', color: '#091525' }}
                 >
                   <Send className="w-4 h-4" />
                 </Button>
@@ -565,7 +565,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
 
       {/* Tip Dialog */}
       <Dialog open={tipDialogOpen} onOpenChange={setTipDialogOpen}>
-        <DialogContent style={{ backgroundColor: '#0C1829', borderColor: '#0E2040' }}>
+        <DialogContent style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040' }}>
           <DialogHeader>
             <div className="flex items-center space-x-3 mb-2">
               <div className="p-2 rounded-lg" style={{ backgroundColor: '#10B981' }}>
@@ -590,7 +590,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 onChange={(e) => setTipAmount(e.target.value)}
                 min="0.01"
                 step="0.01"
-                style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
+                style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040', color: '#F1F5F9' }}
               />
               <p className="text-xs" style={{ color: '#94A3B8' }}>
                 {t('yourBalance')}: ${(Number(user?.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -605,7 +605,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                 setTipAmount("");
                 setSelectedUser(null);
               }}
-              style={{ backgroundColor: '#0C1829', borderColor: '#0E2040', color: '#F1F5F9' }}
+              style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040', color: '#F1F5F9' }}
             >
               {t('cancel')}
             </Button>

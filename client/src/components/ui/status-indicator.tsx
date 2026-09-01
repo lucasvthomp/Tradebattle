@@ -31,7 +31,7 @@ export function StatusIndicator({ status, size = 'md', className = '' }: StatusI
     return (
       <div
         className={`${sizeClasses[size]} rounded-full ${className}`}
-        style={{ backgroundColor: '#28C76F' }}
+        style={{ backgroundColor: '#67E7BF' }}
         title="Online"
       />
     );

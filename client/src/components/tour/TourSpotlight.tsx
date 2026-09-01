@@ -78,7 +78,7 @@ export function TourSpotlight({ targetSelector, isCenter }: TourSpotlightProps) 
           width: rect.width,
           height: rect.height,
           borderRadius: 12,
-          border: "2px solid #00A3FF",
+          border: "2px solid #67E7BF",
           boxShadow: "0 0 0 9999px rgba(0,0,0,0.75)",
           transition: "all 0.3s ease",
           pointerEvents: "auto",

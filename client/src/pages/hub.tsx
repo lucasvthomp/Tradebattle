@@ -17,12 +17,12 @@ function computeLevel(wins: number, trades: number) {
 }
 
 function getRankTitle(level: number) {
-  if (level >= 50) return { title: "Legend", color: "#FF4F58" };
-  if (level >= 30) return { title: "Elite", color: "#00A3FF" };
-  if (level >= 20) return { title: "Expert", color: "#8B5CF6" };
-  if (level >= 12) return { title: "Veteran", color: "#06B6D4" };
-  if (level >= 6) return { title: "Market Runner", color: "#28C76F" };
-  return { title: "Rookie", color: "#8A93A6" };
+  if (level >= 50) return { title: "Legend", color: "#ef8f9a" };
+  if (level >= 30) return { title: "Elite", color: "#67e7bf" };
+  if (level >= 20) return { title: "Expert", color: "#9bd2bd" };
+  if (level >= 12) return { title: "Veteran", color: "#71d8bf" };
+  if (level >= 6) return { title: "Market Runner", color: "#67e7bf" };
+  return { title: "Rookie", color: "#91a6ba" };
 }
 
 const fadeIn = {
@@ -74,10 +74,10 @@ export default function Hub() {
   const ctaLabel = activeTournaments.length > 0 ? "Open live arena" : "Scout arenas";
 
   const stats = [
-    { label: "Buying power", value: `$${balance}`, detail: "Virtual balance", color: "#27a9ff" },
-    { label: "Tournament wins", value: String(wins), detail: "Career record", color: "#20d8c2" },
-    { label: "Live arenas", value: String(activeTournaments.length), detail: "Open right now", color: "#e3b341" },
-    { label: "Total reps", value: String(trades), detail: "Trades logged", color: "#a78bfa" },
+    { label: "Buying power", value: `$${balance}`, detail: "Virtual balance", color: "#67e7bf" },
+    { label: "Tournament wins", value: String(wins), detail: "Career record", color: "#71d8bf" },
+    { label: "Live arenas", value: String(activeTournaments.length), detail: "Open right now", color: "#f2c76a" },
+    { label: "Total reps", value: String(trades), detail: "Trades logged", color: "#9ab5c2" },
   ];
 
   return (

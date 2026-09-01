@@ -13,7 +13,7 @@ export function StockHeader({ symbol, companyName, price, change, percentChange 
 
   return (
     <div className="flex flex-wrap items-baseline gap-3 px-4 py-3">
-      <h1 className="text-2xl md:text-3xl font-bold" style={{ color: "#00A3FF" }}>
+      <h1 className="text-2xl md:text-3xl font-bold" style={{ color: "#67E7BF" }}>
         {symbol}
       </h1>
       <span className="text-sm md:text-base" style={{ color: "#94A3B8" }}>

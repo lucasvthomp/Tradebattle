@@ -49,7 +49,7 @@ export default function ArchiveDetailPage() {
   if (isLoading) {
     return (
       <div className="arena-page-shell min-h-[calc(100dvh-4rem)] flex items-center justify-center" style={{ backgroundColor: 'transparent' }}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#E3B341' }} />
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: '#F2C76A' }} />
       </div>
     );
   }
@@ -70,7 +70,7 @@ export default function ArchiveDetailPage() {
 
   const getPositionIcon = (position: number) => {
     switch (position) {
-      case 1: return <Crown className="w-5 h-5" style={{ color: '#E3B341' }} />;
+      case 1: return <Crown className="w-5 h-5" style={{ color: '#F2C76A' }} />;
       case 2: return <Medal className="w-5 h-5" style={{ color: '#94A3B8' }} />;
       case 3: return <Award className="w-5 h-5" style={{ color: '#D97706' }} />;
       default: return null;
@@ -78,7 +78,7 @@ export default function ArchiveDetailPage() {
   };
 
   return (
-    <div className="arena-page-shell container mx-auto p-4 max-w-4xl">
+    <div className="arena-page-shell archive-detail-page container mx-auto p-4 max-w-4xl">
       {/* Back Button */}
       <Button
         variant="ghost"
@@ -101,13 +101,13 @@ export default function ArchiveDetailPage() {
                 Completed
               </Badge>
             </div>
-            <Trophy className="w-8 h-8" style={{ color: '#E3B341' }} />
+            <Trophy className="w-8 h-8" style={{ color: '#F2C76A' }} />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
             <div className="p-3 rounded-lg" style={{ backgroundColor: 'transparent' }}>
               <div className="flex items-center gap-2 mb-1">
-                <Users className="w-4 h-4" style={{ color: '#E3B341' }} />
+                <Users className="w-4 h-4" style={{ color: '#F2C76A' }} />
                 <span className="text-xs" style={{ color: '#94A3B8' }}>{t('players')}</span>
               </div>
               <p className="text-lg font-bold" style={{ color: '#F1F5F9' }}>
@@ -152,7 +152,7 @@ export default function ArchiveDetailPage() {
       <Card style={{ backgroundColor: '#0C1A2E', borderColor: '#0E2040' }}>
         <CardHeader className="pb-3">
           <CardTitle className="text-lg flex items-center gap-2" style={{ color: '#F1F5F9' }}>
-            <Trophy className="w-5 h-5" style={{ color: '#E3B341' }} />
+            <Trophy className="w-5 h-5" style={{ color: '#F2C76A' }} />
             {t('finalLeaderboard')}
           </CardTitle>
         </CardHeader>
@@ -184,8 +184,8 @@ export default function ArchiveDetailPage() {
                       key={participant.userId}
                       className="flex items-center justify-between gap-2 p-3 rounded-lg"
                       style={{
-                        backgroundColor: isWinner ? '#E3B34110' : '#091525',
-                        border: isWinner ? '1px solid #E3B34140' : '1px solid #0E2040',
+                        backgroundColor: isWinner ? '#F2C76A10' : '#091525',
+                        border: isWinner ? '1px solid #F2C76A40' : '1px solid #0E2040',
                       }}
                     >
                       <div className="flex items-center gap-3 min-w-0">

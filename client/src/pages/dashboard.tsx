@@ -116,13 +116,13 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
         <div className="text-center space-y-4">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto"
             style={{ background: "linear-gradient(135deg, rgba(227,179,65,0.2), rgba(227,179,65,0.05))", border: "1px solid rgba(227,179,65,0.3)" }}>
-            <Trophy size={32} color="#E3B341" />
+            <Trophy size={32} color="#F2C76A" />
           </div>
           <div>
             <h3 className="text-lg font-bold mb-1" style={{ color: "#C9D1E2" }}>No live arenas</h3>
             <p style={{ color: "#8A93A6" }}>Enter an arena to start your run</p>
           </div>
-          <Button asChild style={{ background: "linear-gradient(135deg, #00A3FF, #0066CC)", color: "#fff" }}>
+          <Button asChild style={{ background: "linear-gradient(135deg, #67E7BF, #2EBF9A)", color: "#fff" }}>
             <a href="/tournaments"><Swords className="w-4 h-4 mr-2 inline" />Scout arenas</a>
           </Button>
         </div>
@@ -141,7 +141,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
     <>
       <WebsiteTour />
       <div
-        className="arena-page-shell"
+        className="arena-page-shell trading-page"
         style={{
           height: "calc(100dvh - 4rem)",
           overflow: "hidden",
@@ -167,7 +167,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
             width: 320,
             flexShrink: 0,
             minHeight: 0,
-            background: "linear-gradient(180deg, #0A1F3D 0%, #081729 100%)",
+            background: "linear-gradient(180deg, #0A1C2C 0%, #081622 100%)",
             borderLeft: `1px solid ${panelBorder}`,
             boxShadow: `-4px 0 32px ${panelGlow}`,
             transition: "border-color 1s ease, box-shadow 1s ease",
@@ -200,7 +200,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
           style={{
             position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 30,
             maxHeight: "58vh", overflowY: "auto",
-            background: "linear-gradient(180deg, #0A1F3D 0%, #081729 100%)",
+            background: "linear-gradient(180deg, #0A1C2C 0%, #081622 100%)",
             borderTop: `1px solid ${panelBorder}`,
             boxShadow: `0 -4px 32px ${panelGlow}`,
           }}

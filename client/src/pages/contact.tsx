@@ -19,18 +19,18 @@ const contactSchema = z.object({
 type ContactForm = z.infer<typeof contactSchema>;
 
 const cardStyle = {
-  backgroundColor: "#0C1829",
-  border: "1px solid rgba(255,255,255,0.06)",
-  borderRadius: "12px",
+  backgroundColor: "#0B1B2A",
+  border: "1px solid rgba(118,169,198,0.18)",
+  borderRadius: "10px",
 };
 
 const inputStyle = {
-  backgroundColor: "rgba(255,255,255,0.04)",
-  borderColor: "rgba(255,255,255,0.08)",
+  backgroundColor: "#081622",
+  borderColor: "rgba(118,169,198,0.18)",
   color: "#F1F5F9",
 };
 
-const labelStyle = { color: "#8A93A6", fontSize: "12px", fontWeight: 600, textTransform: "uppercase" as const, letterSpacing: "0.05em" };
+const labelStyle = { color: "#7890A4", fontSize: "12px", fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: "0.08em" };
 
 export default function Support() {
   const { toast } = useToast();
@@ -129,8 +129,8 @@ export default function Support() {
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", backgroundColor: "rgba(13,17,23,0.6)" }}>
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-9">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "linear-gradient(135deg, #00A3FF, #0077CC)" }}>
-              <MessageSquare className="w-5 h-5" style={{ color: "#000" }} />
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "rgba(103,231,191,.12)" }}>
+              <MessageSquare className="w-5 h-5" style={{ color: "#67E7BF" }} />
             </div>
             <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Pit Crew HQ</h1>
           </div>
@@ -192,7 +192,7 @@ export default function Support() {
                 <button
                   onClick={() => setSearchQuery("")}
                   className="text-sm font-semibold"
-                  style={{ color: "#00A3FF" }}
+                  style={{ color: "#67E7BF" }}
                 >
                   Clear search
                 </button>
@@ -205,7 +205,7 @@ export default function Support() {
             {/* Contact form */}
             <div style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
-                <Zap className="w-4 h-4" style={{ color: "#00A3FF" }} />
+                <Zap className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Call the pit crew</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
@@ -238,7 +238,7 @@ export default function Support() {
                   type="submit"
                   disabled={contactMutation.isPending}
                   className="w-full py-2.5 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
-                  style={{ background: "linear-gradient(135deg, #00A3FF, #0077CC)", color: "#FFFFFF" }}
+                  style={{ background: "linear-gradient(135deg, #67E7BF, #2EBF9A)", color: "#FFFFFF" }}
                 >
                   {contactMutation.isPending ? "Sending..." : "Send Message"}
                 </button>
@@ -249,7 +249,7 @@ export default function Support() {
             <div style={cardStyle} className="p-4 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(0,163,255,0.1)" }}>
-                  <Mail className="w-4 h-4" style={{ color: "#00A3FF" }} />
+                  <Mail className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 </div>
                 <div>
                   <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Email</div>
@@ -258,7 +258,7 @@ export default function Support() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(40,199,111,0.1)" }}>
-                  <Clock className="w-4 h-4" style={{ color: "#28C76F" }} />
+                  <Clock className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 </div>
                 <div>
                   <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Response Time</div>

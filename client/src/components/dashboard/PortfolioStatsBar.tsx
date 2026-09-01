@@ -70,7 +70,7 @@ export function PortfolioStatsBar({
         {/* Tournament Selector */}
         {activeTournaments.length > 0 && selectedTournament && onTournamentChange && (
           <div className="flex items-center gap-2">
-            <Trophy className="w-4 h-4" style={{ color: '#E3B341' }} />
+            <Trophy className="w-4 h-4" style={{ color: '#F2C76A' }} />
             <Select
               value={selectedTournament?.id?.toString() || ""}
               onValueChange={onTournamentChange}
@@ -112,7 +112,7 @@ export function PortfolioStatsBar({
 
         {/* Current Rank */}
         {rank && totalPlayers && (
-          <div className="text-base font-semibold" style={{ color: '#E3B341' }}>
+          <div className="text-base font-semibold" style={{ color: '#F2C76A' }}>
             Place #{rank}/{totalPlayers}
           </div>
         )}

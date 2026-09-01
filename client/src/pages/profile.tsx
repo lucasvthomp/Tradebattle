@@ -300,7 +300,7 @@ function TwoFactorSection({ user }: { user: any }) {
               />
             </div>
             <p className="text-xs text-muted-foreground mt-2">
-              Or enter this key manually: <code className="px-1 py-0.5 rounded text-xs" style={{ backgroundColor: '#0E2040', color: '#00A3FF' }}>{setupData.secret}</code>
+              Or enter this key manually: <code className="px-1 py-0.5 rounded text-xs" style={{ backgroundColor: '#0E2040', color: '#67E7BF' }}>{setupData.secret}</code>
             </p>
           </div>
           <div>
@@ -562,7 +562,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)]">
+    <div className="arena-page-shell profile-page min-h-[calc(100dvh-4rem)]">
       <div className="container mx-auto py-8">
         <motion.div
           className="max-w-4xl mx-auto"
@@ -597,7 +597,7 @@ export default function Profile() {
                         }}
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#0C1829' }}>
+                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#0B1B2A' }}>
                         <User className="w-10 h-10" style={{ color: '#8A93A6' }} />
                       </div>
                     )}
@@ -677,10 +677,10 @@ export default function Profile() {
                   const progress = nextLevelXP === currentLevelXP ? 100 : Math.min(Math.round(((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100), 100);
                   const rankTitles = [
                     { min: 50, title: 'Legend', color: '#FF4F58' },
-                    { min: 30, title: 'Elite', color: '#00A3FF' },
-                    { min: 20, title: 'Expert', color: '#8B5CF6' },
+                    { min: 30, title: 'Elite', color: '#67E7BF' },
+                    { min: 20, title: 'Expert', color: '#9AB5C2' },
                     { min: 12, title: 'Veteran', color: '#06B6D4' },
-                    { min: 6, title: 'Trader', color: '#28C76F' },
+                    { min: 6, title: 'Trader', color: '#67E7BF' },
                     { min: 0, title: 'Rookie', color: '#8A93A6' },
                   ];
                   const rank = rankTitles.find(r => level >= r.min) || rankTitles[rankTitles.length - 1];
@@ -694,7 +694,7 @@ export default function Profile() {
                         </div>
                         <span className="text-xs" style={{ color: '#64748B' }}>{xp} XP · {progress}% to Lv.{level + 1}</span>
                       </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#0C1829' }}>
+                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#0B1B2A' }}>
                         <motion.div
                           initial={{ width: 0 }}
                           animate={{ width: `${progress}%` }}

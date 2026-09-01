@@ -643,3 +643,78 @@
     transition: none;
   }
 }
+
+/* The hub is the player's home base: calm surfaces, one accent, clear calls. */
+.hub-screen {
+  padding: 28px 24px 56px;
+  background: #06111f;
+}
+
+.hub-topbar {
+  padding-bottom: 22px;
+  border-bottom-color: rgba(118, 169, 198, 0.18);
+}
+
+.hub-kicker,
+.hub-panel-label {
+  color: #67e7bf;
+}
+
+.hub-primary-action {
+  border-color: #67e7bf;
+  background: #67e7bf;
+  box-shadow: none;
+}
+
+.hub-primary-action:hover {
+  background: #86efcf;
+  transform: none;
+}
+
+.hub-outline-action:hover,
+.hub-live-row:hover {
+  transform: none;
+  border-color: rgba(103, 231, 191, 0.34);
+  background: rgba(103, 231, 191, 0.06);
+}
+
+.hub-rank-chip,
+.hub-live-chip {
+  border-color: rgba(103, 231, 191, 0.24);
+  background: rgba(103, 231, 191, 0.06);
+  color: #a8ead5;
+}
+
+.hub-stat-card,
+.hub-panel {
+  border-color: rgba(118, 169, 198, 0.18);
+  border-radius: 10px;
+  background: #0b1b2a;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.14), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.hub-stat-card::before {
+  box-shadow: none;
+}
+
+.hub-launch-card:hover {
+  transform: none;
+}
+
+.hub-launch-icon.gold,
+.hub-launch-icon.purple {
+  color: #67e7bf;
+  background: rgba(103, 231, 191, 0.08);
+  border-color: rgba(103, 231, 191, 0.2);
+}
+
+.hub-market-change,
+.hub-live-row > span:first-child {
+  color: #67e7bf;
+}
+
+@media (max-width: 620px) {
+  .hub-screen {
+    padding: 22px 14px 42px;
+  }
+}

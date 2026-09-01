@@ -95,10 +95,10 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
         <div className="relative">
           {/* Scroll shadows for mobile */}
           <div
-            className={`absolute inset-y-0 left-0 w-8 pointer-events-none z-10 bg-gradient-to-r from-[#0C1829] to-transparent md:hidden transition-opacity duration-200 ${showLeftShadow ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-y-0 left-0 w-8 pointer-events-none z-10 bg-gradient-to-r from-[#0B1B2A] to-transparent md:hidden transition-opacity duration-200 ${showLeftShadow ? 'opacity-100' : 'opacity-0'}`}
           />
           <div
-            className={`absolute inset-y-0 right-0 w-8 pointer-events-none z-10 bg-gradient-to-l from-[#0C1829] to-transparent md:hidden transition-opacity duration-200 ${showRightShadow ? 'opacity-100' : 'opacity-0'}`}
+            className={`absolute inset-y-0 right-0 w-8 pointer-events-none z-10 bg-gradient-to-l from-[#0B1B2A] to-transparent md:hidden transition-opacity duration-200 ${showRightShadow ? 'opacity-100' : 'opacity-0'}`}
           />
 
           <div

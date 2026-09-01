@@ -11,6 +11,45 @@
   color: var(--site-text);
 }
 
+.tradebattle-header,
+.tradebattle-footer,
+.tradebattle-sidebar {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.tradebattle-header {
+  background: rgba(6, 17, 31, 0.94) !important;
+  border-bottom-color: rgba(103, 231, 191, 0.13) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+.tradebattle-header .container,
+.tradebattle-footer .container {
+  max-width: 1240px;
+}
+
+.tradebattle-header button,
+.tradebattle-header a,
+.tradebattle-sidebar button,
+.tradebattle-sidebar a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tradebattle-header .tradebattle-header-brand {
+  letter-spacing: 0.12em;
+}
+
+.tradebattle-sidebar {
+  background: #071522 !important;
+  border-right-color: rgba(103, 231, 191, 0.13) !important;
+  box-shadow: 8px 0 30px rgba(0, 0, 0, 0.12);
+}
+
+.tradebattle-footer {
+  background: #071522 !important;
+  border-top-color: rgba(103, 231, 191, 0.12) !important;
+}
+
 .tradebattle-site main,
 .tradebattle-route,
 .tradebattle-route > .arena-page,
@@ -36,6 +75,148 @@
 .tradebattle-site .arena-page-shell,
 .tradebattle-site .arena-page {
   color: var(--site-text);
+}
+
+.tradebattle-site .arena-hero,
+.tradebattle-site .hub-screen {
+  background-color: var(--site-bg);
+}
+
+.tradebattle-site .arena-glow {
+  display: none;
+}
+
+.tradebattle-site .match-card,
+.tradebattle-site .about-score-card,
+.tradebattle-site .about-pillar-card,
+.tradebattle-site .mode-card,
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .hub-panel {
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.14), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.tradebattle-site .match-card::before,
+.tradebattle-site .about-score-card::before {
+  opacity: 0.55;
+}
+
+/* Legacy route surfaces are intentionally normalized here so functional flows
+   can keep their data and interactions while they share the new shell. */
+.tradebattle-site.arena-app .arena-page-shell:not(.trading-page),
+.tradebattle-site.arena-app .profile-page,
+.tradebattle-site.arena-app .deposit-page,
+.tradebattle-site.arena-app .admin-page {
+  background: transparent !important;
+}
+
+.tradebattle-site.arena-app .profile-page > .container,
+.tradebattle-site.arena-app .deposit-page > div,
+.tradebattle-site.arena-app .admin-page {
+  position: relative;
+  z-index: 1;
+}
+
+.tradebattle-site.arena-app .profile-page .card,
+.tradebattle-site.arena-app .deposit-page .card,
+.tradebattle-site.arena-app .admin-page .card,
+.tradebattle-site.arena-app .transactions-page .card,
+.tradebattle-site.arena-app .archive-page [style*="backgroundColor"],
+.tradebattle-site.arena-app .archive-detail-page .card {
+  border-radius: 10px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.13);
+}
+
+.tradebattle-site.arena-app .blitz-page,
+.tradebattle-site.arena-app .tournaments-page,
+.tradebattle-site.arena-app .leaderboard-page,
+.tradebattle-site.arena-app .people-page,
+.tradebattle-site.arena-app .shop-page,
+.tradebattle-site.arena-app .archive-page,
+.tradebattle-site.arena-app .archive-detail-page,
+.tradebattle-site.arena-app .transactions-page,
+.tradebattle-site.arena-app .tournament-view-page {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+.tradebattle-site.arena-app .blitz-page h1,
+.tradebattle-site.arena-app .blitz-page h2,
+.tradebattle-site.arena-app .blitz-page h3 {
+  text-shadow: none !important;
+}
+
+.tradebattle-site.arena-app .blitz-page button,
+.tradebattle-site.arena-app .tournaments-page button,
+.tradebattle-site.arena-app .shop-page button,
+.tradebattle-site.arena-app .deposit-page button,
+.tradebattle-site.arena-app .profile-page button,
+.tradebattle-site.arena-app .admin-page button {
+  border-radius: 8px;
+}
+
+.tradebattle-site.arena-app .blitz-page [style*="repeating-linear-gradient"],
+.tradebattle-site.arena-app .tournaments-page [style*="repeating-linear-gradient"] {
+  background-image: none !important;
+}
+
+.tradebattle-site.arena-app .blitz-page [style*="textShadow"] {
+  text-shadow: none !important;
+}
+
+.tradebattle-site.arena-app .blitz-page [style*="boxShadow"],
+.tradebattle-site.arena-app .tournaments-page [style*="boxShadow"],
+.tradebattle-site.arena-app .admin-page [style*="boxShadow"] {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14) !important;
+}
+
+.tradebattle-site.arena-app table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.tradebattle-site.arena-app th {
+  color: #91a6ba !important;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tradebattle-site.arena-app td,
+.tradebattle-site.arena-app th {
+  border-color: var(--site-edge) !important;
+}
+
+.tradebattle-site.arena-app [style*="#67E7BF"],
+.tradebattle-site.arena-app [style*="#67e7bf"] {
+  color: var(--site-mint) !important;
+  border-color: rgba(103, 231, 191, 0.32) !important;
+}
+
+.tradebattle-site.arena-app [style*="linear-gradient(135deg, #67E7BF"],
+.tradebattle-site.arena-app [style*="linear-gradient(135deg, #67e7bf"] {
+  background: var(--site-mint) !important;
+  color: #06151c !important;
+}
+
+.tradebattle-site.arena-app [style*="#C9D1E2"],
+.tradebattle-site.arena-app [style*="#c9d1e2"] {
+  color: #e8f2f5 !important;
+}
+
+.tradebattle-site.arena-app [style*="#8A93A6"],
+.tradebattle-site.arena-app [style*="#8a93a6"] {
+  color: #91a6ba !important;
+}
+
+@media (max-width: 760px) {
+  .tradebattle-site.arena-app .profile-page,
+  .tradebattle-site.arena-app .deposit-page,
+  .tradebattle-site.arena-app .admin-page,
+  .tradebattle-site.arena-app .transactions-page {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
 
 /* Keep old utility-based surfaces legible when a less-traveled route renders. */
@@ -192,6 +373,170 @@
 
 .not-found-back:hover {
   color: var(--site-mint);
+}
+
+/* Blitz is intentionally restrained: the pressure comes from the clock, not decoration. */
+.tradebattle-site.arena-app .blitz-page {
+  min-height: calc(100dvh - 4rem);
+  padding: 34px 20px 56px;
+}
+
+.blitz-shell {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.blitz-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 4px 0 24px;
+  border-bottom: 1px solid var(--site-edge);
+}
+
+.blitz-header h1,
+.blitz-stage-content h2 {
+  margin: 0;
+  color: var(--site-text);
+  font-weight: 900;
+  letter-spacing: -0.055em;
+}
+
+.blitz-header h1 {
+  font-size: clamp(2.2rem, 6vw, 3.4rem);
+  line-height: 1;
+}
+
+.blitz-header p:last-child,
+.blitz-stage-content > p:not(.blitz-kicker) {
+  max-width: 490px;
+  margin: 9px 0 0;
+  color: var(--site-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.blitz-kicker {
+  margin: 0 0 9px;
+  color: var(--site-mint);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.blitz-header-mark,
+.blitz-icon-box,
+.blitz-queue-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(103, 231, 191, 0.25);
+  border-radius: 9px;
+  background: rgba(103, 231, 191, 0.08);
+  color: var(--site-mint);
+}
+
+.blitz-resume-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 16px 0 -2px;
+  padding: 12px 14px;
+  border: 1px solid rgba(103, 231, 191, 0.22);
+  border-radius: 9px;
+  background: rgba(103, 231, 191, 0.06);
+  color: #bdebdc;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.blitz-resume-row > div { display: inline-flex; align-items: center; gap: 8px; }
+.blitz-live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--site-mint); }
+.blitz-resume-row button { display: inline-flex; align-items: center; gap: 6px; border: 0; background: transparent; color: var(--site-mint); font-size: 12px; font-weight: 800; cursor: pointer; }
+
+.blitz-card {
+  margin-top: 22px;
+  border: 1px solid var(--site-edge);
+  border-radius: 12px;
+  background: var(--site-panel);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.16), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.blitz-stage-card { min-height: 390px; display: grid; place-items: center; padding: 44px 24px; }
+.blitz-stage-content { width: min(510px, 100%); text-align: center; }
+.blitz-stage-content .blitz-icon-box { margin: 0 auto 20px; }
+.blitz-stage-content h2 { font-size: clamp(1.8rem, 5vw, 2.45rem); line-height: 1.04; }
+.blitz-stage-content > p:not(.blitz-kicker) { margin-left: auto; margin-right: auto; }
+
+.blitz-actions { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 28px; }
+.blitz-primary-link,
+.blitz-primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid var(--site-mint);
+  border-radius: 8px;
+  background: var(--site-mint);
+  color: #06151c;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+  cursor: pointer;
+}
+.blitz-primary-button:disabled { cursor: wait; opacity: .65; }
+.blitz-primary-link:hover,
+.blitz-primary-button:hover:not(:disabled) { background: #86efcf; }
+.blitz-secondary-link { color: var(--site-muted); font-size: 13px; font-weight: 800; text-decoration: none; }
+.blitz-secondary-link:hover { color: var(--site-mint); }
+
+.blitz-alert { margin: 22px auto 16px; max-width: 420px; padding: 10px 12px; border: 1px solid rgba(239, 143, 154, .3); border-radius: 8px; background: rgba(239, 143, 154, .07); color: #f0abb3; font-size: 12px; }
+.blitz-timer { margin: 20px 0 8px; color: var(--site-mint); font-family: "Courier New", monospace; font-size: clamp(2.6rem, 10vw, 4.1rem); font-weight: 900; letter-spacing: -.08em; }
+.blitz-queue-mark { position: relative; margin: 0 auto 20px; }
+.blitz-queue-mark::before { content: ""; width: 16px; height: 16px; border: 2px solid rgba(103,231,191,.28); border-top-color: var(--site-mint); border-radius: 50%; }
+.blitz-queue-mark span { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--site-mint); }
+.blitz-cancel-button { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; padding: 9px 13px; border: 1px solid rgba(239,143,154,.3); border-radius: 8px; background: rgba(239,143,154,.06); color: #efabb4; font-size: 12px; font-weight: 800; cursor: pointer; }
+.blitz-cancel-button:disabled { opacity: .6; cursor: wait; }
+
+.blitz-versus-row { display: flex; align-items: center; justify-content: center; gap: clamp(18px, 7vw, 58px); margin: 28px 0 22px; }
+.blitz-player { min-width: 92px; text-align: center; }
+.blitz-avatar { display: grid; width: 58px; height: 58px; place-items: center; margin: 0 auto 9px; border: 2px solid; border-radius: 10px; background: #081622; font-size: 20px; font-weight: 900; }
+.blitz-player strong, .blitz-player span { display: block; }
+.blitz-player strong { overflow: hidden; max-width: 130px; color: #dce9ef; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.blitz-player span { margin-top: 4px; font-family: "Courier New", monospace; font-size: 9px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.blitz-player-mint .blitz-avatar { border-color: var(--site-mint); color: var(--site-mint); }
+.blitz-player-mint span { color: var(--site-mint); }
+.blitz-player-rose .blitz-avatar { border-color: #ef8f9a; color: #ef8f9a; }
+.blitz-player-rose span { color: #ef8f9a; }
+.blitz-versus { color: #7890a4; font-family: "Courier New", monospace; font-size: 13px; font-weight: 900; }
+.blitz-countdown { color: var(--site-mint); font-family: "Courier New", monospace; font-size: clamp(3.2rem, 12vw, 5rem); font-weight: 900; letter-spacing: -.1em; line-height: 1; }
+.blitz-icon-success { color: #f2c76a; border-color: rgba(242,199,106,.3); background: rgba(242,199,106,.08); }
+
+.blitz-info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+.blitz-info-item { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 13px; border: 1px solid var(--site-edge); border-radius: 9px; background: rgba(11,27,42,.72); }
+.blitz-info-icon { display: grid; width: 28px; height: 28px; flex: 0 0 auto; place-items: center; border-radius: 7px; background: rgba(103,231,191,.08); color: var(--site-mint); }
+.blitz-info-item span:last-child, .blitz-info-item strong { display: block; }
+.blitz-info-item span:last-child { color: #71889c; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.blitz-info-item strong { margin-top: 4px; overflow: hidden; color: #c5d5dd; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (max-width: 620px) {
+  .tradebattle-site.arena-app .blitz-page { padding: 24px 14px 42px; }
+  .blitz-header { align-items: flex-start; }
+  .blitz-header-mark { display: none; }
+  .blitz-stage-card { min-height: 370px; padding: 34px 18px; }
+  .blitz-actions { align-items: stretch; flex-direction: column; gap: 12px; }
+  .blitz-primary-link, .blitz-primary-button { width: 100%; }
+  .blitz-info-grid { grid-template-columns: 1fr; }
+  .blitz-resume-row { align-items: flex-start; flex-direction: column; }
 }
 
 @media (max-width: 640px) {

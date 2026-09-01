@@ -27,10 +27,10 @@ export function SimplifiedSidebar() {
 
   const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: Home, iconColor: '#28C76F' },
+      { href: "/hub", label: t('hub'), icon: Home, iconColor: '#67E7BF' },
       { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#67E7BF' },
       { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#F2C76A' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#E3B341' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#F2C76A' },
       { href: "/people", label: t('people'), icon: Users, iconColor: '#8EB6D1' },
       { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F2C76A' },
       { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
@@ -96,7 +96,7 @@ export function SimplifiedSidebar() {
     <>
       <div
         data-tour="sidebar"
-        className="hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40"
+        className="tradebattle-sidebar hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40"
         style={{
           width: expanded ? '256px' : '64px',
           backgroundColor: '#071522',

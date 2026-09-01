@@ -30,8 +30,8 @@ const typeIcons: Record<string, any> = {
 };
 
 const typeColors: Record<string, string> = {
-  tournament_invite: '#00A3FF',
-  tournament_invite_accepted: '#28C76F',
+  tournament_invite: '#67E7BF',
+  tournament_invite_accepted: '#67E7BF',
   chat_mention: '#3B82F6',
 };
 
@@ -222,7 +222,7 @@ export function NotificationDropdown() {
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-[95vw] max-w-[380px]" style={{ background: "#0C1829", borderColor: "#0E2040" }}>
+      <DropdownMenuContent align="end" className="w-[95vw] max-w-[380px]" style={{ background: "#0B1B2A", borderColor: "#0E2040" }}>
         <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: "1px solid #0E2040" }}>
           <span className="text-sm font-semibold" style={{ color: "#C9D1E2" }}>Alerts</span>
           {unreadCount > 0 && (
@@ -230,7 +230,7 @@ export function NotificationDropdown() {
               variant="ghost"
               size="sm"
               className="h-9 text-xs min-h-[44px]"
-              style={{ color: "#00A3FF" }}
+              style={{ color: "#67E7BF" }}
               onClick={() => markAllReadMutation.mutate()}
             >
               <CheckCheck className="w-3 h-3 mr-1" />
@@ -262,7 +262,7 @@ export function NotificationDropdown() {
                       className="mt-1 w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                       style={{
                         backgroundColor: notif.read ? "#1a2332" : "rgba(0, 163, 255, 0.12)",
-                        color: notif.read ? "#8A93A6" : (typeColors[notif.type] || "#00A3FF")
+                        color: notif.read ? "#8A93A6" : (typeColors[notif.type] || "#67E7BF")
                       }}
                     >
                       {getIcon(notif.type, notif.read ? undefined : typeColors[notif.type])}
@@ -273,7 +273,7 @@ export function NotificationDropdown() {
                       <p className="text-xs mt-1" style={{ color: "#5f6b7a" }}>{timeAgo(notif.createdAt)}</p>
                     </div>
                     {!notif.read && (
-                      <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: "#00A3FF" }} />
+                      <div className="w-2 h-2 rounded-full mt-2 flex-shrink-0" style={{ backgroundColor: "#67E7BF" }} />
                     )}
                   </div>
 

@@ -32,16 +32,16 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #122A4A;
+  background: #071522;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #2B3A4C;
+  background: #243848;
   border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3A4A5C;
+  background: #335364;
 }
 
 :root {
@@ -58,11 +58,11 @@ html {
   --popover-foreground: 215 20% 85%;
 
   /* Primary - Blue (main interaction color) */
-  --primary: 204 100% 50%;  /* #00A3FF */
+  --primary: 204 100% 50%;  /* #67E7BF */
   --primary-foreground: 0 0% 100%;
 
   /* Gold - prestige/reward only */
-  --gold: 43 71% 57%;  /* #E3B341 */
+  --gold: 43 71% 57%;  /* #F2C76A */
 
   /* Secondary */
   --secondary: 213 68% 27%;  /* #193762 */
@@ -96,11 +96,11 @@ html {
   /* Status / Market Colors */
   --profit-green: 160 84% 39%;  /* #10B981 */
   --loss-red: 0 84% 60%;  /* #EF4444 */
-  --gold-highlight: 43 71% 57%;  /* #E3B341 */
+  --gold-highlight: 43 71% 57%;  /* #F2C76A */
 
   /* New accent colors */
   --cyan: 189 94% 43%;  /* #06B6D4 */
-  --purple: 258 90% 66%;  /* #8B5CF6 */
+  --purple: 258 90% 66%;  /* #9AB5C2 */
 
   /* Shadows */
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.03);
@@ -168,7 +168,7 @@ html {
   --popover: 213 70% 25%;
   --popover-foreground: 215 16% 72%;
 
-  --primary: 204 100% 50%;  /* #00A3FF */
+  --primary: 204 100% 50%;  /* #67E7BF */
   --primary-foreground: 0 0% 100%;
 
   --secondary: 213 68% 27%;  /* #193762 */
@@ -369,7 +369,7 @@ html {
   }
 
   .text-gold {
-    color: #E3B341;
+    color: #F2C76A;
   }
 
   .text-cyan {
@@ -377,7 +377,7 @@ html {
   }
 
   .text-purple {
-    color: #8B5CF6;
+    color: #9AB5C2;
   }
 
   .bg-profit {
@@ -389,7 +389,7 @@ html {
   }
 
   .bg-gold {
-    background-color: #E3B341;
+    background-color: #F2C76A;
   }
 
   .bg-cyan {
@@ -397,7 +397,7 @@ html {
   }
 
   .bg-purple {
-    background-color: #8B5CF6;
+    background-color: #9AB5C2;
   }
 
   /* Backgrounds */
@@ -411,7 +411,7 @@ html {
 
   /* Gradient button styles */
   .btn-gradient-primary {
-    background: linear-gradient(135deg, #00A3FF, #0066CC) !important;
+    background: linear-gradient(135deg, #67E7BF, #2EBF9A) !important;
     color: #FFFFFF !important;
     font-weight: 700;
     border: none !important;
@@ -533,7 +533,7 @@ html {
     left: 50%;
     width: 0;
     height: 2px;
-    background: linear-gradient(90deg, #06B6D4, #8B5CF6);
+    background: linear-gradient(90deg, #06B6D4, #9AB5C2);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateX(-50%);
   }
@@ -548,11 +548,11 @@ html {
   }
 
   .border-gold {
-    border-color: #E3B341;
+    border-color: #F2C76A;
   }
 
   .border-purple {
-    border-color: #8B5CF6;
+    border-color: #9AB5C2;
   }
 
   /* Game card — slightly elevated with blue tint border */
@@ -571,7 +571,7 @@ html {
 
   /* Status indicators */
   .status-active {
-    background: linear-gradient(135deg, #00C853, #00A3FF);
+    background: linear-gradient(135deg, #00C853, #67E7BF);
     color: #FFFFFF;
     font-weight: 700;
     border-radius: 999px;
@@ -601,7 +601,7 @@ html {
   }
 
   input:focus, textarea:focus, select:focus {
-    border-color: #00A3FF;
+    border-color: #67E7BF;
     outline: none;
     box-shadow: 0 0 0 2px rgba(0, 163, 255, 0.2);
   }
@@ -634,7 +634,7 @@ html {
 
   /* Button Styles */
   .btn-primary {
-    background: linear-gradient(135deg, #E3B341, #F59E0B);
+    background: linear-gradient(135deg, #F2C76A, #F59E0B);
     border: none;
     color: #080C14;
     font-weight: 600;
@@ -700,7 +700,7 @@ html {
   }
 
   .gradient-text-gold {
-    color: #E3B341;
+    color: #F2C76A;
     font-weight: 600;
   }
 
@@ -956,7 +956,7 @@ textarea:focus-visible {
   ),
   radial-gradient(
     circle at 80% 20%,
-    #E3B341 0%,
+    #F2C76A 0%,
     transparent 50%
   ),
   radial-gradient(
@@ -981,7 +981,7 @@ textarea:focus-visible {
 }
 
 .status-waiting {
-  background: linear-gradient(135deg, #E3B341, #F59E0B);
+  background: linear-gradient(135deg, #F2C76A, #F59E0B);
   color: #080C14;
   @apply font-semibold;
 }
@@ -1025,10 +1025,10 @@ textarea:focus-visible {
 
 /* Card accent variants - colored left border */
 .card-accent-gold {
-  border-left: 3px solid #E3B341;
+  border-left: 3px solid #F2C76A;
 }
 .card-accent-green {
-  border-left: 3px solid #28C76F;
+  border-left: 3px solid #67E7BF;
 }
 .card-accent-blue {
   border-left: 3px solid #3B82F6;
@@ -1067,7 +1067,7 @@ textarea:focus-visible {
   bottom: 25%;
   width: 3px;
   border-radius: 0 3px 3px 0;
-  background: #E3B341;
+  background: #F2C76A;
   box-shadow: 0 0 8px rgba(227, 179, 65, 0.4);
 }
 
@@ -1217,9 +1217,9 @@ body {
 }
 
 /* Normalize the legacy per-page navy swatches without flattening status colors. */
-.arena-app [style*="#0A1F3D"],
-.arena-app [style*="#081729"],
-.arena-app [style*="#0C1829"],
+.arena-app [style*="#0A1C2C"],
+.arena-app [style*="#081622"],
+.arena-app [style*="#0B1B2A"],
 .arena-app [style*="#0C1A2E"],
 .arena-app [style*="#0B1626"],
 .arena-app [style*="#0B162"],
@@ -1244,16 +1244,16 @@ body {
   border-color: rgba(103, 231, 191, 0.26) !important;
 }
 
-.arena-app [style*="linear-gradient(135deg, #00A3FF"],
-.arena-app [style*="linear-gradient(135deg,#00A3FF"] {
+.arena-app [style*="linear-gradient(135deg, #67E7BF"],
+.arena-app [style*="linear-gradient(135deg,#67E7BF"] {
   background: linear-gradient(135deg, #67e7bf, #2ebf9a) !important;
   color: #06151c !important;
 }
 
-.arena-app [style*="color: '#00A3FF'"],
-.arena-app [style*="color: #00A3FF"],
-.arena-app [style*="color: '#8B5CF6'"],
-.arena-app [style*="color: #8B5CF6"] {
+.arena-app [style*="color: '#67E7BF'"],
+.arena-app [style*="color: #67E7BF"],
+.arena-app [style*="color: '#9AB5C2'"],
+.arena-app [style*="color: #9AB5C2"] {
   color: #67e7bf !important;
 }
 
@@ -1276,6 +1276,31 @@ body {
 .arena-app [role="tablist"] {
   background: rgba(5, 17, 31, 0.42) !important;
   border-color: var(--arena-edge) !important;
+}
+
+/* Tradebattle system tokens: one calm surface hierarchy across every route. */
+:root,
+.dark {
+  --background: 211 66% 7%;
+  --foreground: 210 40% 96%;
+  --card: 207 59% 11%;
+  --card-foreground: 210 35% 92%;
+  --popover: 207 59% 11%;
+  --popover-foreground: 210 35% 92%;
+  --primary: 160 70% 65%;
+  --primary-foreground: 204 66% 7%;
+  --secondary: 205 58% 15%;
+  --secondary-foreground: 210 35% 92%;
+  --muted: 205 48% 14%;
+  --muted-foreground: 212 23% 62%;
+  --accent: 160 70% 65%;
+  --accent-foreground: 204 66% 7%;
+  --destructive: 0 72% 64%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 205 36% 25%;
+  --input: 211 65% 9%;
+  --ring: 160 70% 65%;
+  --radius: 0.625rem;
 }
 
 .arena-app [role="tab"][data-state="active"] {

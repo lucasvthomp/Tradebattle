@@ -8,7 +8,7 @@ export default function Footer() {
   const { user } = useAuth();
   const isPublicSite = !user;
   return (
-    <footer className="bg-card border-t border-border py-12" style={{ background: '#07111f', borderColor: 'rgba(98, 228, 189, 0.12)' }}>
+    <footer className="tradebattle-footer bg-card border-t border-border py-12" style={{ background: '#07111f', borderColor: 'rgba(98, 228, 189, 0.12)' }}>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">

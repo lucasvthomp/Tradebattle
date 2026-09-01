@@ -30,7 +30,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
   const isPublicSite = !user;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(5, 17, 31, 0.9)', borderBottom: '1px solid rgba(103, 231, 191, 0.14)', boxShadow: '0 10px 32px rgba(0, 0, 0, 0.24)' }}>
+    <header className="tradebattle-header fixed top-0 left-0 right-0 z-50 backdrop-blur-md" style={{ backgroundColor: 'rgba(5, 17, 31, 0.9)', borderBottom: '1px solid rgba(103, 231, 191, 0.14)', boxShadow: '0 10px 32px rgba(0, 0, 0, 0.24)' }}>
       <div className="container mx-auto px-4">
         <nav className="flex items-center h-16 relative">
           {/* Left side - Logo and Market Status */}
@@ -39,7 +39,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #9af1d1, #42c99f)', boxShadow: '0 0 18px rgba(98, 228, 189, 0.2)' }}>
                 <span className="font-black text-sm" style={{ color: '#06151c' }}>T</span>
               </div>
-              <span className="text-xl font-display font-bold tracking-tight" style={{ color: '#F2FBF8' }}>TRADEBATTLE</span>
+              <span className="tradebattle-header-brand text-xl font-display font-bold tracking-tight" style={{ color: '#F2FBF8' }}>TRADEBATTLE</span>
             </Link>
 
             {/* Market Status Clock - hide on mobile */}
@@ -198,7 +198,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#28C76F' }} />
+                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Hub</span>
                     </Button>
                   </Link>
@@ -208,7 +208,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Swords className="w-5 h-5 mr-3" style={{ color: '#00A3FF' }} />
+                      <Swords className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Arenas</span>
                     </Button>
                   </Link>
@@ -218,7 +218,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Zap className="w-5 h-5 mr-3" style={{ color: '#8B5CF6' }} />
+                      <Zap className="w-5 h-5 mr-3" style={{ color: '#9AB5C2' }} />
                       <span className="text-base">Blitz</span>
                     </Button>
                   </Link>
@@ -228,7 +228,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <Trophy className="w-5 h-5 mr-3" style={{ color: '#00A3FF' }} />
+                      <Trophy className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Standings</span>
                     </Button>
                   </Link>

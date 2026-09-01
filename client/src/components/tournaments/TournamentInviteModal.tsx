@@ -97,7 +97,7 @@ export default function TournamentInviteModal({
       <DialogContent
         className="max-w-md"
         style={{
-          background: '#0C1829',
+          background: '#0B1B2A',
           border: '1px solid #0E2040'
         }}
       >
@@ -135,7 +135,7 @@ export default function TournamentInviteModal({
                         background: selectedFriends.includes(friend.id)
                           ? 'rgba(0, 163, 255, 0.1)'
                           : '#091525',
-                        border: `1px solid ${selectedFriends.includes(friend.id) ? '#00A3FF' : '#0E2040'}`
+                        border: `1px solid ${selectedFriends.includes(friend.id) ? '#67E7BF' : '#0E2040'}`
                       }}
                       onClick={() => handleToggleFriend(friend.id)}
                     >
@@ -183,8 +183,8 @@ export default function TournamentInviteModal({
                         variant="outline"
                         style={{
                           background: 'rgba(40, 199, 111, 0.1)',
-                          color: '#28C76F',
-                          border: '1px solid #28C76F'
+                          color: '#67E7BF',
+                          border: '1px solid #67E7BF'
                         }}
                       >
                         <UserCheck size={12} className="mr-1" />
@@ -217,7 +217,7 @@ export default function TournamentInviteModal({
               disabled={selectedFriends.length === 0 || inviteMutation.isPending}
               className="flex-1"
               style={{
-                background: selectedFriends.length === 0 ? '#0E2040' : '#00A3FF',
+                background: selectedFriends.length === 0 ? '#0E2040' : '#67E7BF',
                 color: selectedFriends.length === 0 ? '#8A93A6' : '#091525',
                 border: 'none'
               }}

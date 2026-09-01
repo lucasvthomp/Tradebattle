@@ -106,7 +106,7 @@ export function TourCard({ currentStep, onNext, onSkip }: TourCardProps) {
         style={{
           ...cardStyle,
           background: 'transparent',
-          border: "2px solid #00A3FF",
+          border: "2px solid #67E7BF",
           boxShadow: "0 8px 32px rgba(0,163,255,0.12)",
           borderRadius: 16,
           padding: "24px",
@@ -165,7 +165,7 @@ export function TourCard({ currentStep, onNext, onSkip }: TourCardProps) {
             style={{
               height: "100%",
               borderRadius: 2,
-              background: "linear-gradient(90deg, #00A3FF, #10B981)",
+              background: "linear-gradient(90deg, #67E7BF, #10B981)",
             }}
           />
         </div>
@@ -195,7 +195,7 @@ export function TourCard({ currentStep, onNext, onSkip }: TourCardProps) {
               padding: "10px 16px",
               borderRadius: 10,
               border: "none",
-              background: "linear-gradient(135deg, #00A3FF, #0090E0)",
+              background: "linear-gradient(135deg, #67E7BF, #2EBF9A)",
               color: "#091525",
               fontSize: 14,
               fontWeight: 700,

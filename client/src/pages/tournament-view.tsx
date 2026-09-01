@@ -10,9 +10,9 @@ import {
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 
-const UP = "#00FF87";
+const UP = "#67E7BF";
 const DOWN = "#FF3D5A";
-const GOLD = "#E3B341";
+const GOLD = "#F2C76A";
 
 function fmt(n: number) {
   return "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -47,7 +47,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
   const TypeIcon = typeIcon;
 
   return (
-    <div className="arena-page-shell" style={{ minHeight: "calc(100dvh - 4rem)", background: "transparent", padding: "24px 20px 48px" }}>
+    <div className="arena-page-shell tournament-view-page" style={{ minHeight: "calc(100dvh - 4rem)", background: "transparent", padding: "24px 20px 48px" }}>
       <div style={{ maxWidth: "900px", margin: "0 auto" }}>
 
         {/* Back */}
@@ -63,7 +63,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
 
         {/* Tournament header */}
         <div style={{
-          background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
+          background: "linear-gradient(135deg, #0A1C2C 0%, #081622 100%)",
           border: `1px solid ${isLive ? "rgba(0,255,135,0.25)" : "rgba(0,163,255,0.15)"}`,
           borderRadius: "20px", padding: "24px 28px", marginBottom: "20px",
           position: "relative", overflow: "hidden",
@@ -78,7 +78,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                     padding: "6px", borderRadius: "10px",
                     background: "rgba(0,163,255,0.1)", border: "1px solid rgba(0,163,255,0.2)",
                   }}>
-                    <TypeIcon size={16} color="#00A3FF" />
+                    <TypeIcon size={16} color="#67E7BF" />
                   </div>
                   <h1 style={{ fontSize: "clamp(1.2rem, 3vw, 1.8rem)", fontWeight: 900, color: "#FFFFFF", margin: 0, letterSpacing: "-0.02em" }}>
                     {tournament?.name}
@@ -110,7 +110,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                       padding: "3px 10px", borderRadius: "20px",
                       background: "rgba(0,163,255,0.1)", border: "1px solid rgba(0,163,255,0.25)",
                     }}>
-                      <span style={{ fontSize: "11px", fontWeight: 800, color: "#00A3FF" }}>WAITING FOR OPENING BELL</span>
+                      <span style={{ fontSize: "11px", fontWeight: 800, color: "#67E7BF" }}>WAITING FOR OPENING BELL</span>
                     </div>
                   )}
                   <span style={{ fontSize: "12px", color: "#4B6080", fontWeight: 600 }}>
@@ -153,7 +153,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
 
           {/* Leaderboard */}
           <div style={{
-            background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
+            background: "linear-gradient(135deg, #0A1C2C 0%, #081622 100%)",
             border: "1px solid rgba(0,163,255,0.12)", borderRadius: "20px",
             overflow: "hidden",
           }}>
@@ -169,7 +169,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                 {!isLoading && (
                   <span style={{
                     fontSize: "11px", fontWeight: 700, padding: "1px 8px", borderRadius: "20px",
-                    background: "rgba(0,163,255,0.1)", border: "1px solid rgba(0,163,255,0.2)", color: "#00A3FF",
+                    background: "rgba(0,163,255,0.1)", border: "1px solid rgba(0,163,255,0.2)", color: "#67E7BF",
                   }}>
                     {participants.length} players
                   </span>
@@ -204,7 +204,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                   const pctChange = startingBalance > 0 ? ((p.totalValue - startingBalance) / startingBalance) * 100 : 0;
                   const isUp = pctChange >= 0;
                   const isSelected = selectedUserId === p.userId;
-                  const rankColors = ["#E3B341", "#94A3B8", "#CD7F32"];
+                  const rankColors = ["#F2C76A", "#94A3B8", "#CD7F32"];
                   const rankColor = i < 3 ? rankColors[i] : "#4B6080";
 
                   return (
@@ -218,7 +218,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                         borderBottom: "1px solid rgba(255,255,255,0.04)",
                         cursor: "pointer",
                         background: isSelected ? "rgba(0,163,255,0.06)" : "transparent",
-                        borderLeft: isSelected ? "3px solid #00A3FF" : "3px solid transparent",
+                        borderLeft: isSelected ? "3px solid #67E7BF" : "3px solid transparent",
                         transition: "all 0.15s",
                       }}
                     >
@@ -281,7 +281,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               style={{
-                background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
+                background: "linear-gradient(135deg, #0A1C2C 0%, #081622 100%)",
                 border: "1px solid rgba(0,163,255,0.15)", borderRadius: "20px",
                 overflow: "hidden", alignSelf: "start",
               }}
@@ -297,7 +297,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
                     width: "32px", height: "32px", borderRadius: "50%",
                     background: "rgba(0,163,255,0.12)", border: "2px solid rgba(0,163,255,0.3)",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: "12px", fontWeight: 900, color: "#00A3FF",
+                    fontSize: "12px", fontWeight: 900, color: "#67E7BF",
                   }}>
                     {selectedParticipant.username?.[0]?.toUpperCase()}
                   </div>
@@ -318,7 +318,7 @@ function SpectatorView({ tournament, tournamentId }: { tournament: any; tourname
               <div style={{ padding: "16px 20px", borderBottom: "1px solid rgba(0,163,255,0.06)" }}>
                 {[
                   { label: "Total Value", value: fmt(selectedParticipant.totalValue), color: "#FFFFFF" },
-                  { label: "Cash", value: fmt(selectedParticipant.balance), color: "#00A3FF" },
+                  { label: "Cash", value: fmt(selectedParticipant.balance), color: "#67E7BF" },
                   { label: "Holdings", value: fmt(selectedParticipant.stockValue || 0), color: "#C9D1E2" },
                   {
                     label: "P&L",
@@ -427,7 +427,7 @@ export default function TournamentView() {
       <div style={{ height: "calc(100dvh - 4rem)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
           <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Invalid arena</h2>
-          <Link href="/tournaments"><span style={{ color: "#00A3FF", cursor: "pointer" }}>Scout arenas</span></Link>
+          <Link href="/tournaments"><span style={{ color: "#67E7BF", cursor: "pointer" }}>Scout arenas</span></Link>
         </div>
       </div>
     );
@@ -447,7 +447,7 @@ export default function TournamentView() {
         <div style={{ textAlign: "center" }}>
           <Trophy size={48} style={{ color: "#1C3E72", margin: "0 auto 12px", display: "block" }} />
           <h2 style={{ color: "#C9D1E2", fontWeight: 800 }}>Arena not found</h2>
-          <Link href="/tournaments"><span style={{ color: "#00A3FF", cursor: "pointer" }}>Scout arenas</span></Link>
+          <Link href="/tournaments"><span style={{ color: "#67E7BF", cursor: "pointer" }}>Scout arenas</span></Link>
         </div>
       </div>
     );

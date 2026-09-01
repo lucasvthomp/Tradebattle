@@ -197,10 +197,10 @@ function PaymentsDebugTab() {
   };
 
   return (
-    <div className="arena-page-shell space-y-6">
+    <div className="arena-page-shell admin-page space-y-6">
       <Card style={{ backgroundColor: '#142E5A', borderColor: '#1C3E72' }}>
         <CardHeader>
-          <CardTitle style={{ color: '#00A3FF' }}>Crypto Payment Debugger</CardTitle>
+          <CardTitle style={{ color: '#67E7BF' }}>Crypto Payment Debugger</CardTitle>
           <CardDescription style={{ color: '#8A93A6' }}>
             Check NOWPayments status and manually credit confirmed payments
           </CardDescription>
@@ -217,7 +217,7 @@ function PaymentsDebugTab() {
             <Button
               onClick={checkPayment}
               disabled={loading}
-              style={{ backgroundColor: '#00A3FF', color: '#FFFFFF' }}
+              style={{ backgroundColor: '#67E7BF', color: '#FFFFFF' }}
             >
               <Search className="w-4 h-4 mr-2" />
               {loading ? "Checking..." : "Check"}
@@ -240,7 +240,7 @@ function PaymentsDebugTab() {
                           <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Payment Status</p>
                           <Badge
                             style={{
-                              backgroundColor: result.paymentData.payment_status === 'finished' ? '#28C76F' : '#00A3FF',
+                              backgroundColor: result.paymentData.payment_status === 'finished' ? '#67E7BF' : '#67E7BF',
                               color: '#FFFFFF'
                             }}
                           >
@@ -256,7 +256,7 @@ function PaymentsDebugTab() {
                           <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Already Credited</p>
                           <Badge
                             style={{
-                              backgroundColor: result.alreadyCredited ? '#28C76F' : '#FF4F58',
+                              backgroundColor: result.alreadyCredited ? '#67E7BF' : '#FF4F58',
                               color: '#FFFFFF'
                             }}
                           >
@@ -273,7 +273,7 @@ function PaymentsDebugTab() {
                           <p className="text-sm mb-1" style={{ color: '#8A93A6' }}>Should Credit</p>
                           <Badge
                             style={{
-                              backgroundColor: result.shouldCredit ? '#28C76F' : '#8A93A6',
+                              backgroundColor: result.shouldCredit ? '#67E7BF' : '#8A93A6',
                               color: '#FFFFFF'
                             }}
                           >
@@ -287,7 +287,7 @@ function PaymentsDebugTab() {
                   {/* Payment Details */}
                   <Card style={{ backgroundColor: '#0E2440', borderColor: '#1C3E72' }}>
                     <CardHeader>
-                      <CardTitle className="text-lg" style={{ color: '#28C76F' }}>Payment Data</CardTitle>
+                      <CardTitle className="text-lg" style={{ color: '#67E7BF' }}>Payment Data</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <pre className="bg-black/30 p-4 rounded overflow-auto text-xs" style={{ color: '#8A93A6' }}>
@@ -300,7 +300,7 @@ function PaymentsDebugTab() {
                   {result.user && (
                     <Card style={{ backgroundColor: '#0E2440', borderColor: '#1C3E72' }}>
                       <CardHeader>
-                        <CardTitle className="text-lg" style={{ color: '#28C76F' }}>User</CardTitle>
+                        <CardTitle className="text-lg" style={{ color: '#67E7BF' }}>User</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="space-y-2">
@@ -324,7 +324,7 @@ function PaymentsDebugTab() {
                       onClick={manualCredit}
                       disabled={loading}
                       className="w-full"
-                      style={{ backgroundColor: '#28C76F', color: '#FFFFFF', fontSize: '16px', padding: '24px' }}
+                      style={{ backgroundColor: '#67E7BF', color: '#FFFFFF', fontSize: '16px', padding: '24px' }}
                     >
                       <DollarSign className="w-5 h-5 mr-2" />
                       {loading ? "Processing..." : `Manually Credit $${result.paymentData.price_amount} to ${result.user.username}`}
@@ -760,7 +760,7 @@ export default function Admin() {
   if (authLoading || usersLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[calc(100dvh-4rem)] gap-3">
-        <div className="animate-spin rounded-full h-10 w-10 border-2 border-t-transparent" style={{ borderColor: '#00A3FF', borderTopColor: 'transparent' }}></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-2 border-t-transparent" style={{ borderColor: '#67E7BF', borderTopColor: 'transparent' }}></div>
         <span className="text-sm font-medium" style={{ color: '#8A93A6' }}>Loading admin data...</span>
       </div>
     );
@@ -782,15 +782,15 @@ export default function Admin() {
         {/* Header */}
         <motion.div variants={fadeInUp}>
           <div className="flex items-center gap-4 mb-2">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #00A3FF, #0060CC)', boxShadow: '0 0 24px rgba(0, 163, 255, 0.4)' }}>
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #67E7BF, #2EBF9A)', boxShadow: '0 0 24px rgba(0, 163, 255, 0.4)' }}>
               <Shield className="w-6 h-6 text-white" />
             </div>
             <div>
               <h1 className="text-3xl font-black tracking-tight" style={{ color: '#C9D1E2' }}>Admin Dashboard</h1>
               <p className="text-sm" style={{ color: '#8A93A6' }}>Comprehensive site management and diagnostics</p>
             </div>
-            <div className="ml-auto hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: 'rgba(0, 163, 255, 0.12)', border: '1px solid rgba(0, 163, 255, 0.3)', color: '#00A3FF' }}>
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#00A3FF' }} />
+            <div className="ml-auto hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style={{ background: 'rgba(0, 163, 255, 0.12)', border: '1px solid rgba(0, 163, 255, 0.3)', color: '#67E7BF' }}>
+              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: '#67E7BF' }} />
               ADMIN ACCESS
             </div>
           </div>
@@ -800,15 +800,15 @@ export default function Admin() {
         <motion.div variants={fadeInUp}>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 lg:grid-cols-9 mb-2" style={{ background: '#142E5A', border: '1px solid #1C3E72' }}>
-              <TabsTrigger value="overview" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Overview</TabsTrigger>
-              <TabsTrigger value="users" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Users</TabsTrigger>
-              <TabsTrigger value="tournaments" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Arenas</TabsTrigger>
-              <TabsTrigger value="announcements" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Announce</TabsTrigger>
-              <TabsTrigger value="revenue" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Revenue</TabsTrigger>
-              <TabsTrigger value="transactions" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Txns</TabsTrigger>
-              <TabsTrigger value="payments" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Payments</TabsTrigger>
-              <TabsTrigger value="promo-codes" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>Promos</TabsTrigger>
-              <TabsTrigger value="system" className="data-[state=active]:text-[#00A3FF]" style={{ color: '#8A93A6' }}>System</TabsTrigger>
+              <TabsTrigger value="overview" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Overview</TabsTrigger>
+              <TabsTrigger value="users" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Users</TabsTrigger>
+              <TabsTrigger value="tournaments" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Arenas</TabsTrigger>
+              <TabsTrigger value="announcements" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Announce</TabsTrigger>
+              <TabsTrigger value="revenue" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Revenue</TabsTrigger>
+              <TabsTrigger value="transactions" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Txns</TabsTrigger>
+              <TabsTrigger value="payments" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Payments</TabsTrigger>
+              <TabsTrigger value="promo-codes" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>Promos</TabsTrigger>
+              <TabsTrigger value="system" className="data-[state=active]:text-[#67E7BF]" style={{ color: '#8A93A6' }}>System</TabsTrigger>
             </TabsList>
 
             {/* ===== TAB 1: OVERVIEW ===== */}
@@ -833,11 +833,11 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Total arena cash</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(40,199,111,0.15)' }}>
-                      <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
+                      <DollarSign className="h-4 w-4" style={{ color: '#67E7BF' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-black" style={{ color: '#28C76F' }}>
+                    <div className="text-3xl font-black" style={{ color: '#67E7BF' }}>
                       ${(adminStats.totalSiteCash || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>Across all players</p>
@@ -849,11 +849,11 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Active Wagered</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,163,255,0.15)' }}>
-                      <TrendingUp className="h-4 w-4" style={{ color: '#00A3FF' }} />
+                      <TrendingUp className="h-4 w-4" style={{ color: '#67E7BF' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-black" style={{ color: '#00A3FF' }}>
+                    <div className="text-3xl font-black" style={{ color: '#67E7BF' }}>
                       ${(adminStats.activeWagered || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </div>
                     <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>In active arena prize pools</p>
@@ -865,11 +865,11 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Live arenas</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(227,179,65,0.15)' }}>
-                      <Trophy className="h-4 w-4" style={{ color: '#E3B341' }} />
+                      <Trophy className="h-4 w-4" style={{ color: '#F2C76A' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-3xl font-black" style={{ color: '#E3B341' }}>{adminStats.activeTournaments || 0}</div>
+                    <div className="text-3xl font-black" style={{ color: '#F2C76A' }}>{adminStats.activeTournaments || 0}</div>
                     <p className="text-xs mt-1" style={{ color: '#8A93A6' }}>Currently running</p>
                   </CardContent>
                 </Card>
@@ -879,7 +879,7 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Trades Today</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,163,255,0.12)' }}>
-                      <BarChart3 className="h-4 w-4" style={{ color: '#00A3FF' }} />
+                      <BarChart3 className="h-4 w-4" style={{ color: '#67E7BF' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -908,7 +908,7 @@ export default function Admin() {
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                      <Trophy className="h-5 w-5" style={{ color: '#00A3FF' }} />
+                      <Trophy className="h-5 w-5" style={{ color: '#67E7BF' }} />
                       Live arenas
                     </CardTitle>
                   </CardHeader>
@@ -928,14 +928,14 @@ export default function Admin() {
                               <span style={{ color: '#8A93A6' }}>
                                 Entry fee: ${parseFloat(tournament.buyInAmount || 0).toFixed(2)}
                               </span>
-                              <span style={{ color: '#00A3FF' }}>
+                              <span style={{ color: '#67E7BF' }}>
                                 Pot: ${parseFloat(tournament.currentPot || 0).toFixed(2)}
                               </span>
                               <Badge variant="outline" style={{ borderColor: '#1C3E72', color: '#C9D1E2' }}>
                                 <Users className="h-3 w-3 mr-1" />
                                 {tournament.memberCount}
                               </Badge>
-                              <span style={{ color: '#28C76F' }}>
+                              <span style={{ color: '#67E7BF' }}>
                                 {days > 0 ? `${days}d ` : ''}{hours}h left
                               </span>
                             </div>
@@ -1005,7 +1005,7 @@ export default function Admin() {
                       {usersLoading ? (
                         <TableRow>
                           <TableCell colSpan={7} className="text-center py-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#67E7BF' }}></div>
                             <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading users...</p>
                           </TableCell>
                         </TableRow>
@@ -1014,7 +1014,7 @@ export default function Admin() {
                           <TableCell>
                             <div className="flex items-center gap-1">
                               {u.subscriptionTier === 'administrator' && (
-                                <Crown className="h-3 w-3" style={{ color: '#00A3FF' }} />
+                                <Crown className="h-3 w-3" style={{ color: '#67E7BF' }} />
                               )}
                               <span className="font-mono text-sm" style={{ color: '#C9D1E2' }}>{u.id}</span>
                             </div>
@@ -1028,7 +1028,7 @@ export default function Admin() {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <span className="font-mono text-sm" style={{ color: '#28C76F' }}>
+                            <span className="font-mono text-sm" style={{ color: '#67E7BF' }}>
                               ${parseFloat(u.siteCash || "0").toLocaleString()}
                             </span>
                           </TableCell>
@@ -1044,10 +1044,10 @@ export default function Admin() {
                                 <Badge className="text-xs px-1.5 py-0" style={{ background: '#FF8C00', color: '#fff' }}>D-Frozen</Badge>
                               )}
                               {u.tournamentRestricted && (
-                                <Badge className="text-xs px-1.5 py-0" style={{ background: '#00A3FF', color: '#000' }}>T-Restricted</Badge>
+                                <Badge className="text-xs px-1.5 py-0" style={{ background: '#67E7BF', color: '#000' }}>T-Restricted</Badge>
                               )}
                               {!u.banned && !u.withdrawalFrozen && !u.depositFrozen && !u.tournamentRestricted && (
-                                <Badge variant="outline" className="text-xs px-1.5 py-0" style={{ borderColor: '#28C76F', color: '#28C76F' }}>Active</Badge>
+                                <Badge variant="outline" className="text-xs px-1.5 py-0" style={{ borderColor: '#67E7BF', color: '#67E7BF' }}>Active</Badge>
                               )}
                             </div>
                           </TableCell>
@@ -1102,10 +1102,10 @@ export default function Admin() {
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Pot Value</CardTitle>
-                    <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
+                    <DollarSign className="h-4 w-4" style={{ color: '#67E7BF' }} />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold" style={{ color: '#28C76F' }}>
+                    <div className="text-2xl font-bold" style={{ color: '#67E7BF' }}>
                       ${allTournaments.reduce((total: number, t: any) => total + parseFloat(t.currentPot || 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}
                     </div>
                     <p className="text-xs" style={{ color: '#8A93A6' }}>Combined prize pools</p>
@@ -1130,7 +1130,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <Trophy className="h-5 w-5" style={{ color: '#00A3FF' }} />
+                    <Trophy className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Arena management
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1141,7 +1141,7 @@ export default function Admin() {
                   <div className="space-y-4">
                     {tournamentsLoading ? (
                       <div className="text-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#67E7BF' }}></div>
                         <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading arenas...</p>
                       </div>
                     ) : (
@@ -1183,12 +1183,12 @@ export default function Admin() {
                                   <span style={{ color: '#C9D1E2' }}>${parseFloat(tournament.buyInAmount || 0).toFixed(2)}</span>
                                 </div>
                                 <div>
-                                  <span style={{ color: '#00A3FF' }}>${parseFloat(tournament.currentPot || 0).toFixed(2)}</span>
+                                  <span style={{ color: '#67E7BF' }}>${parseFloat(tournament.currentPot || 0).toFixed(2)}</span>
                                 </div>
                                 <div>
                                   {isActive ? (
                                     <div>
-                                      <div className="font-medium" style={{ color: '#28C76F' }}>
+                                      <div className="font-medium" style={{ color: '#67E7BF' }}>
                                         {days > 0 ? `${days}d ` : ''}
                                         {hours > 0 ? `${hours}h ` : ''}
                                         {minutes}m
@@ -1200,8 +1200,8 @@ export default function Admin() {
                                 </div>
                                 <div>
                                   <Badge variant="outline" style={{
-                                    borderColor: isActive ? '#28C76F' : '#FF4F58',
-                                    color: isActive ? '#28C76F' : '#FF4F58'
+                                    borderColor: isActive ? '#67E7BF' : '#FF4F58',
+                                    color: isActive ? '#67E7BF' : '#FF4F58'
                                   }}>
                                     {isActive ? 'Active' : 'Ended'}
                                   </Badge>
@@ -1249,7 +1249,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <Megaphone className="h-5 w-5" style={{ color: '#00A3FF' }} />
+                    <Megaphone className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Create System-Wide Announcement
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1299,7 +1299,7 @@ export default function Admin() {
                         className="h-20 flex flex-col gap-2"
                         style={{ borderColor: '#1C3E72' }}
                       >
-                        <Sparkles className="h-6 w-6" style={{ color: '#00A3FF' }} />
+                        <Sparkles className="h-6 w-6" style={{ color: '#67E7BF' }} />
                         <span className="text-xs">None</span>
                       </Button>
                       <Button
@@ -1307,7 +1307,7 @@ export default function Admin() {
                         className="h-20 flex flex-col gap-2"
                         style={{ borderColor: '#1C3E72' }}
                       >
-                        <PartyPopper className="h-6 w-6" style={{ color: '#00A3FF' }} />
+                        <PartyPopper className="h-6 w-6" style={{ color: '#67E7BF' }} />
                         <span className="text-xs">Confetti</span>
                       </Button>
                       <Button
@@ -1354,7 +1354,7 @@ export default function Admin() {
                       />
                     </div>
                     <div className="flex items-end">
-                      <Button className="w-full h-10" style={{ backgroundColor: '#00A3FF', color: '#FFFFFF' }}>
+                      <Button className="w-full h-10" style={{ backgroundColor: '#67E7BF', color: '#FFFFFF' }}>
                         <Send className="h-4 w-4 mr-2" />
                         Send Announcement
                       </Button>
@@ -1367,7 +1367,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <Activity className="h-5 w-5" style={{ color: '#28C76F' }} />
+                    <Activity className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Active Announcements
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1379,7 +1379,7 @@ export default function Admin() {
                     <div className="p-4 rounded-lg" style={{ backgroundColor: 'transparent', border: '1px solid #0E2040' }}>
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Badge style={{ backgroundColor: '#00A3FF', color: '#FFFFFF' }}>CELEBRATION</Badge>
+                          <Badge style={{ backgroundColor: '#67E7BF', color: '#FFFFFF' }}>CELEBRATION</Badge>
                           <span className="font-semibold" style={{ color: '#C9D1E2' }}>Welcome to Tradebattle!</span>
                         </div>
                         <div className="flex gap-2">
@@ -1424,7 +1424,7 @@ export default function Admin() {
             <TabsContent value="revenue" className="space-y-6">
               {revenueLoading ? (
                 <div className="text-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#67E7BF' }}></div>
                   <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading revenue data...</p>
                 </div>
               ) : (
@@ -1433,10 +1433,10 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Deposits</CardTitle>
-                        <DollarSign className="h-4 w-4" style={{ color: '#28C76F' }} />
+                        <DollarSign className="h-4 w-4" style={{ color: '#67E7BF' }} />
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold" style={{ color: '#28C76F' }}>
+                        <div className="text-2xl font-bold" style={{ color: '#67E7BF' }}>
                           ${(revenueStats.totalDeposits || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
                       </CardContent>
@@ -1455,10 +1455,10 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Net Revenue</CardTitle>
-                        <TrendingUp className="h-4 w-4" style={{ color: '#00A3FF' }} />
+                        <TrendingUp className="h-4 w-4" style={{ color: '#67E7BF' }} />
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold" style={{ color: '#00A3FF' }}>
+                        <div className="text-2xl font-bold" style={{ color: '#67E7BF' }}>
                           ${(revenueStats.netRevenue || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </div>
                       </CardContent>
@@ -1481,7 +1481,7 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                          <BarChart3 className="h-5 w-5" style={{ color: '#00A3FF' }} />
+                          <BarChart3 className="h-5 w-5" style={{ color: '#67E7BF' }} />
                           Breakdown by Type
                         </CardTitle>
                       </CardHeader>
@@ -1506,7 +1506,7 @@ export default function Admin() {
                                   <span style={{ color: '#C9D1E2' }}>{row.count}</span>
                                 </TableCell>
                                 <TableCell className="text-right">
-                                  <span className="font-mono" style={{ color: '#00A3FF' }}>
+                                  <span className="font-mono" style={{ color: '#67E7BF' }}>
                                     ${parseFloat(row.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                   </span>
                                 </TableCell>
@@ -1526,7 +1526,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <DollarSign className="h-5 w-5" style={{ color: '#00A3FF' }} />
+                    <DollarSign className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     All Transactions
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1536,7 +1536,7 @@ export default function Admin() {
                 <CardContent>
                   {adminTxLoading ? (
                     <div className="text-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#67E7BF' }}></div>
                       <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading transactions...</p>
                     </div>
                   ) : adminTransactions.length === 0 ? (
@@ -1572,15 +1572,15 @@ export default function Admin() {
                             </TableCell>
                             <TableCell className="text-right">
                               <span className="font-mono text-sm" style={{
-                                color: ["deposit", "payout", "tip_received"].includes(tx.type) ? '#28C76F' : '#FF4F58'
+                                color: ["deposit", "payout", "tip_received"].includes(tx.type) ? '#67E7BF' : '#FF4F58'
                               }}>
                                 ${parseFloat(tx.amount || 0).toFixed(2)}
                               </span>
                             </TableCell>
                             <TableCell>
                               <Badge variant="outline" className="text-xs" style={{
-                                borderColor: tx.status === "completed" ? '#28C76F' : tx.status === "pending" ? '#00A3FF' : '#FF4F58',
-                                color: tx.status === "completed" ? '#28C76F' : tx.status === "pending" ? '#00A3FF' : '#FF4F58',
+                                borderColor: tx.status === "completed" ? '#67E7BF' : tx.status === "pending" ? '#67E7BF' : '#FF4F58',
+                                color: tx.status === "completed" ? '#67E7BF' : tx.status === "pending" ? '#67E7BF' : '#FF4F58',
                               }}>
                                 {tx.status}
                               </Badge>
@@ -1610,7 +1610,7 @@ export default function Admin() {
                 <div className="flex items-center gap-3">
                   <Button
                     onClick={() => setCreateCodeOpen(true)}
-                    style={{ background: '#00A3FF', color: '#FFFFFF' }}
+                    style={{ background: '#67E7BF', color: '#FFFFFF' }}
                   >
                     <Plus className="h-4 w-4 mr-2" />
                     Create Code
@@ -1633,7 +1633,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <Tag className="h-5 w-5" style={{ color: '#00A3FF' }} />
+                    <Tag className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Promo Code Management
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1643,7 +1643,7 @@ export default function Admin() {
                 <CardContent>
                   {promoCodesLoading ? (
                     <div className="text-center py-12">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#67E7BF' }}></div>
                       <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading promo codes...</p>
                     </div>
                   ) : promoCodes.length === 0 ? (
@@ -1669,7 +1669,7 @@ export default function Admin() {
                           <TableRow key={code.id} style={{ borderColor: '#1C3E72' }}>
                             <TableCell>
                               <div className="flex items-center gap-2">
-                                <span className="font-mono font-bold text-sm" style={{ color: '#00A3FF' }}>
+                                <span className="font-mono font-bold text-sm" style={{ color: '#67E7BF' }}>
                                   {code.code}
                                 </span>
                                 <Button
@@ -1686,7 +1686,7 @@ export default function Admin() {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <span className="font-mono text-sm" style={{ color: '#28C76F' }}>
+                              <span className="font-mono text-sm" style={{ color: '#67E7BF' }}>
                                 ${parseFloat(code.rewardAmount || 0).toFixed(2)}
                               </span>
                             </TableCell>
@@ -1714,8 +1714,8 @@ export default function Admin() {
                                 onClick={() => toggleCodeMutation.mutate({ id: code.id, isActive: !code.isActive })}
                                 disabled={toggleCodeMutation.isPending}
                               >
-                                <ToggleLeft className="h-4 w-4 mr-1" style={{ color: code.isActive ? '#28C76F' : '#FF4F58' }} />
-                                <span className="text-xs" style={{ color: code.isActive ? '#28C76F' : '#FF4F58' }}>
+                                <ToggleLeft className="h-4 w-4 mr-1" style={{ color: code.isActive ? '#67E7BF' : '#FF4F58' }} />
+                                <span className="text-xs" style={{ color: code.isActive ? '#67E7BF' : '#FF4F58' }}>
                                   {code.isActive ? 'Active' : 'Inactive'}
                                 </span>
                               </Button>
@@ -1830,7 +1830,7 @@ export default function Admin() {
                         });
                       }}
                       disabled={createCodeMutation.isPending}
-                      style={{ background: '#00A3FF', color: '#FFFFFF' }}
+                      style={{ background: '#67E7BF', color: '#FFFFFF' }}
                     >
                       {createCodeMutation.isPending ? "Creating..." : "Create Code"}
                     </Button>
@@ -1854,7 +1854,7 @@ export default function Admin() {
                 <CardContent>
                   {systemLoading ? (
                     <div className="text-center py-8">
-                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#00A3FF' }}></div>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#67E7BF' }}></div>
                       <p className="mt-2 text-sm" style={{ color: '#8A93A6' }}>Loading system status...</p>
                     </div>
                   ) : (
@@ -1865,8 +1865,8 @@ export default function Admin() {
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Status</span>
                             <Badge variant="outline" style={{
-                              borderColor: (systemStatus as any)?.database?.connected ? '#28C76F' : '#FF4F58',
-                              color: (systemStatus as any)?.database?.connected ? '#28C76F' : '#FF4F58'
+                              borderColor: (systemStatus as any)?.database?.connected ? '#67E7BF' : '#FF4F58',
+                              color: (systemStatus as any)?.database?.connected ? '#67E7BF' : '#FF4F58'
                             }}>
                               <Database className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.database?.connected ? "Connected" : "Disconnected"}
@@ -1892,8 +1892,8 @@ export default function Admin() {
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Yahoo Finance</span>
                             <Badge variant="outline" style={{
-                              borderColor: (systemStatus as any)?.apis?.yahooFinance?.status ? '#28C76F' : '#FF4F58',
-                              color: (systemStatus as any)?.apis?.yahooFinance?.status ? '#28C76F' : '#FF4F58'
+                              borderColor: (systemStatus as any)?.apis?.yahooFinance?.status ? '#67E7BF' : '#FF4F58',
+                              color: (systemStatus as any)?.apis?.yahooFinance?.status ? '#67E7BF' : '#FF4F58'
                             }}>
                               <Globe className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.apis?.yahooFinance?.status ? "Active" : "Inactive"}
@@ -1902,8 +1902,8 @@ export default function Admin() {
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Cache</span>
                             <Badge variant="outline" style={{
-                              borderColor: (systemStatus as any)?.apis?.cache?.enabled ? '#28C76F' : '#FF4F58',
-                              color: (systemStatus as any)?.apis?.cache?.enabled ? '#28C76F' : '#FF4F58'
+                              borderColor: (systemStatus as any)?.apis?.cache?.enabled ? '#67E7BF' : '#FF4F58',
+                              color: (systemStatus as any)?.apis?.cache?.enabled ? '#67E7BF' : '#FF4F58'
                             }}>
                               <Settings className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.apis?.cache?.enabled ? "Enabled" : "Disabled"}
@@ -1923,7 +1923,7 @@ export default function Admin() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Uptime</span>
-                            <Badge variant="outline" style={{ borderColor: '#28C76F', color: '#28C76F' }}>
+                            <Badge variant="outline" style={{ borderColor: '#67E7BF', color: '#67E7BF' }}>
                               <Clock className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.uptime || "0m"}
                             </Badge>
@@ -1931,8 +1931,8 @@ export default function Admin() {
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Error Rate</span>
                             <Badge variant="outline" style={{
-                              borderColor: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#28C76F',
-                              color: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#28C76F'
+                              borderColor: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#67E7BF',
+                              color: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#67E7BF'
                             }}>
                               <AlertTriangle className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.errorRate || "0"}%
@@ -1941,8 +1941,8 @@ export default function Admin() {
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Response Time</span>
                             <Badge variant="outline" style={{
-                              borderColor: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#28C76F',
-                              color: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#28C76F'
+                              borderColor: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#67E7BF',
+                              color: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#67E7BF'
                             }}>
                               <Activity className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.avgResponseTime || "0"}ms

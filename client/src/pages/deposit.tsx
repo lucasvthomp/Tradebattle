@@ -185,7 +185,7 @@ export default function Deposit() {
   ];
 
   return (
-    <div style={{
+    <div className="arena-page-shell deposit-page" style={{
       minHeight: 'calc(100dvh - 4rem)',
       background: 'transparent',
       padding: 'clamp(24px, 5vw, 40px) clamp(16px, 4vw, 20px)',
@@ -199,7 +199,7 @@ export default function Deposit() {
             gap: '12px',
             marginBottom: '12px',
           }}>
-            <Wallet size={32} color="#00A3FF" />
+            <Wallet size={32} color="#67E7BF" />
             <h1 style={{
               color: '#C9D1E2',
               fontSize: 'clamp(18px, 6vw, 32px)',
@@ -217,14 +217,14 @@ export default function Deposit() {
         {/* Pending Deposits */}
         {pendingDeposits.length > 0 && !payment && (
           <div style={{
-            background: '#0C1829',
-            border: '1px solid #00A3FF',
+            background: '#0B1B2A',
+            border: '1px solid #67E7BF',
             borderRadius: '12px',
             padding: '20px',
             marginBottom: '24px',
           }}>
             <h3 style={{
-              color: '#00A3FF',
+              color: '#67E7BF',
               fontSize: '16px',
               fontWeight: '600',
               marginBottom: '16px',
@@ -264,7 +264,7 @@ export default function Deposit() {
                       onClick={() => resumePayment(deposit)}
                       style={{
                         padding: '8px 16px',
-                        background: '#00A3FF',
+                        background: '#67E7BF',
                         color: '#091525',
                         border: 'none',
                         borderRadius: '6px',
@@ -303,7 +303,7 @@ export default function Deposit() {
 
         {/* Status Card */}
         <div style={{
-          background: '#0C1829',
+          background: '#0B1B2A',
           border: '1px solid #0E2040',
           borderRadius: '12px',
           padding: '24px',
@@ -325,12 +325,12 @@ export default function Deposit() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               {status?.apiKeysSet ? (
-                <CheckCircle2 size={18} color="#28C76F" />
+                <CheckCircle2 size={18} color="#67E7BF" />
               ) : (
                 <AlertCircle size={18} color="#FF4F58" />
               )}
               <span style={{
-                color: status?.apiKeysSet ? '#28C76F' : '#FF4F58',
+                color: status?.apiKeysSet ? '#67E7BF' : '#FF4F58',
                 fontWeight: '500',
               }}>
                 API Keys: {status?.apiKeysSet ? 'Connected' : 'Not Configured'}
@@ -351,7 +351,7 @@ export default function Deposit() {
 
             {currencies.length > 0 && (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <CheckCircle2 size={18} color="#28C76F" />
+                <CheckCircle2 size={18} color="#67E7BF" />
                 <span style={{ color: '#8A93A6' }}>
                   Currencies: <span style={{ color: '#C9D1E2' }}>{currencies.length} available</span>
                 </span>
@@ -365,7 +365,7 @@ export default function Deposit() {
           // Deposit Form
           status?.apiKeysSet ? (
             <div style={{
-              background: '#0C1829',
+              background: '#0B1B2A',
               border: '1px solid #0E2040',
               borderRadius: '12px',
               padding: 'clamp(20px, 5vw, 32px)',
@@ -425,7 +425,7 @@ export default function Deposit() {
                     outline: 'none',
                     transition: 'border-color 0.2s',
                   }}
-                  onFocus={(e) => e.target.style.borderColor = '#00A3FF'}
+                  onFocus={(e) => e.target.style.borderColor = '#67E7BF'}
                   onBlur={(e) => e.target.style.borderColor = '#0E2040'}
                 />
                 <div style={{
@@ -453,7 +453,7 @@ export default function Deposit() {
                           aspectRatio: '1',
                           padding: '0',
                           background: selected ? 'rgba(0,163,255,0.1)' : 'rgba(255,255,255,0.03)',
-                          border: `2px solid ${selected ? '#00A3FF' : 'rgba(255,255,255,0.07)'}`,
+                          border: `2px solid ${selected ? '#67E7BF' : 'rgba(255,255,255,0.07)'}`,
                           borderRadius: '12px',
                           cursor: 'pointer',
                           transition: 'all 0.15s',
@@ -472,7 +472,7 @@ export default function Deposit() {
                           alt={option.label}
                           style={{ width: '40px', height: '40px', borderRadius: '50%' }}
                         />
-                        <span style={{ fontSize: '12px', fontWeight: '700', color: selected ? '#00A3FF' : '#C9D1E2' }}>
+                        <span style={{ fontSize: '12px', fontWeight: '700', color: selected ? '#67E7BF' : '#C9D1E2' }}>
                           {option.label}
                         </span>
                         <span style={{ fontSize: '10px', color: '#4B5563', marginTop: '-4px' }}>
@@ -491,7 +491,7 @@ export default function Deposit() {
                 style={{
                   width: '100%',
                   padding: '16px',
-                  background: loading || !amount || parseFloat(amount) < minimumAmount ? '#0E2040' : '#00A3FF',
+                  background: loading || !amount || parseFloat(amount) < minimumAmount ? '#0E2040' : '#67E7BF',
                   color: loading || !amount || parseFloat(amount) < minimumAmount ? '#8A93A6' : '#091525',
                   border: 'none',
                   borderRadius: '8px',
@@ -506,12 +506,12 @@ export default function Deposit() {
                 }}
                 onMouseEnter={(e) => {
                   if (!loading && amount && parseFloat(amount) >= minimumAmount) {
-                    e.currentTarget.style.background = '#0090E0';
+                    e.currentTarget.style.background = '#2EBF9A';
                   }
                 }}
                 onMouseLeave={(e) => {
                   if (!loading && amount && parseFloat(amount) >= minimumAmount) {
-                    e.currentTarget.style.background = '#00A3FF';
+                    e.currentTarget.style.background = '#67E7BF';
                   }
                 }}
               >
@@ -530,7 +530,7 @@ export default function Deposit() {
             </div>
           ) : (
             <div style={{
-              background: '#0C1829',
+              background: '#0B1B2A',
               border: '1px solid #FF4F58',
               borderRadius: '12px',
               padding: 'clamp(20px, 5vw, 32px)',
@@ -548,7 +548,7 @@ export default function Deposit() {
         ) : (
           // Payment Display
           <div style={{
-            background: '#0C1829',
+            background: '#0B1B2A',
             border: '1px solid #0E2040',
             borderRadius: '12px',
             padding: 'clamp(20px, 5vw, 32px)',
@@ -562,7 +562,7 @@ export default function Deposit() {
               alignItems: 'center',
               gap: '8px',
             }}>
-              <Clock size={24} color="#00A3FF" />
+              <Clock size={24} color="#67E7BF" />
               Send payment
             </h3>
 
@@ -611,7 +611,7 @@ export default function Deposit() {
                   onClick={copyAddress}
                   style={{
                     padding: '8px',
-                    background: copied ? '#28C76F' : '#0E2040',
+                    background: copied ? '#67E7BF' : '#0E2040',
                     border: 'none',
                     borderRadius: '6px',
                     color: '#fff',
@@ -639,13 +639,13 @@ export default function Deposit() {
               </label>
               <div style={{
                 background: 'transparent',
-                border: '2px solid #00A3FF',
+                border: '2px solid #67E7BF',
                 borderRadius: '8px',
                 padding: '16px',
                 textAlign: 'center',
               }}>
                 <div style={{
-                  color: '#00A3FF',
+                  color: '#67E7BF',
                   fontSize: 'clamp(18px, 6vw, 28px)',
                   fontWeight: '700',
                   wordBreak: 'break-word',
@@ -658,7 +658,7 @@ export default function Deposit() {
             {/* Status */}
             <div style={{
               background: 'rgba(0, 163, 255, 0.1)',
-              border: '1px solid #00A3FF',
+              border: '1px solid #67E7BF',
               borderRadius: '8px',
               padding: '16px',
               display: 'flex',
@@ -666,9 +666,9 @@ export default function Deposit() {
               gap: '12px',
               marginBottom: '16px',
             }}>
-              <Loader2 size={20} color="#00A3FF" style={{ animation: 'spin 1s linear infinite' }} />
+              <Loader2 size={20} color="#67E7BF" style={{ animation: 'spin 1s linear infinite' }} />
               <div style={{ flex: 1 }}>
-                <div style={{ color: '#00A3FF', fontWeight: '600', marginBottom: '4px' }}>
+                <div style={{ color: '#67E7BF', fontWeight: '600', marginBottom: '4px' }}>
                   Waiting on the payment...
                 </div>
                 <div style={{ color: '#8A93A6', fontSize: '14px' }}>

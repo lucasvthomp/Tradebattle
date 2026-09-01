@@ -129,7 +129,7 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
                 x: Math.random(),
                 y: Math.random() * 0.5
               },
-              colors: ['#FF6B35', '#F7931E', '#FDC830', '#00A3FF', '#28C76F', '#06B6D4', '#8B5CF6']
+              colors: ['#FF6B35', '#F7931E', '#FDC830', '#67E7BF', '#67E7BF', '#06B6D4', '#9AB5C2']
             });
           }, i * 400);
         }
@@ -144,7 +144,7 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
               angle: 90,
               spread: 360,
               origin: { x: Math.random(), y: Math.random() },
-              colors: ['#00A3FF', '#FDC830', '#F7931E', '#FFD700'],
+              colors: ['#67E7BF', '#FDC830', '#F7931E', '#FFD700'],
               shapes: ['star'],
               scalar: 1.2,
               gravity: 0.5,
@@ -178,13 +178,13 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
   const getBadgeColor = (type: string) => {
     switch (type) {
       case 'celebration':
-        return { backgroundColor: '#00A3FF', color: '#091525' };
+        return { backgroundColor: '#67E7BF', color: '#091525' };
       case 'warning':
         return { backgroundColor: '#FDC830', color: '#091525' };
       case 'urgent':
         return { backgroundColor: '#FF4F58', color: '#FFFFFF' };
       case 'success':
-        return { backgroundColor: '#28C76F', color: '#FFFFFF' };
+        return { backgroundColor: '#67E7BF', color: '#FFFFFF' };
       default:
         return { backgroundColor: '#06B6D4', color: '#FFFFFF' };
     }
@@ -257,12 +257,12 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
                     <Button variant="outline" onClick={handleClose} style={{ borderColor: '#0E2040', color: '#C9D1E2' }}>
                       Skip All
                     </Button>
-                    <Button onClick={handleNext} style={{ backgroundColor: '#00A3FF', color: '#091525' }}>
+                    <Button onClick={handleNext} style={{ backgroundColor: '#67E7BF', color: '#091525' }}>
                       Next Message
                     </Button>
                   </>
                 ) : (
-                  <Button onClick={handleClose} style={{ backgroundColor: '#00A3FF', color: '#091525' }}>
+                  <Button onClick={handleClose} style={{ backgroundColor: '#67E7BF', color: '#091525' }}>
                     Got It!
                   </Button>
                 )}

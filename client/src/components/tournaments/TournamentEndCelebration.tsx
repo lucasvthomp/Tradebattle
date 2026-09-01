@@ -54,7 +54,7 @@ export function TournamentEndCelebration({
       const duration = 3000;
       const end = Date.now() + duration;
 
-      const colors = ['#E3B341', '#FFD700', '#28C76F', '#6366F1'];
+      const colors = ['#F2C76A', '#FFD700', '#67E7BF', '#6366F1'];
 
       (function frame() {
         confetti({
@@ -100,7 +100,7 @@ export function TournamentEndCelebration({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
         className="max-w-4xl p-0 overflow-hidden"
-        style={{ backgroundColor: 'transparent', borderColor: '#E3B341', border: '3px solid' }}
+        style={{ backgroundColor: 'transparent', borderColor: '#F2C76A', border: '3px solid' }}
       >
         {/* Animated Background */}
         <div className="absolute inset-0">
@@ -124,7 +124,7 @@ export function TournamentEndCelebration({
                 ease: "easeInOut",
               }}
             >
-              <Sparkles className="w-4 h-4" style={{ color: '#E3B341' }} />
+              <Sparkles className="w-4 h-4" style={{ color: '#F2C76A' }} />
             </motion.div>
           ))}
         </div>
@@ -151,7 +151,7 @@ export function TournamentEndCelebration({
                     ease: "easeInOut",
                   }}
                 >
-                  <Trophy className="w-32 h-32 mb-8" style={{ color: '#E3B341' }} />
+                  <Trophy className="w-32 h-32 mb-8" style={{ color: '#F2C76A' }} />
                 </motion.div>
 
                 <motion.h1
@@ -179,7 +179,7 @@ export function TournamentEndCelebration({
                     <motion.div
                       key={i}
                       className="w-3 h-3 rounded-full"
-                      style={{ background: '#E3B341' }}
+                      style={{ background: '#F2C76A' }}
                       animate={{
                         scale: [1, 1.5, 1],
                         opacity: [0.3, 1, 0.3],
@@ -246,7 +246,7 @@ export function TournamentEndCelebration({
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.6 }}
                     className="text-3xl font-bold mb-2"
-                    style={{ color: '#E3B341' }}
+                    style={{ color: '#F2C76A' }}
                   >
                     IS THE CHAMPION! 🏆
                   </motion.p>
@@ -261,10 +261,10 @@ export function TournamentEndCelebration({
                     <p className="text-sm font-semibold mb-1" style={{ color: '#8A93A6' }}>
                       Final Balance
                     </p>
-                    <p className="text-4xl font-black" style={{ color: '#28C76F' }}>
+                    <p className="text-4xl font-black" style={{ color: '#67E7BF' }}>
                       ${results.winner.finalBalance.toLocaleString()}
                     </p>
-                    <p className="text-lg font-bold mt-1" style={{ color: '#E3B341' }}>
+                    <p className="text-lg font-bold mt-1" style={{ color: '#F2C76A' }}>
                       +${results.winner.profit.toLocaleString()} profit
                     </p>
                   </motion.div>
@@ -280,7 +280,7 @@ export function TournamentEndCelebration({
                 animate={{ opacity: 1 }}
                 className="py-8 px-8"
               >
-                <h2 className="text-3xl font-black text-center mb-6" style={{ color: '#E3B341' }}>
+                <h2 className="text-3xl font-black text-center mb-6" style={{ color: '#F2C76A' }}>
                   Tournament Results
                 </h2>
 
@@ -332,7 +332,7 @@ export function TournamentEndCelebration({
                       Your Result: <span style={{ color: '#6366F1' }}>#{results.userRank}</span> out of {results.totalParticipants}
                     </p>
                     {results.userProfit !== undefined && (
-                      <p className="text-center mt-1" style={{ color: results.userProfit >= 0 ? '#28C76F' : '#FF4F58' }}>
+                      <p className="text-center mt-1" style={{ color: results.userProfit >= 0 ? '#67E7BF' : '#FF4F58' }}>
                         {results.userProfit >= 0 ? '+' : ''}${results.userProfit.toLocaleString()} profit
                       </p>
                     )}
@@ -344,7 +344,7 @@ export function TournamentEndCelebration({
                   onClick={onClose}
                   className="w-full h-14 text-lg font-bold"
                   style={{
-                    background: 'linear-gradient(135deg, #E3B341, #FFD700)',
+                    background: 'linear-gradient(135deg, #F2C76A, #FFD700)',
                     color: '#091525',
                   }}
                 >

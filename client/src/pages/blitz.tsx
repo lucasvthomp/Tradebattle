@@ -1,76 +1,14 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ReactNode } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
-import { Zap, ArrowRight, X, Swords, Trophy, Clock, DollarSign, Flame } from "lucide-react";
+import { ArrowRight, Clock3, DollarSign, Swords, Trophy, X, Zap } from "lucide-react";
 
 type MatchState = "idle" | "queued" | "vs" | "matched";
 
-// Shared scanline texture overlay — placed absolutely inside any card
-function ScanlineOverlay() {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        borderRadius: "inherit",
-        backgroundImage:
-          "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
-        pointerEvents: "none",
-        zIndex: 0,
-      }}
-    />
-  );
-}
-
-// Big cartoony countdown digit
-function CountdownDigit({ value, color }: { value: number; color: string }) {
-  return (
-    <motion.div
-      key={value}
-      initial={{ scale: 2.2, opacity: 0, y: -20 }}
-      animate={{ scale: 1, opacity: 1, y: 0 }}
-      exit={{ scale: 0.4, opacity: 0, y: 20 }}
-      transition={{ type: "spring", stiffness: 400, damping: 22 }}
-      style={{
-        fontSize: "clamp(80px, 20vw, 140px)",
-        fontWeight: 900,
-        lineHeight: 1,
-        color,
-        textShadow: `0 0 40px ${color}99, 0 0 80px ${color}44`,
-        fontVariantNumeric: "tabular-nums",
-        letterSpacing: "-0.04em",
-        fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-      }}
-    >
-      {value}
-    </motion.div>
-  );
-}
-
-// Pulsing ring behind the queue spinner
-function PulseRing({ color }: { color: string }) {
-  return (
-    <>
-      {[0, 1, 2].map((i) => (
-        <motion.div
-          key={i}
-          style={{
-            position: "absolute",
-            inset: 0,
-            borderRadius: "50%",
-            border: `2px solid ${color}`,
-            pointerEvents: "none",
-          }}
-          animate={{ scale: [1, 2.2], opacity: [0.5, 0] }}
-          transition={{ duration: 2, repeat: Infinity, delay: i * 0.65, ease: "easeOut" }}
-        />
-      ))}
-    </>
-  );
-}
+const formatTime = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
 
 export default function Blitz() {
   const { user } = useAuth();
@@ -79,19 +17,50 @@ export default function Blitz() {
   const [tournamentId, setTournamentId] = useState<number | null>(null);
   const [queueSeconds, setQueueSeconds] = useState(0);
   const [vsCountdown, setVsCountdown] = useState(3);
-  const [opponentName, setOpponentName] = useState<string>("Opponent");
+  const [opponentName, setOpponentName] = useState("Opponent");
   const [queueExpired, setQueueExpired] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Check if user is already in an active blitz tournament
-  const { data: activeTournamentsData } = useQuery({
-    queryKey: ["/api/tournaments"],
-    enabled: !!user,
-  });
-  const activeBlitz = (activeTournamentsData as any)?.data?.find(
-    (t: any) => t.tournamentType === "blitz" && t.status === "active"
-  );
+  const { data: activeTournamentsData } = useQuery({ queryKey: ["/api/tournaments"], enabled: !!user });
+  const activeBlitz = (activeTournamentsData as any)?.data?.find((t: any) => t.tournamentType === "blitz" && t.status === "active");
+
+  const clearPolling = () => {
+    if (pollRef.current) clearInterval(pollRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
+    pollRef.current = null;
+    timerRef.current = null;
+  };
+
+  const triggerVsScreen = (id: number) => {
+    setTournamentId(id);
+    setMatchState("vs");
+    setVsCountdown(3);
+    let count = 3;
+    const countdownTimer = window.setInterval(() => {
+      count -= 1;
+      setVsCountdown(count);
+      if (count <= 0) {
+        window.clearInterval(countdownTimer);
+        setMatchState("matched");
+      }
+    }, 1000);
+  };
+
+  const startPolling = () => {
+    clearPolling();
+    pollRef.current = setInterval(async () => {
+      try {
+        const data: any = await (await apiRequest("GET", "/api/blitz/status")).json();
+        if (data.matched) {
+          clearPolling();
+          if (data.opponentName) setOpponentName(data.opponentName);
+          triggerVsScreen(data.tournamentId);
+        }
+      } catch {}
+    }, 2000);
+    timerRef.current = setInterval(() => setQueueSeconds((current) => current + 1), 1000);
+  };
 
   const queueMutation = useMutation({
     mutationFn: async () => (await apiRequest("POST", "/api/blitz/queue")).json(),
@@ -111,639 +80,134 @@ export default function Blitz() {
   const cancelMutation = useMutation({
     mutationFn: () => apiRequest("DELETE", "/api/blitz/queue"),
     onSuccess: () => {
+      clearPolling();
       setMatchState("idle");
       setQueueSeconds(0);
-      clearPolling();
     },
   });
-
-  function triggerVsScreen(tId: number) {
-    setTournamentId(tId);
-    setMatchState("vs");
-    setVsCountdown(3);
-    let c = 3;
-    const countTimer = setInterval(() => {
-      c -= 1;
-      setVsCountdown(c);
-      if (c <= 0) {
-        clearInterval(countTimer);
-        setMatchState("matched");
-      }
-    }, 1000);
-  }
-
-  function startPolling() {
-    clearPolling();
-    pollRef.current = setInterval(async () => {
-      try {
-        const data: any = await (await apiRequest("GET", "/api/blitz/status")).json();
-        if (data.matched) {
-          clearPolling();
-          if (data.opponentName) setOpponentName(data.opponentName);
-          triggerVsScreen(data.tournamentId);
-        }
-      } catch {}
-    }, 2000);
-
-    timerRef.current = setInterval(() => {
-      setQueueSeconds(s => s + 1);
-    }, 1000);
-  }
-
-  function clearPolling() {
-    if (pollRef.current) clearInterval(pollRef.current);
-    if (timerRef.current) clearInterval(timerRef.current);
-    pollRef.current = null;
-    timerRef.current = null;
-  }
 
   useEffect(() => () => {
     clearPolling();
     apiRequest("DELETE", "/api/blitz/queue").catch(() => {});
   }, []);
 
-  // Auto-cancel queue after 5 minutes with no match
   useEffect(() => {
-    if (matchState === "queued" && queueSeconds >= 300) {
-      clearPolling();
-      apiRequest("DELETE", "/api/blitz/queue").catch(() => {});
-      setMatchState("idle");
-      setQueueSeconds(0);
-      setQueueExpired(true);
-      setTimeout(() => setQueueExpired(false), 5000);
-    }
-  }, [queueSeconds, matchState]);
+    if (matchState !== "queued" || queueSeconds < 300) return;
+    clearPolling();
+    apiRequest("DELETE", "/api/blitz/queue").catch(() => {});
+    setMatchState("idle");
+    setQueueSeconds(0);
+    setQueueExpired(true);
+    const timeout = window.setTimeout(() => setQueueExpired(false), 5000);
+    return () => window.clearTimeout(timeout);
+  }, [matchState, queueSeconds]);
 
-  const formatTime = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  const startQueue = () => {
+    setQueueExpired(false);
+    queueMutation.mutate();
+  };
 
-  const countdownColor = vsCountdown === 1 ? "#FF3D5A" : vsCountdown === 2 ? "#FFB020" : "#00A3FF";
+  if (!user) {
+    return (
+      <div className="arena-page-shell blitz-page">
+        <div className="blitz-shell">
+          <BlitzHeader />
+          <section className="blitz-card blitz-auth-card">
+            <div className="blitz-icon-box"><Swords size={25} /></div>
+            <p className="blitz-kicker">Private match queue</p>
+            <h2>Step into Blitz.</h2>
+            <p>Sign in to find a live opponent and play a focused five-minute market round.</p>
+            <div className="blitz-actions"><Link href="/login" className="blitz-primary-link">Enter arena <ArrowRight size={16} /></Link><Link href="/signup" className="blitz-secondary-link">Create profile</Link></div>
+          </section>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="arena-page-shell" style={{ minHeight: "calc(100dvh - 4rem)", padding: "32px 20px 60px", background: "transparent" }}>
-      <div style={{ maxWidth: "680px", margin: "0 auto" }}>
+    <div className="arena-page-shell blitz-page">
+      <div className="blitz-shell">
+        <BlitzHeader />
 
-        {/* ── Header ── */}
-        <div style={{ textAlign: "center", marginBottom: "40px" }}>
-          <motion.div
-            animate={{ rotate: [0, -8, 8, -4, 4, 0] }}
-            transition={{ duration: 1.2, repeat: Infinity, repeatDelay: 3 }}
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "72px",
-              height: "72px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, rgba(0,163,255,0.15), rgba(0,163,255,0.05))",
-              border: "2px solid rgba(0,163,255,0.4)",
-              boxShadow: "0 0 32px rgba(0,163,255,0.2)",
-              marginBottom: "16px",
-            }}
-          >
-            <Zap color="#00A3FF" width={36} height={36} fill="rgba(0,163,255,0.3)" />
-          </motion.div>
-          <h1 style={{
-            fontSize: "clamp(28px, 8vw, 42px)", fontWeight: 900,
-            color: "#F1F5F9", margin: "0 0 6px",
-            letterSpacing: "-0.03em",
-            textShadow: "0 0 32px rgba(0,163,255,0.4)",
-          }}>
-            Blitz Mode
-          </h1>
-          <p style={{ fontSize: "14px", color: "#4B6080", margin: 0, fontWeight: 600 }}>
-            1v1 · 5-minute battles · instant matchmaking
-          </p>
-        </div>
-
-        {/* ── Auth gate ── */}
-        {!user ? (
-          <div style={{
-            background: "linear-gradient(160deg, #0A1F3D 0%, #081729 100%)",
-            border: "1px solid rgba(0,163,255,0.15)",
-            borderRadius: "20px",
-            textAlign: "center",
-            padding: "48px 24px",
-            position: "relative",
-            overflow: "hidden",
-            boxShadow: "0 0 40px rgba(0,163,255,0.05)",
-          }}>
-            <ScanlineOverlay />
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <div style={{
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "72px",
-                height: "72px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, rgba(0,163,255,0.15), rgba(0,163,255,0.05))",
-                border: "2px solid rgba(0,163,255,0.35)",
-                boxShadow: "0 0 28px rgba(0,163,255,0.18)",
-                marginBottom: "18px",
-              }}>
-                <Swords color="#00A3FF" size={32} />
-              </div>
-              <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#C9D1E2", marginBottom: "8px", letterSpacing: "-0.02em" }}>
-                Enter the arena
-              </h2>
-              <p style={{ fontSize: "14px", color: "#4B6080", marginBottom: "28px" }}>
-                Create a player card to queue for a 1v1 market duel.
-              </p>
-              <Link href="/login">
-                <button style={{
-                  padding: "13px 32px",
-                  background: "linear-gradient(135deg, #00A3FF, #0066CC)",
-                  border: "none", borderRadius: "12px",
-                  color: "#fff", fontSize: "15px", fontWeight: 900, cursor: "pointer",
-                  boxShadow: "0 0 28px rgba(0,163,255,0.35)",
-                  letterSpacing: "0.02em",
-                }}>
-                  Enter the arena
-                </button>
-              </Link>
-            </div>
-          </div>
-        ) : activeBlitz ? (
-          /* ── Already in an active blitz ── */
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{
-              background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
-              border: "2px solid rgba(0,255,135,0.3)",
-              borderRadius: "20px",
-              textAlign: "center",
-              padding: "48px 24px",
-              boxShadow: "0 0 40px rgba(0,255,135,0.08)",
-              position: "relative",
-              overflow: "hidden",
-            }}
-          >
-            <ScanlineOverlay />
-            <div style={{ position: "relative", zIndex: 1 }}>
-              <motion.div
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 0.6, repeat: Infinity, repeatDelay: 1.5 }}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "72px",
-                  height: "72px",
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, rgba(0,255,135,0.15), rgba(0,255,135,0.05))",
-                  border: "2px solid rgba(0,255,135,0.35)",
-                  boxShadow: "0 0 28px rgba(0,255,135,0.2)",
-                  marginBottom: "18px",
-                }}
-              >
-                <Swords color="#00FF87" size={32} />
-              </motion.div>
-              <h2 style={{ fontSize: "22px", fontWeight: 900, color: "#00FF87", marginBottom: "8px", letterSpacing: "-0.02em" }}>
-                You're already in a battle!
-              </h2>
-              <p style={{ fontSize: "14px", color: "#4B6080", marginBottom: "28px" }}>
-                Finish your active arena before starting a new one.
-              </p>
-              <Link href={`/dashboard?tournament=${activeBlitz.id}`}>
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.97 }}
-                  style={{
-                    padding: "13px 32px",
-                    background: "linear-gradient(135deg, #00FF87, #00C853)",
-                    border: "none", borderRadius: "12px",
-                    color: "#041810", fontSize: "15px", fontWeight: 900,
-                    cursor: "pointer", display: "inline-flex", alignItems: "center", gap: "8px",
-                    boxShadow: "0 0 28px rgba(0,255,135,0.3)",
-                    letterSpacing: "0.02em",
-                  }}
-                >
-                  Return to arena <ArrowRight size={18} />
-                </motion.button>
-              </Link>
-            </div>
-          </motion.div>
-        ) : (
-          <div>
-            <AnimatePresence mode="wait">
-
-              {/* ── IDLE ── */}
-              {matchState === "idle" && (
-                <motion.div key="idle" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div style={{
-                    background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
-                    border: "1px solid rgba(0,163,255,0.15)",
-                    borderRadius: "20px",
-                    textAlign: "center",
-                    padding: "clamp(32px, 8vw, 56px) 24px",
-                    boxShadow: "0 0 60px rgba(0,163,255,0.06)",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}>
-                    <ScanlineOverlay />
-
-                    {/* Background glow blob */}
-                    <div style={{
-                      position: "absolute", top: "50%", left: "50%",
-                      transform: "translate(-50%, -50%)",
-                      width: "300px", height: "300px",
-                      borderRadius: "50%",
-                      background: "radial-gradient(circle, rgba(0,163,255,0.07) 0%, transparent 70%)",
-                      pointerEvents: "none",
-                      zIndex: 0,
-                    }} />
-
-                    {/* Horizontal radar sweep line */}
-                    <motion.div
-                      animate={{ x: ["-110%", "110%"] }}
-                      transition={{ duration: 3.5, repeat: Infinity, repeatDelay: 2, ease: "easeInOut" }}
-                      style={{
-                        position: "absolute",
-                        top: 0, bottom: 0,
-                        left: 0,
-                        width: "35%",
-                        background: "linear-gradient(90deg, transparent, rgba(0,163,255,0.04), rgba(0,163,255,0.07), rgba(0,163,255,0.04), transparent)",
-                        pointerEvents: "none",
-                        zIndex: 1,
-                      }}
-                    />
-
-                    <div style={{ position: "relative", zIndex: 2 }}>
-                      <motion.div
-                        animate={{
-                          scale: [1, 1.08, 1],
-                          boxShadow: ["0 0 0px rgba(0,163,255,0)", "0 0 40px rgba(0,163,255,0.2)", "0 0 0px rgba(0,163,255,0)"],
-                        }}
-                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                        style={{
-                          width: "96px", height: "96px", borderRadius: "50%",
-                          background: "linear-gradient(135deg, rgba(0,163,255,0.18), rgba(0,163,255,0.04))",
-                          border: "2px solid rgba(0,163,255,0.4)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          margin: "0 auto 28px",
-                          position: "relative",
-                        }}
-                      >
-                        <Swords color="#00A3FF" size={38} />
-                      </motion.div>
-
-                      <h2 style={{
-                        fontSize: "clamp(22px, 6vw, 30px)", fontWeight: 900,
-                        color: "#C9D1E2", marginBottom: "10px", letterSpacing: "-0.02em",
-                      }}>
-                        Ready to battle?
-                      </h2>
-                      <p style={{ fontSize: "14px", color: "#4B6080", maxWidth: "300px", margin: "0 auto 36px", lineHeight: 1.6 }}>
-                        Face one opponent for five minutes. Highest board value takes it.
-                      </p>
-
-                      {queueExpired && (
-                        <div style={{
-                          marginBottom: "16px", padding: "10px 18px", borderRadius: "10px",
-                          background: "rgba(255,61,90,0.1)", border: "1px solid rgba(255,61,90,0.25)",
-                          color: "#FF4F58", fontSize: "13px", fontWeight: 600,
-                        }}>
-                          No match found — queue expired after 5 minutes. Try again.
-                        </div>
-                      )}
-                      <motion.button
-                        onClick={() => { setQueueExpired(false); queueMutation.mutate(); }}
-                        disabled={queueMutation.isPending}
-                        whileHover={{ scale: 1.05, boxShadow: "0 0 48px rgba(0,163,255,0.5)" }}
-                        whileTap={{ scale: 0.96 }}
-                        style={{
-                          padding: "16px 48px",
-                          background: "linear-gradient(135deg, #00A3FF, #0066CC)",
-                          border: "none", borderRadius: "14px",
-                          color: "#fff", fontSize: "18px", fontWeight: 900,
-                          cursor: "pointer",
-                          display: "inline-flex", alignItems: "center", gap: "10px",
-                          letterSpacing: "0.02em",
-                          boxShadow: "0 0 32px rgba(0,163,255,0.35)",
-                          textShadow: "0 1px 2px rgba(0,0,0,0.3)",
-                        }}
-                      >
-                        <Zap size={20} fill="currentColor" /> Find matchup
-                      </motion.button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ── QUEUED ── */}
-              {matchState === "queued" && (
-                <motion.div key="queued" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}>
-                  <div style={{
-                    background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
-                    border: "1px solid rgba(0,163,255,0.15)",
-                    borderRadius: "20px",
-                    textAlign: "center",
-                    padding: "clamp(32px, 8vw, 56px) 24px",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}>
-                    <ScanlineOverlay />
-                    <div style={{ position: "relative", zIndex: 1 }}>
-                      {/* Spinner with pulse rings */}
-                      <div style={{ position: "relative", width: "96px", height: "96px", margin: "0 auto 28px" }}>
-                        <PulseRing color="rgba(0,163,255,0.35)" />
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1.6, repeat: Infinity, ease: "linear" }}
-                          style={{
-                            position: "absolute", inset: 0, borderRadius: "50%",
-                            border: "3px solid transparent",
-                            borderTopColor: "#00A3FF",
-                            borderRightColor: "rgba(0,163,255,0.25)",
-                          }}
-                        />
-                        <motion.div
-                          animate={{ rotate: -360 }}
-                          transition={{ duration: 2.4, repeat: Infinity, ease: "linear" }}
-                          style={{
-                            position: "absolute", inset: "12px", borderRadius: "50%",
-                            border: "2px solid transparent",
-                            borderTopColor: "rgba(0,163,255,0.5)",
-                            borderLeftColor: "rgba(0,163,255,0.15)",
-                          }}
-                        />
-                        <div style={{
-                          position: "absolute", inset: "24px", borderRadius: "50%",
-                          background: "rgba(0,163,255,0.1)",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <Swords color="#00A3FF" size={20} />
-                        </div>
-                      </div>
-
-                      <h2 style={{ fontSize: "20px", fontWeight: 900, color: "#C9D1E2", marginBottom: "6px" }}>
-                        Finding your matchup...
-                      </h2>
-
-                      {/* Queue timer */}
-                      <motion.div
-                        animate={{ opacity: [1, 0.45, 1] }}
-                        transition={{ duration: 1.1, repeat: Infinity }}
-                        style={{
-                          fontSize: "clamp(36px, 10vw, 52px)", fontWeight: 900,
-                          color: "#00A3FF", marginBottom: "28px",
-                          fontVariantNumeric: "tabular-nums",
-                          letterSpacing: "-0.03em",
-                          textShadow: "0 0 32px rgba(0,163,255,0.6)",
-                          fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-                        }}
-                      >
-                        {formatTime(queueSeconds)}
-                      </motion.div>
-
-                      <button
-                        onClick={() => cancelMutation.mutate()}
-                        style={{
-                          padding: "10px 24px",
-                          background: "rgba(255,61,90,0.1)",
-                          border: "1px solid rgba(255,61,90,0.3)",
-                          borderRadius: "10px", color: "#FF3D5A",
-                          fontSize: "13px", fontWeight: 700, cursor: "pointer",
-                          display: "inline-flex", alignItems: "center", gap: "6px",
-                        }}
-                      >
-                          <X size={13} /> Leave queue
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ── VS SCREEN ── */}
-              {matchState === "vs" && (
-                <motion.div key="vs" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                  <div style={{
-                    background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
-                    border: "2px solid rgba(0,163,255,0.3)",
-                    borderRadius: "20px",
-                    padding: "clamp(32px, 8vw, 56px) 24px",
-                    textAlign: "center",
-                    position: "relative",
-                    overflow: "hidden",
-                    boxShadow: "0 0 60px rgba(0,163,255,0.12)",
-                  }}>
-                    <ScanlineOverlay />
-
-                    {/* Scanline shimmer */}
-                    <motion.div
-                      animate={{ x: ["-100%", "200%"] }}
-                      transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 0.5, ease: "easeInOut" }}
-                      style={{
-                        position: "absolute", top: 0, bottom: 0, width: "40%",
-                        background: "linear-gradient(90deg, transparent, rgba(0,163,255,0.06), transparent)",
-                        pointerEvents: "none",
-                        zIndex: 1,
-                      }}
-                    />
-
-                    <div style={{ position: "relative", zIndex: 2 }}>
-                      {/* Players */}
-                      <div style={{
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        gap: "clamp(12px, 5vw, 40px)", marginBottom: "36px",
-                      }}>
-                        <motion.div
-                          initial={{ x: -80, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ duration: 0.4, ease: "easeOut" }}
-                          style={{ textAlign: "center" }}
-                        >
-                          <div style={{
-                            width: "80px", height: "80px", borderRadius: "50%",
-                            background: "linear-gradient(135deg, #0C1829, #0E2040)",
-                            border: "3px solid #8B5CF6",
-                            boxShadow: "0 0 24px rgba(139,92,246,0.4)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            margin: "0 auto 10px",
-                            fontSize: "32px", fontWeight: 900, color: "#8B5CF6",
-                          }}>
-                            {user?.username?.[0]?.toUpperCase() || "?"}
-                          </div>
-                          <div style={{ fontSize: "14px", fontWeight: 800, color: "#C9D1E2" }}>{user?.username}</div>
-                          <div style={{ fontSize: "11px", color: "#8B5CF6", fontWeight: 700, letterSpacing: "0.05em" }}>YOU</div>
-                        </motion.div>
-
-                        <motion.div
-                          initial={{ scale: 0, rotate: -15 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ duration: 0.4, delay: 0.2, ease: [0.34, 1.56, 0.64, 1] }}
-                          style={{
-                            fontSize: "clamp(28px, 8vw, 44px)", fontWeight: 900,
-                            color: "#00A3FF", lineHeight: 1,
-                            textShadow: "0 0 24px rgba(0,163,255,0.6)",
-                          }}
-                        >
-                          VS
-                        </motion.div>
-
-                        <motion.div
-                          initial={{ x: 80, opacity: 0 }}
-                          animate={{ x: 0, opacity: 1 }}
-                          transition={{ duration: 0.4, ease: "easeOut" }}
-                          style={{ textAlign: "center" }}
-                        >
-                          <div style={{
-                            width: "80px", height: "80px", borderRadius: "50%",
-                            background: "linear-gradient(135deg, #1A0810, #200A10)",
-                            border: "3px solid #FF3D5A",
-                            boxShadow: "0 0 24px rgba(255,61,90,0.4)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            margin: "0 auto 10px",
-                            fontSize: "32px", fontWeight: 900, color: "#FF3D5A",
-                          }}>
-                            {opponentName[0]?.toUpperCase() || "?"}
-                          </div>
-                          <div style={{ fontSize: "14px", fontWeight: 800, color: "#C9D1E2" }}>{opponentName}</div>
-                          <div style={{ fontSize: "11px", color: "#FF3D5A", fontWeight: 700, letterSpacing: "0.05em" }}>OPPONENT</div>
-                        </motion.div>
-                      </div>
-
-                      {/* Big cartoony countdown */}
-                      <div style={{ position: "relative", minHeight: "160px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                        <AnimatePresence mode="wait">
-                          {vsCountdown > 0 ? (
-                            <CountdownDigit key={vsCountdown} value={vsCountdown} color={countdownColor} />
-                          ) : (
-                            <motion.div
-                              key="fight"
-                              initial={{ scale: 0.3, opacity: 0, rotate: -10 }}
-                              animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                              transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                              style={{
-                                fontSize: "clamp(52px, 14vw, 90px)",
-                                fontWeight: 900,
-                                color: "#00FF87",
-                                textShadow: "0 0 40px rgba(0,255,135,0.6), 0 0 80px rgba(0,255,135,0.3)",
-                                letterSpacing: "-0.02em",
-                                fontFamily: "'Space Grotesk', 'Inter', system-ui, sans-serif",
-                              }}
-                            >
-                              FIGHT!
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
-
-                      <p style={{ fontSize: "13px", color: "#4B6080", marginTop: "8px", fontWeight: 600 }}>
-                        Arena starting…
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* ── MATCHED ── */}
-              {matchState === "matched" && tournamentId && (
-                <motion.div key="matched" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
-                  <div style={{
-                    background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
-                    border: "2px solid rgba(0,255,135,0.35)",
-                    borderRadius: "20px",
-                    textAlign: "center",
-                    padding: "clamp(32px, 8vw, 56px) 24px",
-                    boxShadow: "0 0 60px rgba(0,255,135,0.08)",
-                    position: "relative",
-                    overflow: "hidden",
-                  }}>
-                    <ScanlineOverlay />
-                    <div style={{ position: "relative", zIndex: 1 }}>
-                      <motion.div
-                        animate={{ scale: [1, 1.12, 1], rotate: [0, -5, 5, 0] }}
-                        transition={{ duration: 0.6, repeat: 3 }}
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          width: "80px",
-                          height: "80px",
-                          borderRadius: "50%",
-                          background: "linear-gradient(135deg, rgba(227,179,65,0.18), rgba(227,179,65,0.05))",
-                          border: "2px solid rgba(227,179,65,0.5)",
-                          boxShadow: "0 0 32px rgba(227,179,65,0.3)",
-                          marginBottom: "20px",
-                        }}
-                      >
-                        <Trophy color="#E3B341" size={40} />
-                      </motion.div>
-                      <h2 style={{
-                        fontSize: "clamp(24px, 7vw, 34px)", fontWeight: 900,
-                        color: "#00FF87", marginBottom: "10px",
-                        textShadow: "0 0 24px rgba(0,255,135,0.4)",
-                        letterSpacing: "-0.02em",
-                      }}>
-                        Matchup found!
-                      </h2>
-                      <p style={{ fontSize: "14px", color: "#4B6080", marginBottom: "32px", lineHeight: 1.6 }}>
-                        Your 5-minute arena is live. Make your move!
-                      </p>
-                      <Link href={`/dashboard?tournament=${tournamentId}`}>
-                        <motion.button
-                          whileHover={{ scale: 1.05, boxShadow: "0 0 48px rgba(0,255,135,0.45)" }}
-                          whileTap={{ scale: 0.96 }}
-                          style={{
-                            padding: "16px 40px",
-                            background: "linear-gradient(135deg, #00FF87, #00C853)",
-                            border: "none", borderRadius: "14px",
-                            color: "#041810", fontSize: "18px", fontWeight: 900,
-                            cursor: "pointer",
-                            display: "inline-flex", alignItems: "center", gap: "10px",
-                            boxShadow: "0 0 28px rgba(0,255,135,0.3)",
-                            letterSpacing: "0.02em",
-                          }}
-                        >
-                          Enter arena <ArrowRight size={20} />
-                        </motion.button>
-                      </Link>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-            </AnimatePresence>
-
-            {/* ── Info strip ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              style={{
-                marginTop: "20px",
-                background: "linear-gradient(135deg, #0A1F3D 0%, #081729 100%)",
-                border: "1px solid rgba(0,163,255,0.1)",
-                borderRadius: "16px",
-                display: "flex", flexWrap: "wrap",
-                gap: "4px",
-                padding: "8px",
-                justifyContent: "center",
-              }}
-            >
-              {[
-                { icon: <Zap size={15} fill="currentColor" />, color: "#00A3FF", text: "Instant matchups" },
-                { icon: <Clock size={15} />, color: "#8B5CF6", text: "5-minute arenas" },
-                { icon: <DollarSign size={15} />, color: "#00FF87", text: "$10k starting capital" },
-                { icon: <Trophy size={15} />, color: "#E3B341", text: "Highest board value wins" },
-              ].map((item, i) => (
-                <div key={i} style={{
-                  display: "flex", alignItems: "center", gap: "7px",
-                  padding: "8px 16px", borderRadius: "10px",
-                  background: "rgba(0,163,255,0.05)",
-                  border: "1px solid rgba(0,163,255,0.1)",
-                  boxShadow: "0 0 10px rgba(0,163,255,0.04)",
-                }}>
-                  <span style={{ color: item.color }}>{item.icon}</span>
-                  <span style={{ fontSize: "13px", color: "#8A93A6", fontWeight: 600 }}>{item.text}</span>
-                </div>
-              ))}
-            </motion.div>
-          </div>
+        {activeBlitz && (
+          <section className="blitz-resume-row">
+            <div><span className="blitz-live-dot" />You have a live Blitz arena</div>
+            <button type="button" onClick={() => navigate(`/dashboard?tournament=${activeBlitz.id}`)}>Resume arena <ArrowRight size={15} /></button>
+          </section>
         )}
+
+        <section className="blitz-card blitz-stage-card" aria-live="polite">
+          {matchState === "idle" && (
+            <div className="blitz-stage-content">
+              <div className="blitz-icon-box"><Zap size={25} /></div>
+              <p className="blitz-kicker">One opponent · five minutes</p>
+              <h2>Ready for a clean read?</h2>
+              <p>Get matched with one player. The board opens with $10,000 in virtual capital and closes when the clock runs out.</p>
+              {queueExpired && <div className="blitz-alert">No match found this time. The queue is open again.</div>}
+              <button type="button" className="blitz-primary-button" onClick={startQueue} disabled={queueMutation.isPending}>
+                <Swords size={17} /> {queueMutation.isPending ? "Opening queue…" : "Find a matchup"}
+              </button>
+            </div>
+          )}
+
+          {matchState === "queued" && (
+            <div className="blitz-stage-content">
+              <div className="blitz-queue-mark"><span /></div>
+              <p className="blitz-kicker">Queue open</p>
+              <h2>Finding your matchup</h2>
+              <div className="blitz-timer">{formatTime(queueSeconds)}</div>
+              <p>We’ll drop you into the arena as soon as another player is ready.</p>
+              <button type="button" className="blitz-cancel-button" onClick={() => cancelMutation.mutate()} disabled={cancelMutation.isPending}><X size={15} /> Leave queue</button>
+            </div>
+          )}
+
+          {matchState === "vs" && (
+            <div className="blitz-stage-content">
+              <p className="blitz-kicker">Match found</p>
+              <div className="blitz-versus-row">
+                <PlayerBadge label="You" name={user.username || "Player"} tone="mint" />
+                <span className="blitz-versus">VS</span>
+                <PlayerBadge label="Opponent" name={opponentName} tone="rose" />
+              </div>
+              <div className="blitz-countdown">{vsCountdown > 0 ? vsCountdown : "GO"}</div>
+              <p>Opening the market board…</p>
+            </div>
+          )}
+
+          {matchState === "matched" && tournamentId && (
+            <div className="blitz-stage-content">
+              <div className="blitz-icon-box blitz-icon-success"><Trophy size={25} /></div>
+              <p className="blitz-kicker">The board is live</p>
+              <h2>Matchup found.</h2>
+              <p>Your five-minute arena is ready. Make the first move count.</p>
+              <Link href={`/dashboard?tournament=${tournamentId}`} className="blitz-primary-link">Enter arena <ArrowRight size={16} /></Link>
+            </div>
+          )}
+        </section>
+
+        <div className="blitz-info-grid">
+          <BlitzInfo icon={<Clock3 size={16} />} label="Round length" value="5 minutes" />
+          <BlitzInfo icon={<DollarSign size={16} />} label="Starting capital" value="$10,000 virtual" />
+          <BlitzInfo icon={<Trophy size={16} />} label="Win condition" value="Highest board value" />
+        </div>
       </div>
     </div>
   );
+}
+
+function BlitzHeader() {
+  return (
+    <header className="blitz-header">
+      <div><p className="blitz-kicker">Fast format / 02</p><h1>Blitz</h1><p>Short clock. Clear decisions. One player across the board.</p></div>
+      <div className="blitz-header-mark"><Zap size={19} /></div>
+    </header>
+  );
+}
+
+function PlayerBadge({ label, name, tone }: { label: string; name: string; tone: "mint" | "rose" }) {
+  return <div className={`blitz-player blitz-player-${tone}`}><div className="blitz-avatar">{name[0]?.toUpperCase() || "?"}</div><strong>{name}</strong><span>{label}</span></div>;
+}
+
+function BlitzInfo({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
+  return <div className="blitz-info-item"><span className="blitz-info-icon">{icon}</span><div><span>{label}</span><strong>{value}</strong></div></div>;
 }
