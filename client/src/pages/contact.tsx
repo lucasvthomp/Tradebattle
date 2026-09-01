@@ -249,7 +249,7 @@ export default function Support() {
             <div style={cardStyle} className="p-4 space-y-3">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(0,163,255,0.1)" }}>
-                  <Mail className="w-4 h-4" style={{ color: "#67E7BF" }} />
+                  <TradebattleIcon name="support" className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 </div>
                 <div>
                   <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Email</div>
@@ -258,7 +258,7 @@ export default function Support() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(40,199,111,0.1)" }}>
-                  <Clock className="w-4 h-4" style={{ color: "#67E7BF" }} />
+                  <TradebattleIcon name="timer" className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 </div>
                 <div>
                   <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Response Time</div>
