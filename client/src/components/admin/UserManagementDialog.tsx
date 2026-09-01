@@ -277,7 +277,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                     >
                       {user.banned ? (
                         <>
-                          <ShieldCheck className="h-4 w-4 mr-1" />
+                          <TradebattleIcon name="admin" className="h-4 w-4 mr-1" />
                           Unban
                         </>
                       ) : (
