@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -151,7 +152,7 @@ export function TournamentEndCelebration({
                     ease: "easeInOut",
                   }}
                 >
-                  <Trophy className="w-32 h-32 mb-8" style={{ color: '#F2C76A' }} />
+                  <TradebattleIcon name="rankings" className="w-32 h-32 mb-8" style={{ color: '#F2C76A' }} />
                 </motion.div>
 
                 <motion.h1
@@ -223,7 +224,7 @@ export function TournamentEndCelebration({
                         repeat: Infinity,
                       }}
                     />
-                    <Crown className="w-32 h-32 relative z-10" style={{ color: '#FFD700' }} />
+                    <TradebattleIcon name="rankings" className="w-32 h-32 relative z-10" style={{ color: '#FFD700' }} />
                   </motion.div>
 
                   <motion.h1
@@ -299,7 +300,7 @@ export function TournamentEndCelebration({
                         transition={{ delay: idx * 0.2 }}
                         className={`flex flex-col items-center justify-end ${heights[idx]} w-32`}
                       >
-                        <Medal className="w-8 h-8 mb-2" style={{ color: medal.color }} />
+                        <TradebattleIcon name="rankings" className="w-8 h-8 mb-2" style={{ color: medal.color }} />
                         <div className={`w-full ${heights[idx]} rounded-t-xl p-3 flex flex-col items-center justify-between`}
                           style={{ background: `linear-gradient(to top, ${medal.color}30, ${medal.color}10)`, border: `2px solid ${medal.color}` }}
                         >
