@@ -1,3 +1,4 @@
+import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { TrendingUp, TrendingDown, DollarSign, Activity, Trophy } from "lucide-react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +42,7 @@ export function StatsBar({
 
           {tournaments.length > 0 && selectedTournament && (
             <div className="flex items-center gap-2">
-              <Trophy className="w-4 h-4 text-primary" />
+              <TradebattleIcon name="rankings" className="w-4 h-4 text-primary" />
               <Select
                 value={selectedTournament?.id?.toString() || ""}
                 onValueChange={onTournamentChange}
