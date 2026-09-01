@@ -103,22 +103,6 @@ export default function Hub() {
           </div>
         </motion.section>
 
-        <motion.section className="hub-loadout" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.055 }} aria-labelledby="hub-loadout-title">
-          <div className="hub-loadout-copy">
-            <span className="hub-panel-label">PLAYER LOADOUT</span>
-            <h2 id="hub-loadout-title">Your market kit is ready.</h2>
-            <p>Read the tape, ring the bell, and make the next clean decision.</p>
-          </div>
-          <div className="hub-loadout-items" aria-label="Market kit icons">
-            <div className="hub-loadout-item"><BarChart3 size={18} aria-hidden="true" /><span>Tape</span></div>
-            <div className="hub-loadout-item"><ArrowUpRight size={18} aria-hidden="true" /><span>Flow</span></div>
-            <div className="hub-loadout-item"><Activity size={18} aria-hidden="true" /><span>Open</span></div>
-            <div className="hub-loadout-item"><WalletCards size={18} aria-hidden="true" /><span>Stack</span></div>
-            <div className="hub-loadout-item"><DollarSign size={18} aria-hidden="true" /><span>Bank</span></div>
-            <div className="hub-loadout-item"><Trophy size={18} aria-hidden="true" /><span>Rank</span></div>
-          </div>
-        </motion.section>
-
         <motion.section className="hub-stat-grid" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.06 }} aria-label="Player stats">
           {stats.map((stat) => (
             <div key={stat.label} className="hub-stat-card" style={{ "--stat-color": stat.color } as React.CSSProperties}>
