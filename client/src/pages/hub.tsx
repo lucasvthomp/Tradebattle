@@ -65,11 +65,9 @@ export default function Hub() {
   const { level, xp, progress } = computeLevel(wins, trades);
   const { title: rankTitle, color: rankColor } = getRankTitle(level);
   const balance = (Number(user?.siteCash) || 0).toFixed(2);
-  const tagline = !trades
-    ? "Your first read is waiting. Pick a mode and make the opening move."
-    : activeTournaments.length > 0
-      ? `${activeTournaments.length} live arena${activeTournaments.length > 1 ? "s" : ""} are moving now. Find your edge.`
-      : "The board is live. Check the tape and choose your next line.";
+  const tagline = activeTournaments.length > 0
+    ? `${activeTournaments.length} arena${activeTournaments.length > 1 ? "s" : ""} live now`
+    : "Choose your next mode.";
   const ctaHref = activeTournaments.length > 0 ? "/dashboard" : "/tournaments";
   const ctaLabel = activeTournaments.length > 0 ? "Open live arena" : "Scout arenas";
 
@@ -85,7 +83,7 @@ export default function Hub() {
       <div className="hub-shell">
         <motion.header className="hub-topbar" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35 }}>
           <div>
-            <p className="hub-kicker">Player control / 01</p>
+            <p className="hub-kicker">HOME BASE</p>
             <h1 className="hub-title">Welcome back, {user?.username ?? "player"}.</h1>
             <p className="hub-subtitle">{tagline}</p>
           </div>
@@ -96,14 +94,14 @@ export default function Hub() {
 
         <motion.section className="hub-feature-banner" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.04 }}>
           <div className="hub-feature-copy">
-            <p className="hub-feature-kicker"><span className="hub-live-dot" /> READY ROOM / NEXT RUN</p>
+            <p className="hub-feature-kicker"><span className="hub-live-dot" /> LIVE BOARD</p>
             <h2>{activeTournaments.length ? "The board is moving." : "Your next run starts here."}</h2>
-            <p>Pick a mode, build your line, and make the first move count.</p>
+            <p>Choose your pressure level.</p>
             <button type="button" className="hub-feature-action" onClick={() => navigate(ctaHref)}>
               {ctaLabel}<ArrowUpRight size={15} />
             </button>
           </div>
-          <img className="hub-feature-art" src="/assets/tradebattle-shield-soft.png" alt="" aria-hidden="true" />
+          <img className="hub-feature-art" src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" />
         </motion.section>
 
         <motion.section className="hub-loadout" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.055 }} aria-labelledby="hub-loadout-title">
@@ -113,12 +111,12 @@ export default function Hub() {
             <p>Read the tape, ring the bell, and make the next clean decision.</p>
           </div>
           <div className="hub-loadout-items" aria-label="Market kit icons">
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-candles-soft.png" alt="" aria-hidden="true" /><span>Tape</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-exchange-soft.png" alt="" aria-hidden="true" /><span>Flow</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-bell-soft.png" alt="" aria-hidden="true" /><span>Open</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-money-bag-soft.png" alt="" aria-hidden="true" /><span>Stack</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-coins-soft.png" alt="" aria-hidden="true" /><span>Bank</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-trophy-soft.png" alt="" aria-hidden="true" /><span>Rank</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" /><span>Tape</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>Flow</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Open</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Stack</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Bank</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Rank</span></div>
           </div>
         </motion.section>
 
@@ -152,17 +150,16 @@ export default function Hub() {
               <Link href="/tournaments" className="hub-launch-card">
                 <span className="hub-launch-icon gold"><Trophy size={18} /></span>
                 <span className="hub-launch-copy"><strong>Arenas</strong><span>Compete for the prize pool · {activeTournaments.length} live</span></span>
-                <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-trophy-soft.png" alt="" aria-hidden="true" />
+                <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
                 <span className="hub-launch-icon purple"><Zap size={18} /></span>
                 <span className="hub-launch-copy"><strong>Blitz</strong><span>1v1 rounds · 5 minutes · instant</span></span>
-                <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-blitz-soft.png" alt="" aria-hidden="true" />
+                <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
             </div>
-            <div className="hub-launch-foot"><span className="hub-live-dot" />Virtual capital only. Your next round starts when you say go.</div>
           </motion.section>
         </div>
 

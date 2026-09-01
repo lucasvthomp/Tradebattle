@@ -37,6 +37,34 @@ export default function Leaderboard() {
           <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><Trophy size={20} /></div><div><h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rankings</h1><p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>{rankings.length ? `${rankings.length} players on the board` : "Track the players setting the pace."}</p></div></div>
         </header>
 
+
+        {rankings.length > 0 && (
+          <section className="rankings-podium" aria-labelledby="podium-title">
+            <div className="rankings-podium-copy">
+              <span className="rankings-podium-kicker">THE TOP TABLE</span>
+              <h2 id="podium-title">Own the board.</h2>
+              <p>The players setting the pace this round.</p>
+              <img className="rankings-podium-trophy" src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" />
+            </div>
+            <div className="rankings-podium-stage">
+              {[1, 0, 2].map((index) => {
+                const player = rankings[index];
+                const place = index + 1;
+                return (
+                  <div key={`podium-${place}`} className={`ranking-podium-slot ranking-place-${place}`}>
+                    <div className="ranking-podium-player">
+                      <span className="ranking-podium-place">#{place}</span>
+                      <strong>{player?.username ?? "Open slot"}</strong>
+                      <span>{player ? valueFor(player) : "Waiting for a challenger"}</span>
+                    </div>
+                    <div className="ranking-podium-block"><span>{place}</span></div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
         <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as BoardType)}>
           <TabsList className="mb-5 grid h-auto w-full grid-cols-3 gap-1 border p-1" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
             {(Object.keys(boardMeta) as BoardType[]).map((key) => { const Icon = boardMeta[key].icon; return <TabsTrigger key={key} value={key} className="gap-1.5 py-2.5 text-xs font-bold"><Icon size={14} />{boardMeta[key].label}</TabsTrigger>; })}

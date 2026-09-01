@@ -112,6 +112,7 @@ export default function Blitz() {
       <div className="arena-page-shell blitz-page">
         <div className="blitz-shell">
           <BlitzHeader />
+          <BlitzRoundboard />
           <section className="blitz-card blitz-auth-card">
             <div className="blitz-icon-box"><Swords size={25} /></div>
             <p className="blitz-kicker">Private match queue</p>
@@ -128,6 +129,7 @@ export default function Blitz() {
     <div className="arena-page-shell blitz-page">
       <div className="blitz-shell">
         <BlitzHeader />
+          <BlitzRoundboard />
 
         {activeBlitz && (
           <section className="blitz-resume-row">
@@ -186,9 +188,9 @@ export default function Blitz() {
         </section>
 
         <div className="blitz-info-grid">
-          <BlitzInfo icon={<Clock3 size={16} />} label="Round length" value="5 minutes" />
-          <BlitzInfo icon={<DollarSign size={16} />} label="Starting capital" value="$10,000 virtual" />
-          <BlitzInfo icon={<Trophy size={16} />} label="Win condition" value="Highest board value" />
+          <BlitzInfo icon={<Clock3 size={16} />} label="Round timer" value="5 minutes" />
+          <BlitzInfo icon={<DollarSign size={16} />} label="Starting stack" value="$10,000 virtual" />
+          <BlitzInfo icon={<Trophy size={16} />} label="Win line" value="Highest board value" />
         </div>
       </div>
     </div>
@@ -198,9 +200,31 @@ export default function Blitz() {
 function BlitzHeader() {
   return (
     <header className="blitz-header">
-      <div><p className="blitz-kicker">Fast format / 02</p><h1>Blitz</h1><p>Short clock. Clear decisions. One player across the board.</p></div>
+      <div><p className="blitz-kicker">LIVE FORMAT</p><h1>Blitz</h1><p>One board. One rival. Five minutes.</p></div>
       <div className="blitz-header-mark"><Zap size={19} /></div>
     </header>
+  );
+}
+
+
+function BlitzRoundboard() {
+  return (
+    <section className="blitz-roundboard" aria-labelledby="blitz-roundboard-title">
+      <div className="blitz-roundboard-copy">
+        <span className="blitz-kicker">THE FAST LANE</span>
+        <h2 id="blitz-roundboard-title">Make the board blink.</h2>
+        <p>Read the tape, commit to a line, and leave the table with a clean win.</p>
+        <div className="blitz-roundboard-stats">
+          <span><strong>05:00</strong> on the clock</span>
+          <span><strong>1v1</strong> head-to-head</span>
+          <span><strong>$10K</strong> virtual stack</span>
+        </div>
+      </div>
+      <div className="blitz-roundboard-art">
+        <img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" />
+        <span className="blitz-roundboard-art-label">LIVE MARKET</span>
+      </div>
+    </section>
   );
 }
 

@@ -392,7 +392,7 @@ export default function TournamentsPage() {
                 <span><strong>{upcomingTournaments.length}</strong> Next up</span>
               </div>
             </div>
-            <img className="tournament-hero-art" src="/assets/tradebattle-bell-soft.png" alt="" aria-hidden="true" />
+            <img className="tournament-hero-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
           </motion.div>
 
           {/* Header */}

@@ -133,6 +133,7 @@ export default function Support() {
               <MessageSquare className="w-5 h-5" style={{ color: "#67E7BF" }} />
             </div>
             <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Help HQ</h1>
+            <img className="support-header-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
           </div>
           <p className="text-sm" style={{ color: "#4B5563" }}>Quick answers for the arena — or send us a message when you need a hand.</p>
         </div>

@@ -167,16 +167,6 @@ export function SimplifiedSidebar() {
         {/* Code Redemption - Pinned at bottom, never overlaps */}
         {user && (
           <div className="flex-shrink-0 p-2 border-t" style={{ borderColor: 'rgba(103, 231, 191, 0.13)' }}>
-            <div className="sidebar-player-card" aria-label={`Player ${user.username}`}>
-              <div className="sidebar-player-avatar" aria-hidden="true">
-                {user.username?.slice(0, 1).toUpperCase() || 'P'}
-              </div>
-              <div className="sidebar-player-copy">
-                <span>LIVE PLAYER</span>
-                <strong>{user.username || 'Player'}</strong>
-                <small>{user.tournamentWins || 0} wins · {user.totalTrades || 0} reps</small>
-              </div>
-            </div>
             <Button
               onClick={() => setCodeDialogOpen(true)}
               className="transition-all duration-200 hover:brightness-110 w-full flex items-center"

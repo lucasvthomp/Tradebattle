@@ -45,7 +45,7 @@ export default function People() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-xs" style={{ color: "#7890a4" }}><span className="h-2 w-2 rounded-full" style={{ background: "#67e7bf" }} />Profiles update live</div>
+          <div className="people-header-art" aria-hidden="true"><img src="/assets/tradebattle-chest-medal-v2.png" alt="" /></div>
         </header>
 
         <section className="mb-6 flex flex-col gap-3 rounded-lg border p-3 md:flex-row" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }} aria-label="Find players">

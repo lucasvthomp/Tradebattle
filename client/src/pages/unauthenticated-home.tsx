@@ -49,9 +49,9 @@ function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href
 }
 
 const steps = [
-  { number: "01", icon: <Swords aria-hidden="true" />, art: "/assets/tradebattle-bell-soft.png", title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
-  { number: "02", icon: <TrendingUp aria-hidden="true" />, art: "/assets/tradebattle-candles-soft.png", title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
-  { number: "03", icon: <Crown aria-hidden="true" />, art: "/assets/tradebattle-trophy-soft.png", title: "Take the win", body: "Finish above the field when the clock hits zero." },
+  { number: "01", icon: <Swords aria-hidden="true" />, art: "/assets/tradebattle-chest-bell-v2.png", title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
+  { number: "02", icon: <TrendingUp aria-hidden="true" />, art: "/assets/tradebattle-chest-graph-v2.png", title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
+  { number: "03", icon: <Crown aria-hidden="true" />, art: "/assets/tradebattle-chest-trophy-v2.png", title: "Take the win", body: "Finish above the field when the clock hits zero." },
 ];
 
 const modes = [
@@ -63,7 +63,7 @@ const modes = [
     body: "The full field experience. Read the market, make your move, and climb the board.",
     stats: ["Open field", "Free entry"],
     link: "Enter arenas",
-    art: "/assets/tradebattle-trophy-soft.png",
+    art: "/assets/tradebattle-chest-trophy-v2.png",
   },
   {
     className: "mode-blitz",
@@ -73,7 +73,7 @@ const modes = [
     body: "A fast, focused matchup. Five minutes on the clock and one opponent to beat.",
     stats: ["1v1 match", "5 min rounds"],
     link: "Play Blitz",
-    art: "/assets/tradebattle-blitz-soft.png",
+    art: "/assets/tradebattle-chest-exchange-v2.png",
   },
 ];
 
@@ -85,7 +85,7 @@ const promoCards = [
     title: "Take the field",
     body: "Join an open arena and outplay the board.",
     cta: "Enter arenas",
-    art: "/assets/tradebattle-bell-soft.png",
+    art: "/assets/tradebattle-chest-bell-v2.png",
   },
   {
     href: "/blitz",
@@ -94,7 +94,7 @@ const promoCards = [
     title: "Beat the clock",
     body: "Five minutes. One rival. Make it count.",
     cta: "Play Blitz",
-    art: "/assets/tradebattle-exchange-soft.png",
+    art: "/assets/tradebattle-chest-exchange-v2.png",
   },
   {
     href: "/shop",
@@ -103,7 +103,7 @@ const promoCards = [
     title: "Stack your edge",
     body: "Unlock perks for your next run.",
     cta: "Visit rewards",
-    art: "/assets/tradebattle-money-bag-soft.png",
+    art: "/assets/tradebattle-chest-money-bag-v2.png",
   },
 ];
 
@@ -147,7 +147,7 @@ export default function UnauthenticatedHome() {
 
             <div className="arena-hero-visual">
               <div className="arena-hero-art-glow" aria-hidden="true" />
-              <img className="arena-hero-market-icon" src="/assets/tradebattle-shield-soft.png" alt="" aria-hidden="true" />
+              <img className="arena-hero-market-icon" src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" />
               <aside className="match-card" aria-label="Next arena">
               <div className="match-card-top">
                 <span className="match-live"><i aria-hidden="true" /> NEXT MATCH</span>
@@ -155,7 +155,7 @@ export default function UnauthenticatedHome() {
               </div>
 
               <div className="match-title">
-                <span className="match-trophy"><img src="/assets/tradebattle-trophy-soft.png" alt="" aria-hidden="true" /></span>
+                <span className="match-trophy"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /></span>
                 <div><strong>Opening Bell</strong><small>Daily arena · Open field</small></div>
               </div>
 
@@ -210,11 +210,11 @@ export default function UnauthenticatedHome() {
           <h2 id="collectibles-title">Read the board. Bring the right energy.</h2>
         </div>
         <div className="arena-collectibles-items">
-          <div className="arena-collectible"><img src="/assets/tradebattle-candles-soft.png" alt="" aria-hidden="true" /><span>Read</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-exchange-soft.png" alt="" aria-hidden="true" /><span>React</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-money-bag-soft.png" alt="" aria-hidden="true" /><span>Stack</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-trophy-soft.png" alt="" aria-hidden="true" /><span>Win</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-bell-soft.png" alt="" aria-hidden="true" /><span>Ring in</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" /><span>Read</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>React</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Stack</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Win</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Ring in</span></div>
         </div>
       </section>
 

@@ -3,6 +3,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 import { BalanceManagementModal } from "@/components/balance/BalanceManagementModal";
 import { MarketStatus } from "@/components/market-status";
 import {
@@ -77,6 +78,20 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           <div className="hidden md:flex items-center space-x-3 ml-auto">
             {user ? (
               <>
+                {onChatToggle && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    aria-label={chatOpen ? "Close chat" : "Open chat"}
+                    onClick={onChatToggle}
+                    className={`h-10 w-10 p-0 ${chatOpen ? "bg-primary/10" : ""}`}
+                    style={{ color: chatOpen ? "#67E7BF" : "#AFC2D0" }}
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                  </Button>
+                )}
+                <NotificationDropdown />
+
                 {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
