@@ -46,7 +46,7 @@ function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href
 
 const steps = [
   { number: "01", icon: <LayoutGrid aria-hidden="true" /> title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
-  { number: "02", icon: <TrendingUp aria-hidden="true" /> title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
+  { number: "02", icon: <TrendingUp aria-hidden="true" /> title: "Trade the board", body: "Build your positions with market data and virtual capital." },
   { number: "03", icon: <Flag aria-hidden="true" /> title: "Take the win", body: "Finish above the field when the clock hits zero." },
 ];
 
