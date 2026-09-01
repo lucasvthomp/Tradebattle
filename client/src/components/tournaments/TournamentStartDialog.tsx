@@ -201,7 +201,7 @@ export function TournamentStartDialog({ isOpen, onClose, tournament }: Tournamen
                 color: '#091525',
               }}
             >
-              Make your move! 🚀
+              Make your move!
             </Button>
           </motion.div>
         </div>
