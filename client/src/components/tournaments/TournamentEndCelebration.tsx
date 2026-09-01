@@ -249,7 +249,7 @@ export function TournamentEndCelebration({
                     className="text-3xl font-bold mb-2"
                     style={{ color: '#F2C76A' }}
                   >
-                    IS THE CHAMPION! 🏆
+                    IS THE CHAMPION!
                   </motion.p>
 
                   <motion.div
