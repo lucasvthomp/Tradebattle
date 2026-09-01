@@ -136,7 +136,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 </Link>
                 <Link href="/signup">
                   <Button className="px-4 py-2 transition-transform hover:scale-105" style={{ background: '#62E4BD', color: '#06151c', boxShadow: '0 8px 22px rgba(98, 228, 189, 0.18)' }}>
-                    <TradebattleIcon name="user"Plus className="w-4 h-4 mr-2" />
+                    <TradebattleIcon name="players" className="w-4 h-4 mr-2" />
                     Create profile
                   </Button>
                 </Link>
@@ -353,7 +353,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     style={{ background: '#62E4BD', color: '#06151c' }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <TradebattleIcon name="user"Plus className="w-5 h-5 mr-3" />
+                    <TradebattleIcon name="players" className="w-5 h-5 mr-3" />
                     <span className="text-base" style={{ color: '#06151c' }}>Create profile</span>
                   </Button>
                 </Link>
