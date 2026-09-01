@@ -108,7 +108,7 @@ export default function UnauthenticatedHome() {
         <div className="arena-shell">
           <div className="arena-hero-layout">
             <div className="arena-copy">
-              <p className="arena-eyebrow"><Swords size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
+              <p className="arena-eyebrow"><BarChart3 size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
               <h1 id="arena-hero-title">Trade the market.<br /><em>Play to win.</em></h1>
               <p className="arena-lede">Build a virtual portfolio, make your read, and compete for the top of the rankings.</p>
               <div className="arena-actions">
@@ -129,7 +129,7 @@ export default function UnauthenticatedHome() {
               </div>
               <div className="arena-signal-caption">
                 <span><TrendingUp size={15} aria-hidden="true" /> Read the tape</span>
-                <span><Trophy size={15} aria-hidden="true" /> Climb the rankings</span>
+                <span><BarChart3 size={15} aria-hidden="true" /> Climb the rankings</span>
               </div>
             </div>
           </div>
@@ -211,7 +211,7 @@ export default function UnauthenticatedHome() {
 
       <section className="arena-final" aria-labelledby="final-title">
         <div className="arena-final-content">
-          <p><Zap size={15} aria-hidden="true" /> YOUR FIRST MATCH IS FREE</p>
+          <p><Timer size={15} aria-hidden="true" /> YOUR FIRST MATCH IS FREE</p>
           <h2 id="final-title">Make your first move.</h2>
           <PrimaryLink>Start playing free</PrimaryLink>
         </div>
