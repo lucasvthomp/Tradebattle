@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, ArrowUpRight, Bell, ChevronRight, Crown, DollarSign, ShieldCheck, Swords, TrendingUp, Trophy, Zap } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BarChart3, Bell, ChevronRight, DollarSign, Flag, LayoutGrid, ShieldCheck, Timer, TrendingUp } from "lucide-react";
 import { type ReactNode } from "react";
 import "./unauthenticated-home.css";
 
@@ -45,15 +45,15 @@ function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href
 }
 
 const steps = [
-  { number: "01", icon: <Swords aria-hidden="true" /> title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
+  { number: "01", icon: <LayoutGrid aria-hidden="true" /> title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
   { number: "02", icon: <TrendingUp aria-hidden="true" /> title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
-  { number: "03", icon: <Crown aria-hidden="true" /> title: "Take the win", body: "Finish above the field when the clock hits zero." },
+  { number: "03", icon: <Flag aria-hidden="true" /> title: "Take the win", body: "Finish above the field when the clock hits zero." },
 ];
 
 const modes = [
   {
     className: "mode-tournament",
-    icon: <Trophy aria-hidden="true" />,
+    icon: <BarChart3 aria-hidden="true" />,
     label: "MULTIPLAYER",
     title: "Arenas",
     body: "The full field experience. Read the market, make your move, and climb the board.",
@@ -62,7 +62,7 @@ const modes = [
   },
   {
     className: "mode-blitz",
-    icon: <Zap aria-hidden="true" />,
+    icon: <Timer aria-hidden="true" />,
     label: "HEAD-TO-HEAD",
     title: "Blitz",
     body: "A fast, focused matchup. Five minutes on the clock and one opponent to beat.",
@@ -170,7 +170,7 @@ export default function UnauthenticatedHome() {
           <div className="arena-collectible"><TrendingUp size={18} aria-hidden="true" /><span>Read</span></div>
           <div className="arena-collectible"><ArrowUpRight size={18} aria-hidden="true" /><span>React</span></div>
           <div className="arena-collectible"><DollarSign size={18} aria-hidden="true" /><span>Stack</span></div>
-          <div className="arena-collectible"><Trophy size={18} aria-hidden="true" /><span>Win</span></div>
+          <div className="arena-collectible"><BarChart3 size={18} aria-hidden="true" /><span>Win</span></div>
           <div className="arena-collectible"><Bell size={18} aria-hidden="true" /><span>Ring in</span></div>
         </div>
       </section>
