@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Gift, KeyRound, Trophy, Zap, WalletCards, Users, ArrowRight, Check } from "lucide-react";
+import { KeyRound, Trophy, Zap, WalletCards, Users, ArrowRight, Check } from "lucide-react";
 
 const statItems = [
   { label: "Buying power", key: "cash", icon: WalletCards },
@@ -57,7 +57,7 @@ export default function Shop() {
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Player rewards / 01</p>
             <div className="flex items-center gap-3">
               <div className="reward-icon-3d flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
-                <Gift size={21} />
+                <img src="/assets/tradebattle-reward-flat.png" alt="" className="shop-header-art" />
               </div>
               <div>
                 <h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rewards desk</h1>
@@ -69,6 +69,16 @@ export default function Shop() {
             Virtual perks only
           </Badge>
         </header>
+
+        <section className="shop-spotlight" aria-labelledby="shop-spotlight-title">
+          <div className="shop-spotlight-copy">
+            <p>DROP ZONE / 01</p>
+            <h2 id="shop-spotlight-title">Keep your edge stocked.</h2>
+            <span>Redeem codes, collect virtual cash, and show up ready for the next round.</span>
+            <div className="shop-spotlight-pills"><strong>FREE TO CLAIM</strong><strong>NO DEPOSITS</strong></div>
+          </div>
+          <img src="/assets/tradebattle-reward-flat.png" alt="" className="shop-spotlight-art" />
+        </section>
 
         <section className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Player totals">
           {statItems.map(({ label, key, icon: Icon }) => (

@@ -103,7 +103,7 @@ export default function Hub() {
               {ctaLabel}<ArrowUpRight size={15} />
             </button>
           </div>
-          <img className="hub-feature-art" src="/assets/tradebattle-matchup.png" alt="" aria-hidden="true" />
+          <img className="hub-feature-art" src="/assets/tradebattle-matchup-flat.png" alt="" aria-hidden="true" />
         </motion.section>
 
         <motion.section className="hub-stat-grid" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.06 }} aria-label="Player stats">
@@ -136,11 +136,13 @@ export default function Hub() {
               <Link href="/tournaments" className="hub-launch-card">
                 <span className="hub-launch-icon gold"><Trophy size={18} /></span>
                 <span className="hub-launch-copy"><strong>Arenas</strong><span>Compete for the prize pool · {activeTournaments.length} live</span></span>
+                <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-badge-flat.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
                 <span className="hub-launch-icon purple"><Zap size={18} /></span>
                 <span className="hub-launch-copy"><strong>Blitz</strong><span>1v1 rounds · 5 minutes · instant</span></span>
+                <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-matchup-flat.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
             </div>

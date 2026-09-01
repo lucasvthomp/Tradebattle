@@ -83,7 +83,7 @@ const promoCards = [
     title: "Take the field",
     body: "Join an open arena and outplay the board.",
     cta: "Enter arenas",
-    art: "/assets/tradebattle-matchup.png",
+    art: "/assets/tradebattle-badge-flat.png",
   },
   {
     href: "/blitz",
@@ -92,7 +92,7 @@ const promoCards = [
     title: "Beat the clock",
     body: "Five minutes. One rival. Make it count.",
     cta: "Play Blitz",
-    art: "/assets/tradebattle-mascot.png",
+    art: "/assets/tradebattle-mascot-flat.png",
   },
   {
     href: "/shop",
@@ -101,7 +101,7 @@ const promoCards = [
     title: "Stack your edge",
     body: "Unlock perks for your next run.",
     cta: "Visit rewards",
-    art: "/assets/tradebattle-reward-chest.png",
+    art: "/assets/tradebattle-reward-flat.png",
   },
 ];
 
@@ -145,7 +145,7 @@ export default function UnauthenticatedHome() {
 
             <div className="arena-hero-visual">
               <div className="arena-hero-art-glow" aria-hidden="true" />
-              <img className="arena-hero-mascot" src="/assets/tradebattle-mascot.png" alt="" aria-hidden="true" />
+              <img className="arena-hero-mascot" src="/assets/tradebattle-mascot-flat.png" alt="" aria-hidden="true" />
               <aside className="match-card" aria-label="Next arena">
               <div className="match-card-top">
                 <span className="match-live"><i aria-hidden="true" /> NEXT MATCH</span>

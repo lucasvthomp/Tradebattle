@@ -372,10 +372,7 @@ export default function TournamentsPage() {
   return (
     <div
       className="arena-page-shell tournaments-page min-h-[calc(100dvh-4rem)]"
-      style={{
-        background: 'transparent',
-        backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
-      }}
+      style={{ background: 'transparent' }}
     >
       <div className="container mx-auto px-4 lg:px-8" style={{ padding: 'clamp(16px, 3vh, 40px) clamp(16px, 2vw, 32px)' }}>
         <motion.div
@@ -384,9 +381,24 @@ export default function TournamentsPage() {
           variants={staggerChildren}
           className="space-y-6"
         >
+          <motion.div variants={fadeInUp} className="tournament-hero-strip">
+            <div className="tournament-hero-copy">
+              <p className="tournament-hero-kicker"><span className="tournament-live-dot" /> THE ARENA LOBBY</p>
+              <h2>Choose your board.</h2>
+              <p>Find a live field, lock in a matchup, and make your next clean read.</p>
+              <div className="tournament-hero-stats" aria-label="Arena summary">
+                <span><strong>{myActiveTournaments.length}</strong> Your live</span>
+                <span><strong>{otherLiveTournaments.length}</strong> On now</span>
+                <span><strong>{upcomingTournaments.length}</strong> Next up</span>
+              </div>
+            </div>
+            <img className="tournament-hero-art" src="/assets/tradebattle-badge-flat.png" alt="" aria-hidden="true" />
+          </motion.div>
+
           {/* Header */}
           <motion.div variants={fadeInUp}>
             <div
+              className="tournament-lobby-header"
               style={{
                 position: 'relative',
                 overflow: 'hidden',
@@ -395,18 +407,6 @@ export default function TournamentsPage() {
                 paddingBottom: '20px',
               }}
             >
-              {/* Scanline texture strip */}
-              <div
-                aria-hidden="true"
-                style={{
-                  position: 'absolute',
-                  inset: 0,
-                  backgroundImage: "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px)",
-                  background: 'linear-gradient(180deg, rgba(0,163,255,0.04) 0%, transparent 100%)',
-                  pointerEvents: 'none',
-                  zIndex: 0,
-                }}
-              />
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ position: 'relative', zIndex: 1 }}>
                 <div>
                   <div className="flex items-center mb-1" style={{ gap: 'clamp(10px, 1.2vw, 18px)' }}>
@@ -1132,7 +1132,7 @@ function HorizontalTournamentCard({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className="flex items-center gap-4 p-4 transition-all duration-200"
+        className="tournament-card-surface flex items-center gap-4 p-4 transition-all duration-200"
         onClick={() => navigate(`/tournament/${tournament.id}`)}
         role="button"
         title="View tournament"

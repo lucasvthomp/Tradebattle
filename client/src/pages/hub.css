@@ -831,6 +831,29 @@
   pointer-events: none;
 }
 
+.hub-launch-card { position: relative; overflow: hidden; }
+.hub-launch-icon,
+.hub-launch-copy,
+.hub-launch-arrow { position: relative; z-index: 2; }
+
+.hub-launch-art {
+  position: absolute;
+  z-index: 1;
+  right: 27px;
+  top: -22px;
+  width: 106px;
+  opacity: 0.14;
+  filter: drop-shadow(0 9px 10px rgba(0, 0, 0, 0.25));
+  mix-blend-mode: screen;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.hub-launch-art-arena { width: 112px; }
+.hub-launch-art-blitz { top: -9px; width: 125px; transform: rotate(-5deg); }
+.hub-launch-card:hover .hub-launch-art { opacity: 0.28; transform: translateY(-3px); }
+.hub-launch-card:hover .hub-launch-art-blitz { transform: rotate(-5deg) translateY(-3px); }
+
 @media (max-width: 780px) {
   .hub-feature-banner {
     min-height: 220px;
@@ -851,4 +874,7 @@
 @media (prefers-reduced-motion: reduce) {
   .hub-feature-action { transition: none; }
   .hub-feature-action:hover { transform: none; }
+  .hub-launch-art { transition: none; }
+  .hub-launch-card:hover .hub-launch-art,
+  .hub-launch-card:hover .hub-launch-art-blitz { transform: none; }
 }
