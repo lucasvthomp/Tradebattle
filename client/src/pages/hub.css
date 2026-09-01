@@ -878,3 +878,144 @@
   .hub-launch-card:hover .hub-launch-art,
   .hub-launch-card:hover .hub-launch-art-blitz { transform: none; }
 }
+
+
+/* Hub loadout: a compact market kit rail to make the home base feel playable. */
+.hub-feature-art {
+  mix-blend-mode: normal;
+  opacity: 0.78;
+  filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.28));
+}
+
+.hub-launch-art {
+  mix-blend-mode: normal;
+  opacity: 0.48;
+  filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.28));
+}
+
+.hub-launch-art-arena {
+  width: 82px;
+  height: 82px;
+}
+
+.hub-launch-art-blitz {
+  width: 74px;
+  height: 74px;
+}
+
+.hub-loadout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  min-height: 120px;
+  margin: 0 0 12px;
+  padding: 17px 20px 17px 22px;
+  overflow: hidden;
+  border: 1px solid rgba(32, 216, 194, 0.18);
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 91% 50%, rgba(32, 216, 194, 0.14), transparent 28%),
+    linear-gradient(145deg, rgba(12, 34, 49, 0.96), rgba(7, 18, 31, 0.96));
+}
+
+.hub-loadout-copy {
+  max-width: 320px;
+}
+
+.hub-loadout-copy h2 {
+  margin: 6px 0 4px;
+  color: #effbfc;
+  font-size: 19px;
+  letter-spacing: -0.04em;
+}
+
+.hub-loadout-copy p {
+  margin: 0;
+  color: #7790a4;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.hub-loadout-items {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 17px 0 3px;
+}
+
+.hub-loadout-item {
+  position: relative;
+  width: 72px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-direction: column;
+  padding-bottom: 7px;
+  border: 1px solid rgba(157, 183, 210, 0.14);
+  border-radius: 11px;
+  background: rgba(3, 12, 22, 0.42);
+}
+
+.hub-loadout-item img {
+  position: absolute;
+  top: -22px;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.28));
+  transition: transform 180ms ease;
+}
+
+.hub-loadout-item:hover img {
+  transform: translateY(-4px) rotate(-3deg);
+}
+
+.hub-loadout-item span {
+  position: relative;
+  z-index: 1;
+  color: #9cb9c7;
+  font-family: "Courier New", monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 850px) {
+  .hub-loadout {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .hub-loadout-items {
+    width: 100%;
+    justify-content: space-between;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .hub-loadout {
+    padding: 16px 14px 14px;
+  }
+
+  .hub-loadout-items {
+    justify-content: flex-start;
+    gap: 7px;
+    padding-top: 18px;
+  }
+
+  .hub-loadout-item {
+    flex: 0 0 65px;
+    width: 65px;
+    height: 68px;
+  }
+
+  .hub-loadout-item img {
+    width: 66px;
+    height: 66px;
+  }
+}

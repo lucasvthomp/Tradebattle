@@ -103,7 +103,23 @@ export default function Hub() {
               {ctaLabel}<ArrowUpRight size={15} />
             </button>
           </div>
-          <img className="hub-feature-art" src="/assets/tradebattle-matchup-flat.png" alt="" aria-hidden="true" />
+          <img className="hub-feature-art" src="/assets/tradebattle-shield-soft.png" alt="" aria-hidden="true" />
+        </motion.section>
+
+        <motion.section className="hub-loadout" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.055 }} aria-labelledby="hub-loadout-title">
+          <div className="hub-loadout-copy">
+            <span className="hub-panel-label">PLAYER LOADOUT</span>
+            <h2 id="hub-loadout-title">Your market kit is ready.</h2>
+            <p>Read the tape, ring the bell, and make the next clean decision.</p>
+          </div>
+          <div className="hub-loadout-items" aria-label="Market kit icons">
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-candles-soft.png" alt="" aria-hidden="true" /><span>Tape</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-exchange-soft.png" alt="" aria-hidden="true" /><span>Flow</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-bell-soft.png" alt="" aria-hidden="true" /><span>Open</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-money-bag-soft.png" alt="" aria-hidden="true" /><span>Stack</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-coins-soft.png" alt="" aria-hidden="true" /><span>Bank</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-trophy-soft.png" alt="" aria-hidden="true" /><span>Rank</span></div>
+          </div>
         </motion.section>
 
         <motion.section className="hub-stat-grid" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.06 }} aria-label="Player stats">
@@ -136,13 +152,13 @@ export default function Hub() {
               <Link href="/tournaments" className="hub-launch-card">
                 <span className="hub-launch-icon gold"><Trophy size={18} /></span>
                 <span className="hub-launch-copy"><strong>Arenas</strong><span>Compete for the prize pool · {activeTournaments.length} live</span></span>
-                <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-badge-flat.png" alt="" aria-hidden="true" />
+                <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-trophy-soft.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
                 <span className="hub-launch-icon purple"><Zap size={18} /></span>
                 <span className="hub-launch-copy"><strong>Blitz</strong><span>1v1 rounds · 5 minutes · instant</span></span>
-                <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-matchup-flat.png" alt="" aria-hidden="true" />
+                <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-blitz-soft.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
             </div>
