@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Mail, Clock, Search, MessageSquare, Zap } from "lucide-react";
+import { Mail, Clock, Search, MessageSquare, Zap, Rocket, BarChart3, Trophy, Settings2 } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -77,7 +77,7 @@ export default function Support() {
   const faqs = [
     {
       category: "Getting Started",
-      emoji: "🚀",
+      icon: Rocket,
       questions: [
         { question: "How do I create my player card?", answer: "Choose 'Create profile' in the navigation and follow the short setup to pick your player name, contact email, and passcode." },
         { question: "How do I reset my passcode?", answer: "Choose 'Forgot your passcode?' on the entry screen, enter your contact email, and follow the recovery link." },
@@ -86,7 +86,7 @@ export default function Support() {
     },
     {
       category: "Trading",
-      emoji: "📈",
+      icon: BarChart3,
       questions: [
         { question: "Is my money at risk?", answer: "No. Tradebattle uses virtual currency for paper trading only. You never risk real money on trades." },
         { question: "How often are quotes updated?", answer: "Stock quotes refresh in real time during the market window (9:30 AM–4:00 PM EST, Mon–Fri). Crypto runs 24/7." },
@@ -96,7 +96,7 @@ export default function Support() {
     },
     {
       category: "Arenas",
-      emoji: "🏆",
+      icon: Trophy,
       questions: [
         { question: "How do I enter an arena?", answer: "Open Arenas, choose a matchup, and select Enter. Any entry fee comes from your arena cash." },
         { question: "How are rankings determined?", answer: "Rankings use each player’s percentage gain from starting capital — the highest return takes the top place." },
@@ -105,7 +105,7 @@ export default function Support() {
     },
     {
       category: "Technical",
-      emoji: "⚙️",
+      icon: Settings2,
       questions: [
         { question: "What browsers are supported?", answer: "Tradebattle works best on the latest versions of Chrome, Firefox, Safari, and Edge." },
         { question: "Is there a mobile app?", answer: "The site is fully responsive and works great on mobile browsers — no separate app needed." },
@@ -160,7 +160,7 @@ export default function Support() {
             {filteredFaqs.map((cat, ci) => (
               <div key={ci} style={cardStyle} className="overflow-hidden">
                 <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <span className="text-base">{cat.emoji}</span>
+                  <cat.icon className="h-4 w-4" aria-hidden="true" />
                   <span className="text-sm font-bold" style={{ color: "#C9D1E2" }}>{cat.category}</span>
                 </div>
                 <div className="px-4">
