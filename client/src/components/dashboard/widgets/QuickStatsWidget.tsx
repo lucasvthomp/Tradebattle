@@ -29,7 +29,7 @@ export function QuickStatsWidget({
       <div className="grid grid-cols-2 gap-3 h-full">
         <div className="p-2 rounded-lg bg-muted/30 flex flex-col">
           <div className="flex items-center space-x-1 mb-1">
-            <BarChart3 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            <TradebattleIcon name="market" className="w-3 h-3 text-muted-foreground flex-shrink-0" />
             <span className="text-xs text-muted-foreground">Positions</span>
           </div>
           <div className="text-lg lg:text-xl font-bold">{stats.holdingsCount}</div>
