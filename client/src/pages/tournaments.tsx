@@ -93,7 +93,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {shown.map((p) => (
         <Avatar key={p.userId} className="w-7 h-7">
           {p.profilePicture && (
-            <AvatarImage src={p.profilePicture} className="object-cover" />
+            <AvatarImage src={p.profilePicture || "/assets/tradebattle-default-broker.png"} className="object-cover" />
           )}
           <AvatarFallback
             className="text-[9px] font-semibold"
@@ -788,6 +788,20 @@ export default function TournamentsPage() {
             </div>
           </motion.div>
         </motion.div>
+        <motion.section className="tournament-brief-grid" variants={fadeInUp} aria-label="Arena briefing">
+          <div className="tournament-brief-card">
+            <span className="tournament-brief-icon"><TrendingUp size={17} /></span>
+            <div><strong>Read the market</strong><span>Every arena uses the same simulated tape for a fair fight.</span></div>
+          </div>
+          <div className="tournament-brief-card">
+            <span className="tournament-brief-icon"><Shield size={17} /></span>
+            <div><strong>Bring a plan</strong><span>Use your virtual balance, choose a side, and manage the clock.</span></div>
+          </div>
+          <div className="tournament-brief-card">
+            <span className="tournament-brief-icon"><Trophy size={17} /></span>
+            <div><strong>Climb the board</strong><span>Finish strong, collect the result, and keep your run moving.</span></div>
+          </div>
+        </motion.section>
       </div>
 
       {/* Tournament Management Dialog */}
