@@ -138,9 +138,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
         <DropdownMenuTrigger asChild>
           <div className="cursor-pointer self-start">
             <Avatar className="w-9 h-9">
-              {group.profilePicture && (
-                <AvatarImage src={group.profilePicture} className="object-cover" />
-              )}
+              <AvatarImage src={group.profilePicture || "/assets/tradebattle-default-broker.png"} className="object-cover" />
               <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
                 <UserCircle className="w-5 h-5" style={{ color: '#4B5563' }} />
               </AvatarFallback>
