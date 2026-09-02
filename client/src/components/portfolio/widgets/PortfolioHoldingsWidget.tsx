@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -180,7 +179,7 @@ export function PortfolioHoldingsWidget({ onSelectStock }: PortfolioHoldingsWidg
                         aria-label={`View chart for ${holding.symbol}`}
                         title="View chart"
                       >
-                        <TradebattleIcon name="market" className="h-3 w-3" />
+                        <BarChart3 className="h-3 w-3" />
                       </Button>
                       <Button
                         size="sm"

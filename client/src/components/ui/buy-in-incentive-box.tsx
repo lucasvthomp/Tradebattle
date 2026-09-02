@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Gift, Trophy, DollarSign, Users } from "lucide-react";
@@ -74,7 +73,7 @@ export function BuyInIncentiveBox({
     <Card className={`border ${getVariantStyles()}`}>
       <CardContent className="p-4">
         <div className="flex items-center space-x-2 mb-3">
-          <TradebattleIcon name="rewards" className={`w-5 h-5 ${getIconColor()}`} />
+          <Gift className={`w-5 h-5 ${getIconColor()}`} />
           <p className={`text-sm font-medium ${getTextColor()}`}>
             {variant === "creation" 
               ? "Entry benefits"
@@ -84,7 +83,7 @@ export function BuyInIncentiveBox({
             }
           </p>
           <Badge variant="secondary" className="text-xs">
-            <TradebattleIcon name="rankings" className="w-3 h-3 mr-1" />
+            <Trophy className="w-3 h-3 mr-1" />
             {formatCurrency(buyInAmount)} entry
           </Badge>
         </div>
@@ -114,7 +113,7 @@ export function BuyInIncentiveBox({
           {variant === "creation" ? (
             <>
               <div className="flex items-center space-x-2">
-                <TradebattleIcon name="rankings" className="w-3 h-3" />
+                <Trophy className="w-3 h-3" />
                 <span>Creates competitive prize pool for winners</span>
               </div>
               <div className="flex items-center space-x-2">

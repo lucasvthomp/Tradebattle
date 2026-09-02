@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { Link, useLocation, useSearch } from "wouter";
 import { Loader2, Eye, EyeOff, ShieldCheck } from "lucide-react";
@@ -74,7 +73,7 @@ export default function Login() {
             <form onSubmit={handle2FASubmit} className="auth-twofa-card">
               <div className="auth-simple-card-head auth-twofa-head">
                 <div>
-                  <div className="auth-twofa-icon"><TradebattleIcon name="success" size={22} /></div>
+                  <div className="auth-twofa-icon"><ShieldCheck size={22} /></div>
                   <div className="auth-eyebrow">Security checkpoint</div>
                   <h1>One more read.</h1>
                   <p>Enter the six-digit code from your authenticator to finish entering the arena.</p>

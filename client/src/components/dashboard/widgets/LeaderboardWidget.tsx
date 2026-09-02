@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { WidgetWrapper } from "./WidgetWrapper";
 import { Trophy } from "lucide-react";
 import { TournamentLeaderboard } from "@/components/tournaments/TournamentLeaderboard";
@@ -17,7 +16,7 @@ export function LeaderboardWidget({
   return (
     <WidgetWrapper
       title="Rankings"
-      icon={<TradebattleIcon name="rankings" className="w-4 h-4" />}
+      icon={<Trophy className="w-4 h-4" />}
       onRemove={onRemove}
     >
       <TournamentLeaderboard

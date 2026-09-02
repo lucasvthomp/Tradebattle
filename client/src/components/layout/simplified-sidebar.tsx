@@ -2,17 +2,21 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
-import { TradebattleIcon, type TradebattleIconName } from "@/components/tradebattle-icons";
+import {
+  Home,
+  Trophy,
+  Users,
+  Phone,
+  Gift,
+  Settings,
+  Archive,
+  Shield,
+  Swords,
+  Zap,
+  Menu
+} from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
-
-type SidebarItem = {
-  href: string;
-  label: string;
-  icon: TradebattleIconName;
-  iconColor: string;
-};
 
 export function SimplifiedSidebar() {
   const { user } = useAuth();
@@ -21,25 +25,25 @@ export function SimplifiedSidebar() {
   const [expanded, setExpanded] = useState(false);
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
 
-  const navItems: SidebarItem[] = [
+  const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: "home", iconColor: '#67E7BF' },
-      { href: "/tournaments", label: t('tournaments'), icon: "arena", iconColor: '#67E7BF' },
-      { href: "/blitz", label: "Blitz", icon: "blitz", iconColor: '#F2C76A' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: "rankings", iconColor: '#F2C76A' },
-      { href: "/people", label: t('people'), icon: "players", iconColor: '#8EB6D1' },
-      { href: "/shop", label: "Rewards", icon: "rewards", iconColor: '#F2C76A' },
-      { href: "/contact", label: t('support'), icon: "support", iconColor: '#94A3B8' },
+      { href: "/hub", label: t('hub'), icon: Home, iconColor: '#67E7BF' },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#67E7BF' },
+      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#F2C76A' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#F2C76A' },
+      { href: "/people", label: t('people'), icon: Users, iconColor: '#8EB6D1' },
+      { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F2C76A' },
+      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
     ] : [
-      { href: "/contact", label: t('support'), icon: "support", iconColor: '#94A3B8' },
+      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
     ]),
   ];
 
-  const userItems: SidebarItem[] = user ? [
-    { href: "/profile", label: t('settings'), icon: "settings", iconColor: '#94A3B8' },
-    { href: "/archive", label: t('archive'), icon: "archive", iconColor: '#94A3B8' },
+  const userItems = user ? [
+    { href: "/profile", label: t('settings'), icon: Settings, iconColor: '#94A3B8' },
+    { href: "/archive", label: t('archive'), icon: Archive, iconColor: '#94A3B8' },
     ...(user.subscriptionTier === 'administrator' || user.username === 'LUCAS' ? [
-      { href: "/admin", label: "Admin", icon: "admin", iconColor: '#EF4444' }
+      { href: "/admin", label: "Admin", icon: Shield, iconColor: '#EF4444' }
     ] : [])
   ] : [];
 
@@ -67,8 +71,7 @@ export function SimplifiedSidebar() {
             : { color: '#8A9CAF' }),
         }}
       >
-        <TradebattleIcon
-          name={item.icon}
+        <item.icon
           className="w-5 h-5 flex-shrink-0"
           style={{
             color: isActive(item.href) ? item.iconColor : undefined,
@@ -115,8 +118,7 @@ export function SimplifiedSidebar() {
               color: '#C9D1E2',
             }}
           >
-            <TradebattleIcon
-              name="menu"
+            <Menu
               className="w-5 h-5 flex-shrink-0"
               style={{
                 marginRight: expanded ? '12px' : '0',
@@ -176,7 +178,7 @@ export function SimplifiedSidebar() {
                 justifyContent: 'flex-start',
               }}
             >
-              <TradebattleIcon name="rewards"
+              <Gift
                 className="w-5 h-5 flex-shrink-0"
                 style={{
                   marginRight: expanded ? '12px' : '0',

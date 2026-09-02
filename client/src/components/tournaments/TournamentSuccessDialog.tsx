@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -112,7 +111,7 @@ export function TournamentSuccessDialog({
               className="mx-auto w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center mb-3 md:mb-4"
               style={{ backgroundColor: '#10B981', boxShadow: '0 0 30px rgba(16, 185, 129, 0.5)' }}
             >
-              <TradebattleIcon name="rankings" className="w-7 h-7 md:w-8 md:h-8" style={{ color: '#FFFFFF' }} />
+              <Trophy className="w-7 h-7 md:w-8 md:h-8" style={{ color: '#FFFFFF' }} />
             </motion.div>
             <DialogTitle className="text-xl md:text-2xl font-bold mb-2" style={{ color: '#F1F5F9' }}>
               Arena opened!

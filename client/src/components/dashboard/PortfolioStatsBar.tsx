@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { Trophy } from "lucide-react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -71,7 +70,7 @@ export function PortfolioStatsBar({
         {/* Tournament Selector */}
         {activeTournaments.length > 0 && selectedTournament && onTournamentChange && (
           <div className="flex items-center gap-2">
-            <TradebattleIcon name="rankings" className="w-4 h-4" style={{ color: '#F2C76A' }} />
+            <Trophy className="w-4 h-4" style={{ color: '#F2C76A' }} />
             <Select
               value={selectedTournament?.id?.toString() || ""}
               onValueChange={onTournamentChange}

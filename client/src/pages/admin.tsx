@@ -13,7 +13,43 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { UserManagementDialog } from "@/components/admin/UserManagementDialog";
 import { TournamentManagementDialog } from "@/components/admin/TournamentManagementDialog";
-import { TradebattleIcon } from "@/components/tradebattle-icons";
+import {
+  Shield,
+  Users,
+  Crown,
+  Calendar,
+  Mail,
+  AlertCircle,
+  Settings,
+  Trash2,
+  MoreHorizontal,
+  Eye,
+  UserPlus,
+  Server,
+  Activity,
+  Globe,
+  Database,
+  Clock,
+  AlertTriangle,
+  Trophy,
+  GamepadIcon,
+  DollarSign,
+  RefreshCw,
+  Search,
+  Filter,
+  BarChart3,
+  TrendingUp,
+  Ban,
+  Tag,
+  Plus,
+  ToggleLeft,
+  Copy,
+  Megaphone,
+  PartyPopper,
+  Sparkles,
+  Send,
+  Edit,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -183,7 +219,7 @@ function PaymentsDebugTab() {
               disabled={loading}
               style={{ backgroundColor: '#67E7BF', color: '#FFFFFF' }}
             >
-              <TradebattleIcon name="search" className="w-4 h-4 mr-2" />
+              <Search className="w-4 h-4 mr-2" />
               {loading ? "Checking..." : "Check"}
             </Button>
           </div>
@@ -290,7 +326,7 @@ function PaymentsDebugTab() {
                       className="w-full"
                       style={{ backgroundColor: '#67E7BF', color: '#FFFFFF', fontSize: '16px', padding: '24px' }}
                     >
-                      <TradebattleIcon name="cash" className="w-5 h-5 mr-2" />
+                      <DollarSign className="w-5 h-5 mr-2" />
                       {loading ? "Processing..." : `Manually Credit $${result.paymentData.price_amount} to ${result.user.username}`}
                     </Button>
                   )}
@@ -394,7 +430,7 @@ function PaymentsDebugTab() {
             className="w-full"
             style={{ backgroundColor: '#FF4F58', color: '#FFFFFF', fontSize: '16px', padding: '24px' }}
           >
-            <TradebattleIcon name="refresh" className="w-5 h-5 mr-2" />
+            <RefreshCw className="w-5 h-5 mr-2" />
             {loading ? "Processing..." : "Restore Balance"}
           </Button>
         </CardContent>
@@ -746,7 +782,7 @@ export default function Admin() {
         {/* Header */}
         <motion.div variants={fadeInUp}>
           <div className="admin-page-heading">
-            <div className="admin-page-mark"><TradebattleIcon name="admin" className="h-5 w-5" /></div>
+            <div className="admin-page-mark"><Shield className="h-5 w-5" /></div>
             <div>
               <p className="admin-page-kicker">Operator deck</p>
               <h1 className="text-3xl font-black tracking-tight" style={{ color: '#C9D1E2' }}>Admin</h1>
@@ -777,7 +813,7 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Total Users</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.15)' }}>
-                      <TradebattleIcon name="players" className="h-4 w-4" style={{ color: '#3B82F6' }} />
+                      <Users className="h-4 w-4" style={{ color: '#3B82F6' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -791,7 +827,7 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Total arena cash</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(40,199,111,0.15)' }}>
-                      <TradebattleIcon name="cash" className="h-4 w-4" style={{ color: '#67E7BF' }} />
+                      <DollarSign className="h-4 w-4" style={{ color: '#67E7BF' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -807,7 +843,7 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Capital in play</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,163,255,0.15)' }}>
-                      <TradebattleIcon name="trend" className="h-4 w-4" style={{ color: '#67E7BF' }} />
+                      <TrendingUp className="h-4 w-4" style={{ color: '#67E7BF' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -823,7 +859,7 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Live arenas</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(227,179,65,0.15)' }}>
-                      <TradebattleIcon name="rankings" className="h-4 w-4" style={{ color: '#F2C76A' }} />
+                      <Trophy className="h-4 w-4" style={{ color: '#F2C76A' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -837,7 +873,7 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Trades Today</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(0,163,255,0.12)' }}>
-                      <TradebattleIcon name="rankings" className="h-4 w-4" style={{ color: '#67E7BF' }} />
+                      <BarChart3 className="h-4 w-4" style={{ color: '#67E7BF' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -851,7 +887,7 @@ export default function Admin() {
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#8A93A6' }}>Flagged Users</CardTitle>
                     <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(255,79,88,0.15)' }}>
-                      <TradebattleIcon name="info" className="h-4 w-4" style={{ color: '#FF4F58' }} />
+                      <AlertTriangle className="h-4 w-4" style={{ color: '#FF4F58' }} />
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -866,7 +902,7 @@ export default function Admin() {
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                      <TradebattleIcon name="rankings" className="h-5 w-5" style={{ color: '#67E7BF' }} />
+                      <Trophy className="h-5 w-5" style={{ color: '#67E7BF' }} />
                       Live arenas
                     </CardTitle>
                   </CardHeader>
@@ -890,7 +926,7 @@ export default function Admin() {
                                 Pot: ${parseFloat(tournament.currentPot || 0).toFixed(2)}
                               </span>
                               <Badge variant="outline" style={{ borderColor: '#1C3E72', color: '#C9D1E2' }}>
-                                <TradebattleIcon name="players" className="h-3 w-3 mr-1" />
+                                <Users className="h-3 w-3 mr-1" />
                                 {tournament.memberCount}
                               </Badge>
                               <span style={{ color: '#67E7BF' }}>
@@ -911,7 +947,7 @@ export default function Admin() {
               {/* Search & Filter Bar */}
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="relative flex-1">
-                  <TradebattleIcon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#8A93A6' }} />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: '#8A93A6' }} />
                   <Input
                     placeholder="Search by username or email..."
                     value={userSearch}
@@ -922,7 +958,7 @@ export default function Admin() {
                 </div>
                 <Select value={userFilter} onValueChange={setUserFilter}>
                   <SelectTrigger className="w-[200px]" style={{ background: '#142E5A', borderColor: '#1C3E72', color: '#C9D1E2' }}>
-                    <TradebattleIcon name="settings" className="h-4 w-4 mr-2" />
+                    <Filter className="h-4 w-4 mr-2" />
                     <SelectValue placeholder="Filter" />
                   </SelectTrigger>
                   <SelectContent>
@@ -939,7 +975,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="players" className="h-5 w-5" />
+                    <Users className="h-5 w-5" />
                     User Management ({filteredUsers.length})
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -972,7 +1008,7 @@ export default function Admin() {
                           <TableCell>
                             <div className="flex items-center gap-1">
                               {u.subscriptionTier === 'administrator' && (
-                                <TradebattleIcon name="rankings" className="h-3 w-3" style={{ color: '#67E7BF' }} />
+                                <Crown className="h-3 w-3" style={{ color: '#67E7BF' }} />
                               )}
                               <span className="font-mono text-sm" style={{ color: '#C9D1E2' }}>{u.id}</span>
                             </div>
@@ -1018,7 +1054,7 @@ export default function Admin() {
                               size="sm"
                               onClick={() => handleManageUser(u)}
                             >
-                              <TradebattleIcon name="settings" className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                              <Settings className="h-4 w-4" style={{ color: '#8A93A6' }} />
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -1036,7 +1072,7 @@ export default function Admin() {
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total arenas</CardTitle>
-                    <TradebattleIcon name="rankings" className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                    <Trophy className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>{allTournaments.length || 0}</div>
@@ -1047,7 +1083,7 @@ export default function Admin() {
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Active Players</CardTitle>
-                    <TradebattleIcon name="arena" className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                    <GamepadIcon className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
@@ -1060,7 +1096,7 @@ export default function Admin() {
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Pot Value</CardTitle>
-                    <TradebattleIcon name="cash" className="h-4 w-4" style={{ color: '#67E7BF' }} />
+                    <DollarSign className="h-4 w-4" style={{ color: '#67E7BF' }} />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold" style={{ color: '#67E7BF' }}>
@@ -1073,7 +1109,7 @@ export default function Admin() {
                 <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Live arenas</CardTitle>
-                    <TradebattleIcon name="trend" className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                    <Activity className="h-4 w-4" style={{ color: '#8A93A6' }} />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
@@ -1088,7 +1124,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="rankings" className="h-5 w-5" style={{ color: '#67E7BF' }} />
+                    <Trophy className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Arena management
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1133,7 +1169,7 @@ export default function Admin() {
                                 </div>
                                 <div>
                                   <Badge variant="outline" style={{ borderColor: '#1C3E72', color: '#C9D1E2' }}>
-                                    <TradebattleIcon name="players" className="h-3 w-3 mr-1" />
+                                    <Users className="h-3 w-3 mr-1" />
                                     {tournament.memberCount}
                                   </Badge>
                                 </div>
@@ -1168,16 +1204,16 @@ export default function Admin() {
                                   <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                       <Button variant="ghost" size="sm">
-                                        <TradebattleIcon name="menu" className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                                        <MoreHorizontal className="h-4 w-4" style={{ color: '#8A93A6' }} />
                                       </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
                                       <DropdownMenuItem onClick={() => handleViewTournamentDetails(tournament)}>
-                                        <TradebattleIcon name="info" className="h-4 w-4 mr-2" />
+                                        <Eye className="h-4 w-4 mr-2" />
                                         View Details
                                       </DropdownMenuItem>
                                       <DropdownMenuItem onClick={() => handleViewTournamentParticipants(tournament)}>
-                                        <TradebattleIcon name="players" className="h-4 w-4 mr-2" />
+                                        <Users className="h-4 w-4 mr-2" />
                                         View Participants
                                       </DropdownMenuItem>
                                       <DropdownMenuSeparator />
@@ -1185,7 +1221,7 @@ export default function Admin() {
                                         onClick={() => handleDeleteTournament(tournament)}
                                         className="text-red-600 hover:text-red-700"
                                       >
-                                        <TradebattleIcon name="close" className="h-4 w-4 mr-2" />
+                                        <Trash2 className="h-4 w-4 mr-2" />
                                         Delete Tournament
                                       </DropdownMenuItem>
                                     </DropdownMenuContent>
@@ -1207,7 +1243,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="support" className="h-5 w-5" style={{ color: '#67E7BF' }} />
+                    <Megaphone className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Create System-Wide Announcement
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1257,7 +1293,7 @@ export default function Admin() {
                         className="h-20 flex flex-col gap-2"
                         style={{ borderColor: '#1C3E72' }}
                       >
-                        <TradebattleIcon name="success" className="h-6 w-6" style={{ color: '#67E7BF' }} />
+                        <Sparkles className="h-6 w-6" style={{ color: '#67E7BF' }} />
                         <span className="text-xs">None</span>
                       </Button>
                       <Button
@@ -1265,7 +1301,7 @@ export default function Admin() {
                         className="h-20 flex flex-col gap-2"
                         style={{ borderColor: '#1C3E72' }}
                       >
-                        <TradebattleIcon name="success" className="h-6 w-6" style={{ color: '#67E7BF' }} />
+                        <PartyPopper className="h-6 w-6" style={{ color: '#67E7BF' }} />
                         <span className="text-xs">Confetti</span>
                       </Button>
                       <Button
@@ -1297,7 +1333,7 @@ export default function Admin() {
                         className="h-20 flex flex-col gap-2"
                         style={{ borderColor: '#1C3E72' }}
                       >
-                        <TradebattleIcon name="success" className="h-6 w-6" style={{ color: '#FDC830' }} />
+                        <Sparkles className="h-6 w-6" style={{ color: '#FDC830' }} />
                         <span className="text-xs">Sparkles</span>
                       </Button>
                     </div>
@@ -1313,7 +1349,7 @@ export default function Admin() {
                     </div>
                     <div className="flex items-end">
                       <Button className="w-full h-10" style={{ backgroundColor: '#67E7BF', color: '#FFFFFF' }}>
-                        <TradebattleIcon name="arrow-right" className="h-4 w-4 mr-2" />
+                        <Send className="h-4 w-4 mr-2" />
                         Send Announcement
                       </Button>
                     </div>
@@ -1325,7 +1361,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="trend" className="h-5 w-5" style={{ color: '#67E7BF' }} />
+                    <Activity className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Active Announcements
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1342,10 +1378,10 @@ export default function Admin() {
                         </div>
                         <div className="flex gap-2">
                           <Button variant="ghost" size="sm">
-                            <TradebattleIcon name="settings" className="h-4 w-4" />
+                            <Edit className="h-4 w-4" />
                           </Button>
                           <Button variant="ghost" size="sm">
-                            <TradebattleIcon name="close" className="h-4 w-4 text-red-500" />
+                            <Trash2 className="h-4 w-4 text-red-500" />
                           </Button>
                         </div>
                       </div>
@@ -1354,22 +1390,22 @@ export default function Admin() {
                       </p>
                       <div className="flex items-center gap-4 text-xs" style={{ color: '#8A93A6' }}>
                         <span className="flex items-center gap-1">
-                          <TradebattleIcon name="success" className="h-3 w-3" />
+                          <PartyPopper className="h-3 w-3" />
                           Confetti Effect
                         </span>
                         <span className="flex items-center gap-1">
-                          <TradebattleIcon name="players" className="h-3 w-3" />
+                          <Users className="h-3 w-3" />
                           127 views
                         </span>
                         <span className="flex items-center gap-1">
-                          <TradebattleIcon name="timer" className="h-3 w-3" />
+                          <Clock className="h-3 w-3" />
                           Expires in 6 days
                         </span>
                       </div>
                     </div>
 
                     <div className="text-center py-8" style={{ color: '#8A93A6' }}>
-                      <TradebattleIcon name="support" className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                      <Megaphone className="h-12 w-12 mx-auto mb-3 opacity-30" />
                       <p className="text-sm">No other active announcements</p>
                       <p className="text-xs mt-1">Create one above to send messages to all users</p>
                     </div>
@@ -1391,7 +1427,7 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Deposits</CardTitle>
-                        <TradebattleIcon name="cash" className="h-4 w-4" style={{ color: '#67E7BF' }} />
+                        <DollarSign className="h-4 w-4" style={{ color: '#67E7BF' }} />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold" style={{ color: '#67E7BF' }}>
@@ -1402,7 +1438,7 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Withdrawals</CardTitle>
-                        <TradebattleIcon name="cash" className="h-4 w-4" style={{ color: '#FF4F58' }} />
+                        <DollarSign className="h-4 w-4" style={{ color: '#FF4F58' }} />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold" style={{ color: '#FF4F58' }}>
@@ -1413,7 +1449,7 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Net Revenue</CardTitle>
-                        <TradebattleIcon name="trend" className="h-4 w-4" style={{ color: '#67E7BF' }} />
+                        <TrendingUp className="h-4 w-4" style={{ color: '#67E7BF' }} />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold" style={{ color: '#67E7BF' }}>
@@ -1424,7 +1460,7 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium" style={{ color: '#C9D1E2' }}>Total Transactions</CardTitle>
-                        <TradebattleIcon name="rankings" className="h-4 w-4" style={{ color: '#8A93A6' }} />
+                        <BarChart3 className="h-4 w-4" style={{ color: '#8A93A6' }} />
                       </CardHeader>
                       <CardContent>
                         <div className="text-2xl font-bold" style={{ color: '#C9D1E2' }}>
@@ -1439,7 +1475,7 @@ export default function Admin() {
                     <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                       <CardHeader>
                         <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                          <TradebattleIcon name="rankings" className="h-5 w-5" style={{ color: '#67E7BF' }} />
+                          <BarChart3 className="h-5 w-5" style={{ color: '#67E7BF' }} />
                           Breakdown by Type
                         </CardTitle>
                       </CardHeader>
@@ -1484,7 +1520,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="cash" className="h-5 w-5" style={{ color: '#67E7BF' }} />
+                    <DollarSign className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     All Transactions
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1499,7 +1535,7 @@ export default function Admin() {
                     </div>
                   ) : adminTransactions.length === 0 ? (
                     <div className="text-center py-12">
-                      <TradebattleIcon name="cash" className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8A93A6' }} />
+                      <DollarSign className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8A93A6' }} />
                       <p className="text-sm" style={{ color: '#8A93A6' }}>No transactions recorded yet</p>
                     </div>
                   ) : (
@@ -1570,7 +1606,7 @@ export default function Admin() {
                     onClick={() => setCreateCodeOpen(true)}
                     style={{ background: '#67E7BF', color: '#FFFFFF' }}
                   >
-                    <TradebattleIcon name="arrow-right" className="h-4 w-4 mr-2" />
+                    <Plus className="h-4 w-4 mr-2" />
                     Create Code
                   </Button>
                   <Button
@@ -1579,7 +1615,7 @@ export default function Admin() {
                     disabled={seedCodesMutation.isPending}
                     style={{ borderColor: '#1C3E72', color: '#C9D1E2' }}
                   >
-                    <TradebattleIcon name="refresh" className={`h-4 w-4 mr-2 ${seedCodesMutation.isPending ? 'animate-spin' : ''}`} />
+                    <RefreshCw className={`h-4 w-4 mr-2 ${seedCodesMutation.isPending ? 'animate-spin' : ''}`} />
                     Seed Legacy Codes
                   </Button>
                 </div>
@@ -1591,7 +1627,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="rewards" className="h-5 w-5" style={{ color: '#67E7BF' }} />
+                    <Tag className="h-5 w-5" style={{ color: '#67E7BF' }} />
                     Promo Code Management
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1606,7 +1642,7 @@ export default function Admin() {
                     </div>
                   ) : promoCodes.length === 0 ? (
                     <div className="text-center py-12">
-                      <TradebattleIcon name="rewards" className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8A93A6' }} />
+                      <Tag className="w-10 h-10 mx-auto mb-3 opacity-30" style={{ color: '#8A93A6' }} />
                       <p className="text-sm" style={{ color: '#8A93A6' }}>No promo codes yet. Create one or seed legacy codes.</p>
                     </div>
                   ) : (
@@ -1639,7 +1675,7 @@ export default function Admin() {
                                     toast({ title: "Copied", description: `Code "${code.code}" copied to clipboard.` });
                                   }}
                                 >
-                                  <TradebattleIcon name="archive" className="h-3 w-3" style={{ color: '#8A93A6' }} />
+                                  <Copy className="h-3 w-3" style={{ color: '#8A93A6' }} />
                                 </Button>
                               </div>
                             </TableCell>
@@ -1672,7 +1708,7 @@ export default function Admin() {
                                 onClick={() => toggleCodeMutation.mutate({ id: code.id, isActive: !code.isActive })}
                                 disabled={toggleCodeMutation.isPending}
                               >
-                                <TradebattleIcon name="settings" className="h-4 w-4 mr-1" style={{ color: code.isActive ? '#67E7BF' : '#FF4F58' }} />
+                                <ToggleLeft className="h-4 w-4 mr-1" style={{ color: code.isActive ? '#67E7BF' : '#FF4F58' }} />
                                 <span className="text-xs" style={{ color: code.isActive ? '#67E7BF' : '#FF4F58' }}>
                                   {code.isActive ? 'Active' : 'Inactive'}
                                 </span>
@@ -1685,7 +1721,7 @@ export default function Admin() {
                                 onClick={() => deleteCodeMutation.mutate(code.id)}
                                 disabled={deleteCodeMutation.isPending}
                               >
-                                <TradebattleIcon name="close" className="h-4 w-4" style={{ color: '#FF4F58' }} />
+                                <Trash2 className="h-4 w-4" style={{ color: '#FF4F58' }} />
                               </Button>
                             </TableCell>
                           </TableRow>
@@ -1802,7 +1838,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="market" className="h-5 w-5" />
+                    <Server className="h-5 w-5" />
                     System Status
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1826,7 +1862,7 @@ export default function Admin() {
                               borderColor: (systemStatus as any)?.database?.connected ? '#67E7BF' : '#FF4F58',
                               color: (systemStatus as any)?.database?.connected ? '#67E7BF' : '#FF4F58'
                             }}>
-                              <TradebattleIcon name="archive" className="h-3 w-3 mr-1" />
+                              <Database className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.database?.connected ? "Connected" : "Disconnected"}
                             </Badge>
                           </div>
@@ -1853,7 +1889,7 @@ export default function Admin() {
                               borderColor: (systemStatus as any)?.apis?.yahooFinance?.status ? '#67E7BF' : '#FF4F58',
                               color: (systemStatus as any)?.apis?.yahooFinance?.status ? '#67E7BF' : '#FF4F58'
                             }}>
-                              <TradebattleIcon name="market" className="h-3 w-3 mr-1" />
+                              <Globe className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.apis?.yahooFinance?.status ? "Active" : "Inactive"}
                             </Badge>
                           </div>
@@ -1863,14 +1899,14 @@ export default function Admin() {
                               borderColor: (systemStatus as any)?.apis?.cache?.enabled ? '#67E7BF' : '#FF4F58',
                               color: (systemStatus as any)?.apis?.cache?.enabled ? '#67E7BF' : '#FF4F58'
                             }}>
-                              <TradebattleIcon name="settings" className="h-3 w-3 mr-1" />
+                              <Settings className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.apis?.cache?.enabled ? "Enabled" : "Disabled"}
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Active Users</span>
                             <Badge variant="outline" style={{ borderColor: '#1C3E72', color: '#C9D1E2' }}>
-                              <TradebattleIcon name="players" className="h-3 w-3 mr-1" />
+                              <Users className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.activeUsers || "0"}
                             </Badge>
                           </div>
@@ -1882,7 +1918,7 @@ export default function Admin() {
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Uptime</span>
                             <Badge variant="outline" style={{ borderColor: '#67E7BF', color: '#67E7BF' }}>
-                              <TradebattleIcon name="timer" className="h-3 w-3 mr-1" />
+                              <Clock className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.uptime || "0m"}
                             </Badge>
                           </div>
@@ -1892,7 +1928,7 @@ export default function Admin() {
                               borderColor: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#67E7BF',
                               color: ((systemStatus as any)?.system?.errorRate || 0) > 5 ? '#FF4F58' : '#67E7BF'
                             }}>
-                              <TradebattleIcon name="info" className="h-3 w-3 mr-1" />
+                              <AlertTriangle className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.errorRate || "0"}%
                             </Badge>
                           </div>
@@ -1902,14 +1938,14 @@ export default function Admin() {
                               borderColor: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#67E7BF',
                               color: ((systemStatus as any)?.system?.avgResponseTime || 0) > 1000 ? '#FF4F58' : '#67E7BF'
                             }}>
-                              <TradebattleIcon name="trend" className="h-3 w-3 mr-1" />
+                              <Activity className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.avgResponseTime || "0"}ms
                             </Badge>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm" style={{ color: '#8A93A6' }}>Total Requests</span>
                             <Badge variant="outline" style={{ borderColor: '#1C3E72', color: '#C9D1E2' }}>
-                              <TradebattleIcon name="trend" className="h-3 w-3 mr-1" />
+                              <Activity className="h-3 w-3 mr-1" />
                               {(systemStatus as any)?.system?.totalRequests || "0"}
                             </Badge>
                           </div>
@@ -1924,7 +1960,7 @@ export default function Admin() {
               <Card style={{ background: '#142E5A', borderColor: '#1C3E72' }}>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
-                    <TradebattleIcon name="settings" className="h-5 w-5" />
+                    <Settings className="h-5 w-5" />
                     IT Administration
                   </CardTitle>
                   <CardDescription style={{ color: '#8A93A6' }}>
@@ -1944,7 +1980,7 @@ export default function Admin() {
                             toast({ title: "Database Backup", description: "Database backup initiated. This may take a few minutes." });
                           }}
                         >
-                          <TradebattleIcon name="archive" className="h-4 w-4 mr-2" />
+                          <Database className="h-4 w-4 mr-2" />
                           Database Backup
                         </Button>
                         <Button
@@ -1957,7 +1993,7 @@ export default function Admin() {
                             }
                           }}
                         >
-                          <TradebattleIcon name="settings" className="h-4 w-4 mr-2" />
+                          <Settings className="h-4 w-4 mr-2" />
                           Clear Cache
                         </Button>
                         <Button
@@ -1970,7 +2006,7 @@ export default function Admin() {
                             }
                           }}
                         >
-                          <TradebattleIcon name="trend" className="h-4 w-4 mr-2" />
+                          <Activity className="h-4 w-4 mr-2" />
                           System Restart
                         </Button>
                         <Button
@@ -1990,7 +2026,7 @@ export default function Admin() {
                             }
                           }}
                         >
-                          <TradebattleIcon name="info" className="h-4 w-4 mr-2" />
+                          <AlertCircle className="h-4 w-4 mr-2" />
                           Emergency Shutdown
                         </Button>
                       </div>
@@ -2006,7 +2042,7 @@ export default function Admin() {
                             toast({ title: "System Logs", description: "Opening system logs viewer..." });
                           }}
                         >
-                          <TradebattleIcon name="info" className="h-4 w-4 mr-2" />
+                          <Eye className="h-4 w-4 mr-2" />
                           View System Logs
                         </Button>
                         <Button
@@ -2017,7 +2053,7 @@ export default function Admin() {
                             toast({ title: "Error Reports", description: "Last 24 hours: 0 critical errors, 2 warnings" });
                           }}
                         >
-                          <TradebattleIcon name="info" className="h-4 w-4 mr-2" />
+                          <AlertTriangle className="h-4 w-4 mr-2" />
                           Error Reports
                         </Button>
                         <Button
@@ -2028,7 +2064,7 @@ export default function Admin() {
                             toast({ title: "Performance Metrics", description: "Avg Response: 45ms | Uptime: 99.9% | Memory: 1.2GB/4GB" });
                           }}
                         >
-                          <TradebattleIcon name="trend" className="h-4 w-4 mr-2" />
+                          <Activity className="h-4 w-4 mr-2" />
                           Performance Metrics
                         </Button>
                         <Button
@@ -2041,7 +2077,7 @@ export default function Admin() {
                             toast({ title: "Data Refreshed", description: "All data has been refreshed from the server." });
                           }}
                         >
-                          <TradebattleIcon name="refresh" className="h-4 w-4 mr-2" />
+                          <RefreshCw className="h-4 w-4 mr-2" />
                           Force Refresh All Data
                         </Button>
                       </div>

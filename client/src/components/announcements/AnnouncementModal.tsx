@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -170,7 +169,7 @@ export function AnnouncementModal({ announcements, onDismiss }: AnnouncementModa
       case 'urgent':
         return <AlertCircle className="h-6 w-6 text-red-500" />;
       case 'success':
-        return <TradebattleIcon name="rankings" className="h-6 w-6 text-green-500" />;
+        return <Trophy className="h-6 w-6 text-green-500" />;
       default:
         return <Megaphone className="h-6 w-6 text-primary" />;
     }

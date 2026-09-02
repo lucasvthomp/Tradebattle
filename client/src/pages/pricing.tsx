@@ -2,8 +2,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
-import { TradebattleIcon } from "@/components/tradebattle-icons";
+import { Check, Star, Crown, Zap, BookOpen } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
@@ -16,7 +15,7 @@ const tiers = [
     price: "Free",
     period: "forever",
     description: "Perfect for beginners getting started with investment research",
-    icon: <TradebattleIcon name="market" className="w-6 h-6" />,
+    icon: <BookOpen className="w-6 h-6" />,
     features: [
       "Limited watchlist (5 equities)",
       "Limited news access",
@@ -31,7 +30,7 @@ const tiers = [
     price: "$9.99",
     period: "per month",
     description: "Perfect for individual investors starting their qualitative research journey",
-    icon: <TradebattleIcon name="success" className="w-6 h-6" />,
+    icon: <Star className="w-6 h-6" />,
     features: [
       "Access to 50+ research studies monthly",
       "Basic market news and insights",
@@ -47,7 +46,7 @@ const tiers = [
     price: "$19.99",
     period: "per month",
     description: "Ideal for active investors and financial professionals",
-    icon: <TradebattleIcon name="blitz" className="w-6 h-6" />,
+    icon: <Zap className="w-6 h-6" />,
     features: [
       "Everything in Explorer",
       "Unlimited research studies access",
@@ -64,7 +63,7 @@ const tiers = [
     price: "$49.99",
     period: "per month",
     description: "Comprehensive solution for investment firms and professionals",
-    icon: <TradebattleIcon name="rankings" className="w-6 h-6" />,
+    icon: <Crown className="w-6 h-6" />,
     features: [
       "Everything in Analyst",
       "Custom case studies",

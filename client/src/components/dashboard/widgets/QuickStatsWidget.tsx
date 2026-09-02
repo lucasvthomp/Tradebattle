@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { WidgetWrapper } from "./WidgetWrapper";
 import { Activity, TrendingUp, BarChart3, Trophy } from "lucide-react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -29,7 +28,7 @@ export function QuickStatsWidget({
       <div className="grid grid-cols-2 gap-3 h-full">
         <div className="p-2 rounded-lg bg-muted/30 flex flex-col">
           <div className="flex items-center space-x-1 mb-1">
-            <TradebattleIcon name="market" className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            <BarChart3 className="w-3 h-3 text-muted-foreground flex-shrink-0" />
             <span className="text-xs text-muted-foreground">Positions</span>
           </div>
           <div className="text-lg lg:text-xl font-bold">{stats.holdingsCount}</div>
@@ -37,7 +36,7 @@ export function QuickStatsWidget({
 
         <div className="p-2 rounded-lg bg-muted/30 flex flex-col">
           <div className="flex items-center space-x-1 mb-1">
-            <TradebattleIcon name="rankings" className="w-3 h-3 text-muted-foreground flex-shrink-0" />
+            <Trophy className="w-3 h-3 text-muted-foreground flex-shrink-0" />
             <span className="text-xs text-muted-foreground">Entry fee</span>
           </div>
           <div className="text-sm lg:text-lg font-bold truncate">{formatCurrency(stats.buyInAmount)}</div>

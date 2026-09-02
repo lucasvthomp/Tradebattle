@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -80,7 +79,7 @@ export function TournamentJoinConfirmation({
 
               <div>
                 <div className="flex items-center gap-2 mb-1">
-                  <TradebattleIcon name="rankings" className="w-4 h-4" style={{ color: '#67E7BF' }} />
+                  <Trophy className="w-4 h-4" style={{ color: '#67E7BF' }} />
                   <span className="text-sm" style={{ color: '#8A93A6' }}>Prize pool</span>
                 </div>
                 <p className="text-xl font-bold" style={{ color: '#67E7BF' }}>

@@ -1,8 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ChevronRight } from "lucide-react";
-import { TradebattleIcon } from "@/components/tradebattle-icons";
+import { ArrowUpRight, BarChart3, ChevronRight, Trophy, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import "./hub.css";
 
@@ -102,6 +101,23 @@ export default function Hub() {
               {ctaLabel}<ArrowUpRight size={15} />
             </button>
           </div>
+          <img className="hub-feature-art" src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" />
+        </motion.section>
+
+        <motion.section className="hub-loadout" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.055 }} aria-labelledby="hub-loadout-title">
+          <div className="hub-loadout-copy">
+            <span className="hub-panel-label">PLAYER LOADOUT</span>
+            <h2 id="hub-loadout-title">Your market kit is ready.</h2>
+            <p>Read the tape, ring the bell, and make the next clean decision.</p>
+          </div>
+          <div className="hub-loadout-items" aria-label="Market kit icons">
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" /><span>Tape</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>Flow</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Open</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Stack</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Bank</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Rank</span></div>
+          </div>
         </motion.section>
 
         <motion.section className="hub-stat-grid" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.06 }} aria-label="Player stats">
@@ -118,7 +134,7 @@ export default function Hub() {
           <motion.section className="hub-panel hub-market-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.12 }}>
             <div className="hub-panel-heading">
               <div><h2>Market pulse</h2><p>Read the rhythm before you choose a mode.</p></div>
-              <TradebattleIcon name="market" size={18} style={{ color: "#20d8c2" }} />
+              <BarChart3 size={18} style={{ color: "#20d8c2" }} />
             </div>
             <div className="hub-market-readout"><strong className="hub-market-number">71.42</strong><span className="hub-market-change">+8.42%</span></div>
             <HubMarketChart />
@@ -132,13 +148,15 @@ export default function Hub() {
             </div>
             <div className="hub-launch-list">
               <Link href="/tournaments" className="hub-launch-card">
-                <span className="hub-launch-icon gold"><TradebattleIcon name="arena" size={18} /></span>
+                <span className="hub-launch-icon gold"><Trophy size={18} /></span>
                 <span className="hub-launch-copy"><strong>Arenas</strong><span>Compete for the prize pool · {activeTournaments.length} live</span></span>
+                <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
-                <span className="hub-launch-icon purple"><TradebattleIcon name="blitz" size={18} /></span>
+                <span className="hub-launch-icon purple"><Zap size={18} /></span>
                 <span className="hub-launch-copy"><strong>Blitz</strong><span>1v1 rounds · 5 minutes · instant</span></span>
+                <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
             </div>

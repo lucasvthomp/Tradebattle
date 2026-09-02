@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -87,7 +86,7 @@ export function CodeRedemptionDialog({ open, onOpenChange }: CodeRedemptionDialo
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <TradebattleIcon name="rewards" className="w-5 h-5 text-purple-600" />
+            <Gift className="w-5 h-5 text-purple-600" />
             Redeem Code
           </DialogTitle>
         </DialogHeader>
@@ -141,7 +140,7 @@ export function CodeRedemptionDialog({ open, onOpenChange }: CodeRedemptionDialo
               </>
             ) : (
               <>
-                <TradebattleIcon name="rewards" className="w-4 h-4 mr-2" />
+                <Gift className="w-4 h-4 mr-2" />
                 Redeem Code
               </>
             )}
@@ -162,7 +161,7 @@ export function CodeRedemptionDialog({ open, onOpenChange }: CodeRedemptionDialo
                 <span>Balance Boosts</span>
               </div>
               <div className="flex items-center gap-2">
-                <TradebattleIcon name="rankings" className="w-4 h-4 text-yellow-500" />
+                <Trophy className="w-4 h-4 text-yellow-500" />
                 <span>Arena Access</span>
               </div>
               <div className="flex items-center gap-2">

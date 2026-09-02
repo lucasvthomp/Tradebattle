@@ -1,23 +1,22 @@
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { TradebattleIcon, type TradebattleIconName } from "@/components/tradebattle-icons";
+import { ArrowRight, BarChart3, Swords, Trophy, Users } from "lucide-react";
 import { Link } from "wouter";
 
 const pillars = [
   {
-    icon: "arena" as TradebattleIconName,
+    icon: Swords,
     eyebrow: "01 / COMPETE",
     title: "Make every decision count.",
     description: "Trade with a virtual balance, build a position, and see how your strategy holds up when the clock is running.",
   },
   {
-    icon: "trend" as TradebattleIconName,
+    icon: BarChart3,
     eyebrow: "02 / IMPROVE",
     title: "Turn reps into instincts.",
     description: "Review your moves, compare performance, and build a repeatable process without risking real capital.",
   },
   {
-    icon: "players" as TradebattleIconName,
+    icon: Users,
     eyebrow: "03 / CONNECT",
     title: "Find your edge together.",
     description: "Join a competitive community, follow the rankings, and learn from the players you keep chasing.",
@@ -96,14 +95,14 @@ export default function About() {
           <p>Less noise. Better reps. Rankings that give your next session a reason to matter.</p>
         </div>
         <div className="about-pillar-grid">
-          {pillars.map(({ icon, eyebrow, title, description }) => (
+          {pillars.map(({ icon: Icon, eyebrow, title, description }) => (
             <motion.article
               key={eyebrow}
               className="about-pillar-card"
               whileHover={{ y: -4 }}
               transition={{ duration: 0.18 }}
             >
-              <div className="about-pillar-icon"><TradebattleIcon name={icon} size={19} /></div>
+              <div className="about-pillar-icon"><Icon size={19} /></div>
               <div className="about-pillar-eyebrow">{eyebrow}</div>
               <h3>{title}</h3>
               <p>{description}</p>
@@ -113,7 +112,7 @@ export default function About() {
       </section>
 
       <section className="arena-shell about-closer">
-        <div className="about-closer-mark"><TradebattleIcon name="rankings" size={20} /></div>
+        <div className="about-closer-mark"><Trophy size={20} /></div>
         <div>
           <div className="arena-kicker">Your next move starts here</div>
           <h2>Bring a strategy.<br /><span>Leave with a sharper one.</span></h2>

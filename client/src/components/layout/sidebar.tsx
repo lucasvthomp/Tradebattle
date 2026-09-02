@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -112,7 +111,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               size="lg"
             >
               <div className="flex items-center justify-center space-x-2">
-                <TradebattleIcon name="rewards" className="w-5 h-5" style={{ color: '#FFFFFF' }} />
+                <Gift className="w-5 h-5" style={{ color: '#FFFFFF' }} />
                 <span className="text-base" style={{ color: '#FFFFFF' }}>Redeem Code</span>
               </div>
             </Button>

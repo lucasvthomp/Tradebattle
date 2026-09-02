@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useEffect, useRef, useState, memo } from "react";
 import { createChart, ColorType, LineSeries } from "lightweight-charts";
 import { Search, TrendingUp, TrendingDown, Zap, BarChart2, Activity } from "lucide-react";
@@ -470,7 +469,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
 
           {loading && (
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <TradebattleIcon name="blitz" style={{ width: "12px", height: "12px", color: "#67E7BF", opacity: 0.7 }} />
+              <Zap style={{ width: "12px", height: "12px", color: "#67E7BF", opacity: 0.7 }} />
               <span style={{ color: "#4B5975", fontSize: "11px", fontWeight: 600 }}>Loading live chart…</span>
             </div>
           )}

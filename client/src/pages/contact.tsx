@@ -2,8 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { TradebattleIcon, type TradebattleIconName } from "@/components/tradebattle-icons";
-import { Mail, Clock } from "lucide-react";
+import { Mail, Clock, Search, MessageSquare, Zap } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -78,7 +77,7 @@ export default function Support() {
   const faqs = [
     {
       category: "Getting Started",
-      icon: "arena" as TradebattleIconName,
+      emoji: "🚀",
       questions: [
         { question: "How do I create my player card?", answer: "Choose 'Create profile' in the navigation and follow the short setup to pick your player name, contact email, and passcode." },
         { question: "How do I reset my passcode?", answer: "Choose 'Forgot your passcode?' on the entry screen, enter your contact email, and follow the recovery link." },
@@ -87,7 +86,7 @@ export default function Support() {
     },
     {
       category: "Trading",
-      icon: "market" as TradebattleIconName,
+      emoji: "📈",
       questions: [
         { question: "Is my money at risk?", answer: "No. Tradebattle uses virtual currency for paper trading only. You never risk real money on trades." },
         { question: "How often are quotes updated?", answer: "Stock quotes refresh in real time during the market window (9:30 AM–4:00 PM EST, Mon–Fri). Crypto runs 24/7." },
@@ -97,7 +96,7 @@ export default function Support() {
     },
     {
       category: "Arenas",
-      icon: "rankings" as TradebattleIconName,
+      emoji: "🏆",
       questions: [
         { question: "How do I enter an arena?", answer: "Open Arenas, choose a matchup, and select Enter. Any entry fee comes from your arena cash." },
         { question: "How are rankings determined?", answer: "Rankings use each player’s percentage gain from starting capital — the highest return takes the top place." },
@@ -106,7 +105,7 @@ export default function Support() {
     },
     {
       category: "Technical",
-      icon: "settings" as TradebattleIconName,
+      emoji: "⚙️",
       questions: [
         { question: "What browsers are supported?", answer: "Tradebattle works best on the latest versions of Chrome, Firefox, Safari, and Edge." },
         { question: "Is there a mobile app?", answer: "The site is fully responsive and works great on mobile browsers — no separate app needed." },
@@ -131,9 +130,10 @@ export default function Support() {
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-9">
           <div className="flex items-center gap-3 mb-2">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "rgba(103,231,191,.12)" }}>
-              <TradebattleIcon name="chat" className="w-5 h-5" style={{ color: "#67E7BF" }} />
+              <MessageSquare className="w-5 h-5" style={{ color: "#67E7BF" }} />
             </div>
             <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Help HQ</h1>
+            <img className="support-header-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
           </div>
           <p className="text-sm" style={{ color: "#4B5563" }}>Quick answers for the arena — or send us a message when you need a hand.</p>
         </div>
@@ -143,7 +143,7 @@ export default function Support() {
         {/* Search */}
         <div className="mb-7">
           <div className="relative">
-            <TradebattleIcon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#4B5563" }} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: "#4B5563" }} />
             <Input
               placeholder="Scout the playbooks..."
               value={searchQuery}
@@ -160,7 +160,7 @@ export default function Support() {
             {filteredFaqs.map((cat, ci) => (
               <div key={ci} style={cardStyle} className="overflow-hidden">
                 <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                  <TradebattleIcon name={cat.icon} size={16} aria-hidden="true" />
+                  <span className="text-base">{cat.emoji}</span>
                   <span className="text-sm font-bold" style={{ color: "#C9D1E2" }}>{cat.category}</span>
                 </div>
                 <div className="px-4">
@@ -206,7 +206,7 @@ export default function Support() {
             {/* Contact form */}
             <div style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
-                <Clock className="w-4 h-4" style={{ color: "#67E7BF" }} />
+                <Zap className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Help</span>
               </div>
               <form onSubmit={handleSubmit} className="space-y-3">
@@ -259,7 +259,7 @@ export default function Support() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(40,199,111,0.1)" }}>
-                  <TradebattleIcon name="timer" className="w-4 h-4" style={{ color: "#67E7BF" }} />
+                  <Clock className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 </div>
                 <div>
                   <div className="text-xs font-bold" style={{ color: "#C9D1E2" }}>Response Time</div>

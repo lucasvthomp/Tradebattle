@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -192,7 +191,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {user.subscriptionTier === 'administrator' ? (
-              <TradebattleIcon name="admin" className="h-5 w-5" style={{ color: '#F2C76A' }} />
+              <Crown className="h-5 w-5" style={{ color: '#F2C76A' }} />
             ) : (
               <User className="h-5 w-5" />
             )}
@@ -209,7 +208,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <div className="flex items-center gap-2" style={{ color: '#C9D1E2' }}>
                   {user.id}
                   {user.subscriptionTier === 'administrator' && (
-                    <TradebattleIcon name="admin" className="h-4 w-4" style={{ color: '#F2C76A' }} />
+                    <Crown className="h-4 w-4" style={{ color: '#F2C76A' }} />
                   )}
                 </div>
               </div>
@@ -277,7 +276,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                     >
                       {user.banned ? (
                         <>
-                          <TradebattleIcon name="admin" className="h-4 w-4 mr-1" />
+                          <ShieldCheck className="h-4 w-4 mr-1" />
                           Unban
                         </>
                       ) : (
@@ -338,7 +337,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <div className="p-4 rounded-lg" style={{ background: 'transparent', border: '1px solid #0E2040' }}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <TradebattleIcon name="rankings" className="h-5 w-5" style={{ color: user.tournamentRestricted ? '#F2C76A' : '#8A93A6' }} />
+                      <Trophy className="h-5 w-5" style={{ color: user.tournamentRestricted ? '#F2C76A' : '#8A93A6' }} />
                       <div>
                         <div className="font-medium" style={{ color: '#C9D1E2' }}>Restrict arenas</div>
                         <div className="text-xs" style={{ color: '#8A93A6' }}>

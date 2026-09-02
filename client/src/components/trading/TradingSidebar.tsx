@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState, useMemo, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import {
@@ -340,7 +339,7 @@ export function TradingSidebar({
             borderBottom: "1px solid rgba(40,199,111,0.2)",
           }}
         >
-          <TradebattleIcon name="blitz" className="w-3.5 h-3.5 shrink-0" style={{ color: "#67E7BF" }} />
+          <Zap className="w-3.5 h-3.5 shrink-0" style={{ color: "#67E7BF" }} />
           <span className="text-xs font-bold" style={{ color: "#67E7BF" }}>Crypto — 24/7 Open</span>
         </div>
       )}

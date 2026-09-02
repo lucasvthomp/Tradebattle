@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
-import { Search, ArrowUpRight, RefreshCw } from "lucide-react";
-import { TradebattleIcon } from "@/components/tradebattle-icons";
+import { Users, Search, Crown, ArrowUpRight, RefreshCw } from "lucide-react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { UserProfileModal } from "@/components/profile/UserProfileModal";
 
@@ -39,13 +38,14 @@ export default function People() {
           <div>
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Player directory / 01</p>
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><TradebattleIcon name="players" size={20} /></div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><Users size={20} /></div>
               <div>
                 <h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Players</h1>
-                <p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>Find players, compare records, and open a profile.</p>
+                <p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>{visibleUsers.length} {visibleUsers.length === 1 ? t("personUnit") : t("peopleUnit")} in the field</p>
               </div>
             </div>
           </div>
+          <div className="people-header-art" aria-hidden="true"><img src="/assets/tradebattle-chest-medal-v2.png" alt="" /></div>
         </header>
 
         <section className="mb-6 flex flex-col gap-3 rounded-lg border p-3 md:flex-row" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }} aria-label="Find players">
@@ -67,7 +67,7 @@ export default function People() {
           </div>
         ) : error ? (
           <div className="rounded-lg border px-5 py-14 text-center" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
-            <TradebattleIcon name="players" className="mx-auto mb-3" size={28} style={{ color: "#ef8f9a" }} />
+            <Users className="mx-auto mb-3" size={28} style={{ color: "#ef8f9a" }} />
             <p className="text-sm" style={{ color: "#afc2d0" }}>The directory could not load.</p>
             <button className="mt-4 inline-flex items-center gap-2 text-sm font-bold" style={{ color: "#67e7bf" }} onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/users/public"] })}><RefreshCw size={14} /> Try again</button>
           </div>
@@ -88,7 +88,7 @@ export default function People() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <span className="truncate text-sm font-bold" style={{ color: "#eef6fa" }}>{person.username}</span>
-                  {person.subscriptionTier === "administrator" && <TradebattleIcon name="admin" size={13} style={{ color: "#f2c76a" }} />}
+                  {person.subscriptionTier === "administrator" && <Crown size={13} style={{ color: "#f2c76a" }} />}
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: "rgba(118,169,198,.14)" }}>
                   <div><span className="block text-[9px] font-black uppercase tracking-wider" style={{ color: "#6f879d" }}>Trades</span><strong className="font-mono text-sm" style={{ color: "#c9d9e2" }}>{person.totalTrades || 0}</strong></div>

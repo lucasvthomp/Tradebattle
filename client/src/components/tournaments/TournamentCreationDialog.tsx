@@ -1,4 +1,3 @@
-import { TradebattleIcon } from "@/components/tradebattle-icons";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -168,7 +167,7 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
           <DialogHeader>
             <DialogTitle style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#E2E8F0', fontSize: '16px', fontWeight: '700' }}>
               <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(0,163,255,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <TradebattleIcon name="rankings" size={16} color="#67E7BF" />
+                <Trophy size={16} color="#67E7BF" />
               </div>
               Open arena
             </DialogTitle>
