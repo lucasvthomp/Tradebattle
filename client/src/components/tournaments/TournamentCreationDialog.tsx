@@ -173,6 +173,12 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
             </DialogTitle>
           </DialogHeader>
 
+          <div className="arena-dialog-brief" aria-label="Arena setup guide">
+            <span><TrendingUp size={14} /> Pick a market</span>
+            <span><Shield size={14} /> Set the rules</span>
+            <span><Trophy size={14} /> Open the board</span>
+          </div>
+
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '4px' }}>
 
             {/* Name */}
