@@ -1996,3 +1996,397 @@
     opacity: .58;
   }
 }
+
+
+/* Cleanup pass: compact player surfaces, clear menus, and complete art frames. */
+.people-page {
+  background: transparent !important;
+}
+.people-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid rgba(118, 169, 198, 0.18);
+}
+.people-kicker {
+  margin: 0 0 9px;
+  color: #67e7bf;
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .16em;
+}
+.people-title {
+  margin: 0;
+  color: #f2fbf8;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -.06em;
+  line-height: 1;
+}
+.people-subtitle {
+  margin: 10px 0 0;
+  color: #8da2b5;
+  font-size: 13px;
+}
+.people-header-note {
+  display: grid;
+  gap: 7px;
+  min-width: 215px;
+  padding: 12px 14px;
+  border: 1px solid rgba(103, 231, 191, .18);
+  border-radius: 10px;
+  background: rgba(103, 231, 191, .045);
+  color: #7d97a8;
+  font-size: 10px;
+}
+.people-header-note span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.people-header-note span:first-child {
+  color: #b9ebdb;
+  font-weight: 800;
+}
+.people-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding: 10px;
+  border: 1px solid rgba(118, 169, 198, .16);
+  border-radius: 11px;
+  background: #0b1b2a;
+}
+.people-sort-trigger {
+  width: 190px;
+  flex: 0 0 190px;
+  border-color: rgba(118, 169, 198, .22) !important;
+  background: #081622 !important;
+  color: #c9d9e2 !important;
+}
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.people-card {
+  position: relative;
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 15px;
+  min-height: 138px;
+  width: 100%;
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(118, 169, 198, .17);
+  border-radius: 13px;
+  background: #0b1b2a;
+  color: inherit;
+  text-align: left;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+.people-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 34%;
+  background: linear-gradient(90deg, rgba(103, 231, 191, .085), transparent);
+  pointer-events: none;
+}
+.people-card:hover {
+  border-color: rgba(103, 231, 191, .4);
+  background: #0d2231;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, .16);
+  transform: translateY(-2px);
+}
+.people-card-avatar,
+.people-card-body,
+.people-card-open {
+  position: relative;
+  z-index: 1;
+}
+.people-card-avatar {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 108px;
+  border: 1px solid rgba(103, 231, 191, .15);
+  border-radius: 11px;
+  background: #081622;
+}
+.people-card-body {
+  min-width: 0;
+}
+.people-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.people-card-name {
+  color: #edf8f5;
+  font-size: 16px;
+  font-weight: 850;
+  letter-spacing: -.025em;
+}
+.people-card-role {
+  flex-shrink: 0;
+  color: #67e7bf;
+  font-family: "Courier New", monospace;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+.people-card-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+  padding-top: 11px;
+  border-top: 1px solid rgba(118, 169, 198, .14);
+}
+.people-card-stats span,
+.people-card-stats strong {
+  display: block;
+}
+.people-card-stats span {
+  color: #71889b;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.people-card-stats strong {
+  margin-top: 4px;
+  color: #d6e8e5;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+}
+.people-card-stats strong.is-positive {
+  color: #67e7bf;
+}
+.people-card-open {
+  align-self: start;
+  color: #69869a;
+  transition: color 160ms ease, transform 160ms ease;
+}
+.people-card:hover .people-card-open {
+  color: #67e7bf;
+  transform: translate(2px, -2px);
+}
+.people-card-skeleton {
+  min-height: 138px;
+  background: linear-gradient(90deg, #0b1b2a, #122b3a, #0b1b2a);
+  background-size: 200% 100%;
+  animation: peopleSkeleton 1.35s ease-in-out infinite;
+}
+.people-empty-state {
+  min-height: 270px;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  padding: 36px;
+  border: 1px dashed rgba(118, 169, 198, .22);
+  border-radius: 13px;
+  background: rgba(11, 27, 42, .72);
+  text-align: center;
+}
+.people-empty-state p {
+  margin: 0;
+  color: #afc2d0;
+  font-size: 13px;
+}
+.people-empty-state button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  color: #67e7bf;
+  font-size: 12px;
+  font-weight: 800;
+}
+@keyframes peopleSkeleton {
+  0%, 100% { background-position: 0 0; }
+  50% { background-position: 100% 0; }
+}
+
+.tradebattle-site [data-radix-select-content],
+.tradebattle-site [data-radix-dropdown-menu-content],
+.tradebattle-site [role="listbox"],
+.tradebattle-site [role="menu"] {
+  z-index: 100;
+  border: 1px solid rgba(103, 231, 191, .2) !important;
+  border-radius: 11px !important;
+  background: #0b1b2a !important;
+  color: #d9ece8 !important;
+  box-shadow: 0 20px 46px rgba(0, 0, 0, .34) !important;
+}
+.tradebattle-site [role="option"],
+.tradebattle-site [role="menuitem"] {
+  min-height: 36px;
+  border-radius: 7px;
+  color: #a9bec7 !important;
+}
+.tradebattle-site [role="option"][data-highlighted],
+.tradebattle-site [role="menuitem"][data-highlighted],
+.tradebattle-site [role="menuitem"]:focus {
+  background: rgba(103, 231, 191, .12) !important;
+  color: #f1fbf7 !important;
+}
+.tradebattle-site [role="option"][data-state="checked"] {
+  background: rgba(103, 231, 191, .08) !important;
+  color: #67e7bf !important;
+}
+.tradebattle-site .tournament-create-dialog {
+  max-height: min(760px, calc(100dvh - 32px));
+  overflow-y: auto;
+  background: #0b1b2a !important;
+  border-color: rgba(103, 231, 191, .23) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .38) !important;
+}
+.arena-dialog-brief {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  margin-top: 6px;
+  padding: 8px;
+  border: 1px solid rgba(103, 231, 191, .14);
+  border-radius: 9px;
+  background: rgba(103, 231, 191, .045);
+}
+.arena-dialog-brief span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 29px;
+  color: #9ec2c5;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+}
+.arena-dialog-brief svg {
+  color: #67e7bf;
+  flex-shrink: 0;
+}
+.shop-page .shop-spotlight {
+  min-height: 220px;
+}
+.shop-page .shop-spotlight-art {
+  right: 18px;
+  bottom: 2px;
+  width: 208px;
+  height: 208px;
+  object-fit: contain;
+  object-position: center bottom;
+}
+.tournament-brief-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.tournament-brief-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 92px;
+  padding: 13px;
+  border: 1px solid rgba(118, 169, 198, .16);
+  border-radius: 11px;
+  background: #0b1b2a;
+}
+.tournament-brief-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border: 1px solid rgba(103, 231, 191, .24);
+  border-radius: 9px;
+  background: rgba(103, 231, 191, .08);
+  color: #67e7bf;
+}
+.tournament-brief-card strong,
+.tournament-brief-card span {
+  display: block;
+}
+.tournament-brief-card strong {
+  color: #edf8f5;
+  font-size: 12px;
+  font-weight: 850;
+}
+.tournament-brief-card span {
+  margin-top: 5px;
+  color: #7f98a7;
+  font-size: 10px;
+  line-height: 1.45;
+}
+.profile-page .profile-status-dot {
+  top: -5px !important;
+  right: -5px !important;
+  bottom: auto !important;
+  border-color: #071522 !important;
+}
+@media (max-width: 900px) {
+  .people-grid,
+  .tournament-brief-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 620px) {
+  .people-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .people-header-note {
+    width: 100%;
+  }
+  .people-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .people-sort-trigger {
+    width: 100%;
+    flex-basis: auto;
+  }
+  .people-card {
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 11px;
+    min-height: 116px;
+    padding: 10px;
+  }
+  .people-card-avatar {
+    width: 72px;
+    height: 86px;
+  }
+  .people-card-avatar .tradebattle-avatar-status {
+    transform: translate(12%, -18%) !important;
+  }
+  .people-card-stats {
+    margin-top: 12px;
+    gap: 5px;
+  }
+  .people-card-name {
+    font-size: 14px;
+  }
+  .shop-page .shop-spotlight {
+    min-height: 228px;
+  }
+  .shop-page .shop-spotlight-art {
+    right: 4px;
+    bottom: 4px;
+    width: 172px;
+    height: 172px;
+    opacity: .62;
+  }
+  .arena-dialog-brief {
+    grid-template-columns: 1fr;
+  }
+}
