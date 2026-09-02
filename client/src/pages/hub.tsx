@@ -115,7 +115,7 @@ export default function Hub() {
             <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>Flow</span></div>
             <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Open</span></div>
             <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Stack</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Bank</span></div>
+            <div className="hub-loadout-item"><img src="/assets/tradebattle-reward-chest.png" alt="" aria-hidden="true" /><span>Bank</span></div>
             <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Rank</span></div>
           </div>
         </motion.section>
