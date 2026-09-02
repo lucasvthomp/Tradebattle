@@ -6,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { KeyRound, Trophy, Zap, WalletCards, Users, ArrowRight, Check } from "lucide-react";
+import { KeyRound, Trophy, Zap, WalletCards, Users, ArrowRight, Check, Gift } from "lucide-react";
 
 const statItems = [
   { label: "Buying power", key: "cash", icon: WalletCards },
@@ -57,7 +57,7 @@ export default function Shop() {
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Player rewards / 01</p>
             <div className="flex items-center gap-3">
               <div className="reward-icon-3d flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
-                <img src="/assets/tradebattle-reward-soft.png" alt="" className="shop-header-art" />
+                <Gift size={20} />
               </div>
               <div>
                 <h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rewards desk</h1>
