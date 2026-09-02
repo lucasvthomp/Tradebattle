@@ -50,7 +50,7 @@ export function AvatarWithStatus({
       } : undefined}
     >
       <Avatar className="w-full h-full" style={{ borderRadius: borderRadius }}>
-        <AvatarImage src={src || undefined} alt={alt} className="object-cover" />
+        <AvatarImage src={src || "/assets/tradebattle-default-broker.png"} alt={alt} className="object-cover" />
         <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#0B1B2A' }}>
           <UserCircle className="w-1/2 h-1/2" style={{ color: '#4B5563' }} />
         </AvatarFallback>
