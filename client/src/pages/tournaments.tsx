@@ -93,7 +93,7 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {shown.map((p) => (
         <Avatar key={p.userId} className="w-7 h-7">
           {p.profilePicture && (
-            <AvatarImage src={p.profilePicture || "/assets/tradebattle-default-broker.png"} className="object-cover" />
+            <AvatarImage src={p.profilePicture || "/assets/tradebattle-default-broker-v2.png"} className="object-cover" />
           )}
           <AvatarFallback
             className="text-[9px] font-semibold"
