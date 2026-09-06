@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowUpRight, BarChart3, ChevronRight, Trophy, TrendingUp, Zap } from "lucide-react";
+import { FaArrowUpRightFromSquare, FaBolt, FaChartColumn, FaChevronRight, FaTrophy } from "react-icons/fa6";
 import { useAuth } from "@/hooks/use-auth";
 import "./hub.css";
 
@@ -56,11 +56,11 @@ export default function Hub() {
       <div className="hub-shell">
         <motion.header className="hub-topbar" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35 }}>
           <div>
-            <p className="hub-kicker">THE HUB</p>
-            <h1 className="hub-title">Welcome back, {user?.username ?? "player"}.</h1>
+            <p className="hub-kicker">YOUR PLAYGROUND</p>
+            <h1 className="hub-title">Ready when you are, {user?.username ?? "player"}.</h1>
           </div>
           <Link href="/tournaments" className="hub-outline-action">
-            Browse tournaments <ArrowUpRight size={15} />
+            Find a match <FaArrowUpRightFromSquare size={14} />
           </Link>
         </motion.header>
 
@@ -76,11 +76,11 @@ export default function Hub() {
 
         <motion.section className="hub-feature-banner" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.06 }}>
           <div className="hub-feature-copy">
-            <p className="hub-feature-kicker"><span className="hub-live-dot" /> NEXT MATCH</p>
-            <h2>{activeTournaments.length > 0 ? "Join a live arena." : "Take the next spot."}</h2>
-            <p>Pick a tournament, read the board, and make your opening move.</p>
+            <p className="hub-feature-kicker"><span className="hub-live-dot" /> YOUR NEXT PLAY</p>
+            <h2>{activeTournaments.length > 0 ? "Jump into a match." : "Pick your mode."}</h2>
+            <p>Choose a room, make a move, and see how you stack up.</p>
             <Link href="/tournaments" className="hub-feature-action">
-              {activeTournaments.length > 0 ? "Join live arena" : "Browse tournaments"} <ArrowUpRight size={15} />
+              {activeTournaments.length > 0 ? "Join a match" : "Pick an arena"} <FaArrowUpRightFromSquare size={14} />
             </Link>
           </div>
         </motion.section>
@@ -88,8 +88,8 @@ export default function Hub() {
         <div className="hub-main-grid">
           <motion.section className="hub-panel hub-market-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.12 }}>
             <div className="hub-panel-heading">
-              <div><h2>Market preview</h2><p>Preview the market before you play.</p></div>
-              <BarChart3 size={18} style={{ color: "#20d8c2" }} />
+              <div><h2>Quick market peek</h2><p>See what is moving before you play.</p></div>
+              <FaChartColumn size={18} style={{ color: "#20d8c2" }} />
             </div>
             <div className="hub-market-readout"><strong className="hub-market-number">Market</strong><span className="hub-market-change">SIMULATED</span></div>
             <HubMarketChart />
@@ -98,21 +98,21 @@ export default function Hub() {
 
           <motion.section className="hub-panel hub-launch-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.18 }}>
             <div className="hub-panel-heading">
-              <div><h2>Game modes</h2><p>Choose your next match.</p></div>
+              <div><h2>Pick a match</h2><p>Two ways to play.</p></div>
               <span className="hub-panel-label">Play</span>
             </div>
             <div className="hub-launch-list">
               <Link href="/tournaments" className="hub-launch-card">
-                <span className="hub-launch-icon gold"><Trophy size={18} /></span>
-                <span className="hub-launch-copy"><strong>Arenas</strong><span>Open tournament rooms</span></span>
+                <span className="hub-launch-icon gold"><FaTrophy size={18} /></span>
+                <span className="hub-launch-copy"><strong>Arenas</strong><span>Play the field</span></span>
                 <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" />
-                <ChevronRight className="hub-launch-arrow" size={16} />
+                <FaChevronRight className="hub-launch-arrow" size={14} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
-                <span className="hub-launch-icon purple"><Zap size={18} /></span>
-                <span className="hub-launch-copy"><strong>Blitz</strong><span>Head-to-head in five minutes</span></span>
+                <span className="hub-launch-icon purple"><FaBolt size={18} /></span>
+                <span className="hub-launch-copy"><strong>Blitz</strong><span>Race the clock</span></span>
                 <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" />
-                <ChevronRight className="hub-launch-arrow" size={16} />
+                <FaChevronRight className="hub-launch-arrow" size={14} />
               </Link>
             </div>
           </motion.section>
@@ -120,7 +120,7 @@ export default function Hub() {
 
         <motion.section className="hub-panel hub-live-panel hub-live-panel-full" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.24 }}>
           <div className="hub-panel-heading">
-            <div><h2>Live arenas</h2><p>Join an open match.</p></div>
+            <div><h2>Open now</h2><p>Jump into a match.</p></div>
             {activeTournaments.length > 0 && <span className="hub-live-chip"><span className="hub-live-dot" />Live</span>}
           </div>
           {activeTournaments.length > 0 ? (
@@ -130,13 +130,13 @@ export default function Hub() {
                   <span />
                   <span className="hub-live-name">{t.name}</span>
                   <span className="hub-live-count">{t.participantCount || 0}/{t.maxPlayers}</span>
-                  <ChevronRight size={14} />
+                  <FaChevronRight size={14} />
                 </Link>
               ))}
-              {activeTournaments.length > 4 && <Link href="/tournaments" className="hub-outline-action">See all arenas <ArrowUpRight size={14} /></Link>}
+              {activeTournaments.length > 4 && <Link href="/tournaments" className="hub-outline-action">See all arenas <FaArrowUpRightFromSquare size={14} /></Link>}
             </div>
           ) : (
-            <div className="hub-empty-state"><strong>No live arenas.</strong><p>Browse the upcoming matches.</p><Link href="/tournaments">Browse upcoming arenas →</Link></div>
+            <div className="hub-empty-state"><strong>Nothing live yet.</strong><p>Check the upcoming arenas.</p><Link href="/tournaments">See upcoming matches →</Link></div>
           )}
         </motion.section>
       </div>

@@ -3,18 +3,18 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import {
-  Home,
-  Trophy,
-  Users,
-  Phone,
-  Gift,
-  Settings,
-  Archive,
-  Shield,
-  Swords,
-  Zap,
-  Menu
-} from "lucide-react";
+  FaBars,
+  FaBolt,
+  FaBoxArchive,
+  FaGamepad,
+  FaGift,
+  FaHeadset,
+  FaHouse,
+  FaShieldHalved,
+  FaTrophy,
+  FaUsers,
+  FaGear,
+} from "react-icons/fa6";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
 
@@ -31,23 +31,23 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
 
   const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: Home, iconColor: '#67E7BF' },
-      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#67E7BF' },
-      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#F2C76A' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#F2C76A' },
-      { href: "/people", label: t('people'), icon: Users, iconColor: '#8EB6D1' },
-      { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#F2C76A' },
-      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
+      { href: "/hub", label: t('hub'), icon: FaHouse, iconColor: '#67E7BF' },
+      { href: "/tournaments", label: t('tournaments'), icon: FaGamepad, iconColor: '#67E7BF' },
+      { href: "/blitz", label: "Blitz", icon: FaBolt, iconColor: '#F2C76A' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: FaTrophy, iconColor: '#F2C76A' },
+      { href: "/people", label: t('people'), icon: FaUsers, iconColor: '#8EB6D1' },
+      { href: "/shop", label: "Rewards", icon: FaGift, iconColor: '#F2C76A' },
+      { href: "/contact", label: t('support'), icon: FaHeadset, iconColor: '#94A3B8' },
     ] : [
-      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
+      { href: "/contact", label: t('support'), icon: FaHeadset, iconColor: '#94A3B8' },
     ]),
   ];
 
   const userItems = user ? [
-    { href: "/profile", label: t('settings'), icon: Settings, iconColor: '#94A3B8' },
-    { href: "/archive", label: t('archive'), icon: Archive, iconColor: '#94A3B8' },
+    { href: "/profile", label: t('settings'), icon: FaGear, iconColor: '#94A3B8' },
+    { href: "/archive", label: t('archive'), icon: FaBoxArchive, iconColor: '#94A3B8' },
     ...(user.subscriptionTier === 'administrator' || user.username === 'LUCAS' ? [
-      { href: "/admin", label: "Admin", icon: Shield, iconColor: '#EF4444' }
+      { href: "/admin", label: "Admin", icon: FaShieldHalved, iconColor: '#EF4444' }
     ] : [])
   ] : [];
 
@@ -122,7 +122,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
               color: '#C9D1E2',
             }}
           >
-            <Menu
+            <FaBars
               className="w-5 h-5 flex-shrink-0"
               style={{
                 marginRight: expanded ? '12px' : '0',
@@ -186,7 +186,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
                 justifyContent: 'flex-start',
               }}
             >
-              <Gift
+              <FaGift
                 className="w-5 h-5 flex-shrink-0"
                 style={{
                   marginRight: expanded ? '12px' : '0',

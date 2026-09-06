@@ -1196,6 +1196,108 @@
   .shop-spotlight-art { right: -37px; bottom: -65px; width: 220px; opacity: 0.42; }
 }
 
+/* Final playful shell tokens win over legacy route-specific styling. */
+.tradebattle-site .tradebattle-header {
+  background: #11162f !important;
+  border-bottom-color: #2b315e !important;
+  box-shadow: 0 8px 0 rgba(5, 7, 24, 0.22) !important;
+}
+.tradebattle-site .tradebattle-sidebar {
+  background: #11162f !important;
+  border-right-color: #2b315e !important;
+  box-shadow: 5px 0 0 rgba(5, 7, 24, 0.22) !important;
+}
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator {
+  background: #67e7bf !important;
+  color: #0d1230 !important;
+}
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
+  background: #ffd166 !important;
+}
+.tradebattle-site .tradebattle-footer {
+  background: #11162f !important;
+  border-top-color: #2b315e !important;
+}
+
+/* Playful arcade direction: solid color blocks, friendly corners, and a
+   stronger game silhouette instead of a broker-dashboard finish. */
+.tradebattle-site {
+  --site-bg: #0d1230;
+  --site-panel: #171c40;
+  --site-panel-raised: #232957;
+  --site-edge: rgba(137, 150, 221, 0.26);
+  --site-text: #fbfbff;
+  --site-muted: #aeb6d2;
+  --site-mint: #67e7bf;
+  --site-yellow: #ffd166;
+  --site-purple: #b58cff;
+  background: #0d1230 !important;
+}
+
+.tradebattle-site .tradebattle-route::before {
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(181, 140, 255, 0.13), transparent 19rem),
+    radial-gradient(circle at 92% 20%, rgba(103, 231, 191, 0.11), transparent 22rem),
+    radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: auto, auto, 26px 26px;
+  opacity: 0.3;
+}
+
+.tradebattle-header {
+  background: #11162f !important;
+  border-bottom: 2px solid #2b315e !important;
+  box-shadow: 0 8px 0 rgba(5, 7, 24, 0.22) !important;
+}
+
+.tradebattle-header .tradebattle-header-brand {
+  letter-spacing: 0.08em !important;
+}
+
+.tradebattle-sidebar {
+  background: #11162f !important;
+  border-right: 2px solid #2b315e !important;
+  box-shadow: 5px 0 0 rgba(5, 7, 24, 0.22) !important;
+}
+
+.tradebattle-sidebar a,
+.tradebattle-sidebar button {
+  border-radius: 12px !important;
+}
+
+.tradebattle-sidebar a.sidebar-active-indicator {
+  background: #67e7bf !important;
+  color: #0d1230 !important;
+  font-weight: 900;
+}
+
+.tradebattle-sidebar .sidebar-active-indicator::before {
+  width: 5px;
+  top: 6px;
+  bottom: 6px;
+  background: #ffd166;
+}
+
+.tradebattle-sidebar a:hover,
+.tradebattle-sidebar button:hover {
+  background: #252b5b !important;
+}
+
+.tradebattle-site .card,
+.tradebattle-site [class*="rounded-xl"],
+.tradebattle-site [class*="rounded-2xl"] {
+  border-radius: 14px;
+}
+
+.tradebattle-site button:not([aria-label="Close"]),
+.tradebattle-site a[class*="rounded-full"] {
+  border-radius: 11px;
+}
+
+.tradebattle-footer {
+  background: #11162f !important;
+  border-top: 2px solid #2b315e !important;
+}
+
 
 /* Chest-quality art pass: more breathing room, fewer labels, stronger game actions. */
 .tradebattle-site.arena-app .hub-screen {
@@ -2741,4 +2843,27 @@
     max-width: 70%;
     margin-top: 12px;
   }
+}
+
+/* Final playful shell tokens win over legacy route-specific styling. */
+.tradebattle-site .tradebattle-header {
+  background: #11162f !important;
+  border-bottom-color: #2b315e !important;
+  box-shadow: 0 8px 0 rgba(5, 7, 24, 0.22) !important;
+}
+.tradebattle-site .tradebattle-sidebar {
+  background: #11162f !important;
+  border-right-color: #2b315e !important;
+  box-shadow: 5px 0 0 rgba(5, 7, 24, 0.22) !important;
+}
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator {
+  background: #67e7bf !important;
+  color: #0d1230 !important;
+}
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
+  background: #ffd166 !important;
+}
+.tradebattle-site .tradebattle-footer {
+  background: #11162f !important;
+  border-top-color: #2b315e !important;
 }

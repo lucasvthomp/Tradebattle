@@ -162,6 +162,61 @@
   .market-chart-bg::after { background: linear-gradient(90deg, rgba(6, 17, 31, 0.9) 0%, rgba(6, 17, 31, 0.45) 65%, rgba(6, 17, 31, 0.12) 100%); }
 }
 
+/* Playful front door: fewer broker panels, more arcade-like color blocks. */
+.arena-page {
+  --arena-bg: #0d1230;
+  --arena-line: #343b70;
+  --arena-muted: #b0b9d4;
+  --arena-soft: #d6dcf0;
+  --arena-mint: #67e7bf;
+  background: #0d1230;
+}
+.arena-hero {
+  min-height: auto;
+  padding-top: 42px;
+  padding-bottom: 36px;
+  background-color: #171c40;
+  background-image: radial-gradient(rgba(255, 255, 255, .14) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+.arena-glow { display: none; }
+.arena-hero-layout { grid-template-columns: minmax(0, 1.1fr) minmax(280px, .55fr); gap: 38px; padding-bottom: 24px; }
+.arena-status { margin-bottom: 24px; color: #cbd1e7; }
+.arena-copy h1 { font-size: clamp(44px, 5.5vw, 72px); }
+.arena-copy h1 em { color: #67e7bf; }
+.arena-lede { margin: 18px 0 25px; color: #c3cbe0; }
+.arena-primary-link { border-radius: 12px; background: #67e7bf; box-shadow: 4px 4px 0 #236f68; }
+.arena-primary-link:hover { background: #8af1cf; box-shadow: 5px 5px 0 #236f68; }
+.arena-secondary-link { color: #fbfbff; }
+.arena-reassurance { color: #aeb6d2; }
+.arena-hero-visual { min-height: 320px; padding-top: 26px; }
+.arena-hero-market-icon { width: 340px; opacity: .72; filter: drop-shadow(7px 8px 0 rgba(5, 7, 24, .38)); }
+.arena-hero-art-glow { display: none; }
+.match-card { display: none; }
+.arena-promo-rail { padding-top: 32px; padding-bottom: 22px; background: #11162f; border-top: 2px solid #2b315e; }
+.arena-promo-heading h2, .arena-section-heading h2 { letter-spacing: -.045em; }
+.arena-promo-grid { gap: 14px; }
+.arena-promo-card { min-height: 184px; border: 2px solid #394273; border-radius: 16px; background: #222957; box-shadow: 4px 4px 0 rgba(5, 7, 24, .3); }
+.arena-promo-card:hover { border-color: #67e7bf; transform: translateY(-3px); }
+.arena-promo-card h3 { font-size: 24px; }
+.arena-promo-art img { filter: drop-shadow(5px 6px 0 rgba(5, 7, 24, .3)); }
+.arena-modes { background: #0d1230; border-top: 2px solid #2b315e; }
+.mode-grid { gap: 14px; }
+.mode-card { min-height: 270px; border: 2px solid #394273; border-radius: 16px; box-shadow: 4px 4px 0 rgba(5, 7, 24, .3); }
+.mode-tournament { background: #182c4d; }
+.mode-blitz { background: #32274d; }
+.mode-label { border: 0; border-radius: 999px; background: #67e7bf; color: #0d1230; }
+.mode-blitz .mode-label { background: #ffd166; }
+.mode-link { color: #67e7bf; }
+.arena-how { border-top: 2px solid #2b315e; }
+.how-step-icon { border-radius: 12px; background: #67e7bf; color: #0d1230; }
+.arena-final { padding: 70px 24px; background: #232957; border-top: 2px solid #2b315e; }
+
+@media (max-width: 980px) {
+  .arena-hero-layout { grid-template-columns: 1fr; }
+  .arena-hero-visual { display: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .arena-primary-link { transition: none; }
   .arena-primary-link:hover { transform: none; }
@@ -817,4 +872,43 @@
 .arena-promo-heading h2,
 .arena-section-heading h2 {
   letter-spacing: -0.045em;
+}
+
+/* Final playful front-door treatment. */
+.arena-page { --arena-bg: #0d1230; --arena-line: #343b70; --arena-muted: #b0b9d4; --arena-soft: #d6dcf0; --arena-mint: #67e7bf; background: #0d1230; }
+.arena-hero { min-height: auto; padding-top: 42px; padding-bottom: 36px; background-color: #171c40; background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px); background-size: 26px 26px; }
+.arena-glow { display: none; }
+.arena-hero-layout { grid-template-columns: minmax(0, 1.1fr) minmax(280px, .55fr); gap: 38px; padding-bottom: 24px; }
+.arena-status { margin-bottom: 24px; color: #cbd1e7; }
+.arena-copy h1 { font-size: clamp(44px, 5.5vw, 72px); }
+.arena-copy h1 em { color: #67e7bf; }
+.arena-lede { margin: 18px 0 25px; color: #c3cbe0; }
+.arena-primary-link { border-radius: 12px; background: #67e7bf; box-shadow: 4px 4px 0 #236f68; }
+.arena-primary-link:hover { background: #8af1cf; box-shadow: 5px 5px 0 #236f68; }
+.arena-secondary-link { color: #fbfbff; }
+.arena-reassurance { color: #aeb6d2; }
+.arena-hero-visual { min-height: 320px; padding-top: 26px; }
+.arena-hero-market-icon { width: 340px; opacity: .72; filter: drop-shadow(7px 8px 0 rgba(5,7,24,.38)); }
+.arena-hero-art-glow { display: none; }
+.match-card { display: none; }
+.arena-promo-rail { padding-top: 32px; padding-bottom: 22px; background: #11162f; border-top: 2px solid #2b315e; }
+.arena-promo-grid { gap: 14px; }
+.arena-promo-card { min-height: 184px; border: 2px solid #394273; border-radius: 16px; background: #222957; box-shadow: 4px 4px 0 rgba(5,7,24,.3); }
+.arena-promo-card:hover { border-color: #67e7bf; transform: translateY(-3px); }
+.arena-promo-card h3 { font-size: 24px; }
+.arena-promo-art img { filter: drop-shadow(5px 6px 0 rgba(5,7,24,.3)); }
+.arena-modes { background: #0d1230; border-top: 2px solid #2b315e; }
+.mode-grid { gap: 14px; }
+.mode-card { min-height: 270px; border: 2px solid #394273; border-radius: 16px; box-shadow: 4px 4px 0 rgba(5,7,24,.3); }
+.mode-tournament { background: #182c4d; }
+.mode-blitz { background: #32274d; }
+.mode-label { border: 0; border-radius: 999px; background: #67e7bf; color: #0d1230; }
+.mode-blitz .mode-label { background: #ffd166; }
+.mode-link { color: #67e7bf; }
+.arena-how { border-top: 2px solid #2b315e; }
+.how-step-icon { border-radius: 12px; background: #67e7bf; color: #0d1230; }
+.arena-final { padding: 70px 24px; background: #232957; border-top: 2px solid #2b315e; }
+@media (max-width: 980px) {
+  .arena-hero-layout { grid-template-columns: 1fr; }
+  .arena-hero-visual { display: none; }
 }
