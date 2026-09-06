@@ -100,7 +100,7 @@ export default function People() {
               >
                 <div className="people-card-avatar">
                   <AvatarWithStatus
-                    className="h-20 w-20"
+                    className="h-16 w-16"
                     src={person.profilePicture}
                     alt={person.username}
                     fallback={initials(person.username)}
