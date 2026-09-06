@@ -13,7 +13,7 @@ interface AvatarWithStatusProps {
   showBorder?: boolean;
 }
 
-const defaultAvatar = "/assets/tradebattle-default-broker-v2.png";
+const defaultAvatar = "/assets/tradebattle-default-broker.png";
 
 /**
  * One profile renderer for the directory, rankings, chat, and profile views.

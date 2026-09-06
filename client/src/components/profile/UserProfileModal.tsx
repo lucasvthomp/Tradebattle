@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { createPortal } from "react-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -122,7 +123,7 @@ export function UserProfileModal({
 
   return (
     <AnimatePresence>
-      {userId && (
+      {userId && typeof document !== "undefined" && createPortal(
         <>
           {/* Backdrop */}
           <motion.div
@@ -445,7 +446,8 @@ export function UserProfileModal({
               )}
             </div>
           </motion.div>
-        </>
+        </>,
+        document.body
       )}
     </AnimatePresence>
   );
