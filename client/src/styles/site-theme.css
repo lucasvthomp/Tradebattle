@@ -2569,3 +2569,11 @@
 .tradebattle-header [style*="color: '#AFC2D0'"] {
   color: #91a6ba !important;
 }
+
+
+/* Profile presence lives on the avatar edge, consistently. */
+.tradebattle-site.arena-app .profile-page .profile-status-dot {
+  top: auto !important;
+  right: -5px !important;
+  bottom: -5px !important;
+}

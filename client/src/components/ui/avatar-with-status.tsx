@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import { StatusIndicator, UserStatus, calculateUserStatus } from "@/components/ui/status-indicator";
 
 interface AvatarWithStatusProps {
@@ -16,8 +16,8 @@ interface AvatarWithStatusProps {
 const defaultAvatar = "/assets/tradebattle-default-broker-v2.png";
 
 /**
- * Shared profile image treatment used across cards, profiles, chat, and rankings.
- * A missing or broken image always resolves to the same neutral broker mark.
+ * One profile renderer for the directory, rankings, chat, and profile views.
+ * Missing or broken images always use the same neutral broker avatar.
  */
 export function AvatarWithStatus({
   src,
@@ -54,24 +54,29 @@ export function AvatarWithStatus({
       } : undefined}
     >
       <Avatar className="w-full h-full" style={{ borderRadius }}>
-        <AvatarImage
+        <img
+          key={imageSrc}
           src={imageSrc}
-          alt={alt}
-          className="object-cover"
-          onError={() => {
-            if (imageSrc !== defaultAvatar) setImageSrc(defaultAvatar);
+          alt={alt || fallback || ""}
+          className="block h-full w-full object-cover"
+          onError={(event) => {
+            if (event.currentTarget.src.endsWith(defaultAvatar)) {
+              event.currentTarget.style.display = "none";
+              return;
+            }
+            setImageSrc(defaultAvatar);
           }}
         />
-        <AvatarFallback style={{ borderRadius, backgroundColor: '#0B1B2A' }}>
-          <img src={defaultAvatar} alt={fallback || ""} className="w-full h-full object-cover" />
-        </AvatarFallback>
       </Avatar>
 
-      <div className="tradebattle-avatar-status absolute top-0 right-0 z-10" style={{ transform: 'translate(24%, -24%)' }}>
+      <div
+        className="tradebattle-avatar-status absolute bottom-0 right-0 z-10"
+        style={{ transform: 'translate(24%, 24%)' }}
+        aria-label={`Status: ${userStatus}`}
+      >
         <div
           className="rounded-full flex items-center justify-center"
           style={{ backgroundColor: '#071522', padding: '3px', border: '1px solid rgba(103,231,191,.22)' }}
-          aria-label={`Status: ${userStatus}`}
         >
           <StatusIndicator status={userStatus} size={statusSize} />
         </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useSearch } from "wouter";
-import { Loader2, Eye, EyeOff, CheckCircle, XCircle, ArrowRight, ArrowLeft, User, Lock, Globe, Rocket, Check } from "lucide-react";
+import { Loader2, Eye, EyeOff, CheckCircle, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,13 +36,6 @@ const countries = {
   "Uruguay": { language: "Spanish", currency: "UYU", code: "UY" },
 };
 
-const steps = [
-  { icon: User, label: "Profile", subtitle: "Name", title: "Create your profile", description: "Choose a player name and email." },
-  { icon: Lock, label: "Passcode", subtitle: "Security", title: "Choose a passcode", description: "Use a passcode you can remember." },
-  { icon: Globe, label: "Location", subtitle: "Preferences", title: "Choose your location", description: "Set your language and display currency." },
-  { icon: Rocket, label: "Review", subtitle: "Finish", title: "Review your profile", description: "Check your details before creating your profile." },
-];
-
 export default function Signup() {
   const [, navigate] = useLocation();
   const searchString = useSearch();
@@ -53,7 +46,6 @@ export default function Signup() {
   const walletSignature = params.get("signature");
   const isWalletRegistration = !!walletAddress && !!walletSignature;
 
-  const [step, setStep] = useState(1);
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
@@ -66,11 +58,6 @@ export default function Signup() {
   const [acceptedToS, setAcceptedToS] = useState(false);
   const [acceptedPrivacy, setAcceptedPrivacy] = useState(false);
 
-  if (user) {
-    navigate("/hub");
-    return null;
-  }
-
   useEffect(() => {
     if (!username || username.length < 3) {
       setUsernameStatus({ checking: false, available: null });
@@ -80,8 +67,8 @@ export default function Signup() {
     const timer = setTimeout(async () => {
       setUsernameStatus({ checking: true, available: null });
       try {
-        const res = await fetch(`/api/username/check/${encodeURIComponent(username)}`);
-        const data = await res.json();
+        const response = await fetch(`/api/username/check/${encodeURIComponent(username)}`);
+        const data = await response.json();
         setUsernameStatus({ checking: false, available: data.available, reason: data.reason });
       } catch {
         setUsernameStatus({ checking: false, available: null });
@@ -92,15 +79,26 @@ export default function Signup() {
   }, [username]);
 
   useEffect(() => {
-    if (selectedCountry && countries[selectedCountry as keyof typeof countries]) {
-      const countryData = countries[selectedCountry as keyof typeof countries];
+    if (!selectedCountry) return;
+    const countryData = countries[selectedCountry as keyof typeof countries];
+    if (countryData) {
       setSelectedLanguage(countryData.language);
       setSelectedCurrency(countryData.currency);
     }
   }, [selectedCountry]);
 
-  const handleSubmit = async (e?: React.FormEvent) => {
-    e?.preventDefault();
+  if (user) {
+    navigate("/hub");
+    return null;
+  }
+
+  const usernameValid = username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
+  const emailValid = email.includes("@") && email.includes(".");
+  const passwordValid = password.length >= 8 && /[A-Z]/.test(password) && /[0-9]/.test(password);
+  const canSubmit = usernameValid && usernameStatus.available === true && !!selectedCountry && acceptedToS && acceptedPrivacy && (isWalletRegistration || (emailValid && passwordValid));
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
     if (isWalletRegistration) {
       setIsSubmitting(true);
@@ -114,7 +112,7 @@ export default function Signup() {
             signature: walletSignature,
             username,
             email: email || undefined,
-            country: selectedCountry || undefined,
+            country: selectedCountry,
             language: selectedLanguage,
             currency: selectedCurrency,
           }),
@@ -125,56 +123,27 @@ export default function Signup() {
           throw new Error(error.error || "Registration failed");
         }
 
-        const { user } = await response.json();
-        toast({ title: "Registration successful", description: `Welcome to Tradebattle, ${user.username}!` });
+        const { user: createdUser } = await response.json();
+        toast({ title: "Profile created", description: `Welcome, ${createdUser.username}.` });
         window.location.href = "/hub";
       } catch (error: any) {
         toast({ title: "Registration failed", description: error.message, variant: "destructive" });
       } finally {
         setIsSubmitting(false);
       }
-    } else {
-      registerMutation.mutate({
-        email,
-        password,
-        username,
-        country: selectedCountry,
-        language: selectedLanguage,
-        currency: selectedCurrency,
-      }, { onSuccess: () => navigate("/dashboard") });
+      return;
     }
+
+    registerMutation.mutate({
+      email,
+      password,
+      username,
+      country: selectedCountry,
+      language: selectedLanguage,
+      currency: selectedCurrency,
+    }, { onSuccess: () => navigate("/hub") });
   };
 
-  const hasMinLength = password.length >= 8;
-  const hasUppercase = /[A-Z]/.test(password);
-  const hasNumber = /[0-9]/.test(password);
-  const passwordValid = hasMinLength && hasUppercase && hasNumber;
-  const usernameValid = username.length >= 3 && username.length <= 20 && /^[a-zA-Z0-9]+_?[a-zA-Z0-9]*$/.test(username);
-  const emailValid = email.includes("@") && email.includes(".");
-
-  const canProceed = () => {
-    switch (step) {
-      case 1:
-        if (isWalletRegistration) return usernameValid && usernameStatus.available === true;
-        return usernameValid && usernameStatus.available === true && emailValid;
-      case 2: return isWalletRegistration ? true : passwordValid;
-      case 3: return !!selectedCountry;
-      case 4: return acceptedToS && acceptedPrivacy;
-      default: return false;
-    }
-  };
-
-  const nextStep = () => {
-    if (step < 4 && canProceed()) {
-      setStep(isWalletRegistration && step === 1 ? 3 : step + 1);
-    }
-  };
-
-  const prevStep = () => {
-    if (step > 1) setStep(isWalletRegistration && step === 3 ? 1 : step - 1);
-  };
-
-  const currentStep = steps[step - 1];
   return (
     <div className="auth-screen auth-signup-screen auth-simple">
       <div className="auth-simple-wrap">
@@ -185,171 +154,86 @@ export default function Signup() {
         <section className="auth-simple-card">
           <div className="auth-simple-card-head">
             <div>
-              <div className="auth-eyebrow">Create profile</div>
-              <h1>{currentStep.title}</h1>
-              <p>{currentStep.description}</p>
+              <div className="auth-eyebrow">Tradebattle</div>
+              <h1>Create profile</h1>
+              <p>Set up your player account.</p>
             </div>
           </div>
 
-          <div className="auth-simple-stepper" aria-label="Profile setup progress">
-            {steps.map((item, index) => {
-              const stepNumber = index + 1;
-              const isActive = stepNumber === step;
-              const isComplete = stepNumber < step;
-              const isSkipped = isWalletRegistration && stepNumber === 2;
-              return (
-                <div key={item.label} className={`auth-simple-step ${isActive ? "active" : ""} ${isComplete ? "complete" : ""} ${isSkipped ? "skipped" : ""}`}>
-                  <span className="auth-simple-step-number">0{stepNumber}</span>
-                  <span>{isSkipped ? "Wallet" : item.label}</span>
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="auth-field">
+              <Label htmlFor="username">Player name</Label>
+              <div className="auth-username-wrap">
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  placeholder="Player name"
+                  maxLength={20}
+                  className="auth-input"
+                  autoComplete="username"
+                  style={{ borderColor: usernameStatus.available === true ? "#20d8c2" : usernameStatus.available === false ? "#ef6b75" : undefined }}
+                />
+                <div className="auth-icon-button" aria-hidden="true">
+                  {usernameStatus.checking && <Loader2 size={16} className="animate-spin" />}
+                  {usernameStatus.available === true && <CheckCircle size={16} style={{ color: "#20d8c2" }} />}
+                  {usernameStatus.available === false && <XCircle size={16} style={{ color: "#ef6b75" }} />}
                 </div>
-              );
-            })}
-          </div>
-
-          <div className="signup-form-card">
-            {step === 1 && (
-              <div className="auth-form">
-                <div className="auth-field">
-                  <Label htmlFor="username">Player name</Label>
-                  <div className="auth-username-wrap">
-                    <Input
-                      id="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="e.g. closingbell"
-                      maxLength={20}
-                      className="auth-input"
-                      autoComplete="username"
-                      style={{ borderColor: usernameStatus.available === true ? "#20d8c2" : usernameStatus.available === false ? "#ef6b75" : undefined }}
-                    />
-                    <div className="auth-icon-button" aria-hidden="true">
-                      {usernameStatus.checking && <Loader2 size={16} className="animate-spin" />}
-                      {usernameStatus.available === true && <CheckCircle size={16} style={{ color: "#20d8c2" }} />}
-                      {usernameStatus.available === false && <XCircle size={16} style={{ color: "#ef6b75" }} />}
-                    </div>
-                  </div>
-                  {usernameStatus.available === false && usernameStatus.reason && <div className="signup-field-note error">{usernameStatus.reason}</div>}
-                  {username && username.length < 3 && <div className="signup-field-note error">Use at least 3 characters.</div>}
-                  {usernameStatus.available === true && <div className="signup-field-note success">Player name is available.</div>}
-                </div>
-
-                {!isWalletRegistration && (
-                  <div className="auth-field">
-                    <Label htmlFor="email">Contact email</Label>
-                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email address" className="auth-input" autoComplete="email" />
-                    <div className="signup-field-note">Used for account recovery.</div>
-                  </div>
-                )}
-
-                {isWalletRegistration && <div className="signup-wallet-card">Wallet connected · {walletAddress?.slice(0, 7)}...{walletAddress?.slice(-5)}</div>}
               </div>
-            )}
+              {usernameStatus.available === false && usernameStatus.reason && <div className="signup-field-note error">{usernameStatus.reason}</div>}
+            </div>
 
-            {step === 2 && (
-              <div className="auth-form">
+            {!isWalletRegistration && (
+              <>
+                <div className="auth-field">
+                  <Label htmlFor="email">Email</Label>
+                  <Input id="email" type="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="Email address" className="auth-input" autoComplete="email" />
+                </div>
+
                 <div className="auth-field">
                   <Label htmlFor="password">Passcode</Label>
                   <div className="auth-password-wrap">
-                    <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Create your passcode" className="auth-input" autoComplete="new-password" />
+                    <Input id="password" type={showPassword ? "text" : "password"} required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="At least 8 characters" className="auth-input" autoComplete="new-password" />
                     <button type="button" className="auth-icon-button" aria-label={showPassword ? "Hide passcode" : "Show passcode"} onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                     </button>
                   </div>
+                  {password && !passwordValid && <div className="signup-field-note error">Use 8+ characters, one uppercase letter, and one number.</div>}
                 </div>
+              </>
+            )}
 
-                <div className="signup-strength">
-                  <div className="signup-strength-bars"><span className={hasMinLength ? "met" : ""} /><span className={hasUppercase ? "met" : ""} /><span className={hasNumber ? "met" : ""} /></div>
-                  <div className={`signup-field-note ${passwordValid ? "success" : ""}`}>{passwordValid ? "Passcode meets the requirements." : "Use 8+ characters, one uppercase letter, and one number."}</div>
-                </div>
+            <div className="auth-field">
+              <Label className="auth-field-label">Country</Label>
+              <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                <SelectTrigger className="auth-input">
+                  <SelectValue placeholder="Select your country" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(countries).map((country) => <SelectItem key={country} value={country}>{country}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {selectedCountry && <div className="signup-field-note">{selectedLanguage} · {selectedCurrency}</div>}
+            </div>
 
-                <div className="signup-requirements">
-                  {[
-                    { met: hasMinLength, text: "At least 8 characters" },
-                    { met: hasUppercase, text: "One uppercase letter" },
-                    { met: hasNumber, text: "One number" },
-                  ].map((requirement) => (
-                    <div key={requirement.text} className={`signup-requirement ${requirement.met ? "met" : ""}`}>
-                      <span className="signup-requirement-icon">{requirement.met ? <Check size={11} /> : <span style={{ width: 4, height: 4, borderRadius: "50%", background: "currentColor" }} />}</span>
-                      <span>{requirement.text}</span>
-                    </div>
-                  ))}
-                </div>
+            <div className="signup-legal">
+              <div className="signup-legal-row">
+                <Checkbox id="tos" checked={acceptedToS} onCheckedChange={(checked) => setAcceptedToS(checked === true)} />
+                <label htmlFor="tos">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link>.</label>
               </div>
-            )}
-
-            {step === 3 && (
-              <div className="auth-form">
-                <div className="auth-field">
-                  <Label className="auth-field-label">Home base</Label>
-                  <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                    <SelectTrigger className="auth-input">
-                      <SelectValue placeholder="Choose your home base" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Object.keys(countries).map((country) => <SelectItem key={country} value={country}>{country}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <div className="signup-field-note">We use this to set the right language and display currency.</div>
-                </div>
-
-                {selectedCountry ? (
-                  <div className="signup-location-meta">
-                    <div className="signup-meta-card"><span>Language</span><strong>{selectedLanguage}</strong></div>
-                    <div className="signup-meta-card"><span>Currency</span><strong>{selectedCurrency}</strong></div>
-                  </div>
-                ) : (
-                  <div className="signup-wallet-card">Choose your location to continue.</div>
-                )}
+              <div className="signup-legal-row">
+                <Checkbox id="privacy" checked={acceptedPrivacy} onCheckedChange={(checked) => setAcceptedPrivacy(checked === true)} />
+                <label htmlFor="privacy">I accept the <Link href="/privacy" target="_blank">Privacy Policy</Link>.</label>
               </div>
-            )}
+            </div>
 
-            {step === 4 && (
-              <div className="auth-form">
-                <div className="signup-review-list">
-                  {[
-                    { label: "Player name", value: username },
-                    { label: "Contact email", value: email || "Wallet account" },
-                    { label: "Home base", value: selectedCountry },
-                    { label: "Language / currency", value: `${selectedLanguage} · ${selectedCurrency}` },
-                  ].map((item) => (
-                    <div key={item.label} className="signup-review-row"><span>{item.label}</span><strong>{item.value}</strong></div>
-                  ))}
-                </div>
+            {registerMutation.isError && <div className="auth-error">{(registerMutation.error as any)?.message || "Registration failed."}</div>}
 
-                <div className="signup-legal">
-                  <div className="signup-legal-row">
-                    <Checkbox id="tos" checked={acceptedToS} onCheckedChange={(checked) => setAcceptedToS(checked as boolean)} />
-                    <label htmlFor="tos">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link>.</label>
-                  </div>
-                  <div className="signup-legal-row">
-                    <Checkbox id="privacy" checked={acceptedPrivacy} onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)} />
-                    <label htmlFor="privacy">I accept the <Link href="/privacy" target="_blank">Privacy Policy</Link>.</label>
-                  </div>
-                  <p className="signup-legal-note">You must be 18 or older to play.</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="signup-navigation">
-            {step > 1 ? (
-              <Button type="button" variant="outline" onClick={prevStep} className="auth-secondary-button"><ArrowLeft size={15} /> Previous</Button>
-            ) : <span />}
-
-            {step < 4 ? (
-              <Button type="button" onClick={nextStep} disabled={!canProceed()} className="auth-primary-button">Continue <ArrowRight size={15} className="ml-2" /></Button>
-            ) : (
-              <Button type="button" onClick={() => handleSubmit()} disabled={registerMutation.isPending || isSubmitting || !canProceed()} className="auth-primary-button launch">
-                {registerMutation.isPending || isSubmitting ? <><Loader2 size={15} className="mr-2 animate-spin" /> Creating profile…</> : <><Rocket size={15} className="mr-2" /> Create profile</>}
-              </Button>
-            )}
-          </div>
-
-          {registerMutation.isError && <div className="auth-error signup-error">{(registerMutation.error as any)?.message || "Registration failed"}</div>}
-          <p className="auth-footer-link signup-footer">Paper trading · <Link href="/login">Already have an account?</Link></p>
+            <Button type="submit" disabled={!canSubmit || registerMutation.isPending || isSubmitting} className="auth-primary-button">
+              {registerMutation.isPending || isSubmitting ? <><Loader2 size={15} className="mr-2 animate-spin" /> Creating profile…</> : "Create profile"}
+            </Button>
+          </form>
         </section>
-
-        <p className="auth-simple-note">Paper trading · Virtual cash only.</p>
       </div>
     </div>
   );

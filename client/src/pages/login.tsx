@@ -28,34 +28,31 @@ export default function Login() {
     return null;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
     loginMutation.mutate({ username, password });
   };
 
-  const handle2FASubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handle2FASubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setTwoFALoading(true);
     setTwoFAError("");
     try {
       const pending = sessionStorage.getItem("pending2FA");
       if (!pending) {
-        setTwoFAError("Session expired. Please sign in again.");
+        setTwoFAError("Session expired. Sign in again.");
         navigate("/login");
         return;
       }
       const { userId } = JSON.parse(pending);
-      const res = await apiRequest("POST", "/api/auth/2fa/login-verify", {
-        userId,
-        code: twoFACode,
-      });
-      const userData = await res.json();
+      const response = await apiRequest("POST", "/api/auth/2fa/login-verify", { userId, code: twoFACode });
+      const userData = await response.json();
       sessionStorage.removeItem("pending2FA");
       queryClient.setQueryData(["/api/user"], userData);
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       navigate("/hub");
-    } catch (err: any) {
-      setTwoFAError(err.message || "That code is not valid.");
+    } catch (error: any) {
+      setTwoFAError(error.message || "That code is not valid.");
     } finally {
       setTwoFALoading(false);
     }
@@ -65,21 +62,20 @@ export default function Login() {
     <div className="auth-screen auth-login-screen auth-simple">
       <div className="auth-simple-wrap">
         <div className="auth-simple-top">
-          {!is2FA && <Link href="/signup" className="auth-panel-link">New here? Create profile</Link>}
+          {is2FA ? <Link href="/login" className="auth-panel-link">Back to sign in</Link> : <Link href="/signup" className="auth-panel-link">Create profile</Link>}
         </div>
 
-        <section className="auth-simple-card auth-login-card">
+        <section className="auth-simple-card">
           {is2FA ? (
-            <form onSubmit={handle2FASubmit} className="auth-twofa-card">
-              <div className="auth-simple-card-head auth-twofa-head">
+            <form onSubmit={handle2FASubmit} className="auth-form">
+              <div className="auth-simple-card-head">
                 <div>
-                  <div className="auth-twofa-icon"><ShieldCheck size={22} /></div>
-                  <div className="auth-eyebrow">Two-factor sign-in</div>
-                  <h1>Verify your sign-in</h1>
+                  <div className="auth-eyebrow">Secure sign in</div>
+                  <h1>Verify sign-in</h1>
                   <p>Enter the six-digit code from your authenticator.</p>
                 </div>
+                <ShieldCheck className="auth-twofa-icon" size={22} />
               </div>
-
               <div className="auth-field">
                 <Label htmlFor="2fa-code">Verification code</Label>
                 <Input
@@ -88,68 +84,37 @@ export default function Login() {
                   required
                   maxLength={6}
                   value={twoFACode}
-                  onChange={(e) => setTwoFACode(e.target.value.replace(/\D/g, ""))}
+                  onChange={(event) => setTwoFACode(event.target.value.replace(/\D/g, ""))}
                   placeholder="000000"
                   className="auth-input auth-twofa-input"
                   autoComplete="one-time-code"
                 />
               </div>
-
               {twoFAError && <div className="auth-error">{twoFAError}</div>}
-
               <Button type="submit" disabled={twoFALoading || twoFACode.length !== 6} className="auth-primary-button">
                 {twoFALoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying…</> : "Verify code"}
               </Button>
-
-              <button
-                type="button"
-                className="auth-secondary-button"
-                onClick={() => {
-                  sessionStorage.removeItem("pending2FA");
-                  navigate("/login");
-                }}
-              >
-                Back to sign in
-              </button>
             </form>
           ) : (
             <>
               <div className="auth-simple-card-head">
                 <div>
-                  <div className="auth-eyebrow">Sign in</div>
-                  <h1>Sign in to Tradebattle</h1>
-                  <p>Use your player name and passcode to continue.</p>
+                  <div className="auth-eyebrow">Tradebattle</div>
+                  <h1>Sign in</h1>
+                  <p>Use your player name and passcode.</p>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="auth-form">
                 <div className="auth-field">
                   <Label htmlFor="username">Player name</Label>
-                  <Input
-                    id="username"
-                    type="text"
-                    required
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your player name"
-                    className="auth-input"
-                    autoComplete="username"
-                  />
+                  <Input id="username" type="text" required value={username} onChange={(event) => setUsername(event.target.value)} placeholder="Player name" className="auth-input" autoComplete="username" />
                 </div>
 
                 <div className="auth-field">
                   <Label htmlFor="password">Passcode</Label>
                   <div className="auth-password-wrap">
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your passcode"
-                      className="auth-input"
-                      autoComplete="current-password"
-                    />
+                    <Input id="password" type={showPassword ? "text" : "password"} required value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Passcode" className="auth-input" autoComplete="current-password" />
                     <button type="button" className="auth-icon-button" aria-label={showPassword ? "Hide passcode" : "Show passcode"} onClick={() => setShowPassword(!showPassword)}>
                       {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                     </button>
@@ -160,32 +125,18 @@ export default function Login() {
                   {loginMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in…</> : "Sign in"}
                 </Button>
 
-                {loginMutation.isError && (
-                  <div className="auth-error">
-                    {(loginMutation.error as any)?.message || "Sign-in failed. Check your player name and passcode."}
-                  </div>
-                )}
-
+                {loginMutation.isError && <div className="auth-error">{(loginMutation.error as any)?.message || "Sign-in failed."}</div>}
                 <Link href="/forgot-password" className="auth-panel-link" style={{ textAlign: "center" }}>Forgot your passcode?</Link>
 
                 <div className="auth-divider">Or connect a wallet</div>
-
-                <div className="auth-wallet">
-                  <WalletConnect
-                    onSuccess={() => navigate("/hub")}
-                    onNewUser={({ address, signature }) => {
-                      navigate(`/signup?wallet=${encodeURIComponent(address)}&signature=${encodeURIComponent(signature)}`);
-                    }}
-                  />
-                </div>
+                <WalletConnect
+                  onSuccess={() => navigate("/hub")}
+                  onNewUser={({ address, signature }) => navigate(`/signup?wallet=${encodeURIComponent(address)}&signature=${encodeURIComponent(signature)}`)}
+                />
               </form>
-
-              <p className="auth-footer-link">New here? <Link href="/signup">Create profile</Link></p>
             </>
           )}
         </section>
-
-        <p className="auth-simple-note">Paper trading · Virtual cash only.</p>
       </div>
     </div>
   );

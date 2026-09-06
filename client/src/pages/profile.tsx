@@ -106,15 +106,15 @@ function TransactionHistory({ userId, formatCurrency }: { userId: number; format
 }
 
 const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
+  initial: { opacity: 0, y: 6 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.6 }
+  transition: { duration: 0.24, ease: "easeOut" }
 };
 
 const staggerChildren = {
   animate: {
     transition: {
-      staggerChildren: 0.1
+      staggerChildren: 0.04
     }
   }
 };
@@ -603,8 +603,9 @@ export default function Profile() {
                         borderColor: '#071522',
                         borderWidth: '2px',
                         borderStyle: 'solid',
-                        top: '-5px',
-                        right: '-5px'
+                        top: 'auto',
+                        right: '-5px',
+                        bottom: '-5px'
                       }}
                     />
                   </div>
