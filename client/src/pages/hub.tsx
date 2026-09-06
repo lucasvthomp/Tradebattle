@@ -16,8 +16,8 @@ function HubMarketChart() {
       <svg viewBox="0 0 720 260" preserveAspectRatio="none" role="img">
         <defs>
           <linearGradient id="hubChartFill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0%" stopColor="#20d8c2" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="#20d8c2" stopOpacity="0" />
+            <stop offset="0%" stopColor="#f6c453" stopOpacity="0.2" />
+            <stop offset="100%" stopColor="#f6c453" stopOpacity="0" />
           </linearGradient>
         </defs>
         <path className="hub-chart-grid" d="M0 48H720M0 102H720M0 156H720M0 210H720M90 0V260M210 0V260M330 0V260M450 0V260M570 0V260M690 0V260" />
@@ -46,9 +46,9 @@ export default function Hub() {
 
   const overviewItems = [
     { label: "Tournaments", value: String(activeTournaments.length), note: "Open now", tone: "#f2c76a" },
-    { label: "Buying power", value: `$${balance.toFixed(2)}`, note: "Arena cash", tone: "#67e7bf" },
+    { label: "Buying power", value: `$${balance.toFixed(2)}`, note: "Arena cash", tone: "#f6c453" },
     { label: "Record", value: `${wins} win${wins === 1 ? "" : "s"}`, note: "Tournament wins", tone: "#9bd2bd" },
-    { label: "Momentum", value: momentumUp ? `+${wins} win${wins === 1 ? "" : "s"}` : "Flat", note: "Your current run", tone: momentumUp ? "#67e7bf" : "#91a6ba" },
+    { label: "Momentum", value: momentumUp ? `+${wins} win${wins === 1 ? "" : "s"}` : "Flat", note: "Your current run", tone: momentumUp ? "#f6c453" : "#b9acd6" },
   ];
 
   return (
@@ -89,7 +89,7 @@ export default function Hub() {
           <motion.section className="hub-panel hub-market-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.12 }}>
             <div className="hub-panel-heading">
               <div><h2>Quick market peek</h2><p>See what is moving before you play.</p></div>
-              <FaChartColumn size={18} style={{ color: "#20d8c2" }} />
+              <FaChartColumn size={18} style={{ color: "#f6c453" }} />
             </div>
             <div className="hub-market-readout"><strong className="hub-market-number">Market</strong><span className="hub-market-change">SIMULATED</span></div>
             <HubMarketChart />

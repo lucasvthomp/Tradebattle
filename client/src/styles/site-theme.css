@@ -1219,6 +1219,53 @@
   border-top-color: #2b315e !important;
 }
 
+/* Purple + gold palette experiment. */
+.tradebattle-site {
+  --site-bg: #120d2b;
+  --site-panel: #1d1540;
+  --site-panel-raised: #30205e;
+  --site-edge: rgba(246, 196, 83, 0.24);
+  --site-mint: #f6c453;
+  --site-yellow: #ffd166;
+  --site-purple: #b58cff;
+  background: #120d2b !important;
+}
+.tradebattle-site .tradebattle-route::before {
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(181, 140, 255, 0.18), transparent 19rem),
+    radial-gradient(circle at 92% 20%, rgba(246, 196, 83, 0.12), transparent 22rem),
+    radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+}
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: #171039 !important;
+  border-color: #3a296d !important;
+}
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator {
+  background: #f6c453 !important;
+  color: #24143f !important;
+}
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
+  background: #fff0b0 !important;
+}
+.tradebattle-site [style*="#67E7BF"],
+.tradebattle-site [style*="#67e7bf"],
+.tradebattle-site [style*="#62E4BD"],
+.tradebattle-site [style*="#62e4bd"] {
+  color: #f6c453 !important;
+}
+.tradebattle-site .tradebattle-header [style*="linear-gradient(135deg, #9af1d1"],
+.tradebattle-site .tradebattle-header [style*="linear-gradient(135deg, #9af1d1"] {
+  background: linear-gradient(135deg, #ffe08a, #d9982b) !important;
+}
+.tradebattle-site button[style*="#62E4BD"],
+.tradebattle-site button[style*="#62e4bd"] {
+  background: #f6c453 !important;
+  color: #24143f !important;
+  box-shadow: 0 8px 22px rgba(246, 196, 83, 0.18) !important;
+}
+
 /* Playful arcade direction: solid color blocks, friendly corners, and a
    stronger game silhouette instead of a broker-dashboard finish. */
 .tradebattle-site {

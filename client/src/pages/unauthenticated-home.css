@@ -217,6 +217,31 @@
   .arena-hero-visual { display: none; }
 }
 
+/* Purple + gold landing palette. */
+.arena-page {
+  --arena-bg: #120d2b;
+  --arena-line: #3a296d;
+  --arena-muted: #b9acd6;
+  --arena-soft: #e1d8f4;
+  --arena-mint: #f6c453;
+  background: #120d2b;
+}
+.arena-hero { background-color: #1d1540; background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px); }
+.arena-copy h1 em { color: #f6c453; }
+.arena-primary-link { background: #f6c453; color: #24143f; box-shadow: 4px 4px 0 #7b4a28; }
+.arena-primary-link:hover { background: #ffe08a; box-shadow: 5px 5px 0 #7b4a28; }
+.arena-promo-rail { background: #171039; border-top-color: #3a296d; }
+.arena-promo-card { border-color: #4b347a; background: #2a1c56; }
+.arena-promo-card:hover { border-color: #f6c453; }
+.arena-modes { background: #120d2b; border-top-color: #3a296d; }
+.mode-tournament { background: #2e1f5e; }
+.mode-blitz { background: #412263; }
+.mode-label { background: #f6c453; color: #24143f; }
+.mode-blitz .mode-label { background: #ffd166; }
+.mode-link { color: #f6c453; }
+.how-step-icon { background: #f6c453; color: #24143f; }
+.arena-final { background: #30205e; border-top-color: #3a296d; }
+
 @media (prefers-reduced-motion: reduce) {
   .arena-primary-link { transition: none; }
   .arena-primary-link:hover { transform: none; }

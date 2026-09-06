@@ -730,6 +730,30 @@
   .hub-overview-item:nth-child(-n+2) { border-bottom: 1px solid #2b315e; }
 }
 
+/* Gold is the action color; purple carries the play-space. */
+.hub-screen { background-color: #120d2b; }
+.hub-topbar { border-bottom-color: #3a296d; }
+.hub-kicker { color: #f6c453; }
+.hub-outline-action { border-color: #5a3d8a; background: #21164a; }
+.hub-primary-action,
+.hub-feature-action { background: #f6c453; border-color: #f6c453; color: #24143f; }
+.hub-primary-action:hover,
+.hub-feature-action:hover { background: #ffe08a; }
+.hub-overview-bar,
+.hub-panel,
+.hub-stat-card { border-color: #3a296d; background: #1d1540; }
+.hub-feature-banner { border-color: #6847a0; background: #3b246c; }
+.hub-feature-kicker { color: #ffd166; }
+.hub-chart { border-color: #4b347a; background: #160f35; }
+.hub-launch-card { border-color: #4b347a; background: #2a1c56; }
+.hub-launch-card:hover { border-color: #f6c453; background: #352263; }
+.hub-launch-icon.gold { background: #f6c453; }
+.hub-launch-icon.purple { background: #b58cff; }
+.hub-live-row { border-color: #4b347a; background: #24194b; }
+.hub-live-row:hover { border-color: #f6c453; background: #30205e; }
+.hub-empty-state { border-color: #6847a0; background: #24194b; }
+.hub-empty-state a { color: #f6c453; }
+
 @media (prefers-reduced-motion: reduce) {
   .hub-primary-action,
   .hub-outline-action,

@@ -11,14 +11,14 @@ function MarketChartBackground() {
       <svg viewBox="0 0 1440 620" preserveAspectRatio="none" role="presentation">
         <defs>
           <linearGradient id="market-area-fill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#67e7bf" stopOpacity="0.22" />
-            <stop offset="0.62" stopColor="#67e7bf" stopOpacity="0.04" />
-            <stop offset="1" stopColor="#67e7bf" stopOpacity="0" />
+            <stop offset="0" stopColor="#f6c453" stopOpacity="0.22" />
+            <stop offset="0.62" stopColor="#f6c453" stopOpacity="0.04" />
+            <stop offset="1" stopColor="#f6c453" stopOpacity="0" />
           </linearGradient>
           <linearGradient id="market-line-glow" x1="0" x2="1" y1="0" y2="0">
             <stop offset="0" stopColor="#4b9fcb" stopOpacity="0.2" />
-            <stop offset="0.48" stopColor="#67e7bf" stopOpacity="0.92" />
-            <stop offset="1" stopColor="#b2ffe7" stopOpacity="0.74" />
+            <stop offset="0.48" stopColor="#f6c453" stopOpacity="0.92" />
+            <stop offset="1" stopColor="#fff0b0" stopOpacity="0.74" />
           </linearGradient>
           <filter id="market-line-blur" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="7" />

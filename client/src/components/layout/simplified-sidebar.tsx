@@ -31,12 +31,12 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
 
   const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: FaHouse, iconColor: '#67E7BF' },
-      { href: "/tournaments", label: t('tournaments'), icon: FaGamepad, iconColor: '#67E7BF' },
-      { href: "/blitz", label: "Blitz", icon: FaBolt, iconColor: '#F2C76A' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: FaTrophy, iconColor: '#F2C76A' },
+      { href: "/hub", label: t('hub'), icon: FaHouse, iconColor: '#F6C453' },
+      { href: "/tournaments", label: t('tournaments'), icon: FaGamepad, iconColor: '#F6C453' },
+      { href: "/blitz", label: "Blitz", icon: FaBolt, iconColor: '#FFD166' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: FaTrophy, iconColor: '#FFD166' },
       { href: "/people", label: t('people'), icon: FaUsers, iconColor: '#8EB6D1' },
-      { href: "/shop", label: "Rewards", icon: FaGift, iconColor: '#F2C76A' },
+      { href: "/shop", label: "Rewards", icon: FaGift, iconColor: '#FFD166' },
       { href: "/contact", label: t('support'), icon: FaHeadset, iconColor: '#94A3B8' },
     ] : [
       { href: "/contact", label: t('support'), icon: FaHeadset, iconColor: '#94A3B8' },
@@ -71,7 +71,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
           paddingLeft: '14px',
           flexShrink: 0,
           ...(isActive(item.href)
-            ? { backgroundColor: 'rgba(103, 231, 191, 0.1)', color: '#67E7BF' }
+            ? { backgroundColor: 'rgba(246, 196, 83, 0.12)', color: '#F6C453' }
             : { color: '#8A9CAF' }),
         }}
       >
@@ -179,7 +179,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
               onClick={() => setCodeDialogOpen(true)}
               className="transition-all duration-200 hover:brightness-110 w-full flex items-center"
               style={{
-                background: 'linear-gradient(135deg, #67E7BF, #2EBF9A)',
+                background: 'linear-gradient(135deg, #FFE08A, #D9982B)',
                 height: '44px',
                 paddingLeft: '14px',
                 paddingRight: '8px',
