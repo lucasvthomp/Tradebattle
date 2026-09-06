@@ -135,11 +135,14 @@ export default function Deposit() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => null);
         throw new Error(errorData.error || 'Failed to create payment');
       }
 
       const data = await response.json();
+      if (!data?.payment_id || !getPaymentQrValue(data) || data?.pay_amount == null || !data?.pay_currency) {
+        throw new Error('Payment details were incomplete. Please try again.');
+      }
       setPayment(data);
 
       // Start polling for status
@@ -593,19 +596,35 @@ export default function Deposit() {
               Send payment
             </h3>
 
-            {/* QR Code */}
-            <div style={{
-              background: '#ffffff',
-              padding: '24px',
-              borderRadius: '12px',
+            {            {/* QR Code */}
+            <div className="deposit-qr-frame" style={{
+              background: 'rgba(103, 231, 191, 0.06)',
+              padding: '6px',
+              borderRadius: '16px',
               marginBottom: '24px',
               display: 'flex',
               justifyContent: 'center',
             }}>
-              <QRCodeSVG value={getPaymentQrValue(payment)} size={220} includeMargin fgColor="#67E7BF" bgColor="transparent" style={{ display: "block", maxWidth: "100%", height: "auto" }} />
+              <div className="deposit-qr-surface" style={{
+                background: 'transparent',
+                padding: '12px',
+                borderRadius: '12px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <QRCodeSVG
+                  value={getPaymentQrValue(payment)}
+                  size={220}
+                  includeMargin
+                  fgColor="#67E7BF"
+                  bgColor="transparent"
+                  style={{ display: "block", maxWidth: "100%", height: "auto" }}
+                />
+              </div>
             </div>
 
-            {/* Address */}
+/* Address */}
             <div style={{ marginBottom: '24px' }}>
               <label style={{
                 color: '#8A93A6',
@@ -649,12 +668,12 @@ export default function Deposit() {
                     alignItems: 'center',
                   }}
                 >
-                  {copied ? <Check size={18} /> : <Copy size={18} />}
+                  {copiedField === 'address' ? <Check size={18} /> : <Copy size={18} />}
                 </button>
               </div>
             </div>
 
-            {/* Amount */}
+            {            {/* Amount */}
             <div style={{ marginBottom: '24px' }}>
               <label style={{
                 color: '#8A93A6',
@@ -665,25 +684,44 @@ export default function Deposit() {
               }}>
                 Amount to send
               </label>
-              <div style={{
+              <div className="deposit-address deposit-copy-row" style={{
                 background: 'transparent',
-                border: '2px solid #67E7BF',
+                border: '1px solid #0E2040',
                 borderRadius: '8px',
-                padding: '16px',
-                textAlign: 'center',
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
               }}>
-                <div style={{
-                  color: '#67E7BF',
-                  fontSize: 'clamp(18px, 6vw, 28px)',
-                  fontWeight: '700',
-                  wordBreak: 'break-word',
+                <code style={{
+                  flex: 1,
+                  color: '#C9D1E2',
+                  fontSize: '14px',
+                  fontFamily: 'monospace',
                 }}>
-                  {payment.pay_amount} {payment.pay_currency.toUpperCase()}
-                </div>
+                  {getPaymentAmountValue(payment)}
+                </code>
+                <button
+                  onClick={copyAmount}
+                  aria-label="Copy amount"
+                  style={{
+                    padding: '8px',
+                    background: copiedField === 'amount' ? '#67E7BF' : '#123247',
+                    border: 'none',
+                    borderRadius: '6px',
+                    color: '#fff',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {copiedField === 'amount' ? <Check size={18} /> : <Copy size={18} />}
+                </button>
               </div>
             </div>
 
-            {/* Status */}
+/* Status */}
             <div style={{
               background: 'rgba(0, 163, 255, 0.1)',
               border: '1px solid #67E7BF',

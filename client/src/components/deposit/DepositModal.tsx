@@ -105,11 +105,14 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => null);
         throw new Error(errorData.error || 'Failed to create payment');
       }
 
       const data = await response.json();
+      if (!data?.payment_id || !getPaymentQrValue(data) || data?.pay_amount == null || !data?.pay_currency) {
+        throw new Error('Payment details were incomplete. Please try again.');
+      }
       setPayment(data);
       setStep('payment');
       pollPaymentStatus(data.payment_id);
@@ -484,30 +487,54 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                       transition: 'all 0.2s',
                     }}
                   >
-                    {copied ? <Check size={16} /> : <Copy size={16} />}
+                    {copiedField === 'address' ? <Check size={16} /> : <Copy size={16} />}
                   </button>
                 </div>
               </div>
 
-              {/* Amount */}
+              {              {/* Amount */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ color: '#8A93A6', fontSize: '13px', marginBottom: '8px', display: 'block' }}>
                   Amount to send
                 </label>
-                <div style={{
-                  background: '#10283A',
-                  border: '1px solid #67E7BF',
+                <div className="deposit-address deposit-copy-row" style={{
+                  background: 'transparent',
+                  border: '1px solid #0E2040',
                   borderRadius: '12px',
-                  padding: '16px',
-                  textAlign: 'center',
+                  padding: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}>
-                  <div style={{ color: '#F1F5F9', fontSize: '24px', fontWeight: '700' }}>
-                    {payment.pay_amount} {payment.pay_currency.toUpperCase()}
-                  </div>
+                  <code style={{
+                    flex: 1,
+                    color: '#C9D1E2',
+                    fontSize: '12px',
+                    fontFamily: 'monospace',
+                  }}>
+                    {getPaymentAmountValue(payment)}
+                  </code>
+                  <button
+                    onClick={copyAmount}
+                    aria-label="Copy amount"
+                    style={{
+                      padding: '8px',
+                      background: copiedField === 'amount' ? '#67E7BF' : '#123247',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: '#fff',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {copiedField === 'amount' ? <Check size={16} /> : <Copy size={16} />}
+                  </button>
                 </div>
               </div>
 
-              {/* Status */}
+/* Status */}
               <div style={{
                 background: 'rgba(0, 163, 255, 0.1)',
                 border: '1px solid #67E7BF',

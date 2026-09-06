@@ -193,11 +193,14 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => null);
         throw new Error(errorData.error || 'Failed to create payment');
       }
 
       const data = await response.json();
+      if (!data?.payment_id || !getPaymentQrValue(data) || data?.pay_amount == null || !data?.pay_currency) {
+        throw new Error('Payment details were incomplete. Please try again.');
+      }
       setPayment(data);
       setDepositStep('payment');
       pollPaymentStatus(data.payment_id);
@@ -625,28 +628,39 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           color: '#06151C',
                         }}
                       >
-                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        {copiedField === 'address' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       </Button>
                     </div>
                   </div>
 
-                  {/* Amount */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
-                      Amount to send
-                    </label>
-                    <div className="p-5 rounded-xl border-2 text-center" style={{
-                      background: '#10283A',
-                      borderColor: '#67E7BF',
-                      boxShadow: '0 4px 20px rgba(103, 231, 191, 0.18)',
-                    }}>
-                      <div className="text-3xl font-black" style={{ color: '#F1F5F9' }}>
-                        {payment.pay_amount} {payment.pay_currency.toUpperCase()}
-                      </div>
-                    </div>
-                  </div>
+                  {              {/* Amount */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
+                  Amount to send
+                </label>
+                <div className="deposit-address deposit-copy-row flex items-center gap-2 p-3 rounded-xl border-2" style={{
+                  background: '#0B1B2A',
+                  borderColor: 'rgba(255,255,255,0.08)',
+                }}>
+                  <code className="flex-1 text-sm font-mono break-all" style={{ color: '#C9D1E2' }}>
+                    {getPaymentAmountValue(payment)}
+                  </code>
+                  <Button
+                    size="sm"
+                    onClick={copyAmount}
+                    aria-label="Copy amount"
+                    className="shrink-0"
+                    style={{
+                      background: copiedField === 'amount' ? '#67E7BF' : '#123247',
+                      color: '#06151C',
+                    }}
+                  >
+                    {copiedField === 'amount' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </div>
+              </div>
 
-                  {/* Status */}
+/* Status */}
                   <Alert className="border-2" style={{
                     background: 'rgba(103, 231, 191, 0.08)',
                     borderColor: '#67E7BF',
