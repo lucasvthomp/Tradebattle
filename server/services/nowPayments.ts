@@ -37,20 +37,39 @@ export async function getCurrencies() {
 // Get minimum payment amount for a currency
 export async function getMinimumAmount(currency: string) {
   try {
-    const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
-    console.log(`[NOWPayments] Minimum for ${currency}:`, data);
+    const normalizedCurrency = currency.toLowerCase().trim();
+    const data = await apiCall(
+      `/min-amount?currency_from=usd&currency_to=${encodeURIComponent(normalizedCurrency)}&fiat_equivalent=usd`
+    );
+    console.log(`[NOWPayments] Minimum for ${normalizedCurrency}:`, data);
 
-    // Cap all minimums at $5 — never return more than that regardless of what NOWPayments says.
-    // NOWPayments may reject if network fees make the amount truly unworkable, but we let
-    // them surface that error rather than blocking users with a high UI minimum.
-    const apiMin = typeof data.min_amount === "number" ? data.min_amount : 5;
-    return Math.min(apiMin, 5);
+    // The API's min_amount is denominated in the source currency. Since the
+    // product collects USD, prefer the explicit USD equivalent and keep a
+    // small buffer for exchange-rate movement between this check and payment
+    // creation.
+    const fiatEquivalent = Number(data.fiat_equivalent);
+    if (Number.isFinite(fiatEquivalent) && fiatEquivalent > 0) {
+      return Math.max(Math.ceil(fiatEquivalent * 1.02 * 100) / 100, 5);
+    }
+
+    // Fallback for accounts/API versions that omit fiat_equivalent.
+    const cryptoMinimum = Number(data.min_amount);
+    if (Number.isFinite(cryptoMinimum) && cryptoMinimum > 0) {
+      const estimate = await apiCall(
+        `/estimate?amount=${cryptoMinimum}&currency_from=${encodeURIComponent(normalizedCurrency)}&currency_to=usd`
+      );
+      const estimatedUsd = Number(estimate.estimated_amount);
+      if (Number.isFinite(estimatedUsd) && estimatedUsd > 0) {
+        return Math.max(Math.ceil(estimatedUsd * 1.02 * 100) / 100, 5);
+      }
+    }
+
+    return 5;
   } catch (error) {
     console.error(`Failed to get minimum for ${currency}:`, error);
     return 5;
   }
 }
-
 // Create payment
 export async function createPayment(params: {
   priceAmount: number;
