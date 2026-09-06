@@ -467,8 +467,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Create payout via NOWPayments (in background)
-      const protocol = req.protocol;
-      const host = req.get('host');
+      const forwardedProto = req.get('x-forwarded-proto')?.split(',')[0]?.trim();
+      const forwardedHost = req.get('x-forwarded-host')?.split(',')[0]?.trim();
+      const protocol = forwardedProto || (req.secure ? 'https' : req.protocol);
+      const host = forwardedHost || req.get('host');
       const ipnCallbackUrl = `${protocol}://${host}/api/crypto/withdrawal-ipn`;
 
       const { createPayout } = await import('./services/nowPayments.js');
@@ -662,8 +664,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Build callback URL from request
-      const protocol = req.protocol;
-      const host = req.get('host');
+      const forwardedProto = req.get('x-forwarded-proto')?.split(',')[0]?.trim();
+      const forwardedHost = req.get('x-forwarded-host')?.split(',')[0]?.trim();
+      const protocol = forwardedProto || (req.secure ? 'https' : req.protocol);
+      const host = forwardedHost || req.get('host');
       const ipnCallbackUrl = `${protocol}://${host}/api/crypto/ipn`;
 
       const payment = await createPayment({
