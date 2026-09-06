@@ -52,7 +52,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
   const [payment, setPayment] = useState<any>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedField, setCopiedField] = useState<'address' | 'amount' | null>(null);
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositError, setDepositError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState(1);
@@ -95,6 +95,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         setSelectedCurrency('');
         setDepositAmount('');
         setPayment(null);
+        setCopiedField(null);
         setDepositError('');
         setWithdrawStep('amount');
         setWithdrawAmount('');
@@ -148,18 +149,33 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
     return raw;
   }
 
-  // Copy address handler
-  async function copyAddress() {
-    if (!getPaymentQrValue(payment)) return;
+  function getPaymentAmountValue(paymentData: any): string {
+    const amount = paymentData?.pay_amount;
+    const currency = paymentData?.pay_currency;
+    return amount != null && currency ? `${amount} ${String(currency).toUpperCase()}` : '';
+  }
+
+  async function copyPaymentValue(value: string, field: 'address' | 'amount') {
+    if (!value) return;
     try {
-      await navigator.clipboard.writeText(getCleanAddress(getPaymentQrValue(payment)));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(value);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   }
 
+  async function copyAddress() {
+    const value = getPaymentQrValue(payment);
+    if (value) {
+      await copyPaymentValue(getCleanAddress(value), 'address');
+    }
+  }
+
+  async function copyAmount() {
+    await copyPaymentValue(getPaymentAmountValue(payment), 'amount');
+  }
   // Create deposit handler
   async function createDeposit() {
     setDepositLoading(true);
@@ -470,7 +486,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           color: currencies.find(c => c.id === selectedCurrency)?.color,
                         }}
                       >
-                        {currencies.find(c => c.id === selectedCurrency)?.img}
+                        {currencies.find(c => c.id === selectedCurrency)?.label}
                       </div>
                       <div>
                         <div className="font-semibold" style={{ color: '#C9D1E2' }}>
@@ -551,8 +567,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       style={{
                         padding: '6px',
                         borderRadius: '16px',
-                        background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
-                        boxShadow: '0 8px 32px rgba(103, 231, 191, 0.18)',
+                        background: 'rgba(103, 231, 191, 0.06)',
+                        boxShadow: '0 8px 28px rgba(103, 231, 191, 0.12)',
                         display: 'inline-flex',
                       }}
                       animate={{
@@ -565,7 +581,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
                       <div className="deposit-qr-surface" style={{
-                        background: '#ffffff',
+                        background: 'transparent',
                         borderRadius: '12px',
                         padding: '12px',
                         display: 'flex',
@@ -580,8 +596,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           includeMargin
                           size={176}
                           level="H"
-                          fgColor="#0B1B2A"
-                          bgColor="#ffffff"
+                          fgColor="#67E7BF"
+                          bgColor="transparent"
                         />
                       </div>
                     </motion.div>
@@ -602,10 +618,11 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       <Button
                         size="sm"
                         onClick={copyAddress}
+                        aria-label="Copy address"
                         className="shrink-0"
                         style={{
-                          background: copied ? '#67E7BF' : '#67E7BF',
-                          color: '#0B1B2A',
+                          background: copiedField === 'address' ? '#67E7BF' : '#123247',
+                          color: '#06151C',
                         }}
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -837,7 +854,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className="text-3xl mb-2">{currency.img}</div>
+                          <div className="text-3xl mb-2"><span className="font-bold">{currency.label}</span></div>
                           <div className="font-bold" style={{ color: '#C9D1E2' }}>{currency.name}</div>
                           <div className="text-xs" style={{ color: '#8A93A6' }}>{currency.network}</div>
                         </motion.button>

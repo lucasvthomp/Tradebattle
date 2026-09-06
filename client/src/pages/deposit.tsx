@@ -11,7 +11,7 @@ export default function Deposit() {
   const [payment, setPayment] = useState<any>(null);
   const [amount, setAmount] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20');
-  const [copied, setCopied] = useState(false);
+  const [copiedField, setCopiedField] = useState<'address' | 'amount' | null>(null);
   const [error, setError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState<number>(1);
   const [pendingDeposits, setPendingDeposits] = useState<any[]>([]);
@@ -91,19 +91,33 @@ export default function Deposit() {
     return colonIdx > 0 && colonIdx < 20 ? raw.slice(colonIdx + 1).split('?')[0] : raw;
   }
 
-  // Copy address to clipboard
-  async function copyAddress() {
-    if (!getPaymentQrValue(payment)) return;
+  function getPaymentAmountValue(paymentData: any): string {
+    const amount = paymentData?.pay_amount;
+    const currency = paymentData?.pay_currency;
+    return amount != null && currency ? `${amount} ${String(currency).toUpperCase()}` : '';
+  }
 
+  async function copyPaymentValue(value: string, field: 'address' | 'amount') {
+    if (!value) return;
     try {
-      await navigator.clipboard.writeText(getDisplayAddress(getPaymentQrValue(payment)));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(value);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   }
 
+  async function copyAddress() {
+    const value = getPaymentQrValue(payment);
+    if (value) {
+      await copyPaymentValue(getDisplayAddress(value), 'address');
+    }
+  }
+
+  async function copyAmount() {
+    await copyPaymentValue(getPaymentAmountValue(payment), 'amount');
+  }
   // Create payment
   async function createDeposit() {
     setLoading(true);
@@ -154,6 +168,7 @@ export default function Deposit() {
       localStorage.setItem('pendingDeposits', JSON.stringify(updated));
     }
     setPayment(null);
+    setCopiedField(null);
     setError('');
   }
 
@@ -587,7 +602,7 @@ export default function Deposit() {
               display: 'flex',
               justifyContent: 'center',
             }}>
-              <QRCodeSVG value={getPaymentQrValue(payment)} size={220} includeMargin fgColor="#071522" bgColor="#ffffff" style={{ display: "block", maxWidth: "100%", height: "auto" }} />
+              <QRCodeSVG value={getPaymentQrValue(payment)} size={220} includeMargin fgColor="#67E7BF" bgColor="transparent" style={{ display: "block", maxWidth: "100%", height: "auto" }} />
             </div>
 
             {/* Address */}
@@ -601,7 +616,7 @@ export default function Deposit() {
               }}>
                 Payment address
               </label>
-              <div style={{
+              <div className="deposit-address deposit-copy-row" style={{
                 background: 'transparent',
                 border: '1px solid #0E2040',
                 borderRadius: '8px',
@@ -621,9 +636,10 @@ export default function Deposit() {
                 </code>
                 <button
                   onClick={copyAddress}
+                  aria-label="Copy address"
                   style={{
                     padding: '8px',
-                    background: copied ? '#67E7BF' : '#0E2040',
+                    background: copiedField === 'address' ? '#67E7BF' : '#123247',
                     border: 'none',
                     borderRadius: '6px',
                     color: '#fff',

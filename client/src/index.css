@@ -1473,3 +1473,19 @@ body {
     font-size: 13px;
   }
 }
+
+/* Payment copy rows keep wallet values aligned, readable, and in-bounds. */
+.tradebattle-site .deposit-copy-row {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.tradebattle-site .deposit-copy-row code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+.tradebattle-site .deposit-copy-row button {
+  flex: 0 0 auto;
+}

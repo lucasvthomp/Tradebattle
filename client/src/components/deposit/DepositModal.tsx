@@ -14,7 +14,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [amount, setAmount] = useState('');
   const [payment, setPayment] = useState<any>(null);
-  const [copied, setCopied] = useState(false);
+  const [copiedField, setCopiedField] = useState<'address' | 'amount' | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState(1);
@@ -44,6 +44,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
         setSelectedCurrency('');
         setAmount('');
         setPayment(null);
+        setCopiedField(null);
         setError('');
       }, 300);
     }
@@ -61,17 +62,33 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
     return colonIdx > 0 && colonIdx < 20 ? raw.slice(colonIdx + 1).split('?')[0] : raw;
   }
 
-  async function copyAddress() {
-    if (!getPaymentQrValue(payment)) return;
+  function getPaymentAmountValue(paymentData: any): string {
+    const amount = paymentData?.pay_amount;
+    const currency = paymentData?.pay_currency;
+    return amount != null && currency ? `${amount} ${String(currency).toUpperCase()}` : '';
+  }
+
+  async function copyPaymentValue(value: string, field: 'address' | 'amount') {
+    if (!value) return;
     try {
-      await navigator.clipboard.writeText(getDisplayAddress(getPaymentQrValue(payment)));
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      await navigator.clipboard.writeText(value);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   }
 
+  async function copyAddress() {
+    const value = getPaymentQrValue(payment);
+    if (value) {
+      await copyPaymentValue(getDisplayAddress(value), 'address');
+    }
+  }
+
+  async function copyAmount() {
+    await copyPaymentValue(getPaymentAmountValue(payment), 'amount');
+  }
   async function createDeposit() {
     setLoading(true);
     setError('');
@@ -405,13 +422,13 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
             <div>
               {/* QR Code with gold styling */}
               <div style={{
-                background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
+                background: 'rgba(103, 231, 191, 0.06)',
                 padding: '4px',
                 borderRadius: '20px',
                 marginBottom: '20px',
               }}>
                 <div style={{
-                  background: '#ffffff',
+                  background: 'transparent',
                   padding: '24px',
                   borderRadius: '16px',
                   display: 'flex',
@@ -422,8 +439,8 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     size={200}
                     level="H"
                     includeMargin
-                    fgColor="#071522"
-                    bgColor="#ffffff"
+                    fgColor="#67E7BF"
+                    bgColor="transparent"
                     style={{ display: "block", maxWidth: "100%", height: "auto" }}
                   />
                 </div>
@@ -434,7 +451,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <label style={{ color: '#8A93A6', fontSize: '13px', marginBottom: '8px', display: 'block' }}>
                   Send to this address
                 </label>
-                <div style={{
+                <div className="deposit-address deposit-copy-row" style={{
                   background: 'transparent',
                   border: '1px solid #0E2040',
                   borderRadius: '12px',
@@ -454,9 +471,10 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   </code>
                   <button
                     onClick={copyAddress}
+                    aria-label="Copy address"
                     style={{
                       padding: '8px',
-                      background: copied ? '#67E7BF' : '#0E2040',
+                      background: copiedField === 'address' ? '#67E7BF' : '#123247',
                       border: 'none',
                       borderRadius: '8px',
                       color: '#fff',
