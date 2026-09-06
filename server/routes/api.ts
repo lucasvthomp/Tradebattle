@@ -7,7 +7,6 @@ import {
   getPopularStocks,
   getStockPerformance,
   getAllSectors,
-  isCryptoSymbol,
   TimeFrame
 } from '../services/yahooFinance.js';
 import { getExchangeRate, convertCurrency, getAllExchangeRates } from '../services/exchangeRates.js';
@@ -30,28 +29,6 @@ import { containsProfanity, censorProfanity } from '../utils/profanityFilter.js'
 const router = Router();
 
 const VALID_TIMEFRAMES: TimeFrame[] = ['1H', '1D', '1D15', '1D30', '1D1H', '5D', '5D1H', '5D1D', '1W', '1M', '1M1H', '3M', '3M1W', '6M', '6M1W', 'YTD', '1Y', '1Y1W', '5Y', '5Y1M'];
-
-type TournamentMarketMode = 'stocks' | 'crypto';
-
-function getTournamentMarketMode(tournament: any): TournamentMarketMode {
-  return tournament?.tournamentType === 'crypto' ? 'crypto' : 'stocks';
-}
-
-function assertTournamentSymbolAllowed(tournament: any, symbol: string): TournamentMarketMode {
-  if (!tournament) throw new NotFoundError('Tournament not found');
-  if (!['stocks', 'crypto', 'blitz'].includes(tournament.tournamentType)) {
-    throw new ValidationError('This arena has an unsupported market mode');
-  }
-
-  const marketMode = getTournamentMarketMode(tournament);
-  const symbolMode = isCryptoSymbol(symbol) ? 'crypto' : 'stocks';
-  if (symbolMode !== marketMode) {
-    throw new ValidationError(
-      'Not available for ' + (marketMode === 'stocks' ? 'stock' : 'crypto') + ' mode'
-    );
-  }
-  return marketMode;
-}
 
 /**
  * GET /api/quote/:symbol
@@ -95,30 +72,16 @@ router.get('/search/:query', asyncHandler(async (req: any, res: any) => {
 
   let results = await searchStocks(query);
 
-  // Keep incompatible assets visible so the client can explain why they are locked.
-  // The trade routes enforce the same rule server-side.
+  // Filter by tournament type if specified
   if (tournamentId) {
-    const parsedTournamentId = Number(tournamentId);
-    if (!Number.isInteger(parsedTournamentId) || parsedTournamentId <= 0) {
-      throw new ValidationError('Invalid tournament ID');
+    const tournament = await storage.getTournamentById(parseInt(tournamentId));
+    if (tournament && tournament.tournamentType) {
+      const { isCryptoSymbol } = await import('../services/yahooFinance.js');
+      results = results.filter((result: any) => {
+        const isCrypto = isCryptoSymbol(result.symbol);
+        return tournament.tournamentType === 'crypto' ? isCrypto : !isCrypto;
+      });
     }
-
-    const tournament = await storage.getTournamentById(parsedTournamentId);
-    if (!tournament) throw new NotFoundError('Tournament not found');
-
-    const marketMode = getTournamentMarketMode(tournament);
-    results = results.map((result: any) => {
-      const resultMode = isCryptoSymbol(result.symbol) ? 'crypto' : 'stocks';
-      const available = resultMode === marketMode;
-      return {
-        ...result,
-        marketMode: resultMode,
-        available,
-        lockedReason: available
-          ? undefined
-          : 'Not available for ' + (marketMode === 'stocks' ? 'stock' : 'crypto') + ' mode',
-      };
-    });
   }
 
   res.json({
@@ -365,27 +328,39 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
   }
   console.log('[Tournament Creation] User:', userId, 'Balance:', user?.siteCash);
 
-  if (!name || !startingBalance) {
+  if (typeof name !== 'string' || !name.trim()) {
     throw new ValidationError('Tournament name and starting balance are required');
   }
 
-  const buyIn = parseFloat(buyInAmount) || 0;
-  console.log('[Tournament Creation] Buy-in amount:', buyIn);
+  const playerCap = Number(maxPlayers ?? 10);
+  const startingCapital = Number(startingBalance);
+  const buyIn = Number(buyInAmount ?? 0);
 
-  const normalizedTournamentType =
-    tournamentType === undefined || tournamentType === 'stocks'
-      ? 'stocks'
-      : tournamentType === 'crypto'
-        ? 'crypto'
-        : null;
-
-  if (!normalizedTournamentType) {
-    throw new ValidationError('Choose either stock mode or crypto mode for this arena');
+  if (!Number.isInteger(playerCap) || playerCap < 2 || playerCap > 50) {
+    throw new ValidationError('Player cap must be between 2 and 50');
   }
+
+  if (!Number.isFinite(startingCapital) || startingCapital < 1000) {
+    throw new ValidationError('Starting capital must be at least 1,000');
+  }
+
+  if (!Number.isFinite(buyIn) || buyIn < 0) {
+    throw new ValidationError('Entry fee must be a valid non-negative amount');
+  }
+
+  if (tournamentType !== undefined && !['stocks', 'crypto'].includes(tournamentType)) {
+    throw new ValidationError('Choose either stocks or crypto for this arena');
+  }
+
+  console.log('[Tournament Creation] Buy-in amount:', buyIn);
 
   // The buy-in deduction will be handled by the storage layer
 
-  const startTime = scheduledStartTime ? new Date(scheduledStartTime) : new Date();
+  const startTime = scheduledStartTime ? new Date(scheduledStartTime) : new Date(Date.now() + 5 * 60 * 1000);
+
+  if (Number.isNaN(startTime.getTime())) {
+    throw new ValidationError('Tournament start time is invalid');
+  }
 
   // Enforce minimum 1-minute start delay (prevents backdated tournaments)
   const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
@@ -397,10 +372,10 @@ router.post('/tournaments', requireAuth, asyncHandler(async (req, res) => {
 
   const validPayoutStructures = ['winner_take_all', 'top_3', 'top_5', 'top_half'];
   const tournamentData = {
-    name: sanitizeInput(name),
-    maxPlayers: maxPlayers || 10,
-    tournamentType: normalizedTournamentType,
-    startingBalance: parseFloat(startingBalance).toString(),
+    name: sanitizeInput(name.trim()),
+    maxPlayers: playerCap,
+    tournamentType: tournamentType || 'stocks',
+    startingBalance: startingCapital.toString(),
     timeframe: duration || '1 week',
     scheduledStartTime: startTime,
     buyInAmount: buyIn.toString(),
@@ -704,10 +679,6 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
   const tournament = await storage.getTournamentByCode(code);
   if (!tournament) {
     throw new NotFoundError('Tournament not found');
-  }
-
-  if (tournament.status !== 'waiting') {
-    throw new ValidationError('Tournament is no longer accepting players');
   }
 
   if (tournament.currentPlayers >= tournament.maxPlayers) {
@@ -1350,30 +1321,26 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
     throw new ValidationError('Symbol and shares to sell are required');
   }
 
-  const sharesToSellNum = Number(sharesToSell);
-  if (!Number.isInteger(sharesToSellNum) || sharesToSellNum <= 0) {
+  const sharesToSellNum = parseInt(sharesToSell);
+  if (isNaN(sharesToSellNum) || sharesToSellNum <= 0) {
     throw new ValidationError('Invalid number of shares to sell');
   }
 
+  // Check if tournament is completed (no trading allowed)
   const tournament = await storage.getTournamentById(tournamentId);
-  const cleanSymbol = sanitizeInput(symbol).toUpperCase();
-  const marketMode = assertTournamentSymbolAllowed(tournament, cleanSymbol);
-  if (!tournament) throw new NotFoundError('Tournament not found');
-
-  if (tournament.status === 'completed') {
+  if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
   }
-  if (tournament.status !== 'active') {
-    throw new ValidationError('Trading is only available in active arenas');
-  }
 
-  // Stock arenas observe exchange hours. Crypto arenas trade 24/7.
-  if (marketMode === 'stocks' && tournament.tournamentType !== 'blitz') {
+  // Check if market is open for stock tournaments (blitz bypasses market hours)
+  if (tournament && tournament.tournamentType !== 'crypto' && tournament.tournamentType !== 'blitz') {
     const { isMarketOpen } = await import('../../shared/marketHours');
     if (!isMarketOpen()) {
       throw new ValidationError('Stock market is closed. Trading is available Mon-Fri 9:30 AM - 4:00 PM ET.');
     }
   }
+
+  const cleanSymbol = sanitizeInput(symbol).toUpperCase();
 
   // Get user's tournament stock purchases for this symbol
   const allPurchases = await storage.getTournamentStockPurchases(tournamentId, userId);
@@ -1430,8 +1397,7 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
     data: {
       saleValue: result.saleValue,
       newBalance: result.newBalance,
-      sharesSold: result.sharesSold,
-      executionPrice,
+      sharesSold: result.sharesSold
     },
   });
 }));
@@ -1444,35 +1410,25 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   const tournamentId = parseInt(req.params.id);
   const userId = req.user.id;
 
-  if (isNaN(tournamentId)) {
-    throw new ValidationError('Invalid tournament ID');
-  }
-
   const { symbol, companyName, shares } = req.body;
 
   if (!symbol || !companyName || !shares) {
     throw new ValidationError('Symbol, company name, and shares are required');
   }
 
-  const sharesNum = Number(shares);
-  if (!Number.isInteger(sharesNum) || sharesNum <= 0) {
+  const sharesNum = parseInt(shares);
+  if (isNaN(sharesNum) || sharesNum <= 0) {
     throw new ValidationError('Invalid number of shares');
   }
 
+  // Check if tournament is completed (no trading allowed)
   const tournament = await storage.getTournamentById(tournamentId);
-  const cleanSymbol = sanitizeInput(symbol).toUpperCase();
-  const marketMode = assertTournamentSymbolAllowed(tournament, cleanSymbol);
-  if (!tournament) throw new NotFoundError('Tournament not found');
-
-  if (tournament.status === 'completed') {
+  if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
   }
-  if (tournament.status !== 'active') {
-    throw new ValidationError('Trading is only available in active arenas');
-  }
 
-  // Stock arenas observe exchange hours. Crypto arenas trade 24/7.
-  if (marketMode === 'stocks' && tournament.tournamentType !== 'blitz') {
+  // Check if market is open for stock tournaments (blitz bypasses market hours)
+  if (tournament && tournament.tournamentType !== 'crypto' && tournament.tournamentType !== 'blitz') {
     const { isMarketOpen } = await import('../../shared/marketHours');
     if (!isMarketOpen()) {
       throw new ValidationError('Stock market is closed. Trading is available Mon-Fri 9:30 AM - 4:00 PM ET.');
@@ -1481,6 +1437,7 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
 
   // SECURITY: Never trust a client-supplied price. Fetch the authoritative
   // price server-side so a manipulated request cannot buy below market.
+  const cleanSymbol = sanitizeInput(symbol).toUpperCase();
   let executionPrice: number;
   try {
     const quote = await getStockQuote(cleanSymbol);
@@ -1527,11 +1484,7 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
 
   res.status(201).json({
     success: true,
-    data: {
-      purchase: result.purchase,
-      newBalance: result.newBalance,
-      executionPrice,
-    },
+    data: { purchase: result.purchase, newBalance: result.newBalance },
   });
 }));
 

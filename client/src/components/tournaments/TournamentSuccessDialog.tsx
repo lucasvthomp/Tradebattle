@@ -46,15 +46,31 @@ export function TournamentSuccessDialog({
     enabled: isOpen,
   });
 
-  const friends = friendsData?.data || [];
+  const friends = Array.isArray(friendsData?.data) ? friendsData.data : [];
   const tournamentLink = `${window.location.origin}/tournaments?code=${tournamentCode}`;
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText(tournamentLink);
-    setCopied(true);
-    toast({
-      title: "Copied",
-      description: "Arena link copied to clipboard",
+    if (!navigator.clipboard) {
+      toast({
+        title: "Copy unavailable",
+        description: "Copy the arena link directly from the field.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    navigator.clipboard.writeText(tournamentLink).then(() => {
+      setCopied(true);
+      toast({
+        title: "Copied",
+        description: "Arena link copied to clipboard",
+      });
+    }).catch(() => {
+      toast({
+        title: "Copy unavailable",
+        description: "Copy the arena link directly from the field.",
+        variant: "destructive",
+      });
     });
     setTimeout(() => setCopied(false), 2000);
   };
@@ -202,14 +218,16 @@ export function TournamentSuccessDialog({
                     >
                       <div className="flex items-center space-x-3">
                         <Avatar className="w-9 h-9 md:w-10 md:h-10">
-                          <AvatarImage src={friend.profilePicture || "/assets/tradebattle-default-player.png"} className="object-cover" />
+                          {friend.profilePicture && (
+                            <AvatarImage src={friend.profilePicture} className="object-cover" />
+                          )}
                           <AvatarFallback style={{ backgroundColor: '#0B1B2A', color: '#67E7BF' }}>
-                            {friend.username.slice(0, 2).toUpperCase()}
+                            {String(friend.username || 'Player').slice(0, 2).toUpperCase()}
                           </AvatarFallback>
                         </Avatar>
                         <div>
                           <p className="text-sm md:text-base font-medium" style={{ color: '#F1F5F9' }}>
-                            {friend.username}
+                            {friend.username || 'Player'}
                           </p>
                         </div>
                       </div>

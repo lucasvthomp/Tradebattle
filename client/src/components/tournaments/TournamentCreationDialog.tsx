@@ -109,30 +109,42 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
         scheduledStartTime = new Date(Date.now() + (delayMs[form.startDelay] ?? 5 * 60 * 1000));
       }
 
+      if (Number.isNaN(scheduledStartTime.getTime())) {
+        throw new Error('Choose a valid opening time for this arena.');
+      }
+
       const res = await apiRequest("POST", "/api/tournaments", {
-        name: form.name,
-        maxPlayers: form.maxPlayers,
+        name: form.name.trim(),
+        maxPlayers: Number(form.maxPlayers),
         tournamentType: form.tournamentType,
-        startingBalance: form.startingBalance,
+        startingBalance: Number(form.startingBalance),
         duration: form.duration,
         scheduledStartTime: scheduledStartTime.toISOString(),
-        buyInAmount: form.buyInAmount,
+        buyInAmount: Number(form.buyInAmount),
         tradingRestriction: 'none',
         isPublic: form.isPublic,
         payoutStructure: form.payoutStructure,
       });
-      return res.json();
+      const response = await res.json();
+      const tournament = response?.data ?? response;
+
+      if (!tournament || !Number.isFinite(Number(tournament.id)) || !tournament.name || !tournament.code) {
+        throw new Error('The arena could not be opened. Please try again.');
+      }
+
+      return tournament;
     },
-    onSuccess: (response) => {
+    onSuccess: (tournament) => {
       queryClient.invalidateQueries({ queryKey: ["/api/tournaments/public"] });
-      onClose();
-      setCreatedTournament({ id: response.data.id, name: response.data.name, code: response.data.code });
+      queryClient.invalidateQueries({ queryKey: ["/api/tournaments"] });
+      setCreatedTournament({ id: Number(tournament.id), name: String(tournament.name), code: String(tournament.code) });
       setSuccessDialogOpen(true);
+      onClose();
       setForm({ name: "", maxPlayers: 10, tournamentType: "stocks", startingBalance: 10000, duration: "1 week", startDelay: "5 minutes", isPublic: true, buyInAmount: 0, payoutStructure: "winner_take_all", customStartTime: "" });
       setBuyInRaw("0");
     },
     onError: (error: Error) => {
-      toast({ title: "Couldn’t open the arena", description: error.message, variant: "destructive" });
+      toast({ title: "Couldn’t open the arena", description: error.message || "Please check the details and try again.", variant: "destructive" });
     },
   });
 
@@ -172,12 +184,6 @@ export function TournamentCreationDialog({ isOpen, onClose }: TournamentCreation
               Open arena
             </DialogTitle>
           </DialogHeader>
-
-          <div className="arena-dialog-brief" aria-label="Arena setup guide">
-            <span><TrendingUp size={14} /> Pick a market</span>
-            <span><Shield size={14} /> Set the rules</span>
-            <span><Trophy size={14} /> Open the board</span>
-          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '4px' }}>
 
