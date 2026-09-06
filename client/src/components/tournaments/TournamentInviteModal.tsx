@@ -144,7 +144,12 @@ export default function TournamentInviteModal({
                         onCheckedChange={() => handleToggleFriend(friend.id)}
                       />
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={friend.profilePicture || "/assets/tradebattle-default-broker-v2.png"} />
+                        <AvatarImage
+                          src={friend.profilePicture || "/assets/tradebattle-default-broker-v2.png"}
+                          onError={(event) => {
+                            event.currentTarget.src = "/assets/tradebattle-default-broker-v2.png";
+                          }}
+                        />
                         <AvatarFallback style={{ background: '#0E2040', color: '#C9D1E2' }}>
                           {friend.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
@@ -171,7 +176,12 @@ export default function TournamentInviteModal({
                       }}
                     >
                       <Avatar className="h-10 w-10">
-                        <AvatarImage src={friend.profilePicture || "/assets/tradebattle-default-broker-v2.png"} />
+                        <AvatarImage
+                          src={friend.profilePicture || "/assets/tradebattle-default-broker-v2.png"}
+                          onError={(event) => {
+                            event.currentTarget.src = "/assets/tradebattle-default-broker-v2.png";
+                          }}
+                        />
                         <AvatarFallback style={{ background: '#0E2040', color: '#C9D1E2' }}>
                           {friend.username.charAt(0).toUpperCase()}
                         </AvatarFallback>
