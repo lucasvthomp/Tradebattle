@@ -586,7 +586,7 @@ export default function Profile() {
                     style={{ border: '2px solid #0E2040' }}
                   >
                     <img
-                      src={user.profilePicture || "/assets/tradebattle-default-broker.png"}
+                      src={user.profilePicture || "/assets/tradebattle-default-broker-v2.png"}
                       alt="Profile"
                       className="h-full w-full object-cover"
                       style={{ borderRadius: '0.75rem' }}
