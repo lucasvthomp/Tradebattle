@@ -104,7 +104,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             horzLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0B1B2A" },
           },
           rightPriceScale: { borderColor: "rgba(0,163,255,0.12)", textColor: "#7B8FA8" },
-          timeScale: { borderColor: "rgba(0,163,255,0.12)", timeVisible: false, secondsVisible: false },
+          timeScale: { borderColor: "rgba(0,163,255,0.12)", timeVisible: true, secondsVisible: false },
           width: w,
           height: h,
         });
@@ -341,7 +341,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           onClick={() => setMode("candle")}
           style={{
             display: "flex", alignItems: "center", gap: "5px",
-            padding: "4px 11px", borderRadius: "10px",
+            padding: "0 10px", minWidth: "78px", height: "30px", borderRadius: "8px",
             fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
             cursor: "pointer", transition: "all 0.15s",
             border: mode === "candle" ? "1px solid rgba(0,163,255,0.4)" : "1px solid transparent",
@@ -359,7 +359,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           onClick={() => setMode("portfolio")}
           style={{
             display: "flex", alignItems: "center", gap: "5px",
-            padding: "4px 11px", borderRadius: "10px",
+            padding: "0 10px", minWidth: "78px", height: "30px", borderRadius: "8px",
             fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
             cursor: "pointer", transition: "all 0.15s",
             border: mode === "portfolio" ? "1px solid rgba(0,255,135,0.4)" : "1px solid transparent",
@@ -504,7 +504,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
                         setIntervalKey(def);
                       }}
                       style={{
-                        padding: "4px 10px", borderRadius: "10px",
+                        padding: "0 10px", minWidth: "42px", height: "30px", borderRadius: "8px",
                         fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
                         cursor: "pointer", transition: "all 0.15s",
                         border: active ? "1px solid rgba(0,163,255,0.4)" : "1px solid transparent",
@@ -533,7 +533,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
                       key={key}
                       onClick={() => setIntervalKey(key)}
                       style={{
-                        padding: "4px 9px", borderRadius: "10px",
+                        padding: "0 10px", minWidth: "42px", height: "30px", borderRadius: "8px",
                         fontSize: "11px", fontWeight: 700, letterSpacing: "0.02em",
                         cursor: "pointer", transition: "all 0.15s",
                         border: active ? "1px solid rgba(227,179,65,0.45)" : "1px solid transparent",

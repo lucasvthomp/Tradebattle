@@ -334,7 +334,12 @@
   border-radius: 12px;
   color: inherit;
   text-decoration: none;
-  background: #0d2638;
+  background-color: #0d2638;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(103, 231, 191, 0.08) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 82% 74%, rgba(118, 169, 198, 0.08) 0 1px, transparent 1.5px),
+    linear-gradient(135deg, rgba(255,255,255,0.025), transparent 42%);
+  background-size: 28px 28px, 34px 34px, auto;
   transition: transform 180ms ease, border-color 180ms ease, filter 180ms ease;
 }
 
@@ -612,6 +617,9 @@
 
 .mode-card {
   padding-right: 150px;
+  background-image:
+    linear-gradient(135deg, rgba(255,255,255,0.03), transparent 40%),
+    radial-gradient(circle at 84% 18%, rgba(103, 231, 191, 0.1), transparent 28%);
 }
 
 .mode-art-image {

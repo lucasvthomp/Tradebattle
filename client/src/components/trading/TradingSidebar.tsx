@@ -278,9 +278,6 @@ export function TradingSidebar({
           >
             {marketModeLabel}
           </span>
-          <span className="text-[10px]" style={{ color: "#4B6080" }}>
-            One market per arena
-          </span>
         </div>
 
         {/* Big balance */}
@@ -467,7 +464,7 @@ export function TradingSidebar({
           <button
             key={id}
             onClick={() => setActiveView(id)}
-            className="flex-1 py-1.5 text-[11px] font-bold rounded-lg text-center transition-all"
+            className="flex-1 h-8 py-0 text-[11px] font-bold rounded-lg text-center transition-all"
             style={{
               color: activeView === id ? "#C9D1E2" : "#4B5975",
               background: activeView === id ? "rgba(0,163,255,0.12)" : "transparent",
@@ -479,7 +476,7 @@ export function TradingSidebar({
         ))}
         <button
           onClick={() => { setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
-          className="flex-1 py-1.5 text-[11px] font-black rounded-lg text-center transition-all"
+          className="flex-1 h-8 py-0 text-[11px] font-black rounded-lg text-center transition-all"
           style={{
             color: activeView === "trade" ? "#001a0d" : "#28a05a",
             background: activeView === "trade"

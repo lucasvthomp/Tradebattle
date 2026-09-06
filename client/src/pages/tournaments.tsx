@@ -22,7 +22,8 @@ import {
   Timer,
   Lock,
   Crown,
-  Play
+  Play,
+  Shield
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -394,29 +395,9 @@ export default function TournamentsPage() {
               }}
             >
               <img className="tournament-hero-art tournament-header-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
-               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ position: 'relative', zIndex: 1 }}>
-                <div>
-                  <div className="flex items-center mb-1" style={{ gap: 'clamp(10px, 1.2vw, 18px)' }}>
-                    {/* Trophy icon in glowing container */}
-                    <div style={{
-                      width: 'clamp(40px, 4vw, 60px)',
-                      height: 'clamp(40px, 4vw, 60px)',
-                      borderRadius: '14px',
-                      background: 'rgba(0,163,255,0.1)',
-                      border: '1px solid rgba(0,163,255,0.25)',
-                      boxShadow: '0 0 20px rgba(0,163,255,0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}>
-                      <Trophy style={{
-                        width: 'clamp(20px, 2vw, 30px)',
-                        height: 'clamp(20px, 2vw, 30px)',
-                        color: '#67E7BF',
-                        filter: 'drop-shadow(0 0 8px rgba(0,163,255,0.6))',
-                      }} />
-                    </div>
+               <div className="flex flex-col items-center justify-center gap-5 text-center" style={{ position: 'relative', zIndex: 1 }}>
+                <div className="flex flex-col items-center">
+                  <div className="mb-1">
                     <h1
                       style={{
                         fontSize: 'clamp(2rem, 5vw, 4rem)',
@@ -436,13 +417,13 @@ export default function TournamentsPage() {
                     fontSize: '0.7rem',
                     letterSpacing: '0.12em',
                     textTransform: 'uppercase',
-                    marginLeft: 'calc(clamp(40px,4vw,60px) + clamp(10px,1.2vw,18px))',
+                    margin: 0,
                   }}>
                     Compete &amp; Win
                   </p>
                 </div>
 
-                <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 12px)' }}>
+                <div className="flex flex-wrap items-center justify-center" style={{ gap: 'clamp(8px, 1vw, 12px)' }}>
                   {/* Join Private Button */}
                   <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
                     <DialogTrigger asChild>

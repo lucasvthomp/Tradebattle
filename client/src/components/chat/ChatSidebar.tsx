@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Send, MessageSquare, X, DollarSign, UserCircle } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -131,24 +132,20 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
   onMentionClick: (userId: string) => void;
   shiftHeld: boolean;
 }) {
+  const messageAccent = isCurrentUser ? '#67E7BF' : '#7890A4';
+
   return (
     <div className="flex space-x-2">
       {/* Avatar - self-start so it doesn't stretch */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="cursor-pointer self-start">
-            <Avatar className="w-9 h-9">
-              <AvatarImage
-                src={group.profilePicture || "/assets/tradebattle-default-player.png"}
-                className="object-cover"
-                onError={(event) => {
-                  event.currentTarget.src = "/assets/tradebattle-default-player.png";
-                }}
-              />
-              <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
-                <UserCircle className="w-5 h-5" style={{ color: '#4B5563' }} />
-              </AvatarFallback>
-            </Avatar>
+            <AvatarWithStatus
+              src={group.profilePicture}
+              fallback={group.username}
+              className="w-9 h-9"
+              statusSize="sm"
+            />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040' }}>
@@ -210,7 +207,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                 </div>
               )}
               <div className="group/msg flex items-center gap-1.5">
-                <div className="backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#0B1B2A', border: '1px solid #0E2040' }}>
+                <div className="backdrop-blur-sm rounded-lg px-3 py-2 transition-colors" style={{ backgroundColor: isCurrentUser ? 'rgba(23,56,57,0.8)' : '#0B1B2A', border: `1px solid ${isCurrentUser ? 'rgba(103,231,191,.24)' : 'rgba(120,144,164,.18)'}`, borderLeft: `3px solid ${messageAccent}` }}>
                   <p className="text-sm whitespace-pre-wrap leading-normal" style={{
                     color: '#F1F5F9',
                     wordBreak: 'break-word',
@@ -271,7 +268,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       const response = await apiRequest("GET", '/api/chat/global');
       return response.json();
     },
-    refetchInterval: 3000,
+    refetchInterval: 5000,
     enabled: isOpen && !!user,
     staleTime: 1000,
     gcTime: 5000,

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Mail, Clock, Search, MessageSquare, Zap } from "lucide-react";
+import { Mail, Clock, Search, Wrench, Zap } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -127,19 +127,18 @@ export default function Support() {
     <div className="arena-page min-h-[calc(100dvh-4rem)]">
       {/* Header */}
       <div style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", backgroundColor: "rgba(13,17,23,0.6)" }}>
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-9">
+        <div className="max-w-6xl mx-auto px-4 md:px-8 py-10 md:py-12">
           <div className="flex items-center gap-3 mb-2">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "rgba(103,231,191,.12)" }}>
-              <MessageSquare className="w-5 h-5" style={{ color: "#67E7BF" }} />
+              <Wrench className="w-5 h-5" style={{ color: "#67E7BF" }} />
             </div>
             <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Help HQ</h1>
-            <img className="support-header-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
           </div>
           <p className="text-sm" style={{ color: "#4B5563" }}>Quick answers for the arena — or send us a message when you need a hand.</p>
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-4 md:px-6 py-7 md:py-10">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12">
         {/* Search */}
         <div className="mb-7">
           <div className="relative">

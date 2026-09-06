@@ -6,6 +6,7 @@ import { useState } from "react";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 import { BalanceManagementModal } from "@/components/balance/BalanceManagementModal";
 import { MarketStatus } from "@/components/market-status";
+import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,7 +97,13 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 flex items-center space-x-2 px-3 border border-border/30 hover:bg-muted/50 transition-colors">
-                      <User className="w-4 h-4" />
+                      <AvatarWithStatus
+                        src={user?.profilePicture}
+                        fallback={user?.username || "User"}
+                        lastActivity={user?.lastActivity}
+                        statusSize="sm"
+                        className="w-7 h-7"
+                      />
                       <span className="text-sm font-medium">
                         {user?.username || "User"}
                       </span>
@@ -130,14 +137,12 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               <>
                 <Link href="/login">
                   <Button variant="ghost" className="px-4 py-2 hover:bg-muted/50">
-                    <LogIn className="w-4 h-4 mr-2" />
                     Sign in
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button className="px-4 py-2 transition-transform hover:scale-105" style={{ background: '#62E4BD', color: '#06151c', boxShadow: '0 8px 22px rgba(98, 228, 189, 0.18)' }}>
-                    <UserPlus className="w-4 h-4 mr-2" />
-                    Create profile
+                    Sign up
                   </Button>
                 </Link>
               </>
