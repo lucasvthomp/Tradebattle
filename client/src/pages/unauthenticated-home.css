@@ -779,3 +779,42 @@
   .arena-section { padding-top: 38px; padding-bottom: 38px; }
   .arena-how { padding-top: 34px; padding-bottom: 34px; }
 }
+
+/* Public lobby direction: campaign-led, but still easy to scan and enter. */
+.arena-page {
+  background: #08111b;
+}
+.arena-hero {
+  min-height: auto;
+  padding-top: 38px;
+  padding-bottom: 34px;
+  background:
+    radial-gradient(circle at 78% 8%, rgba(103, 231, 191, 0.09), transparent 24rem),
+    #08111b;
+}
+.arena-status {
+  margin-bottom: 24px;
+  font-size: 10px;
+}
+.arena-copy h1 {
+  font-size: clamp(43px, 5vw, 68px);
+}
+.arena-lede {
+  margin: 20px 0 25px;
+  font-size: 16px;
+}
+.match-card,
+.mode-card,
+.arena-promo-card,
+.about-pillar-card {
+  border-radius: 8px;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.18);
+}
+.arena-promo-rail {
+  background: #0a1622;
+  border-top: 1px solid rgba(145, 164, 180, 0.12);
+}
+.arena-promo-heading h2,
+.arena-section-heading h2 {
+  letter-spacing: -0.045em;
+}

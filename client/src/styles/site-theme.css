@@ -318,6 +318,117 @@
   color: var(--site-text) !important;
 }
 
+/* Shared platform pass: compact game-shell surfaces instead of floating AI
+   panels. The content and interactions stay the same; hierarchy comes from
+   rails, active states, and consistent spacing. */
+.tradebattle-site {
+  --site-bg: #08111b;
+  --site-panel: #0d1b28;
+  --site-panel-raised: #112536;
+  --site-edge: rgba(145, 164, 180, 0.17);
+  --site-text: #edf4f7;
+  --site-muted: #91a6b7;
+  --site-mint: #67e7bf;
+}
+
+.tradebattle-site .tradebattle-route::before {
+  inset: 4rem 0 0;
+  background-image:
+    radial-gradient(circle at 18% 12%, rgba(103, 231, 191, 0.07), transparent 22rem),
+    radial-gradient(circle at 86% 4%, rgba(118, 169, 198, 0.08), transparent 25rem),
+    radial-gradient(rgba(145, 164, 180, 0.11) 0.7px, transparent 0.7px);
+  background-size: auto, auto, 24px 24px;
+  opacity: 0.55;
+}
+
+.tradebattle-header {
+  height: 60px;
+  background: #0a1622 !important;
+  border-bottom: 1px solid rgba(145, 164, 180, 0.16) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
+}
+
+.tradebattle-header .container,
+.tradebattle-header nav {
+  height: 100%;
+}
+
+.tradebattle-header-brand {
+  font-size: 0.95rem !important;
+  letter-spacing: 0.16em !important;
+}
+
+.tradebattle-sidebar {
+  top: 64px !important;
+  height: calc(100dvh - 64px) !important;
+  background: #0a1622 !important;
+  border-right: 1px solid rgba(145, 164, 180, 0.15) !important;
+  box-shadow: 8px 0 28px rgba(0, 0, 0, 0.16) !important;
+}
+
+.tradebattle-sidebar a,
+.tradebattle-sidebar button {
+  border-radius: 7px !important;
+}
+
+.tradebattle-sidebar a[style*="height: 44px"] {
+  height: 40px !important;
+  font-size: 0.9rem;
+}
+
+.tradebattle-sidebar a[style*="height: 44px"]:hover {
+  background: rgba(145, 164, 180, 0.08) !important;
+}
+
+.tradebattle-sidebar .sidebar-active-indicator {
+  position: relative;
+  background: rgba(103, 231, 191, 0.12) !important;
+  color: #eaf8f3 !important;
+}
+
+.tradebattle-sidebar .sidebar-active-indicator::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--site-mint);
+}
+
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .arena-page {
+  color: var(--site-text);
+}
+
+.tradebattle-site .arena-page-shell > h1,
+.tradebattle-site .arena-page-shell h1 {
+  letter-spacing: -0.045em;
+}
+
+.tradebattle-site .card,
+.tradebattle-site [class*="rounded-xl"],
+.tradebattle-site [class*="rounded-2xl"] {
+  border-radius: 9px;
+}
+
+.tradebattle-site button:not([aria-label="Close"]),
+.tradebattle-site a[class*="rounded-full"] {
+  border-radius: 7px;
+}
+
+.tradebattle-footer {
+  background: #0a1622 !important;
+  border-top: 1px solid rgba(145, 164, 180, 0.15) !important;
+}
+
+@media (max-width: 900px) {
+  .tradebattle-sidebar {
+    display: none !important;
+  }
+}
+
 .tradebattle-site .tradebattle-route > .bg-white [class*="text-gray-"],
 .tradebattle-site .tradebattle-route > .bg-gray-50 [class*="text-gray-"],
 .tradebattle-site .tradebattle-route > .bg-gray-100 [class*="text-gray-"] {

@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useChatContext } from "@/contexts/ChatContext";
 import Header from "./header";
@@ -15,11 +15,12 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const { user } = useAuth();
   const { chatOpen, toggleChat } = useChatContext();
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
 
   return (
     <div className={`min-h-dvh flex tradebattle-site ${user ? 'arena-app' : ''}`} style={{ backgroundColor: 'transparent' }}>
       {/* Simplified Sidebar - Only for authenticated users */}
-      {user && <SimplifiedSidebar />}
+      {user && <SimplifiedSidebar expanded={sidebarExpanded} onExpandedChange={setSidebarExpanded} />}
 
       {/* Main Content Wrapper */}
       <div className="flex-1 flex flex-col min-w-0">
@@ -30,10 +31,8 @@ export default function Layout({ children }: LayoutProps) {
         <div className="flex flex-1 pt-16 min-h-0">
           {/* Main Content with Page Transitions */}
           <main className={`flex-1 min-h-[calc(100dvh-4rem)] transition-all duration-300 ${user ? 'px-2 md:px-0' : 'px-0'} overflow-x-hidden ${
-            user ? 'md:ml-16' : ''
-          } ${
             user && chatOpen ? 'md:mr-80' : ''
-          }`}>
+          } ${user ? (sidebarExpanded ? 'md:ml-[224px]' : 'md:ml-[68px]') : ''}`}>
             <div className="tradebattle-route">
               <PageTransition>
                 {children}

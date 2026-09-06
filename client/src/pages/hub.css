@@ -1084,3 +1084,64 @@
 @media (prefers-reduced-motion: reduce) {
   .hub-overview-bar, .hub-feature-banner { animation: none; }
 }
+
+/* Game-lobby density pass: sharper rails, calmer surfaces, less dashboard chrome. */
+.hub-screen {
+  padding: 24px 20px 48px;
+  background:
+    radial-gradient(circle at 82% 0%, rgba(103, 231, 191, 0.08), transparent 26rem),
+    #08111b;
+}
+.hub-topbar {
+  align-items: center;
+  padding-bottom: 18px;
+}
+.hub-kicker {
+  margin-bottom: 7px;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  font-weight: 900;
+}
+.hub-title {
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+  letter-spacing: -0.055em;
+}
+.hub-overview-bar,
+.hub-panel,
+.hub-feature-banner {
+  border-radius: 9px;
+}
+.hub-overview-bar {
+  margin: 12px 0 10px;
+  padding: 6px;
+  background: #0d1b28;
+  border-color: rgba(145, 164, 180, 0.17);
+}
+.hub-overview-item {
+  padding: 9px 12px;
+}
+.hub-feature-banner {
+  min-height: 148px;
+  border: 1px solid rgba(145, 164, 180, 0.17);
+  background:
+    linear-gradient(90deg, rgba(8, 17, 27, 0.97), rgba(8, 17, 27, 0.72)),
+    url("/assets/tradebattle-trophy-wallpaper.jpg") center / cover,
+    #0d1b28;
+}
+.hub-main-grid {
+  gap: 10px;
+  margin-top: 10px;
+}
+.hub-chart {
+  height: 184px;
+  border-radius: 8px;
+}
+.hub-launch-list,
+.hub-live-list {
+  padding-top: 14px;
+}
+.hub-launch-card,
+.hub-live-row,
+.hub-empty-state {
+  border-radius: 8px;
+}

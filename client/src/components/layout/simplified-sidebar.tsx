@@ -18,11 +18,15 @@ import {
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
 
-export function SimplifiedSidebar() {
+interface SimplifiedSidebarProps {
+  expanded: boolean;
+  onExpandedChange: (expanded: boolean) => void;
+}
+
+export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSidebarProps) {
   const { user } = useAuth();
   const { t } = useUserPreferences();
   const [location] = useLocation();
-  const [expanded, setExpanded] = useState(false);
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
 
   const navItems = [
@@ -99,7 +103,7 @@ export function SimplifiedSidebar() {
         data-tour="sidebar"
         className={`tradebattle-sidebar ${expanded ? 'sidebar-expanded' : 'sidebar-collapsed'} hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40`}
         style={{
-          width: expanded ? '256px' : '64px',
+          width: expanded ? '224px' : '68px',
           backgroundColor: '#071522',
           borderColor: 'rgba(103, 231, 191, 0.13)',
           transition: 'width 300ms ease',
@@ -109,7 +113,7 @@ export function SimplifiedSidebar() {
         {/* Menu Toggle Button at top */}
         <div className="flex-shrink-0 p-2 border-b" style={{ borderColor: 'rgba(103, 231, 191, 0.13)' }}>
           <button
-            onClick={() => setExpanded(!expanded)}
+            onClick={() => onExpandedChange(!expanded)}
             className="flex items-center hover:bg-[#1A3A68] rounded-lg transition-colors duration-200"
             style={{
               height: '44px',
@@ -147,6 +151,7 @@ export function SimplifiedSidebar() {
           }}
         >
           {/* Navigation Items */}
+          {expanded && <div className="px-3 pt-3 pb-1 text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: '#6E8498' }}>Play</div>}
           <nav className="p-2 space-y-1">
             {navItems.map(renderNavItem)}
           </nav>
@@ -158,9 +163,12 @@ export function SimplifiedSidebar() {
 
           {/* User Actions */}
           {user && (
-            <nav className="p-2 space-y-1">
-              {userItems.map(renderNavItem)}
-            </nav>
+            <>
+              {expanded && <div className="px-3 pt-1 pb-1 text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: '#6E8498' }}>Account</div>}
+              <nav className="p-2 space-y-1">
+                {userItems.map(renderNavItem)}
+              </nav>
+            </>
           )}
         </div>
 
