@@ -2914,3 +2914,259 @@
   background: #11162f !important;
   border-top-color: #2b315e !important;
 }
+
+/* Universal purple + gold palette: keep every route in the same game world. */
+.tradebattle-site {
+  --site-bg: #120d2b !important;
+  --site-panel: #1d1540 !important;
+  --site-panel-raised: #30205e !important;
+  --site-edge: rgba(246, 196, 83, 0.24) !important;
+  --site-text: #f8f5ff !important;
+  --site-muted: #b9b0d7 !important;
+  --site-mint: #f6c453 !important;
+  --site-yellow: #ffd166 !important;
+  --site-purple: #b58cff !important;
+  background: var(--site-bg) !important;
+  color: var(--site-text) !important;
+}
+
+.tradebattle-site .tradebattle-route,
+.tradebattle-site .arena-page,
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .hub-screen,
+.tradebattle-site .trading-page,
+.tradebattle-site .auth-screen {
+  background: var(--site-bg) !important;
+  color: var(--site-text) !important;
+}
+
+.tradebattle-site .tradebattle-route::before {
+  background-image:
+    radial-gradient(circle at 8% 8%, rgba(181, 140, 255, 0.18), transparent 20rem),
+    radial-gradient(circle at 92% 12%, rgba(246, 196, 83, 0.12), transparent 23rem),
+    radial-gradient(rgba(255, 255, 255, 0.12) 0.8px, transparent 0.8px) !important;
+  background-size: auto, auto, 28px 28px !important;
+  opacity: 0.42 !important;
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: #171039 !important;
+  border-color: #3a296d !important;
+}
+
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator {
+  background: #f6c453 !important;
+  color: #24143f !important;
+}
+
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
+  background: #fff0b0 !important;
+}
+
+.tradebattle-site .card,
+.tradebattle-site [data-slot="card"],
+.tradebattle-site .hub-panel,
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .hub-feature-banner,
+.tradebattle-site .blitz-card,
+.tradebattle-site .people-card,
+.tradebattle-site .people-toolbar,
+.tradebattle-site .people-empty-state,
+.tradebattle-site .tournament-card-surface,
+.tradebattle-site .tournament-brief-card,
+.tradebattle-site .tournament-lobby-header-combined,
+.tradebattle-site .shop-spotlight,
+.tradebattle-site .arena-promo-card,
+.tradebattle-site .mode-card,
+.tradebattle-site .how-step,
+.tradebattle-site .arena-final,
+.tradebattle-site .match-card,
+.tradebattle-site .about-score-card,
+.tradebattle-site .about-pillar-card,
+.tradebattle-site .auth-panel,
+.tradebattle-site .auth-simple-card,
+.tradebattle-site .auth-twofa-card {
+  background: var(--site-panel) !important;
+  border-color: var(--site-edge) !important;
+  color: var(--site-text) !important;
+}
+
+.tradebattle-site .hub-feature-banner,
+.tradebattle-site .tournament-lobby-header-combined,
+.tradebattle-site .shop-spotlight,
+.tradebattle-site .arena-final {
+  background:
+    radial-gradient(circle at 86% 32%, rgba(246, 196, 83, 0.18), transparent 28%),
+    linear-gradient(135deg, #28195b 0%, #1d1540 72%) !important;
+}
+
+.tradebattle-site input,
+.tradebattle-site select,
+.tradebattle-site textarea,
+.tradebattle-site [role="combobox"],
+.tradebattle-site [data-slot="input"] {
+  background: #160f35 !important;
+  border-color: var(--site-edge) !important;
+  color: var(--site-text) !important;
+}
+
+.tradebattle-site input::placeholder,
+.tradebattle-site textarea::placeholder {
+  color: #988eb7 !important;
+}
+
+.tradebattle-site h1,
+.tradebattle-site h2,
+.tradebattle-site h3,
+.tradebattle-site h4,
+.tradebattle-site strong,
+.tradebattle-site label {
+  color: var(--site-text);
+}
+
+.tradebattle-site .text-black,
+.tradebattle-site [class*="text-black"],
+.tradebattle-site [style*="color: #000"],
+.tradebattle-site [style*="color:#000"],
+.tradebattle-site [style*="color: rgb(0, 0, 0)"] {
+  color: var(--site-text) !important;
+}
+
+.tradebattle-site .text-muted-foreground,
+.tradebattle-site [class*="text-gray-"],
+.tradebattle-site [class*="text-slate-"] {
+  color: var(--site-muted) !important;
+}
+
+/* Gold is the one action color everywhere: CTAs, active states, and live marks. */
+.tradebattle-site .arena-primary-link,
+.tradebattle-site .blitz-primary-link,
+.tradebattle-site .blitz-primary-button,
+.tradebattle-site .hub-feature-action,
+.tradebattle-site .mode-link,
+.tradebattle-site .auth-primary-button,
+.tradebattle-site .shop-page button[type="submit"],
+.tradebattle-site [class*="bg-emerald"],
+.tradebattle-site [class*="bg-green-600"],
+.tradebattle-site [class*="bg-teal"] {
+  background: #f6c453 !important;
+  border-color: #f6c453 !important;
+  color: #24143f !important;
+  box-shadow: 0 8px 22px rgba(246, 196, 83, 0.18) !important;
+}
+
+.tradebattle-site .arena-primary-link:hover,
+.tradebattle-site .blitz-primary-link:hover,
+.tradebattle-site .blitz-primary-button:hover:not(:disabled),
+.tradebattle-site .hub-feature-action:hover,
+.tradebattle-site .mode-link:hover,
+.tradebattle-site .auth-primary-button:hover:not(:disabled) {
+  background: #ffd976 !important;
+  border-color: #ffd976 !important;
+}
+
+.tradebattle-site .arena-eyebrow,
+.tradebattle-site .arena-status-dot,
+.tradebattle-site .arena-section-heading,
+.tradebattle-site .hub-kicker,
+.tradebattle-site .hub-feature-kicker,
+.tradebattle-site .hub-live-dot,
+.tradebattle-site .blitz-kicker,
+.tradebattle-site .blitz-live-dot,
+.tradebattle-site .tournament-hero-kicker,
+.tradebattle-site .tournament-live-dot,
+.tradebattle-site .people-kicker,
+.tradebattle-site .auth-eyebrow,
+.tradebattle-site .auth-kicker,
+.tradebattle-site .shop-spotlight-copy > p,
+.tradebattle-site .positive {
+  color: #f6c453 !important;
+}
+
+.tradebattle-site .arena-status-dot,
+.tradebattle-site .hub-live-dot,
+.tradebattle-site .blitz-live-dot,
+.tradebattle-site .tournament-live-dot {
+  background: #f6c453 !important;
+  box-shadow: 0 0 0 4px rgba(246, 196, 83, 0.12), 0 0 14px rgba(246, 196, 83, 0.58) !important;
+}
+
+.tradebattle-site .hub-chart-line,
+.tradebattle-site .hub-chart-glow,
+.tradebattle-site .market-chart-line,
+.tradebattle-site .market-chart-highlight,
+.tradebattle-site .auth-market-line {
+  stroke: #f6c453 !important;
+}
+
+.tradebattle-site .hub-chart-dot,
+.tradebattle-site .market-chart-node,
+.tradebattle-site .auth-market-dot {
+  fill: #f6c453 !important;
+  stroke: rgba(246, 196, 83, 0.35) !important;
+}
+
+.tradebattle-site .hub-chart-area,
+.tradebattle-site .market-chart-area,
+.tradebattle-site .auth-market-area {
+  fill: rgba(246, 196, 83, 0.16) !important;
+}
+
+.tradebattle-site [style*="#67E7BF"],
+.tradebattle-site [style*="#67e7bf"],
+.tradebattle-site [style*="#62E4BD"],
+.tradebattle-site [style*="#62e4bd"],
+.tradebattle-site [style*="rgb(103, 231, 191)"] {
+  color: #f6c453 !important;
+  border-color: rgba(246, 196, 83, 0.34) !important;
+}
+
+.tradebattle-site [style*="rgba(103, 231, 191"],
+.tradebattle-site [style*="rgba(98, 228, 189"] {
+  background-color: rgba(246, 196, 83, 0.12) !important;
+  border-color: rgba(246, 196, 83, 0.34) !important;
+}
+
+.tradebattle-site [style*="#0C1A2E"],
+.tradebattle-site [style*="#0c1a2e"],
+.tradebattle-site [style*="#0B1B2A"],
+.tradebattle-site [style*="#0b1b2a"] {
+  background-color: var(--site-panel) !important;
+}
+
+/* Auth screens use their own variables, so bring them into the same palette. */
+.tradebattle-site .auth-screen {
+  --auth-bg: #120d2b;
+  --auth-panel: #1d1540;
+  --auth-panel-raised: #30205e;
+  --auth-line: rgba(246, 196, 83, 0.24);
+  --auth-muted: #b9b0d7;
+  --auth-text: #f8f5ff;
+  --auth-blue: #b58cff;
+  --auth-cyan: #f6c453;
+}
+
+.tradebattle-site .auth-brand-mark,
+.tradebattle-site .auth-twofa-icon {
+  background: linear-gradient(145deg, #f6c453, #b58cff) !important;
+  color: #24143f !important;
+}
+
+.tradebattle-site [role="tablist"],
+.tradebattle-site [data-radix-select-content],
+.tradebattle-site [data-radix-dropdown-menu-content],
+.tradebattle-site [role="listbox"],
+.tradebattle-site [role="menu"] {
+  background: #1d1540 !important;
+  border-color: var(--site-edge) !important;
+  color: var(--site-text) !important;
+}
+
+.tradebattle-site [role="tab"][data-state="active"],
+.tradebattle-site [role="option"][data-state="checked"],
+.tradebattle-site [role="menuitem"][data-highlighted] {
+  background: rgba(246, 196, 83, 0.16) !important;
+  color: #f6c453 !important;
+}
