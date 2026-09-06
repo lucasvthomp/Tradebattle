@@ -680,8 +680,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(payment);
     } catch (error: any) {
-      console.error("Create payment error:", error);
-      res.status(500).json({ error: "Unable to create payment" });
+      const providerMessage = error instanceof Error ? error.message.replace(/\\s+/g, ' ').trim() : '';
+      const safeMessage = providerMessage && !/(api.?key|secret|authorization|token)/i.test(providerMessage)
+        ? `Payment provider: ${providerMessage}`
+        : 'Payment provider rejected the request. Please try again.';
+      console.error("Create payment error:", providerMessage || error);
+      res.status(502).json({ error: safeMessage });
     }
   });
 
