@@ -706,6 +706,10 @@ router.post('/tournaments/code/:code/join', requireAuth, asyncHandler(async (req
     throw new NotFoundError('Tournament not found');
   }
 
+  if (tournament.status !== 'waiting') {
+    throw new ValidationError('Tournament is no longer accepting players');
+  }
+
   if (tournament.currentPlayers >= tournament.maxPlayers) {
     throw new ValidationError('Tournament is full');
   }
