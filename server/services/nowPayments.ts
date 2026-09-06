@@ -44,16 +44,19 @@ export async function getMinimumAmount(currency: string) {
     );
     console.log(`[NOWPayments] Minimum for ${normalizedCurrency}:`, data);
 
+    const addRateBuffer = (value: number) =>
+      Math.max(Math.ceil(Math.max(value * 1.1, value + 0.25) * 100) / 100, 5);
+
     const minimumUsd = Number(data.min_amount);
     if (Number.isFinite(minimumUsd) && minimumUsd > 0) {
-      // Leave a small buffer for the exchange rate moving between this check
-      // and the subsequent payment creation request.
-      return Math.max(Math.ceil(minimumUsd * 1.02 * 100) / 100, 5);
+      // Leave room for exchange-rate movement and provider rounding between
+      // this check and the subsequent payment creation request.
+      return addRateBuffer(minimumUsd);
     }
 
     const fiatEquivalent = Number(data.fiat_equivalent);
     if (Number.isFinite(fiatEquivalent) && fiatEquivalent > 0) {
-      return Math.max(Math.ceil(fiatEquivalent * 1.02 * 100) / 100, 5);
+      return addRateBuffer(fiatEquivalent);
     }
 
     return 5;
