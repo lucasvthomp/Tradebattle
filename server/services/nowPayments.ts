@@ -38,30 +38,22 @@ export async function getCurrencies() {
 export async function getMinimumAmount(currency: string) {
   try {
     const normalizedCurrency = currency.toLowerCase().trim();
+    // With currency_from=usd, NOWPayments returns min_amount in USD.
     const data = await apiCall(
-      `/min-amount?currency_from=usd&currency_to=${encodeURIComponent(normalizedCurrency)}&fiat_equivalent=usd`
+      `/min-amount?currency_from=usd&currency_to=${encodeURIComponent(normalizedCurrency)}`
     );
     console.log(`[NOWPayments] Minimum for ${normalizedCurrency}:`, data);
 
-    // The API's min_amount is denominated in the source currency. Since the
-    // product collects USD, prefer the explicit USD equivalent and keep a
-    // small buffer for exchange-rate movement between this check and payment
-    // creation.
+    const minimumUsd = Number(data.min_amount);
+    if (Number.isFinite(minimumUsd) && minimumUsd > 0) {
+      // Leave a small buffer for the exchange rate moving between this check
+      // and the subsequent payment creation request.
+      return Math.max(Math.ceil(minimumUsd * 1.02 * 100) / 100, 5);
+    }
+
     const fiatEquivalent = Number(data.fiat_equivalent);
     if (Number.isFinite(fiatEquivalent) && fiatEquivalent > 0) {
       return Math.max(Math.ceil(fiatEquivalent * 1.02 * 100) / 100, 5);
-    }
-
-    // Fallback for accounts/API versions that omit fiat_equivalent.
-    const cryptoMinimum = Number(data.min_amount);
-    if (Number.isFinite(cryptoMinimum) && cryptoMinimum > 0) {
-      const estimate = await apiCall(
-        `/estimate?amount=${cryptoMinimum}&currency_from=${encodeURIComponent(normalizedCurrency)}&currency_to=usd`
-      );
-      const estimatedUsd = Number(estimate.estimated_amount);
-      if (Number.isFinite(estimatedUsd) && estimatedUsd > 0) {
-        return Math.max(Math.ceil(estimatedUsd * 1.02 * 100) / 100, 5);
-      }
     }
 
     return 5;
