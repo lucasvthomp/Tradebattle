@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatusIndicator, UserStatus, calculateUserStatus } from "@/components/ui/status-indicator";
-import { UserCircle } from "lucide-react";
 
 interface AvatarWithStatusProps {
   src?: string | null;
@@ -50,9 +49,9 @@ export function AvatarWithStatus({
       } : undefined}
     >
       <Avatar className="w-full h-full" style={{ borderRadius: borderRadius }}>
-        <AvatarImage src={src || "/assets/tradebattle-default-broker.png"} alt={alt} className="object-cover" />
+        <AvatarImage src={src || "/assets/tradebattle-default-broker-v2.png"} alt={alt} className="object-cover" />
         <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#0B1B2A' }}>
-          <UserCircle className="w-1/2 h-1/2" style={{ color: '#4B5563' }} />
+          <img src="/assets/tradebattle-default-broker-v2.png" alt="" className="w-full h-full object-cover" />
         </AvatarFallback>
       </Avatar>
 
