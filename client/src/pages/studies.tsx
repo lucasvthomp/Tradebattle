@@ -34,7 +34,7 @@ export default function Studies() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-3xl md:text-5xl font-bold text-black mb-6">Research Studies</h1>
+              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-6">Research Studies</h1>
               <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto">
                 In-depth analysis and case studies from our research team. Discover the qualitative insights that drive investment decisions.
               </p>
@@ -93,16 +93,16 @@ export default function Studies() {
                     <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-2">
                       <CardContent className="p-6">
                         <div className="flex items-center mb-4">
-                          <TrendingUp className="text-black mr-3 w-5 h-5" />
+                          <TrendingUp className="text-foreground mr-3 w-5 h-5" />
                           <span className="text-sm text-gray-500">{study.category}</span>
                         </div>
-                        <h3 className="text-xl font-bold text-black mb-3">{study.title}</h3>
+                        <h3 className="text-xl font-bold text-foreground mb-3">{study.title}</h3>
                         <p className="text-gray-600 mb-4 flex-1">{study.description}</p>
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-500">
                             {new Date(study.publishedAt!).toLocaleDateString()}
                           </span>
-                          <Button variant="ghost" size="sm" className="hover:text-black">
+                          <Button variant="ghost" size="sm" className="hover:text-foreground">
                             <ArrowRight className="w-4 h-4" />
                           </Button>
                         </div>
@@ -146,7 +146,7 @@ export default function Studies() {
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-2xl md:text-3xl font-bold text-black mb-4">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
                 Want to Access Premium Research?
               </h2>
               <p className="text-base md:text-xl text-gray-600 mb-8">
