@@ -3,12 +3,18 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
-import { Users, Search, Crown, ArrowUpRight, RefreshCw } from "lucide-react";
+import { Users, Search, Crown, RefreshCw } from "lucide-react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { UserProfileModal } from "@/components/profile/UserProfileModal";
 
 function initials(username?: string) {
   return (username || "player").slice(0, 2).toUpperCase();
+}
+
+function joinedYear(value?: string | null) {
+  if (!value) return "—";
+  const year = new Date(value).getFullYear();
+  return Number.isFinite(year) ? String(year) : "—";
 }
 
 export default function People() {
@@ -27,8 +33,9 @@ export default function People() {
   });
 
   const users = (allUsers as any)?.data || [];
+  const normalizedSearch = searchQuery.trim().toLowerCase();
   const visibleUsers = [...users]
-    .filter((person: any) => person.username?.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter((person: any) => person.username?.toLowerCase().includes(normalizedSearch))
     .sort((a: any, b: any) => {
       if (sortBy === "oldest") return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       if (sortBy === "trades") return (b.totalTrades || 0) - (a.totalTrades || 0);
@@ -41,13 +48,11 @@ export default function People() {
       <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-6 md:py-10">
         <header className="people-page-header">
           <div>
-            <p className="people-kicker">PLAYER DIRECTORY</p>
-            <h1 className="people-title">Players</h1>
-            <p className="people-subtitle">Find the people behind the next clean read.</p>
+            <p className="people-kicker">PLAYERS</p>
+            <h1 className="people-title">Find a player</h1>
           </div>
           <div className="people-header-note">
-            <span><Users size={15} /> {visibleUsers.length} in the field</span>
-            <span>Open a card for the full profile</span>
+            <span><Users size={15} /> {visibleUsers.length} {visibleUsers.length === 1 ? "player" : "players"}</span>
           </div>
         </header>
 
@@ -75,19 +80,19 @@ export default function People() {
         </section>
 
         {isLoading ? (
-          <div className="people-grid">
+          <div className="people-grid" aria-label="Loading players">
             {Array.from({ length: 6 }).map((_, index) => <div key={index} className="people-card people-card-skeleton animate-pulse" />)}
           </div>
         ) : error ? (
           <div className="people-empty-state">
             <Users className="mx-auto mb-3" size={28} style={{ color: "#ef8f9a" }} />
-            <p>The directory could not load.</p>
+            <p>The player list could not load.</p>
             <button onClick={() => queryClient.invalidateQueries({ queryKey: ["/api/users/public"] })}><RefreshCw size={14} /> Try again</button>
           </div>
         ) : visibleUsers.length === 0 ? (
           <div className="people-empty-state">
             <Search className="mx-auto mb-3" size={28} style={{ color: "#7890a4" }} />
-            <p>{t("noPeopleFound")}</p>
+            <p>{normalizedSearch ? "No players match that search." : t("noPeopleFound")}</p>
           </div>
         ) : (
           <div className="people-grid">
@@ -97,6 +102,7 @@ export default function People() {
                 type="button"
                 onClick={() => setSelectedUserId(String(person.id))}
                 className="people-card group"
+                aria-label={`View ${person.username || "player"}'s profile`}
               >
                 <div className="people-card-avatar">
                   <AvatarWithStatus
@@ -112,17 +118,15 @@ export default function People() {
                   <div className="people-card-heading">
                     <div className="flex min-w-0 items-center gap-2">
                       <span className="people-card-name truncate">{person.username}</span>
-                      {person.subscriptionTier === "administrator" && <Crown size={14} style={{ color: "#f2c76a" }} />}
+                      {person.subscriptionTier === "administrator" && <Crown size={14} style={{ color: "#f2c76a" }} aria-label="Administrator" />}
                     </div>
-                    <span className="people-card-role">PLAYER</span>
                   </div>
                   <div className="people-card-stats">
                     <div><span>Trades</span><strong>{person.totalTrades || 0}</strong></div>
                     <div><span>Wins</span><strong className="is-positive">{person.tournamentWins || 0}</strong></div>
-                    <div><span>Joined</span><strong>{person.createdAt ? new Date(person.createdAt).getFullYear() : "—"}</strong></div>
+                    <div><span>Joined</span><strong>{joinedYear(person.createdAt)}</strong></div>
                   </div>
                 </div>
-                <span className="people-card-open" aria-hidden="true"><ArrowUpRight size={16} /></span>
               </button>
             ))}
           </div>

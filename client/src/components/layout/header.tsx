@@ -131,7 +131,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 <Link href="/login">
                   <Button variant="ghost" className="px-4 py-2 hover:bg-muted/50">
                     <LogIn className="w-4 h-4 mr-2" />
-                    Enter arena
+                    Sign in
                   </Button>
                 </Link>
                 <Link href="/signup">
@@ -344,7 +344,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <LogIn className="w-5 h-5 mr-3" />
-                    <span className="text-base">Enter arena</span>
+                    <span className="text-base">Sign in</span>
                   </Button>
                 </Link>
                 <Link href="/signup">

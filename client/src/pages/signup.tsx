@@ -37,10 +37,10 @@ const countries = {
 };
 
 const steps = [
-  { icon: User, label: "Identity", subtitle: "Player card", title: "Claim your player card", description: "Choose the name the field will remember." },
-  { icon: Lock, label: "Defense", subtitle: "Secure entry", title: "Lock in your entry", description: "Set a passcode that keeps your seat yours." },
-  { icon: Globe, label: "Home base", subtitle: "Local settings", title: "Set your home base", description: "Tune the arena to your region and currency." },
-  { icon: Rocket, label: "Launch", subtitle: "Final check", title: "Ready for the opening bell", description: "Review your player card and take your seat." },
+  { icon: User, label: "Profile", subtitle: "Name", title: "Create your profile", description: "Choose a player name and email." },
+  { icon: Lock, label: "Passcode", subtitle: "Security", title: "Choose a passcode", description: "Use a passcode you can remember." },
+  { icon: Globe, label: "Location", subtitle: "Preferences", title: "Choose your location", description: "Set your language and display currency." },
+  { icon: Rocket, label: "Review", subtitle: "Finish", title: "Review your profile", description: "Check your details before creating your profile." },
 ];
 
 export default function Signup() {
@@ -179,17 +179,16 @@ export default function Signup() {
     <div className="auth-screen auth-signup-screen auth-simple">
       <div className="auth-simple-wrap">
         <div className="auth-simple-top">
-          <Link href="/login" className="auth-panel-link">Already a player? Sign in</Link>
+          <Link href="/login" className="auth-panel-link">Already have an account? Sign in</Link>
         </div>
 
         <section className="auth-simple-card">
           <div className="auth-simple-card-head">
             <div>
-              <div className="auth-eyebrow">Player setup</div>
+              <div className="auth-eyebrow">Create profile</div>
               <h1>{currentStep.title}</h1>
               <p>{currentStep.description}</p>
             </div>
-            <span className="auth-simple-counter">{String(step).padStart(2, "0")} / 04</span>
           </div>
 
           <div className="auth-simple-stepper" aria-label="Profile setup progress">
@@ -230,19 +229,19 @@ export default function Signup() {
                     </div>
                   </div>
                   {usernameStatus.available === false && usernameStatus.reason && <div className="signup-field-note error">{usernameStatus.reason}</div>}
-                  {username && username.length < 3 && <div className="signup-field-note error">Player name needs at least 3 characters.</div>}
-                  {usernameStatus.available === true && <div className="signup-field-note success">That player name is open.</div>}
+                  {username && username.length < 3 && <div className="signup-field-note error">Use at least 3 characters.</div>}
+                  {usernameStatus.available === true && <div className="signup-field-note success">Player name is available.</div>}
                 </div>
 
                 {!isWalletRegistration && (
                   <div className="auth-field">
                     <Label htmlFor="email">Contact email</Label>
-                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Where should we send updates?" className="auth-input" autoComplete="email" />
-                    <div className="signup-field-note">Used for account recovery and important arena updates.</div>
+                    <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Your email address" className="auth-input" autoComplete="email" />
+                    <div className="signup-field-note">Used for account recovery.</div>
                   </div>
                 )}
 
-                {isWalletRegistration && <div className="signup-wallet-card">Wallet seat connected · {walletAddress?.slice(0, 7)}...{walletAddress?.slice(-5)}</div>}
+                {isWalletRegistration && <div className="signup-wallet-card">Wallet connected · {walletAddress?.slice(0, 7)}...{walletAddress?.slice(-5)}</div>}
               </div>
             )}
 
@@ -260,7 +259,7 @@ export default function Signup() {
 
                 <div className="signup-strength">
                   <div className="signup-strength-bars"><span className={hasMinLength ? "met" : ""} /><span className={hasUppercase ? "met" : ""} /><span className={hasNumber ? "met" : ""} /></div>
-                  <div className={`signup-field-note ${passwordValid ? "success" : ""}`}>{passwordValid ? "Passcode locked in." : "Three checks keep your player card secure."}</div>
+                  <div className={`signup-field-note ${passwordValid ? "success" : ""}`}>{passwordValid ? "Passcode meets the requirements." : "Use 8+ characters, one uppercase letter, and one number."}</div>
                 </div>
 
                 <div className="signup-requirements">
@@ -295,11 +294,11 @@ export default function Signup() {
 
                 {selectedCountry ? (
                   <div className="signup-location-meta">
-                    <div className="signup-meta-card"><span>Play language</span><strong>{selectedLanguage}</strong></div>
-                    <div className="signup-meta-card"><span>Display currency</span><strong>{selectedCurrency}</strong></div>
+                    <div className="signup-meta-card"><span>Language</span><strong>{selectedLanguage}</strong></div>
+                    <div className="signup-meta-card"><span>Currency</span><strong>{selectedCurrency}</strong></div>
                   </div>
                 ) : (
-                  <div className="signup-wallet-card">Your settings stay flexible. You can update them later from your profile.</div>
+                  <div className="signup-wallet-card">Choose your location to continue.</div>
                 )}
               </div>
             )}
@@ -320,13 +319,13 @@ export default function Signup() {
                 <div className="signup-legal">
                   <div className="signup-legal-row">
                     <Checkbox id="tos" checked={acceptedToS} onCheckedChange={(checked) => setAcceptedToS(checked as boolean)} />
-                    <label htmlFor="tos">I agree to the <Link href="/terms" target="_blank">Arena Terms</Link>.</label>
+                    <label htmlFor="tos">I agree to the <Link href="/terms" target="_blank">Terms of Service</Link>.</label>
                   </div>
                   <div className="signup-legal-row">
                     <Checkbox id="privacy" checked={acceptedPrivacy} onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)} />
-                    <label htmlFor="privacy">I accept the <Link href="/privacy" target="_blank">Privacy Rules</Link>.</label>
+                    <label htmlFor="privacy">I accept the <Link href="/privacy" target="_blank">Privacy Policy</Link>.</label>
                   </div>
-                  <p className="signup-legal-note">By joining, you confirm you are 18+ and agree to receive essential updates about your player card.</p>
+                  <p className="signup-legal-note">You must be 18 or older to play.</p>
                 </div>
               </div>
             )}
@@ -341,16 +340,16 @@ export default function Signup() {
               <Button type="button" onClick={nextStep} disabled={!canProceed()} className="auth-primary-button">Continue <ArrowRight size={15} className="ml-2" /></Button>
             ) : (
               <Button type="button" onClick={() => handleSubmit()} disabled={registerMutation.isPending || isSubmitting || !canProceed()} className="auth-primary-button launch">
-                {registerMutation.isPending || isSubmitting ? <><Loader2 size={15} className="mr-2 animate-spin" /> Building card...</> : <><Rocket size={15} className="mr-2" /> Take my seat</>}
+                {registerMutation.isPending || isSubmitting ? <><Loader2 size={15} className="mr-2 animate-spin" /> Creating profile…</> : <><Rocket size={15} className="mr-2" /> Create profile</>}
               </Button>
             )}
           </div>
 
           {registerMutation.isError && <div className="auth-error signup-error">{(registerMutation.error as any)?.message || "Registration failed"}</div>}
-          <p className="auth-footer-link signup-footer">Virtual capital only · <Link href="/login">Already have a player profile?</Link></p>
+          <p className="auth-footer-link signup-footer">Paper trading · <Link href="/login">Already have an account?</Link></p>
         </section>
 
-        <p className="auth-simple-note">Practice with simulated markets. No deposits, no pressure.</p>
+        <p className="auth-simple-note">Paper trading · Virtual cash only.</p>
       </div>
     </div>
   );

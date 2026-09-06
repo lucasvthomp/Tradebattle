@@ -1,11 +1,7 @@
 import { Link } from "wouter";
-import { ArrowRight, ChevronRight, Crown, ShieldCheck, Swords, Target, Timer, TrendingUp, Trophy, Users, Zap } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { ArrowRight, ChevronRight, Crown, ShieldCheck, Swords, TrendingUp, Trophy, Zap } from "lucide-react";
+import { type ReactNode } from "react";
 import "./unauthenticated-home.css";
-
-const formatTime = (total: number) => [Math.floor(total / 3600), Math.floor((total % 3600) / 60), total % 60]
-  .map((part) => String(part).padStart(2, "0"))
-  .join(":");
 
 const marketPath = "M-30 348 C18 326 47 360 86 330 S143 286 184 314 S227 350 273 306 S330 266 370 292 S416 320 456 277 S506 251 544 272 S582 326 621 294 S664 242 704 261 S744 312 786 279 S833 227 875 245 S912 287 953 260 S1002 214 1041 236 S1074 278 1116 248 S1160 195 1203 218 S1245 259 1286 226 S1330 178 1371 202 S1426 174 1470 188";
 
@@ -60,7 +56,7 @@ const modes = [
     icon: <Trophy aria-hidden="true" />,
     label: "MULTIPLAYER",
     title: "Arenas",
-    body: "The full field experience. Read the market, make your move, and climb the board.",
+    body: "Compete against the field with virtual cash.",
     stats: ["Open field", "Free entry"],
     link: "Enter arenas",
     art: "/assets/tradebattle-chest-trophy-v2.png",
@@ -70,7 +66,7 @@ const modes = [
     icon: <Zap aria-hidden="true" />,
     label: "HEAD-TO-HEAD",
     title: "Blitz",
-    body: "A fast, focused matchup. Five minutes on the clock and one opponent to beat.",
+    body: "A five-minute head-to-head match.",
     stats: ["1v1 match", "5 min rounds"],
     link: "Play Blitz",
     art: "/assets/tradebattle-chest-exchange-v2.png",
@@ -108,16 +104,6 @@ const promoCards = [
 ];
 
 export default function UnauthenticatedHome() {
-  const [seconds, setSeconds] = useState(2 * 60 * 60 + 34 * 60 + 12);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setSeconds((current) => current > 0 ? current - 1 : 3 * 60 * 60);
-    }, 1000);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
   return (
     <main className="arena-page">
       <section className="arena-hero" aria-labelledby="arena-hero-title">
@@ -128,19 +114,19 @@ export default function UnauthenticatedHome() {
         <div className="arena-shell">
           <div className="arena-status">
             <span className="arena-status-dot" aria-hidden="true" />
-            <span>ARENA LIVE</span>
+            <span>FREE TO PLAY</span>
             <span className="arena-status-divider" aria-hidden="true" />
-            <span className="arena-status-secondary">2,903 PLAYERS ONLINE</span>
+            <span className="arena-status-secondary">VIRTUAL MARKETS</span>
           </div>
 
           <div className="arena-hero-layout">
             <div className="arena-copy">
               <p className="arena-eyebrow"><Swords size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
-              <h1 id="arena-hero-title">Trade smarter.<br /><em>Win the board.</em></h1>
-              <p className="arena-lede">A live-market strategy game where every decision moves you up — or down — the rankings.</p>
+              <h1 id="arena-hero-title">Trade smarter.<br /><em>Rank the board.</em></h1>
+              <p className="arena-lede">A competitive paper-trading game built around live market moves.</p>
               <div className="arena-actions">
-                <PrimaryLink>Enter the arena</PrimaryLink>
-                <Link href="/login" className="arena-secondary-link">I already play <ChevronRight size={17} aria-hidden="true" /></Link>
+                <PrimaryLink>Start playing</PrimaryLink>
+                <Link href="/login" className="arena-secondary-link">Sign in <ChevronRight size={17} aria-hidden="true" /></Link>
               </div>
               <div className="arena-reassurance"><ShieldCheck size={16} aria-hidden="true" /> Virtual cash only · $10,000 starting balance</div>
             </div>
@@ -148,46 +134,36 @@ export default function UnauthenticatedHome() {
             <div className="arena-hero-visual">
               <div className="arena-hero-art-glow" aria-hidden="true" />
               <img className="arena-hero-market-icon" src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" />
-              <aside className="match-card" aria-label="Next arena">
-              <div className="match-card-top">
-                <span className="match-live"><i aria-hidden="true" /> NEXT MATCH</span>
-                <span className="match-level">OPEN</span>
-              </div>
+              <aside className="match-card" aria-label="How Tradebattle works">
+                <div className="match-card-top">
+                  <span className="match-live"><i aria-hidden="true" /> MATCH BRIEF</span>
+                  <span className="match-level">SIM</span>
+                </div>
 
-              <div className="match-title">
-                <span className="match-trophy"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /></span>
-                <div><strong>Opening Bell</strong><small>Daily arena · Open field</small></div>
-              </div>
+                <div className="match-title">
+                  <span className="match-trophy"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /></span>
+                  <div><strong>Build your edge</strong><small>Paper trading with live market moves</small></div>
+                </div>
 
-              <div className="match-countdown">
-                <span>STARTS IN</span>
-                <strong>{formatTime(seconds)}</strong>
-              </div>
+                <div className="match-board">
+                  <div className="match-board-heading"><span>PLAY</span><span>DETAIL</span></div>
+                  <div className="match-board-row"><span><Swords size={16} aria-hidden="true" /> Format</span><strong>ARENA</strong></div>
+                  <div className="match-board-row"><span><TrendingUp size={16} aria-hidden="true" /> Starting cash</span><strong>$10,000</strong></div>
+                  <div className="match-board-row"><span><Crown size={16} aria-hidden="true" /> Goal</span><strong>RANK UP</strong></div>
+                </div>
 
-              <div className="match-board">
-                <div className="match-board-heading"><span>LIVE BOARD</span><span>VALUE</span></div>
-                <div className="match-board-row"><span><Users size={16} aria-hidden="true" /> Players</span><strong>48 / 100</strong></div>
-                <div className="match-board-row"><span><Target size={16} aria-hidden="true" /> Entry</span><strong>FREE</strong></div>
-                <div className="match-board-row"><span><Crown size={16} aria-hidden="true" /> Prize pool</span><strong>$2,500</strong></div>
-              </div>
-
-              <Link href="/signup" className="match-join">Claim your spot <ArrowRight size={16} aria-hidden="true" /></Link>
+                <Link href="/signup" className="match-join">Create a profile <ArrowRight size={16} aria-hidden="true" /></Link>
               </aside>
             </div>
           </div>
 
-          <div className="arena-score-strip" aria-label="Arena stats">
-            <div><span><TrendingUp size={16} aria-hidden="true" /> MARKET STATUS</span><strong className="positive">OPEN</strong></div>
-            <div><span><Timer size={16} aria-hidden="true" /> ACTIVE ARENAS</span><strong>12</strong></div>
-            <div><span><Trophy size={16} aria-hidden="true" /> PAID OUT THIS MONTH</span><strong>$125K+</strong></div>
-          </div>
         </div>
       </section>
 
       <section className="arena-promo-rail" aria-labelledby="promo-title">
         <div className="arena-promo-heading">
-          <div><p>THE TRADEBATTLE ARCADE</p><h2 id="promo-title">Choose your next move.</h2></div>
-          <span>Three ways in.</span>
+          <div><p>THE TRADEBATTLE ARCADE</p><h2 id="promo-title">Pick a mode.</h2></div>
+          <span>Arenas, Blitz, and rewards.</span>
         </div>
         <div className="arena-promo-grid">
           {promoCards.map((card) => (
@@ -207,14 +183,14 @@ export default function UnauthenticatedHome() {
       <section className="arena-collectibles" aria-labelledby="collectibles-title">
         <div className="arena-collectibles-copy">
           <p>BUILD YOUR KIT</p>
-          <h2 id="collectibles-title">Read the board. Bring the right energy.</h2>
+          <h2 id="collectibles-title">Tools for the run.</h2>
         </div>
         <div className="arena-collectibles-items">
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" /><span>Read</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>React</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Stack</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Win</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Ring in</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" /><span>Market</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>Trade</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Rewards</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Rank</span></div>
+          <div className="arena-collectible"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Start</span></div>
         </div>
       </section>
 
@@ -240,7 +216,7 @@ export default function UnauthenticatedHome() {
       <section className="arena-section arena-how" id="how-it-works" aria-labelledby="how-title">
         <div className="arena-section-heading">
           <p>THE GAME LOOP</p>
-          <h2 id="how-title">Ready. Set. Trade.</h2>
+          <h2 id="how-title">Choose a mode. Make a move.</h2>
         </div>
         <div className="how-steps">
           {steps.map((step) => (
@@ -257,8 +233,8 @@ export default function UnauthenticatedHome() {
       <section className="arena-final" aria-labelledby="final-title">
         <div className="arena-final-content">
           <p><Zap size={15} aria-hidden="true" /> YOUR FIRST MATCH IS FREE</p>
-          <h2 id="final-title">Make your first move.</h2>
-          <PrimaryLink>Start playing free</PrimaryLink>
+          <h2 id="final-title">Start a match.</h2>
+          <PrimaryLink>Play free</PrimaryLink>
         </div>
       </section>
     </main>

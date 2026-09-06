@@ -2513,3 +2513,59 @@
     font-size: 13px;
   }
 }
+
+
+/* Shared motion and layout rules. */
+.tradebattle-site .page-transition {
+  animation: tradebattle-page-in 220ms ease-out both;
+}
+@keyframes tradebattle-page-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tradebattle-site .page-transition { animation: none; }
+}
+
+/* Keep short routes pinned to the viewport so the footer never floats mid-screen. */
+.tradebattle-site.arena-app .archive-page {
+  min-height: calc(100dvh - 4rem);
+}
+.tradebattle-site.arena-app .archive-page > div {
+  padding-bottom: 42px !important;
+}
+
+/* Player cards are compact, direct, and image-first. */
+.tradebattle-site.arena-app .people-card {
+  grid-template-columns: 68px minmax(0, 1fr);
+  min-height: 84px;
+  padding: 8px;
+}
+.tradebattle-site.arena-app .people-card-avatar {
+  width: 64px;
+  height: 64px;
+}
+.tradebattle-site.arena-app .people-card-stats {
+  margin-top: 7px;
+  padding-top: 7px;
+}
+@media (max-width: 680px) {
+  .tradebattle-site.arena-app .people-card {
+    grid-template-columns: 60px minmax(0, 1fr);
+    min-height: 78px;
+  }
+  .tradebattle-site.arena-app .people-card-avatar {
+    width: 58px;
+    height: 58px;
+  }
+}
+
+/* Set one stable color for the authenticated header. */
+.tradebattle-header {
+  background: #071522 !important;
+  color: #eef6fa !important;
+}
+.tradebattle-header .text-muted-foreground,
+.tradebattle-header [style*="color: '#AFC2D0'"] {
+  color: #91a6ba !important;
+}

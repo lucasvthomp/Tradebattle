@@ -39,7 +39,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/signup" : "/leaderboard"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Enter the arena' : t('leaderboard')}
+                    {isPublicSite ? 'Sign in' : t('leaderboard')}
                   </Link>
                 </li>
               </ul>
@@ -71,12 +71,12 @@ export default function Footer() {
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="/contact" className="hover:text-foreground transition-colors">
-                    Help HQ
+                    Help
                   </Link>
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/privacy" : "/archive"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Privacy Rules' : 'Archive'}
+                    {isPublicSite ? 'Privacy Policy' : 'Archive'}
                   </Link>
                 </li>
                 <li>

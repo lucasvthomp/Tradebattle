@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatusIndicator, UserStatus, calculateUserStatus } from "@/components/ui/status-indicator";
 
@@ -12,10 +13,11 @@ interface AvatarWithStatusProps {
   showBorder?: boolean;
 }
 
+const defaultAvatar = "/assets/tradebattle-default-broker-v2.png";
+
 /**
- * Avatar component with online status indicator overlay
- * Shows green circle, moon, or grey circle at bottom-right based on user's last activity
- * Now displays as perfect square with matching border radius
+ * Shared profile image treatment used across cards, profiles, chat, and rankings.
+ * A missing or broken image always resolves to the same neutral broker mark.
  */
 export function AvatarWithStatus({
   src,
@@ -27,10 +29,13 @@ export function AvatarWithStatus({
   statusSize = 'md',
   showBorder = false
 }: AvatarWithStatusProps) {
-  // Calculate status from lastActivity if not explicitly provided
+  const [imageSrc, setImageSrc] = useState(src || defaultAvatar);
   const userStatus = status || calculateUserStatus(lastActivity || null);
 
-  // Determine border size based on avatar size
+  useEffect(() => {
+    setImageSrc(src || defaultAvatar);
+  }, [src]);
+
   const borderWidth = className.includes('w-32') ? '4px' :
                      className.includes('w-24') ? '3px' :
                      className.includes('w-16') ? '2px' : '2px';
@@ -44,22 +49,29 @@ export function AvatarWithStatus({
       className={`relative inline-block ${className}`}
       style={showBorder ? {
         border: `${borderWidth} solid #67E7BF`,
-        borderRadius: borderRadius,
+        borderRadius,
         overflow: 'visible'
       } : undefined}
     >
-      <Avatar className="w-full h-full" style={{ borderRadius: borderRadius }}>
-        <AvatarImage src={src || "/assets/tradebattle-default-broker-v2.png"} alt={alt} className="object-cover" />
-        <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#0B1B2A' }}>
-          <img src="/assets/tradebattle-default-broker-v2.png" alt="" className="w-full h-full object-cover" />
+      <Avatar className="w-full h-full" style={{ borderRadius }}>
+        <AvatarImage
+          src={imageSrc}
+          alt={alt}
+          className="object-cover"
+          onError={() => {
+            if (imageSrc !== defaultAvatar) setImageSrc(defaultAvatar);
+          }}
+        />
+        <AvatarFallback style={{ borderRadius, backgroundColor: '#0B1B2A' }}>
+          <img src={defaultAvatar} alt={fallback || ""} className="w-full h-full object-cover" />
         </AvatarFallback>
       </Avatar>
 
-      {/* Keep presence visible at the top edge instead of hiding it beneath the avatar frame. */}
       <div className="tradebattle-avatar-status absolute top-0 right-0 z-10" style={{ transform: 'translate(24%, -24%)' }}>
         <div
           className="rounded-full flex items-center justify-center"
           style={{ backgroundColor: '#071522', padding: '3px', border: '1px solid rgba(103,231,191,.22)' }}
+          aria-label={`Status: ${userStatus}`}
         >
           <StatusIndicator status={userStatus} size={statusSize} />
         </div>

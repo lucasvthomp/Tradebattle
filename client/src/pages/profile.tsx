@@ -582,7 +582,7 @@ export default function Profile() {
               <CardContent className="p-6 relative z-10">
                 <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-0 md:space-x-4">
                   <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden relative"
+                    className="w-20 h-20 rounded-xl flex items-center justify-center overflow-visible relative"
                     style={{ border: '2px solid #0E2040' }}
                   >
                     <img
@@ -590,12 +590,16 @@ export default function Profile() {
                       alt="Profile"
                       className="h-full w-full object-cover"
                       style={{ borderRadius: '0.75rem' }}
+                      onError={(event) => {
+                        event.currentTarget.src = "/assets/tradebattle-default-broker-v2.png";
+                      }}
                     />
                     {/* Online status indicator - positioned at perfect square corner */}
                     <div
-                      className="absolute w-4 h-4 rounded-full"
+                      className="profile-status-dot absolute z-10 w-4 h-4 rounded-full"
+                      aria-label="Online"
                       style={{
-                        backgroundColor: '#10B981',
+                        backgroundColor: '#67E7BF',
                         borderColor: '#071522',
                         borderWidth: '2px',
                         borderStyle: 'solid',

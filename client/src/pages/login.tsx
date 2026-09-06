@@ -40,7 +40,7 @@ export default function Login() {
     try {
       const pending = sessionStorage.getItem("pending2FA");
       if (!pending) {
-        setTwoFAError("Session expired. Please enter the arena again.");
+        setTwoFAError("Session expired. Please sign in again.");
         navigate("/login");
         return;
       }
@@ -55,7 +55,7 @@ export default function Login() {
       queryClient.invalidateQueries({ queryKey: ["/api/user"] });
       navigate("/hub");
     } catch (err: any) {
-      setTwoFAError(err.message || "Invalid code");
+      setTwoFAError(err.message || "That code is not valid.");
     } finally {
       setTwoFALoading(false);
     }
@@ -65,7 +65,7 @@ export default function Login() {
     <div className="auth-screen auth-login-screen auth-simple">
       <div className="auth-simple-wrap">
         <div className="auth-simple-top">
-          {!is2FA && <Link href="/signup" className="auth-panel-link">New here? Create a profile</Link>}
+          {!is2FA && <Link href="/signup" className="auth-panel-link">New here? Create profile</Link>}
         </div>
 
         <section className="auth-simple-card auth-login-card">
@@ -74,9 +74,9 @@ export default function Login() {
               <div className="auth-simple-card-head auth-twofa-head">
                 <div>
                   <div className="auth-twofa-icon"><ShieldCheck size={22} /></div>
-                  <div className="auth-eyebrow">Security checkpoint</div>
-                  <h1>One more read.</h1>
-                  <p>Enter the six-digit code from your authenticator to finish entering the arena.</p>
+                  <div className="auth-eyebrow">Two-factor sign-in</div>
+                  <h1>Verify your sign-in</h1>
+                  <p>Enter the six-digit code from your authenticator.</p>
                 </div>
               </div>
 
@@ -98,7 +98,7 @@ export default function Login() {
               {twoFAError && <div className="auth-error">{twoFAError}</div>}
 
               <Button type="submit" disabled={twoFALoading || twoFACode.length !== 6} className="auth-primary-button">
-                {twoFALoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Checking code...</> : "Verify and enter"}
+                {twoFALoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Verifying…</> : "Verify code"}
               </Button>
 
               <button
@@ -109,16 +109,16 @@ export default function Login() {
                   navigate("/login");
                 }}
               >
-                Use a different entry
+                Back to sign in
               </button>
             </form>
           ) : (
             <>
               <div className="auth-simple-card-head">
                 <div>
-                  <div className="auth-eyebrow">Player access</div>
-                  <h1>Resume your run.</h1>
-                  <p>Your next move is waiting. Sign in to pick up where you left off.</p>
+                  <div className="auth-eyebrow">Sign in</div>
+                  <h1>Sign in to Tradebattle</h1>
+                  <p>Use your player name and passcode to continue.</p>
                 </div>
               </div>
 
@@ -157,18 +157,18 @@ export default function Login() {
                 </div>
 
                 <Button type="submit" disabled={loginMutation.isPending} className="auth-primary-button">
-                  {loginMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Opening the gate...</> : "Enter the arena"}
+                  {loginMutation.isPending ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in…</> : "Sign in"}
                 </Button>
 
                 {loginMutation.isError && (
                   <div className="auth-error">
-                    {(loginMutation.error as any)?.message || "Entry failed. Check your player name and passcode."}
+                    {(loginMutation.error as any)?.message || "Sign-in failed. Check your player name and passcode."}
                   </div>
                 )}
 
                 <Link href="/forgot-password" className="auth-panel-link" style={{ textAlign: "center" }}>Forgot your passcode?</Link>
 
-                <div className="auth-divider">Or use a wallet</div>
+                <div className="auth-divider">Or connect a wallet</div>
 
                 <div className="auth-wallet">
                   <WalletConnect
@@ -180,12 +180,12 @@ export default function Login() {
                 </div>
               </form>
 
-              <p className="auth-footer-link">New to the arena? <Link href="/signup">Create a player profile</Link></p>
+              <p className="auth-footer-link">New here? <Link href="/signup">Create profile</Link></p>
             </>
           )}
         </section>
 
-        <p className="auth-simple-note">Virtual capital only · Your progress stays yours.</p>
+        <p className="auth-simple-note">Paper trading · Virtual cash only.</p>
       </div>
     </div>
   );

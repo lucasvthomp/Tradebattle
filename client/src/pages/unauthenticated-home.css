@@ -725,3 +725,29 @@
     height: 72px;
   }
 }
+
+
+/* Keep the landing hero focused above the fold. */
+.arena-hero {
+  min-height: auto;
+  padding-top: 34px;
+  padding-bottom: 24px;
+}
+.arena-status {
+  margin-bottom: 24px;
+}
+.arena-hero-layout {
+  padding-bottom: 18px;
+}
+.arena-hero-visual {
+  align-self: center;
+}
+@media (max-width: 760px) {
+  .arena-hero {
+    padding: 24px 16px 18px;
+  }
+  .arena-hero-layout {
+    gap: 28px;
+    padding-bottom: 6px;
+  }
+}
