@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, X, Clock, ArrowLeft, Zap, TrendingUp, TrendingDown, ChevronRight } from "lucide-react";
+import { Search, X, Clock, ArrowLeft, Zap, TrendingUp, TrendingDown, ChevronRight, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { executeOrder, type OrderRequest } from "@/lib/orderEngine";
@@ -40,8 +40,17 @@ interface TradingSidebarProps {
 
 type ActiveView = "positions" | "history" | "trade";
 type OrderSide = "buy" | "sell";
-type OrderType = "market" | "limit" | "stop_market" | "stop_limit";
 type BuyInMode = "shares" | "dollars";
+
+function isCryptoTicker(symbol: string): boolean {
+  const normalized = symbol.toUpperCase();
+  return normalized.endsWith("-USD") ||
+    normalized.endsWith("-USDT") ||
+    normalized.endsWith("-EUR") ||
+    normalized.endsWith("-GBP") ||
+    normalized.endsWith("-BTC") ||
+    normalized.endsWith("-ETH");
+}
 
 export function TradingSidebar({
   selectedSymbol,
@@ -69,23 +78,29 @@ export function TradingSidebar({
   const [activeView, setActiveView] = useState<ActiveView>("positions");
 
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
-  const [orderType, setOrderType] = useState<OrderType>("market");
   const [buyInMode, setBuyInMode] = useState<BuyInMode>("shares");
   const [quantity, setQuantity] = useState(1);
   const [dollarAmount, setDollarAmount] = useState(0);
-  const [limitPrice, setLimitPrice] = useState(0);
-  const [stopPrice, setStopPrice] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
 
   const [marketOpen, setMarketOpen] = useState(isMarketOpen());
   const isCryptoTournament = selectedTournament?.tournamentType === "crypto";
+  const marketModeLabel = isCryptoTournament ? "Crypto mode" : "Stock mode";
+  const selectedSymbolMatchesMode =
+    !selectedSymbol || isCryptoTicker(selectedSymbol) === isCryptoTournament;
   const tradingBlocked = !marketOpen && !isCryptoTournament;
 
   useEffect(() => {
     const interval = setInterval(() => setMarketOpen(isMarketOpen()), 30000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (isCryptoTournament && buyInMode !== "shares") {
+      setBuyInMode("shares");
+    }
+  }, [isCryptoTournament, buyInMode]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
@@ -131,7 +146,7 @@ export function TradingSidebar({
   const bidPrice = currentPrice > 0 ? currentPrice - spread : 0;
   const askPrice = currentPrice > 0 ? currentPrice + spread : 0;
 
-  const effectiveQuantity = buyInMode === "dollars" && currentPrice > 0
+  const effectiveQuantity = buyInMode === "dollars" && !isCryptoTournament && currentPrice > 0
     ? Math.floor(dollarAmount / currentPrice)
     : quantity;
   const estimatedTotal = effectiveQuantity * currentPrice;
@@ -139,6 +154,7 @@ export function TradingSidebar({
   const canSubmit = (() => {
     if (tradingBlocked) return false;
     if (!selectedTournament?.id || !selectedSymbol || currentPrice <= 0) return false;
+    if (!selectedSymbolMatchesMode) return false;
     if (effectiveQuantity <= 0) return false;
     if (orderSide === "buy" && estimatedTotal > buyingPower) return false;
     if (orderSide === "sell" && effectiveQuantity > ownedShares) return false;
@@ -180,7 +196,6 @@ export function TradingSidebar({
   const handleSideChange = (side: OrderSide) => {
     setOrderSide(side);
     setAwaitingConfirm(false);
-    setOrderType("market");
     setBuyInMode("shares");
   };
 
@@ -257,7 +272,19 @@ export function TradingSidebar({
           </SelectContent>
         </Select>
 
-        {/* Big balance */}
+        <div className="flex items-center justify-between mb-2 relative z-10">
+          <span
+            className="text-[10px] font-black uppercase tracking-[0.16em]"
+            style={{ color: "#67E7BF" }}
+          >
+            {marketModeLabel}
+          </span>
+          <span className="text-[10px]" style={{ color: "#4B6080" }}>
+            One market per arena
+          </span>
+        </div>
+
+        {/* Big balance */}}
         <div className="relative z-10">
           <div style={{ color: "#4B6080", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>
             Tournament Balance
@@ -386,9 +413,20 @@ export function TradingSidebar({
               searchResults.map((result: any) => (
                 <button
                   key={result.symbol}
-                  onClick={() => { handleSearchSelect(result.symbol); setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
+                  onClick={() => {
+                    if (result.available === false) return;
+                    handleSearchSelect(result.symbol);
+                    setActiveView("trade");
+                    setQuantity(1);
+                    setAwaitingConfirm(false);
+                  }}
+                  disabled={result.available === false}
                   className="w-full px-3 py-2.5 text-left flex items-center justify-between transition-colors"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                  style={{
+                    borderBottom: "1px solid rgba(255,255,255,0.04)",
+                    opacity: result.available === false ? 0.48 : 1,
+                    cursor: result.available === false ? "not-allowed" : "pointer",
+                  }}
                   onMouseEnter={e => (e.currentTarget.style.backgroundColor = "rgba(227,179,65,0.07)")}
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
@@ -396,6 +434,12 @@ export function TradingSidebar({
                     <span className="text-sm font-black" style={{ color: "#67E7BF" }}>{result.symbol}</span>
                     {result.name && (
                       <div className="text-xs mt-0.5 truncate" style={{ color: "#64748B" }}>{result.name}</div>
+                    )}
+                    {result.available === false && (
+                      <div className="flex items-center gap-1 text-[10px] mt-1" style={{ color: "#A8B3C7" }}>
+                        <Lock className="w-3 h-3" />
+                        {result.lockedReason || ("Not available for " + (isCryptoTournament ? "crypto" : "stock") + " mode")}
+                      </div>
                     )}
                   </div>
                   {result.exchange && (
@@ -616,72 +660,18 @@ export function TradingSidebar({
 
             {/* Order form */}
             <div className="px-3 space-y-1 pb-2">
-              {/* Order Type */}
+              {/* Execution */}
               <div
                 className="flex items-center justify-between py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-                  Order Type
+                  Execution
                 </span>
-                <Select
-                  value={orderType}
-                  onValueChange={(v) => { setOrderType(v as OrderType); setAwaitingConfirm(false); }}
-                >
-                  <SelectTrigger
-                    className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold"
-                    style={{ color: "#67E7BF" }}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.15)" }}>
-                    <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
-                    <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
-                    <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
-                    <SelectItem value="stop_limit" style={{ color: "#F1F5F9" }}>Stop Limit</SelectItem>
-                  </SelectContent>
-                </Select>
+                <span className="text-sm font-bold" style={{ color: "#67E7BF" }}>
+                  Market · instant
+                </span>
               </div>
-
-              {/* Limit Price */}
-              {(orderType === "limit" || orderType === "stop_limit") && (
-                <div
-                  className="flex items-center justify-between py-2"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                >
-                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-                    Limit Price
-                  </span>
-                  <Input
-                    type="number" inputMode="decimal" min="0" step="0.01"
-                    value={limitPrice || ""}
-                    onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
-                    placeholder="0.00"
-                    className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#67E7BF" }}
-                  />
-                </div>
-              )}
-
-              {/* Stop Price */}
-              {(orderType === "stop_market" || orderType === "stop_limit") && (
-                <div
-                  className="flex items-center justify-between py-2"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                >
-                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-                    Stop Price
-                  </span>
-                  <Input
-                    type="number" inputMode="decimal" min="0" step="0.01"
-                    value={stopPrice || ""}
-                    onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
-                    placeholder="0.00"
-                    className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#67E7BF" }}
-                  />
-                </div>
-              )}
 
               {/* Buy In mode */}
               <div
@@ -699,7 +689,9 @@ export function TradingSidebar({
                     <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
                       Units
                     </SelectItem>
-                    <SelectItem value="dollars" style={{ color: "#F1F5F9" }}>Dollars</SelectItem>
+                    {!isCryptoTournament && (
+                      <SelectItem value="dollars" style={{ color: "#F1F5F9" }}>Dollars</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </div>

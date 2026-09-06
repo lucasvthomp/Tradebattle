@@ -43,33 +43,45 @@ function parseErrorMessage(error: unknown): string {
  * Execute a market order. All orders execute immediately at current market price.
  */
 export async function executeOrder(order: OrderRequest): Promise<OrderResult> {
-  const executionPrice = order.currentMarketPrice;
-  const totalValue = order.quantity * executionPrice;
+  const requestedPrice = order.currentMarketPrice;
+  let executionResponse: any = null;
 
   try {
     if (order.side === "buy") {
-      await apiRequest("POST", `/api/tournaments/${order.tournamentId}/purchase`, {
+      const response = await apiRequest("POST", `/api/tournaments/${order.tournamentId}/purchase`, {
         symbol: order.symbol,
         companyName: order.companyName,
         shares: order.quantity,
-        purchasePrice: executionPrice,
+        purchasePrice: requestedPrice,
       });
+      executionResponse = await response.json().catch(() => null);
     } else {
-      await apiRequest("POST", `/api/tournaments/${order.tournamentId}/sell`, {
+      const response = await apiRequest("POST", `/api/tournaments/${order.tournamentId}/sell`, {
         symbol: order.symbol,
         sharesToSell: order.quantity,
-        currentPrice: executionPrice,
+        currentPrice: requestedPrice,
       });
+      executionResponse = await response.json().catch(() => null);
     }
   } catch (error) {
     throw new Error(parseErrorMessage(error));
   }
+
+  const parsedExecutionPrice = Number(
+    executionResponse?.data?.executionPrice ??
+    executionResponse?.data?.purchase?.purchasePrice ??
+    requestedPrice
+  );
+  const executionPrice = Number.isFinite(parsedExecutionPrice) && parsedExecutionPrice > 0
+    ? parsedExecutionPrice
+    : requestedPrice;
+  const totalValue = order.quantity * executionPrice;
 
   return {
     success: true,
     executedPrice: executionPrice,
     executedShares: order.quantity,
     totalValue,
-    message: `${order.side === "buy" ? "Bought" : "Sold"} ${order.quantity} units of ${order.symbol} at $${executionPrice.toFixed(2)}`,
+    message: `${order.side === "buy" ? "Bought" : "Sold"} ${order.quantity} units of ${order.symbol} at ${executionPrice.toFixed(2)}`,
   };
 }

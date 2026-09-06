@@ -716,69 +716,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const data = JSON.parse(rawBody);
       console.log('[IPN] Received webhook:', JSON.stringify(data, null, 2));
 
-      // Accept multiple confirmed payment statuses
+      // Only credit terminal provider states, and validate the signed payload
+      // before touching the user's balance.
       const confirmedStatuses = ['finished', 'confirmed', 'sending'];
+      const paymentId = String(data.payment_id || '').trim();
+      const orderId = typeof data.order_id === 'string' ? data.order_id : '';
+      const priceAmount = Number(data.price_amount);
+
+      if (!paymentId || !orderId || !Number.isFinite(priceAmount) || priceAmount <= 0) {
+        return res.status(400).json({ error: 'Invalid payment payload' });
+      }
 
       if (confirmedStatuses.includes(data.payment_status)) {
-        console.log(`[IPN] Processing confirmed payment`);
+        console.log('[IPN] Processing confirmed payment ' + paymentId);
 
-        // Extract user ID from order_id (format: "deposit-{userId}-{timestamp}")
-        const orderParts = data.order_id.split('-');
+        const orderParts = orderId.split('-');
         if (orderParts.length < 3 || orderParts[0] !== 'deposit') {
-          console.error(`[IPN] Invalid order_id format`);
+          console.error('[IPN] Invalid order_id format');
           return res.status(400).json({ error: 'Invalid order_id format' });
         }
 
         const userId = parseInt(orderParts[1]);
         if (isNaN(userId) || userId <= 0) {
-          console.error(`[IPN] Invalid userId in order_id`);
+          console.error('[IPN] Invalid userId in order_id');
           return res.status(400).json({ error: 'Invalid userId' });
         }
 
-        // Get user
-        const user = await storage.getUser(userId);
-        if (!user) {
-          console.error(`[IPN] User not found: ${userId}`);
-          return res.status(404).json({ error: 'User not found' });
-        }
-
-        // Security: Verify payment was actually created by this user
-        // Check if payment_id matches a payment created by this user
+        // Fail closed if the provider cannot verify the payment. A signed
+        // webhook is not enough to prove the amount/order belongs to this user
+        // when the provider lookup is unavailable.
         const { getPaymentStatus } = await import('./services/nowPayments.js');
+        let paymentInfo: any;
         try {
-          const paymentInfo = await getPaymentStatus(data.payment_id);
-          // Verify order_id from payment provider matches what we expect
-          if (paymentInfo.order_id !== data.order_id) {
-            console.error(`[IPN] Order ID mismatch during verification`);
-            return res.status(400).json({ error: 'Order ID verification failed' });
-          }
+          paymentInfo = await getPaymentStatus(paymentId);
         } catch (verifyError) {
-          console.error(`[IPN] Failed to verify payment: ${verifyError}`);
-          // Log but continue - payment signature was already verified
+          console.error('[IPN] Failed to verify payment:', verifyError);
+          return res.status(502).json({ error: 'Payment verification unavailable' });
         }
 
-        // Add funds to user account
-        const currentBalance = parseFloat(user.siteCash?.toString() || '0');
-        const newBalance = currentBalance + parseFloat(data.price_amount);
+        if (
+          String(paymentInfo?.payment_id) !== paymentId ||
+          paymentInfo?.order_id !== orderId
+        ) {
+          console.error('[IPN] Payment verification mismatch');
+          return res.status(400).json({ error: 'Payment verification failed' });
+        }
 
-        await storage.updateUser(userId, {
-          siteCash: newBalance.toString(),
+        // Claim and credit the webhook in one database transaction. The
+        // unique payment_id makes provider retries harmless, while the
+        // transaction ensures a failed credit can be retried safely.
+        const creditResult = await db.transaction(async (tx) => {
+          const claimed = await tx.execute(sql`
+            INSERT INTO crypto_payment_events (payment_id, user_id, amount, provider_status)
+            VALUES (${paymentId}, ${userId}, ${priceAmount}, ${data.payment_status})
+            ON CONFLICT (payment_id) DO NOTHING
+            RETURNING payment_id
+          `);
+
+          if (!claimed.rows?.length) {
+            return { credited: false, duplicate: true };
+          }
+
+          const userRows = await tx
+            .select()
+            .from(users)
+            .where(eq(users.id, userId))
+            .for('update');
+
+          if (!userRows[0]) {
+            throw new Error('User not found');
+          }
+
+          const currentBalance = Number(userRows[0].siteCash || 0);
+          const newBalance = currentBalance + priceAmount;
+
+          await tx.update(users).set({
+            siteCash: newBalance.toFixed(2),
+            totalDeposited: sql`${users.totalDeposited} + ${priceAmount}`,
+          }).where(eq(users.id, userId));
+
+          await tx.insert(schema.adminLogs).values({
+            adminUserId: userId,
+            targetUserId: userId,
+            action: 'balance_deposit',
+            oldValue: currentBalance.toString(),
+            newValue: newBalance.toString(),
+            notes: 'Crypto deposit: $' + priceAmount + ' - Payment ID: ' + paymentId + ' - Status: ' + data.payment_status,
+          });
+
+          await tx.execute(sql`
+            UPDATE crypto_payment_events
+            SET credited_at = NOW()
+            WHERE payment_id = ${paymentId}
+          `);
+
+          return { credited: true, duplicate: false };
         });
 
-        console.log(`[IPN] Updated balance for user ${userId}: $${currentBalance} → $${newBalance}`);
-
-        // Log transaction (sanitized)
-        const paymentIdShort = data.payment_id ? String(data.payment_id).substring(0, 8) + '...' : 'unknown';
-        await storage.createAdminLog({
-          adminUserId: userId,
-          targetUserId: userId,
-          action: 'balance_deposit',
-          oldValue: currentBalance.toString(),
-          newValue: newBalance.toString(),
-          notes: `Crypto deposit: $${data.price_amount} - Payment: ${paymentIdShort} - Status: ${data.payment_status}`,
-        });
+        if (creditResult.duplicate) {
+          console.log('[IPN] Ignoring duplicate payment ' + paymentId);
+        } else {
+          console.log('[IPN] Credited $' + priceAmount + ' for user ' + userId);
+        }
       } else {
-        console.log(`[IPN] Ignoring payment with status: ${data.payment_status}`);
+        console.log('[IPN] Ignoring payment with status: ' + data.payment_status);
       }
 
       res.status(200).send('OK');
@@ -791,6 +832,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Debug endpoint to check payment and manually credit (admin only)
   app.post('/api/crypto/debug-payment', requireAuth, async (req: any, res) => {
     try {
+      if (req.user.subscriptionTier !== 'administrator') {
+        return res.status(403).json({ error: 'Admin access required' });
+      }
+
       const { paymentId } = req.body;
 
       if (!paymentId) {

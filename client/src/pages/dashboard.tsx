@@ -13,6 +13,16 @@ interface DashboardProps {
   [key: string]: any;
 }
 
+function isCryptoTicker(symbol: string): boolean {
+  const normalized = symbol.toUpperCase();
+  return normalized.endsWith("-USD") ||
+    normalized.endsWith("-USDT") ||
+    normalized.endsWith("-EUR") ||
+    normalized.endsWith("-GBP") ||
+    normalized.endsWith("-BTC") ||
+    normalized.endsWith("-ETH");
+}
+
 export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -28,15 +38,19 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
     return Number.isNaN(id) ? null : id;
   }, [search, forcedTournamentId]);
 
+  const selectedSymbolMatchesMode =
+    !selectedTournament ||
+    isCryptoTicker(selectedSymbol) === (selectedTournament.tournamentType === "crypto");
+
   const { data: quoteResponse } = useQuery({
-    queryKey: ["/api/quote", selectedSymbol],
-    enabled: !!selectedSymbol,
+    queryKey: ["/api/quote", selectedSymbol, selectedTournament?.tournamentType],
+    enabled: !!selectedSymbol && selectedSymbolMatchesMode,
     refetchInterval: 15000,
   });
 
   const { data: profileResponse } = useQuery({
-    queryKey: ["/api/summary", selectedSymbol],
-    enabled: !!selectedSymbol,
+    queryKey: ["/api/summary", selectedSymbol, selectedTournament?.tournamentType],
+    enabled: !!selectedSymbol && selectedSymbolMatchesMode,
   });
 
   const { data: tournamentsResponse } = useQuery({
@@ -57,6 +71,14 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
       setSelectedTournament(requested || activeTournaments[0]);
     }
   }, [activeTournaments, selectedTournament, requestedTournamentId]);
+
+  useEffect(() => {
+    if (!selectedTournament) return;
+    const cryptoArena = selectedTournament.tournamentType === "crypto";
+    if (isCryptoTicker(selectedSymbol) !== cryptoArena) {
+      setSelectedSymbol(cryptoArena ? "BTC-USD" : "AAPL");
+    }
+  }, [selectedTournament?.id, selectedTournament?.tournamentType, selectedSymbol]);
 
   const { data: balanceResponse } = useQuery({
     queryKey: ["/api/tournaments", selectedTournament?.id, "balance"],
