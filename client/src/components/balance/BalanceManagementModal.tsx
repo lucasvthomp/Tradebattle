@@ -152,7 +152,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   async function copyAddress() {
     if (!getPaymentQrValue(payment)) return;
     try {
-      await navigator.clipboard.writeText(getCleanAddress(payment.pay_address));
+      await navigator.clipboard.writeText(getCleanAddress(getPaymentQrValue(payment)));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -619,9 +619,9 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       Amount to send
                     </label>
                     <div className="p-5 rounded-xl border-2 text-center" style={{
-                      background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
+                      background: '#10283A',
                       borderColor: '#67E7BF',
-                      boxShadow: '0 4px 20px rgba(0, 163, 255, 0.25)',
+                      boxShadow: '0 4px 20px rgba(103, 231, 191, 0.18)',
                     }}>
                       <div className="text-3xl font-black" style={{ color: '#F1F5F9' }}>
                         {payment.pay_amount} {payment.pay_currency.toUpperCase()}
