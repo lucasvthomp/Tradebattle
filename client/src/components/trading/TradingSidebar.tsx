@@ -211,7 +211,6 @@ export function TradingSidebar({
     setQuantity(1);
     setDollarAmount(0);
     setAwaitingConfirm(false);
-    setOrderType("market");
     setBuyInMode("shares");
   };
 

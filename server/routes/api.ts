@@ -1354,6 +1354,7 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
   const tournament = await storage.getTournamentById(tournamentId);
   const cleanSymbol = sanitizeInput(symbol).toUpperCase();
   const marketMode = assertTournamentSymbolAllowed(tournament, cleanSymbol);
+  if (!tournament) throw new NotFoundError('Tournament not found');
 
   if (tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
@@ -1457,6 +1458,7 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   const tournament = await storage.getTournamentById(tournamentId);
   const cleanSymbol = sanitizeInput(symbol).toUpperCase();
   const marketMode = assertTournamentSymbolAllowed(tournament, cleanSymbol);
+  if (!tournament) throw new NotFoundError('Tournament not found');
 
   if (tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
