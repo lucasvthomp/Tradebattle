@@ -49,10 +49,22 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
     }
   }, [isOpen]);
 
+  function getPaymentQrValue(paymentData: any): string {
+    const raw = paymentData?.pay_address ?? paymentData?.payin_address ?? paymentData?.address ?? '';
+    return typeof raw === 'string' ? raw.trim() : '';
+  }
+
+  function getDisplayAddress(raw: string): string {
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
+    const colonIdx = raw.indexOf(':');
+    return colonIdx > 0 && colonIdx < 20 ? raw.slice(colonIdx + 1).split('?')[0] : raw;
+  }
+
   async function copyAddress() {
-    if (!payment?.pay_address) return;
+    if (!getPaymentQrValue(payment)) return;
     try {
-      await navigator.clipboard.writeText(payment.pay_address);
+      await navigator.clipboard.writeText(getDisplayAddress(getPaymentQrValue(payment)));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -117,7 +129,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div style={{
+    <div className="deposit-modal-backdrop" style={{
       position: 'fixed',
       inset: 0,
       background: 'rgba(10, 20, 42, 0.95)',
@@ -128,7 +140,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
       justifyContent: 'center',
       padding: '20px',
     }}>
-      <div style={{
+      <div className="deposit-modal-panel" style={{
         background: '#0B1B2A',
         borderRadius: '20px',
         maxWidth: '500px',
@@ -406,11 +418,13 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   justifyContent: 'center',
                 }}>
                   <QRCodeSVG
-                    value={payment.pay_address}
+                    value={getPaymentQrValue(payment)}
                     size={200}
                     level="H"
-                    fgColor="#67E7BF"
-                    bgColor="transparent"
+                    includeMargin
+                    fgColor="#071522"
+                    bgColor="#ffffff"
+                    style={{ display: "block", maxWidth: "100%", height: "auto" }}
                   />
                 </div>
               </div>
@@ -436,7 +450,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     wordBreak: 'break-all',
                     fontFamily: 'monospace',
                   }}>
-                    {payment.pay_address}
+                    {getDisplayAddress(getPaymentQrValue(payment))}
                   </code>
                   <button
                     onClick={copyAddress}
@@ -463,13 +477,13 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                   Amount to send
                 </label>
                 <div style={{
-                  background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
-                  border: '2px solid #67E7BF',
+                  background: '#10283A',
+                  border: '1px solid #67E7BF',
                   borderRadius: '12px',
                   padding: '16px',
                   textAlign: 'center',
                 }}>
-                  <div style={{ color: '#091525', fontSize: '24px', fontWeight: '700' }}>
+                  <div style={{ color: '#F1F5F9', fontSize: '24px', fontWeight: '700' }}>
                     {payment.pay_amount} {payment.pay_currency.toUpperCase()}
                   </div>
                 </div>
