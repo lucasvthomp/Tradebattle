@@ -139,10 +139,10 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
           <div className="cursor-pointer self-start">
             <Avatar className="w-9 h-9">
               <AvatarImage
-                src={group.profilePicture || "/assets/tradebattle-default-broker.png"}
+                src={group.profilePicture || "/assets/tradebattle-default-player.png"}
                 className="object-cover"
                 onError={(event) => {
-                  event.currentTarget.src = "/assets/tradebattle-default-broker.png";
+                  event.currentTarget.src = "/assets/tradebattle-default-player.png";
                 }}
               />
               <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>

@@ -92,14 +92,14 @@ function ParticipantAvatarStack({ participants, totalCount }: {
       {shown.map((p) => (
         <Avatar key={p.userId} className="w-7 h-7">
           <AvatarImage
-            src={p.profilePicture || "/assets/tradebattle-default-broker.png"}
+            src={p.profilePicture || "/assets/tradebattle-default-player.png"}
             className="object-cover"
             onError={(event) => {
-              event.currentTarget.src = "/assets/tradebattle-default-broker.png";
+              event.currentTarget.src = "/assets/tradebattle-default-player.png";
             }}
           />
           <AvatarFallback className="overflow-hidden" style={{ backgroundColor: '#081622', border: '2px solid #0A1C2C' }}>
-            <img src="/assets/tradebattle-default-broker.png" alt="" className="h-full w-full object-cover" />
+            <img src="/assets/tradebattle-default-player.png" alt="" className="h-full w-full object-cover" />
           </AvatarFallback>
         </Avatar>
       ))}

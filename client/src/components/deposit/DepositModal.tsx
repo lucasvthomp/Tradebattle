@@ -26,6 +26,8 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
     { id: 'ltc', name: 'Litecoin', network: 'LTC', icon: 'Ł', color: '#345D9D' },
   ];
 
+  const selectedCurrencyMeta = currencies.find((currency) => currency.id === selectedCurrency);
+
   // Fetch minimum when currency selected
   useEffect(() => {
     if (selectedCurrency) {
@@ -203,7 +205,27 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <ArrowLeft size={20} />
               </button>
             )}
-            <Wallet size={24} color="#67E7BF" />
+            {selectedCurrencyMeta ? (
+              <div
+                aria-label={`Selected ${selectedCurrencyMeta.name}`}
+                style={{
+                  width: '34px',
+                  height: '34px',
+                  borderRadius: '10px',
+                  background: `${selectedCurrencyMeta.color}20`,
+                  color: selectedCurrencyMeta.color,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '20px',
+                  fontWeight: '700',
+                }}
+              >
+                {selectedCurrencyMeta.icon}
+              </div>
+            ) : (
+              <Wallet size={24} color="#67E7BF" />
+            )}
             <h2 style={{ color: '#C9D1E2', fontSize: '20px', fontWeight: '600', margin: 0 }}>
               Add arena cash
             </h2>

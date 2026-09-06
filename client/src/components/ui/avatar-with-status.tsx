@@ -13,11 +13,11 @@ interface AvatarWithStatusProps {
   showBorder?: boolean;
 }
 
-const defaultAvatar = "/assets/tradebattle-default-broker.png";
+const defaultAvatar = "/assets/tradebattle-default-player.png";
 
 /**
  * One profile renderer for the directory, rankings, chat, and profile views.
- * Missing or broken images always use the same neutral broker avatar.
+ * Missing or broken images always use the same neutral player avatar.
  */
 export function AvatarWithStatus({
   src,

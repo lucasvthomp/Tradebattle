@@ -111,7 +111,6 @@ export default function Blitz() {
     return (
       <div className="arena-page-shell blitz-page">
         <div className="blitz-shell">
-          <BlitzHeader />
           <BlitzRoundboard />
           <section className="blitz-card blitz-auth-card">
             <div className="blitz-icon-box"><Swords size={25} /></div>
@@ -128,7 +127,6 @@ export default function Blitz() {
   return (
     <div className="arena-page-shell blitz-page">
       <div className="blitz-shell">
-        <BlitzHeader />
           <BlitzRoundboard />
 
         {activeBlitz && (
@@ -197,23 +195,13 @@ export default function Blitz() {
   );
 }
 
-function BlitzHeader() {
-  return (
-    <header className="blitz-header">
-      <div><p className="blitz-kicker">LIVE FORMAT</p><h1>Blitz</h1><p>One board. One rival. Five minutes.</p></div>
-      <div className="blitz-header-mark"><Zap size={19} /></div>
-    </header>
-  );
-}
-
-
 function BlitzRoundboard() {
   return (
     <section className="blitz-roundboard" aria-labelledby="blitz-roundboard-title">
       <div className="blitz-roundboard-copy">
-        <span className="blitz-kicker">THE FAST LANE</span>
-        <h2 id="blitz-roundboard-title">Make the board blink.</h2>
-        <p>Read the tape, commit to a line, and leave the table with a clean win.</p>
+        <span className="blitz-kicker">BLITZ</span>
+        <h2 id="blitz-roundboard-title">Five minutes. One rival.</h2>
+        <p>Queue for a focused head-to-head market round.</p>
         <div className="blitz-roundboard-stats">
           <span><strong>05:00</strong> on the clock</span>
           <span><strong>1v1</strong> head-to-head</span>

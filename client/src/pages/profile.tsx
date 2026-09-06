@@ -586,12 +586,12 @@ export default function Profile() {
                     style={{ border: '2px solid #0E2040' }}
                   >
                     <img
-                      src={user.profilePicture || "/assets/tradebattle-default-broker.png"}
+                      src={user.profilePicture || "/assets/tradebattle-default-player.png"}
                       alt="Profile"
                       className="h-full w-full object-cover"
                       style={{ borderRadius: '0.75rem' }}
                       onError={(event) => {
-                        event.currentTarget.src = "/assets/tradebattle-default-broker.png";
+                        event.currentTarget.src = "/assets/tradebattle-default-player.png";
                       }}
                     />
                     {/* Online status indicator - positioned at perfect square corner */}

@@ -4,7 +4,6 @@ import { Trophy, TrendingUp, DollarSign, Crown, Award, Medal, Zap, ArrowUp, User
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { useQuery } from "@tanstack/react-query";
-import { AvatarFallback } from "@/components/ui/avatar";
 import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
 import { Badge } from "@/components/ui/badge";
 
@@ -33,18 +32,12 @@ export default function Leaderboard() {
   return (
     <div className="arena-page-shell leaderboard-page">
       <div className="mx-auto w-full max-w-4xl px-4 py-8 md:px-6 md:py-12">
-        <header className="mb-7 border-b pb-7" style={{ borderColor: "var(--site-edge)" }}>
-          <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Competitive record / 01</p>
-          <div className="flex items-center gap-3"><div className="flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}><Trophy size={20} /></div><div><h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rankings</h1><p className="mt-1 text-sm" style={{ color: "#8da2b5" }}>{rankings.length ? `${rankings.length} players on the board` : "Track the players setting the pace."}</p></div></div>
-        </header>
-
-
-        {rankings.length > 0 && (
+        {(
           <section className="rankings-podium" aria-labelledby="podium-title">
             <div className="rankings-podium-copy">
-              <span className="rankings-podium-kicker">THE TOP TABLE</span>
-              <h2 id="podium-title">Own the board.</h2>
-              <p>The players setting the pace this round.</p>
+              <span className="rankings-podium-kicker">ON THE BOARD</span>
+              <h2 id="podium-title">Rankings</h2>
+              <p>The players setting the pace.</p>
               <img className="rankings-podium-trophy" src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" />
             </div>
             <div className="rankings-podium-stage">

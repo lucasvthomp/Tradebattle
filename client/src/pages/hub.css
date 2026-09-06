@@ -1019,3 +1019,68 @@
     height: 66px;
   }
 }
+
+
+/* Current hub polish: one overview strip, one tournament promo, less chrome. */
+.hub-overview-bar {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 14px 0 12px;
+  padding: 8px;
+  border: 1px solid rgba(103, 231, 191, 0.16);
+  border-radius: 12px;
+  background: rgba(11, 27, 42, 0.88);
+}
+.hub-overview-item {
+  min-width: 0;
+  padding: 10px 12px;
+  border-right: 1px solid rgba(118, 169, 198, 0.12);
+}
+.hub-overview-item:last-child { border-right: 0; }
+.hub-overview-label,
+.hub-overview-note {
+  display: block;
+  color: #7890a4;
+  font-size: 10px;
+}
+.hub-overview-label {
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.hub-overview-value {
+  display: block;
+  margin-top: 5px;
+  font-family: "Courier New", monospace;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+.hub-overview-note { margin-top: 3px; color: #60788f; }
+.hub-feature-banner {
+  min-height: 168px;
+  margin-top: 0;
+  background:
+    linear-gradient(90deg, rgba(7, 20, 33, 0.96) 0%, rgba(7, 20, 33, 0.78) 48%, rgba(7, 20, 33, 0.52) 100%),
+    url("/assets/tradebattle-trophy-wallpaper.jpg") center / cover,
+    #0b1b2a;
+}
+.hub-feature-banner::before { z-index: 1; }
+.hub-feature-copy { z-index: 2; }
+.hub-feature-copy > p:not(.hub-feature-kicker) { max-width: 540px; }
+.hub-feature-action {
+  color: #06151c;
+  text-decoration: none;
+}
+.hub-main-grid { margin-top: 12px; }
+.hub-live-panel-full { margin-top: 12px; }
+@media (max-width: 680px) {
+  .hub-overview-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hub-overview-item:nth-child(2) { border-right: 0; }
+  .hub-overview-item:nth-child(-n+2) { border-bottom: 1px solid rgba(118, 169, 198, 0.12); }
+  .hub-feature-banner { min-height: 184px; padding: 21px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hub-overview-bar, .hub-feature-banner { animation: none; }
+}

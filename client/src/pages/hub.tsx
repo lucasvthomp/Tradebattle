@@ -1,29 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowUpRight, BarChart3, ChevronRight, Trophy, Zap } from "lucide-react";
+import { ArrowUpRight, BarChart3, ChevronRight, Trophy, TrendingUp, Zap } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import "./hub.css";
-
-function computeLevel(wins: number, trades: number) {
-  const xp = wins * 120 + trades * 8;
-  const level = Math.floor(Math.sqrt(xp / 40)) + 1;
-  const currentLevelXP = Math.pow(level - 1, 2) * 40;
-  const nextLevelXP = Math.pow(level, 2) * 40;
-  const progress = nextLevelXP === currentLevelXP
-    ? 100
-    : Math.round(((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
-  return { level, xp, progress: Math.min(progress, 100) };
-}
-
-function getRankTitle(level: number) {
-  if (level >= 50) return { title: "Legend", color: "#ef8f9a" };
-  if (level >= 30) return { title: "Elite", color: "#67e7bf" };
-  if (level >= 20) return { title: "Expert", color: "#9bd2bd" };
-  if (level >= 12) return { title: "Veteran", color: "#71d8bf" };
-  if (level >= 6) return { title: "Market Runner", color: "#67e7bf" };
-  return { title: "Rookie", color: "#91a6ba" };
-}
 
 const fadeIn = {
   initial: { opacity: 0, y: 10 },
@@ -47,7 +27,7 @@ function HubMarketChart() {
         <circle className="hub-chart-dot" cx="674" cy="90" r="6" />
         <g transform="translate(594 45)">
           <rect className="hub-chart-tag" width="84" height="25" rx="6" />
-          <text className="hub-chart-tag-text" x="12" y="16">LIVE READ</text>
+          <text className="hub-chart-tag-text" x="12" y="16">MARKET READ</text>
         </g>
       </svg>
     </div>
@@ -56,26 +36,19 @@ function HubMarketChart() {
 
 export default function Hub() {
   const { user } = useAuth();
-  const [, navigate] = useLocation();
   const { data: tournamentsData } = useQuery({ queryKey: ["/api/tournaments"] });
   const activeTournaments = (tournamentsData as any)?.data?.filter((t: any) => t.status === "active") || [];
 
-  const wins = user?.tournamentWins || 0;
-  const trades = user?.totalTrades || 0;
-  const { level, xp, progress } = computeLevel(wins, trades);
-  const { title: rankTitle, color: rankColor } = getRankTitle(level);
-  const balance = (Number(user?.siteCash) || 0).toFixed(2);
-  const tagline = activeTournaments.length > 0
-    ? `${activeTournaments.length} arena${activeTournaments.length > 1 ? "s" : ""} live now`
-    : "Pick a mode.";
-  const ctaHref = activeTournaments.length > 0 ? "/dashboard" : "/tournaments";
-  const ctaLabel = activeTournaments.length > 0 ? "Open live arena" : "Browse arenas";
+  const wins = Number(user?.tournamentWins || 0);
+  const trades = Number(user?.totalTrades || 0);
+  const balance = Number(user?.siteCash || 0);
+  const momentumUp = wins > 0;
 
-  const stats = [
-    { label: "Buying power", value: `$${balance}`, detail: "Virtual balance", color: "#67e7bf" },
-    { label: "Tournament wins", value: String(wins), detail: "Career record", color: "#71d8bf" },
-    { label: "Live arenas", value: String(activeTournaments.length), detail: "Available now", color: "#f2c76a" },
-    { label: "Trades", value: String(trades), detail: "Trades logged", color: "#9ab5c2" },
+  const overviewItems = [
+    { label: "Tournaments", value: String(activeTournaments.length), note: "Open now", tone: "#f2c76a" },
+    { label: "Buying power", value: `$${balance.toFixed(2)}`, note: "Arena cash", tone: "#67e7bf" },
+    { label: "Record", value: `${wins} win${wins === 1 ? "" : "s"}`, note: "Tournament wins", tone: "#9bd2bd" },
+    { label: "Momentum", value: momentumUp ? `+${wins} win${wins === 1 ? "" : "s"}` : "Flat", note: "Your current run", tone: momentumUp ? "#67e7bf" : "#91a6ba" },
   ];
 
   return (
@@ -83,51 +56,33 @@ export default function Hub() {
       <div className="hub-shell">
         <motion.header className="hub-topbar" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35 }}>
           <div>
-            <p className="hub-kicker">HOME BASE</p>
+            <p className="hub-kicker">THE HUB</p>
             <h1 className="hub-title">Welcome back, {user?.username ?? "player"}.</h1>
-            <p className="hub-subtitle">{tagline}</p>
           </div>
-          <div className="hub-top-actions">
-            <span className="hub-rank-chip">{rankTitle} · LV.{level}</span>
-          </div>
+          <Link href="/tournaments" className="hub-outline-action">
+            Browse tournaments <ArrowUpRight size={15} />
+          </Link>
         </motion.header>
 
-        <motion.section className="hub-feature-banner" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.04 }}>
-          <div className="hub-feature-copy">
-            <p className="hub-feature-kicker"><span className="hub-live-dot" /> LIVE ARENAS</p>
-            <h2>{activeTournaments.length ? "Join a live arena." : "Ready to play?"}</h2>
-            <p>Choose a mode and start a match.</p>
-            <button type="button" className="hub-feature-action" onClick={() => navigate(ctaHref)}>
-              {ctaLabel}<ArrowUpRight size={15} />
-            </button>
-          </div>
-          <img className="hub-feature-art" src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" />
-        </motion.section>
-
-        <motion.section className="hub-loadout" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.055 }} aria-labelledby="hub-loadout-title">
-          <div className="hub-loadout-copy">
-            <span className="hub-panel-label">SHORTCUTS</span>
-            <h2 id="hub-loadout-title">Start here.</h2>
-            <p>Open a mode or check your progress.</p>
-          </div>
-          <div className="hub-loadout-items" aria-label="Market kit icons">
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" /><span>Market</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>Arenas</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Blitz</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Rewards</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-reward-chest.png" alt="" aria-hidden="true" /><span>Settings</span></div>
-            <div className="hub-loadout-item"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Rankings</span></div>
-          </div>
-        </motion.section>
-
-        <motion.section className="hub-stat-grid" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.06 }} aria-label="Player stats">
-          {stats.map((stat) => (
-            <div key={stat.label} className="hub-stat-card" style={{ "--stat-color": stat.color } as React.CSSProperties}>
-              <span className="hub-stat-label">{stat.label}</span>
-              <strong className="hub-stat-value">{stat.value}</strong>
-              <span className="hub-stat-detail">{stat.detail}</span>
+        <motion.section className="hub-overview-bar" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.03 }} aria-label="Player overview">
+          {overviewItems.map((item) => (
+            <div key={item.label} className="hub-overview-item">
+              <span className="hub-overview-label">{item.label}</span>
+              <strong className="hub-overview-value" style={{ color: item.tone }}>{item.value}</strong>
+              <span className="hub-overview-note">{item.note}</span>
             </div>
           ))}
+        </motion.section>
+
+        <motion.section className="hub-feature-banner" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.06 }}>
+          <div className="hub-feature-copy">
+            <p className="hub-feature-kicker"><span className="hub-live-dot" /> NEXT MATCH</p>
+            <h2>{activeTournaments.length > 0 ? "Join a live arena." : "Take the next spot."}</h2>
+            <p>Pick a tournament, read the board, and make your opening move.</p>
+            <Link href="/tournaments" className="hub-feature-action">
+              {activeTournaments.length > 0 ? "Join live arena" : "Browse tournaments"} <ArrowUpRight size={15} />
+            </Link>
+          </div>
         </motion.section>
 
         <div className="hub-main-grid">
@@ -143,19 +98,19 @@ export default function Hub() {
 
           <motion.section className="hub-panel hub-launch-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.18 }}>
             <div className="hub-panel-heading">
-              <div><h2>Game modes</h2><p>Pick a mode.</p></div>
-              <span className="hub-panel-label">Select mode</span>
+              <div><h2>Game modes</h2><p>Choose your next match.</p></div>
+              <span className="hub-panel-label">Play</span>
             </div>
             <div className="hub-launch-list">
               <Link href="/tournaments" className="hub-launch-card">
                 <span className="hub-launch-icon gold"><Trophy size={18} /></span>
-                <span className="hub-launch-copy"><strong>Arenas</strong><span>Open matches · {activeTournaments.length} live</span></span>
+                <span className="hub-launch-copy"><strong>Arenas</strong><span>Open tournament rooms</span></span>
                 <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
               <Link href="/blitz" className="hub-launch-card">
                 <span className="hub-launch-icon purple"><Zap size={18} /></span>
-                <span className="hub-launch-copy"><strong>Blitz</strong><span>Head-to-head · 5 minutes</span></span>
+                <span className="hub-launch-copy"><strong>Blitz</strong><span>Head-to-head in five minutes</span></span>
                 <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" />
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
@@ -163,39 +118,27 @@ export default function Hub() {
           </motion.section>
         </div>
 
-        <div className="hub-lower-grid">
-          <motion.section className="hub-panel hub-live-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.24 }}>
-            <div className="hub-panel-heading">
-              <div><h2>Live arenas</h2><p>Join an open match.</p></div>
-              {activeTournaments.length > 0 && <span className="hub-live-chip"><span className="hub-live-dot" />Live</span>}
+        <motion.section className="hub-panel hub-live-panel hub-live-panel-full" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.24 }}>
+          <div className="hub-panel-heading">
+            <div><h2>Live arenas</h2><p>Join an open match.</p></div>
+            {activeTournaments.length > 0 && <span className="hub-live-chip"><span className="hub-live-dot" />Live</span>}
+          </div>
+          {activeTournaments.length > 0 ? (
+            <div className="hub-live-list">
+              {activeTournaments.slice(0, 4).map((t: any) => (
+                <Link key={t.id} href={`/tournament/${t.id}`} className="hub-live-row">
+                  <span />
+                  <span className="hub-live-name">{t.name}</span>
+                  <span className="hub-live-count">{t.participantCount || 0}/{t.maxPlayers}</span>
+                  <ChevronRight size={14} />
+                </Link>
+              ))}
+              {activeTournaments.length > 4 && <Link href="/tournaments" className="hub-outline-action">See all arenas <ArrowUpRight size={14} /></Link>}
             </div>
-            {activeTournaments.length > 0 ? (
-              <div className="hub-live-list">
-                {activeTournaments.slice(0, 4).map((t: any) => (
-                  <Link key={t.id} href={`/tournament/${t.id}`} className="hub-live-row">
-                    <span />
-                    <span className="hub-live-name">{t.name}</span>
-                    <span className="hub-live-count">{t.participantCount || 0}/{t.maxPlayers}</span>
-                    <ChevronRight size={14} />
-                  </Link>
-                ))}
-                {activeTournaments.length > 4 && <Link href="/tournaments" className="hub-outline-action">See all {activeTournaments.length} arenas <ArrowUpRight size={14} /></Link>}
-              </div>
-            ) : (
-              <div className="hub-empty-state"><strong>No live arenas.</strong><p>Browse the upcoming matches.</p><Link href="/tournaments">Browse upcoming arenas →</Link></div>
-            )}
-          </motion.section>
-
-          <motion.section className="hub-panel hub-progress-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.3 }}>
-            <div className="hub-panel-heading"><div><h2>Level progress</h2><p>Your current progress.</p></div><span className="hub-panel-label">Current level</span></div>
-            <div className="hub-progress-body" style={{ "--rank-color": rankColor } as React.CSSProperties}>
-              <div className="hub-progress-head"><strong className="hub-progress-rank">{rankTitle}</strong><span className="hub-progress-level">LEVEL {level}</span></div>
-              <div className="hub-progress-bar"><span style={{ width: `${progress}%` }} /></div>
-              <div className="hub-progress-copy"><span>{xp} XP banked</span><span>{progress}% to next level</span></div>
-              <div className="hub-progress-metrics"><div className="hub-progress-metric"><span>Wins</span><strong>{wins}</strong></div><div className="hub-progress-metric"><span>Trades</span><strong>{trades}</strong></div></div>
-            </div>
-          </motion.section>
-        </div>
+          ) : (
+            <div className="hub-empty-state"><strong>No live arenas.</strong><p>Browse the upcoming matches.</p><Link href="/tournaments">Browse upcoming arenas →</Link></div>
+          )}
+        </motion.section>
       </div>
     </div>
   );
