@@ -2395,7 +2395,7 @@
 /* September contrast, density, and payment pass */
 /* No visible text is pure black on the dark arena surfaces. */
 .tradebattle-site .text-black,
-.tradebattle-site .hover\\:text-black:hover,
+.tradebattle-site .hover\:text-black:hover,
 .tradebattle-site [style*="color: #000"],
 .tradebattle-site [style*="color:#000"],
 .tradebattle-site [style*="color: #000000"],
