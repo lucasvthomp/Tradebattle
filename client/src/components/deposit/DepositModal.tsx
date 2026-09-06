@@ -492,7 +492,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 </div>
               </div>
 
-              {              {/* Amount */}
+                            {/* Amount */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ color: '#8A93A6', fontSize: '13px', marginBottom: '8px', display: 'block' }}>
                   Amount to send
@@ -534,7 +534,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 </div>
               </div>
 
-/* Status */}
+              {/* Status */}
               <div style={{
                 background: 'rgba(0, 163, 255, 0.1)',
                 border: '1px solid #67E7BF',

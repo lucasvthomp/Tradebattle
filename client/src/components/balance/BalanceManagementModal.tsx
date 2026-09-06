@@ -633,7 +633,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     </div>
                   </div>
 
-                  {              {/* Amount */}
+                                    {/* Amount */}
               <div className="space-y-2">
                 <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
                   Amount to send
@@ -660,7 +660,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                 </div>
               </div>
 
-/* Status */}
+                  {/* Status */}
                   <Alert className="border-2" style={{
                     background: 'rgba(103, 231, 191, 0.08)',
                     borderColor: '#67E7BF',

@@ -596,7 +596,7 @@ export default function Deposit() {
               Send payment
             </h3>
 
-            {            {/* QR Code */}
+                        {/* QR Code */}
             <div className="deposit-qr-frame" style={{
               background: 'rgba(103, 231, 191, 0.06)',
               padding: '6px',
@@ -624,7 +624,7 @@ export default function Deposit() {
               </div>
             </div>
 
-/* Address */}
+            {/* Address */}
             <div style={{ marginBottom: '24px' }}>
               <label style={{
                 color: '#8A93A6',
@@ -673,7 +673,7 @@ export default function Deposit() {
               </div>
             </div>
 
-            {            {/* Amount */}
+                        {/* Amount */}
             <div style={{ marginBottom: '24px' }}>
               <label style={{
                 color: '#8A93A6',
@@ -721,7 +721,7 @@ export default function Deposit() {
               </div>
             </div>
 
-/* Status */}
+            {/* Status */}
             <div style={{
               background: 'rgba(0, 163, 255, 0.1)',
               border: '1px solid #67E7BF',
