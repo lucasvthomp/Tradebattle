@@ -1,11 +1,10 @@
-import { motion, AnimatePresence } from "framer-motion";
-import { createPortal } from "react-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Trophy,
   Calendar,
@@ -18,7 +17,6 @@ import {
   UserCheck,
   UserX,
   Clock as ClockIcon,
-  X,
   Crown,
 } from "lucide-react";
 
@@ -122,38 +120,25 @@ export function UserProfileModal({
   const trades = (tradesResponse as any)?.data || [];
 
   return (
-    <AnimatePresence>
-      {userId && typeof document !== "undefined" && createPortal(
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 z-40"
-            style={{ backgroundColor: "rgba(2, 10, 18, 0.78)", backdropFilter: "blur(3px)" }}
-          />
-
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-8 sm:pt-12"
-            role="dialog"
-            aria-modal="true"
-            onClick={(e) => e.target === e.currentTarget && onClose()}
-          >
-            <div
-              className="relative z-10 w-full max-w-md max-h-[calc(100dvh-32px)] overflow-y-auto"
-              style={{
-                backgroundColor: "#0B1B2A",
-                border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: "16px",
-              }}
-            >
+    <Dialog
+      open={Boolean(userId)}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
+      <DialogContent
+        className="profile-popout w-[calc(100%-2rem)] max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto border-0 p-0"
+        style={{
+          backgroundColor: "#0B1B2A",
+          border: "1px solid rgba(103,231,191,0.22)",
+          borderRadius: "16px",
+          color: "#F1F5F9",
+        }}
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>Player profile</DialogTitle>
+          <DialogDescription>Player profile and recent activity</DialogDescription>
+        </DialogHeader>
               {isLoadingProfile ? (
                 <div className="flex items-center justify-center py-16">
                   <div
@@ -224,15 +209,6 @@ export function UserProfileModal({
                           </div>
                         </div>
                       </div>
-                      <button
-                        onClick={onClose}
-                        className="p-1.5 rounded-lg transition-colors"
-                        style={{ color: "#8DA6B8" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.color = "#F1F5F9")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "#8DA6B8")}
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
                     </div>
 
                     {/* Stats */}
@@ -444,11 +420,8 @@ export function UserProfileModal({
                   </div>
                 </>
               )}
-            </div>
-          </motion.div>
-        </>,
-        document.body
-      )}
-    </AnimatePresence>
+
+      </DialogContent>
+    </Dialog>
   );
 }
