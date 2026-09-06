@@ -237,7 +237,7 @@ export function UserManagementDialog({ user, open, onOpenChange }: UserManagemen
                 <Badge className="text-xs" style={{ background: '#FF8C00', color: '#fff' }}>Deposits Frozen</Badge>
               )}
               {user.tournamentRestricted && (
-                <Badge className="text-xs" style={{ background: '#F2C76A', color: '#000' }}>Arena access restricted</Badge>
+                <Badge className="text-xs" style={{ background: '#F2C76A', color: '#F1F5F9' }}>Arena access restricted</Badge>
               )}
               {!user.banned && !user.withdrawalFrozen && !user.depositFrozen && !user.tournamentRestricted && (
                 <Badge variant="outline" className="text-xs" style={{ borderColor: '#67E7BF', color: '#67E7BF' }}>No Restrictions</Badge>
