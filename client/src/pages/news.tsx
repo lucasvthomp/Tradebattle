@@ -50,7 +50,7 @@ export default function NewsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
-              <h1 className="text-3xl md:text-5xl font-bold text-black mb-6">Market News & Analysis</h1>
+              <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-6">Market News & Analysis</h1>
               <p className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto">
                 Stay informed with our curated news and expert analysis. Real-time updates on market movements and research insights.
               </p>
@@ -133,7 +133,7 @@ export default function NewsPage() {
                                 {new Date(item.publishedAt!).toLocaleString()}
                               </span>
                             </div>
-                            <h3 className="text-xl font-bold text-black mb-2">{item.title}</h3>
+                            <h3 className="text-xl font-bold text-foreground mb-2">{item.title}</h3>
                             <p className="text-gray-600 mb-4">{item.description}</p>
                             <div className="flex items-center justify-between">
                               <span className="text-sm text-gray-500 capitalize">
@@ -175,7 +175,7 @@ export default function NewsPage() {
                 {/* Market Sentiment Tracker */}
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-bold text-black mb-4">Market Sentiment Tracker</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-4">Market Sentiment Tracker</h3>
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600">Overall Sentiment</span>
@@ -196,7 +196,7 @@ export default function NewsPage() {
                 {/* Research Calendar */}
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-bold text-black mb-4">Research Calendar</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-4">Research Calendar</h3>
                     <div className="space-y-3">
                       <div className="flex items-center space-x-3">
                         <div className="w-2 h-2 bg-black rounded-full"></div>
@@ -217,7 +217,7 @@ export default function NewsPage() {
                 {/* Trending Topics */}
                 <Card>
                   <CardContent className="p-6">
-                    <h3 className="text-lg font-bold text-black mb-4">Trending Topics</h3>
+                    <h3 className="text-lg font-bold text-foreground mb-4">Trending Topics</h3>
                     <div className="space-y-3">
                       {[
                         "Tech Sector Restructuring",
