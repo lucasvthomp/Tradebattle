@@ -284,7 +284,7 @@ export function TradingSidebar({
           </span>
         </div>
 
-        {/* Big balance */}}
+        {/* Big balance */}
         <div className="relative z-10">
           <div style={{ color: "#4B6080", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>
             Tournament Balance
