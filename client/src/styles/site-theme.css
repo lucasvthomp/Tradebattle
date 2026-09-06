@@ -2577,3 +2577,57 @@
   right: -5px !important;
   bottom: -5px !important;
 }
+
+
+/* Current cleanup: one compact arena header, a usable player modal, and no black text. */
+.tradebattle-site.arena-app .text-black,
+.tradebattle-site.arena-app [class*="text-black"] {
+  color: #f1f6f8 !important;
+}
+.tradebattle-site.arena-app .tournament-lobby-header-combined {
+  min-height: 190px;
+  padding: 22px 24px 18px !important;
+  border: 1px solid rgba(103, 231, 191, .18) !important;
+  border-radius: 14px !important;
+  background:
+    radial-gradient(circle at 84% 38%, rgba(103, 231, 191, .14), transparent 28%),
+    linear-gradient(135deg, #0b202f 0%, #071522 76%) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.035), 0 16px 32px rgba(0,0,0,.14);
+}
+.tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-header-art {
+  right: 22px;
+  bottom: -58px;
+  width: 220px;
+  opacity: .52;
+  z-index: 0;
+}
+.tradebattle-site.arena-app .tournament-lobby-header-combined > div {
+  z-index: 1;
+}
+.tradebattle-site.arena-app .tournament-lobby-header-combined h1 {
+  font-size: clamp(2.25rem, 5vw, 4rem) !important;
+}
+.tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-hero-stats {
+  margin-top: 16px;
+}
+.admin-page .admin-page-heading {
+  padding-bottom: 14px;
+}
+.admin-page .admin-page-kicker { display: none; }
+.admin-page .admin-tab-list > button { min-width: 82px; }
+@media (max-width: 780px) {
+  .tradebattle-site.arena-app .tournament-lobby-header-combined {
+    min-height: 0;
+    padding: 18px 16px 20px !important;
+  }
+  .tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-header-art {
+    right: -38px;
+    bottom: -42px;
+    width: 168px;
+    opacity: .28;
+  }
+  .tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-hero-stats {
+    max-width: 70%;
+    margin-top: 12px;
+  }
+}

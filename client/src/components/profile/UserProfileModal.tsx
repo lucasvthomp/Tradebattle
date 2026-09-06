@@ -34,7 +34,7 @@ export function UserProfileModal({
   const { toast } = useToast();
 
   // Fetch selected user profile
-  const { data: profileUser, isLoading: isLoadingProfile } = useQuery({
+  const { data: profileUser, isLoading: isLoadingProfile, isError: isProfileError } = useQuery({
     queryKey: ["/api/users/public", userId],
     enabled: !!userId,
     retry: 3,
@@ -131,7 +131,7 @@ export function UserProfileModal({
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 z-40"
-            style={{ backgroundColor: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+            style={{ backgroundColor: "rgba(2, 10, 18, 0.78)", backdropFilter: "blur(3px)" }}
           />
 
           {/* Modal */}
@@ -140,11 +140,13 @@ export function UserProfileModal({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 pt-8 sm:pt-12"
+            role="dialog"
+            aria-modal="true"
             onClick={(e) => e.target === e.currentTarget && onClose()}
           >
             <div
-              className="w-full max-w-md overflow-hidden"
+              className="relative z-10 w-full max-w-md max-h-[calc(100dvh-32px)] overflow-y-auto"
               style={{
                 backgroundColor: "#0B1B2A",
                 border: "1px solid rgba(255,255,255,0.1)",
@@ -158,6 +160,24 @@ export function UserProfileModal({
                     style={{ borderColor: "#67E7BF" }}
                   />
                 </div>
+              ) : !profileData ? (
+                <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full" style={{ background: "rgba(103,231,191,.10)", color: "#67E7BF" }}>
+                    <UserX className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-bold" style={{ color: "#F1F5F9" }}>{isProfileError ? "Player unavailable" : "Player profile not found"}</p>
+                    <p className="mt-1 text-sm" style={{ color: "#8DA6B8" }}>This profile could not be loaded.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="mt-2 rounded-lg px-4 py-2 text-sm font-bold"
+                    style={{ background: "#67E7BF", color: "#06151C" }}
+                  >
+                    Close
+                  </button>
+                </div>
               ) : (
                 <>
                   {/* Header */}
@@ -168,7 +188,7 @@ export function UserProfileModal({
                           className="w-14 h-14"
                           src={profileData?.profilePicture}
                           alt={profileData?.username}
-                          fallback={`${profileData?.username?.[0]?.toUpperCase() || ""}${profileData?.username?.[1]?.toUpperCase() || ""}`}
+                          fallback="TB"
                           lastActivity={profileData?.lastActivity}
                           statusSize="md"
                         />
@@ -190,8 +210,8 @@ export function UserProfileModal({
                             )}
                           </div>
                           <div className="flex items-center gap-1 mt-0.5">
-                            <Calendar className="w-3 h-3" style={{ color: "#4B5563" }} />
-                            <span className="text-xs" style={{ color: "#4B5563" }}>
+                            <Calendar className="w-3 h-3" style={{ color: "#8DA6B8" }} />
+                            <span className="text-xs" style={{ color: "#8DA6B8" }}>
                               {t("memberSince")}{" "}
                               {profileData?.createdAt
                                 ? new Date(profileData.createdAt).toLocaleDateString("en-US", {
@@ -206,9 +226,9 @@ export function UserProfileModal({
                       <button
                         onClick={onClose}
                         className="p-1.5 rounded-lg transition-colors"
-                        style={{ color: "#4B5563" }}
+                        style={{ color: "#8DA6B8" }}
                         onMouseEnter={(e) => (e.currentTarget.style.color = "#F1F5F9")}
-                        onMouseLeave={(e) => (e.currentTarget.style.color = "#4B5563")}
+                        onMouseLeave={(e) => (e.currentTarget.style.color = "#8DA6B8")}
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -248,7 +268,7 @@ export function UserProfileModal({
                           <div className="text-base font-black" style={{ color: stat.color }}>
                             {stat.value}
                           </div>
-                          <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>
+                          <div className="text-[10px] mt-0.5" style={{ color: "#8DA6B8" }}>
                             {stat.label}
                           </div>
                         </div>
@@ -275,7 +295,7 @@ export function UserProfileModal({
                         {friendStatus?.status === "pending_sent" && (
                           <div
                             className="w-full py-2 rounded-lg text-sm font-semibold text-center"
-                            style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#64748B" }}
+                            style={{ backgroundColor: "rgba(255,255,255,0.05)", color: "#93A7B6" }}
                           >
                             <ClockIcon className="w-4 h-4 inline mr-1.5" />
                             Request Sent
@@ -326,7 +346,7 @@ export function UserProfileModal({
                             <button
                               onClick={() => removeFriendMutation.mutate(friendStatus.friendshipId)}
                               className="text-xs"
-                              style={{ color: "#4B5563" }}
+                              style={{ color: "#8DA6B8" }}
                             >
                               Remove
                             </button>
@@ -342,14 +362,14 @@ export function UserProfileModal({
                       <ArrowRightLeft className="w-3.5 h-3.5" style={{ color: "#67E7BF" }} />
                       <span
                         className="text-xs font-bold uppercase tracking-wider"
-                        style={{ color: "#4B5563" }}
+                        style={{ color: "#8DA6B8" }}
                       >
                         {t("recentTrades")}
                       </span>
                     </div>
                     {trades.length === 0 ? (
                       <div className="text-center py-6">
-                        <p className="text-sm" style={{ color: "#4B5563" }}>
+                        <p className="text-sm" style={{ color: "#8DA6B8" }}>
                           {t("noTradesYet")}
                         </p>
                       </div>
@@ -390,7 +410,7 @@ export function UserProfileModal({
                                 <p className="text-sm font-semibold" style={{ color: "#F1F5F9" }}>
                                   {trade.action === "buy" ? t("bought") : t("sold")} {trade.symbol}
                                 </p>
-                                <p className="text-xs" style={{ color: "#4B5563" }}>
+                                <p className="text-xs" style={{ color: "#8DA6B8" }}>
                                   {trade.shares} units @ ${parseFloat(trade.price).toFixed(2)}
                                 </p>
                               </div>
@@ -407,7 +427,7 @@ export function UserProfileModal({
                                   trade.totalValue || trade.shares * trade.price
                                 ).toFixed(2)}
                               </p>
-                              <p className="text-xs" style={{ color: "#4B5563" }}>
+                              <p className="text-xs" style={{ color: "#8DA6B8" }}>
                                 {trade.tradeDate
                                   ? new Date(trade.tradeDate).toLocaleDateString("en-US", {
                                       month: "short",

@@ -45,9 +45,9 @@ function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href
 }
 
 const steps = [
-  { number: "01", icon: <Swords aria-hidden="true" />, art: "/assets/tradebattle-chest-bell-v2.png", title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
-  { number: "02", icon: <TrendingUp aria-hidden="true" />, art: "/assets/tradebattle-chest-graph-v2.png", title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
-  { number: "03", icon: <Crown aria-hidden="true" />, art: "/assets/tradebattle-chest-trophy-v2.png", title: "Take the win", body: "Finish above the field when the clock hits zero." },
+  { number: "01", icon: <Swords aria-hidden="true" />, title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
+  { number: "02", icon: <TrendingUp aria-hidden="true" />, title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
+  { number: "03", icon: <Crown aria-hidden="true" />, title: "Take the win", body: "Finish above the field when the clock hits zero." },
 ];
 
 const modes = [
@@ -180,20 +180,6 @@ export default function UnauthenticatedHome() {
         </div>
       </section>
 
-      <section className="arena-collectibles" aria-labelledby="collectibles-title">
-        <div className="arena-collectibles-copy">
-          <p>BUILD YOUR KIT</p>
-          <h2 id="collectibles-title">Tools for the run.</h2>
-        </div>
-        <div className="arena-collectibles-items">
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" /><span>Market</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" /><span>Trade</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-money-bag-v2.png" alt="" aria-hidden="true" /><span>Rewards</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /><span>Rank</span></div>
-          <div className="arena-collectible"><img src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" /><span>Start</span></div>
-        </div>
-      </section>
-
       <section className="arena-section arena-modes" id="modes" aria-labelledby="modes-title">
         <div className="arena-section-heading">
           <p>PICK YOUR FORMAT</p>
@@ -202,7 +188,7 @@ export default function UnauthenticatedHome() {
         <div className="mode-grid">
           {modes.map((mode) => (
             <article className={`mode-card ${mode.className}`} key={mode.title}>
-              <div className="mode-card-top"><span className="mode-label">{mode.label}</span><span className="mode-card-art">{mode.icon}</span></div>
+              <div className="mode-card-top"><span className="mode-label">{mode.label}</span></div>
               <img className="mode-art-image" src={mode.art} alt="" aria-hidden="true" />
               <h3>{mode.title}</h3>
               <p>{mode.body}</p>
@@ -223,7 +209,6 @@ export default function UnauthenticatedHome() {
             <article className="how-step" key={step.number}>
               <span className="how-step-number">{step.number}</span>
               <span className="how-step-icon">{step.icon}</span>
-              <img className="how-step-art" src={step.art} alt="" aria-hidden="true" />
               <div><h3>{step.title}</h3><p>{step.body}</p></div>
             </article>
           ))}

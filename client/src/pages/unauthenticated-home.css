@@ -751,3 +751,23 @@
     padding-bottom: 6px;
   }
 }
+
+
+/* Final landing-page density pass: keep the game loop readable without stacking art on every row. */
+.arena-hero {
+  min-height: min(650px, calc(100dvh - 78px));
+  padding-top: 52px;
+  padding-bottom: 48px;
+}
+.arena-hero-layout { min-height: 0; }
+.arena-promo-rail { padding-top: 38px; padding-bottom: 16px; }
+.arena-promo-grid { gap: 12px; }
+.arena-section { padding-top: 48px; padding-bottom: 48px; }
+.arena-how { padding-top: 40px; padding-bottom: 40px; }
+.how-step { padding-top: 20px; padding-bottom: 20px; }
+.how-step-art { display: none !important; }
+@media (max-width: 760px) {
+  .arena-hero { min-height: auto; padding-top: 34px; padding-bottom: 34px; }
+  .arena-section { padding-top: 38px; padding-bottom: 38px; }
+  .arena-how { padding-top: 34px; padding-bottom: 34px; }
+}

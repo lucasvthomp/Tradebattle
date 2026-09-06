@@ -784,8 +784,7 @@ export default function Admin() {
           <div className="admin-page-heading">
             <div className="admin-page-mark"><Shield className="h-5 w-5" /></div>
             <div>
-              <p className="admin-page-kicker">Operator deck</p>
-              <h1 className="text-3xl font-black tracking-tight" style={{ color: '#C9D1E2' }}>Admin</h1>
+               <h1 className="text-3xl font-black tracking-tight" style={{ color: '#C9D1E2' }}>Admin</h1>
             </div>
           </div>
         </motion.div>
@@ -1038,7 +1037,7 @@ export default function Admin() {
                                 <Badge className="text-xs px-1.5 py-0" style={{ background: '#FF8C00', color: '#fff' }}>D-Frozen</Badge>
                               )}
                               {u.tournamentRestricted && (
-                                <Badge className="text-xs px-1.5 py-0" style={{ background: '#67E7BF', color: '#000' }}>T-Restricted</Badge>
+                                <Badge className="text-xs px-1.5 py-0" style={{ background: '#67E7BF', color: '#06151C' }}>T-Restricted</Badge>
                               )}
                               {!u.banned && !u.withdrawalFrozen && !u.depositFrozen && !u.tournamentRestricted && (
                                 <Badge variant="outline" className="text-xs px-1.5 py-0" style={{ borderColor: '#67E7BF', color: '#67E7BF' }}>Active</Badge>

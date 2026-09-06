@@ -20,7 +20,6 @@ import {
   TrendingUp,
   Bitcoin,
   Timer,
-  Shield,
   Lock,
   Crown,
   Play
@@ -382,24 +381,10 @@ export default function TournamentsPage() {
           variants={staggerChildren}
           className="space-y-6"
         >
-          <motion.div variants={fadeInUp} className="tournament-hero-strip">
-            <div className="tournament-hero-copy">
-              <p className="tournament-hero-kicker"><span className="tournament-live-dot" /> THE ARENA LOBBY</p>
-              <h2>Choose your board.</h2>
-              <p>Find a live field, lock in a matchup, and make your next clean read.</p>
-              <div className="tournament-hero-stats" aria-label="Arena summary">
-                <span><strong>{myActiveTournaments.length}</strong> Your live</span>
-                <span><strong>{otherLiveTournaments.length}</strong> On now</span>
-                <span><strong>{upcomingTournaments.length}</strong> Next up</span>
-              </div>
-            </div>
-            <img className="tournament-hero-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
-          </motion.div>
-
           {/* Header */}
           <motion.div variants={fadeInUp}>
             <div
-              className="tournament-lobby-header"
+              className="tournament-lobby-header tournament-lobby-header-combined"
               style={{
                 position: 'relative',
                 overflow: 'hidden',
@@ -408,7 +393,8 @@ export default function TournamentsPage() {
                 paddingBottom: '20px',
               }}
             >
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ position: 'relative', zIndex: 1 }}>
+              <img className="tournament-hero-art tournament-header-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
+               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ position: 'relative', zIndex: 1 }}>
                 <div>
                   <div className="flex items-center mb-1" style={{ gap: 'clamp(10px, 1.2vw, 18px)' }}>
                     {/* Trophy icon in glowing container */}
@@ -789,20 +775,6 @@ export default function TournamentsPage() {
             </div>
           </motion.div>
         </motion.div>
-        <motion.section className="tournament-brief-grid" variants={fadeInUp} aria-label="Arena briefing">
-          <div className="tournament-brief-card">
-            <span className="tournament-brief-icon"><TrendingUp size={17} /></span>
-            <div><strong>Read the market</strong><span>Every arena uses the same simulated tape for a fair fight.</span></div>
-          </div>
-          <div className="tournament-brief-card">
-            <span className="tournament-brief-icon"><Shield size={17} /></span>
-            <div><strong>Bring a plan</strong><span>Use your virtual balance, choose a side, and manage the clock.</span></div>
-          </div>
-          <div className="tournament-brief-card">
-            <span className="tournament-brief-icon"><Trophy size={17} /></span>
-            <div><strong>Climb the board</strong><span>Finish strong, collect the result, and keep your run moving.</span></div>
-          </div>
-        </motion.section>
       </div>
 
       {/* Tournament Management Dialog */}
