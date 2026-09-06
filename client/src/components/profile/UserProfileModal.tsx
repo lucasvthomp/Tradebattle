@@ -265,7 +265,7 @@ export function UserProfileModal({
                             className="w-full py-2 rounded-lg text-sm font-bold transition-all disabled:opacity-50"
                             style={{
                               background: "linear-gradient(135deg, #67E7BF, #20a35a)",
-                              color: "#000",
+                              color: "#F1F5F9",
                             }}
                           >
                             <UserPlus className="w-4 h-4 inline mr-1.5" />
@@ -291,7 +291,7 @@ export function UserProfileModal({
                               className="flex-1 py-2 rounded-lg text-sm font-bold"
                               style={{
                                 background: "linear-gradient(135deg, #67E7BF, #20a35a)",
-                                color: "#000",
+                                color: "#F1F5F9",
                               }}
                             >
                               <UserCheck className="w-4 h-4 inline mr-1" />
