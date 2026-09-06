@@ -79,12 +79,24 @@ export default function Deposit() {
     }
   }, [selectedCurrency]);
 
+  function getPaymentQrValue(paymentData: any): string {
+    const raw = paymentData?.pay_address ?? paymentData?.payin_address ?? paymentData?.address ?? '';
+    return typeof raw === 'string' ? raw.trim() : '';
+  }
+
+  function getDisplayAddress(raw: string): string {
+    if (!raw) return '';
+    if (/^https?:\/\//i.test(raw)) return raw;
+    const colonIdx = raw.indexOf(':');
+    return colonIdx > 0 && colonIdx < 20 ? raw.slice(colonIdx + 1).split('?')[0] : raw;
+  }
+
   // Copy address to clipboard
   async function copyAddress() {
-    if (!payment?.pay_address) return;
+    if (!getPaymentQrValue(payment)) return;
 
     try {
-      await navigator.clipboard.writeText(payment.pay_address);
+      await navigator.clipboard.writeText(getDisplayAddress(getPaymentQrValue(payment)));
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -575,7 +587,7 @@ export default function Deposit() {
               display: 'flex',
               justifyContent: 'center',
             }}>
-              <QRCodeSVG value={payment.pay_address} size={220} />
+              <QRCodeSVG value={getPaymentQrValue(payment)} size={220} includeMargin fgColor="#071522" bgColor="#ffffff" style={{ display: "block", maxWidth: "100%", height: "auto" }} />
             </div>
 
             {/* Address */}
@@ -605,7 +617,7 @@ export default function Deposit() {
                   wordBreak: 'break-all',
                   fontFamily: 'monospace',
                 }}>
-                  {payment.pay_address}
+                  {getDisplayAddress(getPaymentQrValue(payment))}
                 </code>
                 <button
                   onClick={copyAddress}
