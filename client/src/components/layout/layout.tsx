@@ -5,6 +5,7 @@ import Header from "./header";
 import { SimplifiedSidebar } from "./simplified-sidebar";
 import { PageTransition } from "@/components/ui/page-transition";
 import { SoundEffects } from "@/components/sound-effects";
+import { ThemeTestPanel } from "@/components/theme-test-panel";
 import "@/styles/site-theme.css";
 
 const ChatSidebar = React.lazy(() => import("@/components/chat/ChatSidebar"));
@@ -21,6 +22,7 @@ export default function Layout({ children, footer }: LayoutProps) {
   return (
     <div className={`min-h-dvh flex tradebattle-site ${user ? 'arena-app' : ''}`} style={{ backgroundColor: 'transparent' }}>
       <SoundEffects />
+      <ThemeTestPanel />
       {/* Simplified Sidebar - Only for authenticated users */}
       {user && <SimplifiedSidebar />}
 

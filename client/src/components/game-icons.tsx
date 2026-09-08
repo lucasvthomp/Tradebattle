@@ -15,18 +15,18 @@ export type GameIconName =
   | "trophy";
 
 const iconSources: Record<GameIconName, string> = {
-  bell: "/assets/tradebattle-icon-bell.png",
-  briefcase: "/assets/tradebattle-icon-briefcase.png",
-  chart: "/assets/tradebattle-icon-chart.png",
-  chest: "/assets/tradebattle-icon-chest.png",
-  coins: "/assets/tradebattle-icon-coins.png",
-  gift: "/assets/tradebattle-icon-gift.png",
-  lightning: "/assets/tradebattle-icon-lightning.png",
-  "market-tile": "/assets/tradebattle-icon-market-tile.png",
-  medal: "/assets/tradebattle-icon-medal.png",
-  shield: "/assets/tradebattle-icon-shield.png",
-  swords: "/assets/tradebattle-icon-swords.png",
-  trophy: "/assets/tradebattle-icon-trophy.png",
+  bell: "/assets/tradebattle-visuals/bell.png",
+  briefcase: "/assets/tradebattle-visuals/money-bag.png",
+  chart: "/assets/tradebattle-visuals/market-chart.png",
+  chest: "/assets/tradebattle-visuals/chest.png",
+  coins: "/assets/tradebattle-visuals/money-bag.png",
+  gift: "/assets/tradebattle-visuals/gift.png",
+  lightning: "/assets/tradebattle-visuals/lightning.png",
+  "market-tile": "/assets/tradebattle-visuals/market-chart.png",
+  medal: "/assets/tradebattle-visuals/medal.png",
+  shield: "/assets/tradebattle-visuals/shield.png",
+  swords: "/assets/tradebattle-visuals/swords.png",
+  trophy: "/assets/tradebattle-visuals/trophy.png",
 };
 
 type GameIconProps = {

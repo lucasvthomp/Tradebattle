@@ -2,10 +2,22 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import {
+  Archive,
+  Gift,
+  Home,
+  LifeBuoy,
+  Menu,
+  Settings,
+  Shield,
+  Swords,
+  Trophy,
+  Users,
+  Zap,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
-import { GameIcon, type GameIconName } from "@/components/game-icons";
 
 export function SimplifiedSidebar() {
   const { user } = useAuth();
@@ -16,23 +28,23 @@ export function SimplifiedSidebar() {
 
   const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: "market-tile" as GameIconName, iconColor: '#f3c65b' },
-      { href: "/tournaments", label: t('tournaments'), icon: "swords" as GameIconName, iconColor: '#f3c65b' },
-      { href: "/blitz", label: "Blitz", icon: "lightning" as GameIconName, iconColor: '#f3c65b' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: "trophy" as GameIconName, iconColor: '#f3c65b' },
-      { href: "/people", label: t('people'), icon: "medal" as GameIconName, iconColor: '#f3c65b' },
-      { href: "/shop", label: "Rewards", icon: "gift" as GameIconName, iconColor: '#f3c65b' },
-      { href: "/contact", label: t('support'), icon: "bell" as GameIconName, iconColor: '#b9afd8' },
+      { href: "/hub", label: t('hub'), icon: Home },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords },
+      { href: "/blitz", label: "Blitz", icon: Zap },
+      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
+      { href: "/people", label: t('people'), icon: Users },
+      { href: "/shop", label: "Rewards", icon: Gift },
+      { href: "/contact", label: t('support'), icon: LifeBuoy },
     ] : [
-      { href: "/contact", label: t('support'), icon: "bell" as GameIconName, iconColor: '#94A3B8' },
+      { href: "/contact", label: t('support'), icon: LifeBuoy },
     ]),
   ];
 
   const userItems = user ? [
-    { href: "/profile", label: t('settings'), icon: "briefcase" as GameIconName, iconColor: '#b9afd8' },
-    { href: "/archive", label: t('archive'), icon: "chest" as GameIconName, iconColor: '#b9afd8' },
+    { href: "/profile", label: t('settings'), icon: Settings },
+    { href: "/archive", label: t('archive'), icon: Archive },
     ...(user.subscriptionTier === 'administrator' || user.subscriptionTier === 'admin' ? [
-      { href: "/admin", label: "Admin", icon: "shield" as GameIconName, iconColor: '#f3c65b' }
+      { href: "/admin", label: "Admin", icon: Shield }
     ] : [])
   ] : [];
 
@@ -42,7 +54,7 @@ export function SimplifiedSidebar() {
     return false;
   };
 
-  const renderNavItem = (item: typeof navItems[0]) => (
+  const renderNavItem = (item: { href: string; label: string; icon: LucideIcon }) => (
     <div key={item.href}>
       <Link
         href={item.href}
@@ -60,12 +72,10 @@ export function SimplifiedSidebar() {
             : { color: 'var(--tb-text-muted)' }),
         }}
       >
-        <GameIcon
-          name={item.icon}
-          size={30}
-          className="tradebattle-nav-art flex-shrink-0"
+        <item.icon
+          aria-hidden="true"
+          className="h-5 w-5 flex-shrink-0"
           style={{
-            opacity: isActive(item.href) ? 1 : 0.52,
             marginRight: expanded ? '12px' : '0',
             transition: 'margin 300ms ease',
           }}
@@ -179,10 +189,9 @@ export function SimplifiedSidebar() {
                 justifyContent: 'flex-start',
               }}
             >
-              <GameIcon
-                name="gift"
-                size={30}
-                className="tradebattle-nav-art flex-shrink-0"
+              <Gift
+                aria-hidden="true"
+                className="h-5 w-5 flex-shrink-0"
                 style={{
                   marginRight: expanded ? '12px' : '0',
                   transition: 'margin 300ms ease',
@@ -194,7 +203,7 @@ export function SimplifiedSidebar() {
                   opacity: expanded ? 1 : 0,
                   maxWidth: expanded ? '140px' : '0',
                   transition: 'opacity 200ms ease, max-width 300ms ease',
-                  color: '#06151c',
+                  color: 'var(--tb-purple-950)',
                 }}
               >
                 Redeem Code
