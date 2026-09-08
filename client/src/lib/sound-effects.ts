@@ -4,8 +4,7 @@ let audioContext: AudioContext | null = null;
 
 function isMuted() {
   if (typeof window === "undefined") return true;
-  return window.localStorage.getItem("tradebattle-sound") === "muted"
-    || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return window.localStorage.getItem("tradebattle-sound") === "muted";
 }
 
 function getAudioContext() {

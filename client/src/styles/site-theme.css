@@ -3245,7 +3245,7 @@
   border-color: #403a50 !important;
 }
 
-.tradebattle-site .tradebattle-header button[aria-label*="chat" i] {
+.tradebattle-site .tradebattle-header button[aria-label*="chat"] {
   color: #f6c453 !important;
 }
 .tradebattle-site .tradebattle-header button[aria-label="Close chat"] {
@@ -3421,7 +3421,7 @@
   background: #fff4c7 !important;
 }
 
-.tradebattle-site .tradebattle-header button[aria-label*="chat" i] {
+.tradebattle-site .tradebattle-header button[aria-label*="chat"] {
   color: #f6c453 !important;
 }
 
