@@ -8,7 +8,17 @@ import {
   type PriceToCoordinateConverter,
   type Time,
 } from "lightweight-charts";
-import type { CanvasRenderingTarget2D } from "fancy-canvas";
+
+// lightweight-charts keeps this renderer type in its optional fancy-canvas
+// package. Keep the local contract small so a missing optional type package
+// cannot make the whole app fail its production type check.
+type CanvasRenderingTarget2D = {
+  useBitmapCoordinateSpace: (callback: (scope: {
+    context: CanvasRenderingContext2D;
+    horizontalPixelRatio: number;
+    verticalPixelRatio: number;
+  }) => void) => void;
+};
 
 export interface OhlcData extends CustomData<Time> {
   open: number;

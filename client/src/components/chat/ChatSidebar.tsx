@@ -138,11 +138,13 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
         <DropdownMenuTrigger asChild>
           <div className="cursor-pointer self-start">
             <Avatar className="w-9 h-9">
-              {group.profilePicture && (
-                <AvatarImage src={group.profilePicture} className="object-cover" />
-              )}
-              <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
-                <UserCircle className="w-5 h-5" style={{ color: '#4B5563' }} />
+              <AvatarImage
+                src={group.profilePicture || "/assets/tradebattle-default-broker-v2.png"}
+                alt={group.username}
+                className="object-cover"
+              />
+              <AvatarFallback style={{ backgroundColor: '#2d1958' }}>
+                <img src="/assets/tradebattle-default-broker-v2.png" alt="" aria-hidden="true" className="h-full w-full object-cover" />
               </AvatarFallback>
             </Avatar>
           </div>
@@ -523,8 +525,9 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
                       onMouseEnter={() => setMentionIndex(i)}
                     >
                       <Avatar className="w-5 h-5">
-                        <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
-                          <UserCircle className="w-3 h-3" style={{ color: '#4B5563' }} />
+                        <AvatarImage src="/assets/tradebattle-default-broker-v2.png" alt="" />
+                        <AvatarFallback style={{ backgroundColor: '#2d1958' }}>
+                          <img src="/assets/tradebattle-default-broker-v2.png" alt="" aria-hidden="true" className="h-full w-full object-cover" />
                         </AvatarFallback>
                       </Avatar>
                       <span className="font-medium" style={{ color: '#67E7BF' }}>@{u.username}</span>

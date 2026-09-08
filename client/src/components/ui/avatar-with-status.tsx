@@ -1,6 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatusIndicator, UserStatus, calculateUserStatus } from "@/components/ui/status-indicator";
-import { UserCircle } from "lucide-react";
 
 interface AvatarWithStatusProps {
   src?: string | null;
@@ -50,17 +49,26 @@ export function AvatarWithStatus({
       } : undefined}
     >
       <Avatar className="w-full h-full" style={{ borderRadius: borderRadius }}>
-        <AvatarImage src={src || undefined} alt={alt} className="object-cover" />
-        <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#0B1B2A' }}>
-          <UserCircle className="w-1/2 h-1/2" style={{ color: '#4B5563' }} />
+        <AvatarImage
+          src={src || "/assets/tradebattle-default-broker-v2.png"}
+          alt={alt || "Tradebattle player"}
+          className="object-cover"
+        />
+        <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#2d1958' }}>
+          <img
+            src="/assets/tradebattle-default-broker-v2.png"
+            alt=""
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+          />
         </AvatarFallback>
       </Avatar>
 
-      {/* Keep presence visible at the top edge instead of hiding it beneath the avatar frame. */}
-      <div className="tradebattle-avatar-status absolute top-0 right-0 z-10" style={{ transform: 'translate(24%, -24%)' }}>
+      {/* Presence sits on the lower edge of the square avatar so it never collides with a card header. */}
+      <div className="tradebattle-avatar-status absolute bottom-0 right-0 z-10" style={{ transform: 'translate(24%, 24%)' }}>
         <div
           className="rounded-full flex items-center justify-center"
-          style={{ backgroundColor: '#071522', padding: '3px', border: '1px solid rgba(103,231,191,.22)' }}
+          style={{ backgroundColor: '#140b2b', padding: '3px', border: '1px solid rgba(243,198,91,.35)' }}
         >
           <StatusIndicator status={userStatus} size={statusSize} />
         </div>

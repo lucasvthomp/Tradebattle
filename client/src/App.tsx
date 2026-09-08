@@ -70,7 +70,7 @@ function Router() {
 
   return (
     <>
-      <Layout>
+      <Layout footer={shouldShowFooter ? <Footer /> : null}>
         <Switch>
           {!user ? (
             <>
@@ -114,7 +114,6 @@ function Router() {
           )}
           <Route component={NotFound} />
         </Switch>
-        {shouldShowFooter && <Footer />}
       </Layout>
 
       {/* Tutorial tour overlay */}

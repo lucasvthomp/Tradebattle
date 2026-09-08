@@ -7,7 +7,8 @@ import {
   getPopularStocks,
   getStockPerformance,
   getAllSectors,
-  TimeFrame
+  TimeFrame,
+  isCryptoSymbol,
 } from '../services/yahooFinance.js';
 import { getExchangeRate, convertCurrency, getAllExchangeRates } from '../services/exchangeRates.js';
 import { getKeyStats } from '../services/keyStats.js';
@@ -1340,6 +1341,9 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
 
   // Check if tournament is completed (no trading allowed)
   const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
   if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
   }
@@ -1359,6 +1363,14 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
   }
 
   const cleanSymbol = sanitizeInput(symbol).toUpperCase();
+
+  if ((tournament.tournamentType === 'crypto') !== isCryptoSymbol(cleanSymbol)) {
+    throw new ValidationError(
+      tournament.tournamentType === 'crypto'
+        ? 'This crypto arena only accepts cryptocurrency symbols.'
+        : 'This stock arena only accepts stock symbols.'
+    );
+  }
 
   // Get user's tournament stock purchases for this symbol
   const allPurchases = await storage.getTournamentStockPurchases(tournamentId, userId);
@@ -1430,6 +1442,10 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
 
   const { symbol, companyName, shares } = req.body;
 
+  if (isNaN(tournamentId)) {
+    throw new ValidationError('Invalid tournament ID');
+  }
+
   if (!symbol || !companyName || !shares) {
     throw new ValidationError('Symbol, company name, and shares are required');
   }
@@ -1441,6 +1457,9 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
 
   // Check if tournament is completed (no trading allowed)
   const tournament = await storage.getTournamentById(tournamentId);
+  if (!tournament) {
+    throw new NotFoundError('Tournament not found');
+  }
   if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
   }
@@ -1462,6 +1481,13 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   // SECURITY: Never trust a client-supplied price. Fetch the authoritative
   // price server-side so a manipulated request cannot buy below market.
   const cleanSymbol = sanitizeInput(symbol).toUpperCase();
+  if ((tournament.tournamentType === 'crypto') !== isCryptoSymbol(cleanSymbol)) {
+    throw new ValidationError(
+      tournament.tournamentType === 'crypto'
+        ? 'This crypto arena only accepts cryptocurrency symbols.'
+        : 'This stock arena only accepts stock symbols.'
+    );
+  }
   let executionPrice: number;
   try {
     const quote = await getStockQuote(cleanSymbol);

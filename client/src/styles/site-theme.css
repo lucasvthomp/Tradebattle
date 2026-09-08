@@ -1893,6 +1893,40 @@ body {
   .tradebattle-site .tournament-hero-art { width: 116px !important; height: 116px !important; }
 }
 
+/* Final shell aliases: the older shell block used blue defaults with higher
+ * specificity than :root, so make every route inherit the current palette. */
+.tradebattle-site {
+  --site-bg: var(--tb-surface-900) !important;
+  --site-panel: var(--tb-surface-800) !important;
+  --site-panel-raised: var(--tb-surface-700) !important;
+  --site-edge: var(--tb-purple-edge) !important;
+  --site-text: var(--tb-text-strong) !important;
+  --site-muted: var(--tb-text-muted) !important;
+  --site-mint: var(--tb-accent) !important;
+  --arena-mint: var(--tb-accent) !important;
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: var(--tb-surface-850) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .tradebattle-footer {
+  margin-top: auto;
+  color: var(--tb-text-muted);
+}
+
+/* Stable mobile chat sheet: the toggle must open something on narrow screens. */
+@media (max-width: 767px) {
+  .tradebattle-site .chat-sidebar-panel {
+    border-left: 0 !important;
+    border-top: 1px solid var(--tb-purple-edge) !important;
+    max-height: calc(100dvh - 4rem) !important;
+  }
+}
+
 /* Trading floor: one calm purple/gold system with clear execution states. */
 .tradebattle-site .trading-page {
   background: #140b2b !important;

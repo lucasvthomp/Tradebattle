@@ -469,7 +469,7 @@ export default function Admin() {
   });
 
   // Check if user is admin (based on subscription tier or username)
-  const isAdmin = user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS';
+  const isAdmin = user?.subscriptionTier === 'administrator' || user?.subscriptionTier === 'admin';
 
   // Redirect if not admin
   useEffect(() => {

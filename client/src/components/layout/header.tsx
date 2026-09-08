@@ -89,7 +89,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    {(user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS') && (
+                    {(user?.subscriptionTier === 'administrator' || user?.subscriptionTier === 'admin') && (
                       <>
                         <DropdownMenuSeparator />
                         <Link href="/admin">
@@ -291,7 +291,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   </Link>
 
                   {/* Admin Link */}
-                  {(user?.subscriptionTier === 'administrator' || user?.username === 'LUCAS') && (
+                  {(user?.subscriptionTier === 'administrator' || user?.subscriptionTier === 'admin') && (
                     <Link href="/admin">
                       <Button
                         variant="ghost"

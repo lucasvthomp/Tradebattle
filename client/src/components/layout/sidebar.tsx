@@ -43,7 +43,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       { href: "/people", label: t('people'), icon: Users },
       { href: "/shop", label: "Shop", icon: ShoppingBag },
       { href: "/contact", label: "Support", icon: Phone },
-      ...(user.username === "LUCAS" ? [{ href: "/admin", label: "Admin", icon: Shield }] : []),
+      ...(user.subscriptionTier === "administrator" || user.subscriptionTier === "admin" ? [{ href: "/admin", label: "Admin", icon: Shield }] : []),
     ] : [
       { href: "/contact", label: "Support", icon: Phone },
     ]),

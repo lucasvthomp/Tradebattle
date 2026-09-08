@@ -11,9 +11,10 @@ const ChatSidebar = React.lazy(() => import("@/components/chat/ChatSidebar"));
 
 interface LayoutProps {
   children: React.ReactNode;
+  footer?: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function Layout({ children, footer }: LayoutProps) {
   const { user } = useAuth();
   const { chatOpen, toggleChat } = useChatContext();
 
@@ -45,7 +46,7 @@ export default function Layout({ children }: LayoutProps) {
 
           {/* Chat Sidebar - fixed position, independent of page scroll - Hidden on mobile portrait */}
           {user && chatOpen && (
-            <div className="hidden md:block fixed right-0 top-16 w-80 h-[calc(100dvh-4rem)] z-40">
+            <div className="fixed right-0 top-16 w-full md:w-80 h-[calc(100dvh-4rem)] z-40">
               <Suspense fallback={null}>
                 <ChatSidebar
                   isOpen={chatOpen}
@@ -55,6 +56,7 @@ export default function Layout({ children }: LayoutProps) {
             </div>
           )}
         </div>
+        {footer}
       </div>
     </div>
   );

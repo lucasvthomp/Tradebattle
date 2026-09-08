@@ -218,9 +218,7 @@ export function TournamentSuccessDialog({
                     >
                       <div className="flex items-center space-x-3">
                         <Avatar className="w-9 h-9 md:w-10 md:h-10">
-                          {friend.profilePicture && (
-                            <AvatarImage src={friend.profilePicture} className="object-cover" />
-                          )}
+                          <AvatarImage src={friend.profilePicture || "/assets/tradebattle-default-broker-v2.png"} className="object-cover" />
                           <AvatarFallback style={{ backgroundColor: '#0B1B2A', color: '#67E7BF' }}>
                             {String(friend.username || 'Player').slice(0, 2).toUpperCase()}
                           </AvatarFallback>
