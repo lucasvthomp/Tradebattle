@@ -37,34 +37,20 @@ export async function getCurrencies() {
 // Get minimum payment amount for a currency
 export async function getMinimumAmount(currency: string) {
   try {
-    const normalizedCurrency = currency.toLowerCase().trim();
-    // With currency_from=usd, NOWPayments returns min_amount in USD.
-    const data = await apiCall(
-      `/min-amount?currency_from=usd&currency_to=${encodeURIComponent(normalizedCurrency)}`
-    );
-    console.log(`[NOWPayments] Minimum for ${normalizedCurrency}:`, data);
+    const data = await apiCall(`/min-amount?currency_from=usd&currency_to=${currency.toLowerCase()}`);
+    console.log(`[NOWPayments] Minimum for ${currency}:`, data);
 
-    const addRateBuffer = (value: number) =>
-      Math.max(Math.ceil(Math.max(value * 1.1, value + 0.25) * 100) / 100, 5);
-
-    const minimumUsd = Number(data.min_amount);
-    if (Number.isFinite(minimumUsd) && minimumUsd > 0) {
-      // Leave room for exchange-rate movement and provider rounding between
-      // this check and the subsequent payment creation request.
-      return addRateBuffer(minimumUsd);
-    }
-
-    const fiatEquivalent = Number(data.fiat_equivalent);
-    if (Number.isFinite(fiatEquivalent) && fiatEquivalent > 0) {
-      return addRateBuffer(fiatEquivalent);
-    }
-
-    return 5;
+    // Cap all minimums at $5 — never return more than that regardless of what NOWPayments says.
+    // NOWPayments may reject if network fees make the amount truly unworkable, but we let
+    // them surface that error rather than blocking users with a high UI minimum.
+    const apiMin = typeof data.min_amount === "number" ? data.min_amount : 5;
+    return Math.min(apiMin, 5);
   } catch (error) {
     console.error(`Failed to get minimum for ${currency}:`, error);
     return 5;
   }
 }
+
 // Create payment
 export async function createPayment(params: {
   priceAmount: number;

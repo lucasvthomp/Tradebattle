@@ -4,7 +4,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, Clock3, DollarSign, Swords, Trophy, X, Zap } from "lucide-react";
+import { ArrowRight, Swords, X, Zap } from "lucide-react";
+import { GameIcon, type GameIconName } from "@/components/game-icons";
 
 type MatchState = "idle" | "queued" | "vs" | "matched";
 
@@ -113,7 +114,7 @@ export default function Blitz() {
         <div className="blitz-shell">
           <BlitzHeader />
           <section className="blitz-card blitz-auth-card">
-            <div className="blitz-icon-box"><Swords size={25} /></div>
+            <div className="blitz-icon-box"><GameIcon name="swords" size={44} /></div>
             <p className="blitz-kicker">Private match queue</p>
             <h2>Step into Blitz.</h2>
             <p>Sign in to find a live opponent and play a focused five-minute market round.</p>
@@ -139,7 +140,7 @@ export default function Blitz() {
         <section className="blitz-card blitz-stage-card" aria-live="polite">
           {matchState === "idle" && (
             <div className="blitz-stage-content">
-              <div className="blitz-icon-box"><Zap size={25} /></div>
+              <div className="blitz-icon-box"><GameIcon name="lightning" size={44} /></div>
               <p className="blitz-kicker">One opponent · five minutes</p>
               <h2>Ready for a clean read?</h2>
               <p>Get matched with one player. The board opens with $10,000 in virtual capital and closes when the clock runs out.</p>
@@ -176,7 +177,7 @@ export default function Blitz() {
 
           {matchState === "matched" && tournamentId && (
             <div className="blitz-stage-content">
-              <div className="blitz-icon-box blitz-icon-success"><Trophy size={25} /></div>
+              <div className="blitz-icon-box blitz-icon-success"><GameIcon name="trophy" size={44} /></div>
               <p className="blitz-kicker">The board is live</p>
               <h2>Matchup found.</h2>
               <p>Your five-minute arena is ready. Make the first move count.</p>
@@ -186,9 +187,9 @@ export default function Blitz() {
         </section>
 
         <div className="blitz-info-grid">
-          <BlitzInfo icon={<Clock3 size={16} />} label="Round length" value="5 minutes" />
-          <BlitzInfo icon={<DollarSign size={16} />} label="Starting capital" value="$10,000 virtual" />
-          <BlitzInfo icon={<Trophy size={16} />} label="Win condition" value="Highest board value" />
+          <BlitzInfo icon={<GameIcon name="bell" size={32} />} label="Round length" value="5 minutes" />
+          <BlitzInfo icon={<GameIcon name="briefcase" size={32} />} label="Starting capital" value="$10,000 virtual" />
+          <BlitzInfo icon={<GameIcon name="trophy" size={32} />} label="Win condition" value="Highest board value" />
         </div>
 
         <section className="blitz-playbook" aria-label="How Blitz works">
@@ -197,9 +198,9 @@ export default function Blitz() {
             <Link href="/tournaments" className="blitz-secondary-link">Browse arenas <ArrowRight size={14} /></Link>
           </div>
           <div className="blitz-playbook-grid">
-            <BlitzPlaybookStep number="01" title="Queue" copy="Tap find a matchup and wait for a rival." />
-            <BlitzPlaybookStep number="02" title="Read" copy="Trade the live board with virtual capital." />
-            <BlitzPlaybookStep number="03" title="Finish" copy="The highest portfolio closes the round." />
+            <BlitzPlaybookStep number="01" icon="swords" title="Queue" copy="Tap find a matchup and wait for a rival." />
+            <BlitzPlaybookStep number="02" icon="chart" title="Read" copy="Trade the live board with virtual capital." />
+            <BlitzPlaybookStep number="03" icon="medal" title="Finish" copy="The highest portfolio closes the round." />
           </div>
         </section>
       </div>
@@ -224,6 +225,6 @@ function BlitzInfo({ icon, label, value }: { icon: ReactNode; label: string; val
   return <div className="blitz-info-item"><span className="blitz-info-icon">{icon}</span><div><span>{label}</span><strong>{value}</strong></div></div>;
 }
 
-function BlitzPlaybookStep({ number, title, copy }: { number: string; title: string; copy: string }) {
-  return <div className="blitz-playbook-step"><span>{number}</span><strong>{title}</strong><p>{copy}</p></div>;
+function BlitzPlaybookStep({ number, icon, title, copy }: { number: string; icon: GameIconName; title: string; copy: string }) {
+  return <div className="blitz-playbook-step"><GameIcon name={icon} size={42} /><span>{number}</span><strong>{title}</strong><p>{copy}</p></div>;
 }

@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { isMarketOpen } from "@shared/marketHours";
 import { TradeHistory } from "./TradeHistory";
+import { GameIcon } from "@/components/game-icons";
 
 interface TradingSidebarProps {
   selectedSymbol: string;
@@ -213,8 +214,8 @@ export function TradingSidebar({
       data-tour="trading-sidebar"
       className="flex flex-col h-full min-h-0"
       style={{ backgroundColor: "transparent" }}
-    >
-      {/* ── GAME HEADER: Big balance + P&L ── */}
+      >
+        {/* ── GAME HEADER: Big balance + P&L ── */}
       <div
         className="shrink-0 px-4 pt-4 pb-3 relative overflow-hidden"
         style={{
@@ -224,6 +225,13 @@ export function TradingSidebar({
           borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
+        <div className="flex items-center justify-between mb-2 relative z-10">
+          <div className="flex items-center gap-2">
+            <GameIcon name="briefcase" size={34} />
+            <span className="text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: "#d8c8f8" }}>Trading floor</span>
+          </div>
+          <GameIcon name="chart" size={28} />
+        </div>
         {/* Subtle scanline texture */}
         <div style={{
           position: "absolute", inset: 0, pointerEvents: "none",

@@ -11,6 +11,7 @@ import {
 import { StockSearchBar } from "@/components/trading/StockSearchBar";
 import { useState } from "react";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
+import { GameIcon } from "@/components/game-icons";
 
 interface TradingExecutionWidgetProps {
   tournamentId?: number;
@@ -96,6 +97,7 @@ export function TradingExecutionWidget({
       {/* Header with Toggle */}
       <div className="flex items-center justify-between px-3 py-2 border-b" style={{ borderColor: '#0E2040', backgroundColor: 'transparent' }}>
         <div className="flex items-center gap-2">
+          <GameIcon name="briefcase" size={26} />
           <h3 className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>
             {showHoldings ? "Positions" : "Trade"}
           </h3>

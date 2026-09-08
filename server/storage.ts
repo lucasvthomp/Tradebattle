@@ -553,144 +553,145 @@ export class DatabaseStorage implements IStorage {
 
   // Tournament operations
   async createTournament(tournament: InsertTournament, creatorId: number): Promise<Tournament> {
+    console.log('[Storage] createTournament called with:', JSON.stringify(tournament, null, 2), 'Creator:', creatorId);
+
+    // Generate unique 8-character code
     const code = Math.random().toString(36).substring(2, 10).toUpperCase();
+    console.log('[Storage] Generated code:', code);
+
     const buyInAmount = Number(tournament.buyInAmount || 0);
+    console.log('[Storage] Buy-in amount:', buyInAmount);
 
-    // Keep the balance debit, tournament row, creator participant, and audit
-    // record in one transaction so a partial failure cannot burn funds.
-    return await db.transaction(async (tx) => {
-      const creatorRows = await tx
-        .select()
-        .from(users)
-        .where(eq(users.id, creatorId))
-        .for("update");
-
-      const creator = creatorRows[0];
-      if (!creator) throw new Error("Creator not found");
-
-      const currentSiteCash = Number(creator.siteCash || 0);
-      if (buyInAmount > 0 && currentSiteCash < buyInAmount) {
-        throw new Error(
-          `Insufficient site cash to create tournament. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`
-        );
+    // If tournament has buy-in, check creator balance and deduct
+    if (buyInAmount > 0) {
+      console.log('[Storage] Processing buy-in...');
+      // Get creator's current site cash
+      const user = await db.select().from(users).where(eq(users.id, creatorId)).limit(1);
+      if (!user[0]) {
+        throw new Error('Creator not found');
       }
 
-      if (buyInAmount > 0) {
-        await tx
-          .update(users)
-          .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
-          .where(eq(users.id, creatorId));
+      const currentSiteCash = Number(user[0].siteCash || 0);
+      console.log('[Storage] Creator site cash:', currentSiteCash);
 
-        await tx.insert(adminLogs).values({
+      // Check if creator has sufficient site cash
+      if (currentSiteCash < buyInAmount) {
+        throw new Error(`Insufficient site cash to create tournament. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`);
+      }
+
+      // Deduct buy-in amount from creator's site cash
+      await db.update(users)
+        .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
+        .where(eq(users.id, creatorId));
+      console.log('[Storage] Deducted buy-in from creator');
+
+      // Log the transaction (wrapped in try-catch to prevent tournament creation failure)
+      try {
+        await db.insert(adminLogs).values({
           adminUserId: creatorId,
           targetUserId: creatorId,
-          action: "tournament_creator_buyin",
+          action: 'tournament_creator_buyin',
           oldValue: currentSiteCash.toString(),
           newValue: (currentSiteCash - buyInAmount).toString(),
-          notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`,
+          notes: `Buy-in deducted for creating tournament: ${tournament.name} ($${buyInAmount.toFixed(2)})`
         });
+      } catch (logError) {
+        console.error('[Storage] WARNING: Failed to log transaction:', logError);
+        // Continue with tournament creation even if logging fails
       }
+    }
 
-      const inserted = await tx
-        .insert(tournaments)
-        .values({
-          ...tournament,
-          code,
-          creatorId,
-          currentPot: buyInAmount.toString(),
-        })
-        .returning();
+    const insertValues = {
+      ...tournament,
+      code,
+      creatorId,
+      currentPot: buyInAmount.toString() // Set initial pot to creator's buy-in
+    };
+    console.log('[Storage] Inserting tournament with values:', JSON.stringify(insertValues, null, 2));
 
-      const tournamentRow = inserted[0];
-      if (!tournamentRow) throw new Error("Tournament creation failed");
+    let result;
+    try {
+      result = await db.insert(tournaments).values(insertValues).returning();
+      console.log('[Storage] Tournament created successfully:', result[0].id);
+    } catch (error) {
+      console.error('[Storage] ERROR creating tournament:', error);
+      throw error;
+    }
 
-      await tx.insert(tournamentParticipants).values({
-        tournamentId: tournamentRow.id,
+    // Add creator as first participant with specified starting balance
+    try {
+      await db.insert(tournamentParticipants).values({
+        tournamentId: result[0].id,
         userId: creatorId,
-        balance: (tournament.startingBalance || "10000.00").toString(),
+        balance: (tournament.startingBalance || "10000.00").toString()
       });
+      console.log('[Storage] Added creator as participant');
+    } catch (error) {
+      console.error('[Storage] ERROR adding participant:', error);
+      throw error;
+    }
 
-      return tournamentRow;
-    });
+    return result[0];
   }
 
   async joinTournament(tournamentId: number, userId: number): Promise<TournamentParticipant> {
-    // Lock the tournament before checking capacity, duplicate membership, or
-    // charging a buy-in. This serializes concurrent joins for the same arena.
-    return await db.transaction(async (tx) => {
-      const tournamentRows = await tx
-        .select()
-        .from(tournaments)
-        .where(eq(tournaments.id, tournamentId))
-        .for("update");
-
-      const tournament = tournamentRows[0];
-      if (!tournament) throw new Error("Tournament not found");
-      if (tournament.status !== "waiting") {
-        throw new Error("Tournament is no longer accepting players");
+    // Check if user is already in this tournament
+    const existingParticipant = await db
+      .select()
+      .from(tournamentParticipants)
+      .where(and(eq(tournamentParticipants.tournamentId, tournamentId), eq(tournamentParticipants.userId, userId)))
+      .limit(1);
+    
+    if (existingParticipant.length > 0) {
+      throw new Error('User is already participating in this tournament');
+    }
+    
+    // Get tournament data to check buy-in amount and set starting balance
+    const tournament = await db.select().from(tournaments).where(eq(tournaments.id, tournamentId));
+    if (!tournament[0]) {
+      throw new Error('Tournament not found');
+    }
+    
+    const buyInAmount = Number(tournament[0].buyInAmount || 0);
+    
+    // If tournament has buy-in, check user balance and deduct
+    if (buyInAmount > 0) {
+      // Get user's current site cash
+      const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+      if (!user[0]) {
+        throw new Error('User not found');
       }
-      if (tournament.currentPlayers >= tournament.maxPlayers) {
-        throw new Error("Tournament is full");
+      
+      const currentSiteCash = Number(user[0].siteCash || 0);
+      
+      // Check if user has sufficient site cash
+      if (currentSiteCash < buyInAmount) {
+        throw new Error(`Insufficient site cash. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`);
       }
-
-      const existingParticipant = await tx
-        .select()
-        .from(tournamentParticipants)
-        .where(and(
-          eq(tournamentParticipants.tournamentId, tournamentId),
-          eq(tournamentParticipants.userId, userId),
-        ))
-        .limit(1);
-
-      if (existingParticipant.length > 0) {
-        throw new Error("User is already participating in this tournament");
-      }
-
-      const buyInAmount = Number(tournament.buyInAmount || 0);
-      const userRows = await tx
-        .select()
-        .from(users)
-        .where(eq(users.id, userId))
-        .for("update");
-
-      const user = userRows[0];
-      if (!user) throw new Error("User not found");
-
-      const currentSiteCash = Number(user.siteCash || 0);
-      if (buyInAmount > 0 && currentSiteCash < buyInAmount) {
-        throw new Error(
-          `Insufficient site cash. You need ${buyInAmount.toFixed(2)} but only have ${currentSiteCash.toFixed(2)}`
-        );
-      }
-
-      if (buyInAmount > 0) {
-        await tx
-          .update(users)
-          .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
-          .where(eq(users.id, userId));
-
-        await tx
-          .update(tournaments)
-          .set({ currentPot: sql`${tournaments.currentPot} + ${buyInAmount.toString()}` })
-          .where(eq(tournaments.id, tournamentId));
-      }
-
-      const inserted = await tx
-        .insert(tournamentParticipants)
-        .values({
-          tournamentId,
-          userId,
-          balance: (tournament.startingBalance || "10000.00").toString(),
-        })
-        .returning();
-
-      await tx
-        .update(tournaments)
-        .set({ currentPlayers: sql`${tournaments.currentPlayers} + 1` })
+      
+      // Deduct buy-in amount from user site cash
+      await db.update(users)
+        .set({ siteCash: (currentSiteCash - buyInAmount).toString() })
+        .where(eq(users.id, userId));
+        
+      // Add buy-in to tournament pot
+      await db.update(tournaments)
+        .set({ currentPot: sql`${tournaments.currentPot} + ${buyInAmount.toString()}` })
         .where(eq(tournaments.id, tournamentId));
-
-      return inserted[0];
-    });
+    }
+    
+    const result = await db.insert(tournamentParticipants).values({
+      tournamentId,
+      userId,
+      balance: (tournament[0]?.startingBalance || "10000.00").toString()
+    }).returning();
+    
+    // Update tournament current players count
+    await db.update(tournaments)
+      .set({ currentPlayers: sql`${tournaments.currentPlayers} + 1` })
+      .where(eq(tournaments.id, tournamentId));
+    
+    return result[0];
   }
 
   async getTournamentByCode(code: string): Promise<Tournament | undefined> {

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { QRCodeSVG } from 'qrcode.react';
 import { Copy, Check, Loader2, AlertCircle, CheckCircle2, Clock, Wallet, X, RefreshCw } from 'lucide-react';
+import { GameIcon } from '@/components/game-icons';
 
 export default function Deposit() {
   const { user } = useAuth();
@@ -199,7 +200,7 @@ export default function Deposit() {
             gap: '12px',
             marginBottom: '12px',
           }}>
-            <Wallet size={32} color="#67E7BF" />
+            <GameIcon name="coins" size={52} />
             <h1 style={{
               color: '#C9D1E2',
               fontSize: 'clamp(18px, 6vw, 32px)',

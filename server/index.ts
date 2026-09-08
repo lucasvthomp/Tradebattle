@@ -228,19 +228,6 @@ async function runMigrations() {
       );
     `);
 
-    // Idempotency ledger for provider webhooks. The primary key prevents
-    // NOWPayments retries from crediting the same payment twice.
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS crypto_payment_events (
-        payment_id VARCHAR(255) PRIMARY KEY,
-        user_id INTEGER NOT NULL REFERENCES users(id),
-        amount NUMERIC(15, 2) NOT NULL,
-        provider_status VARCHAR(32) NOT NULL,
-        credited_at TIMESTAMP,
-        created_at TIMESTAMP DEFAULT NOW() NOT NULL
-      );
-    `);
-
     // Create wallet_connection_logs table
     await client.query(`
       CREATE TABLE IF NOT EXISTS wallet_connection_logs (

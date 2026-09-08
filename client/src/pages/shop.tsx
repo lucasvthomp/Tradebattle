@@ -6,12 +6,13 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { KeyRound, Trophy, Zap, WalletCards, Users, ArrowRight, Check } from "lucide-react";
+import { KeyRound, ArrowRight, Check } from "lucide-react";
+import { GameIcon, type GameIconName } from "@/components/game-icons";
 
 const statItems = [
-  { label: "Buying power", key: "cash", icon: WalletCards },
-  { label: "Arena wins", key: "wins", icon: Trophy },
-  { label: "Trade reps", key: "trades", icon: Zap },
+  { label: "Buying power", key: "cash", icon: "coins" as GameIconName },
+  { label: "Arena wins", key: "wins", icon: "trophy" as GameIconName },
+  { label: "Trade reps", key: "trades", icon: "chart" as GameIconName },
 ] as const;
 
 export default function Shop() {
@@ -57,7 +58,7 @@ export default function Shop() {
             <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em]" style={{ color: "#67e7bf" }}>Player rewards / 01</p>
             <div className="flex items-center gap-3">
               <div className="reward-icon-3d flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
-                <img src="/assets/tradebattle-reward-flat.png" alt="" className="shop-header-art" />
+                <GameIcon name="chest" size={42} className="shop-header-art" />
               </div>
               <div>
                 <h1 className="text-2xl font-black tracking-tight md:text-3xl" style={{ color: "#eef6fa" }}>Rewards desk</h1>
@@ -77,15 +78,15 @@ export default function Shop() {
             <span>Redeem codes, collect virtual cash, and show up ready for the next round.</span>
             <div className="shop-spotlight-pills"><strong>FREE TO CLAIM</strong><strong>NO DEPOSITS</strong></div>
           </div>
-          <img src="/assets/tradebattle-reward-flat.png" alt="" className="shop-spotlight-art" />
+          <GameIcon name="chest" size={190} className="shop-spotlight-art" />
         </section>
 
         <section className="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3" aria-label="Player totals">
-          {statItems.map(({ label, key, icon: Icon }) => (
+          {statItems.map(({ label, key, icon }) => (
             <div key={key} className="rounded-lg border p-4" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
               <div className="mb-5 flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: "#7890a4" }}>{label}</span>
-                <span className="reward-icon-3d flex h-8 w-8 items-center justify-center rounded-md"><Icon size={16} style={{ color: "#67e7bf" }} /></span>
+                <span className="reward-icon-3d flex h-10 w-10 items-center justify-center rounded-md"><GameIcon name={icon} size={34} /></span>
               </div>
               <strong className="font-mono text-xl" style={{ color: "#eef6fa" }}>{statValue(key)}</strong>
             </div>
@@ -129,7 +130,7 @@ export default function Shop() {
 
           <aside className="rounded-lg border p-5" style={{ background: "#0b1b2a", borderColor: "var(--site-edge)" }}>
             <div className="reward-icon-3d mb-5 flex h-10 w-10 items-center justify-center rounded-lg" style={{ background: "rgba(103,231,191,.1)", color: "#67e7bf" }}>
-              <Users size={19} />
+              <GameIcon name="gift" size={42} />
             </div>
             <h2 className="text-lg font-extrabold" style={{ color: "#eef6fa" }}>Build your crew</h2>
             <p className="mt-2 text-sm leading-6" style={{ color: "#8da2b5" }}>The best rewards are easier to find when you stay close to the players you compete with.</p>

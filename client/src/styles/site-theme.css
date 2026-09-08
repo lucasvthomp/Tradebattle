@@ -1839,3 +1839,56 @@ body {
   .tradebattle-site .blitz-primary-link,
   .tradebattle-site .blitz-primary-button { transition: none !important; }
 }
+
+/* Custom game icon family: use the artwork for meaning, keep controls quiet. */
+.tradebattle-site .tradebattle-nav-art,
+.tradebattle-site .shop-header-art,
+.tradebattle-site .shop-spotlight-art,
+.tradebattle-site .tournament-hero-art,
+.tradebattle-site .blitz-icon-box img,
+.tradebattle-site .blitz-info-icon img,
+.tradebattle-site .blitz-playbook-step img {
+  display: block;
+  flex: 0 0 auto;
+  user-select: none;
+  pointer-events: none;
+}
+
+.tradebattle-site .tradebattle-nav-art {
+  object-fit: contain;
+  transform: translateZ(0);
+  transition: transform .2s ease, opacity .2s ease;
+}
+
+.tradebattle-site a:hover .tradebattle-nav-art,
+.tradebattle-site a:focus-visible .tradebattle-nav-art {
+  transform: translateY(-1px) scale(1.05);
+  opacity: 1 !important;
+}
+
+.tradebattle-site .hub-launch-icon {
+  display: grid;
+  place-items: center;
+  overflow: visible;
+}
+
+.tradebattle-site .hub-launch-icon img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.tradebattle-site .shop-header-art { object-fit: contain; }
+.tradebattle-site .shop-spotlight-art { object-fit: contain; filter: drop-shadow(0 14px 24px rgba(0, 0, 0, .28)); }
+.tradebattle-site .tournament-hero-art { object-fit: contain; filter: drop-shadow(0 18px 22px rgba(7, 1, 17, .28)); }
+.tradebattle-site .blitz-icon-box img { width: 44px; height: 44px; object-fit: contain; }
+.tradebattle-site .blitz-info-icon img { width: 32px; height: 32px; object-fit: contain; }
+.tradebattle-site .blitz-playbook-step { position: relative; overflow: hidden; }
+.tradebattle-site .blitz-playbook-step img { width: 42px; height: 42px; object-fit: contain; margin-bottom: 6px; }
+.tradebattle-site .blitz-playbook-step > span { display: block; }
+
+@media (max-width: 760px) {
+  .tradebattle-site .shop-spotlight-art { width: 136px !important; height: 136px !important; }
+  .tradebattle-site .tournament-hero-art { width: 116px !important; height: 116px !important; }
+}

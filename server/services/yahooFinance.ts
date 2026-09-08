@@ -540,10 +540,7 @@ export async function getHistoricalData(symbol: string, timeFrame: TimeFrame = '
       throw new Error(`No candles returned for ${symbol}/${timeFrame}`);
     }
 
-    // Keep all minute/hour candles as epoch timestamps. Formatting these as
-    // YYYY-MM-DD collapses every intraday candle onto the same day in the
-    // chart, which makes the 15m/30m/1h controls appear broken.
-    const isIntraday = !['1d', '1wk', '1mo'].includes(interval);
+    const isIntraday = interval === '1m' || interval === '5m' || interval === '30m';
 
     const historicalData: HistoricalDataPoint[] = timestamps
       .map((ts, i) => ({

@@ -2,21 +2,10 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
-import {
-  Home,
-  Trophy,
-  Users,
-  Phone,
-  Gift,
-  Settings,
-  Archive,
-  Shield,
-  Swords,
-  Zap,
-  Menu
-} from "lucide-react";
+import { Menu } from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
+import { GameIcon, type GameIconName } from "@/components/game-icons";
 
 export function SimplifiedSidebar() {
   const { user } = useAuth();
@@ -27,23 +16,23 @@ export function SimplifiedSidebar() {
 
   const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: Home, iconColor: '#f3c65b' },
-      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#f3c65b' },
-      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#f3c65b' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#f3c65b' },
-      { href: "/people", label: t('people'), icon: Users, iconColor: '#f3c65b' },
-      { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#f3c65b' },
-      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#b9afd8' },
+      { href: "/hub", label: t('hub'), icon: "market-tile" as GameIconName, iconColor: '#f3c65b' },
+      { href: "/tournaments", label: t('tournaments'), icon: "swords" as GameIconName, iconColor: '#f3c65b' },
+      { href: "/blitz", label: "Blitz", icon: "lightning" as GameIconName, iconColor: '#f3c65b' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: "trophy" as GameIconName, iconColor: '#f3c65b' },
+      { href: "/people", label: t('people'), icon: "medal" as GameIconName, iconColor: '#f3c65b' },
+      { href: "/shop", label: "Rewards", icon: "gift" as GameIconName, iconColor: '#f3c65b' },
+      { href: "/contact", label: t('support'), icon: "bell" as GameIconName, iconColor: '#b9afd8' },
     ] : [
-      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
+      { href: "/contact", label: t('support'), icon: "bell" as GameIconName, iconColor: '#94A3B8' },
     ]),
   ];
 
   const userItems = user ? [
-    { href: "/profile", label: t('settings'), icon: Settings, iconColor: '#b9afd8' },
-    { href: "/archive", label: t('archive'), icon: Archive, iconColor: '#b9afd8' },
+    { href: "/profile", label: t('settings'), icon: "briefcase" as GameIconName, iconColor: '#b9afd8' },
+    { href: "/archive", label: t('archive'), icon: "chest" as GameIconName, iconColor: '#b9afd8' },
     ...(user.subscriptionTier === 'administrator' || user.username === 'LUCAS' ? [
-      { href: "/admin", label: "Admin", icon: Shield, iconColor: '#f3c65b' }
+      { href: "/admin", label: "Admin", icon: "shield" as GameIconName, iconColor: '#f3c65b' }
     ] : [])
   ] : [];
 
@@ -71,10 +60,12 @@ export function SimplifiedSidebar() {
             : { color: '#8A9CAF' }),
         }}
       >
-        <item.icon
-          className="w-5 h-5 flex-shrink-0"
+        <GameIcon
+          name={item.icon}
+          size={30}
+          className="tradebattle-nav-art flex-shrink-0"
           style={{
-            color: isActive(item.href) ? item.iconColor : undefined,
+            opacity: isActive(item.href) ? 1 : 0.52,
             marginRight: expanded ? '12px' : '0',
             transition: 'margin 300ms ease',
           }}
@@ -188,8 +179,10 @@ export function SimplifiedSidebar() {
                 justifyContent: 'flex-start',
               }}
             >
-              <Gift
-                className="w-5 h-5 flex-shrink-0"
+              <GameIcon
+                name="gift"
+                size={30}
+                className="tradebattle-nav-art flex-shrink-0"
                 style={{
                   marginRight: expanded ? '12px' : '0',
                   transition: 'margin 300ms ease',

@@ -158,7 +158,7 @@ export default function Pricing() {
       >
         <div className="max-w-4xl mx-auto text-center">
           <motion.h1 
-            className="text-4xl md:text-5xl font-bold mb-6 text-foreground"
+            className="text-4xl md:text-5xl font-bold mb-6 text-black"
             variants={fadeInUp}
           >
             Choose Your Research Tier
@@ -205,14 +205,14 @@ export default function Pricing() {
                         {tier.icon}
                       </div>
                     </div>
-                    <CardTitle className="text-2xl font-bold text-foreground">
+                    <CardTitle className="text-2xl font-bold text-black">
                       {tier.name}
                     </CardTitle>
                     <CardDescription className="text-gray-600 mt-2">
                       {tier.description}
                     </CardDescription>
                     <div className="mt-4">
-                      <span className="text-4xl font-bold text-foreground">{tier.price}</span>
+                      <span className="text-4xl font-bold text-black">{tier.price}</span>
                       <span className="text-gray-600 ml-2">{tier.period}</span>
                     </div>
                   </CardHeader>
@@ -265,7 +265,7 @@ export default function Pricing() {
       >
         <div className="max-w-4xl mx-auto">
           <motion.h2 
-            className="text-3xl font-bold text-center mb-12 text-foreground"
+            className="text-3xl font-bold text-center mb-12 text-black"
             variants={fadeInUp}
           >
             Frequently Asked Questions
@@ -273,28 +273,28 @@ export default function Pricing() {
           
           <div className="grid md:grid-cols-2 gap-8">
             <motion.div variants={fadeInUp}>
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Can I switch tiers anytime?</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">Can I switch tiers anytime?</h3>
               <p className="text-gray-600">
                 Yes, you can upgrade or downgrade your tier at any time. Changes take effect immediately and billing is prorated.
               </p>
             </motion.div>
             
             <motion.div variants={fadeInUp}>
-              <h3 className="text-xl font-semibold mb-3 text-foreground">Is there a free plan?</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">Is there a free plan?</h3>
               <p className="text-gray-600">
                 Yes! Our Novice plan is completely free and includes limited watchlist (5 equities), limited news access, and email support.
               </p>
             </motion.div>
             
             <motion.div variants={fadeInUp}>
-              <h3 className="text-xl font-semibold mb-3 text-foreground">What payment methods do you accept?</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">What payment methods do you accept?</h3>
               <p className="text-gray-600">
                 We accept all major credit cards, PayPal, and wire transfers for institutional accounts.
               </p>
             </motion.div>
             
             <motion.div variants={fadeInUp}>
-              <h3 className="text-xl font-semibold mb-3 text-foreground">How do custom case studies work?</h3>
+              <h3 className="text-xl font-semibold mb-3 text-black">How do custom case studies work?</h3>
               <p className="text-gray-600">
                 Professional tier subscribers can request custom case studies on specific companies or sectors through our platform.
               </p>
