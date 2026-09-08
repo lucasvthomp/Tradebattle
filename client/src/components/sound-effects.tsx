@@ -5,7 +5,7 @@ function soundForControl(control: HTMLElement): TradebattleSound {
   const explicit = control.dataset.sound as TradebattleSound | undefined;
   if (explicit && ["tap", "confirm", "back", "error"].includes(explicit)) return explicit;
 
-  const label = \`\${control.getAttribute("aria-label") ?? ""} \${control.textContent ?? ""}\`.toLowerCase();
+  const label = `${control.getAttribute("aria-label") ?? ""} ${control.textContent ?? ""}`.toLowerCase();
   if (/close|back|cancel|previous|dismiss/.test(label)) return "back";
   if (/submit|save|create|join|enter|play|open|sign up|login|redeem|deposit|withdraw|send|confirm/.test(label)) return "confirm";
   return "tap";
@@ -14,7 +14,7 @@ function soundForControl(control: HTMLElement): TradebattleSound {
 export function SoundEffects() {
   useEffect(() => {
     let lastPointerSound = 0;
-    const selector = "button, a[href], [role=\\"button\\"]";
+    const selector = "button, a[href], [role=\"button\"]";
 
     const playForEvent = (event: Event) => {
       const target = event.target instanceof HTMLElement ? event.target.closest<HTMLElement>(selector) : null;
