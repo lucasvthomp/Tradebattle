@@ -14,7 +14,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [amount, setAmount] = useState('');
   const [payment, setPayment] = useState<any>(null);
-  const [copiedField, setCopiedField] = useState<'address' | 'amount' | null>(null);
+  const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState(1);
@@ -25,8 +25,6 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
     { id: 'eth', name: 'Ethereum', network: 'ETH', icon: 'Ξ', color: '#627EEA' },
     { id: 'ltc', name: 'Litecoin', network: 'LTC', icon: 'Ł', color: '#345D9D' },
   ];
-
-  const selectedCurrencyMeta = currencies.find((currency) => currency.id === selectedCurrency);
 
   // Fetch minimum when currency selected
   useEffect(() => {
@@ -46,51 +44,22 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
         setSelectedCurrency('');
         setAmount('');
         setPayment(null);
-        setCopiedField(null);
         setError('');
       }, 300);
     }
   }, [isOpen]);
 
-  function getPaymentQrValue(paymentData: any): string {
-    const raw = paymentData?.pay_address ?? paymentData?.payin_address ?? paymentData?.address ?? '';
-    return typeof raw === 'string' ? raw.trim() : '';
-  }
-
-  function getDisplayAddress(raw: string): string {
-    if (!raw) return '';
-    if (/^https?:\/\//i.test(raw)) return raw;
-    const colonIdx = raw.indexOf(':');
-    return colonIdx > 0 && colonIdx < 20 ? raw.slice(colonIdx + 1).split('?')[0] : raw;
-  }
-
-  function getPaymentAmountValue(paymentData: any): string {
-    const amount = paymentData?.pay_amount;
-    const currency = paymentData?.pay_currency;
-    return amount != null && currency ? `${amount} ${String(currency).toUpperCase()}` : '';
-  }
-
-  async function copyPaymentValue(value: string, field: 'address' | 'amount') {
-    if (!value) return;
+  async function copyAddress() {
+    if (!payment?.pay_address) return;
     try {
-      await navigator.clipboard.writeText(value);
-      setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
+      await navigator.clipboard.writeText(payment.pay_address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   }
 
-  async function copyAddress() {
-    const value = getPaymentQrValue(payment);
-    if (value) {
-      await copyPaymentValue(getDisplayAddress(value), 'address');
-    }
-  }
-
-  async function copyAmount() {
-    await copyPaymentValue(getPaymentAmountValue(payment), 'amount');
-  }
   async function createDeposit() {
     setLoading(true);
     setError('');
@@ -107,14 +76,11 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+        const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to create payment');
       }
 
       const data = await response.json();
-      if (!data?.payment_id || !getPaymentQrValue(data) || data?.pay_amount == null || !data?.pay_currency) {
-        throw new Error('Payment details were incomplete. Please try again.');
-      }
       setPayment(data);
       setStep('payment');
       pollPaymentStatus(data.payment_id);
@@ -151,7 +117,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="deposit-modal-backdrop" style={{
+    <div style={{
       position: 'fixed',
       inset: 0,
       background: 'rgba(10, 20, 42, 0.95)',
@@ -162,7 +128,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
       justifyContent: 'center',
       padding: '20px',
     }}>
-      <div className="deposit-modal-panel" style={{
+      <div style={{
         background: '#0B1B2A',
         borderRadius: '20px',
         maxWidth: '500px',
@@ -205,27 +171,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <ArrowLeft size={20} />
               </button>
             )}
-            {selectedCurrencyMeta ? (
-              <div
-                aria-label={`Selected ${selectedCurrencyMeta.name}`}
-                style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '10px',
-                  background: `${selectedCurrencyMeta.color}20`,
-                  color: selectedCurrencyMeta.color,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '20px',
-                  fontWeight: '700',
-                }}
-              >
-                {selectedCurrencyMeta.icon}
-              </div>
-            ) : (
-              <Wallet size={24} color="#67E7BF" />
-            )}
+            <Wallet size={24} color="#67E7BF" />
             <h2 style={{ color: '#C9D1E2', fontSize: '20px', fontWeight: '600', margin: 0 }}>
               Add arena cash
             </h2>
@@ -447,26 +393,24 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
             <div>
               {/* QR Code with gold styling */}
               <div style={{
-                background: 'rgba(103, 231, 191, 0.06)',
+                background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
                 padding: '4px',
                 borderRadius: '20px',
                 marginBottom: '20px',
               }}>
                 <div style={{
-                  background: 'transparent',
+                  background: '#ffffff',
                   padding: '24px',
                   borderRadius: '16px',
                   display: 'flex',
                   justifyContent: 'center',
                 }}>
                   <QRCodeSVG
-                    value={getPaymentQrValue(payment)}
+                    value={payment.pay_address}
                     size={200}
                     level="H"
-                    includeMargin
                     fgColor="#67E7BF"
                     bgColor="transparent"
-                    style={{ display: "block", maxWidth: "100%", height: "auto" }}
                   />
                 </div>
               </div>
@@ -476,7 +420,7 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                 <label style={{ color: '#8A93A6', fontSize: '13px', marginBottom: '8px', display: 'block' }}>
                   Send to this address
                 </label>
-                <div className="deposit-address deposit-copy-row" style={{
+                <div style={{
                   background: 'transparent',
                   border: '1px solid #0E2040',
                   borderRadius: '12px',
@@ -492,14 +436,13 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                     wordBreak: 'break-all',
                     fontFamily: 'monospace',
                   }}>
-                    {getDisplayAddress(getPaymentQrValue(payment))}
+                    {payment.pay_address}
                   </code>
                   <button
                     onClick={copyAddress}
-                    aria-label="Copy address"
                     style={{
                       padding: '8px',
-                      background: copiedField === 'address' ? '#67E7BF' : '#123247',
+                      background: copied ? '#67E7BF' : '#0E2040',
                       border: 'none',
                       borderRadius: '8px',
                       color: '#fff',
@@ -509,50 +452,26 @@ export function DepositModal({ isOpen, onClose }: DepositModalProps) {
                       transition: 'all 0.2s',
                     }}
                   >
-                    {copiedField === 'address' ? <Check size={16} /> : <Copy size={16} />}
+                    {copied ? <Check size={16} /> : <Copy size={16} />}
                   </button>
                 </div>
               </div>
 
-                            {/* Amount */}
+              {/* Amount */}
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ color: '#8A93A6', fontSize: '13px', marginBottom: '8px', display: 'block' }}>
                   Amount to send
                 </label>
-                <div className="deposit-address deposit-copy-row" style={{
-                  background: 'transparent',
-                  border: '1px solid #0E2040',
+                <div style={{
+                  background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
+                  border: '2px solid #67E7BF',
                   borderRadius: '12px',
-                  padding: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
+                  padding: '16px',
+                  textAlign: 'center',
                 }}>
-                  <code style={{
-                    flex: 1,
-                    color: '#C9D1E2',
-                    fontSize: '12px',
-                    fontFamily: 'monospace',
-                  }}>
-                    {getPaymentAmountValue(payment)}
-                  </code>
-                  <button
-                    onClick={copyAmount}
-                    aria-label="Copy amount"
-                    style={{
-                      padding: '8px',
-                      background: copiedField === 'amount' ? '#67E7BF' : '#123247',
-                      border: 'none',
-                      borderRadius: '8px',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      transition: 'all 0.2s',
-                    }}
-                  >
-                    {copiedField === 'amount' ? <Check size={16} /> : <Copy size={16} />}
-                  </button>
+                  <div style={{ color: '#091525', fontSize: '24px', fontWeight: '700' }}>
+                    {payment.pay_amount} {payment.pay_currency.toUpperCase()}
+                  </div>
                 </div>
               </div>
 

@@ -3,10 +3,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 import { BalanceManagementModal } from "@/components/balance/BalanceManagementModal";
 import { MarketStatus } from "@/components/market-status";
-import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { FaBars, FaBolt, FaBoxArchive, FaChartColumn, FaChevronDown, FaDollarSign, FaGamepad, FaGear, FaGift, FaHeadset, FaHouse, FaMessage, FaRightFromBracket, FaShieldHalved, FaTrophy, FaUsers, FaUser, FaXmark } from "react-icons/fa6";
+import { User, ChevronDown, LogOut, UserPlus, LogIn, DollarSign, Shield, MessageSquare, Menu, X, BarChart3, Trophy, Users as UsersIcon, Phone, Gift, Settings, Archive, Swords, Zap } from "lucide-react";
 interface HeaderProps {
   chatOpen?: boolean;
   onChatToggle?: () => void;
@@ -36,8 +34,8 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           {/* Left side - Logo and Market Status */}
           <div className="flex items-center gap-3">
             <Link href={user ? "/hub" : "/"} className="flex items-center space-x-2 transition-all duration-200 hover:opacity-80">
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FFE08A, #D9982B)', boxShadow: '0 0 18px rgba(246, 196, 83, 0.22)' }}>
-                <span className="font-black text-sm" style={{ color: '#24143f' }}>T</span>
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #9af1d1, #42c99f)', boxShadow: '0 0 18px rgba(98, 228, 189, 0.2)' }}>
+                <span className="font-black text-sm" style={{ color: '#06151c' }}>T</span>
               </div>
               <span className="tradebattle-header-brand text-xl font-display font-bold tracking-tight" style={{ color: '#F2FBF8' }}>TRADEBATTLE</span>
             </Link>
@@ -59,7 +57,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 style={{
                   borderColor: 'rgba(103, 231, 191, 0.42)',
                   background: 'linear-gradient(135deg, rgba(103, 231, 191, 0.14), rgba(103, 231, 191, 0.04))',
-                  color: '#F6C453',
+                  color: '#67E7BF',
                   boxShadow: '0 0 18px rgba(103, 231, 191, 0.1)'
                 }}
                 onClick={() => {
@@ -67,7 +65,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                   setBalanceModalOpen(true);
                 }}
               >
-                <FaDollarSign className="w-4 h-4 mr-1" />
+                <DollarSign className="w-4 h-4 mr-1" />
                 <span className="text-sm font-bold">
                   {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </span>
@@ -79,35 +77,15 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           <div className="hidden md:flex items-center space-x-3 ml-auto">
             {user ? (
               <>
-                {onChatToggle && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    aria-label={chatOpen ? "Close chat" : "Open chat"}
-                    onClick={onChatToggle}
-                    className={`h-10 w-10 p-0 ${chatOpen ? "bg-primary/10" : ""}`}
-                    style={{ color: chatOpen ? "#F6C453" : "#AFC2D0" }}
-                  >
-                    <FaMessage className="w-4 h-4" />
-                  </Button>
-                )}
-                <NotificationDropdown />
-
                 {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 flex items-center space-x-2 px-3 border border-border/30 hover:bg-muted/50 transition-colors">
-                      <AvatarWithStatus
-                        src={user?.profilePicture}
-                        fallback={user?.username || "User"}
-                        lastActivity={user?.lastActivity}
-                        statusSize="sm"
-                        className="w-7 h-7"
-                      />
+                      <User className="w-4 h-4" />
                       <span className="text-sm font-medium">
                         {user?.username || "User"}
                       </span>
-                      <FaChevronDown className="w-4 h-4" />
+                      <ChevronDown className="w-4 h-4" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
@@ -116,7 +94,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                         <DropdownMenuSeparator />
                         <Link href="/admin">
                           <DropdownMenuItem>
-                            <FaShieldHalved className="w-4 h-4 mr-2" />
+                            <Shield className="w-4 h-4 mr-2" />
                             Admin
                           </DropdownMenuItem>
                         </Link>
@@ -126,7 +104,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     <DropdownMenuItem onClick={() => {
                       logoutMutation.mutate();
                     }}>
-                      <FaRightFromBracket className="w-4 h-4 mr-2" />
+                      <LogOut className="w-4 h-4 mr-2" />
                       {t('logout')}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -137,12 +115,14 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
               <>
                 <Link href="/login">
                   <Button variant="ghost" className="px-4 py-2 hover:bg-muted/50">
-                    Sign in
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Enter arena
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button className="px-4 py-2 transition-transform hover:scale-105" style={{ background: '#F6C453', color: '#24143f', boxShadow: '0 8px 22px rgba(246, 196, 83, 0.18)' }}>
-                    Sign up
+                  <Button className="px-4 py-2 transition-transform hover:scale-105" style={{ background: '#62E4BD', color: '#06151c', boxShadow: '0 8px 22px rgba(98, 228, 189, 0.18)' }}>
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Create profile
                   </Button>
                 </Link>
               </>
@@ -156,7 +136,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
             className="md:hidden ml-auto w-10 h-10 p-0 min-w-[44px] min-h-[44px]"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? <FaXmark className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </nav>
       </div>
@@ -176,7 +156,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     style={{
                       borderColor: 'rgba(103, 231, 191, 0.42)',
                       background: 'linear-gradient(135deg, rgba(103, 231, 191, 0.14), rgba(103, 231, 191, 0.04))',
-                      color: '#F6C453'
+                      color: '#67E7BF'
                     }}
                     onClick={() => {
                       setBalanceModalTab('deposit');
@@ -184,7 +164,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       setMobileMenuOpen(false);
                     }}
                   >
-                    <FaDollarSign className="w-5 h-5 mr-3" />
+                    <DollarSign className="w-5 h-5 mr-3" />
                     <div className="flex flex-col items-start">
                       <span className="font-bold text-base">
                         {(Number(user.siteCash) || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -202,7 +182,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaHouse className="w-5 h-5 mr-3" style={{ color: '#F6C453' }} />
+                      <BarChart3 className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Home</span>
                     </Button>
                   </Link>
@@ -212,7 +192,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaGamepad className="w-5 h-5 mr-3" style={{ color: '#F6C453' }} />
+                      <Swords className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Arenas</span>
                     </Button>
                   </Link>
@@ -222,7 +202,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaBolt className="w-5 h-5 mr-3" style={{ color: '#9AB5C2' }} />
+                      <Zap className="w-5 h-5 mr-3" style={{ color: '#9AB5C2' }} />
                       <span className="text-base">Blitz</span>
                     </Button>
                   </Link>
@@ -232,7 +212,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaTrophy className="w-5 h-5 mr-3" style={{ color: '#FFD166' }} />
+                      <Trophy className="w-5 h-5 mr-3" style={{ color: '#67E7BF' }} />
                       <span className="text-base">Rankings</span>
                     </Button>
                   </Link>
@@ -242,7 +222,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaUsers className="w-5 h-5 mr-3" style={{ color: '#3B82F6' }} />
+                      <UsersIcon className="w-5 h-5 mr-3" style={{ color: '#3B82F6' }} />
                       <span className="text-base">Players</span>
                     </Button>
                   </Link>
@@ -252,7 +232,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaGift className="w-5 h-5 mr-3" style={{ color: '#F97316' }} />
+                      <Gift className="w-5 h-5 mr-3" style={{ color: '#F97316' }} />
                       <span className="text-base">Loadout</span>
                     </Button>
                   </Link>
@@ -262,7 +242,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaHeadset className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Help</span>
                     </Button>
                   </Link>
@@ -278,7 +258,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     variant="ghost"
                     className="w-full justify-start h-12 border border-border/30 hover:bg-muted/50 px-4"
                   >
-                    <FaMessage className="w-5 h-5 mr-3" />
+                    <MessageSquare className="w-5 h-5 mr-3" />
                     <span className="text-base">Chat</span>
                   </Button>
                 )}
@@ -286,7 +266,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 {/* User Section */}
                 <div className="rounded-lg px-2 py-3 space-y-1" style={{ backgroundColor: 'rgba(10, 30, 43, 0.82)', border: '1px solid rgba(103, 231, 191, 0.1)' }}>
                   <div className="flex items-center gap-3 px-4 py-3">
-                    <FaUser className="w-5 h-5" />
+                    <User className="w-5 h-5" />
                     <span className="font-medium text-base">{user?.username || "User"}</span>
                   </div>
                   <Link href="/profile">
@@ -295,7 +275,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaGear className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <Settings className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Settings</span>
                     </Button>
                   </Link>
@@ -305,7 +285,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      <FaBoxArchive className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <Archive className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Archive</span>
                     </Button>
                   </Link>
@@ -318,7 +298,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                         className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <FaShieldHalved className="w-5 h-5 mr-3" />
+                        <Shield className="w-5 h-5 mr-3" />
                         <span className="text-base">Admin</span>
                       </Button>
                     </Link>
@@ -335,7 +315,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       setMobileMenuOpen(false);
                     }}
                   >
-                    <FaRightFromBracket className="w-5 h-5 mr-3" />
+                    <LogOut className="w-5 h-5 mr-3" />
                     <span className="text-base">{t('logout')}</span>
                   </Button>
                 </div>
@@ -348,18 +328,18 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     className="w-full justify-start h-12 hover:bg-muted/50 px-4"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <FaRightFromBracket className="w-5 h-5 mr-3" />
-                    <span className="text-base">Sign in</span>
+                    <LogIn className="w-5 h-5 mr-3" />
+                    <span className="text-base">Enter arena</span>
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button
                     className="w-full justify-start h-12 px-4"
-                    style={{ background: '#F6C453', color: '#24143f' }}
+                    style={{ background: '#62E4BD', color: '#06151c' }}
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    <FaUser className="w-5 h-5 mr-3" />
-                    <span className="text-base" style={{ color: '#24143f' }}>Create profile</span>
+                    <UserPlus className="w-5 h-5 mr-3" />
+                    <span className="text-base" style={{ color: '#06151c' }}>Create profile</span>
                   </Button>
                 </Link>
               </>

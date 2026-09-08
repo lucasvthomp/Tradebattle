@@ -106,15 +106,15 @@ function TransactionHistory({ userId, formatCurrency }: { userId: number; format
 }
 
 const fadeInUp = {
-  initial: { opacity: 0, y: 6 },
+  initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.24, ease: "easeOut" }
+  transition: { duration: 0.6 }
 };
 
 const staggerChildren = {
   animate: {
     transition: {
-      staggerChildren: 0.04
+      staggerChildren: 0.1
     }
   }
 };
@@ -582,30 +582,35 @@ export default function Profile() {
               <CardContent className="p-6 relative z-10">
                 <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-0 md:space-x-4">
                   <div
-                    className="w-20 h-20 rounded-xl flex items-center justify-center overflow-visible relative"
+                    className="w-20 h-20 rounded-xl flex items-center justify-center overflow-hidden relative"
                     style={{ border: '2px solid #0E2040' }}
                   >
-                    <img
-                      src={user.profilePicture || "/assets/tradebattle-default-player.png"}
-                      alt="Profile"
-                      className="h-full w-full object-cover"
-                      style={{ borderRadius: '0.75rem' }}
-                      onError={(event) => {
-                        event.currentTarget.src = "/assets/tradebattle-default-player.png";
-                      }}
-                    />
+                    {user.profilePicture ? (
+                      <img
+                        src={user.profilePicture}
+                        alt="Profile"
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          borderRadius: '0.75rem'
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: '#0B1B2A' }}>
+                        <User className="w-10 h-10" style={{ color: '#8A93A6' }} />
+                      </div>
+                    )}
                     {/* Online status indicator - positioned at perfect square corner */}
                     <div
-                      className="profile-status-dot absolute z-10 w-4 h-4 rounded-full"
-                      aria-label="Online"
+                      className="absolute w-4 h-4 rounded-full"
                       style={{
-                        backgroundColor: '#67E7BF',
-                        borderColor: '#071522',
+                        backgroundColor: '#10B981',
+                        borderColor: '#FFFFFF',
                         borderWidth: '2px',
                         borderStyle: 'solid',
-                        top: 'auto',
-                        right: '-5px',
-                        bottom: '-5px'
+                        bottom: '0',
+                        right: '0'
                       }}
                     />
                   </div>

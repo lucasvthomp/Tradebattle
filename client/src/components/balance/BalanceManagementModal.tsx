@@ -52,7 +52,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const [selectedCurrency, setSelectedCurrency] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
   const [payment, setPayment] = useState<any>(null);
-  const [copiedField, setCopiedField] = useState<'address' | 'amount' | null>(null);
+  const [copied, setCopied] = useState(false);
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositError, setDepositError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState(1);
@@ -95,7 +95,6 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         setSelectedCurrency('');
         setDepositAmount('');
         setPayment(null);
-        setCopiedField(null);
         setDepositError('');
         setWithdrawStep('amount');
         setWithdrawAmount('');
@@ -132,13 +131,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const withdrawBreakdown = getWithdrawalBreakdown(currentWithdrawAmountValue);
   const presetWithdrawAmounts = [10, 25, 50, 100].filter(amt => amt <= currentBalance);
 
-  // Use the provider wallet payload directly for the QR code so it renders as a scannable code.
-  function getPaymentQrValue(paymentData: any): string {
-    const raw = paymentData?.pay_address ?? paymentData?.payin_address ?? paymentData?.address ?? '';
-    return typeof raw === 'string' ? raw.trim() : '';
-  }
-
-  // Keep the visible address readable while preserving the provider payload for the QR code.
+  // Extract clean wallet address from pay_address (strips crypto URI schemes like bitcoin:addr?amount=X)
   function getCleanAddress(raw: string): string {
     if (!raw) return '';
     if (/^https?:\/\//i.test(raw)) return raw;
@@ -149,33 +142,18 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
     return raw;
   }
 
-  function getPaymentAmountValue(paymentData: any): string {
-    const amount = paymentData?.pay_amount;
-    const currency = paymentData?.pay_currency;
-    return amount != null && currency ? `${amount} ${String(currency).toUpperCase()}` : '';
-  }
-
-  async function copyPaymentValue(value: string, field: 'address' | 'amount') {
-    if (!value) return;
+  // Copy address handler
+  async function copyAddress() {
+    if (!payment?.pay_address) return;
     try {
-      await navigator.clipboard.writeText(value);
-      setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
+      await navigator.clipboard.writeText(getCleanAddress(payment.pay_address));
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   }
 
-  async function copyAddress() {
-    const value = getPaymentQrValue(payment);
-    if (value) {
-      await copyPaymentValue(getCleanAddress(value), 'address');
-    }
-  }
-
-  async function copyAmount() {
-    await copyPaymentValue(getPaymentAmountValue(payment), 'amount');
-  }
   // Create deposit handler
   async function createDeposit() {
     setDepositLoading(true);
@@ -193,14 +171,11 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+        const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to create payment');
       }
 
       const data = await response.json();
-      if (!data?.payment_id || !getPaymentQrValue(data) || data?.pay_amount == null || !data?.pay_currency) {
-        throw new Error('Payment details were incomplete. Please try again.');
-      }
       setPayment(data);
       setDepositStep('payment');
       pollPaymentStatus(data.payment_id);
@@ -345,16 +320,16 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg border balance-management-modal" style={{
+      <DialogContent className="max-w-lg border" style={{
         background: '#0B1B2A',
-        borderColor: 'rgba(103,231,191,0.22)',
-        boxShadow: '0 25px 60px rgba(0,0,0,0.7), 0 0 40px rgba(103,231,191,0.06)'
+        borderColor: 'rgba(0,163,255,0.2)',
+        boxShadow: '0 25px 60px rgba(0,0,0,0.7), 0 0 40px rgba(0,163,255,0.06)'
       }}>
         <DialogHeader className="pb-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{
-              background: 'linear-gradient(135deg, rgba(103,231,191,0.14), rgba(103,231,191,0.04))',
-              border: '1px solid rgba(103,231,191,0.25)',
+              background: 'linear-gradient(135deg, rgba(0,163,255,0.15), rgba(0,163,255,0.05))',
+              border: '1px solid rgba(0,163,255,0.25)',
             }}>
               <Wallet className="w-5 h-5" style={{ color: '#67E7BF' }} />
             </div>
@@ -374,7 +349,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
             <TabsTrigger
               value="deposit"
               className="rounded-lg text-sm font-black flex items-center gap-2 data-[state=active]:shadow-none"
-              style={{ color: activeTab === 'deposit' ? '#F1F5F9' : '#8A93A6' }}
+              style={{ color: activeTab === 'deposit' ? '#000' : '#4B5563' }}
             >
               <TrendingUp className="w-4 h-4" />
               Add cash
@@ -382,7 +357,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
             <TabsTrigger
               value="withdraw"
               className="rounded-lg text-sm font-black flex items-center gap-2 data-[state=active]:shadow-none"
-              style={{ color: activeTab === 'withdraw' ? '#F1F5F9' : '#8A93A6' }}
+              style={{ color: activeTab === 'withdraw' ? '#000' : '#4B5563' }}
             >
               <TrendingDown className="w-4 h-4" />
               Cash out
@@ -450,7 +425,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         <span style={{ fontSize: '12px', fontWeight: '700', color: '#C9D1E2' }}>
                           {currency.label}
                         </span>
-                        <span style={{ fontSize: '10px', color: '#7890A4', marginTop: '-2px' }}>
+                        <span style={{ fontSize: '10px', color: '#4B5563', marginTop: '-2px' }}>
                           {currency.network}
                         </span>
                       </motion.button>
@@ -489,7 +464,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           color: currencies.find(c => c.id === selectedCurrency)?.color,
                         }}
                       >
-                        {currencies.find(c => c.id === selectedCurrency)?.label}
+                        {currencies.find(c => c.id === selectedCurrency)?.img}
                       </div>
                       <div>
                         <div className="font-semibold" style={{ color: '#C9D1E2' }}>
@@ -566,25 +541,24 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                   {/* QR Code */}
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <motion.div
-                      className="deposit-qr-frame"
                       style={{
                         padding: '6px',
                         borderRadius: '16px',
-                        background: 'rgba(103, 231, 191, 0.06)',
-                        boxShadow: '0 8px 28px rgba(103, 231, 191, 0.12)',
+                        background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
+                        boxShadow: '0 8px 32px rgba(0, 163, 255, 0.35)',
                         display: 'inline-flex',
                       }}
                       animate={{
                         boxShadow: [
-                          '0 8px 32px rgba(103, 231, 191, 0.18)',
-                          '0 8px 40px rgba(103, 231, 191, 0.24)',
-                          '0 8px 32px rgba(103, 231, 191, 0.18)',
+                          '0 8px 32px rgba(0, 163, 255, 0.35)',
+                          '0 8px 40px rgba(0, 163, 255, 0.5)',
+                          '0 8px 32px rgba(0, 163, 255, 0.35)',
                         ],
                       }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <div className="deposit-qr-surface" style={{
-                        background: 'transparent',
+                      <div style={{
+                        background: '#ffffff',
                         borderRadius: '12px',
                         padding: '12px',
                         display: 'flex',
@@ -595,12 +569,11 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         flexShrink: 0,
                       }}>
                         <QRCodeSVG
-                          value={getPaymentQrValue(payment)}
-                          includeMargin
+                          value={getCleanAddress(payment.pay_address || '')}
                           size={176}
                           level="H"
-                          fgColor="#67E7BF"
-                          bgColor="transparent"
+                          fgColor="#0B1B2A"
+                          bgColor="#ffffff"
                         />
                       </div>
                     </motion.div>
@@ -611,58 +584,46 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
                       Send to this address
                     </label>
-                    <div className="deposit-address flex items-center gap-2 p-3 rounded-xl border-2" style={{
+                    <div className="flex items-center gap-2 p-3 rounded-xl border-2" style={{
                       background: '#0B1B2A',
                       borderColor: 'rgba(255,255,255,0.08)',
                     }}>
                       <code className="flex-1 text-sm font-mono break-all" style={{ color: '#C9D1E2' }}>
-                        {getCleanAddress(getPaymentQrValue(payment))}
+                        {getCleanAddress(payment.pay_address || '')}
                       </code>
                       <Button
                         size="sm"
                         onClick={copyAddress}
-                        aria-label="Copy address"
                         className="shrink-0"
                         style={{
-                          background: copiedField === 'address' ? '#67E7BF' : '#123247',
-                          color: '#06151C',
+                          background: copied ? '#67E7BF' : '#67E7BF',
+                          color: '#0B1B2A',
                         }}
                       >
-                        {copiedField === 'address' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       </Button>
                     </div>
                   </div>
 
-                                    {/* Amount */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
-                  Amount to send
-                </label>
-                <div className="deposit-address deposit-copy-row flex items-center gap-2 p-3 rounded-xl border-2" style={{
-                  background: '#0B1B2A',
-                  borderColor: 'rgba(255,255,255,0.08)',
-                }}>
-                  <code className="flex-1 text-sm font-mono break-all" style={{ color: '#C9D1E2' }}>
-                    {getPaymentAmountValue(payment)}
-                  </code>
-                  <Button
-                    size="sm"
-                    onClick={copyAmount}
-                    aria-label="Copy amount"
-                    className="shrink-0"
-                    style={{
-                      background: copiedField === 'amount' ? '#67E7BF' : '#123247',
-                      color: '#06151C',
-                    }}
-                  >
-                    {copiedField === 'amount' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </div>
+                  {/* Amount */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
+                      Amount to send
+                    </label>
+                    <div className="p-5 rounded-xl border-2 text-center" style={{
+                      background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
+                      borderColor: '#67E7BF',
+                      boxShadow: '0 4px 20px rgba(0, 163, 255, 0.25)',
+                    }}>
+                      <div className="text-3xl font-black" style={{ color: '#0B1B2A' }}>
+                        {payment.pay_amount} {payment.pay_currency.toUpperCase()}
+                      </div>
+                    </div>
+                  </div>
 
                   {/* Status */}
                   <Alert className="border-2" style={{
-                    background: 'rgba(103, 231, 191, 0.08)',
+                    background: 'rgba(0, 163, 255, 0.1)',
                     borderColor: '#67E7BF',
                   }}>
                     <Loader2 className="w-5 h-5 animate-spin" style={{ color: '#67E7BF' }} />
@@ -861,14 +822,14 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           className="p-4 rounded-xl border-2 transition-all"
                           style={{
                             background: withdrawCurrency === currency.id
-                              ? 'linear-gradient(135deg, rgba(0, 163, 255, 0.15), rgba(103, 231, 191, 0.08))'
+                              ? 'linear-gradient(135deg, rgba(0, 163, 255, 0.15), rgba(0, 163, 255, 0.1))'
                               : '#0B1B2A',
                             borderColor: withdrawCurrency === currency.id ? '#67E7BF' : 'rgba(255,255,255,0.08)',
                           }}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className="text-3xl mb-2"><span className="font-bold">{currency.label}</span></div>
+                          <div className="text-3xl mb-2">{currency.img}</div>
                           <div className="font-bold" style={{ color: '#C9D1E2' }}>{currency.name}</div>
                           <div className="text-xs" style={{ color: '#8A93A6' }}>{currency.network}</div>
                         </motion.button>
@@ -1048,7 +1009,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     </div>
                   </Card>
 
-                  <Alert style={{ background: 'rgba(103, 231, 191, 0.08)', borderColor: '#67E7BF' }}>
+                  <Alert style={{ background: 'rgba(0, 163, 255, 0.1)', borderColor: '#67E7BF' }}>
                     <AlertDescription style={{ color: '#8A93A6' }}>
                       You’ll receive an alert when your cash out is complete. You can safely close this window.
                     </AlertDescription>

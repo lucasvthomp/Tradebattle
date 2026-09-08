@@ -1,7 +1,11 @@
 import { Link } from "wouter";
-import { FaArrowRight, FaBolt, FaChartLine, FaChevronRight, FaCrown, FaGamepad, FaShieldHalved, FaTrophy } from "react-icons/fa6";
-import { type ReactNode } from "react";
+import { ArrowRight, ChevronRight, Crown, ShieldCheck, Swords, Target, Timer, TrendingUp, Trophy, Users, Zap } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
 import "./unauthenticated-home.css";
+
+const formatTime = (total: number) => [Math.floor(total / 3600), Math.floor((total % 3600) / 60), total % 60]
+  .map((part) => String(part).padStart(2, "0"))
+  .join(":");
 
 const marketPath = "M-30 348 C18 326 47 360 86 330 S143 286 184 314 S227 350 273 306 S330 266 370 292 S416 320 456 277 S506 251 544 272 S582 326 621 294 S664 242 704 261 S744 312 786 279 S833 227 875 245 S912 287 953 260 S1002 214 1041 236 S1074 278 1116 248 S1160 195 1203 218 S1245 259 1286 226 S1330 178 1371 202 S1426 174 1470 188";
 
@@ -11,14 +15,14 @@ function MarketChartBackground() {
       <svg viewBox="0 0 1440 620" preserveAspectRatio="none" role="presentation">
         <defs>
           <linearGradient id="market-area-fill" x1="0" x2="0" y1="0" y2="1">
-            <stop offset="0" stopColor="#f6c453" stopOpacity="0.22" />
-            <stop offset="0.62" stopColor="#f6c453" stopOpacity="0.04" />
-            <stop offset="1" stopColor="#f6c453" stopOpacity="0" />
+            <stop offset="0" stopColor="#67e7bf" stopOpacity="0.22" />
+            <stop offset="0.62" stopColor="#67e7bf" stopOpacity="0.04" />
+            <stop offset="1" stopColor="#67e7bf" stopOpacity="0" />
           </linearGradient>
           <linearGradient id="market-line-glow" x1="0" x2="1" y1="0" y2="0">
             <stop offset="0" stopColor="#4b9fcb" stopOpacity="0.2" />
-            <stop offset="0.48" stopColor="#f6c453" stopOpacity="0.92" />
-            <stop offset="1" stopColor="#fff0b0" stopOpacity="0.74" />
+            <stop offset="0.48" stopColor="#67e7bf" stopOpacity="0.92" />
+            <stop offset="1" stopColor="#b2ffe7" stopOpacity="0.74" />
           </linearGradient>
           <filter id="market-line-blur" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="7" />
@@ -41,35 +45,33 @@ function MarketChartBackground() {
 }
 
 function PrimaryLink({ children, href = "/signup" }: { children: ReactNode; href?: string }) {
-  return <Link href={href} className="arena-primary-link">{children}<FaArrowRight size={16} aria-hidden="true" /></Link>;
+  return <Link href={href} className="arena-primary-link">{children}<ArrowRight size={18} aria-hidden="true" /></Link>;
 }
 
 const steps = [
-  { number: "01", icon: <FaGamepad aria-hidden="true" />, title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
-  { number: "02", icon: <FaChartLine aria-hidden="true" />, title: "Make your move", body: "Build your positions with live market data and virtual capital." },
-  { number: "03", icon: <FaCrown aria-hidden="true" />, title: "Take the win", body: "Finish above the field when the clock hits zero." },
+  { number: "01", icon: <Swords aria-hidden="true" />, title: "Choose your arena", body: "Enter an open arena or go head-to-head in Blitz." },
+  { number: "02", icon: <TrendingUp aria-hidden="true" />, title: "Trade the board", body: "Build your positions with live market data and virtual capital." },
+  { number: "03", icon: <Crown aria-hidden="true" />, title: "Take the win", body: "Finish above the field when the clock hits zero." },
 ];
 
 const modes = [
   {
     className: "mode-tournament",
-    icon: <FaTrophy aria-hidden="true" />,
+    icon: <Trophy aria-hidden="true" />,
     label: "MULTIPLAYER",
     title: "Arenas",
-    body: "Compete against the field with virtual cash.",
+    body: "The full field experience. Read the market, make your move, and climb the board.",
     stats: ["Open field", "Free entry"],
     link: "Enter arenas",
-    art: "/assets/tradebattle-chest-trophy-v2.png",
   },
   {
     className: "mode-blitz",
-    icon: <FaBolt aria-hidden="true" />,
+    icon: <Zap aria-hidden="true" />,
     label: "HEAD-TO-HEAD",
     title: "Blitz",
-    body: "A five-minute head-to-head match.",
+    body: "A fast, focused matchup. Five minutes on the clock and one opponent to beat.",
     stats: ["1v1 match", "5 min rounds"],
     link: "Play Blitz",
-    art: "/assets/tradebattle-chest-exchange-v2.png",
   },
 ];
 
@@ -81,7 +83,7 @@ const promoCards = [
     title: "Take the field",
     body: "Join an open arena and outplay the board.",
     cta: "Enter arenas",
-    art: "/assets/tradebattle-chest-bell-v2.png",
+    art: "/assets/tradebattle-badge-flat.png",
   },
   {
     href: "/blitz",
@@ -90,7 +92,7 @@ const promoCards = [
     title: "Beat the clock",
     body: "Five minutes. One rival. Make it count.",
     cta: "Play Blitz",
-    art: "/assets/tradebattle-chest-exchange-v2.png",
+    art: "/assets/tradebattle-mascot-flat.png",
   },
   {
     href: "/shop",
@@ -99,11 +101,21 @@ const promoCards = [
     title: "Stack your edge",
     body: "Unlock perks for your next run.",
     cta: "Visit rewards",
-    art: "/assets/tradebattle-chest-money-bag-v2.png",
+    art: "/assets/tradebattle-reward-flat.png",
   },
 ];
 
 export default function UnauthenticatedHome() {
+  const [seconds, setSeconds] = useState(2 * 60 * 60 + 34 * 60 + 12);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setSeconds((current) => current > 0 ? current - 1 : 3 * 60 * 60);
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
   return (
     <main className="arena-page">
       <section className="arena-hero" aria-labelledby="arena-hero-title">
@@ -114,56 +126,66 @@ export default function UnauthenticatedHome() {
         <div className="arena-shell">
           <div className="arena-status">
             <span className="arena-status-dot" aria-hidden="true" />
-            <span>FREE TO PLAY</span>
+            <span>ARENA LIVE</span>
             <span className="arena-status-divider" aria-hidden="true" />
-            <span className="arena-status-secondary">VIRTUAL MARKETS</span>
+            <span className="arena-status-secondary">2,903 PLAYERS ONLINE</span>
           </div>
 
           <div className="arena-hero-layout">
             <div className="arena-copy">
-              <p className="arena-eyebrow"><FaGamepad size={14} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
-              <h1 id="arena-hero-title">Trade smarter.<br /><em>Rank the board.</em></h1>
-              <p className="arena-lede">A competitive paper-trading game built around live market moves.</p>
+              <p className="arena-eyebrow"><Swords size={15} aria-hidden="true" /> PAPER TRADING / COMPETITIVE PLAY</p>
+              <h1 id="arena-hero-title">Trade smarter.<br /><em>Win the board.</em></h1>
+              <p className="arena-lede">A live-market strategy game where every decision moves you up — or down — the rankings.</p>
               <div className="arena-actions">
-                <PrimaryLink>Start playing</PrimaryLink>
-                <Link href="/login" className="arena-secondary-link">Sign in <FaChevronRight size={15} aria-hidden="true" /></Link>
+                <PrimaryLink>Enter the arena</PrimaryLink>
+                <Link href="/login" className="arena-secondary-link">I already play <ChevronRight size={17} aria-hidden="true" /></Link>
               </div>
-              <div className="arena-reassurance"><FaShieldHalved size={15} aria-hidden="true" /> Virtual cash only · $10,000 starting balance</div>
+              <div className="arena-reassurance"><ShieldCheck size={16} aria-hidden="true" /> Virtual cash only · $10,000 starting balance</div>
             </div>
 
             <div className="arena-hero-visual">
               <div className="arena-hero-art-glow" aria-hidden="true" />
-              <img className="arena-hero-market-icon" src="/assets/tradebattle-chest-graph-v2.png" alt="" aria-hidden="true" />
-              <aside className="match-card" aria-label="How Tradebattle works">
-                <div className="match-card-top">
-                  <span className="match-live"><i aria-hidden="true" /> MATCH BRIEF</span>
-                  <span className="match-level">SIM</span>
-                </div>
+              <img className="arena-hero-mascot" src="/assets/tradebattle-mascot-flat.png" alt="" aria-hidden="true" />
+              <aside className="match-card" aria-label="Next arena">
+              <div className="match-card-top">
+                <span className="match-live"><i aria-hidden="true" /> NEXT MATCH</span>
+                <span className="match-level">OPEN</span>
+              </div>
 
-                <div className="match-title">
-                  <span className="match-trophy"><img src="/assets/tradebattle-chest-trophy-v2.png" alt="" aria-hidden="true" /></span>
-                  <div><strong>Build your edge</strong><small>Paper trading with live market moves</small></div>
-                </div>
+              <div className="match-title">
+                <span className="match-trophy"><Trophy size={26} aria-hidden="true" /></span>
+                <div><strong>Opening Bell</strong><small>Daily arena · Open field</small></div>
+              </div>
 
-                <div className="match-board">
-                  <div className="match-board-heading"><span>PLAY</span><span>DETAIL</span></div>
-                  <div className="match-board-row"><span><FaGamepad size={15} aria-hidden="true" /> Format</span><strong>ARENA</strong></div>
-                  <div className="match-board-row"><span><FaChartLine size={15} aria-hidden="true" /> Starting cash</span><strong>$10,000</strong></div>
-                  <div className="match-board-row"><span><FaCrown size={15} aria-hidden="true" /> Goal</span><strong>RANK UP</strong></div>
-                </div>
+              <div className="match-countdown">
+                <span>STARTS IN</span>
+                <strong>{formatTime(seconds)}</strong>
+              </div>
 
-                <Link href="/signup" className="match-join">Create a profile <FaArrowRight size={15} aria-hidden="true" /></Link>
+              <div className="match-board">
+                <div className="match-board-heading"><span>LIVE BOARD</span><span>VALUE</span></div>
+                <div className="match-board-row"><span><Users size={16} aria-hidden="true" /> Players</span><strong>48 / 100</strong></div>
+                <div className="match-board-row"><span><Target size={16} aria-hidden="true" /> Entry</span><strong>FREE</strong></div>
+                <div className="match-board-row"><span><Crown size={16} aria-hidden="true" /> Prize pool</span><strong>$2,500</strong></div>
+              </div>
+
+              <Link href="/signup" className="match-join">Claim your spot <ArrowRight size={16} aria-hidden="true" /></Link>
               </aside>
             </div>
           </div>
 
+          <div className="arena-score-strip" aria-label="Arena stats">
+            <div><span><TrendingUp size={16} aria-hidden="true" /> MARKET STATUS</span><strong className="positive">OPEN</strong></div>
+            <div><span><Timer size={16} aria-hidden="true" /> ACTIVE ARENAS</span><strong>12</strong></div>
+            <div><span><Trophy size={16} aria-hidden="true" /> PAID OUT THIS MONTH</span><strong>$125K+</strong></div>
+          </div>
         </div>
       </section>
 
       <section className="arena-promo-rail" aria-labelledby="promo-title">
         <div className="arena-promo-heading">
-          <div><p>THE TRADEBATTLE ARCADE</p><h2 id="promo-title">Pick a mode.</h2></div>
-          <span>Arenas, Blitz, and rewards.</span>
+          <div><p>THE TRADEBATTLE ARCADE</p><h2 id="promo-title">Choose your next move.</h2></div>
+          <span>Three ways in.</span>
         </div>
         <div className="arena-promo-grid">
           {promoCards.map((card) => (
@@ -172,7 +194,7 @@ export default function UnauthenticatedHome() {
                 <span className="arena-promo-label">{card.label}</span>
                 <h3>{card.title}</h3>
                 <p>{card.body}</p>
-                <strong>{card.cta}<FaArrowRight size={14} aria-hidden="true" /></strong>
+                <strong>{card.cta}<ArrowRight size={15} aria-hidden="true" /></strong>
               </div>
               <div className="arena-promo-art" aria-hidden="true"><img src={card.art} alt="" /></div>
             </Link>
@@ -188,12 +210,11 @@ export default function UnauthenticatedHome() {
         <div className="mode-grid">
           {modes.map((mode) => (
             <article className={`mode-card ${mode.className}`} key={mode.title}>
-              <div className="mode-card-top"><span className="mode-label">{mode.label}</span></div>
-              <img className="mode-art-image" src={mode.art} alt="" aria-hidden="true" />
+              <div className="mode-card-top"><span className="mode-label">{mode.label}</span><span className="mode-card-art">{mode.icon}</span></div>
               <h3>{mode.title}</h3>
               <p>{mode.body}</p>
               <div className="mode-stats">{mode.stats.map((stat) => <span key={stat}>{stat}</span>)}</div>
-              <Link href="/signup" className="mode-link">{mode.link}<FaArrowRight size={15} aria-hidden="true" /></Link>
+              <Link href="/signup" className="mode-link">{mode.link}<ArrowRight size={17} aria-hidden="true" /></Link>
             </article>
           ))}
         </div>
@@ -202,7 +223,7 @@ export default function UnauthenticatedHome() {
       <section className="arena-section arena-how" id="how-it-works" aria-labelledby="how-title">
         <div className="arena-section-heading">
           <p>THE GAME LOOP</p>
-          <h2 id="how-title">Choose a mode. Make a move.</h2>
+          <h2 id="how-title">Ready. Set. Trade.</h2>
         </div>
         <div className="how-steps">
           {steps.map((step) => (
@@ -217,9 +238,9 @@ export default function UnauthenticatedHome() {
 
       <section className="arena-final" aria-labelledby="final-title">
         <div className="arena-final-content">
-          <p><FaBolt size={14} aria-hidden="true" /> YOUR FIRST MATCH IS FREE</p>
-          <h2 id="final-title">Start a match.</h2>
-          <PrimaryLink>Play free</PrimaryLink>
+          <p><Zap size={15} aria-hidden="true" /> YOUR FIRST MATCH IS FREE</p>
+          <h2 id="final-title">Make your first move.</h2>
+          <PrimaryLink>Start playing free</PrimaryLink>
         </div>
       </section>
     </main>

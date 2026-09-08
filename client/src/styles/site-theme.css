@@ -318,117 +318,6 @@
   color: var(--site-text) !important;
 }
 
-/* Shared platform pass: compact game-shell surfaces instead of floating AI
-   panels. The content and interactions stay the same; hierarchy comes from
-   rails, active states, and consistent spacing. */
-.tradebattle-site {
-  --site-bg: #08111b;
-  --site-panel: #0d1b28;
-  --site-panel-raised: #112536;
-  --site-edge: rgba(145, 164, 180, 0.17);
-  --site-text: #edf4f7;
-  --site-muted: #91a6b7;
-  --site-mint: #67e7bf;
-}
-
-.tradebattle-site .tradebattle-route::before {
-  inset: 4rem 0 0;
-  background-image:
-    radial-gradient(circle at 18% 12%, rgba(103, 231, 191, 0.07), transparent 22rem),
-    radial-gradient(circle at 86% 4%, rgba(118, 169, 198, 0.08), transparent 25rem),
-    radial-gradient(rgba(145, 164, 180, 0.11) 0.7px, transparent 0.7px);
-  background-size: auto, auto, 24px 24px;
-  opacity: 0.55;
-}
-
-.tradebattle-header {
-  height: 64px;
-  background: #0a1622 !important;
-  border-bottom: 1px solid rgba(145, 164, 180, 0.16) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16) !important;
-}
-
-.tradebattle-header .container,
-.tradebattle-header nav {
-  height: 100%;
-}
-
-.tradebattle-header-brand {
-  font-size: 0.95rem !important;
-  letter-spacing: 0.16em !important;
-}
-
-.tradebattle-sidebar {
-  top: 64px !important;
-  height: calc(100dvh - 64px) !important;
-  background: #0a1622 !important;
-  border-right: 1px solid rgba(145, 164, 180, 0.15) !important;
-  box-shadow: 8px 0 28px rgba(0, 0, 0, 0.16) !important;
-}
-
-.tradebattle-sidebar a,
-.tradebattle-sidebar button {
-  border-radius: 7px !important;
-}
-
-.tradebattle-sidebar a[style*="height: 44px"] {
-  height: 40px !important;
-  font-size: 0.9rem;
-}
-
-.tradebattle-sidebar a[style*="height: 44px"]:hover {
-  background: rgba(145, 164, 180, 0.08) !important;
-}
-
-.tradebattle-sidebar .sidebar-active-indicator {
-  position: relative;
-  background: rgba(103, 231, 191, 0.12) !important;
-  color: #eaf8f3 !important;
-}
-
-.tradebattle-sidebar .sidebar-active-indicator::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 3px;
-  border-radius: 0 3px 3px 0;
-  background: var(--site-mint);
-}
-
-.tradebattle-site .arena-page-shell,
-.tradebattle-site .arena-page {
-  color: var(--site-text);
-}
-
-.tradebattle-site .arena-page-shell > h1,
-.tradebattle-site .arena-page-shell h1 {
-  letter-spacing: -0.045em;
-}
-
-.tradebattle-site .card,
-.tradebattle-site [class*="rounded-xl"],
-.tradebattle-site [class*="rounded-2xl"] {
-  border-radius: 9px;
-}
-
-.tradebattle-site button:not([aria-label="Close"]),
-.tradebattle-site a[class*="rounded-full"] {
-  border-radius: 7px;
-}
-
-.tradebattle-footer {
-  background: #0a1622 !important;
-  border-top: 1px solid rgba(145, 164, 180, 0.15) !important;
-}
-
-@media (max-width: 900px) {
-  .tradebattle-sidebar {
-    display: none !important;
-  }
-}
-
 .tradebattle-site .tradebattle-route > .bg-white [class*="text-gray-"],
 .tradebattle-site .tradebattle-route > .bg-gray-50 [class*="text-gray-"],
 .tradebattle-site .tradebattle-route > .bg-gray-100 [class*="text-gray-"] {
@@ -1196,1725 +1085,6 @@
   .shop-spotlight-art { right: -37px; bottom: -65px; width: 220px; opacity: 0.42; }
 }
 
-/* Final playful shell tokens win over legacy route-specific styling. */
-.tradebattle-site .tradebattle-header {
-  background: #11162f !important;
-  border-bottom-color: #2b315e !important;
-  box-shadow: 0 8px 0 rgba(5, 7, 24, 0.22) !important;
-}
-.tradebattle-site .tradebattle-sidebar {
-  background: #11162f !important;
-  border-right-color: #2b315e !important;
-  box-shadow: 5px 0 0 rgba(5, 7, 24, 0.22) !important;
-}
-.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator {
-  background: #67e7bf !important;
-  color: #0d1230 !important;
-}
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
-  background: #ffd166 !important;
-}
-.tradebattle-site .tradebattle-footer {
-  background: #11162f !important;
-  border-top-color: #2b315e !important;
-}
-
-/* Purple + gold palette experiment. */
-.tradebattle-site {
-  --site-bg: #120d2b;
-  --site-panel: #1d1540;
-  --site-panel-raised: #30205e;
-  --site-edge: rgba(246, 196, 83, 0.24);
-  --site-mint: #f6c453;
-  --site-yellow: #ffd166;
-  --site-purple: #b58cff;
-  background: #120d2b !important;
-}
-.tradebattle-site .tradebattle-route::before {
-  background-image:
-    radial-gradient(circle at 10% 10%, rgba(181, 140, 255, 0.18), transparent 19rem),
-    radial-gradient(circle at 92% 20%, rgba(246, 196, 83, 0.12), transparent 22rem),
-    radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
-}
-.tradebattle-site .tradebattle-header,
-.tradebattle-site .tradebattle-sidebar,
-.tradebattle-site .tradebattle-footer {
-  background: #171039 !important;
-  border-color: #3a296d !important;
-}
-.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator {
-  background: #f6c453 !important;
-  color: #24143f !important;
-}
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
-  background: #fff0b0 !important;
-}
-.tradebattle-site [style*="#67E7BF"],
-.tradebattle-site [style*="#67e7bf"],
-.tradebattle-site [style*="#62E4BD"],
-.tradebattle-site [style*="#62e4bd"] {
-  color: #f6c453 !important;
-}
-.tradebattle-site .tradebattle-header [style*="linear-gradient(135deg, #9af1d1"],
-.tradebattle-site .tradebattle-header [style*="linear-gradient(135deg, #9af1d1"] {
-  background: linear-gradient(135deg, #ffe08a, #d9982b) !important;
-}
-.tradebattle-site button[style*="#62E4BD"],
-.tradebattle-site button[style*="#62e4bd"] {
-  background: #f6c453 !important;
-  color: #24143f !important;
-  box-shadow: 0 8px 22px rgba(246, 196, 83, 0.18) !important;
-}
-
-/* Playful arcade direction: solid color blocks, friendly corners, and a
-   stronger game silhouette instead of a broker-dashboard finish. */
-.tradebattle-site {
-  --site-bg: #0d1230;
-  --site-panel: #171c40;
-  --site-panel-raised: #232957;
-  --site-edge: rgba(137, 150, 221, 0.26);
-  --site-text: #fbfbff;
-  --site-muted: #aeb6d2;
-  --site-mint: #67e7bf;
-  --site-yellow: #ffd166;
-  --site-purple: #b58cff;
-  background: #0d1230 !important;
-}
-
-.tradebattle-site .tradebattle-route::before {
-  background-image:
-    radial-gradient(circle at 10% 10%, rgba(181, 140, 255, 0.13), transparent 19rem),
-    radial-gradient(circle at 92% 20%, rgba(103, 231, 191, 0.11), transparent 22rem),
-    radial-gradient(rgba(255, 255, 255, 0.14) 1px, transparent 1px);
-  background-size: auto, auto, 26px 26px;
-  opacity: 0.3;
-}
-
-.tradebattle-header {
-  background: #11162f !important;
-  border-bottom: 2px solid #2b315e !important;
-  box-shadow: 0 8px 0 rgba(5, 7, 24, 0.22) !important;
-}
-
-.tradebattle-header .tradebattle-header-brand {
-  letter-spacing: 0.08em !important;
-}
-
-.tradebattle-sidebar {
-  background: #11162f !important;
-  border-right: 2px solid #2b315e !important;
-  box-shadow: 5px 0 0 rgba(5, 7, 24, 0.22) !important;
-}
-
-.tradebattle-sidebar a,
-.tradebattle-sidebar button {
-  border-radius: 12px !important;
-}
-
-.tradebattle-sidebar a.sidebar-active-indicator {
-  background: #67e7bf !important;
-  color: #0d1230 !important;
-  font-weight: 900;
-}
-
-.tradebattle-sidebar .sidebar-active-indicator::before {
-  width: 5px;
-  top: 6px;
-  bottom: 6px;
-  background: #ffd166;
-}
-
-.tradebattle-sidebar a:hover,
-.tradebattle-sidebar button:hover {
-  background: #252b5b !important;
-}
-
-.tradebattle-site .card,
-.tradebattle-site [class*="rounded-xl"],
-.tradebattle-site [class*="rounded-2xl"] {
-  border-radius: 14px;
-}
-
-.tradebattle-site button:not([aria-label="Close"]),
-.tradebattle-site a[class*="rounded-full"] {
-  border-radius: 11px;
-}
-
-.tradebattle-footer {
-  background: #11162f !important;
-  border-top: 2px solid #2b315e !important;
-}
-
-
-/* Chest-quality art pass: more breathing room, fewer labels, stronger game actions. */
-.tradebattle-site.arena-app .hub-screen {
-  padding: 42px 32px 78px;
-}
-
-.tradebattle-site.arena-app .hub-shell {
-  width: min(1220px, 100%);
-}
-
-.hub-topbar {
-  padding: 10px 0 30px;
-}
-
-.hub-feature-banner {
-  min-height: 248px;
-  margin-top: 24px;
-  padding: 30px 36px;
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 82% 42%, rgba(103, 231, 191, 0.2), transparent 30%),
-    radial-gradient(circle at 55% 130%, rgba(242, 199, 106, 0.1), transparent 34%),
-    linear-gradient(130deg, #12394a, #0b1b2a 67%);
-  box-shadow: inset 0 1px rgba(255, 255, 255, 0.06), 0 22px 52px rgba(0, 0, 0, 0.2);
-}
-
-.hub-feature-copy {
-  max-width: 500px;
-}
-
-.hub-feature-copy h2 {
-  font-size: clamp(2rem, 4vw, 3.25rem);
-}
-
-.hub-feature-art {
-  right: -18px;
-  bottom: -84px;
-  width: 390px;
-  opacity: 0.74;
-  mix-blend-mode: normal;
-  filter: drop-shadow(0 26px 26px rgba(0, 0, 0, 0.3));
-}
-
-.hub-loadout {
-  min-height: 154px;
-  margin: 18px 0 14px;
-  padding: 23px 27px;
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 92% 45%, rgba(103, 231, 191, 0.16), transparent 28%),
-    linear-gradient(145deg, rgba(16, 47, 59, 0.96), rgba(7, 18, 31, 0.98));
-}
-
-.hub-loadout-copy h2 {
-  font-size: 23px;
-}
-
-.hub-loadout-items {
-  gap: 10px;
-  padding-top: 25px;
-}
-
-.hub-loadout-item {
-  width: 82px;
-  height: 85px;
-  border-radius: 14px;
-  background: rgba(3, 12, 22, 0.38);
-}
-
-.hub-loadout-item img {
-  top: -27px;
-  width: 84px;
-  height: 84px;
-  filter: drop-shadow(0 15px 14px rgba(0, 0, 0, 0.3));
-}
-
-.hub-loadout-item span {
-  font-size: 9px;
-}
-
-.hub-stat-grid {
-  gap: 14px;
-  padding: 23px 0;
-}
-
-.hub-stat-card {
-  min-height: 116px;
-  padding: 20px;
-  border-radius: 16px;
-}
-
-.hub-stat-value {
-  margin-top: 14px;
-  font-size: 27px;
-}
-
-.hub-main-grid,
-.hub-lower-grid {
-  gap: 16px;
-}
-
-.hub-panel {
-  border-radius: 18px;
-}
-
-.hub-panel-heading {
-  padding: 25px 25px 0;
-}
-
-.hub-market-readout {
-  padding: 27px 25px 6px;
-}
-
-.hub-chart {
-  height: 228px;
-  margin: 10px 17px 0;
-  border-radius: 14px;
-}
-
-.hub-chart-footer {
-  padding: 13px 25px 22px;
-}
-
-.hub-launch-list {
-  gap: 13px;
-  padding: 24px 18px 20px;
-}
-
-.hub-launch-card {
-  min-height: 124px;
-  padding: 15px 17px;
-  border-radius: 15px;
-  background:
-    radial-gradient(circle at 83% 44%, rgba(103, 231, 191, 0.12), transparent 33%),
-    rgba(3, 12, 22, 0.4);
-}
-
-.hub-launch-card:hover {
-  transform: translateY(-3px);
-}
-
-.hub-launch-icon {
-  width: 48px;
-  height: 48px;
-  border: 0;
-  border-radius: 14px;
-}
-
-.hub-launch-copy {
-  max-width: 145px;
-}
-
-.hub-launch-copy strong {
-  font-size: 15px;
-}
-
-.hub-launch-copy span {
-  line-height: 1.4;
-}
-
-.hub-launch-art {
-  right: 26px;
-  top: -13px;
-  width: 145px;
-  opacity: 0.38;
-  mix-blend-mode: normal;
-  filter: drop-shadow(0 16px 15px rgba(0, 0, 0, 0.32));
-}
-
-.hub-launch-art-arena {
-  width: 148px;
-}
-
-.hub-launch-art-blitz {
-  top: -7px;
-  width: 145px;
-  transform: rotate(-4deg);
-}
-
-.hub-launch-card:hover .hub-launch-art {
-  opacity: 0.74;
-  transform: translateY(-6px);
-}
-
-.hub-launch-card:hover .hub-launch-art-blitz {
-  transform: rotate(-4deg) translateY(-6px);
-}
-
-.hub-live-panel,
-.hub-progress-panel {
-  min-height: 250px;
-}
-
-.hub-live-list {
-  gap: 9px;
-  padding: 22px 18px 18px;
-}
-
-.hub-live-row {
-  min-height: 52px;
-  padding: 0 13px;
-  border-radius: 11px;
-}
-
-.hub-progress-body {
-  padding: 23px 25px 24px;
-}
-
-/* Blitz becomes a playable board instead of a mostly empty queue page. */
-.tradebattle-site.arena-app .blitz-page {
-  padding: 42px 28px 78px;
-}
-
-.blitz-shell {
-  width: min(980px, 100%);
-}
-
-.blitz-header {
-  padding: 9px 0 28px;
-}
-
-.blitz-header-mark {
-  width: 58px;
-  height: 58px;
-  border: 0;
-  border-radius: 16px;
-  background: rgba(103, 231, 191, 0.07);
-}
-
-.blitz-roundboard {
-  position: relative;
-  min-height: 226px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 275px;
-  align-items: center;
-  gap: 24px;
-  overflow: hidden;
-  margin: 22px 0 18px;
-  padding: 31px 36px;
-  border: 1px solid rgba(103, 231, 191, 0.22);
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 83% 48%, rgba(242, 199, 106, 0.16), transparent 28%),
-    linear-gradient(135deg, #123b45, #0b1b2a 72%);
-  box-shadow: inset 0 1px rgba(255,255,255,.05), 0 20px 48px rgba(0,0,0,.18);
-}
-
-.blitz-roundboard::after {
-  content: "";
-  position: absolute;
-  width: 330px;
-  height: 330px;
-  right: 12px;
-  bottom: -210px;
-  border-radius: 50%;
-  border: 1px solid rgba(103, 231, 191, 0.13);
-  box-shadow: 0 0 0 19px rgba(103, 231, 191, 0.03), 0 0 0 38px rgba(103, 231, 191, 0.02);
-  pointer-events: none;
-}
-
-.blitz-roundboard-copy {
-  position: relative;
-  z-index: 2;
-}
-
-.blitz-roundboard-copy h2 {
-  margin: 0;
-  color: #f3fbfd;
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  font-weight: 900;
-  letter-spacing: -0.065em;
-  line-height: .98;
-}
-
-.blitz-roundboard-copy p {
-  max-width: 460px;
-  margin: 13px 0 0;
-  color: #a5bdc8;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.blitz-roundboard-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 20px;
-}
-
-.blitz-roundboard-stats span {
-  padding: 7px 9px;
-  border: 1px solid rgba(118, 169, 198, .18);
-  border-radius: 8px;
-  color: #89a3b0;
-  font-family: "Courier New", monospace;
-  font-size: 9px;
-  letter-spacing: .07em;
-  text-transform: uppercase;
-}
-
-.blitz-roundboard-stats strong {
-  color: #f2c76a;
-}
-
-.blitz-roundboard-art {
-  position: relative;
-  z-index: 1;
-  height: 205px;
-  display: grid;
-  place-items: center;
-}
-
-.blitz-roundboard-art img {
-  width: 254px;
-  height: 254px;
-  object-fit: contain;
-  filter: drop-shadow(0 24px 22px rgba(0,0,0,.32));
-}
-
-.blitz-roundboard-art-label {
-  position: absolute;
-  right: 0;
-  bottom: 3px;
-  padding: 6px 8px;
-  border: 1px solid rgba(103,231,191,.22);
-  border-radius: 7px;
-  background: rgba(5, 16, 27, .76);
-  color: #67e7bf;
-  font-family: "Courier New", monospace;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .1em;
-}
-
-.blitz-stage-card {
-  min-height: 430px;
-  padding: 58px 28px;
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(103,231,191,.07), transparent 30%),
-    #0b1b2a;
-  box-shadow: 0 20px 46px rgba(0,0,0,.18);
-}
-
-.blitz-info-grid {
-  gap: 14px;
-  margin-top: 16px;
-}
-
-.blitz-info-item {
-  min-height: 92px;
-  padding: 18px;
-  border-radius: 14px;
-}
-
-/* Rankings get a real podium and a visual win state. */
-.tradebattle-site.arena-app .leaderboard-page > div {
-  max-width: 1060px !important;
-  padding-top: 42px !important;
-  padding-bottom: 76px !important;
-}
-
-.leaderboard-page header {
-  margin-bottom: 23px !important;
-  padding-bottom: 23px !important;
-}
-
-.rankings-podium {
-  display: grid;
-  grid-template-columns: minmax(240px, .72fr) minmax(0, 1.28fr);
-  align-items: center;
-  gap: 28px;
-  min-height: 270px;
-  margin-bottom: 22px;
-  padding: 25px 29px;
-  overflow: hidden;
-  border: 1px solid rgba(242,199,106,.24);
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 76% 20%, rgba(242,199,106,.16), transparent 28%),
-    linear-gradient(135deg, #263446, #0b1b2a 74%);
-}
-
-.rankings-podium-copy {
-  position: relative;
-  min-height: 218px;
-}
-
-.rankings-podium-kicker {
-  color: #f2c76a;
-  font-family: "Courier New", monospace;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .14em;
-}
-
-.rankings-podium-copy h2 {
-  margin: 10px 0 7px;
-  color: #f7fbfd;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 900;
-  letter-spacing: -.065em;
-  line-height: .98;
-}
-
-.rankings-podium-copy p {
-  max-width: 210px;
-  margin: 0;
-  color: #9eb1bd;
-  font-size: 12px;
-  line-height: 1.45;
-}
-
-.rankings-podium-trophy {
-  position: absolute;
-  right: -16px;
-  bottom: -48px;
-  width: 165px;
-  height: 165px;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 16px rgba(0,0,0,.3));
-  opacity: .95;
-}
-
-.rankings-podium-stage {
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  gap: 9px;
-  min-height: 214px;
-}
-
-.ranking-podium-slot {
-  width: min(145px, 30%);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 9px;
-  text-align: center;
-}
-
-.ranking-podium-player {
-  min-height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-direction: column;
-  padding: 10px 6px;
-}
-
-.ranking-podium-place {
-  color: #f2c76a;
-  font-family: "Courier New", monospace;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.ranking-podium-player strong {
-  max-width: 100%;
-  margin-top: 5px;
-  overflow: hidden;
-  color: #f0f7fb;
-  font-size: 12px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ranking-podium-player span:last-child {
-  max-width: 100%;
-  margin-top: 4px;
-  overflow: hidden;
-  color: #89a2af;
-  font-family: "Courier New", monospace;
-  font-size: 9px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.ranking-podium-block {
-  display: grid;
-  place-items: center;
-  min-height: 72px;
-  border: 1px solid rgba(242,199,106,.3);
-  border-radius: 12px 12px 0 0;
-  background: linear-gradient(180deg, rgba(242,199,106,.24), rgba(118,75,25,.36));
-  color: #f8d87f;
-  font-family: "Courier New", monospace;
-  font-size: 28px;
-  font-weight: 900;
-}
-
-.ranking-place-1 .ranking-podium-block { min-height: 112px; background: linear-gradient(180deg, rgba(242,199,106,.38), rgba(118,75,25,.46)); }
-.ranking-place-2 .ranking-podium-block { min-height: 86px; }
-.ranking-place-3 .ranking-podium-block { min-height: 64px; }
-
-.leaderboard-page [role="tablist"] {
-  margin-bottom: 15px !important;
-  padding: 5px !important;
-  border-radius: 12px !important;
-}
-
-.leaderboard-page [role="tab"] {
-  min-height: 40px;
-  border-radius: 8px;
-}
-
-/* Players get a stronger directory header and more usable cards. */
-.tradebattle-site.arena-app .people-page > div {
-  max-width: 1180px !important;
-  padding-top: 42px !important;
-  padding-bottom: 76px !important;
-}
-
-.people-page header {
-  position: relative;
-  min-height: 115px;
-  padding-bottom: 25px !important;
-}
-
-.people-header-art {
-  position: absolute;
-  right: 8px;
-  bottom: 10px;
-  width: 138px;
-  height: 138px;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.people-header-art img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 16px 15px rgba(0,0,0,.28));
-}
-
-.people-page section[aria-label="Find players"] {
-  margin-bottom: 23px !important;
-  padding: 14px !important;
-  border-radius: 14px !important;
-}
-
-.people-page button.group {
-  min-height: 230px;
-  padding: 20px !important;
-  border-radius: 16px !important;
-  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
-}
-
-.people-page button.group:hover {
-  transform: translateY(-3px);
-  background: linear-gradient(145deg, rgba(16,46,59,.96), rgba(11,27,42,.98)) !important;
-}
-
-/* Competition detail gets a collectible anchor without crowding the board. */
-.tournament-view-page > div > div[style*="borderRadius"] {
-  box-shadow: 0 20px 46px rgba(0,0,0,.18) !important;
-}
-
-.tournament-view-art {
-  position: absolute;
-  right: 16px;
-  top: 2px;
-  width: 176px;
-  height: 176px;
-  object-fit: contain;
-  opacity: .25;
-  filter: drop-shadow(0 16px 16px rgba(0,0,0,.3));
-  pointer-events: none;
-}
-
-/* Deposit reads as a wallet station, with the input/action hierarchy intact. */
-.tradebattle-site.arena-app .deposit-page {
-  padding-top: 42px !important;
-  padding-bottom: 78px !important;
-}
-
-.deposit-header-art {
-  display: block;
-  width: 112px;
-  height: 112px;
-  margin: -20px auto -22px;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 17px rgba(0,0,0,.3));
-}
-
-.deposit-page > div {
-  max-width: 900px !important;
-}
-
-.deposit-page input {
-  min-height: 52px;
-  border-radius: 12px !important;
-}
-
-.deposit-page button {
-  border-radius: 12px !important;
-}
-
-/* Help gets a clearer visual anchor and less throwaway whitespace. */
-.support-header-art {
-  width: 70px;
-  height: 70px;
-  margin-left: auto;
-  object-fit: contain;
-  filter: drop-shadow(0 11px 11px rgba(0,0,0,.25));
-}
-
-.tradebattle-site.arena-app .support-header-art {
-  display: block;
-}
-
-.tradebattle-site.arena-app .terms-page,
-.tradebattle-site.arena-app .privacy-page {
-  scroll-margin-top: 5rem;
-}
-
-@media (max-width: 820px) {
-  .tradebattle-site.arena-app .hub-screen,
-  .tradebattle-site.arena-app .blitz-page {
-    padding-right: 18px;
-    padding-left: 18px;
-  }
-
-  .hub-feature-banner {
-    min-height: 220px;
-    padding: 24px;
-  }
-
-  .hub-feature-art {
-    right: -54px;
-    bottom: -48px;
-    width: 290px;
-    opacity: .46;
-  }
-
-  .hub-loadout {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .hub-loadout-items {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .rankings-podium {
-    grid-template-columns: 1fr;
-    gap: 6px;
-  }
-
-  .rankings-podium-copy {
-    min-height: 144px;
-  }
-
-  .rankings-podium-trophy {
-    right: 6px;
-    bottom: -44px;
-    width: 150px;
-    height: 150px;
-  }
-
-  .rankings-podium-stage {
-    min-height: 188px;
-  }
-
-  .blitz-roundboard {
-    grid-template-columns: minmax(0, 1fr) 210px;
-    padding: 25px;
-  }
-
-  .blitz-roundboard-art {
-    height: 180px;
-  }
-
-  .blitz-roundboard-art img {
-    width: 205px;
-    height: 205px;
-  }
-}
-
-@media (max-width: 620px) {
-  .hub-topbar {
-    padding-bottom: 22px;
-  }
-
-  .hub-feature-banner {
-    margin-top: 18px;
-    padding: 21px;
-  }
-
-  .hub-feature-copy h2 {
-    font-size: 31px;
-  }
-
-  .hub-loadout {
-    padding: 20px 16px 15px;
-  }
-
-  .hub-loadout-items {
-    justify-content: flex-start;
-    gap: 8px;
-    overflow-x: auto;
-  }
-
-  .hub-loadout-item {
-    flex: 0 0 69px;
-    width: 69px;
-    height: 72px;
-  }
-
-  .hub-loadout-item img {
-    width: 72px;
-    height: 72px;
-  }
-
-  .hub-stat-grid {
-    gap: 9px;
-  }
-
-  .hub-stat-card {
-    min-height: 100px;
-    padding: 15px;
-  }
-
-  .hub-stat-value {
-    font-size: 22px;
-  }
-
-  .hub-panel-heading {
-    padding: 20px 17px 0;
-  }
-
-  .hub-market-readout {
-    padding: 22px 17px 5px;
-  }
-
-  .hub-chart {
-    height: 190px;
-    margin-right: 12px;
-    margin-left: 12px;
-  }
-
-  .hub-chart-footer {
-    padding-right: 17px;
-    padding-left: 17px;
-  }
-
-  .hub-launch-list {
-    padding: 18px 13px 15px;
-  }
-
-  .hub-launch-card {
-    min-height: 106px;
-  }
-
-  .hub-launch-art {
-    right: 15px;
-    width: 118px;
-  }
-
-  .hub-launch-art-arena,
-  .hub-launch-art-blitz {
-    width: 120px;
-  }
-
-  .blitz-roundboard {
-    grid-template-columns: 1fr;
-    min-height: 0;
-    padding: 24px 20px 14px;
-  }
-
-  .blitz-roundboard-copy {
-    padding-right: 18px;
-  }
-
-  .blitz-roundboard-art {
-    height: 150px;
-    margin-top: -10px;
-  }
-
-  .blitz-roundboard-art img {
-    width: 180px;
-    height: 180px;
-  }
-
-  .blitz-roundboard-art-label {
-    right: 12px;
-    bottom: 0;
-  }
-
-  .blitz-stage-card {
-    min-height: 400px;
-    padding: 44px 18px;
-  }
-
-  .rankings-podium {
-    padding: 21px 17px;
-  }
-
-  .rankings-podium-stage {
-    gap: 3px;
-  }
-
-  .ranking-podium-slot {
-    width: 33%;
-  }
-
-  .ranking-podium-player strong {
-    font-size: 10px;
-  }
-
-  .ranking-podium-player span:last-child {
-    font-size: 8px;
-  }
-
-  .people-header-art {
-    right: -9px;
-    width: 105px;
-    height: 105px;
-    opacity: .68;
-  }
-
-  .people-page button.group {
-    min-height: 205px;
-  }
-
-  .tournament-view-art {
-    right: -30px;
-    top: 28px;
-    width: 125px;
-    height: 125px;
-    opacity: .18;
-  }
-
-  .deposit-header-art {
-    width: 92px;
-    height: 92px;
-    margin-top: -12px;
-  }
-
-  .support-header-art {
-    width: 55px;
-    height: 55px;
-  }
-}
-
-
-/* Final art placement pass */
-.shop-spotlight-art {
-  top: 50%;
-  right: 8%;
-  bottom: auto;
-  width: 265px;
-  height: 265px;
-  object-fit: contain;
-  opacity: .92;
-  transform: translateY(-50%);
-}
-
-.tournament-hero-art {
-  right: 24px;
-  bottom: -24px;
-  width: 245px;
-  opacity: .82;
-  mix-blend-mode: normal;
-}
-
-.deposit-page [role="dialog"],
-.deposit-page [data-radix-dialog-content],
-.tradebattle-site.arena-app [role="dialog"]:has(.deposit-step) {
-  border-color: rgba(103, 231, 191, .22);
-  border-radius: 18px;
-  background: #0b1b2a;
-  box-shadow: 0 24px 72px rgba(0,0,0,.35);
-}
-
-.tradebattle-site.arena-app [role="dialog"] [role="tablist"] {
-  border-color: rgba(118,169,198,.18) !important;
-  background: #081622 !important;
-}
-
-.tradebattle-site.arena-app [role="dialog"] [role="tab"] {
-  min-height: 40px;
-  border-radius: 9px;
-  color: #8fa7b5 !important;
-}
-
-.tradebattle-site.arena-app [role="dialog"] [role="tab"][data-state="active"] {
-  background: #67e7bf !important;
-  color: #06151c !important;
-}
-
-@media (max-width: 780px) {
-  .shop-spotlight-art {
-    top: 50%;
-    right: -24px;
-    bottom: auto;
-    width: 220px;
-    height: 220px;
-    opacity: .72;
-    transform: translateY(-50%);
-  }
-
-  .tournament-hero-art {
-    right: -22px;
-    bottom: -20px;
-    width: 205px;
-    opacity: .58;
-  }
-}
-
-
-/* Cleanup pass: compact player surfaces, clear menus, and complete art frames. */
-.people-page {
-  background: transparent !important;
-}
-.people-page-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 22px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid rgba(118, 169, 198, 0.18);
-}
-.people-kicker {
-  margin: 0 0 9px;
-  color: #67e7bf;
-  font-family: "Courier New", monospace;
-  font-size: 10px;
-  font-weight: 900;
-  letter-spacing: .16em;
-}
-.people-title {
-  margin: 0;
-  color: #f2fbf8;
-  font-size: clamp(2rem, 4vw, 3rem);
-  font-weight: 900;
-  letter-spacing: -.06em;
-  line-height: 1;
-}
-.people-subtitle {
-  margin: 10px 0 0;
-  color: #8da2b5;
-  font-size: 13px;
-}
-.people-header-note {
-  display: grid;
-  gap: 7px;
-  min-width: 215px;
-  padding: 12px 14px;
-  border: 1px solid rgba(103, 231, 191, .18);
-  border-radius: 10px;
-  background: rgba(103, 231, 191, .045);
-  color: #7d97a8;
-  font-size: 10px;
-}
-.people-header-note span {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.people-header-note span:first-child {
-  color: #b9ebdb;
-  font-weight: 800;
-}
-.people-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-  padding: 10px;
-  border: 1px solid rgba(118, 169, 198, .16);
-  border-radius: 11px;
-  background: #0b1b2a;
-}
-.people-sort-trigger {
-  width: 190px;
-  flex: 0 0 190px;
-  border-color: rgba(118, 169, 198, .22) !important;
-  background: #081622 !important;
-  color: #c9d9e2 !important;
-}
-.people-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-.people-card {
-  position: relative;
-  display: grid;
-  grid-template-columns: 92px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 15px;
-  min-height: 138px;
-  width: 100%;
-  padding: 14px;
-  overflow: hidden;
-  border: 1px solid rgba(118, 169, 198, .17);
-  border-radius: 13px;
-  background: #0b1b2a;
-  color: inherit;
-  text-align: left;
-  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
-}
-.people-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  width: 34%;
-  background: linear-gradient(90deg, rgba(103, 231, 191, .085), transparent);
-  pointer-events: none;
-}
-.people-card:hover {
-  border-color: rgba(103, 231, 191, .4);
-  background: #0d2231;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, .16);
-  transform: translateY(-2px);
-}
-.people-card-avatar,
-.people-card-body,
-.people-card-open {
-  position: relative;
-  z-index: 1;
-}
-.people-card-avatar {
-  display: grid;
-  place-items: center;
-  width: 92px;
-  height: 108px;
-  border: 1px solid rgba(103, 231, 191, .15);
-  border-radius: 11px;
-  background: #081622;
-}
-.people-card-body {
-  min-width: 0;
-}
-.people-card-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-.people-card-name {
-  color: #edf8f5;
-  font-size: 16px;
-  font-weight: 850;
-  letter-spacing: -.025em;
-}
-.people-card-role {
-  flex-shrink: 0;
-  color: #67e7bf;
-  font-family: "Courier New", monospace;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .12em;
-}
-.people-card-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  margin-top: 20px;
-  padding-top: 11px;
-  border-top: 1px solid rgba(118, 169, 198, .14);
-}
-.people-card-stats span,
-.people-card-stats strong {
-  display: block;
-}
-.people-card-stats span {
-  color: #71889b;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-}
-.people-card-stats strong {
-  margin-top: 4px;
-  color: #d6e8e5;
-  font-family: "Courier New", monospace;
-  font-size: 13px;
-}
-.people-card-stats strong.is-positive {
-  color: #67e7bf;
-}
-.people-card-open {
-  align-self: start;
-  color: #69869a;
-  transition: color 160ms ease, transform 160ms ease;
-}
-.people-card:hover .people-card-open {
-  color: #67e7bf;
-  transform: translate(2px, -2px);
-}
-.people-card-skeleton {
-  min-height: 138px;
-  background: linear-gradient(90deg, #0b1b2a, #122b3a, #0b1b2a);
-  background-size: 200% 100%;
-  animation: peopleSkeleton 1.35s ease-in-out infinite;
-}
-.people-empty-state {
-  min-height: 270px;
-  display: grid;
-  place-content: center;
-  justify-items: center;
-  padding: 36px;
-  border: 1px dashed rgba(118, 169, 198, .22);
-  border-radius: 13px;
-  background: rgba(11, 27, 42, .72);
-  text-align: center;
-}
-.people-empty-state p {
-  margin: 0;
-  color: #afc2d0;
-  font-size: 13px;
-}
-.people-empty-state button {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 14px;
-  color: #67e7bf;
-  font-size: 12px;
-  font-weight: 800;
-}
-@keyframes peopleSkeleton {
-  0%, 100% { background-position: 0 0; }
-  50% { background-position: 100% 0; }
-}
-
-.tradebattle-site [data-radix-select-content],
-.tradebattle-site [data-radix-dropdown-menu-content],
-.tradebattle-site [role="listbox"],
-.tradebattle-site [role="menu"] {
-  z-index: 100;
-  border: 1px solid rgba(103, 231, 191, .2) !important;
-  border-radius: 11px !important;
-  background: #0b1b2a !important;
-  color: #d9ece8 !important;
-  box-shadow: 0 20px 46px rgba(0, 0, 0, .34) !important;
-}
-.tradebattle-site [role="option"],
-.tradebattle-site [role="menuitem"] {
-  min-height: 36px;
-  border-radius: 7px;
-  color: #a9bec7 !important;
-}
-.tradebattle-site [role="option"][data-highlighted],
-.tradebattle-site [role="menuitem"][data-highlighted],
-.tradebattle-site [role="menuitem"]:focus {
-  background: rgba(103, 231, 191, .12) !important;
-  color: #f1fbf7 !important;
-}
-.tradebattle-site [role="option"][data-state="checked"] {
-  background: rgba(103, 231, 191, .08) !important;
-  color: #67e7bf !important;
-}
-.tradebattle-site .tournament-create-dialog {
-  max-height: min(760px, calc(100dvh - 32px));
-  overflow-y: auto;
-  background: #0b1b2a !important;
-  border-color: rgba(103, 231, 191, .23) !important;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, .38) !important;
-}
-.arena-dialog-brief {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 7px;
-  margin-top: 6px;
-  padding: 8px;
-  border: 1px solid rgba(103, 231, 191, .14);
-  border-radius: 9px;
-  background: rgba(103, 231, 191, .045);
-}
-.arena-dialog-brief span {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  min-height: 29px;
-  color: #9ec2c5;
-  font-size: 10px;
-  font-weight: 800;
-  text-align: center;
-}
-.arena-dialog-brief svg {
-  color: #67e7bf;
-  flex-shrink: 0;
-}
-.shop-page .shop-spotlight {
-  min-height: 220px;
-}
-.shop-page .shop-spotlight-art {
-  right: 18px;
-  bottom: 2px;
-  width: 208px;
-  height: 208px;
-  object-fit: contain;
-  object-position: center bottom;
-}
-.tournament-brief-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-}
-.tournament-brief-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  min-height: 92px;
-  padding: 13px;
-  border: 1px solid rgba(118, 169, 198, .16);
-  border-radius: 11px;
-  background: #0b1b2a;
-}
-.tournament-brief-icon {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  flex: 0 0 34px;
-  border: 1px solid rgba(103, 231, 191, .24);
-  border-radius: 9px;
-  background: rgba(103, 231, 191, .08);
-  color: #67e7bf;
-}
-.tournament-brief-card strong,
-.tournament-brief-card span {
-  display: block;
-}
-.tournament-brief-card strong {
-  color: #edf8f5;
-  font-size: 12px;
-  font-weight: 850;
-}
-.tournament-brief-card span {
-  margin-top: 5px;
-  color: #7f98a7;
-  font-size: 10px;
-  line-height: 1.45;
-}
-.profile-page .profile-status-dot {
-  top: -5px !important;
-  right: -5px !important;
-  bottom: auto !important;
-  border-color: #071522 !important;
-}
-@media (max-width: 900px) {
-  .people-grid,
-  .tournament-brief-grid {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 620px) {
-  .people-page-header {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-  .people-header-note {
-    width: 100%;
-  }
-  .people-toolbar {
-    align-items: stretch;
-    flex-direction: column;
-  }
-  .people-sort-trigger {
-    width: 100%;
-    flex-basis: auto;
-  }
-  .people-card {
-    grid-template-columns: 72px minmax(0, 1fr) auto;
-    gap: 11px;
-    min-height: 116px;
-    padding: 10px;
-  }
-  .people-card-avatar {
-    width: 72px;
-    height: 86px;
-  }
-  .people-card-avatar .tradebattle-avatar-status {
-    transform: translate(12%, -18%) !important;
-  }
-  .people-card-stats {
-    margin-top: 12px;
-    gap: 5px;
-  }
-  .people-card-name {
-    font-size: 14px;
-  }
-  .shop-page .shop-spotlight {
-    min-height: 228px;
-  }
-  .shop-page .shop-spotlight-art {
-    right: 4px;
-    bottom: 4px;
-    width: 172px;
-    height: 172px;
-    opacity: .62;
-  }
-  .arena-dialog-brief {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* September contrast, density, and payment pass */
-/* No visible text is pure black on the dark arena surfaces. */
-.tradebattle-site .text-black,
-.tradebattle-site .hover\:text-black:hover,
-.tradebattle-site [style*="color: #000"],
-.tradebattle-site [style*="color:#000"],
-.tradebattle-site [style*="color: #000000"],
-.tradebattle-site [style*="color:#000000"],
-.tradebattle-site [style*="color: rgb(0, 0, 0)"] {
-  color: #f1f5f9 !important;
-}
-
-/* Arena Cash / crypto payment surfaces */
-.tradebattle-site .balance-management-modal {
-  color: #f1f5f9;
-}
-.tradebattle-site.arena-app .balance-management-modal [role="tab"][data-state="active"] {
-  background: rgba(103, 231, 191, .14) !important;
-  border: 1px solid rgba(103, 231, 191, .42) !important;
-  color: #f1f5f9 !important;
-}
-.tradebattle-site .deposit-qr-frame {
-  max-width: 100%;
-  border: 1px solid rgba(103, 231, 191, .28);
-  background: linear-gradient(135deg, #67e7bf 0%, #2ebf9a 100%);
-  box-shadow: 0 14px 34px rgba(103, 231, 191, .16);
-}
-.tradebattle-site .deposit-qr-surface {
-  max-width: min(200px, calc(100vw - 72px));
-  overflow: hidden;
-}
-.tradebattle-site .deposit-qr-surface svg {
-  display: block;
-  max-width: 100%;
-  height: auto;
-}
-.tradebattle-site .deposit-address {
-  min-width: 0;
-}
-.tradebattle-site .deposit-address code,
-.tradebattle-site .deposit-modal-panel code {
-  min-width: 0;
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-.tradebattle-site .deposit-address code {
-  max-height: 4.25rem;
-  overflow: auto;
-  padding-right: 2px;
-}
-.tradebattle-site .deposit-modal-panel {
-  color: #f1f5f9;
-}
-.tradebattle-site .deposit-modal-panel .deposit-qr-surface {
-  max-width: calc(100vw - 72px);
-}
-
-/* Compact, square player cards: avatar left, identity and stats right. */
-.people-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-.people-card {
-  grid-template-columns: 68px minmax(0, 1fr) auto;
-  gap: 11px;
-  min-height: 96px;
-  padding: 10px;
-}
-.people-card-avatar {
-  width: 68px;
-  height: 68px;
-  aspect-ratio: 1;
-  border-radius: 10px;
-}
-.people-card-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.people-card-stats {
-  gap: 6px;
-  margin-top: 10px;
-  padding-top: 8px;
-}
-.people-card-name {
-  font-size: 14px;
-}
-.people-card-open {
-  align-self: center;
-}
-.people-card-skeleton {
-  min-height: 96px;
-}
-@media (max-width: 1100px) {
-  .people-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 680px) {
-  .people-grid {
-    grid-template-columns: 1fr;
-  }
-  .people-card {
-    grid-template-columns: 64px minmax(0, 1fr) auto;
-    min-height: 86px;
-    padding: 9px;
-  }
-  .people-card-avatar {
-    width: 64px;
-    height: 64px;
-  }
-  .people-card-stats {
-    gap: 5px;
-    margin-top: 8px;
-    padding-top: 7px;
-  }
-  .people-card-name {
-    font-size: 13px;
-  }
-}
-
-
-/* Shared motion and layout rules. */
-.tradebattle-site .page-transition {
-  animation: tradebattle-page-in 220ms ease-out both;
-}
-@keyframes tradebattle-page-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tradebattle-site .page-transition { animation: none; }
-}
-
-/* Keep short routes pinned to the viewport so the footer never floats mid-screen. */
-.tradebattle-site.arena-app .archive-page {
-  min-height: calc(100dvh - 4rem);
-}
-.tradebattle-site.arena-app .archive-page > div {
-  padding-bottom: 42px !important;
-}
-
-/* Player cards are compact, direct, and image-first. */
-.tradebattle-site.arena-app .people-card {
-  grid-template-columns: 68px minmax(0, 1fr);
-  min-height: 84px;
-  padding: 8px;
-}
-.tradebattle-site.arena-app .people-card-avatar {
-  width: 64px;
-  height: 64px;
-}
-.tradebattle-site.arena-app .people-card-stats {
-  margin-top: 7px;
-  padding-top: 7px;
-}
-@media (max-width: 680px) {
-  .tradebattle-site.arena-app .people-card {
-    grid-template-columns: 60px minmax(0, 1fr);
-    min-height: 78px;
-  }
-  .tradebattle-site.arena-app .people-card-avatar {
-    width: 58px;
-    height: 58px;
-  }
-}
-
-/* Set one stable color for the authenticated header. */
-.tradebattle-header {
-  background: #071522 !important;
-  color: #eef6fa !important;
-}
-.tradebattle-header .text-muted-foreground,
-.tradebattle-header [style*="color: '#AFC2D0'"] {
-  color: #91a6ba !important;
-}
-
-
-/* Profile presence lives on the avatar edge, consistently. */
-.tradebattle-site.arena-app .profile-page .profile-status-dot {
-  top: auto !important;
-  right: -5px !important;
-  bottom: -5px !important;
-}
-
-
-/* Current cleanup: one compact arena header, a usable player modal, and no black text. */
-.tradebattle-site.arena-app .text-black,
-.tradebattle-site.arena-app [class*="text-black"] {
-  color: #f1f6f8 !important;
-}
-.tradebattle-site.arena-app .tournament-lobby-header-combined {
-  min-height: 190px;
-  padding: 22px 24px 18px !important;
-  border: 1px solid rgba(103, 231, 191, .18) !important;
-  border-radius: 14px !important;
-  background:
-    radial-gradient(circle at 84% 38%, rgba(103, 231, 191, .14), transparent 28%),
-    linear-gradient(135deg, #0b202f 0%, #071522 76%) !important;
-  box-shadow: inset 0 1px rgba(255,255,255,.035), 0 16px 32px rgba(0,0,0,.14);
-}
-.tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-header-art {
-  right: 22px;
-  bottom: -58px;
-  width: 220px;
-  opacity: .52;
-  z-index: 0;
-}
-.tradebattle-site.arena-app .tournament-lobby-header-combined > div {
-  z-index: 1;
-}
-.tradebattle-site.arena-app .tournament-lobby-header-combined h1 {
-  font-size: clamp(2.25rem, 5vw, 4rem) !important;
-}
-.tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-hero-stats {
-  margin-top: 16px;
-}
-.admin-page .admin-page-heading {
-  padding-bottom: 14px;
-}
-.admin-page .admin-page-kicker { display: none; }
-.admin-page .admin-tab-list > button { min-width: 82px; }
-@media (max-width: 780px) {
-  .tradebattle-site.arena-app .tournament-lobby-header-combined {
-    min-height: 0;
-    padding: 18px 16px 20px !important;
-  }
-  .tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-header-art {
-    right: -38px;
-    bottom: -42px;
-    width: 168px;
-    opacity: .28;
-  }
-  .tradebattle-site.arena-app .tournament-lobby-header-combined .tournament-hero-stats {
-    max-width: 70%;
-    margin-top: 12px;
-  }
-}
-
-/* Final playful shell tokens win over legacy route-specific styling. */
-.tradebattle-site .tradebattle-header {
-  background: #11162f !important;
-  border-bottom-color: #2b315e !important;
-  box-shadow: 0 8px 0 rgba(5, 7, 24, 0.22) !important;
-}
-.tradebattle-site .tradebattle-sidebar {
-  background: #11162f !important;
-  border-right-color: #2b315e !important;
-  box-shadow: 5px 0 0 rgba(5, 7, 24, 0.22) !important;
-}
-.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator {
-  background: #67e7bf !important;
-  color: #0d1230 !important;
-}
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
-  background: #ffd166 !important;
-}
-.tradebattle-site .tradebattle-footer {
-  background: #11162f !important;
-  border-top-color: #2b315e !important;
-}
-
 /* Universal purple + gold palette: keep every route in the same game world. */
 .tradebattle-site {
   --site-bg: #120d2b !important;
@@ -3171,7 +1341,6 @@
   color: #f6c453 !important;
 }
 
-
 /* Palette correction: quieter plum surfaces, zero blue drift, and clear active navigation. */
 .tradebattle-site {
   --site-bg: #19172a !important;
@@ -3245,7 +1414,7 @@
   border-color: #403a50 !important;
 }
 
-.tradebattle-site .tradebattle-header button[aria-label*="chat"] {
+.tradebattle-site .tradebattle-header button[aria-label*="chat" i] {
   color: #f6c453 !important;
 }
 .tradebattle-site .tradebattle-header button[aria-label="Close chat"] {
@@ -3358,158 +1527,315 @@
   color: #f6c453 !important;
 }
 
-
-/* Final palette lock: the live app uses inline legacy styles, so keep every surface in the quieter plum/gold system. */
-.tradebattle-site,
-.tradebattle-site.arena-app {
-  --primary: 42 90% 60% !important;
-  --primary-foreground: 18 20% 14% !important;
-  --ring: 42 90% 60% !important;
-  --site-cyan: #f6c453 !important;
-  --site-success: #f6c453 !important;
-  --arena-bg: #19172a !important;
-  --arena-panel: #23203a !important;
-  background: #19172a !important;
-  background-color: #19172a !important;
-  color: #f8f5ff !important;
+/* ──────────────────────────────────────────────────────────────────────────
+   Saturated plum game pass
+   The older screens still carry local navy/teal inline styles. These final
+   tokens and selectors keep every route in the same saturated plum + gold
+   system while preserving red status states and data colors where useful.
+   ────────────────────────────────────────────────────────────────────────── */
+:root,
+.dark {
+  --background: 264 57% 10%;
+  --foreground: 0 0% 98%;
+  --card: 263 57% 16%;
+  --card-foreground: 0 0% 96%;
+  --popover: 263 57% 16%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 263 72% 63%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 263 48% 22%;
+  --secondary-foreground: 0 0% 96%;
+  --muted: 263 43% 21%;
+  --muted-foreground: 263 18% 74%;
+  --accent: 43 87% 65%;
+  --accent-foreground: 263 57% 10%;
+  --border: 263 38% 32%;
+  --input: 264 50% 13%;
+  --ring: 43 87% 65%;
 }
 
-.tradebattle-site main,
-.tradebattle-site .arena-page-shell,
+body {
+  background: #140b2b !important;
+  color: #fbf9ff !important;
+}
+
+.tradebattle-site,
+.tradebattle-site.arena-app {
+  --site-bg: #140b2b !important;
+  --site-panel: #21113f !important;
+  --site-panel-raised: #2d1958 !important;
+  --site-edge: rgba(167, 123, 255, .3) !important;
+  --site-text: #fbf9ff !important;
+  --site-muted: #c1b5d9 !important;
+  --site-purple: #7c3aed !important;
+  --site-purple-bright: #a77bff !important;
+  --site-gold: #f3c65b !important;
+  --site-mint: #f3c65b !important;
+  background: #140b2b !important;
+  color: #fbf9ff !important;
+}
+
 .tradebattle-site .tradebattle-route,
-.tradebattle-site .tournaments-page,
-.tradebattle-site .blitz-page,
+.tradebattle-site .tradebattle-route::before,
+.tradebattle-site main,
+.tradebattle-site .arena-page,
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .hub-screen,
+.tradebattle-site .trading-page,
+.tradebattle-site .auth-screen,
 .tradebattle-site .leaderboard-page,
+.tradebattle-site .blitz-page,
 .tradebattle-site .shop-page,
 .tradebattle-site .people-page,
+.tradebattle-site .tournaments-page,
+.tradebattle-site .archive-page,
 .tradebattle-site .profile-page,
 .tradebattle-site .deposit-page,
-.tradebattle-site .archive-page {
-  background: #19172a !important;
-  background-color: #19172a !important;
+.tradebattle-site .admin-page,
+.tradebattle-site .transactions-page,
+.tradebattle-site .tournament-view-page {
+  background-color: #140b2b !important;
+  color: #fbf9ff !important;
+}
+
+.tradebattle-site .tradebattle-route::before {
+  background-image:
+    radial-gradient(circle at 8% 8%, rgba(124, 58, 237, .22), transparent 22rem),
+    radial-gradient(circle at 92% 12%, rgba(243, 198, 91, .11), transparent 22rem),
+    repeating-linear-gradient(135deg, transparent 0 28px, rgba(167, 123, 255, .055) 28px 30px, transparent 30px 60px) !important;
+  background-size: auto, auto, 180px 180px !important;
+  opacity: .5 !important;
 }
 
 .tradebattle-site .tradebattle-header,
 .tradebattle-site .tradebattle-sidebar,
-.tradebattle-site .tradebattle-footer {
-  background: #211e34 !important;
-  background-color: #211e34 !important;
-  background-image: none !important;
-  border-color: #403a50 !important;
+.tradebattle-site .tradebattle-footer,
+.tradebattle-site .chat-sidebar-panel {
+  background: #1b1038 !important;
+  border-color: rgba(167, 123, 255, .35) !important;
 }
 
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator,
+.tradebattle-site .tradebattle-header::after,
+.tradebattle-site .tradebattle-sidebar::after,
+.tradebattle-site .tradebattle-footer::after {
+  border-color: rgba(243, 198, 91, .16) !important;
+}
+
+.tradebattle-site .card,
+.tradebattle-site [data-slot="card"],
+.tradebattle-site .hub-panel,
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .blitz-card,
+.tradebattle-site .people-card,
+.tradebattle-site .people-toolbar,
+.tradebattle-site .people-empty-state,
+.tradebattle-site .tournament-card-surface,
+.tradebattle-site .tournament-brief-card,
+.tradebattle-site .tournament-lobby-header-combined,
+.tradebattle-site .shop-spotlight,
+.tradebattle-site .rankings-podium,
+.tradebattle-site .arena-promo-card,
+.tradebattle-site .mode-card,
+.tradebattle-site .how-step,
+.tradebattle-site .arena-final,
+.tradebattle-site .auth-panel,
+.tradebattle-site .auth-simple-card,
+.tradebattle-site .auth-twofa-card,
+.tradebattle-site .tradebattle-profile-popout {
+  background: #21113f !important;
+  border-color: rgba(167, 123, 255, .3) !important;
+  color: #fbf9ff !important;
+}
+
+.tradebattle-site input,
+.tradebattle-site select,
+.tradebattle-site textarea,
+.tradebattle-site [role="combobox"],
+.tradebattle-site [data-slot="input"],
+.tradebattle-site [data-radix-select-content],
+.tradebattle-site [data-radix-dropdown-menu-content],
+.tradebattle-site [role="listbox"],
+.tradebattle-site [role="menu"] {
+  background: #180e32 !important;
+  border-color: rgba(167, 123, 255, .34) !important;
+  color: #fbf9ff !important;
+}
+
+.tradebattle-site input::placeholder,
+.tradebattle-site textarea::placeholder { color: #a99cc6 !important; }
+
+.tradebattle-site [role="tab"][data-state="active"],
+.tradebattle-site [role="option"][data-state="checked"],
+.tradebattle-site [role="menuitem"][data-highlighted],
+.tradebattle-site .sidebar-active-indicator,
 .tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator,
 .tradebattle-site .tradebattle-sidebar button.sidebar-active-indicator {
-  background: #f6c453 !important;
-  background-color: #f6c453 !important;
+  background: #f3c65b !important;
   color: #ffffff !important;
-  border-color: #f6c453 !important;
+  border-color: #f3c65b !important;
+  box-shadow: 0 8px 20px rgba(243, 198, 91, .18) !important;
 }
 
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator *,
-.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator *,
-.tradebattle-site .tradebattle-sidebar button.sidebar-active-indicator *,
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator svg,
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator svg * {
+.tradebattle-site .sidebar-active-indicator svg,
+.tradebattle-site .sidebar-active-indicator svg * {
   color: #ffffff !important;
-  fill: currentColor !important;
   stroke: currentColor !important;
+  fill: none !important;
 }
 
-.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
-  background: #fff4c7 !important;
+.tradebattle-site .sidebar-active-indicator::before {
+  background: #fff6d7 !important;
+  box-shadow: 0 0 12px rgba(243, 198, 91, .7) !important;
 }
 
-.tradebattle-site .tradebattle-header button[aria-label*="chat"] {
-  color: #f6c453 !important;
+/* Convert the old blue/green inline color vocabulary to plum/gold. */
+.tradebattle-site [style*="#67E7BF"],
+.tradebattle-site [style*="#67e7bf"],
+.tradebattle-site [style*="#62E4BD"],
+.tradebattle-site [style*="#62e4bd"],
+.tradebattle-site [style*="#20d8c2"],
+.tradebattle-site [style*="#20D8C2"],
+.tradebattle-site [style*="#27a9ff"],
+.tradebattle-site [style*="#27A9FF"],
+.tradebattle-site [style*="#3B82F6"],
+.tradebattle-site [style*="#3b82f6"],
+.tradebattle-site [style*="#06B6D4"],
+.tradebattle-site [style*="#06b6d4"],
+.tradebattle-site [style*="#10B981"],
+.tradebattle-site [style*="#10b981"],
+.tradebattle-site [style*="#2EBF9A"],
+.tradebattle-site [style*="#2ebf9a"] {
+  color: #f3c65b !important;
+  border-color: rgba(243, 198, 91, .34) !important;
 }
 
-.tradebattle-site .tradebattle-header button[aria-label="Close chat"] {
-  background: rgba(246, 196, 83, 0.16) !important;
-  color: #ffffff !important;
+.tradebattle-site button[style*="#67E7BF"],
+.tradebattle-site button[style*="#67e7bf"],
+.tradebattle-site a[style*="#67E7BF"],
+.tradebattle-site a[style*="#67e7bf"],
+.tradebattle-site button[style*="#10B981"],
+.tradebattle-site button[style*="#10b981"] {
+  background: #f3c65b !important;
+  color: #241137 !important;
+  border-color: #f3c65b !important;
 }
 
-.tradebattle-site .tournament-lobby-header-combined,
-.tradebattle-site .hub-feature-banner,
-.tradebattle-site .shop-spotlight,
-.tradebattle-site .arena-final {
-  background:
-    radial-gradient(circle at 84% 38%, rgba(246, 196, 83, 0.12), transparent 28%),
-    linear-gradient(135deg, #302b47 0%, #211e34 76%) !important;
-  border-color: rgba(246, 196, 83, 0.22) !important;
+.tradebattle-site [style*="#0A1C2C"],
+.tradebattle-site [style*="#0a1c2c"],
+.tradebattle-site [style*="#081622"],
+.tradebattle-site [style*="#0B1B2A"],
+.tradebattle-site [style*="#0b1b2a"],
+.tradebattle-site [style*="#0C1A2E"],
+.tradebattle-site [style*="#0c1a2e"],
+.tradebattle-site [style*="#071522"],
+.tradebattle-site [style*="#07111f"],
+.tradebattle-site [style*="#0E2040"] {
+  background-color: #21113f !important;
+  border-color: rgba(167, 123, 255, .3) !important;
 }
 
-.tradebattle-site .deposit-page [style*="#0B1B2A"],
-.tradebattle-site .deposit-page [style*="#0b1b2a"],
-.tradebattle-site .deposit-page [style*="rgb(11, 27, 42)"],
-.tradebattle-site .deposit-page [style*="rgb(11, 28, 44)"],
-.tradebattle-site .deposit-page [style*="#0E2040"],
-.tradebattle-site .deposit-page [style*="#0e2040"],
-.tradebattle-site .deposit-page [style*="rgb(14, 32, 64)"] {
-  background: #23203a !important;
-  background-color: #23203a !important;
-  border-color: rgba(246, 196, 83, 0.24) !important;
+.tradebattle-site [style*="#4B6080"],
+.tradebattle-site [style*="#4b6080"],
+.tradebattle-site [style*="#6F879D"],
+.tradebattle-site [style*="#6f879d"],
+.tradebattle-site [style*="#7890A4"],
+.tradebattle-site [style*="#7890a4"],
+.tradebattle-site [style*="#8A93A6"],
+.tradebattle-site [style*="#8a93a6"],
+.tradebattle-site [style*="#94A3B8"],
+.tradebattle-site [style*="#94a3b8"] {
+  color: #b9afd8 !important;
 }
 
-.tradebattle-site .deposit-page [style*="rgba(0, 163, 255"],
-.tradebattle-site .deposit-page [style*="rgba(0,163,255"] {
-  background-color: rgba(246, 196, 83, 0.08) !important;
-  border-color: rgba(246, 196, 83, 0.28) !important;
-  box-shadow: 0 8px 28px rgba(246, 196, 83, 0.12) !important;
+.tradebattle-site [class*="bg-blue-"],
+.tradebattle-site [class*="bg-cyan-"],
+.tradebattle-site [class*="bg-sky-"],
+.tradebattle-site [class*="bg-indigo-"],
+.tradebattle-site [class*="bg-teal-"],
+.tradebattle-site [class*="bg-emerald-"],
+.tradebattle-site [class*="bg-green-"] {
+  background-color: #2d1958 !important;
+  color: #fbf9ff !important;
 }
 
-.tradebattle-site [style*="color: rgb(103, 231, 191)"],
-.tradebattle-site [style*="color:#67E7BF"],
-.tradebattle-site [style*="color: #67E7BF"],
-.tradebattle-site [style*="color: rgb(32, 216, 194)"],
-.tradebattle-site [style*="color:#20d8c2"],
-.tradebattle-site [style*="color: #20d8c2"] {
-  color: #f6c453 !important;
+.tradebattle-site [class*="text-blue-"],
+.tradebattle-site [class*="text-cyan-"],
+.tradebattle-site [class*="text-sky-"],
+.tradebattle-site [class*="text-indigo-"],
+.tradebattle-site [class*="text-teal-"],
+.tradebattle-site [class*="text-emerald-"],
+.tradebattle-site [class*="text-green-"] {
+  color: #f3c65b !important;
 }
 
-.tradebattle-site [style*="background: rgb(103, 231, 191)"],
-.tradebattle-site [style*="background: #67E7BF"],
-.tradebattle-site [style*="background: linear-gradient(135deg, rgb(103, 231, 191)"],
-.tradebattle-site [style*="background: linear-gradient(135deg, #67E7BF"],
-.tradebattle-site [style*="background: linear-gradient(135deg, rgba(103, 231, 191)"] {
-  background: #f6c453 !important;
-  background-image: none !important;
-  color: #1a1524 !important;
+.tradebattle-site [class*="border-blue-"],
+.tradebattle-site [class*="border-cyan-"],
+.tradebattle-site [class*="border-sky-"],
+.tradebattle-site [class*="border-indigo-"],
+.tradebattle-site [class*="border-teal-"],
+.tradebattle-site [class*="border-emerald-"],
+.tradebattle-site [class*="border-green-"] {
+  border-color: rgba(167, 123, 255, .36) !important;
 }
 
-.tradebattle-site [style*="border-color: rgb(103, 231, 191)"],
-.tradebattle-site [style*="border: 1px solid rgb(103, 231, 191)"],
-.tradebattle-site [style*="border: 2px solid rgb(103, 231, 191)"],
-.tradebattle-site [style*="border-color: #67E7BF"] {
-  border-color: #f6c453 !important;
+.tradebattle-site .tradebattle-footer p,
+.tradebattle-site .tradebattle-footer a,
+.tradebattle-site .tradebattle-footer h4,
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar { color: #fbf9ff; }
+
+/* Chat is a real conversation now: each author owns a lane and a bubble tone. */
+.tradebattle-site .chat-sidebar-panel { color: #fbf9ff; }
+.chat-message-list { padding: 4px 2px 14px; }
+.chat-message-group { display: flex; align-items: flex-start; gap: 10px; max-width: 94%; margin: 0 2px 16px; }
+.chat-message-group.is-own { flex-direction: row-reverse; margin-left: auto; }
+.chat-message-group.is-own .chat-message-content { align-items: flex-end; }
+.chat-message-content { display: flex; flex-direction: column; min-width: 0; }
+.chat-message-meta { width: 100%; gap: 6px !important; }
+.chat-message-group.is-own .chat-message-meta { justify-content: flex-end; }
+.chat-message-bubble { max-width: min(245px, 78vw); background: #2d1958 !important; border: 1px solid rgba(167, 123, 255, .28) !important; border-radius: 10px 10px 10px 3px !important; box-shadow: 0 8px 18px rgba(8, 2, 20, .16); }
+.chat-message-group.is-own .chat-message-bubble { background: #5b2da7 !important; border-color: rgba(243, 198, 91, .42) !important; border-radius: 10px 10px 3px 10px !important; }
+.chat-message-group.is-own .chat-message-bubble p { color: #fffdf2 !important; }
+.chat-message-group.is-other .chat-message-meta > span:first-child { color: #d7caff !important; }
+.chat-message-group.is-own .chat-message-meta > span:first-child { color: #f3c65b !important; }
+.chat-message-group .rounded-full { border-color: rgba(243, 198, 91, .28) !important; }
+
+/* Player pop-outs use the same stage surface and remain usable on phones. */
+.tradebattle-profile-backdrop { background: rgba(8, 3, 20, .78) !important; backdrop-filter: blur(7px) !important; }
+.tradebattle-profile-popout { box-shadow: 0 28px 90px rgba(5, 1, 16, .55), 0 0 0 1px rgba(167, 123, 255, .12); }
+.tradebattle-profile-popout button { color: #fbf9ff; }
+
+/* Blitz: more game surface, less empty panel. */
+.tradebattle-site .blitz-page { background: radial-gradient(circle at 50% 0%, rgba(124, 58, 237, .16), transparent 28rem), #140b2b !important; }
+.tradebattle-site .blitz-header,
+.tradebattle-site .blitz-header-mark,
+.tradebattle-site .blitz-icon-box,
+.tradebattle-site .blitz-queue-mark { border-color: rgba(167, 123, 255, .36) !important; background: #2d1958 !important; color: #f3c65b !important; }
+.tradebattle-site .blitz-primary-link,
+.tradebattle-site .blitz-primary-button { background: #f3c65b !important; border-color: #f3c65b !important; color: #241137 !important; box-shadow: 0 10px 24px rgba(243, 198, 91, .2); }
+.tradebattle-site .blitz-primary-link:hover,
+.tradebattle-site .blitz-primary-button:hover:not(:disabled) { background: #ffdc79 !important; }
+.tradebattle-site .blitz-info-item,
+.tradebattle-site .blitz-playbook-step { background: #21113f !important; border-color: rgba(167, 123, 255, .3) !important; }
+.tradebattle-site .blitz-info-icon { background: rgba(243, 198, 91, .1) !important; color: #f3c65b !important; }
+.tradebattle-site .blitz-playbook { margin-top: 18px; padding: 18px; border: 1px solid rgba(167, 123, 255, .3); border-radius: 12px; background: #21113f; }
+.tradebattle-site .blitz-playbook-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 14px; }
+.tradebattle-site .blitz-playbook-heading h2 { margin: 0; color: #fbf9ff; font-size: 20px; letter-spacing: -.04em; }
+.tradebattle-site .blitz-playbook-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tradebattle-site .blitz-playbook-step { min-height: 104px; padding: 13px; border-radius: 9px; }
+.tradebattle-site .blitz-playbook-step > span { color: #f3c65b; font: 800 10px/1 "Courier New", monospace; }
+.tradebattle-site .blitz-playbook-step strong { display: block; margin-top: 10px; color: #fbf9ff; font-size: 14px; }
+.tradebattle-site .blitz-playbook-step p { margin: 5px 0 0; color: #b9afd8; font-size: 11px; line-height: 1.45; }
+
+@media (max-width: 760px) {
+  .tradebattle-site .chat-sidebar-panel { max-height: 100dvh !important; }
+  .tradebattle-site .blitz-playbook-heading { align-items: flex-start; flex-direction: column; }
+  .tradebattle-site .blitz-playbook-grid { grid-template-columns: 1fr; }
+  .tradebattle-site .tradebattle-profile-popout { max-height: calc(100dvh - 28px); overflow-y: auto; }
 }
 
-.tradebattle-site [style*="rgba(103, 231, 191"],
-.tradebattle-site [style*="rgba(0, 163, 255"],
-.tradebattle-site [style*="rgba(0,163,255"] {
-  border-color: rgba(246, 196, 83, 0.28) !important;
-  box-shadow: 0 0 20px rgba(246, 196, 83, 0.12) !important;
-}
-
-.tradebattle-site [style*="linear-gradient(to right, rgba(103, 231, 191"],
-.tradebattle-site [style*="radial-gradient(circle at 84% 38%, rgba(103, 231, 191"] {
-  background-image: linear-gradient(to right, rgba(246, 196, 83, 0.24), transparent) !important;
-}
-
-body [data-radix-portal] [role="dialog"],
-body [data-radix-dialog-content] {
-  background: #23203a !important;
-  background-color: #23203a !important;
-  border-color: rgba(246, 196, 83, 0.28) !important;
-  color: #f8f5ff !important;
-}
-
-body [data-radix-portal] [role="dialog"] [style*="color: rgb(103, 231, 191)"],
-body [data-radix-portal] [role="dialog"] [style*="color: #67E7BF"],
-body [data-radix-portal] [role="dialog"] [style*="rgba(0, 163, 255"],
-body [data-radix-portal] [role="dialog"] [style*="rgba(103, 231, 191"] {
-  color: #f6c453 !important;
-  border-color: rgba(246, 196, 83, 0.28) !important;
-  background-color: rgba(246, 196, 83, 0.08) !important;
+@media (prefers-reduced-motion: reduce) {
+  .chat-message-group,
+  .tradebattle-site .blitz-primary-link,
+  .tradebattle-site .blitz-primary-button { transition: none !important; }
 }

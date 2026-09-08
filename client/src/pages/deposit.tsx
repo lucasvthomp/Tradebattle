@@ -11,7 +11,7 @@ export default function Deposit() {
   const [payment, setPayment] = useState<any>(null);
   const [amount, setAmount] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20');
-  const [copiedField, setCopiedField] = useState<'address' | 'amount' | null>(null);
+  const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState<number>(1);
   const [pendingDeposits, setPendingDeposits] = useState<any[]>([]);
@@ -79,45 +79,19 @@ export default function Deposit() {
     }
   }, [selectedCurrency]);
 
-  function getPaymentQrValue(paymentData: any): string {
-    const raw = paymentData?.pay_address ?? paymentData?.payin_address ?? paymentData?.address ?? '';
-    return typeof raw === 'string' ? raw.trim() : '';
-  }
+  // Copy address to clipboard
+  async function copyAddress() {
+    if (!payment?.pay_address) return;
 
-  function getDisplayAddress(raw: string): string {
-    if (!raw) return '';
-    if (/^https?:\/\//i.test(raw)) return raw;
-    const colonIdx = raw.indexOf(':');
-    return colonIdx > 0 && colonIdx < 20 ? raw.slice(colonIdx + 1).split('?')[0] : raw;
-  }
-
-  function getPaymentAmountValue(paymentData: any): string {
-    const amount = paymentData?.pay_amount;
-    const currency = paymentData?.pay_currency;
-    return amount != null && currency ? `${amount} ${String(currency).toUpperCase()}` : '';
-  }
-
-  async function copyPaymentValue(value: string, field: 'address' | 'amount') {
-    if (!value) return;
     try {
-      await navigator.clipboard.writeText(value);
-      setCopiedField(field);
-      setTimeout(() => setCopiedField(null), 2000);
+      await navigator.clipboard.writeText(payment.pay_address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
   }
 
-  async function copyAddress() {
-    const value = getPaymentQrValue(payment);
-    if (value) {
-      await copyPaymentValue(getDisplayAddress(value), 'address');
-    }
-  }
-
-  async function copyAmount() {
-    await copyPaymentValue(getPaymentAmountValue(payment), 'amount');
-  }
   // Create payment
   async function createDeposit() {
     setLoading(true);
@@ -135,14 +109,11 @@ export default function Deposit() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
+        const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to create payment');
       }
 
       const data = await response.json();
-      if (!data?.payment_id || !getPaymentQrValue(data) || data?.pay_amount == null || !data?.pay_currency) {
-        throw new Error('Payment details were incomplete. Please try again.');
-      }
       setPayment(data);
 
       // Start polling for status
@@ -171,7 +142,6 @@ export default function Deposit() {
       localStorage.setItem('pendingDeposits', JSON.stringify(updated));
     }
     setPayment(null);
-    setCopiedField(null);
     setError('');
   }
 
@@ -596,32 +566,16 @@ export default function Deposit() {
               Send payment
             </h3>
 
-                        {/* QR Code */}
-            <div className="deposit-qr-frame" style={{
-              background: 'rgba(103, 231, 191, 0.06)',
-              padding: '6px',
-              borderRadius: '16px',
+            {/* QR Code */}
+            <div style={{
+              background: '#ffffff',
+              padding: '24px',
+              borderRadius: '12px',
               marginBottom: '24px',
               display: 'flex',
               justifyContent: 'center',
             }}>
-              <div className="deposit-qr-surface" style={{
-                background: 'transparent',
-                padding: '12px',
-                borderRadius: '12px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-                <QRCodeSVG
-                  value={getPaymentQrValue(payment)}
-                  size={220}
-                  includeMargin
-                  fgColor="#67E7BF"
-                  bgColor="transparent"
-                  style={{ display: "block", maxWidth: "100%", height: "auto" }}
-                />
-              </div>
+              <QRCodeSVG value={payment.pay_address} size={220} />
             </div>
 
             {/* Address */}
@@ -635,7 +589,7 @@ export default function Deposit() {
               }}>
                 Payment address
               </label>
-              <div className="deposit-address deposit-copy-row" style={{
+              <div style={{
                 background: 'transparent',
                 border: '1px solid #0E2040',
                 borderRadius: '8px',
@@ -651,14 +605,13 @@ export default function Deposit() {
                   wordBreak: 'break-all',
                   fontFamily: 'monospace',
                 }}>
-                  {getDisplayAddress(getPaymentQrValue(payment))}
+                  {payment.pay_address}
                 </code>
                 <button
                   onClick={copyAddress}
-                  aria-label="Copy address"
                   style={{
                     padding: '8px',
-                    background: copiedField === 'address' ? '#67E7BF' : '#123247',
+                    background: copied ? '#67E7BF' : '#0E2040',
                     border: 'none',
                     borderRadius: '6px',
                     color: '#fff',
@@ -668,12 +621,12 @@ export default function Deposit() {
                     alignItems: 'center',
                   }}
                 >
-                  {copiedField === 'address' ? <Check size={18} /> : <Copy size={18} />}
+                  {copied ? <Check size={18} /> : <Copy size={18} />}
                 </button>
               </div>
             </div>
 
-                        {/* Amount */}
+            {/* Amount */}
             <div style={{ marginBottom: '24px' }}>
               <label style={{
                 color: '#8A93A6',
@@ -684,40 +637,21 @@ export default function Deposit() {
               }}>
                 Amount to send
               </label>
-              <div className="deposit-address deposit-copy-row" style={{
+              <div style={{
                 background: 'transparent',
-                border: '1px solid #0E2040',
+                border: '2px solid #67E7BF',
                 borderRadius: '8px',
-                padding: '14px 16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
+                padding: '16px',
+                textAlign: 'center',
               }}>
-                <code style={{
-                  flex: 1,
-                  color: '#C9D1E2',
-                  fontSize: '14px',
-                  fontFamily: 'monospace',
+                <div style={{
+                  color: '#67E7BF',
+                  fontSize: 'clamp(18px, 6vw, 28px)',
+                  fontWeight: '700',
+                  wordBreak: 'break-word',
                 }}>
-                  {getPaymentAmountValue(payment)}
-                </code>
-                <button
-                  onClick={copyAmount}
-                  aria-label="Copy amount"
-                  style={{
-                    padding: '8px',
-                    background: copiedField === 'amount' ? '#67E7BF' : '#123247',
-                    border: 'none',
-                    borderRadius: '6px',
-                    color: '#fff',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  {copiedField === 'amount' ? <Check size={18} /> : <Copy size={18} />}
-                </button>
+                  {payment.pay_amount} {payment.pay_currency.toUpperCase()}
+                </div>
               </div>
             </div>
 

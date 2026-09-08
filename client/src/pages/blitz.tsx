@@ -111,7 +111,7 @@ export default function Blitz() {
     return (
       <div className="arena-page-shell blitz-page">
         <div className="blitz-shell">
-          <BlitzRoundboard />
+          <BlitzHeader />
           <section className="blitz-card blitz-auth-card">
             <div className="blitz-icon-box"><Swords size={25} /></div>
             <p className="blitz-kicker">Private match queue</p>
@@ -127,7 +127,7 @@ export default function Blitz() {
   return (
     <div className="arena-page-shell blitz-page">
       <div className="blitz-shell">
-          <BlitzRoundboard />
+        <BlitzHeader />
 
         {activeBlitz && (
           <section className="blitz-resume-row">
@@ -186,33 +186,33 @@ export default function Blitz() {
         </section>
 
         <div className="blitz-info-grid">
-          <BlitzInfo icon={<Clock3 size={16} />} label="Round timer" value="5 minutes" />
-          <BlitzInfo icon={<DollarSign size={16} />} label="Starting stack" value="$10,000 virtual" />
-          <BlitzInfo icon={<Trophy size={16} />} label="Win line" value="Highest board value" />
+          <BlitzInfo icon={<Clock3 size={16} />} label="Round length" value="5 minutes" />
+          <BlitzInfo icon={<DollarSign size={16} />} label="Starting capital" value="$10,000 virtual" />
+          <BlitzInfo icon={<Trophy size={16} />} label="Win condition" value="Highest board value" />
         </div>
+
+        <section className="blitz-playbook" aria-label="How Blitz works">
+          <div className="blitz-playbook-heading">
+            <div><p className="blitz-kicker">THE ROUND</p><h2>Fast decisions. Clean scoreboard.</h2></div>
+            <Link href="/tournaments" className="blitz-secondary-link">Browse arenas <ArrowRight size={14} /></Link>
+          </div>
+          <div className="blitz-playbook-grid">
+            <BlitzPlaybookStep number="01" title="Queue" copy="Tap find a matchup and wait for a rival." />
+            <BlitzPlaybookStep number="02" title="Read" copy="Trade the live board with virtual capital." />
+            <BlitzPlaybookStep number="03" title="Finish" copy="The highest portfolio closes the round." />
+          </div>
+        </section>
       </div>
     </div>
   );
 }
 
-function BlitzRoundboard() {
+function BlitzHeader() {
   return (
-    <section className="blitz-roundboard" aria-labelledby="blitz-roundboard-title">
-      <div className="blitz-roundboard-copy">
-        <span className="blitz-kicker">BLITZ</span>
-        <h2 id="blitz-roundboard-title">Five minutes. One rival.</h2>
-        <p>Queue for a focused head-to-head market round.</p>
-        <div className="blitz-roundboard-stats">
-          <span><strong>05:00</strong> on the clock</span>
-          <span><strong>1v1</strong> head-to-head</span>
-          <span><strong>$10K</strong> virtual stack</span>
-        </div>
-      </div>
-      <div className="blitz-roundboard-art">
-        <img src="/assets/tradebattle-chest-exchange-v2.png" alt="" aria-hidden="true" />
-        <span className="blitz-roundboard-art-label">LIVE MARKET</span>
-      </div>
-    </section>
+    <header className="blitz-header">
+      <div><p className="blitz-kicker">Fast format / 02</p><h1>Blitz</h1><p>Short clock. Clear decisions. One player across the board.</p></div>
+      <div className="blitz-header-mark"><Zap size={19} /></div>
+    </header>
   );
 }
 
@@ -222,4 +222,8 @@ function PlayerBadge({ label, name, tone }: { label: string; name: string; tone:
 
 function BlitzInfo({ icon, label, value }: { icon: ReactNode; label: string; value: string }) {
   return <div className="blitz-info-item"><span className="blitz-info-icon">{icon}</span><div><span>{label}</span><strong>{value}</strong></div></div>;
+}
+
+function BlitzPlaybookStep({ number, title, copy }: { number: string; title: string; copy: string }) {
+  return <div className="blitz-playbook-step"><span>{number}</span><strong>{title}</strong><p>{copy}</p></div>;
 }

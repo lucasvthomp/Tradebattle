@@ -635,125 +635,6 @@
   }
 }
 
-/* Arcade lobby refresh: use solid blocks and playful color hits instead of
-   a financial dashboard gradient stack. */
-.hub-screen {
-  padding-top: 24px;
-  background-color: #0d1230;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1px);
-  background-size: 26px 26px;
-}
-
-.hub-shell { max-width: 1240px; }
-.hub-topbar { padding-bottom: 21px; border-bottom: 2px solid #2b315e; }
-.hub-kicker { color: #67e7bf; font-size: 11px; letter-spacing: 0.18em; }
-.hub-title { font-size: clamp(2.05rem, 4vw, 3.2rem); letter-spacing: -0.06em; }
-.hub-subtitle { color: #b0b9d4; }
-
-.hub-outline-action,
-.hub-primary-action {
-  min-height: 42px;
-  border-radius: 11px;
-  font-size: 13px;
-  box-shadow: 3px 3px 0 rgba(6, 9, 32, 0.42);
-}
-.hub-primary-action { background: #67e7bf; border-color: #67e7bf; color: #0d1230; }
-.hub-outline-action { border: 1px solid #51598d; background: #1b2149; color: #fbfbff; }
-
-.hub-overview-bar {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0;
-  margin: 18px 0 14px;
-  overflow: hidden;
-  border: 2px solid #2b315e;
-  border-radius: 16px;
-  background: #171c40;
-}
-.hub-overview-item {
-  min-height: 76px;
-  padding: 14px 18px;
-  border-right: 1px solid #2b315e;
-}
-.hub-overview-item:last-child { border-right: 0; }
-.hub-overview-label { color: #aeb6d2; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
-.hub-overview-value { margin-top: 7px; font-family: inherit; font-size: 22px; letter-spacing: -.04em; }
-.hub-overview-note { color: #7984aa; }
-
-.hub-feature-banner {
-  min-height: 164px;
-  margin-bottom: 14px;
-  border: 2px solid #51598d;
-  border-radius: 18px;
-  background: #2b3472;
-  box-shadow: 5px 5px 0 rgba(5, 7, 24, 0.38);
-}
-.hub-feature-copy { padding: 26px 28px; }
-.hub-feature-kicker { color: #ffd166; font-size: 11px; letter-spacing: .16em; }
-.hub-feature-banner h2 { font-size: clamp(1.8rem, 3.6vw, 2.9rem); letter-spacing: -.055em; }
-.hub-feature-banner p { color: #d6dcf0; }
-.hub-feature-action { background: #67e7bf; border-radius: 11px; color: #0d1230; box-shadow: 3px 3px 0 rgba(6, 9, 32, .36); }
-
-.hub-panel,
-.hub-stat-card {
-  border: 2px solid #2b315e;
-  border-radius: 16px;
-  background: #171c40;
-  box-shadow: 4px 4px 0 rgba(5, 7, 24, 0.28);
-}
-.hub-panel-heading { padding: 18px 20px 0; }
-.hub-panel-heading h2 { color: #fbfbff; font-size: 17px; }
-.hub-panel-heading p { color: #aeb6d2; }
-.hub-panel-label { color: #67e7bf; }
-.hub-market-readout { padding-top: 16px; }
-.hub-market-number { font-family: inherit; font-size: 26px; }
-.hub-chart { border: 1px solid #394273; border-radius: 13px; background: #111735; }
-.hub-launch-list { padding: 16px 14px 14px; }
-.hub-launch-card { min-height: 86px; border: 2px solid #394273; border-radius: 14px; background: #222957; }
-.hub-launch-card:hover { border-color: #67e7bf; background: #293164; transform: translateY(-2px); }
-.hub-launch-icon { border: 0; border-radius: 14px; }
-.hub-launch-icon.gold { color: #0d1230; background: #ffd166; }
-.hub-launch-icon.purple { color: #0d1230; background: #b58cff; }
-.hub-launch-copy strong { font-size: 15px; }
-.hub-launch-copy span { color: #b0b9d4; font-size: 11px; }
-.hub-launch-arrow { color: #fbfbff; }
-.hub-live-row { border: 1px solid #394273; border-radius: 12px; background: #1d234b; }
-.hub-live-row:hover { border-color: #67e7bf; background: #242b5b; }
-.hub-empty-state { border-color: #51598d; border-radius: 14px; background: #1d234b; }
-.hub-empty-state strong { color: #fbfbff; }
-.hub-empty-state p { color: #aeb6d2; }
-.hub-empty-state a { color: #67e7bf; }
-
-@media (max-width: 620px) {
-  .hub-overview-bar { grid-template-columns: repeat(2, 1fr); }
-  .hub-overview-item:nth-child(2) { border-right: 0; }
-  .hub-overview-item:nth-child(-n+2) { border-bottom: 1px solid #2b315e; }
-}
-
-/* Gold is the action color; purple carries the play-space. */
-.hub-screen { background-color: #120d2b; }
-.hub-topbar { border-bottom-color: #3a296d; }
-.hub-kicker { color: #f6c453; }
-.hub-outline-action { border-color: #5a3d8a; background: #21164a; }
-.hub-primary-action,
-.hub-feature-action { background: #f6c453; border-color: #f6c453; color: #24143f; }
-.hub-primary-action:hover,
-.hub-feature-action:hover { background: #ffe08a; }
-.hub-overview-bar,
-.hub-panel,
-.hub-stat-card { border-color: #3a296d; background: #1d1540; }
-.hub-feature-banner { border-color: #6847a0; background: #3b246c; }
-.hub-feature-kicker { color: #ffd166; }
-.hub-chart { border-color: #4b347a; background: #160f35; }
-.hub-launch-card { border-color: #4b347a; background: #2a1c56; }
-.hub-launch-card:hover { border-color: #f6c453; background: #352263; }
-.hub-launch-icon.gold { background: #f6c453; }
-.hub-launch-icon.purple { background: #b58cff; }
-.hub-live-row { border-color: #4b347a; background: #24194b; }
-.hub-live-row:hover { border-color: #f6c453; background: #30205e; }
-.hub-empty-state { border-color: #6847a0; background: #24194b; }
-.hub-empty-state a { color: #f6c453; }
-
 @media (prefers-reduced-motion: reduce) {
   .hub-primary-action,
   .hub-outline-action,
@@ -998,322 +879,167 @@
   .hub-launch-card:hover .hub-launch-art-blitz { transform: none; }
 }
 
-
-/* Hub loadout: a compact market kit rail to make the home base feel playable. */
-.hub-feature-art {
-  mix-blend-mode: normal;
-  opacity: 0.78;
-  filter: drop-shadow(0 22px 22px rgba(0, 0, 0, 0.28));
-}
-
-.hub-launch-art {
-  mix-blend-mode: normal;
-  opacity: 0.48;
-  filter: drop-shadow(0 12px 12px rgba(0, 0, 0, 0.28));
-}
-
-.hub-launch-art-arena {
-  width: 82px;
-  height: 82px;
-}
-
-.hub-launch-art-blitz {
-  width: 74px;
-  height: 74px;
-}
-
-.hub-loadout {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 28px;
-  min-height: 120px;
-  margin: 0 0 12px;
-  padding: 17px 20px 17px 22px;
-  overflow: hidden;
-  border: 1px solid rgba(32, 216, 194, 0.18);
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 91% 50%, rgba(32, 216, 194, 0.14), transparent 28%),
-    linear-gradient(145deg, rgba(12, 34, 49, 0.96), rgba(7, 18, 31, 0.96));
-}
-
-.hub-loadout-copy {
-  max-width: 320px;
-}
-
-.hub-loadout-copy h2 {
-  margin: 6px 0 4px;
-  color: #effbfc;
-  font-size: 19px;
-  letter-spacing: -0.04em;
-}
-
-.hub-loadout-copy p {
-  margin: 0;
-  color: #7790a4;
-  font-size: 11px;
-  line-height: 1.45;
-}
-
-.hub-loadout-items {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 17px 0 3px;
-}
-
-.hub-loadout-item {
-  position: relative;
-  width: 72px;
-  height: 74px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  flex-direction: column;
-  padding-bottom: 7px;
-  border: 1px solid rgba(157, 183, 210, 0.14);
-  border-radius: 11px;
-  background: rgba(3, 12, 22, 0.42);
-}
-
-.hub-loadout-item img {
-  position: absolute;
-  top: -22px;
-  width: 72px;
-  height: 72px;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.28));
-  transition: transform 180ms ease;
-}
-
-.hub-loadout-item:hover img {
-  transform: translateY(-4px) rotate(-3deg);
-}
-
-.hub-loadout-item span {
-  position: relative;
-  z-index: 1;
-  color: #9cb9c7;
-  font-family: "Courier New", monospace;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-@media (max-width: 850px) {
-  .hub-loadout {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .hub-loadout-items {
-    width: 100%;
-    justify-content: space-between;
-    overflow-x: auto;
-  }
-}
-
-@media (max-width: 620px) {
-  .hub-loadout {
-    padding: 16px 14px 14px;
-  }
-
-  .hub-loadout-items {
-    justify-content: flex-start;
-    gap: 7px;
-    padding-top: 18px;
-  }
-
-  .hub-loadout-item {
-    flex: 0 0 65px;
-    width: 65px;
-    height: 68px;
-  }
-
-  .hub-loadout-item img {
-    width: 66px;
-    height: 66px;
-  }
-}
-
-
-/* Current hub polish: one overview strip, one tournament promo, less chrome. */
-.hub-overview-bar {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px;
-  margin: 14px 0 12px;
-  padding: 8px;
-  border: 1px solid rgba(103, 231, 191, 0.16);
-  border-radius: 12px;
-  background: rgba(11, 27, 42, 0.88);
-}
-.hub-overview-item {
-  min-width: 0;
-  padding: 10px 12px;
-  border-right: 1px solid rgba(118, 169, 198, 0.12);
-}
-.hub-overview-item:last-child { border-right: 0; }
-.hub-overview-label,
-.hub-overview-note {
-  display: block;
-  color: #7890a4;
-  font-size: 10px;
-}
-.hub-overview-label {
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-.hub-overview-value {
-  display: block;
-  margin-top: 5px;
-  font-family: "Courier New", monospace;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-}
-.hub-overview-note { margin-top: 3px; color: #60788f; }
-.hub-feature-banner {
-  min-height: 168px;
-  margin-top: 0;
-  background:
-    linear-gradient(90deg, rgba(7, 20, 33, 0.96) 0%, rgba(7, 20, 33, 0.78) 48%, rgba(7, 20, 33, 0.52) 100%),
-    url("/assets/tradebattle-trophy-wallpaper.jpg") center / cover,
-    #0b1b2a;
-}
-.hub-feature-banner::before { z-index: 1; }
-.hub-feature-copy { z-index: 2; }
-.hub-feature-copy > p:not(.hub-feature-kicker) { max-width: 540px; }
-.hub-feature-action {
-  color: #06151c;
-  text-decoration: none;
-}
-.hub-main-grid { margin-top: 12px; }
-.hub-live-panel-full { margin-top: 12px; }
-@media (max-width: 680px) {
-  .hub-overview-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hub-overview-item:nth-child(2) { border-right: 0; }
-  .hub-overview-item:nth-child(-n+2) { border-bottom: 1px solid rgba(118, 169, 198, 0.12); }
-  .hub-feature-banner { min-height: 184px; padding: 21px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .hub-overview-bar, .hub-feature-banner { animation: none; }
-}
-
-/* Game-lobby density pass: sharper rails, calmer surfaces, less dashboard chrome. */
+/* Game-lobby pass: compact account context, saturated plum surfaces, and two
+   clear ways into play. Decorative texture stays CSS-only so it remains sharp
+   and lightweight on mobile. */
 .hub-screen {
-  padding: 24px 20px 48px;
+  --hub-bg: #140b2b;
+  --hub-panel: #21113f;
+  --hub-panel-raised: #2d1958;
+  --hub-purple-bright: #a77bff;
+  --hub-gold: #f3c65b;
+  min-height: calc(100dvh - 4rem);
+  padding: 22px 24px 52px;
   background:
-    radial-gradient(circle at 82% 0%, rgba(103, 231, 191, 0.08), transparent 26rem),
-    #08111b;
+    radial-gradient(circle at 85% 6%, rgba(124, 58, 237, .22), transparent 24rem),
+    radial-gradient(circle at 8% 42%, rgba(243, 198, 91, .08), transparent 23rem),
+    var(--hub-bg);
 }
+
 .hub-topbar {
   align-items: center;
-  padding-bottom: 18px;
-}
-.hub-kicker {
-  margin-bottom: 7px;
-  font-size: 10px;
-  letter-spacing: 0.14em;
-  font-weight: 900;
-}
-.hub-title {
-  font-size: clamp(1.8rem, 3vw, 2.7rem);
-  letter-spacing: -0.055em;
-}
-.hub-overview-bar,
-.hub-panel,
-.hub-feature-banner {
-  border-radius: 9px;
-}
-.hub-overview-bar {
-  margin: 12px 0 10px;
-  padding: 6px;
-  background: #0d1b28;
-  border-color: rgba(145, 164, 180, 0.17);
-}
-.hub-overview-item {
-  padding: 9px 12px;
-}
-.hub-feature-banner {
-  min-height: 148px;
-  border: 1px solid rgba(145, 164, 180, 0.17);
-  background:
-    linear-gradient(90deg, rgba(8, 17, 27, 0.97), rgba(8, 17, 27, 0.72)),
-    url("/assets/tradebattle-trophy-wallpaper.jpg") center / cover,
-    #0d1b28;
-}
-.hub-main-grid {
-  gap: 10px;
-  margin-top: 10px;
-}
-.hub-chart {
-  height: 184px;
-  border-radius: 8px;
-}
-.hub-launch-list,
-.hub-live-list {
-  padding-top: 14px;
-}
-.hub-launch-card,
-.hub-live-row,
-.hub-empty-state {
-  border-radius: 8px;
+  padding: 0 0 16px;
+  border-bottom-color: rgba(167, 123, 255, .24);
 }
 
-/* Final playful hub treatment. */
-.hub-screen {
-  padding-top: 24px;
-  background-color: #0d1230;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.13) 1px, transparent 1px);
-  background-size: 26px 26px;
+.hub-kicker,
+.hub-panel-label,
+.hub-feature-kicker { color: var(--hub-gold); }
+
+.hub-title { font-size: clamp(1.8rem, 3.5vw, 3rem); }
+.hub-subtitle { display: none; }
+
+.hub-top-play,
+.hub-feature-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid var(--hub-gold);
+  border-radius: 9px;
+  background: var(--hub-gold);
+  color: #231137;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: transform 160ms ease, filter 160ms ease;
 }
-.hub-topbar { padding-bottom: 21px; border-bottom: 2px solid #2b315e; }
-.hub-kicker { color: #67e7bf; letter-spacing: .18em; }
-.hub-title { font-size: clamp(2.05rem, 4vw, 3.2rem); }
-.hub-outline-action,
-.hub-primary-action { min-height: 42px; border-radius: 11px; font-size: 13px; box-shadow: 3px 3px 0 rgba(6, 9, 32, .42); }
-.hub-primary-action { background: #67e7bf; border-color: #67e7bf; color: #0d1230; }
-.hub-outline-action { border-color: #51598d; background: #1b2149; color: #fbfbff; }
-.hub-overview-bar { margin: 18px 0 14px; padding: 0; overflow: hidden; border: 2px solid #2b315e; border-radius: 16px; background: #171c40; }
-.hub-overview-item { min-height: 76px; padding: 14px 18px; border-right: 1px solid #2b315e; }
-.hub-overview-item:last-child { border-right: 0; }
-.hub-overview-label { color: #aeb6d2; }
-.hub-overview-value { margin-top: 7px; font-family: inherit; font-size: 22px; }
-.hub-overview-note { color: #7984aa; }
-.hub-feature-banner { min-height: 164px; margin-bottom: 14px; border: 2px solid #51598d; border-radius: 18px; background: #2b3472; box-shadow: 5px 5px 0 rgba(5, 7, 24, .38); }
-.hub-feature-copy { padding: 26px 28px; }
-.hub-feature-kicker { color: #ffd166; }
-.hub-feature-banner h2 { font-size: clamp(1.8rem, 3.6vw, 2.9rem); }
-.hub-feature-banner p { color: #d6dcf0; }
-.hub-feature-action { background: #67e7bf; border-radius: 11px; box-shadow: 3px 3px 0 rgba(6, 9, 32, .36); }
-.hub-panel, .hub-stat-card { border: 2px solid #2b315e; border-radius: 16px; background: #171c40; box-shadow: 4px 4px 0 rgba(5, 7, 24, .28); }
-.hub-panel-heading { padding: 18px 20px 0; }
-.hub-panel-heading h2 { color: #fbfbff; font-size: 17px; }
-.hub-panel-heading p { color: #aeb6d2; }
-.hub-chart { border-color: #394273; border-radius: 13px; background: #111735; }
-.hub-launch-list { padding: 16px 14px 14px; }
-.hub-launch-card { min-height: 86px; border: 2px solid #394273; border-radius: 14px; background: #222957; }
-.hub-launch-card:hover { border-color: #67e7bf; background: #293164; transform: translateY(-2px); }
-.hub-launch-icon { border: 0; border-radius: 14px; }
-.hub-launch-icon.gold { color: #0d1230; background: #ffd166; }
-.hub-launch-icon.purple { color: #0d1230; background: #b58cff; }
-.hub-launch-copy strong { font-size: 15px; }
-.hub-launch-copy span { color: #b0b9d4; font-size: 11px; }
-.hub-launch-arrow { color: #fbfbff; }
-.hub-live-row { border: 1px solid #394273; border-radius: 12px; background: #1d234b; }
-.hub-live-row:hover { border-color: #67e7bf; background: #242b5b; }
-.hub-empty-state { border-color: #51598d; border-radius: 14px; background: #1d234b; }
-.hub-empty-state strong { color: #fbfbff; }
-.hub-empty-state p { color: #aeb6d2; }
-.hub-empty-state a { color: #67e7bf; }
+
+.hub-top-play:hover,
+.hub-feature-action:hover { transform: translateY(-2px); filter: brightness(1.08); }
+
+.hub-overview-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 14px 0;
+  overflow: hidden;
+  border: 1px solid rgba(167, 123, 255, .25);
+  border-radius: 11px;
+  background: rgba(167, 123, 255, .2);
+}
+
+.hub-overview-item {
+  min-width: 0;
+  padding: 10px 14px;
+  background: rgba(33, 17, 63, .94);
+}
+
+.hub-overview-item span,
+.hub-overview-item small {
+  display: block;
+  color: #a99cc6;
+  font-size: 10px;
+}
+
+.hub-overview-item span { font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.hub-overview-item strong { display: block; margin: 3px 0 1px; font-family: "Courier New", monospace; font-size: 16px; }
+
+.hub-feature-banner {
+  min-height: 218px;
+  margin-top: 0;
+  border-color: rgba(167, 123, 255, .38);
+  background:
+    linear-gradient(125deg, rgba(33, 17, 63, .96), rgba(44, 22, 84, .92)),
+    repeating-linear-gradient(135deg, transparent 0 18px, rgba(167, 123, 255, .08) 18px 20px, transparent 20px 38px);
+  box-shadow: 0 18px 48px rgba(11, 3, 27, .32), inset 0 1px rgba(255, 255, 255, .06);
+}
+
+.hub-feature-banner::after {
+  content: "";
+  position: absolute;
+  inset: auto -15% -72% 35%;
+  height: 220px;
+  background: repeating-linear-gradient(135deg, transparent 0 22px, rgba(243, 198, 91, .12) 22px 24px, transparent 24px 48px);
+  transform: rotate(-10deg);
+  pointer-events: none;
+}
+
+.hub-feature-copy h2 { font-size: clamp(2rem, 4vw, 3.3rem); }
+.hub-feature-art { opacity: .56; filter: drop-shadow(0 22px 24px rgba(0, 0, 0, .36)); }
+
+.hub-ad-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.hub-ad-card {
+  position: relative;
+  min-height: 128px;
+  overflow: hidden;
+  padding: 18px 20px;
+  border: 1px solid rgba(167, 123, 255, .28);
+  border-radius: 12px;
+  background-color: var(--hub-panel);
+  color: #fff;
+  text-decoration: none;
+  transition: transform 180ms ease, border-color 180ms ease, filter 180ms ease;
+}
+
+.hub-ad-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .6;
+  background-image: repeating-linear-gradient(135deg, transparent 0 19px, rgba(255,255,255,.06) 19px 21px, transparent 21px 42px);
+  pointer-events: none;
+}
+
+.hub-ad-card:hover { transform: translateY(-2px); border-color: rgba(243, 198, 91, .64); filter: brightness(1.08); }
+.hub-ad-arena { background: linear-gradient(120deg, #261252, #3b1b6e); }
+.hub-ad-blitz { background: linear-gradient(120deg, #21113f, #4b1d60); }
+.hub-ad-card > * { position: relative; z-index: 1; }
+.hub-ad-card img { position: absolute; z-index: 0; right: -14px; bottom: -70px; width: 190px; opacity: .35; transform: rotate(-8deg); filter: drop-shadow(0 12px 12px rgba(0,0,0,.32)); }
+.hub-ad-card > svg { position: absolute; right: 18px; top: 18px; color: var(--hub-gold); }
+.hub-ad-label { display: block; color: var(--hub-gold); font: 900 10px/1 "Courier New", monospace; letter-spacing: .14em; }
+.hub-ad-card strong { display: block; margin-top: 10px; font-size: 20px; letter-spacing: -.04em; }
+.hub-ad-card > span:last-of-type { display: block; margin-top: 5px; color: #c8bbe2; font-size: 12px; }
+
+.hub-stat-grid { display: none; }
+.hub-stat-card, .hub-panel { border-color: rgba(167, 123, 255, .25); background: var(--hub-panel); }
+.hub-chart { border-color: rgba(167, 123, 255, .22); background: rgba(19, 7, 42, .48); }
+.hub-chart-line { stroke: var(--hub-gold); }
+.hub-chart-glow { stroke: rgba(243, 198, 91, .18); }
+.hub-chart-dot { stroke: var(--hub-gold); }
+.hub-chart-tag { fill: #2d1958; stroke: rgba(243, 198, 91, .42); }
+.hub-chart-tag-text, .hub-market-change { fill: var(--hub-gold); color: var(--hub-gold); }
+.hub-live-dot, .hub-live-row > span:first-child { background: var(--hub-gold); box-shadow: 0 0 12px rgba(243, 198, 91, .6); }
+.hub-launch-icon.gold, .hub-launch-icon.purple { color: var(--hub-gold); background: rgba(243, 198, 91, .08); border-color: rgba(243, 198, 91, .28); }
+.hub-progress-link { margin-top: 18px; width: fit-content; }
 
 @media (max-width: 620px) {
-  .hub-overview-bar { grid-template-columns: repeat(2, 1fr); }
-  .hub-overview-item:nth-child(2) { border-right: 0; }
-  .hub-overview-item:nth-child(-n+2) { border-bottom: 1px solid #2b315e; }
+  .hub-screen { padding: 18px 12px 38px; }
+  .hub-topbar { align-items: flex-start; }
+  .hub-top-actions { width: auto; }
+  .hub-overview-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hub-ad-grid { grid-template-columns: 1fr; }
+  .hub-ad-card { min-height: 118px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-top-play, .hub-feature-action, .hub-ad-card { transition: none; }
 }

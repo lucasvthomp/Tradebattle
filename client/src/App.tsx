@@ -59,10 +59,6 @@ function AutoTourStarter() {
 function Router() {
   const { user, isLoading } = useAuth();
   const [location] = useLocation();
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-  }, [location]);
   const { announcements, dismissAnnouncement } = useAnnouncements();
 
   if (isLoading) {

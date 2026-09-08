@@ -3,51 +3,47 @@ import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
 import {
-  FaBars,
-  FaBolt,
-  FaBoxArchive,
-  FaGamepad,
-  FaGift,
-  FaHeadset,
-  FaHouse,
-  FaShieldHalved,
-  FaTrophy,
-  FaUsers,
-  FaGear,
-} from "react-icons/fa6";
+  Home,
+  Trophy,
+  Users,
+  Phone,
+  Gift,
+  Settings,
+  Archive,
+  Shield,
+  Swords,
+  Zap,
+  Menu
+} from "lucide-react";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
 
-interface SimplifiedSidebarProps {
-  expanded: boolean;
-  onExpandedChange: (expanded: boolean) => void;
-}
-
-export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSidebarProps) {
+export function SimplifiedSidebar() {
   const { user } = useAuth();
   const { t } = useUserPreferences();
   const [location] = useLocation();
+  const [expanded, setExpanded] = useState(false);
   const [codeDialogOpen, setCodeDialogOpen] = useState(false);
 
   const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: FaHouse, iconColor: '#F6C453' },
-      { href: "/tournaments", label: t('tournaments'), icon: FaGamepad, iconColor: '#F6C453' },
-      { href: "/blitz", label: "Blitz", icon: FaBolt, iconColor: '#FFD166' },
-      { href: "/leaderboard", label: t('leaderboard'), icon: FaTrophy, iconColor: '#FFD166' },
-      { href: "/people", label: t('people'), icon: FaUsers, iconColor: '#8EB6D1' },
-      { href: "/shop", label: "Rewards", icon: FaGift, iconColor: '#FFD166' },
-      { href: "/contact", label: t('support'), icon: FaHeadset, iconColor: '#94A3B8' },
+      { href: "/hub", label: t('hub'), icon: Home, iconColor: '#f3c65b' },
+      { href: "/tournaments", label: t('tournaments'), icon: Swords, iconColor: '#f3c65b' },
+      { href: "/blitz", label: "Blitz", icon: Zap, iconColor: '#f3c65b' },
+      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy, iconColor: '#f3c65b' },
+      { href: "/people", label: t('people'), icon: Users, iconColor: '#f3c65b' },
+      { href: "/shop", label: "Rewards", icon: Gift, iconColor: '#f3c65b' },
+      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#b9afd8' },
     ] : [
-      { href: "/contact", label: t('support'), icon: FaHeadset, iconColor: '#94A3B8' },
+      { href: "/contact", label: t('support'), icon: Phone, iconColor: '#94A3B8' },
     ]),
   ];
 
   const userItems = user ? [
-    { href: "/profile", label: t('settings'), icon: FaGear, iconColor: '#94A3B8' },
-    { href: "/archive", label: t('archive'), icon: FaBoxArchive, iconColor: '#94A3B8' },
+    { href: "/profile", label: t('settings'), icon: Settings, iconColor: '#b9afd8' },
+    { href: "/archive", label: t('archive'), icon: Archive, iconColor: '#b9afd8' },
     ...(user.subscriptionTier === 'administrator' || user.username === 'LUCAS' ? [
-      { href: "/admin", label: "Admin", icon: FaShieldHalved, iconColor: '#EF4444' }
+      { href: "/admin", label: "Admin", icon: Shield, iconColor: '#f3c65b' }
     ] : [])
   ] : [];
 
@@ -71,7 +67,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
           paddingLeft: '14px',
           flexShrink: 0,
           ...(isActive(item.href)
-            ? { backgroundColor: 'rgba(246, 196, 83, 0.12)', color: '#F6C453' }
+            ? { backgroundColor: 'rgba(103, 231, 191, 0.1)', color: '#67E7BF' }
             : { color: '#8A9CAF' }),
         }}
       >
@@ -103,7 +99,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
         data-tour="sidebar"
         className={`tradebattle-sidebar ${expanded ? 'sidebar-expanded' : 'sidebar-collapsed'} hidden md:flex flex-col fixed left-0 top-16 h-[calc(100dvh-4rem)] backdrop-blur-md border-r z-40`}
         style={{
-          width: expanded ? '224px' : '68px',
+          width: expanded ? '256px' : '64px',
           backgroundColor: '#071522',
           borderColor: 'rgba(103, 231, 191, 0.13)',
           transition: 'width 300ms ease',
@@ -113,7 +109,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
         {/* Menu Toggle Button at top */}
         <div className="flex-shrink-0 p-2 border-b" style={{ borderColor: 'rgba(103, 231, 191, 0.13)' }}>
           <button
-            onClick={() => onExpandedChange(!expanded)}
+            onClick={() => setExpanded(!expanded)}
             className="flex items-center hover:bg-[#1A3A68] rounded-lg transition-colors duration-200"
             style={{
               height: '44px',
@@ -122,7 +118,7 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
               color: '#C9D1E2',
             }}
           >
-            <FaBars
+            <Menu
               className="w-5 h-5 flex-shrink-0"
               style={{
                 marginRight: expanded ? '12px' : '0',
@@ -151,7 +147,6 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
           }}
         >
           {/* Navigation Items */}
-          {expanded && <div className="px-3 pt-3 pb-1 text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: '#6E8498' }}>Play</div>}
           <nav className="p-2 space-y-1">
             {navItems.map(renderNavItem)}
           </nav>
@@ -163,30 +158,37 @@ export function SimplifiedSidebar({ expanded, onExpandedChange }: SimplifiedSide
 
           {/* User Actions */}
           {user && (
-            <>
-              {expanded && <div className="px-3 pt-1 pb-1 text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: '#6E8498' }}>Account</div>}
-              <nav className="p-2 space-y-1">
-                {userItems.map(renderNavItem)}
-              </nav>
-            </>
+            <nav className="p-2 space-y-1">
+              {userItems.map(renderNavItem)}
+            </nav>
           )}
         </div>
 
         {/* Code Redemption - Pinned at bottom, never overlaps */}
         {user && (
           <div className="flex-shrink-0 p-2 border-t" style={{ borderColor: 'rgba(103, 231, 191, 0.13)' }}>
+            <div className="sidebar-player-card" aria-label={`Player ${user.username}`}>
+              <div className="sidebar-player-avatar" aria-hidden="true">
+                {user.username?.slice(0, 1).toUpperCase() || 'P'}
+              </div>
+              <div className="sidebar-player-copy">
+                <span>LIVE PLAYER</span>
+                <strong>{user.username || 'Player'}</strong>
+                <small>{user.tournamentWins || 0} wins · {user.totalTrades || 0} reps</small>
+              </div>
+            </div>
             <Button
               onClick={() => setCodeDialogOpen(true)}
               className="transition-all duration-200 hover:brightness-110 w-full flex items-center"
               style={{
-                background: 'linear-gradient(135deg, #FFE08A, #D9982B)',
+                background: 'linear-gradient(135deg, #67E7BF, #2EBF9A)',
                 height: '44px',
                 paddingLeft: '14px',
                 paddingRight: '8px',
                 justifyContent: 'flex-start',
               }}
             >
-              <FaGift
+              <Gift
                 className="w-5 h-5 flex-shrink-0"
                 style={{
                   marginRight: expanded ? '12px' : '0',

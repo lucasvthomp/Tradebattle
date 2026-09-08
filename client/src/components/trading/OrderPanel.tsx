@@ -515,7 +515,7 @@ export function OrderPanel({
             background: awaitingConfirm
               ? (orderSide === "buy" ? "linear-gradient(135deg, #0d9668, #0591a3)" : "linear-gradient(135deg, #c53030, #c05621)")
               : (orderSide === "buy" ? "linear-gradient(135deg, #10B981, #06B6D4)" : "linear-gradient(135deg, #EF4444, #F97316)"),
-            color: "#F1F5F9",
+            color: orderSide === "buy" ? "#000000" : "#FFFFFF",
             border: awaitingConfirm ? "2px solid #FFFFFF" : "none",
           }}
         >

@@ -20,10 +20,10 @@ import {
   TrendingUp,
   Bitcoin,
   Timer,
+  Shield,
   Lock,
   Crown,
-  Play,
-  Shield
+  Play
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
@@ -92,15 +92,14 @@ function ParticipantAvatarStack({ participants, totalCount }: {
     <div className="flex items-center -space-x-2">
       {shown.map((p) => (
         <Avatar key={p.userId} className="w-7 h-7">
-          <AvatarImage
-            src={p.profilePicture || "/assets/tradebattle-default-player.png"}
-            className="object-cover"
-            onError={(event) => {
-              event.currentTarget.src = "/assets/tradebattle-default-player.png";
-            }}
-          />
-          <AvatarFallback className="overflow-hidden" style={{ backgroundColor: '#081622', border: '2px solid #0A1C2C' }}>
-            <img src="/assets/tradebattle-default-player.png" alt="" className="h-full w-full object-cover" />
+          {p.profilePicture && (
+            <AvatarImage src={p.profilePicture} className="object-cover" />
+          )}
+          <AvatarFallback
+            className="text-[9px] font-semibold"
+            style={{ backgroundColor: '#081622', color: '#67E7BF', border: '2px solid #0A1C2C' }}
+          >
+            {p.username.slice(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
       ))}
@@ -382,10 +381,24 @@ export default function TournamentsPage() {
           variants={staggerChildren}
           className="space-y-6"
         >
+          <motion.div variants={fadeInUp} className="tournament-hero-strip">
+            <div className="tournament-hero-copy">
+              <p className="tournament-hero-kicker"><span className="tournament-live-dot" /> THE ARENA LOBBY</p>
+              <h2>Choose your board.</h2>
+              <p>Find a live field, lock in a matchup, and make your next clean read.</p>
+              <div className="tournament-hero-stats" aria-label="Arena summary">
+                <span><strong>{myActiveTournaments.length}</strong> Your live</span>
+                <span><strong>{otherLiveTournaments.length}</strong> On now</span>
+                <span><strong>{upcomingTournaments.length}</strong> Next up</span>
+              </div>
+            </div>
+            <img className="tournament-hero-art" src="/assets/tradebattle-badge-flat.png" alt="" aria-hidden="true" />
+          </motion.div>
+
           {/* Header */}
           <motion.div variants={fadeInUp}>
             <div
-              className="tournament-lobby-header tournament-lobby-header-combined"
+              className="tournament-lobby-header"
               style={{
                 position: 'relative',
                 overflow: 'hidden',
@@ -394,10 +407,29 @@ export default function TournamentsPage() {
                 paddingBottom: '20px',
               }}
             >
-              <img className="tournament-hero-art tournament-header-art" src="/assets/tradebattle-chest-bell-v2.png" alt="" aria-hidden="true" />
-               <div className="flex flex-col items-center justify-center gap-5 text-center" style={{ position: 'relative', zIndex: 1 }}>
-                <div className="flex flex-col items-center">
-                  <div className="mb-1">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4" style={{ position: 'relative', zIndex: 1 }}>
+                <div>
+                  <div className="flex items-center mb-1" style={{ gap: 'clamp(10px, 1.2vw, 18px)' }}>
+                    {/* Trophy icon in glowing container */}
+                    <div style={{
+                      width: 'clamp(40px, 4vw, 60px)',
+                      height: 'clamp(40px, 4vw, 60px)',
+                      borderRadius: '14px',
+                      background: 'rgba(0,163,255,0.1)',
+                      border: '1px solid rgba(0,163,255,0.25)',
+                      boxShadow: '0 0 20px rgba(0,163,255,0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}>
+                      <Trophy style={{
+                        width: 'clamp(20px, 2vw, 30px)',
+                        height: 'clamp(20px, 2vw, 30px)',
+                        color: '#67E7BF',
+                        filter: 'drop-shadow(0 0 8px rgba(0,163,255,0.6))',
+                      }} />
+                    </div>
                     <h1
                       style={{
                         fontSize: 'clamp(2rem, 5vw, 4rem)',
@@ -417,13 +449,13 @@ export default function TournamentsPage() {
                     fontSize: '0.7rem',
                     letterSpacing: '0.12em',
                     textTransform: 'uppercase',
-                    margin: 0,
+                    marginLeft: 'calc(clamp(40px,4vw,60px) + clamp(10px,1.2vw,18px))',
                   }}>
                     Compete &amp; Win
                   </p>
                 </div>
 
-                <div className="flex flex-wrap items-center justify-center" style={{ gap: 'clamp(8px, 1vw, 12px)' }}>
+                <div className="flex items-center" style={{ gap: 'clamp(8px, 1vw, 12px)' }}>
                   {/* Join Private Button */}
                   <Dialog open={joinCodeDialogOpen} onOpenChange={setJoinCodeDialogOpen}>
                     <DialogTrigger asChild>

@@ -20,8 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Send, MessageSquare, X, DollarSign, UserCircle } from "lucide-react";
-import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
@@ -132,20 +131,20 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
   onMentionClick: (userId: string) => void;
   shiftHeld: boolean;
 }) {
-  const messageAccent = isCurrentUser ? '#67E7BF' : '#7890A4';
-
   return (
-    <div className="flex space-x-2">
+    <div className={`chat-message-group ${isCurrentUser ? "is-own" : "is-other"}`}>
       {/* Avatar - self-start so it doesn't stretch */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div className="cursor-pointer self-start">
-            <AvatarWithStatus
-              src={group.profilePicture}
-              fallback={group.username}
-              className="w-9 h-9"
-              statusSize="sm"
-            />
+            <Avatar className="w-9 h-9">
+              {group.profilePicture && (
+                <AvatarImage src={group.profilePicture} className="object-cover" />
+              )}
+              <AvatarFallback style={{ backgroundColor: '#0B1B2A' }}>
+                <UserCircle className="w-5 h-5" style={{ color: '#4B5563' }} />
+              </AvatarFallback>
+            </Avatar>
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" style={{ backgroundColor: '#0B1B2A', borderColor: '#0E2040' }}>
@@ -170,13 +169,13 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
         </DropdownMenuContent>
       </DropdownMenu>
 
-      <div className="flex-1 min-w-0 space-y-0.5">
+      <div className="chat-message-content flex-1 min-w-0 space-y-0.5">
         {group.messages.map((msg, idx) => {
           const isFirst = idx === 0;
           return (
             <div key={msg.id}>
               {isFirst && (
-                <div className="flex items-center space-x-1.5 mb-1">
+                <div className="chat-message-meta flex items-center space-x-1.5 mb-1">
                   <span className="text-sm font-bold" style={{ color: '#F1F5F9' }}>
                     {group.username}
                   </span>
@@ -207,7 +206,7 @@ const ChatMessageGroup = React.memo(function ChatMessageGroup({
                 </div>
               )}
               <div className="group/msg flex items-center gap-1.5">
-                <div className="backdrop-blur-sm rounded-lg px-3 py-2 transition-colors" style={{ backgroundColor: isCurrentUser ? 'rgba(23,56,57,0.8)' : '#0B1B2A', border: `1px solid ${isCurrentUser ? 'rgba(103,231,191,.24)' : 'rgba(120,144,164,.18)'}`, borderLeft: `3px solid ${messageAccent}` }}>
+                <div className="chat-message-bubble backdrop-blur-sm rounded-lg px-3 py-2" style={{ backgroundColor: '#0B1B2A', border: '1px solid #0E2040' }}>
                   <p className="text-sm whitespace-pre-wrap leading-normal" style={{
                     color: '#F1F5F9',
                     wordBreak: 'break-word',
@@ -268,7 +267,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       const response = await apiRequest("GET", '/api/chat/global');
       return response.json();
     },
-    refetchInterval: 5000,
+    refetchInterval: 3000,
     enabled: isOpen && !!user,
     staleTime: 1000,
     gcTime: 5000,
@@ -446,7 +445,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
       animate={{ x: 0 }}
       exit={{ x: "100%" }}
       transition={{ type: "spring", damping: 30, stiffness: 300 }}
-      className="h-full w-full backdrop-blur-md shadow-xl flex flex-col overflow-hidden"
+      className="chat-sidebar-panel h-full w-full backdrop-blur-md shadow-xl flex flex-col overflow-hidden"
       style={{ maxHeight: 'calc(100vh - 4rem)', backgroundColor: '#0B1B2A', borderLeft: '2px solid #0E2040' }}
     >
             {/* Header */}
@@ -468,7 +467,7 @@ export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
             {/* Messages Area */}
             <div className="flex-1 overflow-hidden">
               <ScrollArea ref={scrollAreaRef} className="h-full p-3" style={{ backgroundColor: 'rgba(10, 22, 44, 0.5)' }}>
-                <div className="space-y-3">
+                <div className="chat-message-list space-y-3">
                 {isLoading ? (
                   <div className="text-center py-4">
                     <div className="inline-block w-5 h-5 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: '#67E7BF', borderTopColor: 'transparent' }} />

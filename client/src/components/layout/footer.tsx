@@ -8,14 +8,14 @@ export default function Footer() {
   const { user } = useAuth();
   const isPublicSite = !user;
   return (
-    <footer className="tradebattle-footer bg-card border-t border-border py-12" style={{ background: '#171039', borderColor: 'rgba(246, 196, 83, 0.18)' }}>
+    <footer className="tradebattle-footer bg-card border-t border-border py-12" style={{ background: '#07111f', borderColor: 'rgba(98, 228, 189, 0.12)' }}>
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FFE08A, #D9982B)', boxShadow: '0 0 16px rgba(246, 196, 83, 0.18)' }}>
-                  <span className="font-black text-sm" style={{ color: '#24143f' }}>T</span>
+                <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #9af1d1, #42c99f)', boxShadow: '0 0 16px rgba(98, 228, 189, 0.16)' }}>
+                  <span className="font-black text-sm" style={{ color: '#06151c' }}>T</span>
                 </div>
                   <span className="text-xl font-display font-bold tracking-tight" style={{ color: '#F2FBF8' }}>TRADEBATTLE</span>
               </div>
@@ -39,7 +39,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/signup" : "/leaderboard"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Sign in' : t('leaderboard')}
+                    {isPublicSite ? 'Enter the arena' : t('leaderboard')}
                   </Link>
                 </li>
               </ul>
@@ -71,12 +71,12 @@ export default function Footer() {
               <ul className="space-y-2 text-muted-foreground">
                 <li>
                   <Link href="/contact" className="hover:text-foreground transition-colors">
-                    Help
+                    Help HQ
                   </Link>
                 </li>
                 <li>
                   <Link href={isPublicSite ? "/privacy" : "/archive"} className="hover:text-foreground transition-colors">
-                    {isPublicSite ? 'Privacy Policy' : 'Archive'}
+                    {isPublicSite ? 'Privacy Rules' : 'Archive'}
                   </Link>
                 </li>
                 <li>

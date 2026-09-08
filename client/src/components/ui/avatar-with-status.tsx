@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { StatusIndicator, UserStatus, calculateUserStatus } from "@/components/ui/status-indicator";
+import { UserCircle } from "lucide-react";
 
 interface AvatarWithStatusProps {
   src?: string | null;
@@ -13,11 +13,10 @@ interface AvatarWithStatusProps {
   showBorder?: boolean;
 }
 
-const defaultAvatar = "/assets/tradebattle-default-player.png";
-
 /**
- * One profile renderer for the directory, rankings, chat, and profile views.
- * Missing or broken images always use the same neutral player avatar.
+ * Avatar component with online status indicator overlay
+ * Shows green circle, moon, or grey circle at bottom-right based on user's last activity
+ * Now displays as perfect square with matching border radius
  */
 export function AvatarWithStatus({
   src,
@@ -29,13 +28,10 @@ export function AvatarWithStatus({
   statusSize = 'md',
   showBorder = false
 }: AvatarWithStatusProps) {
-  const [imageSrc, setImageSrc] = useState(src || defaultAvatar);
+  // Calculate status from lastActivity if not explicitly provided
   const userStatus = status || calculateUserStatus(lastActivity || null);
 
-  useEffect(() => {
-    setImageSrc(src || defaultAvatar);
-  }, [src]);
-
+  // Determine border size based on avatar size
   const borderWidth = className.includes('w-32') ? '4px' :
                      className.includes('w-24') ? '3px' :
                      className.includes('w-16') ? '2px' : '2px';
@@ -49,31 +45,19 @@ export function AvatarWithStatus({
       className={`relative inline-block ${className}`}
       style={showBorder ? {
         border: `${borderWidth} solid #67E7BF`,
-        borderRadius,
+        borderRadius: borderRadius,
         overflow: 'visible'
       } : undefined}
     >
-      <Avatar className="w-full h-full" style={{ borderRadius }}>
-        <img
-          key={imageSrc}
-          src={imageSrc}
-          alt={alt || fallback || ""}
-          className="block h-full w-full object-cover"
-          onError={(event) => {
-            if (event.currentTarget.src.endsWith(defaultAvatar)) {
-              event.currentTarget.style.display = "none";
-              return;
-            }
-            setImageSrc(defaultAvatar);
-          }}
-        />
+      <Avatar className="w-full h-full" style={{ borderRadius: borderRadius }}>
+        <AvatarImage src={src || undefined} alt={alt} className="object-cover" />
+        <AvatarFallback style={{ borderRadius: borderRadius, backgroundColor: '#0B1B2A' }}>
+          <UserCircle className="w-1/2 h-1/2" style={{ color: '#4B5563' }} />
+        </AvatarFallback>
       </Avatar>
 
-      <div
-        className="tradebattle-avatar-status absolute bottom-0 right-0 z-10"
-        style={{ transform: 'translate(24%, 24%)' }}
-        aria-label={`Status: ${userStatus}`}
-      >
+      {/* Keep presence visible at the top edge instead of hiding it beneath the avatar frame. */}
+      <div className="tradebattle-avatar-status absolute top-0 right-0 z-10" style={{ transform: 'translate(24%, -24%)' }}>
         <div
           className="rounded-full flex items-center justify-center"
           style={{ backgroundColor: '#071522', padding: '3px', border: '1px solid rgba(103,231,191,.22)' }}
