@@ -1892,3 +1892,94 @@ body {
   .tradebattle-site .shop-spotlight-art { width: 136px !important; height: 136px !important; }
   .tradebattle-site .tournament-hero-art { width: 116px !important; height: 116px !important; }
 }
+
+/* Trading floor: one calm purple/gold system with clear execution states. */
+.tradebattle-site .trading-page {
+  background: #140b2b !important;
+}
+
+.tradebattle-site .trading-page .trading-sidebar-rail {
+  background: linear-gradient(180deg, #21113f 0%, #170d30 100%) !important;
+  border-color: rgba(167, 123, 255, .28) !important;
+  box-shadow: -12px 0 36px rgba(10, 3, 24, .25) !important;
+}
+
+.tradebattle-site .trade-status-banner {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 8px 13px;
+  border-bottom: 1px solid rgba(167, 123, 255, .22);
+  font-size: 12px;
+}
+.tradebattle-site .trade-status-banner > svg { flex: 0 0 auto; }
+.tradebattle-site .trade-status-banner.is-open { background: rgba(243, 198, 91, .08); color: #f3c65b; }
+.tradebattle-site .trade-status-banner.is-closed { background: rgba(255, 91, 112, .08); color: #ff8795; border-bottom-color: rgba(255, 91, 112, .24); }
+.tradebattle-site .trade-status-banner.is-scheduled { background: rgba(167, 123, 255, .12); color: #d7c3ff; }
+.tradebattle-site .trade-status-title { display: block; font-weight: 800; color: currentColor; }
+.tradebattle-site .trade-status-copy { display: block; margin-top: 2px; color: #b9afd8; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.tradebattle-site .trade-success-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  color: #f8e6ac;
+  background: rgba(243, 198, 91, .11);
+  border-bottom: 1px solid rgba(243, 198, 91, .25);
+  font-size: 11px;
+  animation: trade-success-in .22s ease-out;
+}
+.tradebattle-site .trade-success-mark {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #f3c65b;
+  color: #241137;
+  font-size: 12px;
+  font-weight: 900;
+}
+.tradebattle-site .trade-success-banner > span:nth-child(2) { flex: 1; }
+.tradebattle-site .trade-success-banner button { color: #b9afd8; font-size: 18px; line-height: 1; }
+
+.tradebattle-site .trade-scheduled-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  color: #f8e6ac;
+  background: rgba(36, 17, 55, .94);
+  border-bottom: 1px solid rgba(243, 198, 91, .3);
+  font-size: 12px;
+}
+.tradebattle-site .trade-scheduled-dot { width: 7px; height: 7px; border-radius: 50%; background: #f3c65b; box-shadow: 0 0 12px rgba(243, 198, 91, .8); }
+
+/* Override legacy inline blue/green surfaces inside the trading rail. */
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="rgba(0,163,255"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="rgba(0,163,255"] {
+  border-color: rgba(167, 123, 255, .3) !important;
+}
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#0A1930"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#0a1930"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#0A1C2C"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#0a1c2c"] {
+  background-color: #24153f !important;
+}
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#67E7BF"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#67e7bf"] {
+  color: #f3c65b !important;
+  border-color: rgba(243, 198, 91, .36) !important;
+}
+
+@keyframes trade-success-in {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 760px) {
+  .tradebattle-site .trade-scheduled-banner { right: 0 !important; font-size: 11px; }
+  .tradebattle-site .trade-status-copy { white-space: normal; }
+}

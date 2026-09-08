@@ -110,7 +110,7 @@ export function MarketStatusDisclaimer() {
             <strong>Stock market is paused</strong> - Reopens {marketStatus.nextOpen && formatNextOpen(marketStatus.nextOpen)}
           </div>
           <div className="text-sm">
-            Only crypto arenas are available • Stock trades queue for the next open
+            Only crypto arenas are available • Stock trades resume at the next open
           </div>
         </div>
       </AlertDescription>

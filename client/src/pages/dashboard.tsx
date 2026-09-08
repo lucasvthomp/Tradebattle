@@ -46,7 +46,10 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
 
   const activeTournaments = useMemo(() => {
     const all = (tournamentsResponse as any)?.data || [];
-    return all.filter((t: any) => t.status === "active");
+    // Keep scheduled arenas visible so players can see the countdown before
+    // the trading floor opens. Orders remain disabled until the server marks
+    // the arena active.
+    return all.filter((t: any) => t.status === "active" || t.status === "waiting");
   }, [tournamentsResponse]);
 
   useEffect(() => {
@@ -54,7 +57,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
       const requested = requestedTournamentId
         ? activeTournaments.find((t: any) => t.id === requestedTournamentId)
         : null;
-      setSelectedTournament(requested || activeTournaments[0]);
+      setSelectedTournament(requested || activeTournaments.find((t: any) => t.status === "active") || activeTournaments[0]);
     }
   }, [activeTournaments, selectedTournament, requestedTournamentId]);
 
@@ -122,7 +125,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
             <h3 className="text-lg font-bold mb-1" style={{ color: "#C9D1E2" }}>No live arenas</h3>
             <p style={{ color: "#8A93A6" }}>Enter an arena to start your run</p>
           </div>
-          <Button asChild style={{ background: "linear-gradient(135deg, #67E7BF, #2EBF9A)", color: "#fff" }}>
+          <Button asChild style={{ background: "linear-gradient(135deg, #D5A73C, #F3C65B)", color: "#241137" }}>
             <a href="/tournaments"><GameIcon name="swords" size={24} className="mr-2 inline-block align-middle" />Scout arenas</a>
           </Button>
         </div>
@@ -130,12 +133,14 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
     );
   }
 
+  const arenaIsScheduled = selectedTournament?.status === "waiting";
+
   const isUp = pctChange >= 0;
   const plIsUp = totalPL >= 0;
 
   // Glow color for the panel border based on P&L
-  const panelGlow = isUp ? "rgba(0,255,135,0.18)" : "rgba(255,61,90,0.18)";
-  const panelBorder = isUp ? "rgba(0,255,135,0.25)" : "rgba(255,61,90,0.25)";
+  const panelGlow = isUp ? "rgba(243,198,91,0.18)" : "rgba(255,61,90,0.18)";
+  const panelBorder = isUp ? "rgba(243,198,91,0.30)" : "rgba(255,61,90,0.25)";
 
   return (
     <>
@@ -151,6 +156,21 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
           gap: 0,
         }}
       >
+        {arenaIsScheduled && (
+          <div
+            className="trade-scheduled-banner"
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 320,
+              zIndex: 5,
+            }}
+          >
+            <span className="trade-scheduled-dot" />
+            <span>{selectedTournament?.name || "This arena"} is scheduled to open soon. Trading unlocks when the arena goes live.</span>
+          </div>
+        )}
         {/* ── LEFT: CHART — frameless, fills space ── */}
         <div
           data-tour="chart-area"
@@ -162,12 +182,12 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
 
         {/* ── RIGHT: GAME PANEL ── */}
         <div
-          className="hidden md:flex flex-col"
+          className="trading-sidebar-rail hidden md:flex flex-col"
           style={{
             width: 320,
             flexShrink: 0,
             minHeight: 0,
-            background: "linear-gradient(180deg, #0A1C2C 0%, #081622 100%)",
+            background: "linear-gradient(180deg, #21113F 0%, #170D30 100%)",
             borderLeft: `1px solid ${panelBorder}`,
             boxShadow: `-4px 0 32px ${panelGlow}`,
             transition: "border-color 1s ease, box-shadow 1s ease",
@@ -196,11 +216,11 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
 
         {/* Mobile sidebar */}
         <div
-          className="flex md:hidden w-full"
+          className="trading-sidebar-rail flex md:hidden w-full"
           style={{
             position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 30,
             maxHeight: "58vh", overflowY: "auto",
-            background: "linear-gradient(180deg, #0A1C2C 0%, #081622 100%)",
+            background: "linear-gradient(180deg, #21113F 0%, #170D30 100%)",
             borderTop: `1px solid ${panelBorder}`,
             boxShadow: `0 -4px 32px ${panelGlow}`,
           }}

@@ -8,97 +8,38 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Clock, Globe, Moon, Sun } from "lucide-react";
+import { getMarketStatus } from "@shared/marketHours";
 
 interface MarketStatusProps {
   variant?: "badge" | "card" | "inline" | "clock";
   showScheduleNote?: boolean;
 }
 
+const formatCountdown = (minutes: number) => {
+  const hours = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return `${hours}:${mins.toString().padStart(2, "0")}`;
+};
+
 export function MarketStatus({ variant = "badge", showScheduleNote = false }: MarketStatusProps) {
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [isMarketOpen, setIsMarketOpen] = useState(false);
-  const [timeUntilOpen, setTimeUntilOpen] = useState("");
-  const [timeUntilClose, setTimeUntilClose] = useState("");
-  const [minutesUntilEvent, setMinutesUntilEvent] = useState(0);
-  const [showCountdown, setShowCountdown] = useState(false);
+  const [marketStatus, setMarketStatus] = useState(() => getMarketStatus());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      setCurrentTime(now);
-
-      // Calculate market status (NYSE hours: 9:30 AM - 4:00 PM ET, Mon-Fri)
-      const nyTime = new Date(now.toLocaleString("en-US", {timeZone: "America/New_York"}));
-      const day = nyTime.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      const hour = nyTime.getHours();
-      const minute = nyTime.getMinutes();
-      const totalMinutes = hour * 60 + minute;
-
-      // Market is closed on weekends (Saturday = 6, Sunday = 0)
-      const isWeekend = day === 0 || day === 6;
-
-      // Market hours: 9:30 AM (570 minutes) to 4:00 PM (960 minutes)
-      const marketOpen = 9 * 60 + 30; // 9:30 AM in minutes
-      const marketClose = 16 * 60; // 4:00 PM in minutes
-
-      const isOpen = !isWeekend && totalMinutes >= marketOpen && totalMinutes < marketClose;
-      setIsMarketOpen(isOpen);
-
-      // Calculate time until next market event
-      if (isOpen) {
-        // Market is open, calculate time until close
-        const minutesUntilClose = marketClose - totalMinutes;
-        const hoursUntilClose = Math.floor(minutesUntilClose / 60);
-        const minsUntilClose = minutesUntilClose % 60;
-        setTimeUntilClose(`${hoursUntilClose}h ${minsUntilClose}m`);
-        setTimeUntilOpen("");
-        setMinutesUntilEvent(minutesUntilClose);
-        setShowCountdown(minutesUntilClose <= 120); // Show countdown if within 2 hours
-      } else {
-        // Market is closed, calculate time until open
-        let minutesUntilOpen;
-
-        if (isWeekend) {
-          // If it's weekend, calculate until Monday 9:30 AM
-          const daysUntilMonday = day === 0 ? 1 : (7 - day + 1); // If Sunday, 1 day. Otherwise, days until next Monday
-          minutesUntilOpen = (daysUntilMonday * 24 * 60) + marketOpen - totalMinutes;
-        } else if (totalMinutes < marketOpen) {
-          // Same day, before market open
-          minutesUntilOpen = marketOpen - totalMinutes;
-        } else {
-          // Same day, after market close - next trading day
-          minutesUntilOpen = (24 * 60) - totalMinutes + marketOpen;
-        }
-
-        const hoursUntilOpen = Math.floor(minutesUntilOpen / 60);
-        const minsUntilOpen = minutesUntilOpen % 60;
-
-        if (hoursUntilOpen >= 24) {
-          const daysUntilOpen = Math.floor(hoursUntilOpen / 24);
-          const remainingHours = hoursUntilOpen % 24;
-          setTimeUntilOpen(`${daysUntilOpen}d ${remainingHours}h`);
-        } else {
-          setTimeUntilOpen(`${hoursUntilOpen}h ${minsUntilOpen}m`);
-        }
-        setTimeUntilClose("");
-        setMinutesUntilEvent(minutesUntilOpen);
-        setShowCountdown(minutesUntilOpen <= 120); // Show countdown if within 2 hours
-      }
-    }, 1000);
+    const timer = setInterval(() => setMarketStatus(getMarketStatus()), 1000);
 
     return () => clearInterval(timer);
   }, []);
 
   const getStatusColor = () => {
-    return isMarketOpen ? "bg-[#10B981]" : "bg-[#EF4444]";
+    return marketStatus.isOpen ? "bg-[#F3C65B]" : "bg-[#B58CFF]";
   };
 
   const getStatusText = () => {
-    return isMarketOpen ? "Markets Open" : "Markets Closed";
+    return marketStatus.isOpen ? "Markets Open" : "Markets Closed";
   };
 
   const getStatusIcon = () => {
-    return isMarketOpen ? Sun : Moon;
+    return marketStatus.isOpen ? Sun : Moon;
   };
 
   const StatusIcon = getStatusIcon();
@@ -106,7 +47,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   if (variant === "badge") {
     return (
       <Badge variant="secondary" className="flex items-center space-x-2">
-        <div className={`w-2 h-2 rounded-full ${getStatusColor()} ${isMarketOpen ? 'animate-pulse' : ''}`}></div>
+        <div className={`w-2 h-2 rounded-full ${getStatusColor()} ${marketStatus.isOpen ? 'animate-pulse' : ''}`}></div>
         <StatusIcon className="w-3 h-3" />
         <span className="text-xs">{getStatusText()}</span>
       </Badge>
@@ -117,11 +58,11 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
     return (
       <div className="flex items-center space-x-1.5 px-2 py-1 rounded-md bg-muted/30 border border-border/50">
         <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs font-medium text-muted-foreground">
-          Market {isMarketOpen ? (
-            <span className="text-[#10B981]">Open</span>
+        <span className="text-xs font-medium" style={{ color: "#C9B6E8" }}>
+          Market {marketStatus.isOpen ? (
+            <span style={{ color: "#F3C65B" }}>Open</span>
           ) : (
-            <span className="text-[#FF9F43]">Closed</span>
+            <span style={{ color: "#B58CFF" }}>Closed</span>
           )}
         </span>
       </div>
@@ -129,12 +70,6 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }
 
   if (variant === "clock") {
-    const formatCountdown = (minutes: number) => {
-      const hours = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      return `${hours}:${mins.toString().padStart(2, '0')}`;
-    };
-
     return (
       <TooltipProvider delayDuration={0}>
         <Tooltip>
@@ -142,39 +77,35 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
             <div className="flex items-center space-x-2 cursor-help">
               <Clock
                 className={`w-5 h-5 ${
-                  isMarketOpen
-                    ? "text-[#10B981]"
-                    : "text-[#FF9F43]"
+                marketStatus.isOpen
+                    ? "text-[#F3C65B]"
+                    : "text-[#B58CFF]"
                 }`}
               />
-              {showCountdown && (
-                <span className={`text-sm font-medium tabular-nums ${
-                  isMarketOpen ? "text-[#10B981]" : "text-[#FF9F43]"
-                }`}>
-                  {formatCountdown(minutesUntilEvent)}
+              <span className="text-sm font-medium tabular-nums" style={{ color: marketStatus.isOpen ? "#F3C65B" : "#B58CFF" }}>
+                {formatCountdown(marketStatus.minutesUntilEvent)}
                 </span>
-              )}
             </div>
           </TooltipTrigger>
           <TooltipContent
             side="bottom"
             className="max-w-xs backdrop-blur-md border-2"
             style={{
-              backgroundColor: 'rgba(15, 23, 42, 0.95)',
-              borderColor: 'rgba(0, 163, 255, 0.25)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 163, 255, 0.1)'
+              backgroundColor: 'rgba(36, 21, 63, 0.97)',
+              borderColor: 'rgba(167, 123, 255, 0.32)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(167, 123, 255, 0.12)'
             }}
           >
             <div className="space-y-2">
-              <div className="font-semibold" style={{ color: '#F1F5F9' }}>Market window (NYSE)</div>
-              <div className="text-xs space-y-1" style={{ color: '#C9D1E2' }}>
+              <div className="font-semibold" style={{ color: '#F8F4FF' }}>Market window (NYSE)</div>
+              <div className="text-xs space-y-1" style={{ color: '#C9B6E8' }}>
                 <div>Monday - Friday</div>
                 <div>9:30 AM - 4:00 PM ET</div>
-                <div className="pt-2 border-t" style={{ borderColor: 'rgba(0, 163, 255, 0.15)' }}>
-                  {isMarketOpen ? (
-                    <span className="font-medium" style={{ color: '#10B981' }}>Currently Open - Closes in {timeUntilClose}</span>
+                <div className="pt-2 border-t" style={{ borderColor: 'rgba(167, 123, 255, 0.22)' }}>
+                  {marketStatus.isOpen ? (
+                    <span className="font-medium" style={{ color: '#F3C65B' }}>Currently Open - Closes {marketStatus.closeLabel}</span>
                   ) : (
-                    <span className="font-medium" style={{ color: '#FF9F43' }}>Currently Closed - Opens in {timeUntilOpen}</span>
+                    <span className="font-medium" style={{ color: '#B58CFF' }}>Currently Closed - Opens {marketStatus.nextOpenLabel}</span>
                   )}
                 </div>
               </div>
@@ -186,11 +117,11 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }
 
   return (
-    <Card className={`border-0 ${isMarketOpen ? 'bg-[#10B981]/10' : 'bg-[#EF4444]/10'}`}>
+    <Card className="border-0" style={{ background: marketStatus.isOpen ? "rgba(243,198,91,0.08)" : "rgba(167,123,255,0.10)" }}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded-full ${getStatusColor()} ${isMarketOpen ? 'animate-pulse' : ''}`}></div>
+            <div className={`w-3 h-3 rounded-full ${getStatusColor()} ${marketStatus.isOpen ? 'animate-pulse' : ''}`}></div>
             <StatusIcon className="w-5 h-5" />
             <span className="font-medium">{getStatusText()}</span>
           </div>
@@ -201,22 +132,22 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
         </div>
         
         <div className="text-sm text-muted-foreground">
-          {isMarketOpen ? (
+          {marketStatus.isOpen ? (
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4" />
-              <span>Closes in {timeUntilClose}</span>
+              <span>Closes {marketStatus.closeLabel}</span>
             </div>
           ) : (
             <div className="flex items-center space-x-2">
               <Clock className="w-4 h-4" />
-              <span>Opens in {timeUntilOpen}</span>
+              <span>Opens {marketStatus.nextOpenLabel}</span>
             </div>
           )}
         </div>
 
-        {showScheduleNote && !isMarketOpen && (
-          <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-950/30 rounded text-xs text-blue-800 dark:text-blue-200">
-            <strong>Off-Market Trading:</strong> Stock orders placed now will be scheduled and executed when markets open.
+        {showScheduleNote && !marketStatus.isOpen && (
+          <div className="mt-3 p-2 rounded text-xs" style={{ background: "rgba(167,123,255,0.10)", color: "#D8C8F8", border: "1px solid rgba(167,123,255,0.18)" }}>
+            Stock trades are paused until the next market open.
           </div>
         )}
       </CardContent>

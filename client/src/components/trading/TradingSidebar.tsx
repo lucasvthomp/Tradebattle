@@ -14,7 +14,7 @@ import { executeOrder, type OrderRequest } from "@/lib/orderEngine";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { isMarketOpen } from "@shared/marketHours";
+import { getMarketStatus } from "@shared/marketHours";
 import { TradeHistory } from "./TradeHistory";
 import { GameIcon } from "@/components/game-icons";
 
@@ -41,7 +41,6 @@ interface TradingSidebarProps {
 
 type ActiveView = "positions" | "history" | "trade";
 type OrderSide = "buy" | "sell";
-type OrderType = "market" | "limit" | "stop_market" | "stop_limit";
 type BuyInMode = "shares" | "dollars";
 
 export function TradingSidebar({
@@ -70,21 +69,20 @@ export function TradingSidebar({
   const [activeView, setActiveView] = useState<ActiveView>("positions");
 
   const [orderSide, setOrderSide] = useState<OrderSide>("buy");
-  const [orderType, setOrderType] = useState<OrderType>("market");
   const [buyInMode, setBuyInMode] = useState<BuyInMode>("shares");
   const [quantity, setQuantity] = useState(1);
   const [dollarAmount, setDollarAmount] = useState(0);
-  const [limitPrice, setLimitPrice] = useState(0);
-  const [stopPrice, setStopPrice] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [awaitingConfirm, setAwaitingConfirm] = useState(false);
+  const [lastTrade, setLastTrade] = useState<string | null>(null);
 
-  const [marketOpen, setMarketOpen] = useState(isMarketOpen());
+  const [marketStatus, setMarketStatus] = useState(() => getMarketStatus());
   const isCryptoTournament = selectedTournament?.tournamentType === "crypto";
-  const tradingBlocked = !marketOpen && !isCryptoTournament;
+  const arenaWaiting = selectedTournament?.status === "waiting";
+  const tradingBlocked = arenaWaiting || (!marketStatus.isOpen && !isCryptoTournament);
 
   useEffect(() => {
-    const interval = setInterval(() => setMarketOpen(isMarketOpen()), 30000);
+    const interval = setInterval(() => setMarketStatus(getMarketStatus()), 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -138,7 +136,7 @@ export function TradingSidebar({
   const estimatedTotal = effectiveQuantity * currentPrice;
 
   const canSubmit = (() => {
-    if (tradingBlocked) return false;
+    if (tradingBlocked || selectedTournament?.status !== "active") return false;
     if (!selectedTournament?.id || !selectedSymbol || currentPrice <= 0) return false;
     if (effectiveQuantity <= 0) return false;
     if (orderSide === "buy" && estimatedTotal > buyingPower) return false;
@@ -164,6 +162,7 @@ export function TradingSidebar({
       };
       const result = await executeOrder(order);
       toast({ title: result.message });
+      setLastTrade(result.message);
       setQuantity(1);
       setDollarAmount(0);
       onOrderExecuted();
@@ -181,7 +180,6 @@ export function TradingSidebar({
   const handleSideChange = (side: OrderSide) => {
     setOrderSide(side);
     setAwaitingConfirm(false);
-    setOrderType("market");
     setBuyInMode("shares");
   };
 
@@ -197,7 +195,6 @@ export function TradingSidebar({
     setQuantity(1);
     setDollarAmount(0);
     setAwaitingConfirm(false);
-    setOrderType("market");
     setBuyInMode("shares");
   };
 
@@ -206,6 +203,14 @@ export function TradingSidebar({
     if (awaitingConfirm) return `Confirm ${orderSide === "buy" ? "BUY" : "SELL"}`;
     return `${orderSide === "buy" ? "BUY" : "SELL"} ${selectedSymbol || "—"}`;
   })();
+
+  const statusLabel = arenaWaiting
+    ? "Arena scheduled"
+    : isCryptoTournament
+      ? "Crypto open 24/7"
+      : marketStatus.isOpen
+        ? `Market open · closes ${marketStatus.closeLabel}`
+        : `Market closed · opens ${marketStatus.nextOpenLabel}`;
 
   const fmtMoney = (n: number) => "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -220,8 +225,8 @@ export function TradingSidebar({
         className="shrink-0 px-4 pt-4 pb-3 relative overflow-hidden"
         style={{
           background: isProfit
-            ? "linear-gradient(160deg, rgba(0,255,135,0.07) 0%, rgba(10,31,61,0.6) 60%)"
-            : "linear-gradient(160deg, rgba(255,61,90,0.07) 0%, rgba(10,31,61,0.6) 60%)",
+            ? "linear-gradient(160deg, rgba(243,198,91,0.11) 0%, rgba(35,18,66,0.72) 60%)"
+            : "linear-gradient(160deg, rgba(255,61,90,0.07) 0%, rgba(35,18,66,0.72) 60%)",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
@@ -256,7 +261,7 @@ export function TradingSidebar({
           >
             <SelectValue placeholder="Select arena" />
           </SelectTrigger>
-          <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.2)" }}>
+          <SelectContent style={{ backgroundColor: "#24153F", borderColor: "rgba(167,123,255,0.32)" }}>
             {activeTournaments.map((t: any) => (
               <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
                 {t.name}
@@ -267,7 +272,7 @@ export function TradingSidebar({
 
         {/* Big balance */}
         <div className="relative z-10">
-          <div style={{ color: "#4B6080", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>
+          <div style={{ color: "#A996C7", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>
             Tournament Balance
           </div>
           <div style={{
@@ -276,7 +281,7 @@ export function TradingSidebar({
             fontWeight: 900,
             letterSpacing: "-0.03em",
             lineHeight: 1,
-            textShadow: isProfit ? "0 0 30px rgba(0,255,135,0.3)" : "0 0 30px rgba(255,61,90,0.3)",
+            textShadow: isProfit ? "0 0 30px rgba(243,198,91,0.24)" : "0 0 30px rgba(255,61,90,0.3)",
             fontVariantNumeric: "tabular-nums",
           }}>
             {fmtMoney(totalValue)}
@@ -286,21 +291,21 @@ export function TradingSidebar({
           <div className="flex items-center gap-2 mt-2">
             <div style={{
               display: "inline-flex", alignItems: "center", gap: 4,
-              background: isProfit ? "rgba(0,255,135,0.12)" : "rgba(255,61,90,0.12)",
-              border: `1px solid ${isProfit ? "rgba(0,255,135,0.3)" : "rgba(255,61,90,0.3)"}`,
+              background: isProfit ? "rgba(243,198,91,0.12)" : "rgba(255,61,90,0.12)",
+              border: `1px solid ${isProfit ? "rgba(243,198,91,0.3)" : "rgba(255,61,90,0.3)"}`,
               borderRadius: 6,
               padding: "2px 8px",
               fontSize: "0.75rem",
               fontWeight: 800,
-              color: isProfit ? "#67E7BF" : "#FF3D5A",
-              boxShadow: isProfit ? "0 0 12px rgba(0,255,135,0.2)" : "0 0 12px rgba(255,61,90,0.2)",
+              color: isProfit ? "#F3C65B" : "#FF3D5A",
+              boxShadow: isProfit ? "0 0 12px rgba(243,198,91,0.22)" : "0 0 12px rgba(255,61,90,0.2)",
             }}>
               {isProfit ? "▲" : "▼"} {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
             </div>
             <span style={{
               fontSize: "0.75rem",
               fontWeight: 700,
-              color: isProfit ? "#67E7BF" : "#FF3D5A",
+              color: isProfit ? "#F3C65B" : "#FF3D5A",
             }}>
               {totalPL >= 0 ? "+" : ""}{fmtMoney(totalPL)}
             </span>
@@ -309,13 +314,13 @@ export function TradingSidebar({
             <div style={{
               marginLeft: "auto",
               display: "inline-flex", alignItems: "center", gap: 3,
-              background: "rgba(0,163,255,0.1)",
-              border: "1px solid rgba(0,163,255,0.2)",
+              background: "rgba(167,123,255,0.12)",
+              border: "1px solid rgba(167,123,255,0.24)",
               borderRadius: 6,
               padding: "2px 7px",
               fontSize: "0.7rem",
               fontWeight: 700,
-              color: "#67E7BF",
+              color: "#F3C65B",
             }}>
               Cash {fmtMoney(buyingPower)}
             </div>
@@ -323,34 +328,25 @@ export function TradingSidebar({
         </div>
       </div>
 
-      {/* ── MARKET STATUS BANNER ── */}
-      {!isCryptoTournament && tradingBlocked && (
-        <div
-          className="px-3 py-2 flex items-center gap-2 shrink-0"
-          style={{
-            background: "linear-gradient(90deg, rgba(239,68,68,0.15), transparent)",
-            borderBottom: "1px solid rgba(239,68,68,0.25)",
-          }}
-        >
-          <Clock className="w-3.5 h-3.5 shrink-0" style={{ color: "#EF4444" }} />
-          <div>
-            <span className="text-xs font-bold" style={{ color: "#EF4444" }}>Market Closed</span>
-            <span className="text-[10px] ml-2" style={{ color: "#64748B" }}>Mon–Fri 9:30–16:00 ET</span>
-          </div>
+      {/* ── MARKET / ARENA STATUS ── */}
+      <div
+        className={`trade-status-banner ${arenaWaiting ? "is-scheduled" : marketStatus.isOpen || isCryptoTournament ? "is-open" : "is-closed"}`}
+        title={statusLabel}
+      >
+        {arenaWaiting ? (
+          <Clock className="w-3.5 h-3.5 shrink-0" />
+        ) : isCryptoTournament ? (
+          <Zap className="w-3.5 h-3.5 shrink-0" />
+        ) : (
+          <Clock className="w-3.5 h-3.5 shrink-0" />
+        )}
+        <div className="min-w-0">
+          <span className="trade-status-title">
+            {arenaWaiting ? "Arena scheduled" : isCryptoTournament ? "Crypto market open" : marketStatus.isOpen ? "Stock market open" : "Stock market closed"}
+          </span>
+          <span className="trade-status-copy">{arenaWaiting ? "Trading unlocks when the start time is reached" : statusLabel}</span>
         </div>
-      )}
-      {isCryptoTournament && (
-        <div
-          className="px-3 py-2 flex items-center gap-2 shrink-0"
-          style={{
-            background: "linear-gradient(90deg, rgba(40,199,111,0.12), transparent)",
-            borderBottom: "1px solid rgba(40,199,111,0.2)",
-          }}
-        >
-          <Zap className="w-3.5 h-3.5 shrink-0" style={{ color: "#67E7BF" }} />
-          <span className="text-xs font-bold" style={{ color: "#67E7BF" }}>Crypto — 24/7 Open</span>
-        </div>
-      )}
+      </div>
 
       {/* ── SYMBOL SEARCH ── */}
       <div
@@ -368,7 +364,7 @@ export function TradingSidebar({
             style={{
               backgroundColor: "rgba(255,255,255,0.04)",
               borderColor: "rgba(255,255,255,0.08)",
-              color: "#67E7BF",
+              color: "#F3C65B",
             }}
           />
           {showSearch && (
@@ -382,7 +378,7 @@ export function TradingSidebar({
           <div
             style={{
               position: "absolute", left: "12px", right: "12px", zIndex: 9999, top: "calc(100% + 2px)",
-              backgroundColor: "#0A1930", border: "1px solid rgba(0,163,255,0.2)",
+              backgroundColor: "#24153F", border: "1px solid rgba(167,123,255,0.32)",
               borderRadius: "12px", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
             }}
           >
@@ -401,7 +397,7 @@ export function TradingSidebar({
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
                   <div>
-                    <span className="text-sm font-black" style={{ color: "#67E7BF" }}>{result.symbol}</span>
+                    <span className="text-sm font-black" style={{ color: "#F3C65B" }}>{result.symbol}</span>
                     {result.name && (
                       <div className="text-xs mt-0.5 truncate" style={{ color: "#64748B" }}>{result.name}</div>
                     )}
@@ -435,8 +431,8 @@ export function TradingSidebar({
             className="flex-1 py-1.5 text-[11px] font-bold rounded-lg text-center transition-all"
             style={{
               color: activeView === id ? "#C9D1E2" : "#4B5975",
-              background: activeView === id ? "rgba(0,163,255,0.12)" : "transparent",
-              border: activeView === id ? "1px solid rgba(0,163,255,0.25)" : "1px solid transparent",
+              background: activeView === id ? "rgba(167,123,255,0.16)" : "transparent",
+              border: activeView === id ? "1px solid rgba(167,123,255,0.32)" : "1px solid transparent",
             }}
           >
             {label}
@@ -446,17 +442,25 @@ export function TradingSidebar({
           onClick={() => { setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
           className="flex-1 py-1.5 text-[11px] font-black rounded-lg text-center transition-all"
           style={{
-            color: activeView === "trade" ? "#001a0d" : "#28a05a",
+            color: activeView === "trade" ? "#241137" : "#C9B6E8",
             background: activeView === "trade"
-              ? "linear-gradient(135deg, #1db95f, #67E7BF)"
+              ? "linear-gradient(135deg, #D5A73C, #F3C65B)"
               : "transparent",
-            border: activeView === "trade" ? "1px solid rgba(40,199,111,0.5)" : "1px solid rgba(40,199,111,0.2)",
-            boxShadow: activeView === "trade" ? "0 0 16px rgba(40,199,111,0.3)" : "none",
+            border: activeView === "trade" ? "1px solid rgba(243,198,91,0.65)" : "1px solid rgba(167,123,255,0.22)",
+            boxShadow: activeView === "trade" ? "0 0 18px rgba(243,198,91,0.22)" : "none",
           }}
         >
           Trade
         </button>
       </div>
+
+      {lastTrade && (
+        <div className="trade-success-banner" role="status">
+          <span className="trade-success-mark">✓</span>
+          <span>{lastTrade}</span>
+          <button aria-label="Dismiss trade confirmation" onClick={() => setLastTrade(null)}>×</button>
+        </div>
+      )}
 
       {/* ── CONTENT ── */}
       <ScrollArea className="flex-1 min-h-0">
@@ -472,7 +476,7 @@ export function TradingSidebar({
                 </span>
                 <span
                   className="text-[10px] font-black px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: "rgba(227,179,65,0.12)", color: "#67E7BF" }}
+                  style={{ backgroundColor: "rgba(243,198,91,0.12)", color: "#F3C65B" }}
                 >
                   {holdings.length}
                 </span>
@@ -501,13 +505,13 @@ export function TradingSidebar({
                         onClick={() => handleHoldingClick(h.symbol)}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all"
                         style={{
-                          backgroundColor: isSelected ? "rgba(0,163,255,0.06)" : "rgba(255,255,255,0.025)",
-                          border: isSelected ? "1px solid rgba(0,163,255,0.25)" : "1px solid transparent",
+                          backgroundColor: isSelected ? "rgba(167,123,255,0.10)" : "rgba(255,255,255,0.025)",
+                          border: isSelected ? "1px solid rgba(167,123,255,0.30)" : "1px solid transparent",
                         }}
                       >
                         <div className="text-left">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-black" style={{ color: isSelected ? "#67E7BF" : "#F1F5F9" }}>
+                            <span className="text-sm font-black" style={{ color: isSelected ? "#F3C65B" : "#F1F5F9" }}>
                               {h.symbol}
                             </span>
                             <span
@@ -528,7 +532,7 @@ export function TradingSidebar({
                             </div>
                             <div
                               className="text-xs font-black"
-                              style={{ color: isPositive ? "#67E7BF" : "#FF4F58" }}
+                              style={{ color: isPositive ? "#F3C65B" : "#FF4F58" }}
                             >
                               {isPositive ? "+" : ""}{changePercent.toFixed(1)}%
                             </div>
@@ -572,7 +576,7 @@ export function TradingSidebar({
                       <span className="text-xs truncate" style={{ color: "#4B5563" }}>{companyName}</span>
                     )}
                   </div>
-                  <div className="text-lg font-black" style={{ color: "#67E7BF", letterSpacing: "-0.02em" }}>
+                  <div className="text-lg font-black" style={{ color: "#F3C65B", letterSpacing: "-0.02em" }}>
                     {formatCurrency(currentPrice)}
                   </div>
                 </div>
@@ -593,9 +597,9 @@ export function TradingSidebar({
                   style={
                     orderSide === "buy"
                       ? {
-                          background: "linear-gradient(135deg, #1db95f, #67E7BF)",
-                          color: "#001a0d",
-                          boxShadow: "0 0 28px rgba(40,199,111,0.45), inset 0 1px 0 rgba(255,255,255,0.15)",
+                          background: "linear-gradient(135deg, #D5A73C, #F3C65B)",
+                          color: "#241137",
+                          boxShadow: "0 0 28px rgba(243,198,91,0.30), inset 0 1px 0 rgba(255,255,255,0.15)",
                           letterSpacing: "0.06em",
                         }
                       : { backgroundColor: "transparent", color: "#3a5040" }
@@ -624,73 +628,6 @@ export function TradingSidebar({
 
             {/* Order form */}
             <div className="px-3 space-y-1 pb-2">
-              {/* Order Type */}
-              <div
-                className="flex items-center justify-between py-2"
-                style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-              >
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-                  Order Type
-                </span>
-                <Select
-                  value={orderType}
-                  onValueChange={(v) => { setOrderType(v as OrderType); setAwaitingConfirm(false); }}
-                >
-                  <SelectTrigger
-                    className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold"
-                    style={{ color: "#67E7BF" }}
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.15)" }}>
-                    <SelectItem value="market" style={{ color: "#F1F5F9" }}>Market</SelectItem>
-                    <SelectItem value="limit" style={{ color: "#F1F5F9" }}>Limit</SelectItem>
-                    <SelectItem value="stop_market" style={{ color: "#F1F5F9" }}>Stop Market</SelectItem>
-                    <SelectItem value="stop_limit" style={{ color: "#F1F5F9" }}>Stop Limit</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Limit Price */}
-              {(orderType === "limit" || orderType === "stop_limit") && (
-                <div
-                  className="flex items-center justify-between py-2"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                >
-                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-                    Limit Price
-                  </span>
-                  <Input
-                    type="number" inputMode="decimal" min="0" step="0.01"
-                    value={limitPrice || ""}
-                    onChange={(e) => { setLimitPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
-                    placeholder="0.00"
-                    className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#67E7BF" }}
-                  />
-                </div>
-              )}
-
-              {/* Stop Price */}
-              {(orderType === "stop_market" || orderType === "stop_limit") && (
-                <div
-                  className="flex items-center justify-between py-2"
-                  style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
-                >
-                  <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
-                    Stop Price
-                  </span>
-                  <Input
-                    type="number" inputMode="decimal" min="0" step="0.01"
-                    value={stopPrice || ""}
-                    onChange={(e) => { setStopPrice(parseFloat(e.target.value) || 0); setAwaitingConfirm(false); }}
-                    placeholder="0.00"
-                    className="w-28 h-9 md:h-7 text-right text-sm font-bold border-0 bg-transparent p-0"
-                    style={{ color: "#67E7BF" }}
-                  />
-                </div>
-              )}
-
               {/* Buy In mode */}
               <div
                 className="flex items-center justify-between py-2"
@@ -700,10 +637,10 @@ export function TradingSidebar({
                   Buy In
                 </span>
                 <Select value={buyInMode} onValueChange={(v) => { setBuyInMode(v as BuyInMode); setAwaitingConfirm(false); }}>
-                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#67E7BF" }}>
+                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#F3C65B" }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#0A1930", borderColor: "rgba(0,163,255,0.15)" }}>
+                  <SelectContent style={{ backgroundColor: "#24153F", borderColor: "rgba(167,123,255,0.28)" }}>
                     <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
                       Units
                     </SelectItem>
@@ -825,13 +762,13 @@ export function TradingSidebar({
                       ? orderSide === "buy"
                         ? {
                             background: awaitingConfirm
-                              ? "linear-gradient(135deg, #0d9668, #0d7e58)"
-                              : "linear-gradient(135deg, #1db95f, #67E7BF)",
-                            color: awaitingConfirm ? "#aaffcc" : "#001a0d",
+                              ? "linear-gradient(135deg, #9F7625, #D5A73C)"
+                              : "linear-gradient(135deg, #D5A73C, #F3C65B)",
+                            color: awaitingConfirm ? "#FFF1B8" : "#241137",
                             boxShadow: awaitingConfirm
-                              ? "0 0 32px rgba(40,199,111,0.7)"
-                              : "0 0 20px rgba(40,199,111,0.4)",
-                            border: awaitingConfirm ? "2px solid rgba(40,199,111,0.9)" : "1px solid rgba(40,199,111,0.3)",
+                              ? "0 0 32px rgba(243,198,91,0.52)"
+                              : "0 0 20px rgba(243,198,91,0.28)",
+                            border: awaitingConfirm ? "2px solid rgba(243,198,91,0.9)" : "1px solid rgba(243,198,91,0.42)",
                             letterSpacing: "0.05em",
                           }
                         : {

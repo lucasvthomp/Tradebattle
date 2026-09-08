@@ -25,6 +25,7 @@ import { tournaments, tournamentParticipants, tradeHistory } from '../../shared/
 import { eq, sql } from 'drizzle-orm';
 import { requireAuth } from '../auth.js';
 import { containsProfanity, censorProfanity } from '../utils/profanityFilter.js';
+import { getMarketStatus } from '../../shared/marketHours.js';
 
 const router = Router();
 
@@ -294,6 +295,17 @@ router.get('/health', (req, res) => {
     success: true,
     message: 'Yahoo Finance API is healthy',
     timestamp: new Date().toISOString(),
+  });
+});
+
+/**
+ * GET /api/market/status
+ * Single source of truth for stock-arena availability.
+ */
+router.get('/market/status', (req, res) => {
+  res.json({
+    success: true,
+    data: getMarketStatus(),
   });
 });
 
@@ -1331,6 +1343,12 @@ router.post('/tournaments/:id/sell', requireAuth, asyncHandler(async (req, res) 
   if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
   }
+  if (tournament && tournament.status !== 'active') {
+    const startLabel = tournament.scheduledStartTime
+      ? new Date(tournament.scheduledStartTime).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+      : 'the scheduled start';
+    throw new ValidationError(`This arena has not started yet. Trading opens ${startLabel}.`);
+  }
 
   // Check if market is open for stock tournaments (blitz bypasses market hours)
   if (tournament && tournament.tournamentType !== 'crypto' && tournament.tournamentType !== 'blitz') {
@@ -1425,6 +1443,12 @@ router.post('/tournaments/:id/purchase', requireAuth, asyncHandler(async (req, r
   const tournament = await storage.getTournamentById(tournamentId);
   if (tournament && tournament.status === 'completed') {
     throw new ValidationError('Cannot trade in completed tournaments');
+  }
+  if (tournament && tournament.status !== 'active') {
+    const startLabel = tournament.scheduledStartTime
+      ? new Date(tournament.scheduledStartTime).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' })
+      : 'the scheduled start';
+    throw new ValidationError(`This arena has not started yet. Trading opens ${startLabel}.`);
   }
 
   // Check if market is open for stock tournaments (blitz bypasses market hours)

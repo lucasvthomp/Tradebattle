@@ -33,7 +33,7 @@ interface PriceInfo {
   changePct: number;
 }
 
-const UP_COLOR   = "#67E7BF";
+const UP_COLOR   = "#F3C65B";
 const DOWN_COLOR = "#FF3D5A";
 
 function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) {
@@ -95,16 +95,16 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             attributionLogo: false,
           },
           grid: {
-            vertLines: { color: "rgba(0,163,255,0.06)" },
-            horzLines: { color: "rgba(0,163,255,0.06)" },
+            vertLines: { color: "rgba(167,123,255,0.08)" },
+            horzLines: { color: "rgba(167,123,255,0.08)" },
           },
           crosshair: {
             mode: 1,
-            vertLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0B1B2A" },
-            horzLine: { color: "rgba(0,163,255,0.5)", width: 1, style: 3, labelBackgroundColor: "#0B1B2A" },
+            vertLine: { color: "rgba(243,198,91,0.55)", width: 1, style: 3, labelBackgroundColor: "#24153F" },
+            horzLine: { color: "rgba(243,198,91,0.55)", width: 1, style: 3, labelBackgroundColor: "#24153F" },
           },
-          rightPriceScale: { borderColor: "rgba(0,163,255,0.12)", textColor: "#7B8FA8" },
-          timeScale: { borderColor: "rgba(0,163,255,0.12)", timeVisible: false, secondsVisible: false },
+          rightPriceScale: { borderColor: "rgba(167,123,255,0.22)", textColor: "#B9AFD8" },
+          timeScale: { borderColor: "rgba(167,123,255,0.22)", timeVisible: false, secondsVisible: false },
           width: w,
           height: h,
         });
@@ -121,7 +121,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           seriesRef.current = chart.addSeries(LineSeries, {
             color: UP_COLOR, lineWidth: 2,
             crosshairMarkerVisible: true, crosshairMarkerRadius: 5,
-            crosshairMarkerBorderColor: "#0B1B2A",
+            crosshairMarkerBorderColor: "#24153F",
             crosshairMarkerBackgroundColor: UP_COLOR,
             lastValueVisible: true, priceLineVisible: false,
           });
@@ -271,7 +271,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
       const pct = startingBalance !== 0 ? (change / startingBalance) * 100 : 0;
       setPortfolioChange({ change, pct });
 
-      // Colour line green/red based on performance vs starting balance
+      // Use gold for positive performance and red for negative performance.
       const lineColor = change >= 0 ? UP_COLOR : DOWN_COLOR;
       series.applyOptions({
         color: lineColor,
@@ -292,7 +292,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
         {/* Mode toggle even on empty state */}
         {tournamentId && (
-          <div style={{ padding: "10px 16px 8px", flexShrink: 0, display: "flex", gap: "6px", borderBottom: "1px solid rgba(0,163,255,0.08)" }}>
+          <div style={{ padding: "10px 16px 8px", flexShrink: 0, display: "flex", gap: "6px", borderBottom: "1px solid rgba(167,123,255,0.12)" }}>
             {renderModeToggle()}
           </div>
         )}
@@ -300,23 +300,23 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           flex: 1,
           display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center", gap: "16px",
-          background: "radial-gradient(ellipse at center, rgba(0,163,255,0.04) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(167,123,255,0.06) 0%, transparent 70%)",
         }}>
           <div style={{
             width: "72px", height: "72px", borderRadius: "20px",
-            background: "linear-gradient(135deg, rgba(0,163,255,0.15), rgba(0,163,255,0.05))",
-            border: "2px solid rgba(0,163,255,0.2)",
-            boxShadow: "0 0 24px rgba(0,163,255,0.15), inset 0 1px 0 rgba(255,255,255,0.06)",
+            background: "linear-gradient(135deg, rgba(167,123,255,0.18), rgba(167,123,255,0.06))",
+            border: "2px solid rgba(167,123,255,0.25)",
+            boxShadow: "0 0 24px rgba(167,123,255,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <Search style={{ width: "28px", height: "28px", color: "#67E7BF" }} />
+            <Search style={{ width: "28px", height: "28px", color: "#F3C65B" }} />
           </div>
           <div style={{ textAlign: "center" }}>
             <div style={{ color: "#C9D1E2", fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em" }}>
               Pick a ticker to trade
             </div>
             <div style={{ color: "#4B5975", fontSize: "13px", marginTop: "6px", fontWeight: 500 }}>
-              Try AAPL, TSLA, or BTC-USD
+              Try AAPL, TSLA, or MSFT
             </div>
           </div>
         </div>
@@ -328,9 +328,9 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
     ? (portfolioChange ? portfolioChange.change >= 0 : true)
     : (priceInfo ? priceInfo.change >= 0 : true);
   const priceColor  = isPositive ? UP_COLOR : DOWN_COLOR;
-  const glowColor   = isPositive ? "rgba(0,255,135,0.25)" : "rgba(255,61,90,0.25)";
+  const glowColor   = isPositive ? "rgba(243,198,91,0.25)" : "rgba(255,61,90,0.25)";
   const bgGradient  = isPositive
-    ? "linear-gradient(90deg, rgba(0,255,135,0.08), transparent)"
+    ? "linear-gradient(90deg, rgba(243,198,91,0.08), transparent)"
     : "linear-gradient(90deg, rgba(255,61,90,0.08), transparent)";
 
   function renderModeToggle() {
@@ -344,12 +344,12 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             padding: "4px 11px", borderRadius: "10px",
             fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
             cursor: "pointer", transition: "all 0.15s",
-            border: mode === "candle" ? "1px solid rgba(0,163,255,0.4)" : "1px solid transparent",
+            border: mode === "candle" ? "1px solid rgba(243,198,91,0.45)" : "1px solid transparent",
             background: mode === "candle"
-              ? "linear-gradient(135deg, rgba(0,163,255,0.22), rgba(0,163,255,0.1))"
+              ? "linear-gradient(135deg, rgba(243,198,91,0.2), rgba(243,198,91,0.08))"
               : "transparent",
-            color: mode === "candle" ? "#00C8FF" : "#4B5975",
-            boxShadow: mode === "candle" ? "0 0 10px rgba(0,163,255,0.2)" : "none",
+            color: mode === "candle" ? "#F3C65B" : "#7F72A7",
+            boxShadow: mode === "candle" ? "0 0 10px rgba(243,198,91,0.2)" : "none",
           }}
         >
           <BarChart2 style={{ width: "11px", height: "11px" }} />
@@ -362,12 +362,12 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             padding: "4px 11px", borderRadius: "10px",
             fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
             cursor: "pointer", transition: "all 0.15s",
-            border: mode === "portfolio" ? "1px solid rgba(0,255,135,0.4)" : "1px solid transparent",
+            border: mode === "portfolio" ? "1px solid rgba(167,123,255,0.42)" : "1px solid transparent",
             background: mode === "portfolio"
-              ? "linear-gradient(135deg, rgba(0,255,135,0.18), rgba(0,255,135,0.06))"
+              ? "linear-gradient(135deg, rgba(167,123,255,0.2), rgba(167,123,255,0.07))"
               : "transparent",
             color: mode === "portfolio" ? UP_COLOR : "#4B5975",
-            boxShadow: mode === "portfolio" ? "0 0 10px rgba(0,255,135,0.2)" : "none",
+            boxShadow: mode === "portfolio" ? "0 0 10px rgba(167,123,255,0.2)" : "none",
           }}
         >
           <Activity style={{ width: "11px", height: "11px" }} />
@@ -385,7 +385,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "10px 16px 8px", flexShrink: 0,
         background: bgGradient,
-        borderBottom: "1px solid rgba(0,163,255,0.08)",
+        borderBottom: "1px solid rgba(167,123,255,0.12)",
       }}>
         {/* Left: info area */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
@@ -395,9 +395,9 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
               {/* Ticker badge */}
               <div style={{
                 padding: "3px 10px", borderRadius: "10px",
-                background: "rgba(0,163,255,0.12)",
-                border: "1px solid rgba(0,163,255,0.22)",
-                boxShadow: "0 0 10px rgba(0,163,255,0.12)",
+                background: "rgba(167,123,255,0.12)",
+                border: "1px solid rgba(167,123,255,0.28)",
+                boxShadow: "0 0 10px rgba(167,123,255,0.12)",
               }}>
                 <span style={{ color: "#E0EEFF", fontSize: "13px", fontWeight: 900, letterSpacing: "0.04em" }}>
                   {symbol}
@@ -417,8 +417,8 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
                   <div style={{
                     display: "flex", alignItems: "center", gap: "5px",
                     padding: "3px 10px", borderRadius: "10px",
-                    background: isPositive ? "rgba(0,255,135,0.12)" : "rgba(255,61,90,0.12)",
-                    border: `1px solid ${isPositive ? "rgba(0,255,135,0.25)" : "rgba(255,61,90,0.25)"}`,
+                    background: isPositive ? "rgba(243,198,91,0.12)" : "rgba(255,61,90,0.12)",
+                    border: `1px solid ${isPositive ? "rgba(243,198,91,0.28)" : "rgba(255,61,90,0.25)"}`,
                     boxShadow: `0 0 10px ${glowColor}`,
                   }}>
                     {isPositive
@@ -437,8 +437,8 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             <>
               <div style={{
                 padding: "3px 10px", borderRadius: "10px",
-                background: "rgba(0,255,135,0.08)",
-                border: "1px solid rgba(0,255,135,0.2)",
+                background: "rgba(243,198,91,0.08)",
+                border: "1px solid rgba(243,198,91,0.24)",
               }}>
                 <span style={{ color: UP_COLOR, fontSize: "13px", fontWeight: 900, letterSpacing: "0.04em" }}>
                   MY PORTFOLIO
@@ -449,8 +449,8 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
                 <div style={{
                   display: "flex", alignItems: "center", gap: "5px",
                   padding: "3px 10px", borderRadius: "10px",
-                  background: isPositive ? "rgba(0,255,135,0.12)" : "rgba(255,61,90,0.12)",
-                  border: `1px solid ${isPositive ? "rgba(0,255,135,0.25)" : "rgba(255,61,90,0.25)"}`,
+                  background: isPositive ? "rgba(243,198,91,0.12)" : "rgba(255,61,90,0.12)",
+                  border: `1px solid ${isPositive ? "rgba(243,198,91,0.28)" : "rgba(255,61,90,0.25)"}`,
                   boxShadow: `0 0 10px ${glowColor}`,
                 }}>
                   {isPositive
@@ -469,7 +469,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
 
           {loading && (
             <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-              <Zap style={{ width: "12px", height: "12px", color: "#67E7BF", opacity: 0.7 }} />
+              <Zap style={{ width: "12px", height: "12px", color: "#F3C65B", opacity: 0.7 }} />
               <span style={{ color: "#4B5975", fontSize: "11px", fontWeight: 600 }}>Loading live chart…</span>
             </div>
           )}
@@ -507,12 +507,12 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
                         padding: "4px 10px", borderRadius: "10px",
                         fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
                         cursor: "pointer", transition: "all 0.15s",
-                        border: active ? "1px solid rgba(0,163,255,0.4)" : "1px solid transparent",
+                        border: active ? "1px solid rgba(243,198,91,0.45)" : "1px solid transparent",
                         background: active
-                          ? "linear-gradient(135deg, rgba(0,163,255,0.22), rgba(0,163,255,0.1))"
+                          ? "linear-gradient(135deg, rgba(243,198,91,0.2), rgba(243,198,91,0.08))"
                           : "transparent",
-                        color: active ? "#00C8FF" : "#4B5975",
-                        boxShadow: active ? "0 0 10px rgba(0,163,255,0.2)" : "none",
+                        color: active ? "#F3C65B" : "#7F72A7",
+                        boxShadow: active ? "0 0 10px rgba(243,198,91,0.2)" : "none",
                       }}
                     >
                       {r}
@@ -559,7 +559,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
         ref={containerRef}
         style={{
           flex: 1, minHeight: 0, width: "100%",
-          background: "linear-gradient(180deg, rgba(0,163,255,0.015) 0%, transparent 30%)",
+          background: "linear-gradient(180deg, rgba(167,123,255,0.04) 0%, transparent 30%)",
         }}
       />
     </div>
