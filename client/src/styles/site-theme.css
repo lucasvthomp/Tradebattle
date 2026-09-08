@@ -3357,3 +3357,159 @@
   background: #302b47 !important;
   color: #f6c453 !important;
 }
+
+
+/* Final palette lock: the live app uses inline legacy styles, so keep every surface in the quieter plum/gold system. */
+.tradebattle-site,
+.tradebattle-site.arena-app {
+  --primary: 42 90% 60% !important;
+  --primary-foreground: 18 20% 14% !important;
+  --ring: 42 90% 60% !important;
+  --site-cyan: #f6c453 !important;
+  --site-success: #f6c453 !important;
+  --arena-bg: #19172a !important;
+  --arena-panel: #23203a !important;
+  background: #19172a !important;
+  background-color: #19172a !important;
+  color: #f8f5ff !important;
+}
+
+.tradebattle-site main,
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .tradebattle-route,
+.tradebattle-site .tournaments-page,
+.tradebattle-site .blitz-page,
+.tradebattle-site .leaderboard-page,
+.tradebattle-site .shop-page,
+.tradebattle-site .people-page,
+.tradebattle-site .profile-page,
+.tradebattle-site .deposit-page,
+.tradebattle-site .archive-page {
+  background: #19172a !important;
+  background-color: #19172a !important;
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: #211e34 !important;
+  background-color: #211e34 !important;
+  background-image: none !important;
+  border-color: #403a50 !important;
+}
+
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator,
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator,
+.tradebattle-site .tradebattle-sidebar button.sidebar-active-indicator {
+  background: #f6c453 !important;
+  background-color: #f6c453 !important;
+  color: #ffffff !important;
+  border-color: #f6c453 !important;
+}
+
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator *,
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator *,
+.tradebattle-site .tradebattle-sidebar button.sidebar-active-indicator *,
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator svg,
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator svg * {
+  color: #ffffff !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.tradebattle-site .tradebattle-sidebar .sidebar-active-indicator::before {
+  background: #fff4c7 !important;
+}
+
+.tradebattle-site .tradebattle-header button[aria-label*="chat" i] {
+  color: #f6c453 !important;
+}
+
+.tradebattle-site .tradebattle-header button[aria-label="Close chat"] {
+  background: rgba(246, 196, 83, 0.16) !important;
+  color: #ffffff !important;
+}
+
+.tradebattle-site .tournament-lobby-header-combined,
+.tradebattle-site .hub-feature-banner,
+.tradebattle-site .shop-spotlight,
+.tradebattle-site .arena-final {
+  background:
+    radial-gradient(circle at 84% 38%, rgba(246, 196, 83, 0.12), transparent 28%),
+    linear-gradient(135deg, #302b47 0%, #211e34 76%) !important;
+  border-color: rgba(246, 196, 83, 0.22) !important;
+}
+
+.tradebattle-site .deposit-page [style*="#0B1B2A"],
+.tradebattle-site .deposit-page [style*="#0b1b2a"],
+.tradebattle-site .deposit-page [style*="rgb(11, 27, 42)"],
+.tradebattle-site .deposit-page [style*="rgb(11, 28, 44)"],
+.tradebattle-site .deposit-page [style*="#0E2040"],
+.tradebattle-site .deposit-page [style*="#0e2040"],
+.tradebattle-site .deposit-page [style*="rgb(14, 32, 64)"] {
+  background: #23203a !important;
+  background-color: #23203a !important;
+  border-color: rgba(246, 196, 83, 0.24) !important;
+}
+
+.tradebattle-site .deposit-page [style*="rgba(0, 163, 255"],
+.tradebattle-site .deposit-page [style*="rgba(0,163,255"] {
+  background-color: rgba(246, 196, 83, 0.08) !important;
+  border-color: rgba(246, 196, 83, 0.28) !important;
+  box-shadow: 0 8px 28px rgba(246, 196, 83, 0.12) !important;
+}
+
+.tradebattle-site [style*="color: rgb(103, 231, 191)"],
+.tradebattle-site [style*="color:#67E7BF"],
+.tradebattle-site [style*="color: #67E7BF"],
+.tradebattle-site [style*="color: rgb(32, 216, 194)"],
+.tradebattle-site [style*="color:#20d8c2"],
+.tradebattle-site [style*="color: #20d8c2"] {
+  color: #f6c453 !important;
+}
+
+.tradebattle-site [style*="background: rgb(103, 231, 191)"],
+.tradebattle-site [style*="background: #67E7BF"],
+.tradebattle-site [style*="background: linear-gradient(135deg, rgb(103, 231, 191)"],
+.tradebattle-site [style*="background: linear-gradient(135deg, #67E7BF"],
+.tradebattle-site [style*="background: linear-gradient(135deg, rgba(103, 231, 191)"] {
+  background: #f6c453 !important;
+  background-image: none !important;
+  color: #1a1524 !important;
+}
+
+.tradebattle-site [style*="border-color: rgb(103, 231, 191)"],
+.tradebattle-site [style*="border: 1px solid rgb(103, 231, 191)"],
+.tradebattle-site [style*="border: 2px solid rgb(103, 231, 191)"],
+.tradebattle-site [style*="border-color: #67E7BF"] {
+  border-color: #f6c453 !important;
+}
+
+.tradebattle-site [style*="rgba(103, 231, 191"],
+.tradebattle-site [style*="rgba(0, 163, 255"],
+.tradebattle-site [style*="rgba(0,163,255"] {
+  border-color: rgba(246, 196, 83, 0.28) !important;
+  box-shadow: 0 0 20px rgba(246, 196, 83, 0.12) !important;
+}
+
+.tradebattle-site [style*="linear-gradient(to right, rgba(103, 231, 191"],
+.tradebattle-site [style*="radial-gradient(circle at 84% 38%, rgba(103, 231, 191"] {
+  background-image: linear-gradient(to right, rgba(246, 196, 83, 0.24), transparent) !important;
+}
+
+body [data-radix-portal] [role="dialog"],
+body [data-radix-dialog-content] {
+  background: #23203a !important;
+  background-color: #23203a !important;
+  border-color: rgba(246, 196, 83, 0.28) !important;
+  color: #f8f5ff !important;
+}
+
+body [data-radix-portal] [role="dialog"] [style*="color: rgb(103, 231, 191)"],
+body [data-radix-portal] [role="dialog"] [style*="color: #67E7BF"],
+body [data-radix-portal] [role="dialog"] [style*="rgba(0, 163, 255"],
+body [data-radix-portal] [role="dialog"] [style*="rgba(103, 231, 191"] {
+  color: #f6c453 !important;
+  border-color: rgba(246, 196, 83, 0.28) !important;
+  background-color: rgba(246, 196, 83, 0.08) !important;
+}
