@@ -1983,3 +1983,334 @@ body {
   .tradebattle-site .trade-scheduled-banner { right: 0 !important; font-size: 11px; }
   .tradebattle-site .trade-status-copy { white-space: normal; }
 }
+
+/*
+ * Palette control center
+ *
+ * Change these values to audition a new Tradebattle theme. Components should
+ * consume the semantic aliases below instead of introducing route-specific
+ * blues, cyans, or greens. The legacy selectors that follow keep older inline
+ * styles on the same palette while those components are gradually simplified.
+ */
+:root,
+.dark,
+.tradebattle-site {
+  --tb-purple-950: #0f0724;
+  --tb-purple-900: #140b2b;
+  --tb-purple-850: #170d30;
+  --tb-purple-800: #21113f;
+  --tb-purple-750: #24153f;
+  --tb-purple-700: #2d1958;
+  --tb-purple-600: #5b2da7;
+  --tb-purple-500: #7c3aed;
+  --tb-purple-400: #a77bff;
+  --tb-purple-300: #d7c3ff;
+  --tb-purple-wash: rgba(167, 123, 255, .12);
+  --tb-purple-edge: rgba(167, 123, 255, .30);
+  --tb-purple-glow: rgba(167, 123, 255, .22);
+
+  --tb-gold-800: #9f7625;
+  --tb-gold-700: #b88b2f;
+  --tb-gold-600: #d5a73c;
+  --tb-gold-500: #f3c65b;
+  --tb-gold-400: #ffdc79;
+  --tb-gold-300: #fff1b8;
+  --tb-purple-hsl: 264 90% 68%;
+  --tb-gold-hsl: 43 86% 65%;
+  --tb-gold-wash: rgba(243, 198, 91, .12);
+  --tb-gold-edge: rgba(243, 198, 91, .34);
+  --tb-gold-glow: rgba(243, 198, 91, .24);
+
+  --tb-surface-950: var(--tb-purple-950);
+  --tb-surface-900: var(--tb-purple-900);
+  --tb-surface-850: var(--tb-purple-850);
+  --tb-surface-800: var(--tb-purple-800);
+  --tb-surface-750: var(--tb-purple-750);
+  --tb-surface-700: var(--tb-purple-700);
+  --tb-border: var(--tb-purple-edge);
+  --tb-text-strong: #fbf9ff;
+  --tb-text: #f0eafa;
+  --tb-text-muted: #b9afd8;
+  --tb-text-subtle: #8e80a8;
+  --tb-state-positive: var(--tb-gold-500);
+  --tb-state-negative: #ff5b70;
+  --tb-state-warning: var(--tb-gold-400);
+  --tb-state-info: var(--tb-purple-400);
+
+  --tb-accent: var(--tb-gold-500);
+  --tb-accent-1: var(--tb-gold-600);
+  --tb-accent-2: var(--tb-gold-500);
+  --tb-accent-3: var(--tb-gold-400);
+  --tb-accent-4: var(--tb-purple-400);
+  --tb-gradient-page: linear-gradient(160deg, var(--tb-purple-900) 0%, var(--tb-purple-800) 52%, var(--tb-purple-900) 100%);
+  --tb-gradient-panel: linear-gradient(180deg, var(--tb-purple-800) 0%, var(--tb-purple-850) 100%);
+  --tb-gradient-panel-raised: linear-gradient(135deg, var(--tb-purple-700) 0%, var(--tb-purple-800) 72%);
+  --tb-gradient-action: linear-gradient(135deg, var(--tb-gold-600), var(--tb-gold-500));
+  --tb-gradient-action-hover: linear-gradient(135deg, var(--tb-gold-500), var(--tb-gold-400));
+  --tb-gradient-accent: linear-gradient(135deg, var(--tb-purple-500), var(--tb-purple-400));
+  --tb-shadow-panel: 0 14px 36px rgba(5, 1, 16, .24), 0 0 0 1px rgba(167, 123, 255, .08);
+  --tb-shadow-action: 0 10px 24px var(--tb-gold-glow);
+
+  /* Tailwind/shadcn HSL hooks point at the same test colors. */
+  --primary: var(--tb-gold-hsl) !important;
+  --primary-foreground: 264 57% 10% !important;
+  --accent: var(--tb-purple-hsl) !important;
+  --accent-foreground: 264 57% 10% !important;
+  --ring: var(--tb-gold-hsl) !important;
+  --border: 264 35% 31% !important;
+  --input: 263 57% 16% !important;
+
+  /* Existing semantic names now resolve through one palette. */
+  --site-bg: var(--tb-surface-900) !important;
+  --site-panel: var(--tb-surface-800) !important;
+  --site-panel-raised: var(--tb-surface-700) !important;
+  --site-edge: var(--tb-border) !important;
+  --site-text: var(--tb-text) !important;
+  --site-muted: var(--tb-text-muted) !important;
+  --site-mint: var(--tb-accent) !important;
+}
+
+.tradebattle-site,
+.tradebattle-site .tradebattle-route,
+.tradebattle-site .arena-page,
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .hub-screen,
+.tradebattle-site .trading-page,
+.tradebattle-site .auth-screen,
+.tradebattle-site .leaderboard-page,
+.tradebattle-site .blitz-page,
+.tradebattle-site .shop-page,
+.tradebattle-site .people-page,
+.tradebattle-site .tournaments-page,
+.tradebattle-site .archive-page,
+.tradebattle-site .profile-page,
+.tradebattle-site .deposit-page,
+.tradebattle-site .admin-page,
+.tradebattle-site .transactions-page,
+.tradebattle-site .tournament-view-page {
+  background: var(--tb-gradient-page) !important;
+  color: var(--tb-text);
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: var(--tb-surface-850) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .card,
+.tradebattle-site [data-slot="card"],
+.tradebattle-site .hub-panel,
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .blitz-card,
+.tradebattle-site .people-card,
+.tradebattle-site .people-toolbar,
+.tradebattle-site .tournament-card-surface,
+.tradebattle-site .tournament-brief-card,
+.tradebattle-site .shop-spotlight,
+.tradebattle-site .arena-promo-card,
+.tradebattle-site .mode-card,
+.tradebattle-site .how-step,
+.tradebattle-site .auth-panel,
+.tradebattle-site .auth-simple-card {
+  background: var(--tb-gradient-panel) !important;
+  border-color: var(--tb-purple-edge) !important;
+  box-shadow: var(--tb-shadow-panel);
+}
+
+/* Legacy utility colors: blue/cyan/teal/indigo become purple surfaces. */
+.tradebattle-site [class*="bg-blue-"],
+.tradebattle-site [class*="bg-cyan-"],
+.tradebattle-site [class*="bg-sky-"],
+.tradebattle-site [class*="bg-indigo-"],
+.tradebattle-site [class*="bg-teal-"],
+.tradebattle-site [class*="bg-emerald-"],
+.tradebattle-site [class*="bg-green-"] {
+  background: var(--tb-surface-700) !important;
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site [class*="text-blue-"],
+.tradebattle-site [class*="text-cyan-"],
+.tradebattle-site [class*="text-sky-"],
+.tradebattle-site [class*="text-indigo-"],
+.tradebattle-site [class*="text-teal-"],
+.tradebattle-site [class*="text-emerald-"],
+.tradebattle-site [class*="text-green-"] {
+  color: var(--tb-accent) !important;
+}
+
+.tradebattle-site [class*="border-blue-"],
+.tradebattle-site [class*="border-cyan-"],
+.tradebattle-site [class*="border-sky-"],
+.tradebattle-site [class*="border-indigo-"],
+.tradebattle-site [class*="border-teal-"],
+.tradebattle-site [class*="border-emerald-"],
+.tradebattle-site [class*="border-green-"] {
+  border-color: var(--tb-purple-edge) !important;
+}
+
+/* Inline legacy tokens are common in older dashboard and admin surfaces. */
+.tradebattle-site [style*="#0A1930"],
+.tradebattle-site [style*="#0a1930"],
+.tradebattle-site [style*="#0A1C2C"],
+.tradebattle-site [style*="#0a1c2c"],
+.tradebattle-site [style*="#0B1B2A"],
+.tradebattle-site [style*="#0b1b2a"],
+.tradebattle-site [style*="#081622"],
+.tradebattle-site [style*="#0E2040"],
+.tradebattle-site [style*="#0e2040"],
+.tradebattle-site [style*="#142E5A"],
+.tradebattle-site [style*="#1A3A68"],
+.tradebattle-site [style*="#1C3E72"] {
+  background: var(--tb-surface-800) !important;
+  background-color: var(--tb-surface-800) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site [style*="rgba(0,163,255"],
+.tradebattle-site [style*="rgba(0, 163, 255"],
+.tradebattle-site [style*="rgba(0,255,135"],
+.tradebattle-site [style*="rgba(0, 255, 135"],
+.tradebattle-site [style*="rgba(40,199,111"],
+.tradebattle-site [style*="rgba(40, 199, 111"],
+.tradebattle-site [style*="rgba(103,231,191"],
+.tradebattle-site [style*="rgba(103, 231, 191"],
+.tradebattle-site [style*="rgba(59,130,246"],
+.tradebattle-site [style*="rgba(59, 130, 246"] {
+  background-color: var(--tb-purple-wash) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site [style*="background-color"][style*="rgb(0, 163, 255)"],
+.tradebattle-site [style*="background-color"][style*="rgb(0, 255, 135)"],
+.tradebattle-site [style*="background-color"][style*="rgb(40, 199, 111)"],
+.tradebattle-site [style*="background-color"][style*="rgb(103, 231, 191)"],
+.tradebattle-site [style*="background-color"][style*="rgb(59, 130, 246)"] {
+  background-color: var(--tb-purple-wash) !important;
+  border-color: var(--tb-purple-edge) !important;
+  color: var(--tb-accent) !important;
+}
+
+.tradebattle-site [style*="#67E7BF"],
+.tradebattle-site [style*="#67e7bf"],
+.tradebattle-site [style*="#2EBF9A"],
+.tradebattle-site [style*="#2ebf9a"],
+.tradebattle-site [style*="#10B981"],
+.tradebattle-site [style*="#10b981"],
+.tradebattle-site [style*="#06B6D4"],
+.tradebattle-site [style*="#06b6d4"],
+.tradebattle-site [style*="#20D8C2"],
+.tradebattle-site [style*="#20d8c2"],
+.tradebattle-site [style*="#27A9FF"],
+.tradebattle-site [style*="#27a9ff"],
+.tradebattle-site [style*="#3B82F6"],
+.tradebattle-site [style*="#3b82f6"],
+.tradebattle-site [style*="#2563EB"],
+.tradebattle-site [style*="#2563eb"] {
+  color: var(--tb-accent) !important;
+  border-color: var(--tb-gold-edge) !important;
+}
+
+.tradebattle-site [style*="linear-gradient"][style*="#67E7BF"],
+.tradebattle-site [style*="linear-gradient"][style*="#67e7bf"],
+.tradebattle-site [style*="linear-gradient"][style*="#2EBF9A"],
+.tradebattle-site [style*="linear-gradient"][style*="#2ebf9a"],
+.tradebattle-site [style*="linear-gradient"][style*="#10B981"],
+.tradebattle-site [style*="linear-gradient"][style*="#10b981"] {
+  background: var(--tb-gradient-action) !important;
+  color: var(--tb-purple-950) !important;
+}
+
+.tradebattle-site button[style*="#67E7BF"],
+.tradebattle-site button[style*="#67e7bf"],
+.tradebattle-site button[style*="rgb(103, 231, 191)"],
+.tradebattle-site a[style*="#67E7BF"],
+.tradebattle-site a[style*="#67e7bf"],
+.tradebattle-site a[style*="rgb(103, 231, 191)"],
+.tradebattle-site [role="button"][style*="#67E7BF"],
+.tradebattle-site [role="button"][style*="#67e7bf"] {
+  background: var(--tb-gradient-action) !important;
+  color: var(--tb-purple-950) !important;
+  border-color: var(--tb-accent) !important;
+}
+
+/* SVG presentation attributes do not pass through inline-style selectors. */
+.tradebattle-site svg [stroke="#67e7bf"],
+.tradebattle-site svg [stroke="#67E7BF"],
+.tradebattle-site svg [fill="#67e7bf"],
+.tradebattle-site svg [fill="#67E7BF"],
+.tradebattle-site svg stop[stop-color="#67e7bf"],
+.tradebattle-site svg stop[stop-color="#67E7BF"],
+.tradebattle-site svg [stroke="#20d8c2"],
+.tradebattle-site svg [stroke="#20D8C2"] {
+  stroke: var(--tb-accent) !important;
+  fill: var(--tb-accent) !important;
+  stop-color: var(--tb-accent) !important;
+}
+
+.tradebattle-site .hub-screen {
+  background: var(--tb-gradient-page) !important;
+}
+.tradebattle-site .hub-screen .hub-primary-action,
+.tradebattle-site .hub-screen .hub-feature-action {
+  background: var(--tb-gradient-action) !important;
+  border-color: var(--tb-accent) !important;
+  color: var(--tb-purple-950) !important;
+  box-shadow: var(--tb-shadow-action) !important;
+}
+.tradebattle-site .hub-screen .hub-primary-action:hover,
+.tradebattle-site .hub-screen .hub-feature-action:hover {
+  background: var(--tb-gradient-action-hover) !important;
+}
+.tradebattle-site .hub-screen .hub-kicker,
+.tradebattle-site .hub-screen .hub-panel-label,
+.tradebattle-site .hub-screen .hub-feature-kicker,
+.tradebattle-site .hub-screen .hub-live-dot,
+.tradebattle-site .hub-screen .hub-market-change,
+.tradebattle-site .hub-screen .hub-live-row > span:first-child {
+  color: var(--tb-accent) !important;
+}
+.tradebattle-site .hub-screen .hub-live-dot {
+  background: var(--tb-accent) !important;
+  box-shadow: 0 0 0 4px var(--tb-gold-wash), 0 0 12px var(--tb-accent) !important;
+}
+
+.tradebattle-site .auth-screen {
+  --auth-bg: var(--tb-surface-950);
+  --auth-panel: var(--tb-surface-800);
+  --auth-panel-raised: var(--tb-surface-700);
+  --auth-line: var(--tb-purple-edge);
+  --auth-muted: var(--tb-text-muted);
+  --auth-text: var(--tb-text-strong);
+  --auth-blue: var(--tb-purple-400);
+  --auth-cyan: var(--tb-accent);
+  background: var(--tb-gradient-page) !important;
+}
+
+.tradebattle-site .arena-page {
+  --arena-bg: var(--tb-surface-950);
+  --arena-line: var(--tb-purple-edge);
+  --arena-muted: var(--tb-text-muted);
+  --arena-soft: var(--tb-text);
+  --arena-mint: var(--tb-accent);
+  background: var(--tb-gradient-page) !important;
+}
+
+/* Keep positive performance gold, while red remains reserved for loss/error. */
+.tradebattle-site .positive,
+.tradebattle-site [data-positive="true"],
+.tradebattle-site [style*="#67E7BF"],
+.tradebattle-site [style*="#67e7bf"] {
+  color: var(--tb-state-positive) !important;
+}
+
+.tradebattle-site button:focus-visible,
+.tradebattle-site a:focus-visible,
+.tradebattle-site input:focus-visible,
+.tradebattle-site textarea:focus-visible,
+.tradebattle-site [role="combobox"]:focus-visible {
+  outline: 2px solid var(--tb-accent-3) !important;
+  outline-offset: 2px;
+}
