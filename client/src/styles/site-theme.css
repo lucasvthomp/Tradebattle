@@ -2753,3 +2753,143 @@ body {
     linear-gradient(135deg, var(--tb-surface-700), var(--tb-surface-800) 72%) !important;
   border-color: var(--tb-purple-edge) !important;
 }
+
+/* Original ocean palette: navy surfaces, blue depth, cyan energy, restrained gold. */
+.tradebattle-site {
+  --tb-purple-950: #06111f !important;
+  --tb-purple-900: #081622 !important;
+  --tb-purple-850: #0b1b2a !important;
+  --tb-purple-800: #0e2040 !important;
+  --tb-purple-750: #102638 !important;
+  --tb-purple-700: #142e5a !important;
+  --tb-purple-600: #1a3a68 !important;
+  --tb-purple-500: #27a9ff !important;
+  --tb-purple-400: #20d8c2 !important;
+  --tb-purple-300: #b2ffe7 !important;
+  --tb-purple-wash: rgba(39, 169, 255, .10) !important;
+  --tb-purple-edge: rgba(118, 169, 198, .22) !important;
+  --tb-purple-glow: rgba(32, 216, 194, .20) !important;
+  --tb-purple-hsl: 198 85% 58% !important;
+  --tb-gold-600: #c7962d !important;
+  --tb-gold-500: #e3b341 !important;
+  --tb-gold-400: #f2c76a !important;
+  --tb-gold-300: #ffe4a0 !important;
+  --tb-gold-wash: rgba(227, 179, 65, .12) !important;
+  --tb-gold-edge: rgba(227, 179, 65, .35) !important;
+  --tb-gold-glow: rgba(227, 179, 65, .22) !important;
+  --tb-surface-950: #06111f !important;
+  --tb-surface-900: #081622 !important;
+  --tb-surface-850: #0b1b2a !important;
+  --tb-surface-800: #0e2040 !important;
+  --tb-surface-750: #102638 !important;
+  --tb-surface-700: #142e5a !important;
+  --tb-surface-600: #1a3a68 !important;
+  --tb-text-strong: #eef6fa !important;
+  --tb-text: #eef6fa !important;
+  --tb-text-muted: #8da2b5 !important;
+  --tb-text-subtle: #6f879d !important;
+  --tb-border: rgba(118, 169, 198, .18) !important;
+  --tb-state-positive: #20d8c2 !important;
+  --tb-state-info: #27a9ff !important;
+  --tb-accent: var(--tb-gold-500) !important;
+  --tb-accent-4: var(--tb-purple-400) !important;
+  --tb-gradient-page: linear-gradient(160deg, #06111f, #0b1b2a 52%, #06111f) !important;
+  --tb-gradient-panel: linear-gradient(180deg, #0e2040, #0b1b2a) !important;
+  --tb-gradient-panel-raised: linear-gradient(135deg, #142e5a, #0e2040 72%) !important;
+  --tb-gradient-action: linear-gradient(135deg, #f2c76a, #e3b341) !important;
+  --tb-gradient-action-hover: linear-gradient(135deg, #ffe4a0, #f2c76a) !important;
+  --tb-gradient-accent: linear-gradient(135deg, #27a9ff, #20d8c2) !important;
+  --tb-shadow-panel: 0 14px 36px rgba(1, 13, 25, .32), 0 0 0 1px rgba(118, 169, 198, .07) !important;
+  --tb-shadow-action: 0 10px 24px var(--tb-gold-glow) !important;
+  --site-bg: #06111f !important;
+  --site-panel: #0b1b2a !important;
+  --site-panel-raised: #102638 !important;
+  --site-edge: rgba(118, 169, 198, .18) !important;
+  --site-text: #eef6fa !important;
+  --site-muted: #8da2b5 !important;
+  --site-mint: #20d8c2 !important;
+  --primary: 43 72% 57% !important;
+  --primary-foreground: 213 52% 8% !important;
+  --accent: 198 85% 58% !important;
+  --accent-foreground: 213 52% 8% !important;
+  --ring: 43 72% 57% !important;
+  --border: 205 29% 33% !important;
+  --input: 207 38% 18% !important;
+  --background: 213 52% 8% !important;
+  --foreground: 190 25% 96% !important;
+  --card: 204 45% 13% !important;
+  --card-foreground: 190 25% 96% !important;
+  --popover: 204 45% 13% !important;
+  --popover-foreground: 190 25% 96% !important;
+  --secondary: 207 38% 18% !important;
+  --secondary-foreground: 190 25% 96% !important;
+  --muted: 207 32% 20% !important;
+  --muted-foreground: 205 18% 66% !important;
+  --sidebar-bg: 213 52% 9% !important;
+  --hover-overlay: 207 38% 24% !important;
+  --secondary-text: 205 18% 66% !important;
+  --disabled-text: 205 16% 42% !important;
+  --neutral-gray: 205 12% 58% !important;
+  --profit-green: 163 72% 65% !important;
+  --cyan: 177 73% 50% !important;
+  --purple: 198 85% 58% !important;
+  --shadow-cyan: 0 0 24px rgba(32, 216, 194, .20) !important;
+}
+
+.tradebattle-site .hub-screen {
+  --hub-bg: #06111f !important;
+  --hub-panel: #0b1b2a !important;
+  --hub-panel-raised: #102638 !important;
+  --hub-purple-bright: #27a9ff !important;
+  --hub-gold: #e3b341 !important;
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: #0b1b2a !important;
+  border-color: rgba(118, 169, 198, .18) !important;
+}
+
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator,
+.tradebattle-site .tradebattle-sidebar button.sidebar-active-indicator {
+  background: #1a3a68 !important;
+  color: #ffffff !important;
+  border-color: #e3b341 !important;
+  box-shadow: inset 3px 0 0 #e3b341, 0 8px 20px rgba(32, 216, 194, .16) !important;
+}
+
+.tradebattle-site .tradebattle-sidebar a:hover,
+.tradebattle-site .tradebattle-sidebar button:hover {
+  background: rgba(39, 169, 255, .10) !important;
+}
+
+.tradebattle-site .hub-overview-strip {
+  background: rgba(118, 169, 198, .22) !important;
+  border-color: rgba(118, 169, 198, .22) !important;
+}
+
+.tradebattle-site .hub-overview-item,
+.tradebattle-site .hub-ad-card,
+.tradebattle-site .hub-ad-arena,
+.tradebattle-site .hub-ad-blitz {
+  background: linear-gradient(135deg, #142e5a, #0e2040 72%) !important;
+  border-color: rgba(118, 169, 198, .22) !important;
+}
+
+.tradebattle-site .hub-chart {
+  background: #06111f !important;
+  border-color: rgba(118, 169, 198, .22) !important;
+}
+
+.tradebattle-site .hub-chart-tag {
+  fill: #142e5a !important;
+  stroke: rgba(227, 179, 65, .35) !important;
+}
+
+.tradebattle-site .hub-feature-banner {
+  background:
+    radial-gradient(circle at 86% 32%, rgba(227, 179, 65, .12), transparent 28%),
+    linear-gradient(135deg, #142e5a, #0e2040 72%) !important;
+  border-color: rgba(118, 169, 198, .22) !important;
+}

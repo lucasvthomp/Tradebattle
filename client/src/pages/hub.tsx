@@ -106,6 +106,25 @@ export default function Hub() {
           </Link>
         </motion.section>
 
+        <motion.section className="hub-tool-rail" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.08 }} aria-label="Player toolkit">
+          <Link href="/dashboard" className="hub-tool-card">
+            <GameIcon name="briefcase" size={46} />
+            <span><strong>Trade desk</strong><small>Make a move</small></span>
+          </Link>
+          <Link href="/tournaments" className="hub-tool-card">
+            <GameIcon name="trading-calendar" size={46} />
+            <span><strong>Match schedule</strong><small>Find your next arena</small></span>
+          </Link>
+          <Link href="/settings" className="hub-tool-card">
+            <GameIcon name="gears" size={46} />
+            <span><strong>Player setup</strong><small>Make it yours</small></span>
+          </Link>
+          <Link href="/blitz" className="hub-tool-card">
+            <GameIcon name="controller" size={46} />
+            <span><strong>Quick play</strong><small>Jump into Blitz</small></span>
+          </Link>
+        </motion.section>
+
         <div className="hub-main-grid">
           <motion.section className="hub-panel hub-market-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.12 }}>
             <div className="hub-panel-heading">

@@ -1031,6 +1031,60 @@
 .hub-launch-icon.gold, .hub-launch-icon.purple { color: var(--hub-gold); background: rgba(243, 198, 91, .08); border-color: rgba(243, 198, 91, .28); }
 .hub-progress-link { margin-top: 18px; width: fit-content; }
 
+.hub-tool-rail {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.hub-tool-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(118, 169, 198, .18);
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(16, 38, 56, .92), rgba(14, 32, 64, .9));
+  color: #eef6fa;
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.hub-tool-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(227, 179, 65, .5);
+  background: linear-gradient(135deg, rgba(20, 46, 90, .96), rgba(14, 32, 64, .94));
+}
+
+.hub-tool-card img {
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.hub-tool-card span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hub-tool-card strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  letter-spacing: -.01em;
+}
+
+.hub-tool-card small {
+  overflow: hidden;
+  color: #8da2b5;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (max-width: 620px) {
   .hub-screen { padding: 18px 12px 38px; }
   .hub-topbar { align-items: flex-start; }
@@ -1038,6 +1092,7 @@
   .hub-overview-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hub-ad-grid { grid-template-columns: 1fr; }
   .hub-ad-card { min-height: 118px; }
+  .hub-tool-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {
