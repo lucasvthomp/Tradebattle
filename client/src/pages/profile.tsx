@@ -569,11 +569,6 @@ export default function Profile() {
           animate="animate"
           variants={staggerChildren}
         >
-          {/* Header */}
-          <motion.div className="mb-8" variants={fadeInUp}>
-            <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Player card</h1>
-          </motion.div>
-
           {/* User Overview Card */}
           <motion.div variants={fadeInUp}>
             <Card className="mb-8 shadow-lg" style={{ backgroundColor: '#0C1A2E', border: '1px solid #0E2040' }}>
@@ -631,7 +626,6 @@ export default function Profile() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm mb-2" style={{ color: '#94A3B8' }}>{user.email}</p>
                     <div className="flex items-center flex-wrap gap-2">
                       <Badge variant="secondary" className="text-xs">
                         <Calendar className="w-3 h-3 mr-1" />
@@ -651,7 +645,7 @@ export default function Profile() {
                       onClick={() => document.getElementById('profile-picture-input')?.click()}
                     >
                       <Camera className="w-4 h-4 mr-2" />
-                      Change Photo
+                      Change photo
                     </Button>
                   </div>
                   <input
@@ -663,46 +657,6 @@ export default function Profile() {
                   />
                 </div>
 
-                {/* XP / Level bar */}
-                {(() => {
-                  const wins = user?.tournamentWins || 0;
-                  const trades = user?.totalTrades || 0;
-                  const xp = wins * 120 + trades * 8;
-                  const level = Math.floor(Math.sqrt(xp / 40)) + 1;
-                  const currentLevelXP = Math.pow(level - 1, 2) * 40;
-                  const nextLevelXP = Math.pow(level, 2) * 40;
-                  const progress = nextLevelXP === currentLevelXP ? 100 : Math.min(Math.round(((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100), 100);
-                  const rankTitles = [
-                    { min: 50, title: 'Legend', color: '#FF4F58' },
-                    { min: 30, title: 'Elite', color: '#67E7BF' },
-                    { min: 20, title: 'Expert', color: '#9AB5C2' },
-                    { min: 12, title: 'Veteran', color: '#06B6D4' },
-                    { min: 6, title: 'Trader', color: '#67E7BF' },
-                    { min: 0, title: 'Rookie', color: '#8A93A6' },
-                  ];
-                  const rank = rankTitles.find(r => level >= r.min) || rankTitles[rankTitles.length - 1];
-                  return (
-                    <div className="mt-4 pt-4" style={{ borderTop: '1px solid #0E2040' }}>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold" style={{ color: rank.color }}>{rank.title}</span>
-                          <span className="text-xs" style={{ color: '#94A3B8' }}>·</span>
-                          <span className="text-xs font-semibold" style={{ color: '#C9D1E2' }}>Level {level}</span>
-                        </div>
-                        <span className="text-xs" style={{ color: '#64748B' }}>{xp} XP · {progress}% to Lv.{level + 1}</span>
-                      </div>
-                      <div className="h-2 rounded-full overflow-hidden" style={{ backgroundColor: '#0B1B2A' }}>
-                        <motion.div
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progress}%` }}
-                          transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
-                          className="h-full rounded-full"
-                          style={{ backgroundColor: rank.color }}
-                        />
-                      </div>
-                    </div>
-                  );
-                })()}
               </CardContent>
             </Card>
           </motion.div>
@@ -740,10 +694,7 @@ export default function Profile() {
                 
                 <Card className="border-0 shadow-lg">
                   <CardHeader>
-                    <CardTitle>Settings</CardTitle>
-                    <CardDescription>
-                      Manage your account information and public profile
-                    </CardDescription>
+                    <CardTitle>Player details</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <form onSubmit={form.handleSubmit(handleSaveProfile)} className="space-y-6">
@@ -755,9 +706,6 @@ export default function Profile() {
                             {...form.register("username")}
                             placeholder={user?.username}
                           />
-                          <p className="text-xs text-muted-foreground">
-                            Username can only be changed once every 2 weeks. Contains only letters, numbers, and underscores.
-                          </p>
                           {form.formState.errors.username && (
                             <p className="text-sm text-destructive">
                               {form.formState.errors.username.message}
@@ -799,11 +747,8 @@ export default function Profile() {
                   <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                       <DollarSign className="w-5 h-5" />
-                      <span>Arena cash (test mode)</span>
+                      <span>Arena cash</span>
                     </CardTitle>
-                    <CardDescription>
-                      Add or withdraw arena cash in test mode. This balance is separate from live market positions.
-                    </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     {/* Current Balance Display */}
@@ -884,18 +829,6 @@ export default function Profile() {
                       </Card>
                     </div>
 
-                    {/* Important Notice */}
-                    <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
-                      <div className="flex items-start space-x-3">
-                        <Shield className="w-5 h-5 text-amber-600 mt-0.5" />
-                        <div>
-                          <h4 className="font-medium text-amber-800 dark:text-amber-200">Test arena notice</h4>
-                          <p className="text-sm text-amber-700 dark:text-amber-300 mt-1">
-                            This cash panel is for testing purposes only. Market play uses virtual capital and does not risk real money.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
               </TabsContent>

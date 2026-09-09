@@ -37,10 +37,10 @@ const countries = {
 };
 
 const steps = [
-  { icon: User, label: "Identity", subtitle: "Player card", title: "Claim your player card", description: "Choose the name the field will remember." },
-  { icon: Lock, label: "Defense", subtitle: "Secure entry", title: "Lock in your entry", description: "Set a passcode that keeps your seat yours." },
-  { icon: Globe, label: "Home base", subtitle: "Local settings", title: "Set your home base", description: "Tune the arena to your region and currency." },
-  { icon: Rocket, label: "Launch", subtitle: "Final check", title: "Ready for the opening bell", description: "Review your player card and take your seat." },
+  { icon: User, label: "Identity", subtitle: "Profile", title: "Create your profile", description: "Pick a player name." },
+  { icon: Lock, label: "Defense", subtitle: "Passcode", title: "Set a passcode", description: "Keep your account secure." },
+  { icon: Globe, label: "Home base", subtitle: "Region", title: "Choose your region", description: "Set your local settings." },
+  { icon: Rocket, label: "Launch", subtitle: "Final check", title: "Review and enter", description: "One last check." },
 ];
 
 export default function Signup() {
@@ -179,13 +179,13 @@ export default function Signup() {
     <div className="auth-screen auth-signup-screen auth-simple">
       <div className="auth-simple-wrap">
         <div className="auth-simple-top">
-          <Link href="/login" className="auth-panel-link">Already a player? Sign in</Link>
+          <Link href="/login" className="auth-panel-link">Sign in</Link>
         </div>
 
         <section className="auth-simple-card">
           <div className="auth-simple-card-head">
             <div>
-              <div className="auth-eyebrow">Player setup</div>
+              <div className="auth-eyebrow">Create profile</div>
               <h1>{currentStep.title}</h1>
               <p>{currentStep.description}</p>
             </div>
@@ -238,7 +238,7 @@ export default function Signup() {
                   <div className="auth-field">
                     <Label htmlFor="email">Contact email</Label>
                     <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Where should we send updates?" className="auth-input" autoComplete="email" />
-                    <div className="signup-field-note">Used for account recovery and important arena updates.</div>
+                    <div className="signup-field-note">Used for account recovery.</div>
                   </div>
                 )}
 
@@ -260,7 +260,7 @@ export default function Signup() {
 
                 <div className="signup-strength">
                   <div className="signup-strength-bars"><span className={hasMinLength ? "met" : ""} /><span className={hasUppercase ? "met" : ""} /><span className={hasNumber ? "met" : ""} /></div>
-                  <div className={`signup-field-note ${passwordValid ? "success" : ""}`}>{passwordValid ? "Passcode locked in." : "Three checks keep your player card secure."}</div>
+                  <div className={`signup-field-note ${passwordValid ? "success" : ""}`}>{passwordValid ? "Passcode locked in." : "8+ characters, one uppercase, one number."}</div>
                 </div>
 
                 <div className="signup-requirements">
@@ -284,13 +284,13 @@ export default function Signup() {
                   <Label className="auth-field-label">Home base</Label>
                   <Select value={selectedCountry} onValueChange={setSelectedCountry}>
                     <SelectTrigger className="auth-input">
-                      <SelectValue placeholder="Choose your home base" />
+                  <SelectValue placeholder="Choose your region" />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.keys(countries).map((country) => <SelectItem key={country} value={country}>{country}</SelectItem>)}
                     </SelectContent>
                   </Select>
-                  <div className="signup-field-note">We use this to set the right language and display currency.</div>
+                  <div className="signup-field-note">You can change this later.</div>
                 </div>
 
                 {selectedCountry ? (
@@ -299,7 +299,7 @@ export default function Signup() {
                     <div className="signup-meta-card"><span>Display currency</span><strong>{selectedCurrency}</strong></div>
                   </div>
                 ) : (
-                  <div className="signup-wallet-card">Your settings stay flexible. You can update them later from your profile.</div>
+                  <div className="signup-wallet-card">You can change this later.</div>
                 )}
               </div>
             )}
@@ -326,7 +326,7 @@ export default function Signup() {
                     <Checkbox id="privacy" checked={acceptedPrivacy} onCheckedChange={(checked) => setAcceptedPrivacy(checked as boolean)} />
                     <label htmlFor="privacy">I accept the <Link href="/privacy" target="_blank">Privacy Rules</Link>.</label>
                   </div>
-                  <p className="signup-legal-note">By joining, you confirm you are 18+ and agree to receive essential updates about your player card.</p>
+                  <p className="signup-legal-note">18+ and agree to the Terms and Privacy Rules.</p>
                 </div>
               </div>
             )}
@@ -341,16 +341,13 @@ export default function Signup() {
               <Button type="button" onClick={nextStep} disabled={!canProceed()} className="auth-primary-button">Continue <ArrowRight size={15} className="ml-2" /></Button>
             ) : (
               <Button type="button" onClick={() => handleSubmit()} disabled={registerMutation.isPending || isSubmitting || !canProceed()} className="auth-primary-button launch">
-                {registerMutation.isPending || isSubmitting ? <><Loader2 size={15} className="mr-2 animate-spin" /> Building card...</> : <><Rocket size={15} className="mr-2" /> Take my seat</>}
+                {registerMutation.isPending || isSubmitting ? <><Loader2 size={15} className="mr-2 animate-spin" /> Creating profile...</> : <><Rocket size={15} className="mr-2" /> Create profile</>}
               </Button>
             )}
           </div>
 
           {registerMutation.isError && <div className="auth-error signup-error">{(registerMutation.error as any)?.message || "Registration failed"}</div>}
-          <p className="auth-footer-link signup-footer">Virtual capital only · <Link href="/login">Already have a player profile?</Link></p>
         </section>
-
-        <p className="auth-simple-note">Practice with simulated markets. No deposits, no pressure.</p>
       </div>
     </div>
   );

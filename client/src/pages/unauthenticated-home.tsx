@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, ChevronRight, Crown, ShieldCheck, Swords, Target, Timer, TrendingUp, Trophy, Users, Zap } from "lucide-react";
+import { ArrowRight, ChevronRight, Crown, ShieldCheck, Swords, Target, TrendingUp, Trophy, Users, Zap } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import "./unauthenticated-home.css";
 
@@ -127,8 +127,6 @@ export default function UnauthenticatedHome() {
           <div className="arena-status">
             <span className="arena-status-dot" aria-hidden="true" />
             <span>ARENA LIVE</span>
-            <span className="arena-status-divider" aria-hidden="true" />
-            <span className="arena-status-secondary">2,903 PLAYERS ONLINE</span>
           </div>
 
           <div className="arena-hero-layout">
@@ -174,18 +172,12 @@ export default function UnauthenticatedHome() {
             </div>
           </div>
 
-          <div className="arena-score-strip" aria-label="Arena stats">
-            <div><span><TrendingUp size={16} aria-hidden="true" /> MARKET STATUS</span><strong className="positive">OPEN</strong></div>
-            <div><span><Timer size={16} aria-hidden="true" /> ACTIVE ARENAS</span><strong>12</strong></div>
-            <div><span><Trophy size={16} aria-hidden="true" /> PAID OUT THIS MONTH</span><strong>$125K+</strong></div>
-          </div>
         </div>
       </section>
 
       <section className="arena-promo-rail" aria-labelledby="promo-title">
         <div className="arena-promo-heading">
-          <div><p>THE TRADEBATTLE ARCADE</p><h2 id="promo-title">Choose your next move.</h2></div>
-          <span>Three ways in.</span>
+          <h2 id="promo-title">Choose your next move.</h2>
         </div>
         <div className="arena-promo-grid">
           {promoCards.map((card) => (

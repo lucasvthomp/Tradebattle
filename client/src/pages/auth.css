@@ -1276,3 +1276,35 @@
 @media (prefers-reduced-motion: reduce) {
   .auth-simple-card { animation: none; }
 }
+
+/* Quiet motion keeps entry screens alive without competing with the form. */
+.auth-screen {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(39, 169, 255, 0.13), transparent 34rem),
+    radial-gradient(circle at 82% 78%, rgba(32, 216, 194, 0.07), transparent 28rem),
+    var(--auth-bg);
+}
+
+.auth-screen::before {
+  opacity: 0.16;
+  animation: auth-grid-drift 24s linear infinite;
+}
+
+.auth-screen::after {
+  animation: auth-orbit 18s ease-in-out infinite alternate;
+}
+
+@keyframes auth-grid-drift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 72px 36px, -36px 72px; }
+}
+
+@keyframes auth-orbit {
+  from { opacity: 0.34; transform: translate3d(0, 0, 0) scale(1); }
+  to { opacity: 0.58; transform: translate3d(-24px, 20px, 0) scale(1.04); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-screen::before,
+  .auth-screen::after { animation: none; }
+}

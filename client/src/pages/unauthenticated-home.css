@@ -470,3 +470,18 @@
   .arena-promo-card { transition: none; }
   .arena-promo-card:hover { transform: none; }
 }
+
+/* Keep the public hero focused: less vertical padding, more room for the action. */
+@media (min-width: 981px) {
+  .arena-hero {
+    min-height: auto;
+    padding-top: 40px;
+  }
+
+  .arena-status { margin-bottom: 26px; }
+  .arena-hero-layout { gap: clamp(32px, 5vw, 70px); padding-bottom: 30px; }
+  .arena-hero-visual { min-height: 470px; padding-top: 46px; }
+  .arena-hero-mascot { top: -42px; max-height: 380px; }
+}
+
+.arena-promo-heading h2 { font-size: clamp(32px, 4.5vw, 48px); }
