@@ -3554,3 +3554,17 @@ body,
 .tradebattle-site [style*="color: '#091525'" i] {
   color: var(--tb-text-strong) !important;
 }
+
+/* Action surfaces stay readable after the old green button tokens are
+ * remapped to gold; this also keeps selected coin labels from going dark. */
+.tradebattle-site button[style*="#67E7BF" i],
+.tradebattle-site button[style*="#2EBF9A" i],
+.tradebattle-site button[style*="#10B981" i] {
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site button[style*="#67E7BF" i] span,
+.tradebattle-site button[style*="#2EBF9A" i] span,
+.tradebattle-site button[style*="#10B981" i] span {
+  color: var(--tb-text-strong) !important;
+}
