@@ -2723,3 +2723,26 @@ body {
 .tradebattle-site [style*="#170d30"] {
   background: var(--tb-gradient-panel) !important;
 }
+
+.tradebattle-site .hub-overview-strip {
+  background: var(--tb-purple-edge) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .hub-overview-item,
+.tradebattle-site .hub-ad-card,
+.tradebattle-site .hub-ad-arena,
+.tradebattle-site .hub-ad-blitz {
+  background: var(--tb-gradient-panel-raised) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .hub-chart {
+  background: var(--tb-surface-950) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .hub-chart-tag {
+  fill: var(--tb-purple-700) !important;
+  stroke: var(--tb-gold-edge) !important;
+}
