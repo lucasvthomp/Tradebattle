@@ -233,7 +233,7 @@ export function TradingSidebar({
         <div className="flex items-center justify-between mb-2 relative z-10">
           <div className="flex items-center gap-2">
             <GameIcon name="briefcase" size={34} />
-            <span className="text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: "#d8c8f8" }}>Trading floor</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.16em]" style={{ color: "var(--tb-text-muted)" }}>Trading floor</span>
           </div>
           <GameIcon name="chart" size={28} />
         </div>
@@ -442,7 +442,7 @@ export function TradingSidebar({
           onClick={() => { setActiveView("trade"); setQuantity(1); setAwaitingConfirm(false); }}
           className="flex-1 py-1.5 text-[11px] font-black rounded-lg text-center transition-all"
           style={{
-            color: activeView === "trade" ? "#241137" : "#C9B6E8",
+            color: activeView === "trade" ? "var(--tb-purple-950)" : "var(--tb-text-muted)",
             background: activeView === "trade"
               ? "linear-gradient(135deg, #D5A73C, #F3C65B)"
               : "transparent",

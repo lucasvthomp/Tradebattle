@@ -31,7 +31,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }, []);
 
   const getStatusColor = () => {
-    return marketStatus.isOpen ? "bg-[#F3C65B]" : "bg-[#B58CFF]";
+    return marketStatus.isOpen ? "var(--tb-gold-500)" : "var(--tb-purple-400)";
   };
 
   const getStatusText = () => {
@@ -47,7 +47,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   if (variant === "badge") {
     return (
       <Badge variant="secondary" className="flex items-center space-x-2">
-        <div className={`w-2 h-2 rounded-full ${getStatusColor()} ${marketStatus.isOpen ? 'animate-pulse' : ''}`}></div>
+        <div className={`w-2 h-2 rounded-full ${marketStatus.isOpen ? 'animate-pulse' : ''}`} style={{ background: getStatusColor() }}></div>
         <StatusIcon className="w-3 h-3" />
         <span className="text-xs">{getStatusText()}</span>
       </Badge>
@@ -58,11 +58,11 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
     return (
       <div className="flex items-center space-x-1.5 px-2 py-1 rounded-md bg-muted/30 border border-border/50">
         <Clock className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-xs font-medium" style={{ color: "#C9B6E8" }}>
+        <span className="text-xs font-medium" style={{ color: "var(--tb-text-muted)" }}>
           Market {marketStatus.isOpen ? (
-            <span style={{ color: "#F3C65B" }}>Open</span>
+            <span style={{ color: "var(--tb-gold-500)" }}>Open</span>
           ) : (
-            <span style={{ color: "#B58CFF" }}>Closed</span>
+            <span style={{ color: "var(--tb-purple-400)" }}>Closed</span>
           )}
         </span>
       </div>
@@ -79,10 +79,10 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
                 className={`w-5 h-5 ${
                 marketStatus.isOpen
                     ? "text-[#F3C65B]"
-                    : "text-[#B58CFF]"
+                    : "text-[var(--tb-purple-400)]"
                 }`}
               />
-              <span className="text-sm font-medium tabular-nums" style={{ color: marketStatus.isOpen ? "#F3C65B" : "#B58CFF" }}>
+              <span className="text-sm font-medium tabular-nums" style={{ color: marketStatus.isOpen ? "var(--tb-gold-500)" : "var(--tb-purple-400)" }}>
                 {formatCountdown(marketStatus.minutesUntilEvent)}
                 </span>
             </div>
@@ -91,21 +91,21 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
             side="bottom"
             className="max-w-xs backdrop-blur-md border-2"
             style={{
-              backgroundColor: 'rgba(36, 21, 63, 0.97)',
-              borderColor: 'rgba(167, 123, 255, 0.32)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(167, 123, 255, 0.12)'
+              backgroundColor: 'var(--tb-surface-800)',
+              borderColor: 'var(--tb-purple-edge)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px var(--tb-purple-glow)'
             }}
           >
             <div className="space-y-2">
-              <div className="font-semibold" style={{ color: '#F8F4FF' }}>Market window (NYSE)</div>
-              <div className="text-xs space-y-1" style={{ color: '#C9B6E8' }}>
+              <div className="font-semibold" style={{ color: 'var(--tb-text-strong)' }}>Market window (NYSE)</div>
+            <div className="text-xs space-y-1" style={{ color: 'var(--tb-text-muted)' }}>
                 <div>Monday - Friday</div>
                 <div>9:30 AM - 4:00 PM ET</div>
-                <div className="pt-2 border-t" style={{ borderColor: 'rgba(167, 123, 255, 0.22)' }}>
+                <div className="pt-2 border-t" style={{ borderColor: 'var(--tb-purple-edge)' }}>
                   {marketStatus.isOpen ? (
-                    <span className="font-medium" style={{ color: '#F3C65B' }}>Currently Open - Closes {marketStatus.closeLabel}</span>
+                    <span className="font-medium" style={{ color: 'var(--tb-gold-500)' }}>Currently Open - Closes {marketStatus.closeLabel}</span>
                   ) : (
-                    <span className="font-medium" style={{ color: '#B58CFF' }}>Currently Closed - Opens {marketStatus.nextOpenLabel}</span>
+                    <span className="font-medium" style={{ color: 'var(--tb-purple-400)' }}>Currently Closed - Opens {marketStatus.nextOpenLabel}</span>
                   )}
                 </div>
               </div>
@@ -117,11 +117,11 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
   }
 
   return (
-    <Card className="border-0" style={{ background: marketStatus.isOpen ? "rgba(243,198,91,0.08)" : "rgba(167,123,255,0.10)" }}>
+      <Card className="border-0" style={{ background: marketStatus.isOpen ? "var(--tb-gold-wash)" : "var(--tb-purple-wash)" }}>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center space-x-2">
-            <div className={`w-3 h-3 rounded-full ${getStatusColor()} ${marketStatus.isOpen ? 'animate-pulse' : ''}`}></div>
+            <div className={`w-3 h-3 rounded-full ${marketStatus.isOpen ? 'animate-pulse' : ''}`} style={{ background: getStatusColor() }}></div>
             <StatusIcon className="w-5 h-5" />
             <span className="font-medium">{getStatusText()}</span>
           </div>
@@ -146,7 +146,7 @@ export function MarketStatus({ variant = "badge", showScheduleNote = false }: Ma
         </div>
 
         {showScheduleNote && !marketStatus.isOpen && (
-          <div className="mt-3 p-2 rounded text-xs" style={{ background: "rgba(167,123,255,0.10)", color: "#D8C8F8", border: "1px solid rgba(167,123,255,0.18)" }}>
+          <div className="mt-3 p-2 rounded text-xs" style={{ background: "var(--tb-purple-wash)", color: "var(--tb-text)", border: "1px solid var(--tb-purple-edge)" }}>
             Stock trades are paused until the next market open.
           </div>
         )}

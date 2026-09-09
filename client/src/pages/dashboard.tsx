@@ -187,7 +187,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
             width: 320,
             flexShrink: 0,
             minHeight: 0,
-            background: "linear-gradient(180deg, #21113F 0%, #170D30 100%)",
+            background: "var(--tb-gradient-panel)",
             borderLeft: `1px solid ${panelBorder}`,
             boxShadow: `-4px 0 32px ${panelGlow}`,
             transition: "border-color 1s ease, box-shadow 1s ease",
@@ -220,7 +220,7 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
           style={{
             position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 30,
             maxHeight: "58vh", overflowY: "auto",
-            background: "linear-gradient(180deg, #21113F 0%, #170D30 100%)",
+            background: "var(--tb-gradient-panel)",
             borderTop: `1px solid ${panelBorder}`,
             boxShadow: `0 -4px 32px ${panelGlow}`,
           }}

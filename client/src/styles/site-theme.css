@@ -2682,3 +2682,44 @@ body {
 .tradebattle-site .tradebattle-header a:hover {
   color: var(--tb-gold-400) !important;
 }
+
+/* Remove the last hard-coded plum islands from shared controls. */
+.tradebattle-site [role="tablist"],
+.tradebattle-site [data-slot="tabs-list"],
+.tradebattle-site .leaderboard-page [role="tablist"],
+.tradebattle-site .leaderboard-page [data-slot="tabs-list"],
+.tradebattle-site [role="listbox"],
+.tradebattle-site [role="menu"] {
+  background: var(--tb-surface-800) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site [role="tab"] {
+  color: var(--tb-text-muted) !important;
+}
+
+.tradebattle-site [role="tab"][data-state="active"],
+.tradebattle-site [role="option"][data-state="checked"],
+.tradebattle-site [role="menuitem"][data-highlighted] {
+  background: var(--tb-purple-600) !important;
+  color: #ffffff !important;
+  border-color: var(--tb-gold-500) !important;
+}
+
+.tradebattle-site .trading-sidebar-rail {
+  background: var(--tb-gradient-panel) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .hub-screen {
+  --hub-panel: var(--tb-surface-800) !important;
+  --hub-panel-raised: var(--tb-surface-700) !important;
+  --hub-purple-bright: var(--tb-purple-400) !important;
+}
+
+.tradebattle-site [style*="#21113F"],
+.tradebattle-site [style*="#21113f"],
+.tradebattle-site [style*="#170D30"],
+.tradebattle-site [style*="#170d30"] {
+  background: var(--tb-gradient-panel) !important;
+}
