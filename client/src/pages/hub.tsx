@@ -45,13 +45,13 @@ export default function Hub() {
   const trades = user?.totalTrades || 0;
   const balance = (Number(user?.siteCash) || 0).toFixed(2);
   const ctaHref = activeTournaments.length > 0 ? "/dashboard" : "/tournaments";
-  const ctaLabel = activeTournaments.length > 0 ? "Open live arena" : "Browse arenas";
+  const ctaLabel = activeTournaments.length > 0 ? "Play now" : "Find a match";
 
   const stats = [
-    { label: "Buying power", value: `$${balance}`, detail: "Virtual cash", color: "var(--hub-gold)" },
-    { label: "Wins", value: String(wins), detail: "Tournament record", color: "var(--hub-purple-bright)" },
-    { label: "Live arenas", value: String(activeTournaments.length), detail: "Open now", color: "var(--hub-gold)" },
-    { label: "Trades", value: String(trades), detail: "Total moves", color: "var(--hub-purple-bright)" },
+    { label: "Buying power", value: `$${balance}`, detail: "cash", color: "var(--hub-gold)" },
+    { label: "Wins", value: String(wins), detail: "record", color: "var(--hub-purple-bright)" },
+    { label: "Live arenas", value: String(activeTournaments.length), detail: "open now", color: "var(--hub-gold)" },
+    { label: "Trades", value: String(trades), detail: "moves", color: "var(--hub-purple-bright)" },
   ];
 
   return (
@@ -60,7 +60,7 @@ export default function Hub() {
         <motion.header className="hub-topbar" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35 }}>
           <div>
             <p className="hub-kicker">HOME</p>
-            <h1 className="hub-title">Welcome back, {user?.username ?? "player"}.</h1>
+            <h1 className="hub-title">Choose your next move.</h1>
           </div>
           <div className="hub-top-actions">
             <button type="button" className="hub-top-play" onClick={() => navigate(ctaHref)}>{ctaLabel}<ArrowUpRight size={15} /></button>
@@ -79,56 +79,44 @@ export default function Hub() {
 
         <motion.section className="hub-feature-banner" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.04 }}>
           <div className="hub-feature-copy">
-            <p className="hub-feature-kicker"><span className="hub-live-dot" /> FEATURED RUN</p>
-            <h2>{activeTournaments.length ? "The board is moving." : "Pick your next match."}</h2>
-            <p>Choose your format, read the board, and make the first move.</p>
-            <button type="button" className="hub-feature-action" onClick={() => navigate(ctaHref)}>
-              {ctaLabel}<ArrowUpRight size={15} />
-            </button>
+            <p className="hub-feature-kicker"><span className="hub-live-dot" /> PLAY NOW</p>
+            <h2>{activeTournaments.length ? "Play the board." : "Pick a mode. Play now."}</h2>
+            <p>Arenas or Blitz. Your call.</p>
+            <div className="hub-feature-actions">
+              <button type="button" className="hub-feature-action" onClick={() => navigate(ctaHref)}>
+                {ctaLabel}<ArrowUpRight size={15} />
+              </button>
+              <Link href="/shop" className="hub-feature-secondary">Open rewards</Link>
+            </div>
           </div>
-          <img className="hub-feature-art" src="/assets/tradebattle-visuals/market-chart.png" alt="" aria-hidden="true" />
+          <img className="hub-feature-art" src="/assets/tradebattle-visuals/hub-arena-banner.png" alt="" aria-hidden="true" />
         </motion.section>
 
         <motion.section className="hub-ad-grid" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.06 }} aria-label="Game modes">
           <Link href="/tournaments" className="hub-ad-card hub-ad-arena">
             <span className="hub-ad-label">ARENAS</span>
             <strong>Climb the board.</strong>
-            <span>Longer runs. Bigger decisions.</span>
-            <img src="/assets/tradebattle-visuals/trophy.png" alt="" aria-hidden="true" />
+            <span>Long game.</span>
             <ArrowUpRight size={16} />
           </Link>
           <Link href="/blitz" className="hub-ad-card hub-ad-blitz">
             <span className="hub-ad-label">BLITZ</span>
-            <strong>Five minutes. One rival.</strong>
-            <span>Queue up and make it count.</span>
-            <img src="/assets/tradebattle-visuals/swords.png" alt="" aria-hidden="true" />
+            <strong>Beat the clock.</strong>
+            <span>Fast rounds.</span>
             <ArrowUpRight size={16} />
           </Link>
-        </motion.section>
-
-        <motion.section className="hub-tool-rail" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.35, delay: 0.08 }} aria-label="Player toolkit">
-          <Link href="/dashboard" className="hub-tool-card">
-            <GameIcon name="briefcase" size={46} />
-            <span><strong>Trade desk</strong><small>Make a move</small></span>
-          </Link>
-          <Link href="/tournaments" className="hub-tool-card">
-            <GameIcon name="trading-calendar" size={46} />
-            <span><strong>Match schedule</strong><small>Find your next arena</small></span>
-          </Link>
-          <Link href="/profile" className="hub-tool-card">
-            <GameIcon name="gears" size={46} />
-            <span><strong>Player setup</strong><small>Make it yours</small></span>
-          </Link>
-          <Link href="/blitz" className="hub-tool-card">
-            <GameIcon name="controller" size={46} />
-            <span><strong>Quick play</strong><small>Jump into Blitz</small></span>
+          <Link href="/shop" className="hub-ad-card hub-ad-rewards">
+            <span className="hub-ad-label">REWARDS</span>
+            <strong>Claim your edge.</strong>
+            <span>Daily drops.</span>
+            <ArrowUpRight size={16} />
           </Link>
         </motion.section>
 
         <div className="hub-main-grid">
           <motion.section className="hub-panel hub-market-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.12 }}>
             <div className="hub-panel-heading">
-              <div><h2>Market pulse</h2><p>Read the rhythm before you choose a mode.</p></div>
+              <div><h2>Market pulse</h2><p>Simulated momentum.</p></div>
               <GameIcon name="chart" size={30} />
             </div>
             <div className="hub-market-readout"><strong className="hub-market-number">71.42</strong><span className="hub-market-change">+8.42%</span></div>
@@ -138,31 +126,33 @@ export default function Hub() {
 
           <motion.section className="hub-panel hub-launch-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.18 }}>
             <div className="hub-panel-heading">
-              <div><h2>Quick launch</h2><p>Choose your pressure level.</p></div>
-              <span className="hub-panel-label">Select mode</span>
+              <div><h2>Quick links</h2><p>Go straight in.</p></div>
+              <span className="hub-panel-label">GO</span>
             </div>
             <div className="hub-launch-list">
-              <Link href="/tournaments" className="hub-launch-card">
-                <span className="hub-launch-icon gold"><GameIcon name="trophy" size={36} /></span>
-                <span className="hub-launch-copy"><strong>Arenas</strong><span>Compete for the prize pool · {activeTournaments.length} live</span></span>
-                <img className="hub-launch-art hub-launch-art-arena" src="/assets/tradebattle-visuals/trophy.png" alt="" aria-hidden="true" />
+              <Link href="/dashboard" className="hub-launch-card">
+                <span className="hub-launch-icon gold"><GameIcon name="briefcase" size={34} /></span>
+                <span className="hub-launch-copy"><strong>Trade desk</strong><span>Make a move</span></span>
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
-              <Link href="/blitz" className="hub-launch-card">
-                <span className="hub-launch-icon purple"><GameIcon name="lightning" size={36} /></span>
-                <span className="hub-launch-copy"><strong>Blitz</strong><span>1v1 rounds · 5 minutes · instant</span></span>
-                <img className="hub-launch-art hub-launch-art-blitz" src="/assets/tradebattle-visuals/lightning.png" alt="" aria-hidden="true" />
+              <Link href="/leaderboard" className="hub-launch-card">
+                <span className="hub-launch-icon purple"><GameIcon name="trophy" size={34} /></span>
+                <span className="hub-launch-copy"><strong>Rankings</strong><span>See the board</span></span>
+                <ChevronRight className="hub-launch-arrow" size={16} />
+              </Link>
+              <Link href="/shop" className="hub-launch-card">
+                <span className="hub-launch-icon gold"><GameIcon name="gift" size={34} /></span>
+                <span className="hub-launch-copy"><strong>Rewards</strong><span>Open your drops</span></span>
                 <ChevronRight className="hub-launch-arrow" size={16} />
               </Link>
             </div>
-            <div className="hub-launch-foot"><span className="hub-live-dot" />Virtual capital only. Your next round starts when you say go.</div>
           </motion.section>
         </div>
 
         <div className="hub-lower-grid">
           <motion.section className="hub-panel hub-live-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.24 }}>
             <div className="hub-panel-heading">
-              <div><h2>Live arenas</h2><p>Open tables with room to make a move.</p></div>
+              <div><h2>Live arenas</h2><p>Jump in.</p></div>
               {activeTournaments.length > 0 && <span className="hub-live-chip"><span className="hub-live-dot" />Live</span>}
             </div>
             {activeTournaments.length > 0 ? (
@@ -178,12 +168,12 @@ export default function Hub() {
                 {activeTournaments.length > 4 && <Link href="/tournaments" className="hub-outline-action">See all {activeTournaments.length} arenas <ArrowUpRight size={14} /></Link>}
               </div>
             ) : (
-              <div className="hub-empty-state"><strong>No live arenas in your queue.</strong><p>There is always another table forming.</p><Link href="/tournaments">Browse upcoming arenas →</Link></div>
+              <div className="hub-empty-state"><strong>No live arenas.</strong><Link href="/tournaments">Browse arenas →</Link></div>
             )}
           </motion.section>
 
           <motion.section className="hub-panel hub-progress-panel" variants={fadeIn} initial="initial" animate="animate" transition={{ duration: 0.4, delay: 0.3 }}>
-            <div className="hub-panel-heading"><div><h2>Player trajectory</h2><p>Keep stacking clean decisions.</p></div><span className="hub-panel-label">Rank track</span></div>
+            <div className="hub-panel-heading"><div><h2>Your record</h2><p>Keep moving.</p></div><span className="hub-panel-label">RANK</span></div>
             <div className="hub-progress-body">
               <div className="hub-progress-head"><strong className="hub-progress-rank">Your record</strong><span className="hub-progress-level">CURRENT RUN</span></div>
               <div className="hub-progress-metrics"><div className="hub-progress-metric"><span>Wins</span><strong>{wins}</strong></div><div className="hub-progress-metric"><span>Trades</span><strong>{trades}</strong></div></div>

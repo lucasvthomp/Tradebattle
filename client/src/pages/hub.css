@@ -1098,3 +1098,100 @@
 @media (prefers-reduced-motion: reduce) {
   .hub-top-play, .hub-feature-action, .hub-ad-card { transition: none; }
 }
+
+/* Action-first lobby treatment: the generated art is used as quiet material,
+   while the words stay short and legible over the negative space. */
+.hub-feature-banner {
+  background-image:
+    linear-gradient(90deg, rgba(33, 17, 63, .98) 0%, rgba(33, 17, 63, .86) 34%, rgba(33, 17, 63, .24) 78%, rgba(33, 17, 63, .48) 100%),
+    url("/assets/tradebattle-visuals/hub-arena-banner.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.hub-feature-art {
+  display: none;
+}
+
+.hub-feature-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.hub-feature-secondary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid rgba(243, 198, 91, .32);
+  border-radius: 8px;
+  color: #f3c65b;
+  font-size: 11px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.hub-feature-secondary:hover {
+  border-color: rgba(243, 198, 91, .68);
+  background: rgba(243, 198, 91, .1);
+  transform: translateY(-2px);
+}
+
+.hub-ad-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.hub-ad-card {
+  min-height: 142px;
+  padding: 19px 20px;
+  background-size: cover;
+  background-position: center;
+}
+
+.hub-ad-card::before {
+  opacity: .35;
+  background: linear-gradient(90deg, rgba(17, 8, 36, .72), transparent 80%);
+}
+
+.hub-ad-arena {
+  background-image: linear-gradient(90deg, rgba(33, 17, 63, .92), rgba(33, 17, 63, .2)), url("/assets/tradebattle-visuals/hub-arena-banner.png");
+}
+
+.hub-ad-blitz {
+  background-image: linear-gradient(90deg, rgba(25, 15, 58, .94), rgba(25, 15, 58, .2)), url("/assets/tradebattle-visuals/hub-blitz-banner.png");
+}
+
+.hub-ad-rewards {
+  background-image: linear-gradient(90deg, rgba(8, 53, 63, .94), rgba(8, 53, 63, .18)), url("/assets/tradebattle-visuals/hub-rewards-pattern.png");
+}
+
+.hub-ad-card > svg {
+  z-index: 2;
+}
+
+.hub-launch-list {
+  gap: 7px;
+  padding-top: 17px;
+}
+
+.hub-launch-card {
+  min-height: 65px;
+}
+
+@media (max-width: 780px) {
+  .hub-ad-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-ad-card {
+    min-height: 118px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hub-feature-secondary { transition: none; }
+  .hub-feature-secondary:hover { transform: none; }
+}
