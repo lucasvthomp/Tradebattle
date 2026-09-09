@@ -2479,3 +2479,186 @@ body {
   outline: 2px solid var(--tb-accent-3) !important;
   outline-offset: 2px;
 }
+
+/* Market palette rollback: teal surfaces, money-green signal, gold rewards. */
+:root,
+.dark,
+.tradebattle-site {
+  --tb-purple-950: #06151c !important;
+  --tb-purple-900: #08232a !important;
+  --tb-purple-850: #092a33 !important;
+  --tb-purple-800: #0d3440 !important;
+  --tb-purple-750: #103e49 !important;
+  --tb-purple-700: #14505c !important;
+  --tb-purple-600: #126f79 !important;
+  --tb-purple-500: #168c88 !important;
+  --tb-purple-400: #67e7bf !important;
+  --tb-purple-300: #b8f4df !important;
+  --tb-purple-wash: rgba(103, 231, 191, .12) !important;
+  --tb-purple-edge: rgba(103, 231, 191, .25) !important;
+  --tb-purple-glow: rgba(103, 231, 191, .20) !important;
+  --tb-purple-hsl: 177 73% 50% !important;
+
+  --tb-gold-800: #9f7625 !important;
+  --tb-gold-700: #b88b2f !important;
+  --tb-gold-600: #d5a73c !important;
+  --tb-gold-500: #f3c65b !important;
+  --tb-gold-400: #ffdc79 !important;
+  --tb-gold-300: #fff1b8 !important;
+  --tb-gold-hsl: 43 86% 65% !important;
+  --tb-gold-wash: rgba(243, 198, 91, .12) !important;
+  --tb-gold-edge: rgba(243, 198, 91, .34) !important;
+  --tb-gold-glow: rgba(243, 198, 91, .24) !important;
+
+  --tb-surface-950: var(--tb-purple-950) !important;
+  --tb-surface-900: var(--tb-purple-900) !important;
+  --tb-surface-850: var(--tb-purple-850) !important;
+  --tb-surface-800: var(--tb-purple-800) !important;
+  --tb-surface-750: var(--tb-purple-750) !important;
+  --tb-surface-700: var(--tb-purple-700) !important;
+  --tb-border: var(--tb-purple-edge) !important;
+  --tb-text-strong: #f2fbf8 !important;
+  --tb-text: #e5f2ef !important;
+  --tb-text-muted: #9ebbb8 !important;
+  --tb-text-subtle: #759794 !important;
+  --tb-state-positive: #67e7bf !important;
+  --tb-state-negative: #f08a8a !important;
+  --tb-state-warning: var(--tb-gold-400) !important;
+  --tb-state-info: #8ad9e0 !important;
+  --tb-accent: var(--tb-gold-500) !important;
+  --tb-accent-1: var(--tb-gold-600) !important;
+  --tb-accent-2: var(--tb-gold-500) !important;
+  --tb-accent-3: var(--tb-gold-400) !important;
+  --tb-accent-4: var(--tb-purple-400) !important;
+  --tb-gradient-page: linear-gradient(160deg, var(--tb-purple-900), var(--tb-purple-800) 52%, var(--tb-purple-900)) !important;
+  --tb-gradient-panel: linear-gradient(180deg, var(--tb-purple-800), var(--tb-purple-850)) !important;
+  --tb-gradient-panel-raised: linear-gradient(135deg, var(--tb-purple-700), var(--tb-purple-800) 72%) !important;
+  --tb-gradient-action: linear-gradient(135deg, var(--tb-gold-600), var(--tb-gold-500)) !important;
+  --tb-gradient-action-hover: linear-gradient(135deg, var(--tb-gold-500), var(--tb-gold-400)) !important;
+  --tb-gradient-accent: linear-gradient(135deg, var(--tb-purple-500), var(--tb-purple-400)) !important;
+  --tb-shadow-panel: 0 14px 36px rgba(1, 13, 17, .28), 0 0 0 1px rgba(103, 231, 191, .07) !important;
+  --tb-shadow-action: 0 10px 24px var(--tb-gold-glow) !important;
+  --site-bg: var(--tb-surface-900) !important;
+  --site-panel: var(--tb-surface-800) !important;
+  --site-panel-raised: var(--tb-surface-700) !important;
+  --site-edge: var(--tb-border) !important;
+  --site-text: var(--tb-text) !important;
+  --site-muted: var(--tb-text-muted) !important;
+  --site-mint: var(--tb-purple-400) !important;
+  --primary: var(--tb-gold-hsl) !important;
+  --primary-foreground: 177 42% 10% !important;
+  --accent: var(--tb-purple-hsl) !important;
+  --accent-foreground: 177 42% 10% !important;
+  --ring: var(--tb-gold-hsl) !important;
+  --border: 177 35% 25% !important;
+  --input: 177 42% 15% !important;
+}
+
+.tradebattle-site,
+.tradebattle-site .tradebattle-route,
+.tradebattle-site .arena-page,
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .hub-screen,
+.tradebattle-site .trading-page,
+.tradebattle-site .auth-screen,
+.tradebattle-site .leaderboard-page,
+.tradebattle-site .blitz-page,
+.tradebattle-site .shop-page,
+.tradebattle-site .people-page,
+.tradebattle-site .tournaments-page,
+.tradebattle-site .archive-page,
+.tradebattle-site .profile-page,
+.tradebattle-site .deposit-page,
+.tradebattle-site .admin-page,
+.tradebattle-site .transactions-page,
+.tradebattle-site .tournament-view-page {
+  background: var(--tb-gradient-page) !important;
+  color: var(--tb-text) !important;
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: var(--tb-surface-850) !important;
+  border-color: var(--tb-purple-edge) !important;
+  color: var(--tb-text) !important;
+}
+
+.tradebattle-site .card,
+.tradebattle-site [data-slot="card"],
+.tradebattle-site .hub-panel,
+.tradebattle-site .hub-stat-card,
+.tradebattle-site .blitz-card,
+.tradebattle-site .people-card,
+.tradebattle-site .people-toolbar,
+.tradebattle-site .tournament-card-surface,
+.tradebattle-site .tournament-brief-card,
+.tradebattle-site .shop-spotlight,
+.tradebattle-site .arena-promo-card,
+.tradebattle-site .mode-card,
+.tradebattle-site .how-step,
+.tradebattle-site .auth-panel,
+.tradebattle-site .auth-simple-card {
+  background: var(--tb-gradient-panel) !important;
+  border-color: var(--tb-purple-edge) !important;
+  color: var(--tb-text) !important;
+}
+
+.tradebattle-site input,
+.tradebattle-site textarea,
+.tradebattle-site select,
+.tradebattle-site [role="combobox"] {
+  background: var(--tb-surface-950) !important;
+  border-color: var(--tb-purple-edge) !important;
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site .tradebattle-sidebar a.sidebar-active-indicator,
+.tradebattle-site .tradebattle-sidebar button.sidebar-active-indicator {
+  background: var(--tb-purple-600) !important;
+  color: #ffffff !important;
+  border-color: var(--tb-gold-500) !important;
+  box-shadow: inset 3px 0 0 var(--tb-gold-500), 0 8px 20px rgba(103, 231, 191, .16) !important;
+}
+
+.tradebattle-site .tradebattle-sidebar a:not(.sidebar-active-indicator),
+.tradebattle-site .tradebattle-sidebar button:not(.sidebar-active-indicator) {
+  color: var(--tb-text-muted) !important;
+}
+
+.tradebattle-site .tradebattle-sidebar a:hover,
+.tradebattle-site .tradebattle-sidebar button:hover {
+  background: var(--tb-purple-wash) !important;
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site .sidebar-nav-icon,
+.tradebattle-site .sidebar-active-indicator .sidebar-nav-icon,
+.tradebattle-site .sidebar-active-indicator svg,
+.tradebattle-site .sidebar-active-indicator svg * {
+  color: inherit !important;
+  fill: currentColor !important;
+  stroke: currentColor !important;
+}
+
+.tradebattle-site .sidebar-active-indicator .sidebar-nav-icon {
+  color: #ffffff !important;
+}
+
+.tradebattle-site .tradebattle-sidebar .sidebar-player-avatar {
+  background: var(--tb-purple-600) !important;
+  color: #ffffff !important;
+}
+
+.tradebattle-site .tradebattle-footer p,
+.tradebattle-site .tradebattle-footer a,
+.tradebattle-site .tradebattle-footer h4,
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar {
+  color: var(--tb-text) !important;
+}
+
+.tradebattle-site .tradebattle-footer a:hover,
+.tradebattle-site .tradebattle-header a:hover {
+  color: var(--tb-gold-400) !important;
+}

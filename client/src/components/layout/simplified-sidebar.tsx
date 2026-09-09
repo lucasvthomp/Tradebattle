@@ -2,20 +2,20 @@ import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserPreferences } from "@/contexts/UserPreferencesContext";
 import { Button } from "@/components/ui/button";
+import type { IconType } from "react-icons";
 import {
-  Archive,
-  Gift,
-  Home,
-  LifeBuoy,
-  Menu,
-  Settings,
-  Shield,
-  Swords,
-  Trophy,
-  Users,
-  Zap,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+  FaArchive,
+  FaBars,
+  FaBolt,
+  FaCog,
+  FaFlagCheckered,
+  FaGift,
+  FaHome,
+  FaLifeRing,
+  FaShieldAlt,
+  FaTrophy,
+  FaUsers,
+} from "react-icons/fa";
 import { useState } from "react";
 import { CodeRedemptionDialog } from "@/components/code-redemption-dialog";
 
@@ -28,23 +28,23 @@ export function SimplifiedSidebar() {
 
   const navItems = [
     ...(user ? [
-      { href: "/hub", label: t('hub'), icon: Home },
-      { href: "/tournaments", label: t('tournaments'), icon: Swords },
-      { href: "/blitz", label: "Blitz", icon: Zap },
-      { href: "/leaderboard", label: t('leaderboard'), icon: Trophy },
-      { href: "/people", label: t('people'), icon: Users },
-      { href: "/shop", label: "Rewards", icon: Gift },
-      { href: "/contact", label: t('support'), icon: LifeBuoy },
+      { href: "/hub", label: t('hub'), icon: FaHome },
+      { href: "/tournaments", label: t('tournaments'), icon: FaFlagCheckered },
+      { href: "/blitz", label: "Blitz", icon: FaBolt },
+      { href: "/leaderboard", label: t('leaderboard'), icon: FaTrophy },
+      { href: "/people", label: t('people'), icon: FaUsers },
+      { href: "/shop", label: "Rewards", icon: FaGift },
+      { href: "/contact", label: t('support'), icon: FaLifeRing },
     ] : [
-      { href: "/contact", label: t('support'), icon: LifeBuoy },
+      { href: "/contact", label: t('support'), icon: FaLifeRing },
     ]),
   ];
 
   const userItems = user ? [
-    { href: "/profile", label: t('settings'), icon: Settings },
-    { href: "/archive", label: t('archive'), icon: Archive },
+    { href: "/profile", label: t('settings'), icon: FaCog },
+    { href: "/archive", label: t('archive'), icon: FaArchive },
     ...(user.subscriptionTier === 'administrator' || user.subscriptionTier === 'admin' ? [
-      { href: "/admin", label: "Admin", icon: Shield }
+      { href: "/admin", label: "Admin", icon: FaShieldAlt }
     ] : [])
   ] : [];
 
@@ -54,7 +54,7 @@ export function SimplifiedSidebar() {
     return false;
   };
 
-  const renderNavItem = (item: { href: string; label: string; icon: LucideIcon }) => (
+  const renderNavItem = (item: { href: string; label: string; icon: IconType }) => (
     <div key={item.href}>
       <Link
         href={item.href}
@@ -74,7 +74,7 @@ export function SimplifiedSidebar() {
       >
         <item.icon
           aria-hidden="true"
-          className="h-5 w-5 flex-shrink-0"
+          className="sidebar-nav-icon h-5 w-5 flex-shrink-0"
           style={{
             marginRight: expanded ? '12px' : '0',
             transition: 'margin 300ms ease',
@@ -119,7 +119,8 @@ export function SimplifiedSidebar() {
               color: 'var(--tb-text)',
             }}
           >
-            <Menu
+            <FaBars
+              aria-hidden="true"
               className="w-5 h-5 flex-shrink-0"
               style={{
                 marginRight: expanded ? '12px' : '0',
@@ -189,9 +190,9 @@ export function SimplifiedSidebar() {
                 justifyContent: 'flex-start',
               }}
             >
-              <Gift
+              <FaGift
                 aria-hidden="true"
-                className="h-5 w-5 flex-shrink-0"
+                className="sidebar-nav-icon h-5 w-5 flex-shrink-0"
                 style={{
                   marginRight: expanded ? '12px' : '0',
                   transition: 'margin 300ms ease',

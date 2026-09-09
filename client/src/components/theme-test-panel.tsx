@@ -16,20 +16,20 @@ type ThemePreset = {
   accentLight: string;
 };
 
-const DEFAULT_THEME = "trade";
+const DEFAULT_THEME = "market";
 const STORAGE_KEY = "tradebattle-theme-preview";
 
 const themes: ThemePreset[] = [
   {
-    id: "trade",
-    label: "Trade",
-    swatches: ["#7c3aed", "#f3c65b"],
-    deep: "#0f0724",
-    base: "#140b2b",
-    mid: "#21113f",
-    raised: "#2d1958",
-    purple: "#7c3aed",
-    purpleLight: "#a77bff",
+    id: "market",
+    label: "Market",
+    swatches: ["#168c88", "#f3c65b"],
+    deep: "#06151c",
+    base: "#08232a",
+    mid: "#0d3440",
+    raised: "#14505c",
+    purple: "#168c88",
+    purpleLight: "#67e7bf",
     accent: "#f3c65b",
     accentDark: "#d5a73c",
     accentLight: "#ffdc79",
@@ -143,7 +143,7 @@ function applyTheme(theme: ThemePreset) {
   };
 
   for (const target of targets) {
-    for (const [name, value] of Object.entries(variables)) target.style.setProperty(name, value);
+    for (const [name, value] of Object.entries(variables)) target.style.setProperty(name, value, "important");
   }
 }
 
@@ -152,7 +152,9 @@ export function ThemeTestPanel() {
   const [activeTheme, setActiveTheme] = useState(DEFAULT_THEME);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY) || DEFAULT_THEME;
+    const stored = window.localStorage.getItem(STORAGE_KEY);
+    const saved = stored === "trade" ? DEFAULT_THEME : (stored || DEFAULT_THEME);
+    if (stored === "trade") window.localStorage.setItem(STORAGE_KEY, DEFAULT_THEME);
     const theme = themes.find((item) => item.id === saved) || themes[0];
     setActiveTheme(theme.id);
     applyTheme(theme);
@@ -211,7 +213,7 @@ export function ThemeTestPanel() {
           ))}
         </div>
         <button type="button" className="theme-test-reset" onClick={resetTheme}>
-          <RotateCcw size={13} aria-hidden="true" /> Reset Trade theme
+          <RotateCcw size={13} aria-hidden="true" /> Reset Market theme
         </button>
       </div>
     </aside>
