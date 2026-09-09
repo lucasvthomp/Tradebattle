@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/use-auth';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Copy, Check, Loader2, AlertCircle, CheckCircle2, Clock, Wallet, X, RefreshCw } from 'lucide-react';
 import { GameIcon } from '@/components/game-icons';
 
@@ -13,6 +13,7 @@ export default function Deposit() {
   const [amount, setAmount] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState('usdttrc20');
   const [copied, setCopied] = useState(false);
+  const [copiedAmount, setCopiedAmount] = useState(false);
   const [error, setError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState<number>(1);
   const [pendingDeposits, setPendingDeposits] = useState<any[]>([]);
@@ -93,8 +94,26 @@ export default function Deposit() {
     }
   }
 
+  async function copyAmount() {
+    if (!payment?.pay_amount || !payment?.pay_currency) return;
+
+    try {
+      await navigator.clipboard.writeText(`${payment.pay_amount} ${payment.pay_currency.toUpperCase()}`);
+      setCopiedAmount(true);
+      setTimeout(() => setCopiedAmount(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy amount:', err);
+    }
+  }
+
   // Create payment
   async function createDeposit() {
+    const numericAmount = Number.parseFloat(amount);
+    if (!Number.isFinite(numericAmount) || numericAmount < minimumAmount) {
+      setError(`Enter at least $${minimumAmount.toFixed(2)} to continue.`);
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -104,7 +123,7 @@ export default function Deposit() {
         cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: parseFloat(amount),
+          amount: numericAmount,
           currency: selectedCurrency,
         }),
       });
@@ -143,6 +162,8 @@ export default function Deposit() {
       localStorage.setItem('pendingDeposits', JSON.stringify(updated));
     }
     setPayment(null);
+    setCopied(false);
+    setCopiedAmount(false);
     setError('');
   }
 
@@ -207,11 +228,11 @@ export default function Deposit() {
               fontWeight: '700',
               margin: 0,
             }}>
-              Add arena cash
+              Deposit
             </h1>
           </div>
           <p style={{ color: '#8A93A6', fontSize: '16px', margin: 0 }}>
-            Add arena cash with cryptocurrency
+            Add cash with cryptocurrency
           </p>
         </div>
 
@@ -377,7 +398,7 @@ export default function Deposit() {
                 fontWeight: '600',
                 marginBottom: '24px',
               }}>
-                Set up a cash add
+                Set up a deposit
               </h3>
 
               {error && (
@@ -524,7 +545,7 @@ export default function Deposit() {
                 ) : (
                   <>
                     <Wallet size={20} />
-                    Add arena cash
+                    Continue to payment
                   </>
                 )}
               </button>
@@ -569,14 +590,21 @@ export default function Deposit() {
 
             {/* QR Code */}
             <div style={{
-              background: '#ffffff',
-              padding: '24px',
+              background: 'transparent',
+              border: '1px solid rgba(45, 127, 201, .34)',
+              padding: '14px',
               borderRadius: '12px',
               marginBottom: '24px',
               display: 'flex',
               justifyContent: 'center',
             }}>
-              <QRCodeSVG value={payment.pay_address} size={220} />
+              <QRCodeCanvas
+                value={payment.pay_address}
+                size={220}
+                level="H"
+                fgColor="#2d7fc9"
+                bgColor="transparent"
+              />
             </div>
 
             {/* Address */}
@@ -639,20 +667,39 @@ export default function Deposit() {
                 Amount to send
               </label>
               <div style={{
-                background: 'transparent',
-                border: '2px solid #67E7BF',
+                background: '#0A1928',
+                border: '1px solid rgba(227, 179, 65, .34)',
                 borderRadius: '8px',
-                padding: '16px',
-                textAlign: 'center',
+                padding: '14px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
               }}>
-                <div style={{
-                  color: '#67E7BF',
-                  fontSize: 'clamp(18px, 6vw, 28px)',
-                  fontWeight: '700',
+                <code style={{
+                  flex: 1,
+                  color: '#F1F5F9',
+                  fontSize: '14px',
                   wordBreak: 'break-word',
+                  fontFamily: 'monospace',
                 }}>
                   {payment.pay_amount} {payment.pay_currency.toUpperCase()}
-                </div>
+                </code>
+                <button
+                  onClick={copyAmount}
+                  aria-label="Copy amount to send"
+                  style={{
+                    padding: '8px',
+                    background: copiedAmount ? '#F2C76A' : '#E3B341',
+                    border: 'none',
+                    borderRadius: '6px',
+                    color: '#F8FAFC',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  {copiedAmount ? <Check size={18} /> : <Copy size={18} />}
+                </button>
               </div>
             </div>
 
