@@ -2552,6 +2552,26 @@ body {
   --ring: var(--tb-gold-hsl) !important;
   --border: 177 35% 25% !important;
   --input: 177 42% 15% !important;
+  --background: 190 52% 8% !important;
+  --foreground: 168 30% 96% !important;
+  --card: 183 46% 13% !important;
+  --card-foreground: 168 30% 96% !important;
+  --popover: 183 46% 13% !important;
+  --popover-foreground: 168 30% 96% !important;
+  --secondary: 180 40% 18% !important;
+  --secondary-foreground: 168 30% 96% !important;
+  --muted: 180 30% 20% !important;
+  --muted-foreground: 170 18% 70% !important;
+  --accent-foreground: 177 42% 10% !important;
+  --sidebar-bg: 190 52% 9% !important;
+  --hover-overlay: 180 40% 24% !important;
+  --secondary-text: 170 18% 70% !important;
+  --disabled-text: 172 16% 42% !important;
+  --neutral-gray: 174 12% 58% !important;
+  --profit-green: 163 72% 65% !important;
+  --cyan: 177 73% 50% !important;
+  --purple: 177 73% 50% !important;
+  --shadow-cyan: 0 0 24px rgba(103, 231, 191, .22) !important;
 }
 
 .tradebattle-site,
