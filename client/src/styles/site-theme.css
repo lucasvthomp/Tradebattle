@@ -3067,3 +3067,230 @@ body,
 .tradebattle-site .blitz-playbook-step p {
   color: var(--tb-text-muted) !important;
 }
+
+/* Shared polish pass: lighter shell, one entry motion, and clear utility states. */
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer {
+  background: var(--tb-surface-800) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .tradebattle-footer {
+  box-shadow: inset 0 1px rgba(255, 255, 255, .035), 0 -16px 36px rgba(1, 13, 25, .12) !important;
+}
+
+.tradebattle-site .tradebattle-sidebar {
+  box-shadow: 8px 0 30px rgba(1, 13, 25, .18) !important;
+}
+
+.tradebattle-site .tradebattle-header button[data-tour="balance"] {
+  background: var(--tb-surface-750) !important;
+  border-color: var(--tb-gold-edge) !important;
+  color: var(--tb-gold-400) !important;
+  box-shadow: 0 8px 20px rgba(227, 179, 65, .12) !important;
+}
+
+.tradebattle-site .tradebattle-header button[data-tour="balance"] svg {
+  color: var(--tb-gold-400) !important;
+}
+
+.tradebattle-site .tradebattle-header .tradebattle-avatar-status {
+  z-index: 20 !important;
+}
+
+.page-transition {
+  animation: tradebattle-route-in .32s cubic-bezier(.2, .8, .2, 1) both;
+  transform-origin: top center;
+}
+
+@keyframes tradebattle-route-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition { animation: none; }
+}
+
+/* Help HQ shortcuts make the support route feel like a useful station. */
+.tradebattle-site .help-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.tradebattle-site .help-quick-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 62px;
+  padding: 12px 13px;
+  border: 1px solid var(--tb-purple-edge);
+  border-radius: 10px;
+  background: var(--tb-gradient-panel);
+  color: var(--tb-gold-400);
+  text-decoration: none;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.tradebattle-site .help-quick-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--tb-gold-edge);
+  background: var(--tb-gradient-panel-raised);
+}
+
+.tradebattle-site .help-quick-card span {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.tradebattle-site .help-quick-card strong {
+  color: var(--tb-text-strong);
+  font-size: 12px;
+}
+
+.tradebattle-site .help-quick-card small {
+  color: var(--tb-text-muted);
+  font-size: 10px;
+}
+
+/* Rankings podium: the winner arrives last and rises above the two side steps. */
+.tradebattle-site .rankings-podium {
+  position: relative;
+  min-height: 270px;
+  margin: 0 0 20px;
+  padding: 22px 18px 0;
+  overflow: hidden;
+  border: 1px solid var(--tb-purple-edge) !important;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 0%, var(--tb-gold-wash), transparent 42%),
+    var(--tb-gradient-panel) !important;
+}
+
+.tradebattle-site .rankings-podium-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
+  gap: 14px;
+  height: 245px;
+}
+
+.tradebattle-site .rankings-podium-slot {
+  display: grid;
+  align-items: end;
+  justify-items: center;
+  min-width: 0;
+  animation: podium-rise .68s cubic-bezier(.2, .9, .2, 1) both;
+}
+
+.tradebattle-site .rankings-podium-place-2 { animation-delay: .08s; }
+.tradebattle-site .rankings-podium-place-1 { animation-delay: .24s; }
+.tradebattle-site .rankings-podium-place-3 { animation-delay: .16s; }
+
+.tradebattle-site .rankings-podium-player {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  width: 100%;
+  color: var(--tb-text-strong);
+  text-align: center;
+}
+
+.tradebattle-site .rankings-podium-player > img {
+  object-fit: contain;
+}
+
+.tradebattle-site .rankings-podium-player strong {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--tb-text-strong);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tradebattle-site .rankings-podium-player span {
+  color: var(--tb-text-muted);
+  font-family: "Courier New", monospace;
+  font-size: 10px;
+}
+
+.tradebattle-site .rankings-podium-step {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid var(--tb-gold-edge);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(180deg, var(--tb-surface-700), var(--tb-surface-800));
+  color: var(--tb-gold-400);
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.tradebattle-site .rankings-podium-place-1 .rankings-podium-step { height: 72px; }
+.tradebattle-site .rankings-podium-place-2 .rankings-podium-step { height: 50px; }
+.tradebattle-site .rankings-podium-place-3 .rankings-podium-step { height: 36px; }
+
+.tradebattle-site .rankings-podium-confetti {
+  position: absolute;
+  inset: 0;
+  opacity: .7;
+  background-image:
+    radial-gradient(circle, var(--tb-gold-400) 0 2px, transparent 2.5px),
+    radial-gradient(circle, var(--tb-purple-400) 0 1.5px, transparent 2px),
+    radial-gradient(circle, var(--tb-state-positive) 0 1.5px, transparent 2px);
+  background-position: 12% 24%, 88% 28%, 74% 12%;
+  background-size: 90px 100px, 120px 120px, 140px 140px;
+  animation: podium-confetti 3s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes podium-rise {
+  from { opacity: 0; transform: translateY(42px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes podium-confetti {
+  from { transform: translateY(-3px); opacity: .4; }
+  to { transform: translateY(5px); opacity: .85; }
+}
+
+@media (max-width: 640px) {
+  .tradebattle-site .help-quick-grid { grid-template-columns: 1fr; }
+  .tradebattle-site .rankings-podium { padding-inline: 8px; }
+  .tradebattle-site .rankings-podium-grid { gap: 6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tradebattle-site .help-quick-card,
+  .tradebattle-site .rankings-podium-slot,
+  .tradebattle-site .rankings-podium-confetti { animation: none; transition: none; }
+}
+
+/* Deposit uses the same board surfaces and gold action hierarchy as the rest. */
+.tradebattle-site .deposit-page {
+  color: var(--tb-text) !important;
+}
+
+.tradebattle-site .deposit-page h1,
+.tradebattle-site .deposit-page h2,
+.tradebattle-site .deposit-page h3 {
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site .deposit-page button:enabled {
+  border-color: var(--tb-gold-edge) !important;
+}
+
+.tradebattle-site .deposit-page input:focus {
+  border-color: var(--tb-gold-400) !important;
+  box-shadow: 0 0 0 3px var(--tb-gold-wash) !important;
+}

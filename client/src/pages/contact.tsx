@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Mail, Clock, Search, MessageSquare, Zap } from "lucide-react";
+import { Mail, Clock, Search, MessageSquare, Zap, Phone, BookOpen, Bug } from "lucide-react";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -130,7 +130,7 @@ export default function Support() {
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-8 md:py-9">
           <div className="flex items-center gap-3 mb-2">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: "rgba(103,231,191,.12)" }}>
-              <MessageSquare className="w-5 h-5" style={{ color: "#67E7BF" }} />
+              <Phone className="w-5 h-5" style={{ color: "#67E7BF" }} />
             </div>
             <h1 className="text-3xl font-black" style={{ color: "#F1F5F9" }}>Help HQ</h1>
           </div>
@@ -153,9 +153,24 @@ export default function Support() {
           </div>
         </div>
 
+        <div className="help-quick-grid mb-7" aria-label="Help shortcuts">
+          <a href="#help-faqs" className="help-quick-card">
+            <BookOpen className="h-4 w-4" />
+            <span><strong>Playbooks</strong><small>Find a fast answer</small></span>
+          </a>
+          <a href="#contact-help" className="help-quick-card">
+            <Phone className="h-4 w-4" />
+            <span><strong>Talk to Help</strong><small>Send the details</small></span>
+          </a>
+          <a href="#contact-help" className="help-quick-card">
+            <Bug className="h-4 w-4" />
+            <span><strong>Report a bug</strong><small>Help us fix the field</small></span>
+          </a>
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-6 md:gap-8">
           {/* FAQs */}
-          <div className="lg:col-span-2 space-y-6">
+          <div id="help-faqs" className="lg:col-span-2 space-y-6">
             {filteredFaqs.map((cat, ci) => (
               <div key={ci} style={cardStyle} className="overflow-hidden">
                 <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
@@ -203,7 +218,7 @@ export default function Support() {
           {/* Sidebar */}
           <div className="space-y-4 lg:sticky lg:top-24">
             {/* Contact form */}
-            <div style={cardStyle} className="p-4">
+            <div id="contact-help" style={cardStyle} className="p-4">
               <div className="flex items-center gap-2 mb-4">
                 <Zap className="w-4 h-4" style={{ color: "#67E7BF" }} />
                 <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>Contact Help</span>

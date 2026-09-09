@@ -6,6 +6,7 @@ import { useState } from "react";
 import { BalanceManagementModal } from "@/components/balance/BalanceManagementModal";
 import { MarketStatus } from "@/components/market-status";
 import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
+import { AvatarWithStatus } from "@/components/ui/avatar-with-status";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,7 +87,7 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     onClick={onChatToggle}
                     className={`h-10 w-10 p-0 min-w-[44px] min-h-[44px] flex items-center justify-center border transition-colors ${chatOpen ? "sidebar-active-indicator" : "border-border/30 hover:bg-muted/50"}`}
                   >
-                    <MessageSquare className="w-4 h-4" />
+                    <MessageSquare className="w-4 h-4" fill={chatOpen ? "currentColor" : "none"} />
                   </Button>
                 )}
                 <NotificationDropdown />
@@ -94,7 +95,13 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="h-10 flex items-center space-x-2 px-3 border border-border/30 hover:bg-muted/50 transition-colors">
-                      <User className="w-4 h-4" />
+                      <AvatarWithStatus
+                        className="h-7 w-7"
+                        src={user.profilePicture}
+                        alt={`${user.username || "Player"} profile picture`}
+                        lastActivity={user.lastActivity}
+                        statusSize="sm"
+                      />
                       <span className="text-sm font-medium">
                         {user?.username || "User"}
                       </span>

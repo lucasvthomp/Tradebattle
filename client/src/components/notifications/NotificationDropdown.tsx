@@ -211,7 +211,7 @@ export function NotificationDropdown() {
           className="h-10 w-10 md:h-10 md:w-10 p-0 relative flex items-center justify-center hover:bg-muted/50 transition-colors min-w-[44px] min-h-[44px]"
           style={{ border: 'none' }}
         >
-          <Bell className="w-4 h-4" />
+          <Bell className="w-4 h-4" fill={open ? "currentColor" : "none"} />
           {unreadCount > 0 && (
             <span
               className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold"
