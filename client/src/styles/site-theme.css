@@ -2953,6 +2953,17 @@ body {
   opacity: .9 !important;
 }
 
+.tradebattle-site .shop-spotlight .shop-spotlight-art {
+  top: 50% !important;
+  right: clamp(18px, 4vw, 42px) !important;
+  bottom: auto !important;
+  width: clamp(160px, 19vw, 210px) !important;
+  height: clamp(160px, 19vw, 210px) !important;
+  transform: translateY(-50%) !important;
+  object-fit: contain !important;
+  opacity: .94 !important;
+}
+
 @media (max-width: 780px) {
   .tradebattle-site .tournament-hero-strip .tournament-hero-art {
     top: 50% !important;
@@ -2961,6 +2972,15 @@ body {
     width: 150px !important;
     height: 150px !important;
     opacity: .54 !important;
+  }
+
+  .tradebattle-site .shop-spotlight .shop-spotlight-art {
+    top: 50% !important;
+    right: 8px !important;
+    bottom: auto !important;
+    width: 138px !important;
+    height: 138px !important;
+    opacity: .72 !important;
   }
 }
 
