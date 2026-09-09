@@ -3294,3 +3294,87 @@ body,
   border-color: var(--tb-gold-400) !important;
   box-shadow: 0 0 0 3px var(--tb-gold-wash) !important;
 }
+
+/* Final contrast correction: keep the whole board close to the footer's
+ * deep navy, with only a restrained lift for the page canvas and panels. */
+.tradebattle-site {
+  --tb-purple-950: #06111f !important;
+  --tb-purple-900: #081622 !important;
+  --tb-purple-850: #0a1928 !important;
+  --tb-purple-800: #0c1c32 !important;
+  --tb-purple-750: #0e2235 !important;
+  --tb-purple-700: #123052 !important;
+  --tb-purple-600: #173b61 !important;
+  --tb-surface-950: #06111f !important;
+  --tb-surface-900: #081622 !important;
+  --tb-surface-850: #0a1928 !important;
+  --tb-surface-800: #0c1c32 !important;
+  --tb-surface-750: #0e2235 !important;
+  --tb-surface-700: #123052 !important;
+  --tb-surface-600: #173b61 !important;
+  --tb-gradient-page: linear-gradient(160deg, #06111f 0%, #081622 52%, #06111f 100%) !important;
+  --tb-gradient-panel: linear-gradient(180deg, #0c1c32, #081622) !important;
+  --tb-gradient-panel-raised: linear-gradient(135deg, #123052, #0c1c32 72%) !important;
+  --site-bg: #06111f !important;
+  --site-panel: #0a1928 !important;
+  --site-panel-raised: #0e2235 !important;
+  --background: 213 52% 8% !important;
+  --card: 211 45% 12% !important;
+  --popover: 211 45% 12% !important;
+  --secondary: 209 38% 16% !important;
+  --muted: 209 32% 18% !important;
+}
+
+.tradebattle-site,
+.tradebattle-site .tradebattle-route,
+.tradebattle-site main,
+.tradebattle-site .hub-screen,
+.tradebattle-site .blitz-page,
+.tradebattle-site .trading-page {
+  background: var(--tb-gradient-page) !important;
+  background-color: transparent !important;
+}
+
+.tradebattle-site .tradebattle-route::before {
+  background-image:
+    radial-gradient(circle at 82% -10%, rgba(39, 169, 255, .035), transparent 26rem),
+    radial-gradient(circle at 8% 100%, rgba(32, 216, 194, .018), transparent 22rem) !important;
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar {
+  background: var(--tb-surface-900) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .tradebattle-footer {
+  background: var(--tb-surface-950) !important;
+  border-color: var(--tb-purple-edge) !important;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025), 0 -12px 28px rgba(1, 13, 25, .22) !important;
+}
+
+.tradebattle-site .tradebattle-header button[data-tour="balance"] {
+  background: var(--tb-surface-900) !important;
+}
+
+/* Blue-led money palette: blue carries the surfaces, money green is reserved
+ * for live/profit signals, and gold remains the primary action accent. */
+.tradebattle-site {
+  --tb-purple-500: #2d7fc9 !important;
+  --tb-purple-400: #3db99b !important;
+  --tb-purple-300: #a8ead5 !important;
+  --tb-purple-wash: rgba(45, 127, 201, .095) !important;
+  --tb-purple-edge: rgba(112, 158, 194, .20) !important;
+  --tb-purple-glow: rgba(61, 185, 155, .14) !important;
+  --tb-purple-hsl: 209 63% 48% !important;
+  --tb-state-positive: #3db99b !important;
+  --tb-state-info: #5ca8e7 !important;
+  --tb-accent: var(--tb-gold-500) !important;
+  --tb-accent-4: var(--tb-purple-400) !important;
+  --tb-gradient-accent: linear-gradient(135deg, #2d7fc9, #3db99b) !important;
+  --site-mint: #3db99b !important;
+  --arena-mint: #3db99b !important;
+  --cyan: #55b8e8 !important;
+  --purple: 209 63% 48% !important;
+  --profit-green: 158 50% 48% !important;
+}
