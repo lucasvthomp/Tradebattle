@@ -2893,3 +2893,157 @@ body {
     linear-gradient(135deg, #142e5a, #0e2040 72%) !important;
   border-color: rgba(118, 169, 198, .22) !important;
 }
+
+/* Final ocean cleanup: override the older purple trading-floor rules and keep
+ * the competition artwork inside its hero instead of cropping it below the fold. */
+.tradebattle-site .trading-page {
+  background: var(--tb-gradient-page) !important;
+  color: var(--tb-text) !important;
+}
+
+.tradebattle-site .trading-page .trading-sidebar-rail {
+  background: var(--tb-gradient-panel) !important;
+  border-color: var(--tb-purple-edge) !important;
+  box-shadow: -12px 0 36px rgba(1, 13, 25, .25) !important;
+}
+
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="rgba(167, 123, 255"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="rgba(167,123,255"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#24153F"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#24153f"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#21113F"],
+.tradebattle-site .trading-page .trading-sidebar-rail [style*="#21113f"] {
+  background: var(--tb-gradient-panel) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .trade-status-banner {
+  border-bottom-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .trade-status-banner.is-open {
+  background: var(--tb-gold-wash) !important;
+  color: var(--tb-gold-400) !important;
+}
+
+.tradebattle-site .trade-status-banner.is-scheduled {
+  background: var(--tb-purple-wash) !important;
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site .trade-status-copy {
+  color: var(--tb-text-muted) !important;
+}
+
+.tradebattle-site .trade-success-banner,
+.tradebattle-site .trade-scheduled-banner {
+  color: var(--tb-text-strong) !important;
+  background: var(--tb-gold-wash) !important;
+  border-bottom-color: var(--tb-gold-edge) !important;
+}
+
+.tradebattle-site .tournament-hero-strip .tournament-hero-art {
+  top: 50% !important;
+  right: clamp(18px, 4vw, 52px) !important;
+  bottom: auto !important;
+  width: clamp(150px, 19vw, 230px) !important;
+  height: clamp(150px, 19vw, 230px) !important;
+  transform: translateY(-50%) !important;
+  object-fit: contain !important;
+  opacity: .9 !important;
+}
+
+@media (max-width: 780px) {
+  .tradebattle-site .tournament-hero-strip .tournament-hero-art {
+    top: 50% !important;
+    right: 8px !important;
+    bottom: auto !important;
+    width: 150px !important;
+    height: 150px !important;
+    opacity: .54 !important;
+  }
+}
+
+/* Remove remaining plum-era islands from chat, player pop-outs, and Blitz. */
+body,
+.tradebattle-site,
+.tradebattle-site .tradebattle-route,
+.tradebattle-site .tradebattle-route::before,
+.tradebattle-site main {
+  background-color: var(--tb-surface-950) !important;
+  color: var(--tb-text) !important;
+}
+
+.tradebattle-site .tradebattle-route::before {
+  background-image:
+    radial-gradient(circle at 8% 8%, rgba(39, 169, 255, .13), transparent 22rem),
+    radial-gradient(circle at 92% 12%, rgba(227, 179, 65, .09), transparent 22rem),
+    repeating-linear-gradient(135deg, transparent 0 28px, rgba(118, 169, 198, .035) 28px 30px, transparent 30px 60px) !important;
+}
+
+.tradebattle-site .chat-sidebar-panel {
+  background: var(--tb-surface-850) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .chat-message-bubble {
+  background: var(--tb-surface-700) !important;
+  border-color: var(--tb-purple-edge) !important;
+  box-shadow: 0 8px 18px rgba(1, 13, 25, .22) !important;
+}
+
+.tradebattle-site .chat-message-group.is-own .chat-message-bubble {
+  background: var(--tb-surface-600) !important;
+  border-color: var(--tb-gold-edge) !important;
+}
+
+.tradebattle-site .chat-message-group.is-own .chat-message-bubble p,
+.tradebattle-site .chat-message-group.is-other .chat-message-meta > span:first-child,
+.tradebattle-site .chat-message-group.is-own .chat-message-meta > span:first-child {
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site .tradebattle-profile-backdrop {
+  background: rgba(1, 13, 25, .78) !important;
+}
+
+.tradebattle-site .tradebattle-profile-popout {
+  background: var(--tb-gradient-panel) !important;
+  border-color: var(--tb-purple-edge) !important;
+  box-shadow: 0 28px 90px rgba(1, 13, 25, .55), 0 0 0 1px var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .blitz-page {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(39, 169, 255, .14), transparent 28rem),
+    var(--tb-gradient-page) !important;
+}
+
+.tradebattle-site .blitz-header,
+.tradebattle-site .blitz-header-mark,
+.tradebattle-site .blitz-icon-box,
+.tradebattle-site .blitz-queue-mark {
+  border-color: var(--tb-purple-edge) !important;
+  background: var(--tb-surface-700) !important;
+  color: var(--tb-gold-400) !important;
+}
+
+.tradebattle-site .blitz-info-item,
+.tradebattle-site .blitz-playbook,
+.tradebattle-site .blitz-playbook-step {
+  background: var(--tb-gradient-panel) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
+
+.tradebattle-site .blitz-info-icon {
+  background: var(--tb-gold-wash) !important;
+  color: var(--tb-gold-400) !important;
+}
+
+.tradebattle-site .blitz-playbook-step > span {
+  color: var(--tb-gold-400) !important;
+}
+
+.tradebattle-site .blitz-playbook-step p {
+  color: var(--tb-text-muted) !important;
+}

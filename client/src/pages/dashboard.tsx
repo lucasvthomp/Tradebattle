@@ -106,8 +106,8 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
     return (
       <div className="flex items-center justify-center" style={{ height: "calc(100dvh - 4rem)" }}>
         <div className="text-center">
-          <h2 className="text-xl font-semibold mb-2" style={{ color: "#C9D1E2" }}>Enter the arena</h2>
-          <p style={{ color: "#8A93A6" }}>Sign in to open the trading floor.</p>
+          <h2 className="text-xl font-semibold mb-2" style={{ color: "var(--tb-text-strong)" }}>Enter the arena</h2>
+          <p style={{ color: "var(--tb-text-muted)" }}>Sign in to open the trading floor.</p>
         </div>
       </div>
     );
@@ -122,10 +122,10 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
             <GameIcon name="trophy" size={58} />
           </div>
           <div>
-            <h3 className="text-lg font-bold mb-1" style={{ color: "#C9D1E2" }}>No live arenas</h3>
-            <p style={{ color: "#8A93A6" }}>Enter an arena to start your run</p>
+            <h3 className="text-lg font-bold mb-1" style={{ color: "var(--tb-text-strong)" }}>No live arenas</h3>
+            <p style={{ color: "var(--tb-text-muted)" }}>Enter an arena to start your run</p>
           </div>
-          <Button asChild style={{ background: "linear-gradient(135deg, #D5A73C, #F3C65B)", color: "#241137" }}>
+          <Button asChild style={{ background: "var(--tb-gradient-action)", color: "var(--tb-purple-950)" }}>
             <a href="/tournaments"><GameIcon name="swords" size={24} className="mr-2 inline-block align-middle" />Scout arenas</a>
           </Button>
         </div>
@@ -139,8 +139,8 @@ export default function Dashboard({ forcedTournamentId }: DashboardProps = {}) {
   const plIsUp = totalPL >= 0;
 
   // Glow color for the panel border based on P&L
-  const panelGlow = isUp ? "rgba(243,198,91,0.18)" : "rgba(255,61,90,0.18)";
-  const panelBorder = isUp ? "rgba(243,198,91,0.30)" : "rgba(255,61,90,0.25)";
+  const panelGlow = isUp ? "var(--tb-gold-glow)" : "rgba(255,61,90,0.18)";
+  const panelBorder = isUp ? "var(--tb-gold-edge)" : "rgba(255,61,90,0.25)";
 
   return (
     <>

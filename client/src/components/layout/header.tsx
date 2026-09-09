@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { BalanceManagementModal } from "@/components/balance/BalanceManagementModal";
 import { MarketStatus } from "@/components/market-status";
+import { NotificationDropdown } from "@/components/notifications/NotificationDropdown";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -77,6 +78,18 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
           <div className="hidden md:flex items-center space-x-3 ml-auto">
             {user ? (
               <>
+                {onChatToggle && (
+                  <Button
+                    variant="ghost"
+                    aria-label={chatOpen ? "Close chat" : "Open chat"}
+                    aria-pressed={chatOpen}
+                    onClick={onChatToggle}
+                    className={`h-10 w-10 p-0 min-w-[44px] min-h-[44px] flex items-center justify-center border transition-colors ${chatOpen ? "sidebar-active-indicator" : "border-border/30 hover:bg-muted/50"}`}
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                  </Button>
+                )}
+                <NotificationDropdown />
                 {/* User Menu */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -236,16 +249,6 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                       <span className="text-base">Loadout</span>
                     </Button>
                   </Link>
-                  <Link href="/contact">
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
-                      <span className="text-base">Help</span>
-                    </Button>
-                  </Link>
                 </div>
 
                 {/* Chat Button */}
@@ -277,6 +280,16 @@ export default function Header({ chatOpen = false, onChatToggle }: HeaderProps) 
                     >
                       <Settings className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
                       <span className="text-base">Settings</span>
+                    </Button>
+                  </Link>
+                  <Link href="/contact">
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start h-12 hover:bg-muted/50 px-4"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <Phone className="w-5 h-5 mr-3" style={{ color: '#94A3B8' }} />
+                      <span className="text-base">Help</span>
                     </Button>
                   </Link>
                   <Link href="/archive">

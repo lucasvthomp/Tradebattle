@@ -11,7 +11,7 @@ import {
   FaFlagCheckered,
   FaGift,
   FaHome,
-  FaLifeRing,
+  FaPhone,
   FaShieldAlt,
   FaTrophy,
   FaUsers,
@@ -34,14 +34,14 @@ export function SimplifiedSidebar() {
       { href: "/leaderboard", label: t('leaderboard'), icon: FaTrophy },
       { href: "/people", label: t('people'), icon: FaUsers },
       { href: "/shop", label: "Rewards", icon: FaGift },
-      { href: "/contact", label: t('support'), icon: FaLifeRing },
     ] : [
-      { href: "/contact", label: t('support'), icon: FaLifeRing },
+      { href: "/contact", label: t('support'), icon: FaPhone },
     ]),
   ];
 
   const userItems = user ? [
     { href: "/profile", label: t('settings'), icon: FaCog },
+    { href: "/contact", label: t('support'), icon: FaPhone },
     { href: "/archive", label: t('archive'), icon: FaArchive },
     ...(user.subscriptionTier === 'administrator' || user.subscriptionTier === 'admin' ? [
       { href: "/admin", label: "Admin", icon: FaShieldAlt }

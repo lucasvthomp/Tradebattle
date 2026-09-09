@@ -225,8 +225,8 @@ export function TradingSidebar({
         className="shrink-0 px-4 pt-4 pb-3 relative overflow-hidden"
         style={{
           background: isProfit
-            ? "linear-gradient(160deg, rgba(243,198,91,0.11) 0%, rgba(35,18,66,0.72) 60%)"
-            : "linear-gradient(160deg, rgba(255,61,90,0.07) 0%, rgba(35,18,66,0.72) 60%)",
+            ? "linear-gradient(160deg, var(--tb-gold-wash) 0%, var(--tb-surface-850) 60%)"
+            : "linear-gradient(160deg, rgba(255,61,90,0.07) 0%, var(--tb-surface-850) 60%)",
           borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
@@ -256,12 +256,12 @@ export function TradingSidebar({
             style={{
               backgroundColor: "rgba(0,0,0,0.3)",
               borderColor: "rgba(255,255,255,0.1)",
-              color: "#8A93A6",
+              color: "var(--tb-text-muted)",
             }}
           >
             <SelectValue placeholder="Select arena" />
           </SelectTrigger>
-          <SelectContent style={{ backgroundColor: "#24153F", borderColor: "rgba(167,123,255,0.32)" }}>
+          <SelectContent style={{ backgroundColor: "var(--tb-surface-800)", borderColor: "var(--tb-purple-edge)" }}>
             {activeTournaments.map((t: any) => (
               <SelectItem key={t.id} value={t.id.toString()} style={{ color: "#F1F5F9" }}>
                 {t.name}
@@ -272,7 +272,7 @@ export function TradingSidebar({
 
         {/* Big balance */}
         <div className="relative z-10">
-          <div style={{ color: "#A996C7", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>
+          <div style={{ color: "var(--tb-text-muted)", fontSize: "0.65rem", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: 2 }}>
             Tournament Balance
           </div>
           <div style={{
@@ -297,7 +297,7 @@ export function TradingSidebar({
               padding: "2px 8px",
               fontSize: "0.75rem",
               fontWeight: 800,
-              color: isProfit ? "#F3C65B" : "#FF3D5A",
+              color: isProfit ? "var(--tb-gold-500)" : "#FF3D5A",
               boxShadow: isProfit ? "0 0 12px rgba(243,198,91,0.22)" : "0 0 12px rgba(255,61,90,0.2)",
             }}>
               {isProfit ? "▲" : "▼"} {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
@@ -305,7 +305,7 @@ export function TradingSidebar({
             <span style={{
               fontSize: "0.75rem",
               fontWeight: 700,
-              color: isProfit ? "#F3C65B" : "#FF3D5A",
+              color: isProfit ? "var(--tb-gold-500)" : "#FF3D5A",
             }}>
               {totalPL >= 0 ? "+" : ""}{fmtMoney(totalPL)}
             </span>
@@ -314,13 +314,13 @@ export function TradingSidebar({
             <div style={{
               marginLeft: "auto",
               display: "inline-flex", alignItems: "center", gap: 3,
-              background: "rgba(167,123,255,0.12)",
-              border: "1px solid rgba(167,123,255,0.24)",
+              background: "var(--tb-purple-wash)",
+              border: "1px solid var(--tb-purple-edge)",
               borderRadius: 6,
               padding: "2px 7px",
               fontSize: "0.7rem",
               fontWeight: 700,
-              color: "#F3C65B",
+              color: "var(--tb-gold-500)",
             }}>
               Cash {fmtMoney(buyingPower)}
             </div>
@@ -354,7 +354,7 @@ export function TradingSidebar({
         style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative" }}
       >
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "#4B5563" }} />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5" style={{ color: "var(--tb-text-subtle)" }} />
           <Input
             placeholder={selectedSymbol ? `${selectedSymbol} — change ticker` : "Scout ticker..."}
             value={showSearch ? searchQuery : ""}
@@ -364,7 +364,7 @@ export function TradingSidebar({
             style={{
               backgroundColor: "rgba(255,255,255,0.04)",
               borderColor: "rgba(255,255,255,0.08)",
-              color: "#F3C65B",
+              color: "var(--tb-gold-500)",
             }}
           />
           {showSearch && (
@@ -378,7 +378,7 @@ export function TradingSidebar({
           <div
             style={{
               position: "absolute", left: "12px", right: "12px", zIndex: 9999, top: "calc(100% + 2px)",
-              backgroundColor: "#24153F", border: "1px solid rgba(167,123,255,0.32)",
+              backgroundColor: "var(--tb-surface-800)", border: "1px solid var(--tb-purple-edge)",
               borderRadius: "12px", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
             }}
           >
@@ -397,13 +397,13 @@ export function TradingSidebar({
                   onMouseLeave={e => (e.currentTarget.style.backgroundColor = "transparent")}
                 >
                   <div>
-                    <span className="text-sm font-black" style={{ color: "#F3C65B" }}>{result.symbol}</span>
+                    <span className="text-sm font-black" style={{ color: "var(--tb-gold-500)" }}>{result.symbol}</span>
                     {result.name && (
                       <div className="text-xs mt-0.5 truncate" style={{ color: "#64748B" }}>{result.name}</div>
                     )}
                   </div>
                   {result.exchange && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "#8A93A6" }}>{result.exchange}</span>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "var(--tb-text-muted)" }}>{result.exchange}</span>
                   )}
                 </button>
               ))
@@ -430,9 +430,9 @@ export function TradingSidebar({
             onClick={() => setActiveView(id)}
             className="flex-1 py-1.5 text-[11px] font-bold rounded-lg text-center transition-all"
             style={{
-              color: activeView === id ? "#C9D1E2" : "#4B5975",
-              background: activeView === id ? "rgba(167,123,255,0.16)" : "transparent",
-              border: activeView === id ? "1px solid rgba(167,123,255,0.32)" : "1px solid transparent",
+              color: activeView === id ? "var(--tb-text-strong)" : "var(--tb-text-subtle)",
+              background: activeView === id ? "var(--tb-purple-wash)" : "transparent",
+              border: activeView === id ? "1px solid var(--tb-purple-edge)" : "1px solid transparent",
             }}
           >
             {label}
@@ -444,10 +444,10 @@ export function TradingSidebar({
           style={{
             color: activeView === "trade" ? "var(--tb-purple-950)" : "var(--tb-text-muted)",
             background: activeView === "trade"
-              ? "linear-gradient(135deg, #D5A73C, #F3C65B)"
+              ? "var(--tb-gradient-action)"
               : "transparent",
-            border: activeView === "trade" ? "1px solid rgba(243,198,91,0.65)" : "1px solid rgba(167,123,255,0.22)",
-            boxShadow: activeView === "trade" ? "0 0 18px rgba(243,198,91,0.22)" : "none",
+            border: activeView === "trade" ? "1px solid var(--tb-gold-edge)" : "1px solid var(--tb-purple-edge)",
+            boxShadow: activeView === "trade" ? "0 0 18px var(--tb-gold-glow)" : "none",
           }}
         >
           Trade
@@ -471,12 +471,12 @@ export function TradingSidebar({
             {/* Holdings */}
             <div className="px-3 py-2">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "#4B5563" }}>
+                <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--tb-text-subtle)" }}>
                   Positions
                 </span>
                 <span
                   className="text-[10px] font-black px-2 py-0.5 rounded-full"
-                  style={{ backgroundColor: "rgba(243,198,91,0.12)", color: "#F3C65B" }}
+                  style={{ backgroundColor: "var(--tb-gold-wash)", color: "var(--tb-gold-500)" }}
                 >
                   {holdings.length}
                 </span>
@@ -484,9 +484,9 @@ export function TradingSidebar({
 
               {holdings.length === 0 ? (
                 <div className="py-8 text-center">
-                  <TrendingUp className="w-8 h-8 mx-auto mb-2" style={{ color: "#2D3748" }} />
-                  <p className="text-sm font-semibold" style={{ color: "#4B5563" }}>No positions yet</p>
-                  <p className="text-xs mt-1" style={{ color: "#2D3748" }}>
+                  <TrendingUp className="w-8 h-8 mx-auto mb-2" style={{ color: "var(--tb-text-subtle)" }} />
+                  <p className="text-sm font-semibold" style={{ color: "var(--tb-text-muted)" }}>No positions yet</p>
+                  <p className="text-xs mt-1" style={{ color: "var(--tb-text-subtle)" }}>
                     Search a ticker above to get started
                   </p>
                 </div>
@@ -505,23 +505,23 @@ export function TradingSidebar({
                         onClick={() => handleHoldingClick(h.symbol)}
                         className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all"
                         style={{
-                          backgroundColor: isSelected ? "rgba(167,123,255,0.10)" : "rgba(255,255,255,0.025)",
-                          border: isSelected ? "1px solid rgba(167,123,255,0.30)" : "1px solid transparent",
+                          backgroundColor: isSelected ? "var(--tb-purple-wash)" : "rgba(255,255,255,0.025)",
+                          border: isSelected ? "1px solid var(--tb-purple-edge)" : "1px solid transparent",
                         }}
                       >
                         <div className="text-left">
                           <div className="flex items-center gap-2">
-                            <span className="text-sm font-black" style={{ color: isSelected ? "#F3C65B" : "#F1F5F9" }}>
+                            <span className="text-sm font-black" style={{ color: isSelected ? "var(--tb-gold-500)" : "var(--tb-text-strong)" }}>
                               {h.symbol}
                             </span>
                             <span
                               className="text-[9px] font-bold px-1.5 py-0.5 rounded"
-                              style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "#8A93A6" }}
+                              style={{ backgroundColor: "rgba(255,255,255,0.06)", color: "var(--tb-text-muted)" }}
                             >
                               {h.shares} units
                             </span>
                           </div>
-                          <div className="text-[10px] mt-0.5" style={{ color: "#4B5563" }}>
+                          <div className="text-[10px] mt-0.5" style={{ color: "var(--tb-text-subtle)" }}>
                             avg {formatCurrency(h.averagePurchasePrice || 0)}
                           </div>
                         </div>
@@ -532,12 +532,12 @@ export function TradingSidebar({
                             </div>
                             <div
                               className="text-xs font-black"
-                              style={{ color: isPositive ? "#F3C65B" : "#FF4F58" }}
+                              style={{ color: isPositive ? "var(--tb-gold-500)" : "#FF4F58" }}
                             >
                               {isPositive ? "+" : ""}{changePercent.toFixed(1)}%
                             </div>
                           </div>
-                          <ChevronRight className="w-3.5 h-3.5" style={{ color: "#2D3748" }} />
+                          <ChevronRight className="w-3.5 h-3.5" style={{ color: "var(--tb-text-subtle)" }} />
                         </div>
                       </button>
                     );
@@ -566,22 +566,22 @@ export function TradingSidebar({
                 className="p-1.5 rounded-lg transition-colors"
                 style={{ backgroundColor: "rgba(255,255,255,0.05)" }}
               >
-                <ArrowLeft className="w-4 h-4" style={{ color: "#8A93A6" }} />
+                <ArrowLeft className="w-4 h-4" style={{ color: "var(--tb-text-muted)" }} />
               </button>
               {selectedSymbol ? (
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-base font-black" style={{ color: "#FFFFFF" }}>{selectedSymbol}</span>
                     {companyName !== selectedSymbol && (
-                      <span className="text-xs truncate" style={{ color: "#4B5563" }}>{companyName}</span>
+                      <span className="text-xs truncate" style={{ color: "var(--tb-text-subtle)" }}>{companyName}</span>
                     )}
                   </div>
-                  <div className="text-lg font-black" style={{ color: "#F3C65B", letterSpacing: "-0.02em" }}>
+                  <div className="text-lg font-black" style={{ color: "var(--tb-gold-500)", letterSpacing: "-0.02em" }}>
                     {formatCurrency(currentPrice)}
                   </div>
                 </div>
               ) : (
-                <span className="text-sm" style={{ color: "#4B5563" }}>No symbol selected</span>
+                <span className="text-sm" style={{ color: "var(--tb-text-subtle)" }}>No symbol selected</span>
               )}
             </div>
 
@@ -597,9 +597,9 @@ export function TradingSidebar({
                   style={
                     orderSide === "buy"
                       ? {
-                          background: "linear-gradient(135deg, #D5A73C, #F3C65B)",
-                          color: "#241137",
-                          boxShadow: "0 0 28px rgba(243,198,91,0.30), inset 0 1px 0 rgba(255,255,255,0.15)",
+                          background: "var(--tb-gradient-action)",
+                          color: "var(--tb-purple-950)",
+                          boxShadow: "0 0 28px var(--tb-gold-glow), inset 0 1px 0 rgba(255,255,255,0.15)",
                           letterSpacing: "0.06em",
                         }
                       : { backgroundColor: "transparent", color: "#3a5040" }
@@ -618,7 +618,7 @@ export function TradingSidebar({
                           boxShadow: "0 0 28px rgba(255,79,88,0.45), inset 0 1px 0 rgba(255,255,255,0.1)",
                           letterSpacing: "0.06em",
                         }
-                      : { backgroundColor: "transparent", color: "#503a3b" }
+                      : { backgroundColor: "transparent", color: "var(--tb-text-subtle)" }
                   }
                 >
                   ▼ SELL
@@ -633,14 +633,14 @@ export function TradingSidebar({
                 className="flex items-center justify-between py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--tb-text-muted)" }}>
                   Buy In
                 </span>
                 <Select value={buyInMode} onValueChange={(v) => { setBuyInMode(v as BuyInMode); setAwaitingConfirm(false); }}>
-                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "#F3C65B" }}>
+                  <SelectTrigger className="w-auto h-auto p-0 border-0 bg-transparent gap-1 text-sm font-bold" style={{ color: "var(--tb-gold-500)" }}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent style={{ backgroundColor: "#24153F", borderColor: "rgba(167,123,255,0.28)" }}>
+                  <SelectContent style={{ backgroundColor: "var(--tb-surface-800)", borderColor: "var(--tb-purple-edge)" }}>
                     <SelectItem value="shares" style={{ color: "#F1F5F9" }}>
                       Units
                     </SelectItem>
@@ -654,7 +654,7 @@ export function TradingSidebar({
                 className="flex items-center justify-between py-2"
                 style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
               >
-                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: "var(--tb-text-muted)" }}>
                   {buyInMode === "shares" ? "Units" : "Amount"}
                 </span>
                 {buyInMode === "shares" ? (
@@ -668,7 +668,7 @@ export function TradingSidebar({
                   />
                 ) : (
                   <div className="flex items-center">
-                    <span className="text-sm mr-0.5" style={{ color: "#4B5563" }}>$</span>
+                    <span className="text-sm mr-0.5" style={{ color: "var(--tb-text-subtle)" }}>$</span>
                     <Input
                       type="number" inputMode="decimal" min="0" step="0.01"
                       value={dollarAmount || ""}
@@ -683,8 +683,8 @@ export function TradingSidebar({
 
               {buyInMode === "dollars" && effectiveQuantity > 0 && (
                 <div className="flex items-center justify-between py-1">
-                  <span className="text-[10px]" style={{ color: "#4B5563" }}>Est. units</span>
-                  <span className="text-[10px] font-bold" style={{ color: "#8A93A6" }}>{effectiveQuantity}</span>
+                  <span className="text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>Est. units</span>
+                  <span className="text-[10px] font-bold" style={{ color: "var(--tb-text-muted)" }}>{effectiveQuantity}</span>
                 </div>
               )}
 
@@ -694,16 +694,16 @@ export function TradingSidebar({
                 style={{ backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}
               >
                 <div className="flex items-center justify-between">
-              <span className="text-xs" style={{ color: "#4B5563" }}>Live quote</span>
+              <span className="text-xs" style={{ color: "var(--tb-text-subtle)" }}>Live quote</span>
                   <span className="text-sm font-bold" style={{ color: "#F1F5F9" }}>{formatCurrency(currentPrice)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px]" style={{ color: "#2D3748" }}>Bid</span>
-                  <span className="text-[10px]" style={{ color: "#4B5563" }}>{formatCurrency(bidPrice)}</span>
+                  <span className="text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>Bid</span>
+                  <span className="text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>{formatCurrency(bidPrice)}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px]" style={{ color: "#2D3748" }}>Ask</span>
-                  <span className="text-[10px]" style={{ color: "#4B5563" }}>{formatCurrency(askPrice)}</span>
+                  <span className="text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>Ask</span>
+                  <span className="text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>{formatCurrency(askPrice)}</span>
                 </div>
               </div>
 
@@ -712,7 +712,7 @@ export function TradingSidebar({
                 className="flex items-center justify-between py-2"
                 style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
               >
-                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "#8A93A6" }}>
+                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: "var(--tb-text-muted)" }}>
                   Est. {orderSide === "buy" ? "Cost" : "Credit"}
                 </span>
                 <span className="text-base font-black" style={{ color: "#FFFFFF" }}>
@@ -746,7 +746,7 @@ export function TradingSidebar({
                   style={{
                     width: "72px",
                     backgroundColor: "rgba(255,255,255,0.04)",
-                    color: "#8A93A6",
+                    color: "var(--tb-text-muted)",
                     border: "1px solid rgba(255,255,255,0.07)",
                     flexShrink: 0,
                   }}
@@ -762,9 +762,9 @@ export function TradingSidebar({
                       ? orderSide === "buy"
                         ? {
                             background: awaitingConfirm
-                              ? "linear-gradient(135deg, #9F7625, #D5A73C)"
-                              : "linear-gradient(135deg, #D5A73C, #F3C65B)",
-                            color: awaitingConfirm ? "#FFF1B8" : "#241137",
+                              ? "linear-gradient(135deg, var(--tb-gold-600), var(--tb-gold-500))"
+                              : "var(--tb-gradient-action)",
+                            color: awaitingConfirm ? "var(--tb-gold-300)" : "var(--tb-purple-950)",
                             boxShadow: awaitingConfirm
                               ? "0 0 32px rgba(243,198,91,0.52)"
                               : "0 0 20px rgba(243,198,91,0.28)",
@@ -782,7 +782,7 @@ export function TradingSidebar({
                             border: awaitingConfirm ? "2px solid rgba(255,79,88,0.9)" : "1px solid rgba(255,79,88,0.3)",
                             letterSpacing: "0.05em",
                           }
-                      : { backgroundColor: "rgba(255,255,255,0.06)", color: "#4B5563", border: "1px solid transparent" }
+                      : { backgroundColor: "rgba(255,255,255,0.06)", color: "var(--tb-text-subtle)", border: "1px solid transparent" }
                   }
                 >
                   {buttonLabel}
