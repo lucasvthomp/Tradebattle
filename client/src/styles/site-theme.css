@@ -3072,7 +3072,7 @@ body,
 .tradebattle-site .tradebattle-header,
 .tradebattle-site .tradebattle-sidebar,
 .tradebattle-site .tradebattle-footer {
-  background: var(--tb-surface-800) !important;
+  background: var(--tb-surface-750) !important;
   border-color: var(--tb-purple-edge) !important;
 }
 
