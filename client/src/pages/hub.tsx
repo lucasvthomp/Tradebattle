@@ -115,7 +115,7 @@ export default function Hub() {
             <GameIcon name="trading-calendar" size={46} />
             <span><strong>Match schedule</strong><small>Find your next arena</small></span>
           </Link>
-          <Link href="/settings" className="hub-tool-card">
+          <Link href="/profile" className="hub-tool-card">
             <GameIcon name="gears" size={46} />
             <span><strong>Player setup</strong><small>Make it yours</small></span>
           </Link>
