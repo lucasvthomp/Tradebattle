@@ -2746,3 +2746,10 @@ body {
   fill: var(--tb-purple-700) !important;
   stroke: var(--tb-gold-edge) !important;
 }
+
+.tradebattle-site .hub-feature-banner {
+  background:
+    radial-gradient(circle at 86% 32%, var(--tb-gold-wash), transparent 28%),
+    linear-gradient(135deg, var(--tb-surface-700), var(--tb-surface-800) 72%) !important;
+  border-color: var(--tb-purple-edge) !important;
+}
