@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, memo } from "react";
 import { createChart, ColorType, LineSeries } from "lightweight-charts";
-import { Search, TrendingUp, TrendingDown, Zap, BarChart2, Activity } from "lucide-react";
+import { Search, TrendingUp, TrendingDown, Zap, BarChart2, Activity, Settings, Maximize2, Grid3X3 } from "lucide-react";
 import { RoundedCandleSeriesView, type OhlcData } from "./RoundedCandleSeries";
 
 interface TradingViewChartProps {
@@ -33,8 +33,9 @@ interface PriceInfo {
   changePct: number;
 }
 
-const UP_COLOR   = "#F3C65B";
-const DOWN_COLOR = "#FF3D5A";
+// Keep market movement colors fixed and readable: green is up, red is down.
+const UP_COLOR   = "#3DB99B";
+const DOWN_COLOR = "#EF6470";
 
 function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,6 +50,9 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
   const [priceInfo, setPriceInfo] = useState<PriceInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [portfolioChange, setPortfolioChange] = useState<{ change: number; pct: number } | null>(null);
+  const [showGrid, setShowGrid] = useState(true);
+  const [showPriceLine, setShowPriceLine] = useState(true);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   // Track previous values to know when a full rebuild is needed vs just a data reload
   const prevSymbolRef = useRef<string>("");
@@ -95,16 +99,16 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             attributionLogo: false,
           },
           grid: {
-            vertLines: { color: "rgba(167,123,255,0.08)" },
-            horzLines: { color: "rgba(167,123,255,0.08)" },
+            vertLines: { color: "rgba(45,127,201,0.11)", visible: showGrid },
+            horzLines: { color: "rgba(45,127,201,0.11)", visible: showGrid },
           },
           crosshair: {
             mode: 1,
             vertLine: { color: "rgba(243,198,91,0.55)", width: 1, style: 3, labelBackgroundColor: "#24153F" },
             horzLine: { color: "rgba(243,198,91,0.55)", width: 1, style: 3, labelBackgroundColor: "#24153F" },
           },
-          rightPriceScale: { borderColor: "rgba(167,123,255,0.22)", textColor: "#B9AFD8" },
-          timeScale: { borderColor: "rgba(167,123,255,0.22)", timeVisible: false, secondsVisible: false },
+          rightPriceScale: { borderColor: "rgba(45,127,201,0.26)", textColor: "#A7BCD0" },
+          timeScale: { borderColor: "rgba(45,127,201,0.26)", timeVisible: false, secondsVisible: false },
           width: w,
           height: h,
         });
@@ -123,7 +127,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             crosshairMarkerVisible: true, crosshairMarkerRadius: 5,
             crosshairMarkerBorderColor: "#24153F",
             crosshairMarkerBackgroundColor: UP_COLOR,
-            lastValueVisible: true, priceLineVisible: false,
+            lastValueVisible: true, priceLineVisible: showPriceLine,
           });
         }
 
@@ -171,6 +175,17 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
     return () => clearInterval(interval);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, tournamentId]);
+
+  useEffect(() => {
+    if (!chartRef.current) return;
+    chartRef.current.applyOptions({
+      grid: {
+        vertLines: { visible: showGrid },
+        horzLines: { visible: showGrid },
+      },
+    });
+    seriesRef.current?.applyOptions?.({ priceLineVisible: showPriceLine });
+  }, [showGrid, showPriceLine]);
 
   async function loadCandleData(sym: string, tf: string, series: any, chart: any) {
     setLoading(true);
@@ -258,7 +273,13 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
         ? json.startingBalance
         : (raw[0]?.value ?? 0);
 
-      if (raw.length === 0) throw new Error("No portfolio data");
+      if (raw.length === 0) {
+        const today = new Date().toISOString().slice(0, 10);
+        series.setData([{ time: today as any, value: startingBalance }]);
+        chart.timeScale().fitContent();
+        setPortfolioChange({ change: 0, pct: 0 });
+        return;
+      }
 
       // Server already filters out weekends — map directly to chart format
       const lineData = raw.map((d) => ({ time: d.date as any, value: d.value }));
@@ -271,7 +292,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
       const pct = startingBalance !== 0 ? (change / startingBalance) * 100 : 0;
       setPortfolioChange({ change, pct });
 
-      // Use gold for positive performance and red for negative performance.
+      // Keep performance colors consistent with the market chart: green up, red down.
       const lineColor = change >= 0 ? UP_COLOR : DOWN_COLOR;
       series.applyOptions({
         color: lineColor,
@@ -292,7 +313,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
         {/* Mode toggle even on empty state */}
         {tournamentId && (
-          <div style={{ padding: "10px 16px 8px", flexShrink: 0, display: "flex", gap: "6px", borderBottom: "1px solid rgba(167,123,255,0.12)" }}>
+          <div style={{ padding: "10px 16px 8px", flexShrink: 0, display: "flex", gap: "6px", borderBottom: "1px solid rgba(45,127,201,0.14)" }}>
             {renderModeToggle()}
           </div>
         )}
@@ -300,13 +321,13 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
           flex: 1,
           display: "flex", flexDirection: "column",
           alignItems: "center", justifyContent: "center", gap: "16px",
-          background: "radial-gradient(ellipse at center, rgba(167,123,255,0.06) 0%, transparent 70%)",
+          background: "radial-gradient(ellipse at center, rgba(45,127,201,0.06) 0%, transparent 70%)",
         }}>
           <div style={{
             width: "72px", height: "72px", borderRadius: "20px",
-            background: "linear-gradient(135deg, rgba(167,123,255,0.18), rgba(167,123,255,0.06))",
-            border: "2px solid rgba(167,123,255,0.25)",
-            boxShadow: "0 0 24px rgba(167,123,255,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
+            background: "linear-gradient(135deg, rgba(45,127,201,0.18), rgba(45,127,201,0.06))",
+            border: "2px solid rgba(45,127,201,0.25)",
+            boxShadow: "0 0 24px rgba(45,127,201,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <Search style={{ width: "28px", height: "28px", color: "#F3C65B" }} />
@@ -362,12 +383,12 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
             padding: "4px 11px", borderRadius: "10px",
             fontSize: "11px", fontWeight: 800, letterSpacing: "0.02em",
             cursor: "pointer", transition: "all 0.15s",
-            border: mode === "portfolio" ? "1px solid rgba(167,123,255,0.42)" : "1px solid transparent",
+            border: mode === "portfolio" ? "1px solid rgba(45,127,201,0.42)" : "1px solid transparent",
             background: mode === "portfolio"
-              ? "linear-gradient(135deg, rgba(167,123,255,0.2), rgba(167,123,255,0.07))"
+              ? "linear-gradient(135deg, rgba(45,127,201,0.2), rgba(45,127,201,0.07))"
               : "transparent",
             color: mode === "portfolio" ? UP_COLOR : "#4B5975",
-            boxShadow: mode === "portfolio" ? "0 0 10px rgba(167,123,255,0.2)" : "none",
+            boxShadow: mode === "portfolio" ? "0 0 10px rgba(45,127,201,0.2)" : "none",
           }}
         >
           <Activity style={{ width: "11px", height: "11px" }} />
@@ -385,7 +406,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "10px 16px 8px", flexShrink: 0,
         background: bgGradient,
-        borderBottom: "1px solid rgba(167,123,255,0.12)",
+        borderBottom: "1px solid rgba(45,127,201,0.14)",
       }}>
         {/* Left: info area */}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
@@ -395,9 +416,9 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
               {/* Ticker badge */}
               <div style={{
                 padding: "3px 10px", borderRadius: "10px",
-                background: "rgba(167,123,255,0.12)",
-                border: "1px solid rgba(167,123,255,0.28)",
-                boxShadow: "0 0 10px rgba(167,123,255,0.12)",
+                background: "rgba(45,127,201,0.12)",
+                border: "1px solid rgba(45,127,201,0.28)",
+                boxShadow: "0 0 10px rgba(45,127,201,0.12)",
               }}>
                 <span style={{ color: "#E0EEFF", fontSize: "13px", fontWeight: 900, letterSpacing: "0.04em" }}>
                   {symbol}
@@ -551,6 +572,55 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
               </div>
             </>
           )}
+
+          <div style={{ position: "relative" }}>
+            <button
+              type="button"
+              aria-label="Chart settings"
+              onClick={() => setSettingsOpen((open) => !open)}
+              style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                width: 28, height: 28, borderRadius: 8, cursor: "pointer",
+                border: settingsOpen ? "1px solid rgba(227,179,65,0.45)" : "1px solid rgba(45,127,201,0.22)",
+                background: settingsOpen ? "rgba(227,179,65,0.12)" : "rgba(45,127,201,0.08)",
+                color: settingsOpen ? "#F2C76A" : "#A7BCD0",
+              }}
+            >
+              <Settings style={{ width: 13, height: 13 }} />
+            </button>
+            {settingsOpen && (
+              <div style={{
+                position: "absolute", top: "calc(100% + 8px)", right: 0, zIndex: 20,
+                width: 176, padding: 8, display: "grid", gap: 5,
+                border: "1px solid rgba(45,127,201,0.28)", borderRadius: 10,
+                background: "#0C1C32", boxShadow: "0 14px 30px rgba(1,13,25,.5)",
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setShowGrid((visible) => !visible)}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "7px 8px", border: 0, borderRadius: 7, background: "rgba(255,255,255,.04)", color: "#F1F5F9", fontSize: 11, cursor: "pointer" }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}><Grid3X3 style={{ width: 13, height: 13 }} /> Grid</span>
+                  <span style={{ color: showGrid ? "#3DB99B" : "#71889C", fontWeight: 800 }}>{showGrid ? "On" : "Off"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowPriceLine((visible) => !visible)}
+                  style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, padding: "7px 8px", border: 0, borderRadius: 7, background: "rgba(255,255,255,.04)", color: "#F1F5F9", fontSize: 11, cursor: "pointer" }}
+                >
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 7 }}><Activity style={{ width: 13, height: 13 }} /> Price line</span>
+                  <span style={{ color: showPriceLine ? "#3DB99B" : "#71889C", fontWeight: 800 }}>{showPriceLine ? "On" : "Off"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => chartRef.current?.timeScale().fitContent()}
+                  style={{ display: "flex", alignItems: "center", gap: 7, padding: "7px 8px", border: 0, borderRadius: 7, background: "rgba(227,179,65,.1)", color: "#F2C76A", fontSize: 11, fontWeight: 800, cursor: "pointer" }}
+                >
+                  <Maximize2 style={{ width: 13, height: 13 }} /> Fit chart
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -559,7 +629,7 @@ function TradingViewChartInner({ symbol, tournamentId }: TradingViewChartProps) 
         ref={containerRef}
         style={{
           flex: 1, minHeight: 0, width: "100%",
-          background: "linear-gradient(180deg, rgba(167,123,255,0.04) 0%, transparent 30%)",
+          background: "linear-gradient(180deg, rgba(45,127,201,0.04) 0%, transparent 30%)",
         }}
       />
     </div>

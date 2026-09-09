@@ -297,7 +297,7 @@ export function TradingSidebar({
               padding: "2px 8px",
               fontSize: "0.75rem",
               fontWeight: 800,
-              color: isProfit ? "var(--tb-gold-500)" : "#FF3D5A",
+              color: isProfit ? "var(--tb-state-positive)" : "#EF6470",
               boxShadow: isProfit ? "0 0 12px rgba(243,198,91,0.22)" : "0 0 12px rgba(255,61,90,0.2)",
             }}>
               {isProfit ? "▲" : "▼"} {isProfit ? "+" : ""}{pctChange.toFixed(2)}%
@@ -305,7 +305,7 @@ export function TradingSidebar({
             <span style={{
               fontSize: "0.75rem",
               fontWeight: 700,
-              color: isProfit ? "var(--tb-gold-500)" : "#FF3D5A",
+              color: isProfit ? "var(--tb-state-positive)" : "#EF6470",
             }}>
               {totalPL >= 0 ? "+" : ""}{fmtMoney(totalPL)}
             </span>
@@ -468,6 +468,32 @@ export function TradingSidebar({
         {/* POSITIONS VIEW */}
         {activeView === "positions" && (
           <div>
+            <div className="mx-3 mt-3 rounded-xl border p-3" style={{ background: "var(--tb-surface-850)", borderColor: "var(--tb-purple-edge)" }}>
+              <div className="mb-3 flex items-center justify-between">
+                <span className="text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: "var(--tb-text-subtle)" }}>Portfolio snapshot</span>
+                <span className="text-[10px] font-bold" style={{ color: "var(--tb-gold-400)" }}>{holdings.length ? `${holdings.length} open` : "Ready"}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <span className="block text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>Total value</span>
+                  <strong className="mt-1 block text-sm" style={{ color: "var(--tb-text-strong)" }}>{formatMoney(totalValue)}</strong>
+                </div>
+                <div>
+                  <span className="block text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>Invested</span>
+                  <strong className="mt-1 block text-sm" style={{ color: "var(--tb-text-strong)" }}>{formatMoney(invested)}</strong>
+                </div>
+                <div>
+                  <span className="block text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>Cash</span>
+                  <strong className="mt-1 block text-sm" style={{ color: "var(--tb-text-strong)" }}>{formatMoney(buyingPower)}</strong>
+                </div>
+                <div>
+                  <span className="block text-[10px]" style={{ color: "var(--tb-text-subtle)" }}>Run</span>
+                  <strong className="mt-1 block text-sm" style={{ color: isProfit ? "var(--tb-state-positive)" : "#EF6470" }}>{isProfit ? "+" : ""}{pctChange.toFixed(2)}%</strong>
+                </div>
+              </div>
+              {!holdings.length && <p className="mt-3 border-t pt-3 text-[11px] leading-relaxed" style={{ borderColor: "rgba(255,255,255,.06)", color: "var(--tb-text-muted)" }}>Your starting cash is ready. Search for a ticker to make your first move.</p>}
+            </div>
+
             {/* Holdings */}
             <div className="px-3 py-2">
               <div className="flex items-center justify-between mb-2">
@@ -532,7 +558,7 @@ export function TradingSidebar({
                             </div>
                             <div
                               className="text-xs font-black"
-                              style={{ color: isPositive ? "var(--tb-gold-500)" : "#FF4F58" }}
+                              style={{ color: isPositive ? "var(--tb-state-positive)" : "#EF6470" }}
                             >
                               {isPositive ? "+" : ""}{changePercent.toFixed(1)}%
                             </div>

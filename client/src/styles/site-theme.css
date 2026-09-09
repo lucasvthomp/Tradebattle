@@ -3378,3 +3378,179 @@ body,
   --purple: 209 63% 48% !important;
   --profit-green: 158 50% 48% !important;
 }
+
+/*
+ * Canonical board palette.
+ *
+ * Older screens still carry a few inline blue/purple values because those
+ * views predate the shared theme. Keep this compatibility layer at the end
+ * so every route resolves to the same small, intentional blue scale without
+ * changing the fixed market colors (green up / red down) or gold actions.
+ */
+.tradebattle-site {
+  --tb-blue-950: #06111f !important;
+  --tb-blue-900: #081622 !important;
+  --tb-blue-850: #0a1928 !important;
+  --tb-blue-800: #0c1c32 !important;
+  --tb-blue-700: #123052 !important;
+  --tb-blue-600: #173b61 !important;
+  --tb-blue-500: #2d7fc9 !important;
+  --tb-blue-400: #5ca8e7 !important;
+  --tb-blue-wash: rgba(45, 127, 201, .10) !important;
+  --tb-blue-edge: rgba(112, 158, 194, .22) !important;
+  --tb-blue-gradient: linear-gradient(135deg, #123052, #0c1c32 72%) !important;
+  --tb-text-strong: #f1f5f9 !important;
+  --tb-text: #d8e5ee !important;
+  --tb-text-muted: #9db3c5 !important;
+  --tb-text-subtle: #71889c !important;
+}
+
+.tradebattle-site,
+.tradebattle-site body,
+.tradebattle-site main,
+.tradebattle-site .tradebattle-route,
+.tradebattle-site .auth-screen,
+.tradebattle-site .deposit-page,
+.tradebattle-site .trading-page,
+.tradebattle-site .arena-page-shell,
+.tradebattle-site .blitz-page,
+.tradebattle-site .tournaments-page,
+.tradebattle-site .leaderboard-page,
+.tradebattle-site .people-page,
+.tradebattle-site .shop-page,
+.tradebattle-site .archive-page,
+.tradebattle-site .contact-page,
+.tradebattle-site .profile-page {
+  color: var(--tb-text) !important;
+}
+
+/* Route shell surfaces */
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar,
+.tradebattle-site .tradebattle-footer,
+.tradebattle-site [data-radix-select-content],
+.tradebattle-site [data-radix-dropdown-menu-content],
+.tradebattle-site [role="listbox"],
+.tradebattle-site [role="menu"],
+.tradebattle-site [role="dialog"] {
+  border-color: var(--tb-blue-edge) !important;
+}
+
+.tradebattle-site .tradebattle-header,
+.tradebattle-site .tradebattle-sidebar {
+  background: var(--tb-blue-900) !important;
+}
+
+.tradebattle-site .tradebattle-footer {
+  background: var(--tb-blue-950) !important;
+}
+
+.tradebattle-site [data-radix-select-content],
+.tradebattle-site [data-radix-dropdown-menu-content],
+.tradebattle-site [role="listbox"],
+.tradebattle-site [role="menu"] {
+  background: var(--tb-blue-800) !important;
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site .auth-screen {
+  --auth-bg: var(--tb-blue-950) !important;
+  --auth-panel: var(--tb-blue-800) !important;
+  --auth-panel-raised: var(--tb-blue-700) !important;
+  --auth-line: var(--tb-blue-edge) !important;
+  --auth-muted: var(--tb-text-muted) !important;
+  --auth-text: var(--tb-text-strong) !important;
+  --auth-blue: var(--tb-blue-500) !important;
+  --auth-cyan: var(--tb-gold-500) !important;
+}
+
+/* Inline legacy surfaces: one blue scale across every page and overlay. */
+.tradebattle-site [style*="#06151c" i],
+.tradebattle-site [style*="#091525" i],
+.tradebattle-site [style*="#0A1930" i],
+.tradebattle-site [style*="#0A1C2C" i],
+.tradebattle-site [style*="#0B1B2A" i],
+.tradebattle-site [style*="#11162f" i],
+.tradebattle-site [style*="#0d1230" i] {
+  background-color: var(--tb-blue-850) !important;
+}
+
+.tradebattle-site [style*="#0C1A2E" i],
+.tradebattle-site [style*="#0E2040" i],
+.tradebattle-site [style*="#0E2440" i],
+.tradebattle-site [style*="#142E5A" i],
+.tradebattle-site [style*="#1A3A68" i],
+.tradebattle-site [style*="#1C3E72" i] {
+  background-color: var(--tb-blue-800) !important;
+  border-color: var(--tb-blue-edge) !important;
+}
+
+.tradebattle-site [style*="#21113f" i],
+.tradebattle-site [style*="#140b2b" i],
+.tradebattle-site [style*="#2d1958" i],
+.tradebattle-site [style*="#211e34" i] {
+  background-color: var(--tb-blue-800) !important;
+  border-color: var(--tb-blue-edge) !important;
+}
+
+.tradebattle-site [style*="#4B5563" i],
+.tradebattle-site [style*="#4B6080" i],
+.tradebattle-site [style*="#6F879D" i],
+.tradebattle-site [style*="#7890A4" i],
+.tradebattle-site [style*="#7F72A7" i],
+.tradebattle-site [style*="#8A93A6" i],
+.tradebattle-site [style*="#94A3B8" i] {
+  color: var(--tb-text-muted) !important;
+}
+
+.tradebattle-site [style*="#C9D1E2" i],
+.tradebattle-site [style*="#091525" i] {
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site [style*="rgba(0,163,255" i],
+.tradebattle-site [style*="rgba(0, 163, 255" i],
+.tradebattle-site [style*="rgba(167,123,255" i],
+.tradebattle-site [style*="rgba(167, 123, 255" i] {
+  background-color: var(--tb-blue-wash) !important;
+  border-color: var(--tb-blue-edge) !important;
+  box-shadow: none !important;
+}
+
+.tradebattle-site [style*="linear-gradient(135deg, rgba(0, 163, 255" i],
+.tradebattle-site [style*="linear-gradient(135deg, rgba(167, 123, 255" i] {
+  background: var(--tb-blue-gradient) !important;
+}
+
+/* Utility classes from older routes now land on the same surfaces. */
+.tradebattle-site [class*="bg-blue-"],
+.tradebattle-site [class*="bg-cyan-"],
+.tradebattle-site [class*="bg-sky-"],
+.tradebattle-site [class*="bg-indigo-"],
+.tradebattle-site [class*="bg-teal-"] {
+  background-color: var(--tb-blue-700) !important;
+  color: var(--tb-text-strong) !important;
+}
+
+.tradebattle-site [class*="text-blue-"],
+.tradebattle-site [class*="text-cyan-"],
+.tradebattle-site [class*="text-sky-"],
+.tradebattle-site [class*="text-indigo-"],
+.tradebattle-site [class*="text-teal-"] {
+  color: var(--tb-blue-400) !important;
+}
+
+.tradebattle-site [class*="border-blue-"],
+.tradebattle-site [class*="border-cyan-"],
+.tradebattle-site [class*="border-sky-"],
+.tradebattle-site [class*="border-indigo-"],
+.tradebattle-site [class*="border-teal-"] {
+  border-color: var(--tb-blue-edge) !important;
+}
+
+/* Never let an old dark inline text token become black on a blue surface. */
+.tradebattle-site [style*="color: #091525" i],
+.tradebattle-site [style*="color:#091525" i],
+.tradebattle-site [style*="color: '#091525'" i] {
+  color: var(--tb-text-strong) !important;
+}

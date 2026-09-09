@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '@/hooks/use-auth';
 import { useUserPreferences } from '@/contexts/UserPreferencesContext';
 import { useMutation } from '@tanstack/react-query';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { QRCodeSVG } from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import {
   Copy,
   Check,
@@ -53,6 +53,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const [depositAmount, setDepositAmount] = useState('');
   const [payment, setPayment] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedAmount, setCopiedAmount] = useState(false);
   const [depositLoading, setDepositLoading] = useState(false);
   const [depositError, setDepositError] = useState('');
   const [minimumAmount, setMinimumAmount] = useState(1);
@@ -64,6 +65,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
   const [withdrawCurrency, setWithdrawCurrency] = useState("");
   const [withdrawAddress, setWithdrawAddress] = useState("");
   const [withdrawalResult, setWithdrawalResult] = useState<any>(null);
+  const paymentPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentBalance = Number(user?.siteCash) || 0;
 
@@ -96,6 +98,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         setDepositAmount('');
         setPayment(null);
         setDepositError('');
+        setCopied(false);
+        setCopiedAmount(false);
         setWithdrawStep('amount');
         setWithdrawAmount('');
         setSelectedWithdrawAmount(null);
@@ -154,8 +158,33 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
     }
   }
 
+  async function copyAmount() {
+    const value = payment?.pay_amount && payment?.pay_currency
+      ? `${payment.pay_amount} ${payment.pay_currency.toUpperCase()}`
+      : '';
+    if (!value) return;
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedAmount(true);
+      setTimeout(() => setCopiedAmount(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy amount:', err);
+    }
+  }
+
   // Create deposit handler
   async function createDeposit() {
+    const numericAmount = Number.parseFloat(depositAmount);
+    if (!selectedCurrency) {
+      setDepositError('Choose a deposit rail first.');
+      setDepositStep('select');
+      return;
+    }
+    if (!Number.isFinite(numericAmount) || numericAmount < minimumAmount) {
+      setDepositError(`Enter at least $${minimumAmount.toFixed(2)} to continue.`);
+      setDepositStep('amount');
+      return;
+    }
     setDepositLoading(true);
     setDepositError('');
 
@@ -165,7 +194,7 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
         cache: 'no-store',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          amount: parseFloat(depositAmount),
+          amount: numericAmount,
           currency: selectedCurrency,
         }),
       });
@@ -188,7 +217,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
 
   // Poll payment status
   function pollPaymentStatus(paymentId: string) {
-    const interval = setInterval(async () => {
+    if (paymentPollRef.current) clearInterval(paymentPollRef.current);
+    paymentPollRef.current = setInterval(async () => {
       try {
         const response = await fetch(`/api/crypto/payment/${paymentId}`, {
           cache: 'no-store',
@@ -199,7 +229,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
 
         // Check for finished, confirmed, or partially_paid status
         if (data.payment_status === 'finished' || data.payment_status === 'confirmed' || data.payment_status === 'sending') {
-          clearInterval(interval);
+          if (paymentPollRef.current) clearInterval(paymentPollRef.current);
+          paymentPollRef.current = null;
           toast({
             title: "Payment Received!",
             description: "Your balance has been updated successfully.",
@@ -207,7 +238,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
           queryClient.invalidateQueries({ queryKey: ['/api/user'] });
           onClose();
         } else if (data.payment_status === 'failed' || data.payment_status === 'expired' || data.payment_status === 'refunded') {
-          clearInterval(interval);
+          if (paymentPollRef.current) clearInterval(paymentPollRef.current);
+          paymentPollRef.current = null;
           setDepositError('Payment failed or expired.');
           setDepositStep('amount');
         }
@@ -335,10 +367,10 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
             </div>
             <div>
               <DialogTitle className="text-lg font-black" style={{ color: '#F1F5F9', letterSpacing: '-0.01em' }}>
-                Arena cash
+                Deposit
               </DialogTitle>
               <p className="text-xs mt-0.5" style={{ color: '#4B5563' }}>
-                Buying power: <span className="font-black" style={{ color: '#67E7BF' }}>{formatCurrency(currentBalance)}</span>
+                Arena cash: <span className="font-black" style={{ color: 'var(--tb-gold-400)' }}>{formatCurrency(currentBalance)}</span>
               </p>
             </div>
           </div>
@@ -349,15 +381,15 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
             <TabsTrigger
               value="deposit"
               className="rounded-lg text-sm font-black flex items-center gap-2 data-[state=active]:shadow-none"
-              style={{ color: activeTab === 'deposit' ? '#000' : '#4B5563' }}
+              style={{ color: activeTab === 'deposit' ? '#F1F5F9' : '#8A93A6' }}
             >
               <TrendingUp className="w-4 h-4" />
-              Add cash
+              Deposit
             </TabsTrigger>
             <TabsTrigger
               value="withdraw"
               className="rounded-lg text-sm font-black flex items-center gap-2 data-[state=active]:shadow-none"
-              style={{ color: activeTab === 'withdraw' ? '#000' : '#4B5563' }}
+              style={{ color: activeTab === 'withdraw' ? '#F1F5F9' : '#8A93A6' }}
             >
               <TrendingDown className="w-4 h-4" />
               Cash out
@@ -464,7 +496,11 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           color: currencies.find(c => c.id === selectedCurrency)?.color,
                         }}
                       >
-                        {currencies.find(c => c.id === selectedCurrency)?.img}
+                        <img
+                          src={currencies.find(c => c.id === selectedCurrency)?.img}
+                          alt={`${currencies.find(c => c.id === selectedCurrency)?.label || 'Currency'} icon`}
+                          className="h-8 w-8 rounded-full object-contain"
+                        />
                       </div>
                       <div>
                         <div className="font-semibold" style={{ color: '#C9D1E2' }}>
@@ -544,21 +580,21 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                       style={{
                         padding: '6px',
                         borderRadius: '16px',
-                        background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
-                        boxShadow: '0 8px 32px rgba(0, 163, 255, 0.35)',
+                        background: 'var(--tb-purple-500)',
+                        boxShadow: '0 8px 32px rgba(45, 127, 201, 0.24)',
                         display: 'inline-flex',
                       }}
                       animate={{
                         boxShadow: [
-                          '0 8px 32px rgba(0, 163, 255, 0.35)',
-                          '0 8px 40px rgba(0, 163, 255, 0.5)',
-                          '0 8px 32px rgba(0, 163, 255, 0.35)',
+                          '0 8px 32px rgba(45, 127, 201, 0.24)',
+                          '0 8px 40px rgba(45, 127, 201, 0.36)',
+                          '0 8px 32px rgba(45, 127, 201, 0.24)',
                         ],
                       }}
                       transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                     >
                       <div style={{
-                        background: '#ffffff',
+                        background: 'transparent',
                         borderRadius: '12px',
                         padding: '12px',
                         display: 'flex',
@@ -568,12 +604,12 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         height: '200px',
                         flexShrink: 0,
                       }}>
-                        <QRCodeSVG
+                        <QRCodeCanvas
                           value={getCleanAddress(payment.pay_address || '')}
                           size={176}
                           level="H"
-                          fgColor="#0B1B2A"
-                          bgColor="#ffffff"
+                          fgColor="#2d7fc9"
+                          bgColor="transparent"
                         />
                       </div>
                     </motion.div>
@@ -596,8 +632,8 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                         onClick={copyAddress}
                         className="shrink-0"
                         style={{
-                          background: copied ? '#67E7BF' : '#67E7BF',
-                          color: '#0B1B2A',
+                          background: copied ? 'var(--tb-gold-400)' : 'var(--tb-gold-500)',
+                          color: '#F8FAFC',
                         }}
                       >
                         {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -610,14 +646,25 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                     <label className="text-sm font-medium" style={{ color: '#8A93A6' }}>
                       Amount to send
                     </label>
-                    <div className="p-5 rounded-xl border-2 text-center" style={{
-                      background: 'linear-gradient(135deg, #67E7BF 0%, #2EBF9A 100%)',
-                      borderColor: '#67E7BF',
-                      boxShadow: '0 4px 20px rgba(0, 163, 255, 0.25)',
+                    <div className="flex items-center gap-2 rounded-xl border-2 p-3" style={{
+                      background: 'var(--tb-surface-850)',
+                      borderColor: 'var(--tb-gold-edge)',
                     }}>
-                      <div className="text-3xl font-black" style={{ color: '#0B1B2A' }}>
+                      <code className="flex-1 break-all text-sm font-mono" style={{ color: '#F1F5F9' }}>
                         {payment.pay_amount} {payment.pay_currency.toUpperCase()}
-                      </div>
+                      </code>
+                      <Button
+                        size="sm"
+                        onClick={copyAmount}
+                        className="shrink-0"
+                        aria-label="Copy amount to send"
+                        style={{
+                          background: copiedAmount ? 'var(--tb-gold-400)' : 'var(--tb-gold-500)',
+                          color: '#F8FAFC',
+                        }}
+                      >
+                        {copiedAmount ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+                      </Button>
                     </div>
                   </div>
 
@@ -829,7 +876,11 @@ export function BalanceManagementModal({ isOpen, onClose, initialTab = 'deposit'
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          <div className="text-3xl mb-2">{currency.img}</div>
+                          <img
+                            src={currency.img}
+                            alt={`${currency.name} icon`}
+                            className="mb-2 h-10 w-10 rounded-full object-contain"
+                          />
                           <div className="font-bold" style={{ color: '#C9D1E2' }}>{currency.name}</div>
                           <div className="text-xs" style={{ color: '#8A93A6' }}>{currency.network}</div>
                         </motion.button>
